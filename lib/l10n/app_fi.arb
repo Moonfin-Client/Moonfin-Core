@@ -29,7 +29,7 @@
     "@username": {
         "description": "Username field label"
     },
-    "quickConnectInstruction": "Syötä tämä koodi palvelimesi web-hallintapaneeliin:",
+    "quickConnectInstruction": "Syötä tämä koodi palvelimesi web hallintapaneeliin:",
     "@quickConnectInstruction": {
         "description": "Instruction text for Quick Connect code entry"
     },
@@ -144,7 +144,7 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://sinun-palvelimen.osoite.com",
+    "serverAddressHint": "https://sinun palvelimen.osoite.com",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Ota käyttöön täysin mukautettu teema ja vaihda Apple- tai Material-tyylisen käyttöliittymän välillä.",
+    "settingsAppearanceThemeSubtitle": "Ota käyttöön täysin mukautettu teema ja vaihda Apple tai Material tyylisen käyttöliittymän välillä.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -184,11 +184,11 @@
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
-    "themeNeonPulseSubtitle": "Synthwave-tyyli magenta hehkulla, syaanilla tekstillä ja vahvemmalla kromikontrastilla",
+    "themeNeonPulseSubtitle": "Synthwave tyyli magenta hehkulla, syaanilla tekstillä ja vahvemmalla kromikontrastilla",
     "@themeNeonPulseSubtitle": {
         "description": "Preview description for the Neon Pulse theme"
     },
-    "embyConnectSignInSubtitle": "Kirjaudu sisään Emby Connect -tililläsi",
+    "embyConnectSignInSubtitle": "Kirjaudu sisään Emby Connect tililläsi",
     "@embyConnectSignInSubtitle": {
         "description": "Subtitle on the Emby Connect sign-in screen"
     },
@@ -204,19 +204,19 @@
     "@tryAgain": {
         "description": "Button to retry a failed operation"
     },
-    "noLinkedServers": "Tähän Emby Connect -tiliin ei ole linkitetty palvelimia",
+    "noLinkedServers": "Tähän Emby Connect tiliin ei ole linkitetty palvelimia",
     "@noLinkedServers": {
         "description": "Error when Emby Connect account has no linked servers"
     },
-    "invalidEmbyConnectCredentials": "Virheelliset Emby Connect -tiedot",
+    "invalidEmbyConnectCredentials": "Virheelliset Emby Connect tiedot",
     "@invalidEmbyConnectCredentials": {
         "description": "Error when Emby Connect auth response is invalid"
     },
-    "invalidEmbyConnectLogin": "Virheellinen Emby Connect -käyttäjätunnus tai salasana",
+    "invalidEmbyConnectLogin": "Virheellinen Emby Connect käyttäjätunnus tai salasana",
     "@invalidEmbyConnectLogin": {
         "description": "Error for wrong Emby Connect credentials"
     },
-    "embyConnectExchangeNotSupported": "Palvelin ei tue Emby Connect -tiedonsiirtoa",
+    "embyConnectExchangeNotSupported": "Palvelin ei tue Emby Connect tiedonsiirtoa",
     "@embyConnectExchangeNotSupported": {
         "description": "Error when server lacks Emby Connect exchange endpoint"
     },
@@ -236,7 +236,7 @@
     "@noReachableAddress": {
         "description": "Shown when a discovered server has no usable address"
     },
-    "invalidServerExchangeResponse": "Virheellinen vastaus Exchange-palvelimen päätelaitteelta",
+    "invalidServerExchangeResponse": "Virheellinen vastaus Exchange palvelimen päätelaitteelta",
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
@@ -813,15 +813,15 @@
     "@openLinks": {
         "description": "Section header for external links"
     },
-    "librivoxPage": "LibriVox-sivu",
+    "librivoxPage": "LibriVox sivu",
     "@librivoxPage": {
         "description": "Button label for LibriVox external link"
     },
-    "internetArchive": "Internet-arkisto",
+    "internetArchive": "Internet arkisto",
     "@internetArchive": {
         "description": "Button label for Internet Archive external link"
     },
-    "rssFeed": "RSS-syöte",
+    "rssFeed": "RSS syöte",
     "@rssFeed": {
         "description": "Button label for RSS feed external link"
     },
@@ -986,7 +986,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "Tälle kirjailijalle ei löytynyt kirjoja.",
+    "noBooksFound": "Kirjoja ei löytynyt",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -1086,7 +1086,7 @@
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
-    "finished": "Valmis",
+    "finished": "Valmistui",
     "@finished": {
         "description": "Status label for a finished book"
     },
@@ -1254,7 +1254,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Hae OpenSubtitles-palvelun avulla",
+    "searchOpenSubtitlesPlugin": "Hae OpenSubtitles palvelun avulla",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -1597,7 +1597,7 @@
             }
         }
     },
-    "castingUnavailableOffline": "Suoratoisto ei ole käytettävissä offline-toiston aikana.",
+    "castingUnavailableOffline": "Suoratoisto ei ole käytettävissä offline toiston aikana.",
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
@@ -1871,7 +1871,7 @@
             }
         }
     },
-    "epubUnavailableOnPlatform": "EPUB-renderöinti sovelluksen sisällä ei ole vielä saatavilla tällä alustalla.",
+    "epubUnavailableOnPlatform": "EPUB renderöinti sovelluksen sisällä ei ole vielä saatavilla tällä alustalla.",
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
@@ -2056,7 +2056,7 @@
     "@preparingInAppReader": {
         "description": "Loading text while reader is being prepared"
     },
-    "pdfDataNotAvailable": "PDF-tietoja ei ole saatavilla.",
+    "pdfDataNotAvailable": "PDF tietoja ei ole saatavilla.",
     "@pdfDataNotAvailable": {
         "description": "Error when PDF data cannot be loaded"
     },
@@ -2064,7 +2064,7 @@
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
-    "platformCannotHostDocumentEngine": "Tämä alusta ei voi isännöidä {extension}-tiedostojen upotettua asiakirjamoottoria.",
+    "platformCannotHostDocumentEngine": "Tämä alusta ei voi isännöidä {extension} tiedostojen upotettua asiakirjamoottoria.",
     "@platformCannotHostDocumentEngine": {
         "description": "Fallback description when platform lacks document engine",
         "placeholders": {
@@ -2081,7 +2081,7 @@
     "@openExternally": {
         "description": "Button to open document in external viewer"
     },
-    "noEpubChaptersFound": "EPUB-lukuja ei löytynyt.",
+    "noEpubChaptersFound": "EPUB lukuja ei löytynyt.",
     "@noEpubChaptersFound": {
         "description": "Error when no EPUB chapters are found"
     },
@@ -2187,7 +2187,7 @@
     "@recentRecordings": {
         "description": "Section title for recently completed recordings"
     },
-    "tvSeries": "TV-sarja",
+    "tvSeries": "TV sarja",
     "@tvSeries": {
         "description": "Section title for TV series recordings"
     },
@@ -2287,7 +2287,7 @@
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
-    "tvShows": "TV-ohjelmat",
+    "tvShows": "TV ohjelmat",
     "@tvShows": {
         "description": "Filter label for TV shows"
     },
@@ -2295,7 +2295,7 @@
     "@music": {
         "description": "Filter label for music"
     },
-    "musicAlbums": "Musiikki-albumit",
+    "musicAlbums": "Musiikki albumit",
     "@musicAlbums": {
         "description": "Section title for downloaded music albums"
     },
@@ -2527,7 +2527,7 @@
     "@database": {
         "description": "Storage breakdown label for database"
     },
-    "ofStorageLimit": "{limit}-rajoituksesta",
+    "ofStorageLimit": "{limit} rajoituksesta",
     "@ofStorageLimit": {
         "description": "Text showing storage used of total limit",
         "placeholders": {
@@ -2552,7 +2552,7 @@
     "@pinCode": {
         "description": "PIN code settings title"
     },
-    "setUpPinCodeProtection": "Aseta PIN-koodisuojaus",
+    "setUpPinCodeProtection": "Aseta PIN koodisuojaus",
     "@setUpPinCodeProtection": {
         "description": "PIN code settings description"
     },
@@ -2839,7 +2839,7 @@
     "@dimVideoShowOverview": {
         "description": "Description for show description on pause"
     },
-    "osdLockButton": "OSD-lukituspainike",
+    "osdLockButton": "OSD lukituspainike",
     "@osdLockButton": {
         "description": "Setting for OSD lock button"
     },
@@ -2935,19 +2935,19 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3-läpivienti",
+    "ac3Passthrough": "AC3 läpivienti",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
-    "dtsPassthrough": "DTS-läpivienti",
+    "dtsPassthrough": "DTS läpivienti",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
-    "trueHdSupport": "TrueHD-tuki",
+    "trueHdSupport": "TrueHD tuki",
     "@trueHdSupport": {
         "description": "Setting for TrueHD support"
     },
-    "enableDtsPassthrough": "Bittivirta DTS-ääni vain AVR:lle; vaatii vastaanottimen tuen ja DTS-lähderaidan",
+    "enableDtsPassthrough": "Bittivirta DTS ääni vain AVR:lle; vaatii vastaanottimen tuen ja DTS lähderaidan",
     "@enableDtsPassthrough": {
         "description": "Description for DTS passthrough"
     },
@@ -2971,15 +2971,15 @@
     "@enableCustomMpvConf": {
         "description": "Setting for custom mpv.conf"
     },
-    "applyMpvConfBeforePlayback": "Käytä käyttäjän määrittämää mpv.conf-tiedostoa ennen toiston alkamista",
+    "applyMpvConfBeforePlayback": "Käytä käyttäjän määrittämää mpv.conf tiedostoa ennen toiston alkamista",
     "@applyMpvConfBeforePlayback": {
         "description": "Description for custom mpv.conf"
     },
-    "unsafeAdvancedMpvOptions": "Vaaralliset mpv-lisäasetukset",
+    "unsafeAdvancedMpvOptions": "Vaaralliset mpv lisäasetukset",
     "@unsafeAdvancedMpvOptions": {
         "description": "Setting for unsafe mpv options"
     },
-    "unsafeMpvOptionsDescription": "Salli laajempi joukko mpv-vaihtoehtoja. Saattaa häiritä toistokäyttäytymistä.",
+    "unsafeMpvOptionsDescription": "Salli laajempi joukko mpv vaihtoehtoja. Saattaa häiritä toistokäyttäytymistä.",
     "@unsafeMpvOptionsDescription": {
         "description": "Description for unsafe mpv options"
     },
@@ -3076,11 +3076,11 @@
     "@skipForwardLength": {
         "description": "Setting for skip forward length"
     },
-    "customMpvConfPath": "Mukautettu mpv.conf-polku",
+    "customMpvConfPath": "Mukautettu mpv.conf polku",
     "@customMpvConfPath": {
         "description": "Setting for custom mpv.conf path"
     },
-    "notSetMpvConf": "Ei asetettu. Moonfin yrittää oletusarvoista mpv.conf-tiedostoa app/data-kansioissa.",
+    "notSetMpvConf": "Ei asetettu. Moonfin yrittää oletusarvoista mpv.conf tiedostoa app/data kansioissa.",
     "@notSetMpvConf": {
         "description": "Description when no custom mpv.conf is set"
     },
@@ -3092,7 +3092,7 @@
     "@pathToMpvConf": {
         "description": "Hint text for mpv.conf path input"
     },
-    "subtitleStyleDescription": "Tyyliasetukset (koko, väri, offset) koskevat tekstipohjaisia tekstityksiä (SRT, VTT, TTML). ASS/SSA-tekstitykset käyttävät omaa upotettua tyyliään, ellei \"ASS/SSA Direct Play\" ole poistettu käytöstä. Bittikarttatekstitystä (PGS, DVB, VobSub) ei voi muokata uudelleen.",
+    "subtitleStyleDescription": "Tyyliasetukset (koko, väri, offset) koskevat tekstipohjaisia tekstityksiä (SRT, VTT, TTML). ASS/SSA tekstitykset käyttävät omaa upotettua tyyliään, ellei \"ASS/SSA Direct Play\" ole poistettu käytöstä. Bittikarttatekstitystä (PGS, DVB, VobSub) ei voi muokata uudelleen.",
     "@subtitleStyleDescription": {
         "description": "Info text about subtitle styling"
     },
@@ -3140,15 +3140,15 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "Suora PGS-toisto",
+    "pgsDirectPlay": "Suora PGS toisto",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
-    "directPlayPgsSubtitles": "Suoratoisto PGS-tekstitykset",
+    "directPlayPgsSubtitles": "Suoratoisto PGS tekstitykset",
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "Suora ASS/SSA-toisto",
+    "assSsaDirectPlay": "Suora ASS/SSA toisto",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -3222,7 +3222,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Paikalliset asetukset synkronoitu {profile}-profiiliin.",
+    "syncedSettingsToProfile": "Paikalliset asetukset synkronoitu {profile} profiiliin.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3255,7 +3255,7 @@
     "@profileSyncHidden": {
         "description": "Title when profile sync is hidden"
     },
-    "enablePluginSyncDescription": "Ota Palvelinlaajennuksen synkronointi käyttöön Plugin-asetuksissa, jotta profiiliohjaimet näkyvät tässä.",
+    "enablePluginSyncDescription": "Ota Palvelinlaajennuksen synkronointi käyttöön Plugin asetuksissa, jotta profiiliohjaimet näkyvät tässä.",
     "@enablePluginSyncDescription": {
         "description": "Description when plugin sync is disabled"
     },
@@ -3271,11 +3271,11 @@
     "@network": {
         "description": "Section title for network settings"
     },
-    "wifiOnlyDownloads": "Vain WiFi-lataukset",
+    "wifiOnlyDownloads": "Vain WiFi lataukset",
     "@wifiOnlyDownloads": {
         "description": "Setting for wifi-only downloads"
     },
-    "onlyDownloadOnWifi": "Lataa vain WiFi-yhteyden ollessa kytkettynä",
+    "onlyDownloadOnWifi": "Lataa vain WiFi yhteyden ollessa kytkettynä",
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
@@ -3339,11 +3339,11 @@
     "@cannotWriteToFolder": {
         "description": "Error when cannot write to selected folder"
     },
-    "saveToDownloadsFolderQuestion": "Tallennetaanko Lataukset-kansioon?",
+    "saveToDownloadsFolderQuestion": "Tallennetaanko Lataukset kansioon?",
     "@saveToDownloadsFolderQuestion": {
         "description": "Dialog title for saving to downloads folder"
     },
-    "saveToDownloadsFolderDescription": "Ladattu media tallennetaan laitteesi Downloads/Moonfin-kansioon. Nämä tiedostot näkyvät muille sovelluksille, kuten galleriallesi tai musiikkisoittimellesi.\n\nNykyiset lataukset säilyvät nykyisessä paikassaan.",
+    "saveToDownloadsFolderDescription": "Ladattu media tallennetaan laitteesi Downloads/Moonfin kansioon. Nämä tiedostot näkyvät muille sovelluksille, kuten galleriallesi tai musiikkisoittimellesi.\n\nNykyiset lataukset säilyvät nykyisessä paikassaan.",
     "@saveToDownloadsFolderDescription": {
         "description": "Description for saving to downloads folder"
     },
@@ -3548,7 +3548,7 @@
     "@contentType": {
         "description": "Setting for content type"
     },
-    "moviesAndTvShows": "Elokuvat ja TV-ohjelmat",
+    "moviesAndTvShows": "Elokuvat ja TV ohjelmat",
     "@moviesAndTvShows": {
         "description": "Content type: movies and TV shows"
     },
@@ -3556,7 +3556,7 @@
     "@moviesOnly": {
         "description": "Content type: movies only"
     },
-    "tvShowsOnly": "Vain TV-ohjelmat",
+    "tvShowsOnly": "Vain TV ohjelmat",
     "@tvShowsOnly": {
         "description": "Content type: TV shows only"
     },
@@ -3644,7 +3644,7 @@
     "@playlists": {
         "description": "Home section: playlists"
     },
-    "liveTV": "Live-TV",
+    "liveTV": "Live TV",
     "@liveTV": {
         "description": "Home section: live TV"
     },
@@ -3724,11 +3724,11 @@
     "@couldNotRefreshRatings": {
         "description": "Shown when ratings fail to refresh"
     },
-    "enablePinCode": "Ota PIN-koodi käyttöön",
+    "enablePinCode": "Ota PIN koodi käyttöön",
     "@enablePinCode": {
         "description": "Setting for enabling PIN code"
     },
-    "requirePinToAccess": "Vaadi PIN-koodi päästäksesi tilillesi",
+    "requirePinToAccess": "Vaadi PIN koodi päästäksesi tilillesi",
     "@requirePinToAccess": {
         "description": "Description for enable PIN code"
     },
@@ -3736,7 +3736,7 @@
     "@changePin": {
         "description": "Setting for changing PIN"
     },
-    "setNewPinCode": "Aseta uusi PIN-koodi",
+    "setNewPinCode": "Aseta uusi PIN koodi",
     "@setNewPinCode": {
         "description": "Description for change PIN"
     },
@@ -3744,7 +3744,7 @@
     "@removePin": {
         "description": "Setting for removing PIN"
     },
-    "removePinProtection": "Poista PIN-koodisuojaus",
+    "removePinProtection": "Poista PIN koodisuojaus",
     "@removePinProtection": {
         "description": "Description for remove PIN"
     },
@@ -3878,7 +3878,7 @@
     "@additionalRatings": {
         "description": "Setting for additional ratings"
     },
-    "showMdbListAndTmdbRatings": "Näytä MDBList- ja TMDB-luokitukset",
+    "showMdbListAndTmdbRatings": "Näytä MDBList ja TMDB luokitukset",
     "@showMdbListAndTmdbRatings": {
         "description": "Description for additional ratings"
     },
@@ -4022,7 +4022,7 @@
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "Ei saatavilla, koska palvelinlaajennuksen Seerr-tuki on poistettu käytöstä.",
+    "seerrUnavailable": "Ei saatavilla, koska palvelinlaajennuksen Seerr tuki on poistettu käytöstä.",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
@@ -4043,7 +4043,7 @@
             }
         }
     },
-    "discoverRows": "Seerrin Discover-sivu",
+    "discoverRows": "Seerrin Discover sivu",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
@@ -4084,7 +4084,7 @@
     "@sourceCode": {
         "description": "Link to source code"
     },
-    "sourceCodeUrl": "https://github.com/Moonfin-Client/Moonfin-Core",
+    "sourceCodeUrl": "https://github.com/Moonfin Client/Moonfin Core",
     "@sourceCodeUrl": {
         "description": "Displayed source code repository URL"
     },
@@ -4306,7 +4306,7 @@
     "@keep": {
         "description": "Button to keep/dismiss a cancel dialog"
     },
-    "itemNotFoundInLibrary": "Kohdetta ei löydy Moonfin-kirjastostasi",
+    "itemNotFoundInLibrary": "Kohdetta ei löydy Moonfin kirjastostasi",
     "@itemNotFoundInLibrary": {
         "description": "Snackbar when Seerr item cannot be found in Jellyfin"
     },
@@ -4438,7 +4438,7 @@
     "@deletedStatus": {
         "description": "Request status label for deleted media"
     },
-    "tmdbScore": "TMDB-pisteet",
+    "tmdbScore": "TMDB pisteet",
     "@tmdbScore": {
         "description": "Stat label for TMDB user score"
     },
@@ -4483,7 +4483,7 @@
     "copy": "Kopioida",
     "create": "Luoda",
     "disable": "Poista käytöstä",
-    "done": "Valmis",
+    "done": "Valmista",
     "edit": "Muokkaa",
     "encoding": "Koodaus",
     "error": "Virhe",
@@ -4539,13 +4539,13 @@
     "adminDrawerDevices": "Laitteet",
     "adminDrawerActivity": "Toiminta",
     "adminDrawerNetworking": "Verkkoasetukset",
-    "adminDrawerApiKeys": "API-avaimet",
+    "adminDrawerApiKeys": "API avaimet",
     "adminDrawerBackups": "Varmuuskopiot",
     "adminDrawerLogs": "Lokit",
     "adminDrawerScheduledTasks": "Ajastetut tehtävät",
     "adminDrawerPlugins": "Laajennukset",
     "adminDrawerRepositories": "Pakettivarastot",
-    "adminDrawerLiveTv": "Live-TV",
+    "adminDrawerLiveTv": "Live TV",
     "adminExitTooltip": "Poistu",
     "adminDashboardLoadFailed": "Koontinäyttöä ei voitu ladata",
     "adminMediaOverview": "Median yleiskatsaus",
@@ -4875,14 +4875,14 @@
     "adminAllowContentDeletion": "Salli sisällön poistaminen",
     "adminAllowContentDownloading": "Salli sisällön lataaminen",
     "adminAllowPublicSharing": "Salli julkinen jakaminen",
-    "adminAllowRemoteControl": "Salli muiden käyttäjien kauko-ohjaus",
+    "adminAllowRemoteControl": "Salli muiden käyttäjien kauko ohjaus",
     "adminAllowSharedDeviceControl": "Salli jaettu laitehallinta",
     "adminAllowRemoteAccess": "Salli etäkäyttö",
     "adminRemoteBitrateLimit": "Etäasiakkaan bittinopeusrajoitus (bps)",
     "adminLeaveEmptyNoLimit": "Jätä tyhjäksi ilman rajoituksia",
     "adminMaxActiveSessions": "Aktiivisten istuntojen enimmäismäärä",
     "adminAllowLiveTvAccess": "Salli suoran television käyttö",
-    "adminAllowLiveTvManagement": "Salli live-TV:n hallinta",
+    "adminAllowLiveTvManagement": "Salli live TV:n hallinta",
     "adminAllowCollectionManagement": "Salli kokoelman hallinta",
     "adminAllowSubtitleManagement": "Salli tekstityksen hallinta",
     "adminAllowLyricManagement": "Salli sanoituksen hallinta",
@@ -4934,10 +4934,10 @@
             }
         }
     },
-    "adminCreateApiKey": "Luo API-avain",
+    "adminCreateApiKey": "Luo API avain",
     "adminAppName": "Sovelluksen nimi",
-    "adminApiKeyCreated": "API-avain luotu",
-    "adminApiKeyCreatedNoToken": "Avain luotu onnistuneesti. Palvelin ei palauttanut merkkiä. Tarkista palvelimen API-avaimet.",
+    "adminApiKeyCreated": "API avain luotu",
+    "adminApiKeyCreatedNoToken": "Avain luotu onnistuneesti. Palvelin ei palauttanut merkkiä. Tarkista palvelimen API avaimet.",
     "adminKeyCopied": "Avain kopioitu leikepöydälle",
     "adminApiKeyCreateFailed": "Avaimen luominen epäonnistui: {error}",
     "@adminApiKeyCreateFailed": {
@@ -4948,7 +4948,7 @@
         }
     },
     "adminKeyTokenMissing": "Palvelimen vastauksesta puuttuu avaintunnus",
-    "adminRevokeApiKey": "Peruuta API-avain",
+    "adminRevokeApiKey": "Peruuta API avain",
     "adminRevokeKeyConfirm": "Perutaanko avain kohteelle {name}?",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
@@ -4957,7 +4957,7 @@
             }
         }
     },
-    "adminApiKeyRevoked": "API-avain peruutettu",
+    "adminApiKeyRevoked": "API avain peruutettu",
     "adminApiKeyRevokeFailed": "Avaimen peruuttaminen epäonnistui: {error}",
     "@adminApiKeyRevokeFailed": {
         "placeholders": {
@@ -4966,10 +4966,10 @@
             }
         }
     },
-    "adminApiKeysLoadFailed": "API-avaimien lataaminen epäonnistui",
-    "adminApiKeysTitle": "API-avaimet",
+    "adminApiKeysLoadFailed": "API avaimien lataaminen epäonnistui",
+    "adminApiKeysTitle": "API avaimet",
     "adminCreateKey": "Luo avain",
-    "adminNoApiKeys": "API-avaimia ei löytynyt",
+    "adminNoApiKeys": "API avaimia ei löytynyt",
     "adminUnknownApp": "Tuntematon sovellus",
     "adminApiKeyTokenCreated": "Tunnus: {token}\\nLuotu: {created}",
     "@adminApiKeyTokenCreated": {
@@ -5191,7 +5191,7 @@
     "adminNoPackagesMatchSearch": "Ei hakuasi vastaavia paketteja",
     "adminNoPackagesAvailable": "Paketteja ei ole saatavilla",
     "adminExperimentalIntegration": "Kokeellinen tietojen yhdistäminen",
-    "adminExperimentalWarning": "Plugin-asetusten integrointi on vielä kokeellista. Jotkin asetussivut eivät välttämättä näy oikein.",
+    "adminExperimentalWarning": "Plugin asetusten integrointi on vielä kokeellista. Jotkin asetussivut eivät välttämättä näy oikein.",
     "continueAction": "Jatkaa",
     "adminPluginRemoveAfterRestart": "\"{name}\" poistetaan palvelimen uudelleenkäynnistyksen jälkeen",
     "@adminPluginRemoveAfterRestart": {
@@ -5268,9 +5268,9 @@
         }
     },
     "adminRepositoryNameHint": "esim. Jellyfin vakaa",
-    "adminRepositoryUrl": "Tietovaraston URL-osoite",
+    "adminRepositoryUrl": "Tietovaraston URL osoite",
     "adminAddEntry": "Lisää merkintä",
-    "adminInvalidUrl": "Virheellinen URL-osoite",
+    "adminInvalidUrl": "Virheellinen URL osoite",
     "adminPluginSettingsLoadFailed": "Liitännäisen asetuksia ei voi ladata: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
@@ -5313,7 +5313,7 @@
     "adminPlaybackLoadFailed": "Toistoasetusten lataaminen epäonnistui",
     "adminPlaybackTranscoding": "Toisto / Transkoodaus",
     "adminHardwareAcceleration": "Laitteistokiihdytys",
-    "adminVaapiDevice": "VA-API laite",
+    "adminVaapiDevice": "VA API laite",
     "adminEnableHardwareEncoding": "Ota käyttöön laitteistokoodaus",
     "adminEnableHardwareDecoding": "Ota laitteiston dekoodaus käyttöön:",
     "adminEncodingThreads": "Säikeiden koodaus",
@@ -5325,13 +5325,13 @@
     "adminSegmentKeepSeconds": "Segmentin säilytys (sekuntia)",
     "adminThrottleBuffering": "Puskuroitu rajoitus",
     "adminTrickplaySaved": "Trickplay-asetukset tallennettu",
-    "adminTrickplayLoadFailed": "Trickplay-asetusten lataaminen epäonnistui",
+    "adminTrickplayLoadFailed": "Trickplay asetusten lataaminen epäonnistui",
     "adminEnableHardwareAcceleration": "Ota käyttöön laitteistokiihdytys",
     "adminEnableKeyFrameExtraction": "Ota käyttöön vain avainkehysten purkaminen",
     "adminKeyFrameSubtitle": "Nopeampi mutta pienempi tarkkuus",
     "adminScanBehavior": "Skannauskäyttäytyminen",
     "adminProcessPriority": "Prosessin prioriteetti",
-    "adminImageSettings": "Kuva-asetukset",
+    "adminImageSettings": "Kuva asetukset",
     "adminIntervalMs": "Aikaväli (ms)",
     "adminCaptureFrameSubtitle": "Kuinka usein ottaa kuvia",
     "adminWidthResolutions": "Leveyden resoluutiot",
@@ -5355,18 +5355,18 @@
     "adminNetworkingWarning": "Verkkoasetusten muutokset voivat vaatia palvelimen uudelleenkäynnistyksen.",
     "adminEnableRemoteAccess": "Ota etäkäyttö käyttöön",
     "ports": "Portit",
-    "adminHttpPort": "HTTP-portti",
-    "adminHttpsPort": "HTTPS-portti",
-    "adminPublicHttpsPort": "Julkinen HTTPS-portti",
-    "adminBaseUrl": "Perus-URL",
+    "adminHttpPort": "HTTP portti",
+    "adminHttpsPort": "HTTPS portti",
+    "adminPublicHttpsPort": "Julkinen HTTPS portti",
+    "adminBaseUrl": "Perus URL",
     "adminBaseUrlHint": "esim. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Ota HTTPS käyttöön",
     "adminLocalNetwork": "Lähiverkko",
     "adminLocalNetworkAddresses": "Lähiverkko osoitteet",
     "adminKnownProxies": "Ehdotetut proxyt",
-    "adminRemoteIpFilter": "Etä-IP-suodatin",
-    "adminRemoteIpFilterEntries": "Etä-IP-suodatin",
+    "adminRemoteIpFilter": "Etä IP suodatin",
+    "adminRemoteIpFilterEntries": "Etä IP suodatin",
     "adminCertificatePath": "Varmenteen polku",
     "whitelist": "Valkoinen lista",
     "blacklist": "Musta lista",
@@ -5460,7 +5460,7 @@
             }
         }
     },
-    "adminDeleteImage": "Poista {imageType}-kuva",
+    "adminDeleteImage": "Poista {imageType} kuva",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5567,7 +5567,7 @@
             }
         }
     },
-    "adminLiveTvLoadFailed": "Live-TV-hallinnan lataaminen epäonnistui",
+    "adminLiveTvLoadFailed": "Live TV hallinnan lataaminen epäonnistui",
     "adminTunerDevices": "Viritinlaitteet",
     "adminNoTunerHosts": "Viritinisäntiä ei ole määritetty",
     "adminGuideProviders": "Opaspalveluntarjoajat",
@@ -5683,8 +5683,8 @@
     "adminMetadataFieldTitle": "Nimike",
     "adminMetadataFieldSortTitle": "Lajittele otsikko",
     "adminMetadataFieldOriginalTitle": "Alkuperäinen otsikko",
-    "adminMetadataFieldPremiereDate": "Ensiesityspäivä (VVVV-KK-PP)",
-    "adminMetadataFieldEndDate": "Päättymispäivä (VVVV-KK-PP)",
+    "adminMetadataFieldPremiereDate": "Ensiesityspäivä (VVVV KK PP)",
+    "adminMetadataFieldEndDate": "Päättymispäivä (VVVV KK PP)",
     "adminMetadataFieldProductionYear": "Tuotantovuosi",
     "adminMetadataFieldOfficialRating": "Virallinen luokitus",
     "adminMetadataFieldCommunityRating": "yhteisön luokitus",
@@ -5749,7 +5749,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Poista {imageType}-kuva",
+    "adminMetadataDeleteImageTitle": "Poista {imageType} kuva",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5766,7 +5766,7 @@
             }
         }
     },
-    "adminMetadataChooseImage": "Valitse {imageType}-kuva",
+    "adminMetadataChooseImage": "Valitse {imageType} kuva",
     "@adminMetadataChooseImage": {
         "placeholders": {
             "imageType": {
@@ -5816,7 +5816,7 @@
         }
     },
     "adminPluginDetailExperimental": "Kokeellinen tietojen yhdistäminen",
-    "adminPluginDetailExperimentalContent": "Plugin-asetusten integrointi on vielä kokeellista. Jotkin kentät tai asettelut eivät ehkä vielä näy oikein.",
+    "adminPluginDetailExperimentalContent": "Plugin asetusten integrointi on vielä kokeellista. Jotkin kentät tai asettelut eivät ehkä vielä näy oikein.",
     "adminPluginDetailToggle404": "Plugin vaihto epäonnistui. Palvelin ei löytänyt tätä laajennusversiota. Yritä päivittää laajennukset ja yritä sitten uudelleen.",
     "adminPluginDetailToggleDioError": "Plugin vaihto epäonnistui. Tarkista lisätietoja palvelimen lokeista.",
     "adminPluginDetailSettingsTitle": "{name} Asetukset",
@@ -5868,9 +5868,9 @@
     "adminReposUnnamed": "(nimetön)",
     "adminReposEditTitle": "Muokkaa arkistoa",
     "adminReposAddTitle": "Lisää arkisto",
-    "adminReposUrl": "Tietovaraston URL-osoite",
+    "adminReposUrl": "Tietovaraston URL osoite",
     "adminReposNameHint": "esim. Jellyfin vakaa",
-    "adminPluginSettingsInvalidUrl": "Virheellinen URL-osoite",
+    "adminPluginSettingsInvalidUrl": "Virheellinen URL osoite",
     "adminGeneralSettingsTitle": "Yleiset asetukset",
     "adminGeneralMetadataLanguage": "Ensisijainen metatietojen kieli",
     "adminGeneralMetadataLanguageHint": "esim. en, de, fr",
@@ -5921,14 +5921,14 @@
     "adminTrickplayHwEncoding": "Ota käyttöön laitteistokoodaus",
     "adminTrickplayKeyFrameOnly": "Ota käyttöön vain avainkehysten purkaminen",
     "adminTrickplayKeyFrameOnlySubtitle": "Nopeampi mutta pienempi tarkkuus",
-    "adminTrickplayNonBlocking": "Ei-esto",
+    "adminTrickplayNonBlocking": "Ei esto",
     "adminTrickplayBlocking": "Estäminen",
     "adminTrickplayPriorityHigh": "Korkea",
     "adminTrickplayPriorityAboveNormal": "Normaalia korkeampi",
     "adminTrickplayPriorityNormal": "Normaali",
     "adminTrickplayPriorityBelowNormal": "Normaalin alapuolella",
     "adminTrickplayPriorityIdle": "Taustalla",
-    "adminTrickplayImageSettings": "Kuva-asetukset",
+    "adminTrickplayImageSettings": "Kuva asetukset",
     "adminTrickplayInterval": "Aikaväli (ms)",
     "adminTrickplayIntervalSubtitle": "Kuinka usein ottaa kuvia",
     "adminTrickplayWidthResolutionsHint": "Pilkuilla erotetut pikselien leveydet (esim. 320)",
@@ -6061,15 +6061,15 @@
             }
         }
     },
-    "adminTrickplayDescription": "Määritä trickplay-kuvien luominen esikatselun pikkukuvien etsimistä varten.",
-    "adminNetworkingPublicHttpsPort": "Julkinen HTTPS-portti",
-    "adminNetworkingBaseUrl": "Perus-URL-osoite",
+    "adminTrickplayDescription": "Määritä trickplay kuvien luominen esikatselun pikkukuvien etsimistä varten.",
+    "adminNetworkingPublicHttpsPort": "Julkinen HTTPS portti",
+    "adminNetworkingBaseUrl": "Perus URL osoite",
     "adminNetworkingBaseUrlHint": "esim. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Varmenteen polku",
     "adminNetworkingRemoteIpFilter": "Etä-IP-suodatin",
-    "adminNetworkingRemoteIpFilterLabel": "Etä-IP-suodatin",
-    "adminPlaybackVaapiDevice": "VA-API laite",
+    "adminNetworkingRemoteIpFilterLabel": "Etä IP suodatin",
+    "adminPlaybackVaapiDevice": "VA API laite",
     "adminPlaybackAutomatic": "0 = automaattinen",
     "adminPlaybackTranscodeTempPath": "Transkoodaus lämpötilapolku",
     "adminPlaybackSegmentDeletion": "Salli segmentin poistaminen",
@@ -6125,10 +6125,10 @@
     "syncPlayDisabledTitle": "SyncPlay pois käytöstä",
     "syncPlayDisabledMessage": "Ota SyncPlay käyttöön asetuksissa, jos haluat käyttää synkronoitua toistoa.",
     "syncPlayServerUnsupportedTitle": "Palvelinta ei tueta",
-    "syncPlayServerUnsupportedMessage": "SyncPlay vaatii Jellyfin-palvelimen. Nykyinen palvelin ei tue sitä.",
+    "syncPlayServerUnsupportedMessage": "SyncPlay vaatii Jellyfin palvelimen. Nykyinen palvelin ei tue sitä.",
     "syncPlayGroupFallbackName": "SyncPlay Ryhmä",
-    "syncPlayGroupTooltip": "SyncPlay-ryhmä",
-    "syncPlayParticipantCount": "{count, plural, one {# osallistuja} other {# osallistujaa}}",
+    "syncPlayGroupTooltip": "SyncPlay ryhmä",
+    "syncPlayParticipantCount": "{count, plural, one {{count} participant} other {{count} participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6160,12 +6160,12 @@
     "syncPlayPlayNow": "Toista nyt",
     "syncPlayCreateNewGroup": "Luo uusi ryhmä",
     "syncPlayGroupName": "Ryhmän nimi",
-    "syncPlayDefaultGroupName": "Oma SyncPlay-ryhmä",
+    "syncPlayDefaultGroupName": "Oma SyncPlay ryhmä",
     "syncPlayCreateGroup": "Luo ryhmä",
     "syncPlayAvailableGroups": "Saatavilla olevat ryhmät",
     "syncPlayNoGroupsAvailable": "Ryhmiä ei ole saatavilla",
-    "syncPlayJoinGroupQuestion": "Liitytkö SyncPlay-ryhmään?",
-    "syncPlayJoinGroupWarning": "SyncPlay-ryhmään liittyminen voi korvata nykyisen toistojonosi. Jatkaa?",
+    "syncPlayJoinGroupQuestion": "Liitytkö SyncPlay ryhmään?",
+    "syncPlayJoinGroupWarning": "SyncPlay ryhmään liittyminen voi korvata nykyisen toistojonosi. Jatkaa?",
     "syncPlayJoin": "Liity",
     "syncPlayStateIdle": "Toimeton",
     "syncPlayStateWaiting": "Odottaa",
@@ -6189,8 +6189,8 @@
             }
         }
     },
-    "syncPlayAccessDeniedTitle": "SyncPlay-käyttö estetty",
-    "syncPlayAccessDeniedMessage": "Sinulla ei ole pääsyä yhteen tai useampaan kohteeseen tässä SyncPlay-ryhmässä. Pyydä ryhmän omistajaa vahvistamaan kirjaston käyttöoikeudet tai valitse toinen jono.",
+    "syncPlayAccessDeniedTitle": "SyncPlay käyttö estetty",
+    "syncPlayAccessDeniedMessage": "Sinulla ei ole pääsyä yhteen tai useampaan kohteeseen tässä SyncPlay ryhmässä. Pyydä ryhmän omistajaa vahvistamaan kirjaston käyttöoikeudet tai valitse toinen jono.",
     "syncPlaySyncingPlaybackToGroup": "Synkronoidaan toistoa {groupName}",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
@@ -6202,12 +6202,12 @@
     },
     "voiceSearchUnavailable": "Puhehaku ei ole käytettävissä.",
     "dolbyVisionDirectPlayFailedTitle": "Dolby Vision Direct Play epäonnistui",
-    "dolbyVisionDirectPlayFailedMessage": "Tämän Dolby Vision -virran suoratoisto epäonnistui. Yritetäänkö palvelimen transkoodaus uudelleen?",
+    "dolbyVisionDirectPlayFailedMessage": "Tämän Dolby Vision virran suoratoisto epäonnistui. Yritetäänkö palvelimen transkoodaus uudelleen?",
     "retryWithTranscode": "Yritä uudelleen transkoodauksella",
     "dolbyVisionNotSupportedTitle": "Dolby Visionia ei tueta",
-    "dolbyVisionNotSupportedMessage": "Tämä laite ei voi purkaa Dolby Vision -sisältöä suoraan. Käytä HDR10-varaa tai pyydä palvelimen transkoodausta.",
+    "dolbyVisionNotSupportedMessage": "Tämä laite ei voi purkaa Dolby Vision sisältöä suoraan. Käytä HDR10 varaa tai pyydä palvelimen transkoodausta.",
     "rememberMyChoice": "Muista valintani",
-    "playHdr10Fallback": "Toista vara-HDR10",
+    "playHdr10Fallback": "Toista vara HDR10",
     "requestTranscode": "Pyydä transkoodausta",
     "integrationRowsDiscoveredCount": "{count, plural, one {# rivi löytyi} other {# riviä löytyi}}",
     "@integrationRowsDiscoveredCount": {
@@ -6225,7 +6225,7 @@
     "mediaBarLoading": "Ladataan mediapalkkia...",
     "mediaBarError": "Mediapalkin lataaminen epäonnistui",
     "offlineServerUnavailable": "Yhteys Internetiin, mutta nykyinen palvelin ei ole käytettävissä.",
-    "offlineNoInternet": "Olet offline-tilassa. Vain ladattu sisältö on saatavilla.",
+    "offlineNoInternet": "Olet offline tilassa. Vain ladattu sisältö on saatavilla.",
     "offlineFileNotAvailable": "Tiedosto ei ole käytettävissä",
     "offlineSwitchServer": "Vaihda palvelinta",
     "offlineSavedMedia": "Lataukset",
@@ -6233,7 +6233,7 @@
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
     "castRemotePlayback": "Kaukotoisto",
-    "castControlFailed": "Cast-ohjaus epäonnistui: {error}",
+    "castControlFailed": "Cast ohjaus epäonnistui: {error}",
     "@castControlFailed": {
         "placeholders": {
             "error": {
@@ -6263,9 +6263,9 @@
     "subtitlesLabel": "Tekstitykset",
     "pinConfirmTitle": "Vahvista PIN",
     "pinSetTitle": "Aseta PIN",
-    "pinEnterTitle": "Anna PIN-koodi",
-    "pinReenterToConfirm": "Vahvista syöttämällä PIN-koodi uudelleen",
-    "pinEnterNDigit": "Anna {length}-numeroinen PIN-koodi",
+    "pinEnterTitle": "Anna PIN koodi",
+    "pinReenterToConfirm": "Vahvista syöttämällä PIN koodi uudelleen",
+    "pinEnterNDigit": "Anna {length} -numeroinen PIN koodi",
     "@pinEnterNDigit": {
         "placeholders": {
             "length": {
@@ -6273,7 +6273,7 @@
             }
         }
     },
-    "pinEnterYourNDigit": "Anna {length}-numeroinen PIN-koodi",
+    "pinEnterYourNDigit": "Anna {length} -numeroinen PIN koodi",
     "@pinEnterYourNDigit": {
         "placeholders": {
             "length": {
@@ -6281,18 +6281,18 @@
             }
         }
     },
-    "pinIncorrect": "Väärä PIN-koodi",
-    "pinMismatch": "PIN-koodit eivät täsmää",
-    "pinForgot": "Unohditko PIN-koodin?",
+    "pinIncorrect": "Väärä PIN koodi",
+    "pinMismatch": "PIN koodit eivät täsmää",
+    "pinForgot": "Unohditko PIN koodin?",
     "pinClear": "Tyhjennä",
     "pinBackspace": "Askelpalautin",
-    "quickConnectAuthorized": "Quick Connect -pyyntö hyväksytty.",
-    "quickConnectInvalidOrExpired": "Quick Connect -koodi on virheellinen tai vanhentunut.",
+    "quickConnectAuthorized": "Quick Connect pyyntö hyväksytty.",
+    "quickConnectInvalidOrExpired": "Quick Connect koodi on virheellinen tai vanhentunut.",
     "quickConnectNotSupported": "Quick Connectia ei tueta tällä palvelimella.",
-    "quickConnectAuthorizeFailed": "Quick Connect -koodin valtuuttaminen epäonnistui.",
+    "quickConnectAuthorizeFailed": "Quick Connect koodin valtuuttaminen epäonnistui.",
     "quickConnectDisabled": "Quick Connect on poistettu käytöstä tällä palvelimella.",
-    "quickConnectForbidden": "Tilisi ei voi valtuuttaa tätä Quick Connect -pyyntöä.",
-    "quickConnectNotFound": "Quick Connect -koodia ei löytynyt. Kokeile uutta koodia.",
+    "quickConnectForbidden": "Tilisi ei voi valtuuttaa tätä Quick Connect pyyntöä.",
+    "quickConnectNotFound": "Quick Connect koodia ei löytynyt. Kokeile uutta koodia.",
     "quickConnectFailedWithMessage": "Quick Connect epäonnistui: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
@@ -6328,7 +6328,7 @@
         }
     },
     "noRemoteDevices": "Etätoistolaitteita ei ole saatavilla.",
-    "noRemoteDevicesIos": "Etätoistolaitteita ei ole saatavilla.\n\niOS:ssä AirPlay-kohteet eivät ehkä ole käytettävissä simulaattorissa.",
+    "noRemoteDevicesIos": "Etätoistolaitteita ei ole saatavilla.\n\niOS:ssä AirPlay kohteet eivät ehkä ole käytettävissä simulaattorissa.",
     "trackActionPlayNext": "Toista seuraavaksi",
     "trackActionAddToQueue": "Lisää jonoon",
     "trackActionAddToPlaylist": "Lisää soittolistaan",
@@ -6356,7 +6356,7 @@
     "shuffleLibrary": "Kirjasto",
     "shuffleGenre": "Genre",
     "shuffleNoLibraries": "Yhteensopivia kirjastoja ei ole saatavilla.",
-    "shuffleNoGenres": "Tälle shuffle-tilalle ei löytynyt yhtään tyylilajia.",
+    "shuffleNoGenres": "Tälle shuffle tilalle ei löytynyt yhtään tyylilajia.",
     "posterDisplayTitle": "Näyttö",
     "posterImageType": "Kuvatyyppi",
     "imageTypePoster": "Juliste",
@@ -6383,7 +6383,7 @@
             }
         }
     },
-    "liveTv": "Live-TV",
+    "liveTv": "Live TV",
     "continueWatchingAndNextUp": "Jatka katselua ja seuraavaksi",
     "downloadingBatchProgress": "Ladataan {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
@@ -6413,7 +6413,7 @@
     "@playerTooltipPlaybackSpeed": {
         "description": "Tooltip label for playback speed control in player"
     },
-    "playerTooltipCastControls": "Cast-ohjaimet",
+    "playerTooltipCastControls": "Cast ohjaimet",
     "@playerTooltipCastControls": {
         "description": "Tooltip label for active cast controls button in player"
     },
@@ -6494,9 +6494,9 @@
     "settingsTwentyFourHourClock": "24 tunnin kello",
     "settingsTwentyFourHourClockSubtitle": "Käytä 24 tunnin ajan muotoilua kaikkialla, missä kello näkyy",
     "settingsShowShuffleButtonInNavigation": "Näytä sekoituspainike navigointipalkissa",
-    "settingsShowGenresButtonInNavigation": "Näytä genre-painike navigointipalkissa",
-    "settingsShowFavoritesButtonInNavigation": "Näytä suosikit-painike navigointipalkissa",
-    "settingsShowLibrariesButtonInNavigation": "Näytä kirjastot-painike navigointipalkissa",
+    "settingsShowGenresButtonInNavigation": "Näytä genre painike navigointipalkissa",
+    "settingsShowFavoritesButtonInNavigation": "Näytä suosikit painike navigointipalkissa",
+    "settingsShowLibrariesButtonInNavigation": "Näytä kirjastot painike navigointipalkissa",
     "settingsLibraryVisibilitySubtitle": "Vaihda etusivun näkyvyys kirjastoittain. Käynnistä Moonfin uudelleen, jotta muutokset tulevat voimaan.",
     "settingsMediaBarAndLocalPreviews": "Mediapalkki ja paikalliset esikatselut",
     "settingsVisualOverlays": "Visuaaliset peittokuvat",
@@ -6519,11 +6519,11 @@
     "settingsSupportMoonfin": "Tue Moonfin:ä",
     "settingsLegal": "OIKEUDELLISET JUTUT",
     "settingsLicenses": "Lisenssit",
-    "settingsOpenSourceLicenseNotices": "Avoimen lähdekoodin lisenssi-ilmoitukset",
+    "settingsOpenSourceLicenseNotices": "Avoimen lähdekoodin lisenssi ilmoitukset",
     "settingsPrivacyPolicy": "Tietosuojakäytäntö",
     "settingsPrivacyPolicySubtitle": "Kuinka Moonfin käsittelee tietojasi",
     "settingsCheckForUpdates": "Tarkista päivitykset",
-    "settingsCheckForUpdatesSubtitle": "Tarkista viimeisin Moonfin-julkaisu",
+    "settingsCheckForUpdatesSubtitle": "Tarkista viimeisin Moonfin julkaisu",
     "settingsPoweredByFlutter": "Toteutettu Flutter-alustalla",
     "settingsLicenseNoticesCount": "{count, plural, one {# lisenssi-ilmoitus} other {# lisenssi-ilmoitusta}}",
     "@settingsLicenseNoticesCount": {
@@ -6551,22 +6551,22 @@
     "settingsDoNothing": "Älä tee mitään",
     "settingsMaxBitrateDescription": "Rajoita suoratoiston bittinopeus. Tämän kynnyksen ylittävä sisältö muunnetaan sopivaksi.",
     "settingsMaxResolutionDescription": "Rajoita soittimen pyytämää enimmäisresoluutiota. Korkeamman resoluution sisältö transkoodataan alaspäin.",
-    "settingsPlayerZoomDescription": "Miten video skaalataan ruudulle. ”Zoom to Fill” -toiminto suurentaa kuvaa, kunnes se täyttää ruudun, ja leikkaa reunat pois. Se ei tunnista mustia palkkeja.",
+    "settingsPlayerZoomDescription": "Miten video skaalataan ruudulle. ”Zoom to Fill” toiminto suurentaa kuvaa, kunnes se täyttää ruudun, ja leikkaa reunat pois. Se ei tunnista mustia palkkeja.",
     "settingsPlaybackEngineAndroidTv": "Toistomoottori (Android TV)",
-    "settingsPlaybackEngineAndroidTvDescription": "Valitse oletustoistomoottori Android TV -laitteissa. Muutokset koskevat seuraavaa toistokertaa.",
+    "settingsPlaybackEngineAndroidTvDescription": "Valitse oletustoistomoottori Android TV laitteissa. Muutokset koskevat seuraavaa toistokertaa.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (suositus)",
     "settingsPlaybackEngineMpvLegacy": "mpv (perintö)",
     "settingsDolbyVisionFallback": "Dolby Vision Varavaihtoehto",
-    "settingsDolbyVisionFallbackDescription": "Dolby Vision -nimikkeiden käyttäytyminen laitteissa, joissa ei ole Dolby Vision -dekoodausta.",
+    "settingsDolbyVisionFallbackDescription": "Dolby Vision nimikkeiden käyttäytyminen laitteissa, joissa ei ole Dolby Vision dekoodausta.",
     "settingsAskEachTime": "Kysy joka kerta",
-    "settingsPreferHdr10Fallback": "Suosi HDR10-varausvaihtoehtoa",
+    "settingsPreferHdr10Fallback": "Suosi HDR10 varausvaihtoehtoa",
     "settingsPreferServerTranscode": "Suosi palvelimen transkoodausta",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Profiili 7 Suoratoisto",
-    "settingsDolbyVisionProfile7DirectPlayDescription": "Ohjaa, ohjataanko Dolby Vision -profiili 7 -parannuskerroksen streameja.",
+    "settingsDolbyVisionProfile7DirectPlayDescription": "Ohjaa, ohjataanko Dolby Vision profiili 7 parannuskerroksen streameja.",
     "settingsAutoAftkrtEnabled": "Auto",
     "settingsEnabledOnThisDevice": "Käytössä",
     "settingsDisabledPreferTranscode": "Pois",
-    "settingsResumeRewindDescription": "Kun toistoa jatketaan (Jatka katselua -sivulta tai mediakohdesivulta), kuinka monta sekuntia tulee kelata taaksepäin?",
+    "settingsResumeRewindDescription": "Kun toistoa jatketaan (Jatka katselua sivulta tai mediakohdesivulta), kuinka monta sekuntia tulee kelata taaksepäin?",
     "settingsUnpauseRewindDescription": "Kun toistoa jatketaan taukopainikkeen painamisen jälkeen, kuinka monta sekuntia tulee kelata taaksepäin?",
     "settingsSkipBackLengthDescription": "Kuinka monta sekuntia palataan taaksepäin kelauspainikkeen painamisen jälkeen.",
     "settingsOneSecond": "1 sekunti",
@@ -6590,14 +6590,14 @@
             }
         }
     },
-    "settingsLiveTvDirect": "Suora TV-lähetys",
-    "settingsLiveTvDirectSubtitle": "Ota suora toisto käyttöön live-TV:ssä",
+    "settingsLiveTvDirect": "Suora TV lähetys",
+    "settingsLiveTvDirectSubtitle": "Ota suora toisto käyttöön live TV:ssä",
     "settingsOpenGroups": "Avaa Ryhmät",
-    "settingsOpenGroupsSubtitle": "Luo SyncPlay-ryhmiä, liity niihin tai hallinnoi niitä",
+    "settingsOpenGroupsSubtitle": "Luo SyncPlay ryhmiä, liity niihin tai hallinnoi niitä",
     "settingsSyncplayEnabled": "SyncPlay käytössä",
     "settingsSyncplayEnabledSubtitle": "Ota ryhmäkatseluominaisuudet käyttöön",
-    "settingsSyncplayButton": "SyncPlay-painike",
-    "settingsSyncplayButtonSubtitle": "Näytä SyncPlay-painike navigointipalkissa",
+    "settingsSyncplayButton": "SyncPlay painike",
+    "settingsSyncplayButtonSubtitle": "Näytä SyncPlay painike navigointipalkissa",
     "settingsSyncplayAdvancedCorrection": "Edistynyt korjaus",
     "settingsSyncplayAdvancedCorrectionSubtitle": "Ota hienorakeinen synkronointilogiikka käyttöön",
     "settingsSyncplaySyncCorrection": "Synkronoinnin korjaus",
@@ -6665,7 +6665,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Seerr-tilin tyyppi",
+    "seerrAccountType": "Seerr tilin tyyppi",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6761,11 +6761,11 @@
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Ota käyttöön vain muodot, joita AVR- tai HDMI-allas tukee.",
+    "settingsAudioCodecPassthroughDescription": "Ota käyttöön vain muodot, joita AVR tai HDMI allas tukee.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3-läpivienti",
+    "settingsAudioEac3Passthrough": "EAC3 läpivienti",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
@@ -6773,15 +6773,15 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core -läpivienti",
+    "settingsAudioDtsCorePassthrough": "DTS Core läpivienti",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA -läpivienti",
+    "settingsAudioDtsHdPassthrough": "DTS HD MA läpivienti",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD-läpivienti",
+    "settingsAudioTrueHdPassthrough": "TrueHD läpivienti",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
@@ -6825,7 +6825,7 @@
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD-äänen reitti",
+    "settingsAudioHdRoute": "HD äänen reitti",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6920,7 +6920,7 @@
     "@allowExternalAudioEffectsTitle": {
         "description": "Setting title: allow equalizer apps to attach to Media3"
     },
-    "allowExternalAudioEffectsSubtitle": "Salli taajuuskorjain- ja tehostesovellusten (esim. Wavelet) liittää Media3-toistoistuntoihin.",
+    "allowExternalAudioEffectsSubtitle": "Salli taajuuskorjain ja tehostesovellusten (esim. Wavelet) liittää Media3 toistoistuntoihin.",
     "@allowExternalAudioEffectsSubtitle": {
         "description": "Setting subtitle for external audio effects"
     },
@@ -6928,15 +6928,15 @@
     "@disableTunnelingTitle": {
         "description": "Setting title: force non-tunneled video playback"
     },
-    "disableTunnelingSubtitle": "Pakota ei-tunneloitu toisto. Hyödyllinen laitteissa, joissa tunneloidaan audio-/videokatkoksia.",
+    "disableTunnelingSubtitle": "Pakota ei tunneloitu toisto. Hyödyllinen laitteissa, joissa tunneloidaan audio /videokatkoksia.",
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "Toista Dolby Vision -profiili 7 aina HDR10-muodossa",
+    "mapDolbyVisionP7Title": "Toista Dolby Vision profiili 7 aina HDR10 muodossa",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
-    "mapDolbyVisionP7Subtitle": "Ohita profiilin 8 muuntaminen ja muunna Dolby Vision -profiilin 7 virrat HDR10-yhteensopivaksi HEVC-muodoksi. Käytä tätä, jos muunnettuja virtoja katsottaessa kuva näyttää virheelliseltä.",
+    "mapDolbyVisionP7Subtitle": "Ohita profiilin 8 muuntaminen ja muunna Dolby Vision profiilin 7 virrat HDR10 yhteensopivaksi HEVC muodoksi. Käytä tätä, jos muunnettuja virtoja katsottaessa kuva näyttää virheelliseltä.",
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
@@ -6993,7 +6993,7 @@
         }
     },
     "savedThemesTitle": "Tallennetut Teemat",
-    "savedThemesDescription": "Nämä ovat teemoja, jotka on ladattu nykyisen palvelimen Moonfin-laajennuksesta. Poistaminen poistaa vain tämän paikallisen kopion.",
+    "savedThemesDescription": "Nämä ovat teemoja, jotka on ladattu nykyisen palvelimen Moonfin laajennuksesta. Poistaminen poistaa vain tämän paikallisen kopion.",
     "savedThemesEmpty": "Tälle palvelimelle ei löytynyt tallennettuja teemoja.",
     "savedThemesCurrentThemeId": "{themeId} • Tällä hetkellä aktiivinen",
     "@savedThemesCurrentThemeId": {
@@ -7014,11 +7014,11 @@
     "homeRowsStyleModern": "Moderni",
     "homeRowsSection": "Kotirivit",
     "rowsType": "Rivien tyyppi",
-    "rowsTypeDescription": "Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan -rivejä.",
+    "rowsTypeDescription": "Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan rivejä.",
     "displayFavoritesRows": "Näytä suosikkirivit",
-    "displayFavoritesRowsSubtitle": "Näytä suosikkielokuvat, -sarjat ja muut suosikkirivit Etusivu-osioissa.",
+    "displayFavoritesRowsSubtitle": "Näytä suosikkielokuvat, sarjat ja muut suosikkirivit Etusivu osioissa.",
     "favoritesRowSorting": "Suosikkirivien lajittelu",
-    "favoritesRowSortingDescription": "Lajittele Suosikit-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
+    "favoritesRowSortingDescription": "Lajittele Suosikit rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "displayCollectionsRows": "Näytä kokoelmarivit",
     "displayCollectionsRowsSubtitle": "Näytä kokoelmarivit aloitusnäytön osioissa.",
     "collectionsRowSorting": "Kokoelmat rivien lajittelu",
@@ -7026,7 +7026,7 @@
     "displayGenresRows": "Näytä Genrerivit",
     "displayGenresRowsSubtitle": "Näytä Genrerivit Kotiosioissa.",
     "genresRowSorting": "Genret Rivilajittelu",
-    "genresRowSortingDescription": "Lajittele Genres-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
+    "genresRowSortingDescription": "Lajittele Genres rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "genresRowItems": "Kohteet Genre rivillä",
     "genresRowItemsDescription": "Näytä elokuvat, sarjat tai molemmat Genret riveillä.",
     "appearance": "Ulkoasu",
@@ -7045,24 +7045,24 @@
     "mediaPlayerBehavior": "Mediasoittimen käyttäytyminen",
     "playbackEnhancements": "Toiston parannukset",
     "alwaysOn": "Aina päällä.",
-    "replaceSkipOutroWithNextUpDisplay": "Korvaa Skip Outro Next Up -näytöllä",
-    "replaceSkipOutroWithNextUpDisplaySubtitle": "Näytä Next Up -peittokuva Ohita Outro -painikkeen sijaan.",
+    "replaceSkipOutroWithNextUpDisplay": "Korvaa Skip Outro Next Up näytöllä",
+    "replaceSkipOutroWithNextUpDisplaySubtitle": "Näytä Next Up peittokuva Ohita Outro painikkeen sijaan.",
     "playerRouting": "Soittimen reititys",
     "preferSoftwareDecoders": "Suosittele ohjelmistopohjaisia dekoodereita",
-    "preferSoftwareDecodersSubtitle": "Käytä FFmpeg (audio) ja libgav1 (AV1) ennen laitteistodekoodeja. Poista käytöstä, jos HDMI-äänen läpivienti katkeaa.",
+    "preferSoftwareDecodersSubtitle": "Käytä FFmpeg (audio) ja libgav1 (AV1) ennen laitteistodekoodeja. Poista käytöstä, jos HDMI äänen läpivienti katkeaa.",
     "useExternalPlayer": "Käytä aina ulkoista soitinta",
     "useExternalPlayerSubtitle": "Avaa videon toisto valitsemallasi ulkoisella sovelluksella Android TV:ssä.",
     "automaticQueuing": "Automaattinen jonotus",
     "preferSdhSubtitles": "Suosi SDH tekstityksiä",
-    "preferSdhSubtitlesSubtitle": "Priorisoi SDH/CC-tekstitysraidat, kun valitset automaattisen valinnan.",
+    "preferSdhSubtitlesSubtitle": "Priorisoi SDH/CC tekstitysraidat, kun valitset automaattisen valinnan.",
     "webDiagnostics": "Verkkodiagnostiikka",
     "webDiagnosticsTitle": "Moonfin Verkkodiagnostiikka",
     "webDiagnosticsIntro": "Tämän sivun avulla voit diagnosoida selaimen yhteysongelmia (CORS, sekasisältö ja etsintäasetukset).",
     "webDiagnosticsDetectedMixedContentFailure": "Havaittu sekasisällön virhe",
     "webDiagnosticsDetectedCorsPreflightFailure": "Havaittu CORS/Preflight Failure",
-    "webDiagnosticsMixedContentFailureBody": "Moonfin havaitsi HTTPS-sivun, joka yritti kutsua HTTP-palvelimen URL-osoitetta. Selaimet estävät tämän pyynnön ennen kuin se saavuttaa palvelimesi.",
-    "webDiagnosticsCorsFailureBody": "Moonfin havaitsi selaintason pyyntövirheen, joka johtuu yleensä puuttuvista CORS- tai esitarkastusotsikoista mediapalvelimelta.",
-    "webDiagnosticsTargetUrl": "Kohde-URL-osoite: {url}",
+    "webDiagnosticsMixedContentFailureBody": "Moonfin havaitsi HTTPS sivun, joka yritti kutsua HTTP palvelimen URL osoitetta. Selaimet estävät tämän pyynnön ennen kuin se saavuttaa palvelimesi.",
+    "webDiagnosticsCorsFailureBody": "Moonfin havaitsi selaintason pyyntövirheen, joka johtuu yleensä puuttuvista CORS tai esitarkastusotsikoista mediapalvelimelta.",
+    "webDiagnosticsTargetUrl": "Kohde URL osoite: {url}",
     "@webDiagnosticsTargetUrl": {
         "description": "Target URL shown in diagnostics summary",
         "placeholders": {
@@ -7083,22 +7083,22 @@
     "webDiagnosticsCurrentRuntimeContext": "Nykyinen ajonaikainen konteksti",
     "webDiagnosticsOrigin": "Alkuperä",
     "webDiagnosticsScheme": "Kaavio",
-    "webDiagnosticsPluginMode": "Plugin-tila",
-    "webDiagnosticsWebRtcScan": "WebRTC-skannaus",
-    "webDiagnosticsForcedServerUrl": "Pakotettu palvelimen URL-osoite",
-    "webDiagnosticsDefaultServerUrl": "Oletuspalvelimen URL-osoite",
-    "webDiagnosticsDiscoveryProxyUrl": "Discovery-välityspalvelimen URL-osoite",
+    "webDiagnosticsPluginMode": "Plugin tila",
+    "webDiagnosticsWebRtcScan": "WebRTC skannaus",
+    "webDiagnosticsForcedServerUrl": "Pakotettu palvelimen URL osoite",
+    "webDiagnosticsDefaultServerUrl": "Oletuspalvelimen URL osoite",
+    "webDiagnosticsDiscoveryProxyUrl": "Discovery välityspalvelimen URL osoite",
     "notConfigured": "ei ole määritetty",
     "webDiagnosticsMixedContent": "Sekoitettu sisältö",
-    "webDiagnosticsMixedContentDetected": "Tämä sivu ladataan HTTPS:n kautta, mutta yksi tai useampi määritetty URL-osoite on HTTP. Selaimet estävät HTTPS-sivuja kutsumasta HTTP API:ita.",
+    "webDiagnosticsMixedContentDetected": "Tämä sivu ladataan HTTPS:n kautta, mutta yksi tai useampi määritetty URL osoite on HTTP. Selaimet estävät HTTPS sivuja kutsumasta HTTP API:ita.",
     "webDiagnosticsMixedContentFix": "Korjaus: palvele mediapalvelinta tai välityspalvelinta HTTPS:n kautta tai lataa Moonfin HTTP:n kautta vain luotetuissa paikallisverkoissa.",
     "webDiagnosticsNoMixedContentDetected": "Nykyisistä ajonaikaisista asetuksista ei havaittu ilmeisiä sekasisällön määrityksiä.",
-    "webDiagnosticsCorsChecklist": "CORS-tarkistuslista",
-    "webDiagnosticsCorsChecklistItem1": "• Salli selaimen alkuperä kohdassa Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Sisällytä valtuutus, X-Emby-Authorization ja X-Emby-Token kohtaan Access-Control-Allow-Headers.",
+    "webDiagnosticsCorsChecklist": "CORS tarkistuslista",
+    "webDiagnosticsCorsChecklistItem1": "• Salli selaimen alkuperä kohdassa Access Control Allow Origin.",
+    "webDiagnosticsCorsChecklistItem2": "• Sisällytä valtuutus, X Emby Authorization ja X Emby Token kohtaan Access Control Allow Headers.",
     "webDiagnosticsCorsChecklistItem3": "• Näytä sisältöalue ja hyväksyntäalue suoratoistoa ja hakukäyttäytymistä varten.",
-    "webDiagnosticsCorsChecklistItem4": "• Palauta numero 204 OPTIONS-esitarkastuspyyntöihin.",
-    "webDiagnosticsHeaderSnippetTitle": "Esimerkki otsikkokatkelmasta (nginx-tyylinen)",
+    "webDiagnosticsCorsChecklistItem4": "• Palauta numero 204 OPTIONS esitarkastuspyyntöihin.",
+    "webDiagnosticsHeaderSnippetTitle": "Esimerkki otsikkokatkelmasta (nginx tyylinen)",
     "note": "Huom",
     "webDiagnosticsNonWebNote": "Tämä vianmääritysohje on tarkoitettu verkkosovelluksille. Jos näet tämän viestin jollain muulla alustalla, nämä tarkistukset eivät välttämättä koske sitä.",
     "backToServerSelect": "Takaisin palvelinvalintaan",
@@ -7113,13 +7113,13 @@
     "microphonePermissionPermanentlyDenied": "Mikrofonin käyttöoikeus on evätty pysyvästi.",
     "microphonePermissionDenied": "Mikrofonin käyttöoikeus on evätty.",
     "speechRecognitionUnavailable": "Puheentunnistus ei ole käytettävissä tällä laitteella.",
-    "openIosRoutePicker": "Avaa iOS-reitinvalitsin",
+    "openIosRoutePicker": "Avaa iOS reitinvalitsin",
     "airPlayRoutePickerUnavailable": "AirPlay reitinvalitsin ei ole käytettävissä tässä laitteessa.",
     "videos": "Videot",
     "trailers": "Trailerit",
     "programs": "Ohjelmat",
     "songs": "Kappaleet",
-    "photoAlbums": "Valokuva-albumit",
+    "photoAlbums": "Valokuva albumit",
     "photos": "Valokuvat",
     "people": "Ihmiset",
     "recentlyReleasedEpisodes": "Äskettäin julkaistut jaksot",
@@ -7145,7 +7145,7 @@
     "noPasswordConfigured": "Salasanaa ei ole määritetty",
     "remoteAccess": "Etäkäyttö",
     "localOnly": "Vain paikallinen",
-    "adminMediaAnalyticsLoadFailed": "Media-analyysin lataaminen epäonnistui",
+    "adminMediaAnalyticsLoadFailed": "Media analyysin lataaminen epäonnistui",
     "analyticsCombinedAcrossLibraries": "Yhdistetty analytiikka kaikista mediakirjastoista.",
     "analyticsTopArtists": "Huippuartistit",
     "analyticsTopAuthors": "Huippukirjoittajat",
@@ -7196,7 +7196,7 @@
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Tallenteita ei löytynyt",
-    "noImagePagesFoundInArchive": "Kuvasivuja ei löytynyt .{extension} -arkistosta.",
+    "noImagePagesFoundInArchive": "Kuvasivuja ei löytynyt .{extension} arkistosta.",
     "@noImagePagesFoundInArchive": {
         "placeholders": {
             "extension": {
@@ -7215,7 +7215,7 @@
             }
         }
     },
-    "epubRendererFailed": "EPUB-renderöijä epäonnistui ({code}): {description}",
+    "epubRendererFailed": "EPUB renderöijä epäonnistui ({code}): {description}",
     "@epubRendererFailed": {
         "placeholders": {
             "code": {
@@ -7246,7 +7246,7 @@
         }
     },
     "noReadableBookEndpointAvailable": "Ei luettavissa olevan kirjan päätepistettä saatavilla",
-    "unsupportedComicArchiveFormat": "Ei tuettu sarjakuva-arkistomuoto: .{extension}",
+    "unsupportedComicArchiveFormat": "Ei tuettu sarjakuva arkistomuoto: .{extension}",
     "@unsupportedComicArchiveFormat": {
         "placeholders": {
             "extension": {
@@ -7254,16 +7254,16 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "CBR-poistolaajennus ei ole saatavilla tällä alustalla.",
-    "failedToExtractCbrArchive": ".cbr-arkiston purkaminen epäonnistui.",
-    "cb7ExtractionUnavailable": "CB7-poisto ei ole käytettävissä tällä alustalla.",
-    "cb7ExtractionPluginUnavailable": "CB7-poistolaajennus ei ole saatavilla tällä alustalla.",
+    "cbrExtractionPluginUnavailable": "CBR poistolaajennus ei ole saatavilla tällä alustalla.",
+    "failedToExtractCbrArchive": ".cbr arkiston purkaminen epäonnistui.",
+    "cb7ExtractionUnavailable": "CB7 poisto ei ole käytettävissä tällä alustalla.",
+    "cb7ExtractionPluginUnavailable": "CB7 poistolaajennus ei ole saatavilla tällä alustalla.",
     "loadingShuffle": "Ladataan satunnaistoistoa...",
     "libraryShuffleLabel": "KIRJASTON SEKOITUS",
     "randomShuffleLabel": "SATUNNAINEN SEKOITUS",
     "genresShuffleLabel": "GENRE SEKOITUS",
     "autoHdrSwitching": "Automaattinen HDR Kytkentä",
-    "autoHdrSwitchingDescription": "Ota HDR automaattisesti käyttöön HDR-videon toistoa varten ja palauta näyttötila poistuessasi.",
+    "autoHdrSwitchingDescription": "Ota HDR automaattisesti käyttöön HDR videon toistoa varten ja palauta näyttötila poistuessasi.",
     "whenFullscreen": "Kun koko näyttö",
     "transcodingLimits": "Transkoodausrajat",
     "settingsSupportMoonfinSubtitle": "Tarjoa kahvi kehittäjälle",
@@ -7287,7 +7287,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetyn moonfin-asettelun versio. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on hero-first-asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista.",
+    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetyn moonfin asettelun versio. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on hero first asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7311,7 +7311,7 @@
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Näytä kodekki , tarkkuus- ja streamin tiedot bannerissa yhteenvetona",
+    "showTechnicalDetailsSubtitle": "Näytä kodekki , tarkkuus ja streamin tiedot bannerissa yhteenvetona",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
@@ -7319,7 +7319,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Käytä Moonfin Recommends -sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends -palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota.",
+    "recommendationSystemSubtitle": "Käytä Moonfin Recommends sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -7343,7 +7343,7 @@
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Automaattinen-toiminto mukautuu laitteeseesi. Valitse Apple tai Material, jos haluat määrittää ulkoasun manuaalisesti.",
+    "interfaceStyleSubtitle": "Automaattinen toiminto mukautuu laitteeseesi. Valitse Apple tai Material, jos haluat määrittää ulkoasun manuaalisesti.",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
@@ -7391,11 +7391,11 @@
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Liquid-glass tyyli, jossa on liukuva liukuväritausta, jäämaiset pinnat ja Applen sininen korostusväri",
+    "themeGlassSubtitle": "Liquid glass tyyli, jossa on liukuva liukuväritausta, jäämaiset pinnat ja Applen sininen korostusväri",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
-    "theme8BitHero": "8-bittinen sankari",
+    "theme8BitHero": "8 bittinen sankari",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
@@ -7836,7 +7836,7 @@
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Jotta voit käyttää tätä asetusta, varmista, että kirjaston näyttöasetuksissa Jellyfin- tai Emby-palvelimellasi on käytössä \"Ryhmittele elokuvat kokoelmiin\" ja/tai \"Ryhmittele sarjat kokoelmiin\".",
+    "groupItemsIntoCollectionsDialogMessage": "Jotta voit käyttää tätä asetusta, varmista, että kirjaston näyttöasetuksissa Jellyfin tai Emby palvelimellasi on käytössä \"Ryhmittele elokuvat kokoelmiin\" ja/tai \"Ryhmittele sarjat kokoelmiin\".",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
@@ -8157,7 +8157,7 @@
     },
     "adminDrawerDisplay": "Näyttö",
     "adminDrawerMetadata": "Metatiedot",
-    "adminDrawerNfo": "NFO-asetukset",
+    "adminDrawerNfo": "NFO asetukset",
     "adminActivitySeverityAll": "Kaikki vakavuusasteet",
     "adminActivityDateRange": "Aikaväli",
     "adminRemoveDeviceConfirm": "Poistetaanko laite \"{name}\"? Käyttäjän on kirjauduttava tällä laitteella uudelleen sisään.",
@@ -8242,12 +8242,12 @@
     "adminLibDummyChapterDuration": "Valeluvun kesto (sekunteina)",
     "adminLibDummyChapterDurationHint": "Lukujen pituus medialle, jolla ei ole omia lukuja. Poista käytöstä arvolla 0.",
     "adminLibChapterImageResolution": "Lukukuvien tarkkuus",
-    "adminLibNfoTitle": "NFO-asetukset",
-    "adminLibNfoHelp": "NFO-metatiedot ovat yhteensopivia Kodin ja vastaavien sovellusten kanssa. Asetukset koskevat kaikkia kirjastoja, jotka tallentavat NFO-metatietoja.",
-    "adminLibKodiUser": "Käyttäjä, jonka katselutiedot tallennetaan NFO-tiedostoihin",
-    "adminLibSaveImagePaths": "Tallenna kuvapolut NFO-tiedostoihin",
-    "adminLibPathSubstitution": "Ota polkujen korvaus käyttöön NFO-kuvapoluille",
-    "adminLibExtraThumbs": "Kopioi extrafanart-kuvat extrathumbs-kansioon",
+    "adminLibNfoTitle": "NFO asetukset",
+    "adminLibNfoHelp": "NFO metatiedot ovat yhteensopivia Kodin ja vastaavien sovellusten kanssa. Asetukset koskevat kaikkia kirjastoja, jotka tallentavat NFO metatietoja.",
+    "adminLibKodiUser": "Käyttäjä, jonka katselutiedot tallennetaan NFO tiedostoihin",
+    "adminLibSaveImagePaths": "Tallenna kuvapolut NFO tiedostoihin",
+    "adminLibPathSubstitution": "Ota polkujen korvaus käyttöön NFO kuvapoluille",
+    "adminLibExtraThumbs": "Kopioi extrafanart kuvat extrathumbs kansioon",
     "adminLibNone": "Ei mitään",
     "adminLibRefreshDays": "{days} päivää",
     "@adminLibRefreshDays": {
@@ -8273,7 +8273,7 @@
     "adminLibChapterImagesDuringScan": "Pura lukukuvat kirjastoskannauksen aikana",
     "adminLibAutomaticSeriesGrouping": "Yhdistä automaattisesti sarjat, jotka on jaettu useaan kansioon",
     "adminLibSeasonZeroName": "Kauden nolla näyttönimi",
-    "adminLibLufsScan": "Ota LUFS-skannaus käyttöön äänen normalisointia varten",
+    "adminLibLufsScan": "Ota LUFS skannaus käyttöön äänen normalisointia varten",
     "adminLibPreferNonstandardArtist": "Suosi epästandardia artistitunnistetta",
     "adminLibAutoAddToCollection": "Lisää elokuvat kokoelmiin automaattisesti",
     "adminParentalControl": "Lapsilukko",
@@ -8283,7 +8283,7 @@
     "adminBlockUnratedItems": "Estä kohteet, joiden ikärajatieto puuttuu tai on tuntematon",
     "adminUnratedBook": "Kirjat",
     "adminUnratedChannelContent": "Kanavat",
-    "adminUnratedLiveTvChannel": "Live-TV",
+    "adminUnratedLiveTvChannel": "Live TV",
     "adminUnratedMovie": "Elokuvat",
     "adminUnratedMusic": "Musiikki",
     "adminUnratedTrailer": "Trailerit",
@@ -8315,7 +8315,7 @@
     "adminPasswordResetProvider": "Salasanan palautuksen tarjoaja",
     "adminLoginAttemptsBeforeLockout": "Epäonnistuneiden kirjautumisyritysten enimmäismäärä ennen lukitusta",
     "adminLoginAttemptsHint": "Käytä oletusta arvolla 0 tai poista lukitus käytöstä arvolla -1.",
-    "adminSyncPlayAccess": "SyncPlay-käyttöoikeus",
+    "adminSyncPlayAccess": "SyncPlay käyttöoikeus",
     "adminSyncPlayCreateAndJoin": "Salli ryhmien luominen ja niihin liittyminen",
     "adminSyncPlayJoin": "Salli ryhmiin liittyminen",
     "adminSyncPlayNone": "Ei käyttöoikeutta",
@@ -8327,10 +8327,10 @@
     "adminBackupMetadata": "Metatiedot",
     "adminBackupSubtitles": "Tekstitykset",
     "adminEditTuner": "Muokkaa viritintä",
-    "adminTunerTypeM3u": "M3U-viritin",
+    "adminTunerTypeM3u": "M3U viritin",
     "adminTunerTypeHdHomerun": "HDHomeRun",
     "adminTunerFileOrUrl": "Tiedosto tai URL",
-    "adminTunerIpAddress": "Virittimen IP-osoite",
+    "adminTunerIpAddress": "Virittimen IP osoite",
     "adminTunerFriendlyName": "Näyttönimi",
     "adminTunerUserAgent": "User agent",
     "adminTunerCount": "Samanaikaisten yhteyksien raja",
@@ -8338,7 +8338,7 @@
     "adminTunerFallbackBitrate": "Suoratoiston varabittinopeuden yläraja",
     "adminTunerImportFavoritesOnly": "Tuo vain suosikkikanavat",
     "adminTunerAllowHwTranscoding": "Salli laitteistotranskoodaus",
-    "adminTunerAllowFmp4": "Salli fMP4-transkoodaussäiliö",
+    "adminTunerAllowFmp4": "Salli fMP4 transkoodaussäiliö",
     "adminTunerAllowStreamSharing": "Salli lähetysvirran jakaminen",
     "adminTunerEnableStreamLooping": "Ota lähetysvirran silmukointi käyttöön",
     "adminTunerIgnoreDts": "Ohita DTS",
@@ -8375,7 +8375,7 @@
     },
     "adminRecordingPostProcessor": "Jälkikäsittelysovelluksen polku",
     "adminRecordingPostProcessorArgs": "Jälkikäsittelijän argumentit",
-    "adminSaveRecordingNfo": "Tallenna tallenteen NFO-metatiedot",
+    "adminSaveRecordingNfo": "Tallenna tallenteen NFO metatiedot",
     "adminSaveRecordingImages": "Tallenna tallenteen kuvat",
     "adminLiveTvSectionTiming": "Ajoitus",
     "adminLiveTvSectionPaths": "Tallennuspolut",
@@ -8397,45 +8397,45 @@
     "adminBrandingSplashUploadFailed": "Aloitusruudun lataaminen epäonnistui",
     "adminBrandingSplashDeleted": "Aloitusruutu poistettu",
     "adminBrandingNoSplash": "Ei mukautettua aloitusruutua",
-    "adminPlaybackQsvDevice": "QSV-laite",
-    "adminPlaybackEnhancedNvdec": "Ota tehostettu NVDEC-purkaja käyttöön",
+    "adminPlaybackQsvDevice": "QSV laite",
+    "adminPlaybackEnhancedNvdec": "Ota tehostettu NVDEC purkaja käyttöön",
     "adminPlaybackPreferNativeDecoder": "Suosi järjestelmän natiivia laitteistopurkajaa",
     "adminPlaybackColorDepth": "Laitteistopurun värisyvyys",
-    "adminPlaybackColorDepth10Hevc": "10-bittinen HEVC-purku",
-    "adminPlaybackColorDepth10Vp9": "10-bittinen VP9-purku",
-    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bittinen purku",
-    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bittinen purku",
+    "adminPlaybackColorDepth10Hevc": "10 bittinen HEVC purku",
+    "adminPlaybackColorDepth10Vp9": "10 bittinen VP9 purku",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10 bittinen purku",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12 bittinen purku",
     "adminPlaybackHwEncodingSection": "Laitteistokoodaus",
-    "adminPlaybackAllowHevcEncoding": "Salli HEVC-koodaus",
-    "adminPlaybackAllowAv1Encoding": "Salli AV1-koodaus",
-    "adminPlaybackIntelLowPowerH264": "Ota Intelin vähävirtainen H.264-koodain käyttöön",
-    "adminPlaybackIntelLowPowerHevc": "Ota Intelin vähävirtainen HEVC-koodain käyttöön",
+    "adminPlaybackAllowHevcEncoding": "Salli HEVC koodaus",
+    "adminPlaybackAllowAv1Encoding": "Salli AV1 koodaus",
+    "adminPlaybackIntelLowPowerH264": "Ota Intelin vähävirtainen H.264 koodain käyttöön",
+    "adminPlaybackIntelLowPowerHevc": "Ota Intelin vähävirtainen HEVC koodain käyttöön",
     "adminPlaybackToneMapping": "Sävykartoitus",
     "adminPlaybackEnableTonemapping": "Ota sävykartoitus käyttöön",
-    "adminPlaybackEnableVppTonemapping": "Ota VPP-sävykartoitus käyttöön",
-    "adminPlaybackEnableVtTonemapping": "Ota VideoToolbox-sävykartoitus käyttöön",
+    "adminPlaybackEnableVppTonemapping": "Ota VPP sävykartoitus käyttöön",
+    "adminPlaybackEnableVtTonemapping": "Ota VideoToolbox sävykartoitus käyttöön",
     "adminPlaybackTonemappingAlgorithm": "Sävykartoituksen algoritmi",
     "adminPlaybackTonemappingMode": "Sävykartoituksen tila",
     "adminPlaybackTonemappingRange": "Sävykartoituksen alue",
     "adminPlaybackTonemappingDesat": "Sävykartoituksen värikylläisyyden vähennys",
     "adminPlaybackTonemappingPeak": "Sävykartoituksen huippuarvo",
     "adminPlaybackTonemappingParam": "Sävykartoituksen parametri",
-    "adminPlaybackVppTonemappingBrightness": "VPP-sävykartoituksen kirkkaus",
-    "adminPlaybackVppTonemappingContrast": "VPP-sävykartoituksen kontrasti",
+    "adminPlaybackVppTonemappingBrightness": "VPP sävykartoituksen kirkkaus",
+    "adminPlaybackVppTonemappingContrast": "VPP sävykartoituksen kontrasti",
     "adminPlaybackPresetsQuality": "Esiasetukset ja laatu",
     "adminPlaybackEncoderPreset": "Koodaimen esiasetus",
-    "adminPlaybackH264Crf": "H.264-koodauksen CRF",
-    "adminPlaybackH265Crf": "H.265 (HEVC) -koodauksen CRF",
+    "adminPlaybackH264Crf": "H.264 koodauksen CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) koodauksen CRF",
     "adminPlaybackDeinterlaceMethod": "Lomituksenpoiston menetelmä",
     "adminPlaybackDeinterlaceDoubleRate": "Kaksinkertaista kuvataajuus lomitusta poistettaessa",
     "adminPlaybackAudioSection": "Ääni",
-    "adminPlaybackEnableAudioVbr": "Ota äänen VBR-koodaus käyttöön",
+    "adminPlaybackEnableAudioVbr": "Ota äänen VBR koodaus käyttöön",
     "adminPlaybackDownmixBoost": "Äänen alasmiksauksen korostus",
     "adminPlaybackDownmixAlgorithm": "Stereoalasmiksauksen algoritmi",
     "adminPlaybackMaxMuxingQueue": "Muksausjonon enimmäiskoko",
     "adminPlaybackAutoOption": "Auto",
     "adminRunningTasks": "Käynnissä olevat tehtävät",
-    "adminNetworkingPublicHttpPort": "Julkinen HTTP-portti",
+    "adminNetworkingPublicHttpPort": "Julkinen HTTP portti",
     "adminNetworkingRequireHttps": "Vaadi HTTPS",
     "adminNetworkingRequireHttpsHint": "Ohjaa kaikki etäpyynnöt HTTPS:ään. Ei vaikutusta, jos palvelimella ei ole voimassa olevaa varmennetta.",
     "adminNetworkingCertPassword": "Varmenteen salasana",
@@ -8456,15 +8456,15 @@
     "adminGeneralSectionPaths": "Polut",
     "adminGeneralSectionPerformance": "Suorituskyky",
     "adminGeneralDisplayLanguage": "Ensisijainen näyttökieli",
-    "offlineBannerTitle": "Olet offline-tilassa",
+    "offlineBannerTitle": "Olet offline tilassa",
     "offlineBannerSubtitle": "Näytetään lataamasi sisältö",
     "serverUnreachableBannerTitle": "Palvelimeen ei saada yhteyttä",
     "serverUnreachableBannerSubtitle": "Toistetaan latauksista, kunnes yhteys palaa",
-    "contextMenuHideFromContinueWatching": "Piilota Jatka katselua -osiosta",
+    "contextMenuHideFromContinueWatching": "Piilota Jatka katselua osiosta",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Piilota Seuraavaksi-osiosta",
+    "contextMenuHideFromNextUp": "Piilota Seuraavaksi osiosta",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
@@ -8480,13 +8480,13 @@
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Luota palvelimiin, jotka käyttävät itse allekirjoitettuja tai yksityisen CA:n TLS-varmenteita. Ota käyttöön vain hallitsemillesi palvelimille. Tämä poistaa varmenteiden tarkistuksen kaikista yhteyksistä.",
+    "settingsAllowSelfSignedCertsSubtitle": "Luota palvelimiin, jotka käyttävät itse allekirjoitettuja tai yksityisen CA:n TLS varmenteita. Ota käyttöön vain hallitsemillesi palvelimille. Tämä poistaa varmenteiden tarkistuksen kaikista yhteyksistä.",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
     "settingsDetailsScreen": "Tietonäkymä",
     "settingsDetailsScreenSubtitle": "Tyyli, taustan sumennus ja välilehtien toiminta",
-    "settingsShowSeerrButtonInNavigation": "Näytä Seerr-painike navigointipalkissa",
+    "settingsShowSeerrButtonInNavigation": "Näytä Seerr painike navigointipalkissa",
     "settingsAlwaysExpandNavbarLabels": "Näytä tekstit aina ylänavigointipalkissa",
     "settingsMediaSegmentCountdown": "Mediasegmentin ajastin",
     "@settingsMediaSegmentCountdown": {
@@ -8517,7 +8517,7 @@
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
-    "enableTunnelingSubtitle": "Lisäasetus. Reitittää äänen ja videon kytketyn laitteistopolun kautta. Oletuksena pois päältä, koska se aiheuttaa ääni- ja kuvakatkoja joillakin laitteilla.",
+    "enableTunnelingSubtitle": "Lisäasetus. Reitittää äänen ja videon kytketyn laitteistopolun kautta. Oletuksena pois päältä, koska se aiheuttaa ääni ja kuvakatkoja joillakin laitteilla.",
     "@enableTunnelingSubtitle": {
         "description": "Setting subtitle for enable tunneling"
     },
@@ -8570,7 +8570,7 @@
     "keyboard": "Näppäimistö",
     "navButtons": "Painikkeet",
     "rendering": "Renderöinti",
-    "mpvConfiguration": "MPV-määritykset",
+    "mpvConfiguration": "MPV määritykset",
     "externalPlayerAppDescription": "Määritä ulkoinen soitin, niin pitkä painallus tarjoaa toistovaihtoehdon",
     "crewContributionsSeerr": "Työryhmän osuudet (Seerr)",
     "changeArtwork": "Vaihda kansikuva",
@@ -8801,7 +8801,7 @@
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Myönnä Jellyfin-palvelun käyttäjälle (esim. jellyfin tai Dockerin PUID/PGID) kirjoitusoikeudet palvelimella oleviin mediakirjastokansioihisi.\n\n2. Tai siirry Jellyfinin hallintapaneeliin -> Kirjastot, muokkaa tätä kirjastoa ja poista käytöstä 'Tallenna kuvitus mediakansioihin', jolloin kuvitus tallennetaan Jellyfinin sisäiseen tietokantaan.",
+    "libraryWriteAccessFixSteps": "1. Myönnä Jellyfin palvelun käyttäjälle (esim. jellyfin tai Dockerin PUID/PGID) kirjoitusoikeudet palvelimella oleviin mediakirjastokansioihisi.\n\n2. Tai siirry Jellyfinin hallintapaneeliin > Kirjastot, muokkaa tätä kirjastoa ja poista käytöstä 'Tallenna kuvitus mediakansioihin', jolloin kuvitus tallennetaan Jellyfinin sisäiseen tietokantaan.",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
@@ -8821,7 +8821,7 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Jellyfin ei ilmeisesti onnistunut päivittämään kuvitusta. Kirjastosi on määritetty tallentamaan kuvitus suoraan mediakansioihin ('Tallenna kuvitus mediakansioihin' on käytössä). Tämä virhe johtuu yleensä siitä, ettei Jellyfin-palvelinprosessilla ole oikeutta kirjoittaa tiedostoja mediahakemistoihisi.",
+    "libraryWriteAccessReactiveBody": "Jellyfin ei ilmeisesti onnistunut päivittämään kuvitusta. Kirjastosi on määritetty tallentamaan kuvitus suoraan mediakansioihin ('Tallenna kuvitus mediakansioihin' on käytössä). Tämä virhe johtuu yleensä siitä, ettei Jellyfin palvelinprosessilla ole oikeutta kirjoittaa tiedostoja mediahakemistoihisi.",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
@@ -8892,7 +8892,7 @@
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller on Flutterin moderni GPU-renderöijä, joka tuo sulavammat animaatiot ja vähemmän nykimistä. Joissakin TV-bokseissa ja vanhemmissa GPU:issa se voi aiheuttaa häiriöitä tai mustan kuvan; valitse silloin Ei käytössä. Automaattinen valitsee laitteellesi parhaan oletuksen. Ota muutos käyttöön käynnistämällä Moonfin uudelleen.",
+    "impellerRenderingSubtitle": "Impeller on Flutterin moderni GPU renderöijä, joka tuo sulavammat animaatiot ja vähemmän nykimistä. Joissakin TV bokseissa ja vanhemmissa GPU:issa se voi aiheuttaa häiriöitä tai mustan kuvan; valitse silloin Ei käytössä. Automaattinen valitsee laitteellesi parhaan oletuksen. Ota muutos käyttöön käynnistämällä Moonfin uudelleen.",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
@@ -8948,16 +8948,16 @@
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "IMDb Top 250 -elokuvat",
-    "imdbTop250TvShows": "IMDb Top 250 -sarjat",
+    "imdbTop250Movies": "IMDb Top 250 elokuvat",
+    "imdbTop250TvShows": "IMDb Top 250 sarjat",
     "imdbMostPopularMovies": "IMDb:n suosituimmat elokuvat",
     "imdbMostPopularTvShows": "IMDb:n suosituimmat sarjat",
     "imdbLowestRatedMovies": "IMDb:n huonoimmin arvostellut elokuvat",
     "imdbTopEnglishMovies": "IMDb:n parhaat englanninkieliset elokuvat",
-    "adminLibTrickplayExtraction": "Ota Trickplay-kuvien purku käyttöön",
-    "adminLibTrickplayDuringScan": "Pura Trickplay-kuvat kirjastoskannauksen aikana",
-    "adminLibSaveTrickplayWithMedia": "Tallenna Trickplay-kuvat mediakansioihin",
-    "adminBackupTrickplay": "Trickplay-kuvat",
+    "adminLibTrickplayExtraction": "Ota Trickplay kuvien purku käyttöön",
+    "adminLibTrickplayDuringScan": "Pura Trickplay kuvat kirjastoskannauksen aikana",
+    "adminLibSaveTrickplayWithMedia": "Tallenna Trickplay kuvat mediakansioihin",
+    "adminBackupTrickplay": "Trickplay kuvat",
     "oledMode": "OLED Tila",
     "@oledMode": {
         "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
@@ -9089,7 +9089,7 @@
             }
         }
     },
-    "resetProfileDescription": "Tämä poistaa {profile}-profiilin palvelimelta ja palauttaa kaikki tämän laitteen synkronoidut asetukset oletusarvoihinsa.",
+    "resetProfileDescription": "Tämä poistaa {profile} profiilin palvelimelta ja palauttaa kaikki tämän laitteen synkronoidut asetukset oletusarvoihinsa.",
     "@resetProfileDescription": {
         "description": "Body of the dialog confirming a device profile reset",
         "placeholders": {
@@ -9102,7 +9102,7 @@
     "@resetGlobalProfileDescription": {
         "description": "Body of the dialog confirming a global profile reset"
     },
-    "profileReset": "Palauta {profile} -profiili oletusasetuksiin.",
+    "profileReset": "Palauta {profile} profiili oletusasetuksiin.",
     "@profileReset": {
         "description": "Message after a profile was reset",
         "placeholders": {
@@ -9123,7 +9123,7 @@
     "@ratingsReset": {
         "description": "Message after the ratings settings were reset"
     },
-    "failedToResetProfile": "{profile}-profiilin nollaaminen epäonnistui.",
+    "failedToResetProfile": "{profile} profiilin nollaaminen epäonnistui.",
     "@failedToResetProfile": {
         "description": "Message when a profile reset failed",
         "placeholders": {
@@ -9160,15 +9160,15 @@
     "@trailerCaptions": {
         "description": "Setting for YouTube trailer captions"
     },
-    "trailerCaptionsDescription": "Näytä tekstitykset YouTube-trailereissa",
+    "trailerCaptionsDescription": "Näytä tekstitykset YouTube trailereissa",
     "@trailerCaptionsDescription": {
         "description": "Description for YouTube trailer captions"
     },
-    "nextUpMaxDays": "Enimmäispäivien määrä Next Up -kohdassa",
+    "nextUpMaxDays": "Enimmäispäivien määrä Next Up kohdassa",
     "@nextUpMaxDays": {
         "description": "Setting for how far back the Next Up row reaches"
     },
-    "nextUpMaxDaysDescription": "Kuinka kauan ohjelma pysyy Next Up -osiossa sen jälkeen, kun olet katsonut sen viimeksi",
+    "nextUpMaxDaysDescription": "Kuinka kauan ohjelma pysyy Next Up osiossa sen jälkeen, kun olet katsonut sen viimeksi",
     "@nextUpMaxDaysDescription": {
         "description": "Description for the Next Up window setting"
     },
@@ -9254,13 +9254,13 @@
     "@useNativeEmulator": {
         "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
     },
-    "useNativeEmulatorSubtitle": "Pelaa pelejä natiivi-ytimillä EmulatorJS-verkkosoittimen sijaan",
+    "useNativeEmulatorSubtitle": "Pelaa pelejä natiivi ytimillä EmulatorJS verkkosoittimen sijaan",
     "@useNativeEmulatorSubtitle": {
         "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
     },
     "emulatorCores": "Emulaattoriytimet",
     "emulatorCoresSubtitle": "Lataa järjestelmät, joilla pelejä voi pelata suoraan",
-    "emulatorCoresDescription": "Valitse, mitkä järjestelmät haluat asentaa. Libretro-projekti tarjoaa ytimet, joiden avulla pelejä voidaan ajaa natiivisti selaimen näkymän sijaan.",
+    "emulatorCoresDescription": "Valitse, mitkä järjestelmät haluat asentaa. Libretro projekti tarjoaa ytimet, joiden avulla pelejä voidaan ajaa natiivisti selaimen näkymän sijaan.",
     "emulatorCoreDownloading": "Lataaminen",
     "emulatorCoreUnavailable": "Ei saatavilla tälle laitteelle",
     "emulatorCoreDownloadFailed": "Ydintiedostoa ei voitu ladata. Tarkista verkkoyhteytesi ja yritä uudelleen.",
@@ -11362,7 +11362,7 @@
     "transcodeInterlacedVideoNotSupported": "Lomitetun videon toistoa ei tueta.",
     "transcodeSecondaryAudioNotSupported": "Toissijainen äänikanava vaatii transkoodauksen.",
     "transcodeDirectPlayError": "Tämän mediaformaatin suoraa toistoa ei tueta.",
-    "setupStyleSpotlight": "Esittelyssä",
+    "setupStyleSpotlight": "Kohokohta",
     "@setupStyleSpotlight": {
         "description": "Name of the hero-first detail layout, offered in the setup wizard"
     },
@@ -15693,7 +15693,7 @@
     "@addServerChooseHow": {
         "description": "Subtitle of the first step of the Add Server dialog"
     },
-    "addServerAddressChoice": "Jellyfin tai Emby verkossasi tai verkossa",
+    "addServerAddressChoice": "Jellyfin, Emby tai Silo verkossasi tai verkossa",
     "@addServerAddressChoice": {
         "description": "Add Server dialog: what the Server Address option is for"
     },
@@ -15705,7 +15705,7 @@
     "@addServerAddressHelp": {
         "description": "Add Server dialog: help under the Connect to Server title"
     },
-    "addServerDetectNote": "Toimii Jellyfinin ja Embyn kanssa. Plex-osoite avaa Plexin kirjautumissivun.",
+    "addServerDetectNote": "Toimii Jellyfinin, Embyn ja Silon kanssa. Plex-osoite avaa Plexin kirjautumissivun.",
     "@addServerDetectNote": {
         "description": "Add Server dialog: note under the address field"
     },
@@ -16037,11 +16037,11 @@
     "@setupNavbarBottomHint": {
         "description": "What the Bottom Bar navigation position gives you on phones"
     },
-    "setupMediaBarMoonfinHint": "Suuri kuva sekä siihen lisättyjä tietoja ja yleiskatsaus.",
+    "setupMediaBarMoonfinHint": "Suuri kuvitus sekä siihen lisättyjä tietoja ja yleiskatsaus.",
     "@setupMediaBarMoonfinHint": {
         "description": "What the Moonfin media bar style looks like"
     },
-    "setupMediaBarMakdHint": "Suuri kuva, jota hallitsee iso otsikkologo.",
+    "setupMediaBarMakdHint": "Suuri kuvitus, jota hallitsee iso otsikkologo.",
     "@setupMediaBarMakdHint": {
         "description": "What the MakD media bar style looks like"
     },
@@ -16064,5 +16064,430 @@
     "setupMediaBarOffHint": "Ei esillä olevaa aluetta. Etusivu avautuu suoraan rivillesi.",
     "@setupMediaBarOffHint": {
         "description": "What turning the media bar off does to the Home screen"
+    },
+    "signingIn": "Kirjaudutaan sisään...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "moonbaseAddress": "Moonbase osoite",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "watchPartyGroupSubtitles": "Tekstitykset kaikille",
+    "@watchPartyGroupSubtitles": {
+        "description": "The Watch Party host's subtitle choice for the whole group"
+    },
+    "watchPartyOwnSubtitles": "Jokaisen oma valinta",
+    "@watchPartyOwnSubtitles": {
+        "description": "Watch Party subtitle option that leaves subtitles to each member"
+    },
+    "watchPartyLobby": "Aulassa",
+    "@watchPartyLobby": {
+        "description": "Watch Party status while nothing plays"
+    },
+    "watchPartyUpNextLabel": "Seuraavaksi",
+    "@watchPartyUpNextLabel": {
+        "description": "Label over the title a Watch Party host has staged"
+    },
+    "watchPartyRoomSettings": "Huoneen asetukset",
+    "@watchPartyRoomSettings": {
+        "description": "Heading over a Watch Party host's room switches"
+    },
+    "watchPartyCodeOrLink": "Huoneen koodi tai kutsulinkki",
+    "@watchPartyCodeOrLink": {
+        "description": "Join box on the Watch Party screen"
+    },
+    "watchPartyCopyInvite": "Kopioi kutsulinkki",
+    "@watchPartyCopyInvite": {
+        "description": "Host button that copies a Watch Party invite link"
+    },
+    "watchPartyInviteCopied": "Kutsulinkki kopioitu",
+    "@watchPartyInviteCopied": {
+        "description": "Snackbar after copying a Watch Party invite link"
+    },
+    "watchPartyLetEveryoneVote": "Annetaan kaikkien äänestää elokuvista",
+    "@watchPartyLetEveryoneVote": {
+        "description": "Host switch that turns a Watch Party into a vote on movies"
+    },
+    "watchPartyVoteHelp": "Lisää elokuvia, joista kaikki voivat äänestää, ja katso sitten se, jonka haluat. TV-jaksot valitset edelleen itse.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "watchPartyGuestVoteHelp": "Äänestä sitä, mitä haluat katsoa. Juontaja toistaa yhden valinnan.",
+    "@watchPartyGuestVoteHelp": {
+        "description": "Under a guest's vote list in a Watch Party"
+    },
+    "watchPartySearchMovies": "Hae elokuvia",
+    "@watchPartySearchMovies": {
+        "description": "Hint in the host's movie search in a Watch Party vote"
+    },
+    "watchPartyNoSuggestions": "Äänestettävissä olevia elokuvia ei ole vielä.",
+    "@watchPartyNoSuggestions": {
+        "description": "Shown when a Watch Party vote has no movies"
+    },
+    "watchPartySuggested": "Lisätty Watch Party äänestykseen",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "watchPartyVoteCount": "{count, plural, one {{count} vote} other {{count} votes}}",
+    "@watchPartyVoteCount": {
+        "description": "How many votes a movie has in a Watch Party vote",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchParty": "Watch Party",
+    "@watchParty": {
+        "description": "Title of Silo's Watch Party screen"
+    },
+    "watchPartyUnavailable": "Tämä palvelin ei tue Watch Party -toimintoa.",
+    "@watchPartyUnavailable": {
+        "description": "Shown when the Silo server has no Watch Party rooms"
+    },
+    "watchPartyRoomCode": "Huoneen koodi",
+    "@watchPartyRoomCode": {
+        "description": "Label for a Watch Party room's join code"
+    },
+    "watchPartyStart": "Järjestä Watch Party",
+    "@watchPartyStart": {
+        "description": "Button that opens a new Watch Party room"
+    },
+    "watchPartyPickTitle": "Avaa elokuva tai sarja ja valitse ”Katso ryhmän kanssa” -vaihtoehto, jotta voit valita, mitä kaikki katsovat.",
+    "@watchPartyPickTitle": {
+        "description": "How a Watch Party host picks what to watch"
+    },
+    "watchPartyWaitingForHost": "Odotan, että isäntä valitsee jotain.",
+    "@watchPartyWaitingForHost": {
+        "description": "Shown to Watch Party guests before anything is picked"
+    },
+    "watchPartyShareCode": "Muut liittyvät mukaan tällä koodilla Watch Party -näytöltä.",
+    "@watchPartyShareCode": {
+        "description": "Under a Watch Party room's code"
+    },
+    "watchPartyReconnecting": "Yhdistetään uudelleen...",
+    "@watchPartyReconnecting": {
+        "description": "Watch Party connection status while the room socket reconnects"
+    },
+    "watchPartyOffline": "offline-tilassa",
+    "@watchPartyOffline": {
+        "description": "After a Watch Party member's name when they are not connected"
+    },
+    "watchPartyStartForEveryone": "Aloitus kaikille",
+    "@watchPartyStartForEveryone": {
+        "description": "Host button that starts the staged item for the whole Watch Party"
+    },
+    "watchPartyBackToLobby": "Takaisin aulaan",
+    "@watchPartyBackToLobby": {
+        "description": "Host button that stops Watch Party playback"
+    },
+    "watchPartyGuestsCanPause": "Vieraat voivat toistaa ja keskeyttää",
+    "@watchPartyGuestsCanPause": {
+        "description": "Host switch for guest transport control in a Watch Party"
+    },
+    "watchPartyEnd": "Watch Party päättäjäiset",
+    "@watchPartyEnd": {
+        "description": "Host button that closes the Watch Party room for everyone"
+    },
+    "watchPartyEnded": "Watch Party on päättynyt.",
+    "@watchPartyEnded": {
+        "description": "Shown when the Watch Party room was closed"
+    },
+    "watchPartyStaged": "Valittu Watch Partyyn",
+    "@watchPartyStaged": {
+        "description": "Snackbar after the host picks an item for the Watch Party"
+    },
+    "watchPartyUpNext": "Seuraavaksi: {title}",
+    "@watchPartyUpNext": {
+        "description": "The item a Watch Party host has staged",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "hideHomeWatchProgress": "Piilota edistymisen seuranta",
+    "@hideHomeWatchProgress": {
+        "description": "Setting title to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeWatchProgressSubtitle": "Piilota edistymispalkki julisteista, joiden katsomisen olet jo aloittanut.",
+    "@hideHomeWatchProgressSubtitle": {
+        "description": "Description for setting to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeUnwatchedCount": "Piilota katsomattomien lukumäärä",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "hideHomeUnwatchedCountSubtitle": "Piilota merkki, joka kertoo, kuinka monta jaksoa on vielä katsomatta.",
+    "@hideHomeUnwatchedCountSubtitle": {
+        "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
+    },
+    "siloPasswordChangeTitle": "Valitse uusi salasana",
+    "@siloPasswordChangeTitle": {
+        "description": "Title of the dialog shown after signing in to a Silo server with a temporary password"
+    },
+    "siloPasswordChangeMessage": "Tällä tilillä on väliaikainen salasana. Valitse uusi salasana, jotta voit kirjautua sisään.",
+    "@siloPasswordChangeMessage": {
+        "description": "Explanation in the Silo change-password dialog. The temporary password was set by the server's admin."
+    },
+    "siloPasswordChangeNew": "Uusi salasana",
+    "@siloPasswordChangeNew": {
+        "description": "Field label in the Silo change-password dialog"
+    },
+    "siloPasswordChangeConfirm": "Vahvista uusi salasana",
+    "@siloPasswordChangeConfirm": {
+        "description": "Field label in the Silo change-password dialog: the new password typed a second time"
+    },
+    "siloPasswordChangeSubmit": "Vaihda salasana",
+    "@siloPasswordChangeSubmit": {
+        "description": "Button in the Silo change-password dialog that saves the new password and finishes signing in"
+    },
+    "siloPasswordChangeTooShort": "{count, plural, =1{Use at least 1 character} other{Use at least {count} characters}}",
+    "@siloPasswordChangeTooShort": {
+        "description": "Error in the Silo change-password dialog when the new password is shorter than the server allows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPasswordChangeTooLong": "Tuo salasana on liian pitkä",
+    "@siloPasswordChangeTooLong": {
+        "description": "Error in the Silo change-password dialog when the new password is longer than the server allows"
+    },
+    "siloPasswordChangeMismatch": "Salasanat eivät täsmää",
+    "@siloPasswordChangeMismatch": {
+        "description": "Error in the Silo change-password dialog when the two new password fields differ"
+    },
+    "siloPasswordChangeSameAsTemporary": "Valitse salasana, joka eroaa väliaikaisesta salasanasta",
+    "@siloPasswordChangeSameAsTemporary": {
+        "description": "Error in the Silo change-password dialog when the new password equals the temporary one used to sign in"
+    },
+    "siloPasswordChangeFailed": "Salasanaa ei voitu vaihtaa. Yritä uudelleen.",
+    "@siloPasswordChangeFailed": {
+        "description": "Error in the Silo change-password dialog when the request failed (network or server error)"
+    },
+    "siloPasswordChangeUnavailable": "Tällä tilillä on väliaikainen salasana, eikä tätä palvelinta voi muuttaa täällä. Vaihda salasana Silon verkkosovelluksessa ja kirjaudu sitten uudelleen sisään.",
+    "@siloPasswordChangeUnavailable": {
+        "description": "Sign-in error for a Silo account with a temporary password when the server has password changes switched off"
+    },
+    "siloPasswordChangedSignInAgain": "Salasanasi on vaihdettu. Kirjaudu sisään uudella salasanalla.",
+    "@siloPasswordChangedSignInAgain": {
+        "description": "Shown on the sign-in screen when the Silo password was changed but the session could not continue"
+    },
+    "siloServerRowSubtitle": "Palvelimeltasi",
+    "@siloServerRowSubtitle": {
+        "description": "Subtitle of a Home row the media server curates itself (a Silo home section), on Home and in Home settings"
+    },
+    "siloCodeSignIn": "Kirjaudu sisään koodilla",
+    "@siloCodeSignIn": {
+        "description": "Silo login screen: the toggle for signing in by approving a code from another device (Silo's name for what Jellyfin calls Quick Connect)"
+    },
+    "siloCodeSignInInstruction": "Skannaa QR-koodi puhelimellasi tai siirry osoitteeseen {address} millä tahansa laitteella, johon olet kirjautunut sisään, ja syötä tämä koodi:",
+    "@siloCodeSignInInstruction": {
+        "description": "Silo login screen, sign in with a code: how to approve the code shown below",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "silo.example.com/activate"
+            }
+        }
+    },
+    "siloCodeSignInInstructionNoLink": "Syötä tämä koodi Silo-sovellukseen laitteella, jolla olet kirjautunut sisään:",
+    "@siloCodeSignInInstructionNoLink": {
+        "description": "Silo login screen, sign in with a code, when the server gave no page address"
+    },
+    "siloCodeSignInOpened": "Koodi löytyi. Hyväksy kirjautuminen toisella laitteellasi.",
+    "@siloCodeSignInOpened": {
+        "description": "Silo login screen, sign in with a code: someone has looked the code up and is about to approve it"
+    },
+    "siloCodeSignInDenied": "Tätä kirjautumista ei hyväksytty.",
+    "@siloCodeSignInDenied": {
+        "description": "Silo login screen, sign in with a code: the person approving refused the request"
+    },
+    "siloCodeSignInNewCode": "Hanki uusi koodi",
+    "@siloCodeSignInNewCode": {
+        "description": "Silo login screen, sign in with a code: button that shows a new code after the last one ended"
+    },
+    "siloCodeSignInOff": "Koodilla kirjautuminen on poistettu käytöstä tällä palvelimella.",
+    "@siloCodeSignInOff": {
+        "description": "Silo login screen: the server doesn't offer sign-in with a code"
+    },
+    "siloCodeSignInPasswordChangeRequired": "Tällä tilillä on väliaikainen salasana. Kirjaudu sisään tällä salasanalla kerran, jotta se vaihdetaan.",
+    "@siloCodeSignInPasswordChangeRequired": {
+        "description": "Silo login screen: a code was approved for an account that must first replace its temporary password, which needs a password sign-in"
+    },
+    "siloApproveSignIn": "Hyväksy kirjautuminen",
+    "@siloApproveSignIn": {
+        "description": "Title of the dialog where a signed-in Silo user types the code another device shows, to sign that device in (Silo's counterpart of authorizing a Quick Connect code)"
+    },
+    "siloApproveSignInHint": "Toisella laitteella näkyvä koodi",
+    "@siloApproveSignInHint": {
+        "description": "Hint in the Silo approve-a-sign-in dialog's code field"
+    },
+    "siloApproveSignInApprove": "Hyväksy",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "siloApproveSignInDone": "Hyväksytty. Toinen laite on kirjautumassa sisään.",
+    "@siloApproveSignInDone": {
+        "description": "Shown after a Silo sign-in code was approved"
+    },
+    "siloApproveSignInNoRequest": "Kyseisellä koodilla ei ole odottavaa kirjautumista. Tarkista asia tai hanki uusi koodi toisella laitteella.",
+    "@siloApproveSignInNoRequest": {
+        "description": "Shown when Silo has no pending sign-in for the typed code (unknown, expired, already used or declined)"
+    },
+    "siloNativeOfferTitle": "Yhdistetäänkö suoraan Siloon?",
+    "@siloNativeOfferTitle": {
+        "description": "Title of the dialog shown when the address being added is Silo's Jellyfin-compatible service and Silo's own API answers on another port of the same host"
+    },
+    "siloNativeOfferMessage": "Tämä osoite on {serverName}:n Jellyfin-yhteensopiva palvelu. Moonfin voi muodostaa yhteyden Siloon suoraan osoitteessa {address} ja käyttää Silon omia ominaisuuksia.",
+    "@siloNativeOfferMessage": {
+        "description": "Body of the dialog offering to add a Silo server natively instead of through its Jellyfin-compatible service",
+        "placeholders": {
+            "serverName": {
+                "type": "String"
+            },
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloNativeOfferUse": "Käytä Siloa",
+    "@siloNativeOfferUse": {
+        "description": "Button: add the Silo server through its native API"
+    },
+    "siloNativeOfferKeep": "Pidä Jellyfin",
+    "@siloNativeOfferKeep": {
+        "description": "Button: add the address as a Jellyfin server, as entered"
+    },
+    "siloAppUpdateRequired": "Tämä Silo-palvelin vaatii uudemman Moonfin-version. Päivitä Moonfin, jotta voit käyttää sitä.",
+    "@siloAppUpdateRequired": {
+        "description": "Shown when a Silo server no longer speaks the API this version of Moonfin uses (its API is newer)"
+    },
+    "siloServerUpdateRequired": "Tämä Silo-palvelin on liian vanha tälle Moonfin-versiolle. Päivitä Silo, jotta voit käyttää sitä.",
+    "@siloServerUpdateRequired": {
+        "description": "Shown when a Silo server's API is older than the one this version of Moonfin uses"
+    },
+    "siloTooManyAttempts": "Yritit liian monta kertaa. Yritä myöhemmin uudelleen.",
+    "@siloTooManyAttempts": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429) without saying how long to wait"
+    },
+    "siloTooManyAttemptsWait": "Yritit liian monta kertaa. Yritä uudelleen {wait}:n kuluttua.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloServerBusy": "Palvelin on varattu tai käynnistymässä. Yritä myöhemmin uudelleen.",
+    "@siloServerBusy": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503) without saying how long to wait"
+    },
+    "siloServerBusyWait": "Palvelin on varattu tai käynnistymässä. Yritä uudelleen {wait} minuutin kuluttua.",
+    "@siloServerBusyWait": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloWaitSeconds": "{count, plural, =1{1 second} other{{count} seconds}}",
+    "@siloWaitSeconds": {
+        "description": "How long to wait before trying again, in seconds; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloWaitMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+    "@siloWaitMinutes": {
+        "description": "How long to wait before trying again, in minutes; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPlaybackUnavailable": "Toistoa ei ole käytettävissä tällä Silo-palvelimella.",
+    "@siloPlaybackUnavailable": {
+        "description": "Player message: the Silo server has playback switched off for this account"
+    },
+    "siloPlaybackUpdateRequired": "Tämän Silo-palvelimen käyttämiseen tarvitaan uudempi Moonfin-versio.",
+    "@siloPlaybackUpdateRequired": {
+        "description": "Player message: the Silo server no longer speaks the playback protocol this version of Moonfin uses"
+    },
+    "siloPlaybackEndedOnServer": "Toisto lopetettiin Silo-palvelimella.",
+    "@siloPlaybackEndedOnServer": {
+        "description": "Player message: an administrator ended this playback session on the Silo server"
+    },
+    "siloPinTitle": "{name}:n PIN-koodi",
+    "@siloPinTitle": {
+        "description": "Title of the dialog asking for a Silo household profile's PIN; name is the profile's name",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinHint": "PIN-koodi",
+    "@siloPinHint": {
+        "description": "Field label in the Silo profile PIN dialog"
+    },
+    "siloPinUnlock": "Avaa",
+    "@siloPinUnlock": {
+        "description": "Button in the Silo profile PIN dialog that checks the PIN"
+    },
+    "siloPinWrong": "Tuo PIN-koodi ei ole oikea.",
+    "@siloPinWrong": {
+        "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
+    },
+    "siloPinLocked": "Liian monta väärää PIN-koodia. Yritä myöhemmin uudelleen.",
+    "@siloPinLocked": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs, without saying for how long"
+    },
+    "siloPinLockedWait": "Liian monta väärää PIN-koodia. Yritä uudelleen {wait}.",
+    "@siloPinLockedWait": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs; wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinFailed": "PIN-koodia ei voitu tarkistaa. Yritä uudelleen.",
+    "@siloPinFailed": {
+        "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
+    },
+    "siloSignOutAccount": "Kirjaudu ulos Silo-tililtä",
+    "@siloSignOutAccount": {
+        "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
+    },
+    "settingsLivePreview": "Reaaliaikainen esikatselu",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "settingsPreviewShowsOn": "{screen} näkyvät esikatselukuvat",
+    "@settingsPreviewShowsOn": {
+        "description": "Under the Settings live preview, says the focused setting changes the named preview screen",
+        "placeholders": {
+            "screen": {
+                "type": "String",
+                "example": "Home"
+            }
+        }
+    },
+    "settingsPreviewNotShown": "Ei näkyvissä esikatselussa",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsPreviewSaved": "Tallennettu",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
     }
 }
