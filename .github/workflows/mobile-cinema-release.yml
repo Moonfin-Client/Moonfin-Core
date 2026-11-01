@@ -1,0 +1,84 @@
+name: Build Mobile Cinema APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/mobile-cinema-redesign
+    paths:
+      - .github/workflows/mobile-cinema-release.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-cinema-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: '3.47.2'
+  BUILD_NAME: '3.0.0-mobile-cinema.1'
+  BUILD_NUMBER: '30000157'
+
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Check mobile UI
+        working-directory: packages/mobile_ui
+        run: |
+          flutter pub get
+          dart analyze lib test
+          flutter test
+
+      - name: Build mobile release APK
+        run: >-
+          flutter build apk --release --no-pub --flavor mobile
+          --build-name "$BUILD_NAME" --build-number "$BUILD_NUMBER"
+          --dart-define=DISTRIBUTION_CHANNEL=apk
+
+      # The fork has no upstream signing key. The existing Gradle release
+      # configuration signs this preview with the Android debug certificate.
+      - name: Verify and package APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=build/app/outputs/flutter-apk/app-mobile-release.apk
+          build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          "$build_tools/apksigner" verify --verbose --print-certs "$apk" > apk-signature.txt
+          "$build_tools/aapt" dump badging "$apk" > apk-metadata.txt
+          mkdir -p release
+          cp "$apk" "release/Moonfin_Android_v${BUILD_NAME}.apk"
+          cp apk-signature.txt apk-metadata.txt release/
+          cd release
+          sha256sum ./*.apk > SHA256SUMS.txt
+
+      - name: Report native library page alignment
+        shell: bash
+        run: |
+          bash scripts/check-android-16kb-pages.sh build/app/outputs/flutter-apk/app-mobile-release.apk > release/native-page-alignment.txt 2>&1 || {
+            cat release/native-page-alignment.txt
+            echo '::warning::Some bundled native libraries do not meet the 16 KB page alignment check. See the report.'
+          }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mobile-cinema-release
+          path: release/
+          if-no-files-found: error
