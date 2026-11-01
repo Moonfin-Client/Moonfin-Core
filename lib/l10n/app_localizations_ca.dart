@@ -3349,15 +3349,15 @@ class AppLocalizationsCa extends AppLocalizations {
   String get seasonalDensityHeavy => 'Intens';
 
   @override
-  String get seasonalFollower => 'Focus Follower';
+  String get seasonalFollower => 'Seguidor del focus';
 
   @override
   String get seasonalFollowerDescription =>
-      'A holiday piece, like Halloween\'s planchette, follows what you select on Home';
+      'Una peça festiva, com la planxeta de Halloween, segueix el que selecciones a l\'inici';
 
   @override
   String get seasonalFollowerPointerDescription =>
-      'A holiday piece, like Halloween\'s planchette, replaces the mouse pointer on Home';
+      'Una peça festiva, com la planxeta de Halloween, substitueix el punter del ratolí a l\'inici';
 
   @override
   String get seasonalRow => 'Fila de temporada';
@@ -4292,7 +4292,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get secondarySubtitlesEnabledSubtitle =>
-      'Show a second subtitle track at the same time. The subtitle menu then asks for the primary or secondary track first';
+      'Mostra una segona pista de subtítols alhora. Aleshores, el menú de subtítols et demana primer si vols la pista principal o la secundària';
 
   @override
   String get defaultToNoSubtitles => 'Per defecte, Sense subtítols';
@@ -4305,16 +4305,16 @@ class AppLocalizationsCa extends AppLocalizations {
   String get subtitleSize => 'Mida del subtítol';
 
   @override
-  String get primarySubtitleSlot => 'Principal';
+  String get primarySubtitleSlot => 'Pista principal';
 
   @override
-  String get secondarySubtitleSlot => 'Secundari';
+  String get secondarySubtitleSlot => 'Pista secundària';
 
   @override
-  String get secondarySubtitleTrack => 'Pista de subtítols secundària';
+  String get secondarySubtitleTrack => 'Subtítols secundaris';
 
   @override
-  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+  String get secondaryDelayAdjustment => 'Ajust del retard secundari';
 
   @override
   String decreaseValue(String setting) {
@@ -4649,11 +4649,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra les biblioteques a la barra d\'eines';
 
   @override
-  String get showLibrariesIndividually => 'Show Libraries Individually';
+  String get showLibrariesIndividually => 'Mostra les biblioteques per separat';
 
   @override
   String get showLibrariesIndividuallySubtitle =>
-      'Show each library as its own button in the navigation bar instead of in the Libraries menu';
+      'Mostra cada biblioteca com un botó propi a la barra de navegació en lloc de dins del menú «Biblioteques»';
 
   @override
   String get navbarAlwaysExpanded =>
@@ -12202,11 +12202,11 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get stripDolbyVisionHdr10PlusTitle =>
-      'Play Dolby Vision with HDR10+ as HDR10+';
+      'Reprodueix Dolby Vision amb HDR10+ com a HDR10+';
 
   @override
   String get stripDolbyVisionHdr10PlusSubtitle =>
-      'Drop the Dolby Vision layer from videos that also have HDR10+. Turn this on if those videos play with sound but a black screen.';
+      'Elimina la capa Dolby Vision dels vídeos que també tenen HDR10+. Activa-ho si aquests vídeos es reprodueixen amb so però amb la pantalla en negre.';
 
   @override
   String get subtitlesUseEmbeddedStyles =>
@@ -12233,11 +12233,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra els detalls de l\'item seleccionat a dalt la pàgina de Biblioteca.';
 
   @override
-  String get libraryCardTitles => 'Titles Under Posters';
+  String get libraryCardTitles => 'Títols sota els pòsters';
 
   @override
   String get libraryCardTitlesDescription =>
-      'Show each item\'s title and details below its artwork in library grids.';
+      'Mostra el títol i els detalls de cada element sota la seva il·lustració a les graelles de les biblioteques.';
 
   @override
   String get useDetailedSubHeadings => 'Utilitzeu subtítols detallats';
@@ -12682,11 +12682,12 @@ class AppLocalizationsCa extends AppLocalizations {
       'Reprodueix HEVC fins a 1080p des del fitxer original en lloc de demanar al servidor que el transcodifiqui. Aquest Apple TV el descodifica per programari, així que els fitxers exigents de 10 bits o amb una taxa de bits alta poden anar a batzegades.';
 
   @override
-  String get av1SoftwareUhdDirectPlay => 'Direct Play 4K AV1 (Software Decode)';
+  String get av1SoftwareUhdDirectPlay =>
+      'Reproducció nativa d\'AV1 en 4K (descodificació per programari)';
 
   @override
   String get av1SoftwareUhdDirectPlaySubtitle =>
-      'Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.';
+      'Reprodueix AV1 per sobre de 1080p, inclòs HDR10, des del fitxer original en lloc de demanar al servidor que el transcodifiqui. Aquest dispositiu descodifica AV1 per programari, així que els fitxers 4K pesants o amb una taxa de bits alta poden anar a batzegades.';
 
   @override
   String get useExternalPlayer => 'Utilitza sempre un reproductor extern';
@@ -14841,7 +14842,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get showAlphabeticalFilters => 'Mostra l\'alfabet';
 
   @override
-  String get libraryFolderView => 'Folder View';
+  String get libraryFolderView => 'Vista de carpetes';
 
   @override
   String get personalRatingStyle => 'Estil de puntuació personal';
@@ -15114,52 +15115,55 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String setupStepOf(int current, int total) {
-    return 'Step $current of $total';
+    return 'Pas $current de $total';
   }
 
   @override
-  String get setupCurrent => 'Current';
+  String get setupCurrent => 'Actual';
 
   @override
   String get setupTvHint =>
-      'Up and down to preview · OK to choose · Back twice to skip';
+      'Amunt i avall per previsualitzar · OK per triar · Enrere dues vegades per ometre';
 
   @override
-  String get setupNavbarTopHint => 'Tabs across the top of the screen.';
+  String get setupNavbarTopHint =>
+      'Pestanyes a la part superior de la pantalla.';
 
   @override
-  String get setupNavbarLeftHint => 'A slim rail of icons down the left side.';
+  String get setupNavbarLeftHint =>
+      'Una barra estreta d\'icones al costat esquerre.';
 
   @override
   String get setupNavbarBottomHint =>
-      'Tabs along the bottom edge, in easy reach of your thumb.';
+      'Pestanyes a la vora inferior, a l\'abast del polze.';
 
   @override
   String get setupMediaBarMoonfinHint =>
-      'Large artwork with the title, details and overview laid over it.';
+      'Il·lustració gran amb el títol, els detalls i la visió general superposats.';
 
   @override
-  String get setupMediaBarMakdHint => 'Large artwork led by a big title logo.';
+  String get setupMediaBarMakdHint =>
+      'Il·lustració gran encapçalada per un logotip gran del títol.';
 
   @override
   String get setupMediaBarBookshelfHint =>
-      'Titles shelved as book spines, with the featured one face out.';
+      'Títols col·locats com a lloms de llibres, amb el destacat de cara.';
 
   @override
   String get setupMediaBarGalleryHint =>
-      'The featured title opened up, with the next few lined up beside it.';
+      'El títol destacat obert, amb els següents alineats al costat.';
 
   @override
   String get setupMediaBarBannerHint =>
-      'A shorter banner above your rows, so more of them fit on screen.';
+      'Un bàner més baix sobre les teves files, perquè n\'hi càpiguen més a la pantalla.';
 
   @override
   String get setupMediaBarAyaHint =>
-      'Artwork first in a framed panel, with your rows right underneath.';
+      'La il·lustració primer, en un plafó amb marc, i les teves files just a sota.';
 
   @override
   String get setupMediaBarOffHint =>
-      'No featured area. Home opens straight onto your rows.';
+      'Sense zona destacada. L\'inici s\'obre directament a les teves files.';
 
   @override
   String get runSetupAgain => 'Iniciar la configuració de nou';
@@ -15882,7 +15886,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeScreenBackdropCorner => 'Cantonada';
 
   @override
-  String get homeScreenBackdropTop => 'Top';
+  String get homeScreenBackdropTop => 'A dalt';
 
   @override
   String get detailsScreenBackdrop => 'Teló de fons de la pantalla de detalls';
@@ -16123,7 +16127,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsApplePlayerUiDescription =>
-      'El reproductor natiu d\'estil Apple no té enviament a altres dispositius, gestos de lliscament, bloqueig de l\'orientació, retard d\'àudio ni botó de PiP';
+      'El reproductor natiu d\'estil Apple no té enviament a altres dispositius, retard d\'àudio ni botó de PiP, i el bloqueig de la rotació només hi és a TV en directe';
 
   @override
   String get settingsApplePlayerUiStandard => 'Estàndard';
@@ -16563,8 +16567,8 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count artists',
-      one: '1 artist',
+      other: '$count artistes',
+      one: '1 artista',
     );
     return '$_temp0';
   }
@@ -16574,8 +16578,8 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count songs',
-      one: '1 song',
+      other: '$count cançons',
+      one: '1 cançó',
     );
     return '$_temp0';
   }
@@ -16585,8 +16589,8 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count playlists',
-      one: '1 playlist',
+      other: '$count llistes de reproducció',
+      one: '1 llista de reproducció',
     );
     return '$_temp0';
   }
@@ -16596,70 +16600,70 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count plays',
-      one: '1 play',
+      other: '$count reproduccions',
+      one: '1 reproducció',
     );
     return '$_temp0';
   }
 
   @override
-  String get allArtists => 'All Artists';
+  String get allArtists => 'Tots els artistes';
 
   @override
-  String get libraryZToA => 'Z to A';
+  String get libraryZToA => 'Z-A';
 
   @override
-  String get musicSortYear => 'Year';
+  String get musicSortYear => 'Any';
 
   @override
-  String get musicFilter => 'Filter';
+  String get musicFilter => 'Filtre';
 
   @override
-  String get musicGenreFilterTitle => 'Filter by Genre';
+  String get musicGenreFilterTitle => 'Filtra per gènere';
 
   @override
-  String get openAlbum => 'Open Album';
+  String get openAlbum => 'Obre l\'àlbum';
 
   @override
-  String get openPlaylist => 'Open Playlist';
+  String get openPlaylist => 'Obre la llista de reproducció';
 
   @override
-  String get allSongsAToZ => 'All Songs A to Z';
+  String get allSongsAToZ => 'Totes les cançons de la A a la Z';
 
   @override
-  String get musicMix => 'Mix';
+  String get musicMix => 'Mescla';
 
   @override
-  String get musicMixEverything => 'Everything';
+  String get musicMixEverything => 'Tot';
 
   @override
-  String get musicMixEverythingSubtitle => '300 songs at random';
+  String get musicMixEverythingSubtitle => '300 cançons a l\'atzar';
 
   @override
-  String get mostPlayed => 'Most Played';
+  String get mostPlayed => 'Més reproduïdes';
 
   @override
-  String get musicMixMostPlayedSubtitle => 'Your top 100';
+  String get musicMixMostPlayedSubtitle => 'El teu top 100';
 
   @override
-  String get musicMixFreshArrivals => 'Fresh Arrivals';
+  String get musicMixFreshArrivals => 'Novetats';
 
   @override
-  String get musicMixFreshArrivalsSubtitle => 'The newest 100 songs';
+  String get musicMixFreshArrivalsSubtitle => 'Les 100 cançons més noves';
 
   @override
-  String get musicMixRediscover => 'Rediscover';
+  String get musicMixRediscover => 'Redescobreix';
 
   @override
   String get musicMixRediscoverSubtitle =>
-      'Favorites you haven\'t played lately';
+      'Preferides que fa temps que no escoltes';
 
   @override
-  String get musicSortMostAlbums => 'Most Albums';
+  String get musicSortMostAlbums => 'Més àlbums';
 
   @override
   String bookSeriesPosition(int index, int total) {
-    return 'Book $index of $total';
+    return 'Llibre $index de $total';
   }
 
   @override
@@ -16667,44 +16671,45 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count favorites',
-      one: '1 favorite',
+      other: '$count preferits',
+      one: '1 preferit',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookSortZToA => 'Z to A';
+  String get bookSortZToA => 'Z-A';
 
   @override
-  String get bookSortMostTitles => 'Most Titles';
+  String get bookSortMostTitles => 'Més títols';
 
   @override
-  String get bookSurpriseMe => 'Surprise Me';
+  String get bookSurpriseMe => 'Sorprèn-me';
 
   @override
-  String get bookShuffleAudiobooks => 'Shuffle Audiobooks';
+  String get bookShuffleAudiobooks => 'Reprodueix un audiollibre a l\'atzar';
 
   @override
-  String get bookStartReading => 'Start Reading';
+  String get bookStartReading => 'Comença a llegir';
 
   @override
-  String get bookOtherBooks => 'Other Books';
+  String get bookOtherBooks => 'Altres llibres';
 
   @override
-  String get bookDiscoverSearchBooks => 'Search Open Library';
+  String get bookDiscoverSearchBooks => 'Cerca a Open Library';
 
   @override
-  String get bookDiscoverSearchAudiobooks => 'Search LibriVox';
+  String get bookDiscoverSearchAudiobooks => 'Cerca a LibriVox';
 
   @override
-  String get bookDiscoverFeatured => 'Featured';
+  String get bookDiscoverFeatured => 'Destacat';
 
   @override
-  String get bookReaderControlsAutoHide => 'Controls hide automatically';
+  String get bookReaderControlsAutoHide =>
+      'Els controls s\'amaguen automàticament';
 
   @override
-  String get bookReaderControlsStayVisible => 'Controls stay visible';
+  String get bookReaderControlsStayVisible => 'Els controls es queden visibles';
 
   @override
   String get settingsLivePreview => 'Live preview';

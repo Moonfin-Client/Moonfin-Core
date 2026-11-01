@@ -13,10 +13,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get animeMarkerFiller => 'Filler';
+  String get animeMarkerFiller => '原创剧情';
 
   @override
-  String get animeMarkerMixed => 'Mixed';
+  String get animeMarkerMixed => '混合剧情';
 
   @override
   String get animeMarkerAnimeCanon => 'Anime Canon';

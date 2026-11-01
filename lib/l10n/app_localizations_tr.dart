@@ -471,7 +471,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sekmeler arasında gezinirken sekme içeriğini otomatik olarak göster. Her sekmeyi manuel olarak açıp kapatmak için bu seçeneği kapatın.';
 
   @override
-  String get showTechnicalDetails => 'Teknik Detaylar Gösterilsin Mi?';
+  String get showTechnicalDetails => 'Teknik Detayları Göster';
 
   @override
   String get showTechnicalDetailsSubtitle =>
@@ -495,7 +495,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Ebeveyn Reyting Sınırı Uygulansın mı?';
+      'Yaş Sınırını Önerilere Uygula';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -3269,7 +3269,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loadingAnimationSpeedUltra => 'Ultra';
 
   @override
-  String get showLoadingAnimationText => 'Yazı Gözüksün Mü?';
+  String get showLoadingAnimationText => 'Yazıyı Göster';
 
   @override
   String get loadingAnimationPreview => 'Önizleme';
@@ -3408,10 +3408,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Parçayı bir kez oynatmak yerine döngüye al';
 
   @override
-  String get detailsBackgroundBlur => 'Detay Arka Plan Bulanıklığı';
+  String get detailsBackgroundBlur => 'Arka Plan Bulanıklığı';
 
   @override
-  String get detailsBackgroundOpacity => 'Detay Arka Plan Opaklığı';
+  String get detailsBackgroundOpacity => 'Arka Plan Opaklığı';
 
   @override
   String pixelValue(int value) {
@@ -3431,7 +3431,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playerZoomMode => 'Oynatıcı Yakınlaştırma Modu';
 
   @override
-  String get settingsScrollWheelAction => 'Fare tekerleği';
+  String get settingsScrollWheelAction => 'Fare Tekerleği';
 
   @override
   String get settingsScrollWheelActionDescription =>
@@ -3453,14 +3453,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get fit => 'Sığdır';
 
   @override
-  String get autoCrop => 'Otomatik Kırp';
+  String get autoCrop => 'Sığdırarak Yakınlaştır';
 
   @override
-  String get cropBlackBars => 'Siyah bantları kırp';
+  String get cropBlackBars => 'Siyah Bantları Kırp';
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Kodlanmış siyah bantları tespit et, kırp ve ekranı doldur.';
+      'Oynatma başladıktan sonra kodlanmış siyah şeritleri tespit et, kırp ve ekranı doldur. Oynatıcıdaki yakınlaştırma düğmesinden yeniden kırpılabilir.';
 
   @override
   String get cropBlackBarsRecropInterval => 'Recrop Interval';
@@ -4049,7 +4049,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutput =>
-      'Doğrudan Geçiş (Passthrough) çıkışı';
+      'Doğrudan Geçiş (Passthrough) Çıkışı';
 
   @override
   String get settingsAudioPassthroughOutputDescription =>
@@ -4152,7 +4152,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Daha geniş bir mpv seçenek kümesine izin verin. Oynatma davranışını bozabilir.';
 
   @override
-  String get hardwareDecoding => 'Donanım kod çözme';
+  String get hardwareDecoding => 'Donanım Kod Çözme';
 
   @override
   String get hardwareDecodingSubtitle =>
@@ -4486,14 +4486,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wifiOnlyDownloads => 'Yalnızca WiFi İndirmeleri';
 
   @override
-  String get tvOfflineDownloads => 'Çevrimdışı indirmeleri etkinleştir';
+  String get tvOfflineDownloads => 'Çevrimdışı İndirmeleri Etkinleştir';
 
   @override
   String get tvOfflineDownloadsSubtitle =>
       'Öğe sayfalarında indirme işlemlerini göster';
 
   @override
-  String get reportDownloadsActivity => 'İndirmeleri sunucuda göster';
+  String get reportDownloadsActivity => 'İndirmeleri Sunucuda Göster';
 
   @override
   String get reportDownloadsActivitySubtitle =>
@@ -4528,7 +4528,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Android, Moonfin uygulamasının yalnızca kendi sahip olduğu klasörlere yazmasına izin veriyor ve bu cihazda çıkarılabilir depolama alanı yok. İndirmelerin diğer uygulamaların erişebileceği bir yere kaydedilmesi için yukarıdaki \'İndirilenler klasörüne kaydet\' seçeneğini açın.';
 
   @override
-  String get saveToDownloadsFolder => 'İndirilenler klasörüne kaydet';
+  String get saveToDownloadsFolder => 'İndirilenler Klasörüne Kaydet';
 
   @override
   String get downloadsVisibleToOtherApps =>
@@ -4977,7 +4977,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get trailerCaptionsDescription =>
-      'YouTube fragmanlarında medya çubuğunda altyazıları göster';
+      'YouTube fragmanlarında altyazıları göster';
 
   @override
   String get episodePreview => 'Bölüm Önizlemesi';
@@ -5090,14 +5090,14 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get fullScreenRows => 'Genişletilmiş Ana Sayfa Satırları';
+  String get fullScreenRows => 'Genişletilmiş Satırlar';
 
   @override
   String get fullScreenRowsDescription =>
       'Ana sayfa satırlarını ekran başına 1 satırla sınırla';
 
   @override
-  String get homeRowsPadding => 'Ana Sayfa Satır Boşluğu';
+  String get homeRowsPadding => 'Satır Boşluğu';
 
   @override
   String get homeRowsPaddingDescription =>
@@ -5494,14 +5494,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get seerrNotificationsSection => 'Bildirimler';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'Yeni keşfet bildirimleri';
+  String get seerrNotifyNewRequestsTitle => 'Yeni Keşfet Bildirimleri';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
       'Birisi talep gönderdiğinde bana bildirim gönder';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'İstek güncellemeleri';
+  String get seerrNotifyLibraryAddedTitle => 'İstek Güncellemeleri';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
@@ -5514,7 +5514,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get seerrNotifyIssuesSubtitle => 'Yeni sorunlar, yanıtlar ve çözümler';
 
   @override
-  String get seerrNotifyNewMediaTitle => 'Yeni medya eklendi';
+  String get seerrNotifyNewMediaTitle => 'Yeni Medya Eklendi';
 
   @override
   String get seerrNotifyNewMediaSubtitle =>
@@ -5653,10 +5653,10 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get imageCacheLimit => 'Görsel önbelleği sınırı';
+  String get imageCacheLimit => 'Görsel Önbelleği Sınırı';
 
   @override
-  String get clearImageCache => 'Görsel önbelleğini temizle';
+  String get clearImageCache => 'Görsel Önbelleğini Temizle';
 
   @override
   String get imageCacheCleared => 'Görsel önbelleği temizlendi';
@@ -7889,7 +7889,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return '\'$name\' cihazı kaldırılsın mı? Kullanıcının bu cihazda tekrar oturum açması gerekecektir.';
+    return '\"$name\" cihazı kaldırılsın mı? Kullanıcının bu cihazda yeniden oturum açması gerekecek.';
   }
 
   @override
@@ -11366,7 +11366,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsAllowSelfSignedCerts =>
-      'Kendinden imzalı sertifikalara izin ver';
+      'Kendinden İmzalı Sertifikalara İzin Ver';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
@@ -11725,7 +11725,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'Videonun ekrana sığacak şekilde nasıl ölçeklendirilmesi gerektiği.';
+      'Videonun ekrana nasıl ölçeklendirileceğini belirler. Sığdırarak Yakınlaştır, görüntüyü ekranı kaplayacak şekilde büyütür ve kenarlardan kırpar. Siyah şeritleri algılamaz.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Oynatma Motoru (Android TV)';
@@ -11867,7 +11867,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get settingsLiveTvDirect => 'Canlı TV Doğrudan';
+  String get settingsLiveTvDirect => 'Canlı TV Doğrudan Oynatma';
 
   @override
   String get settingsLiveTvDirectSubtitle =>
@@ -11977,7 +11977,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get allowExternalAudioEffectsTitle =>
-      'Harici ses efektlerine izin ver';
+      'Harici Ses Efektlerine İzin Ver';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
@@ -11991,7 +11991,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Tünelsiz oynatmaya zorla. Tünelleme kaynaklı ses/video kopmaları yaşanan cihazlarda yararlıdır.';
 
   @override
-  String get enableTunnelingTitle => 'Tünellemeyi etkinleştir';
+  String get enableTunnelingTitle => 'Tünellemeyi Etkinleştir';
 
   @override
   String get enableTunnelingSubtitle =>
@@ -11999,7 +11999,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mapDolbyVisionP7Title =>
-      'Dolby Vision profil 7\'yi her zaman HDR10 olarak oynat';
+      'Dolby Vision Profil 7\'yi Her Zaman HDR10 Olarak Oynat';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
@@ -12014,7 +12014,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Drop the Dolby Vision layer from videos that also have HDR10+. Turn this on if those videos play with sound but a black screen.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Gömülü altyazı stillerini kullan';
+  String get subtitlesUseEmbeddedStyles => 'Gömülü Altyazı Stillerini Kullan';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
@@ -12022,7 +12022,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Gömülü altyazı boyutlarını kullan';
+      'Gömülü Altyazı Boyutlarını Kullan';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
@@ -12102,7 +12102,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get savedThemesTitle => 'Kayıtlı temalar';
+  String get savedThemesTitle => 'Kayıtlı Temalar';
 
   @override
   String get savedThemesDescription =>
@@ -12406,10 +12406,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mpvConfiguration => 'MPV ayarı';
 
   @override
-  String get cardSize => 'Ana Sayfa Satırı Kart Gösterim Boyutu';
+  String get cardSize => 'Kart Boyutu';
 
   @override
-  String get externalPlayerApp => 'Harici oynatıcı';
+  String get externalPlayerApp => 'Harici Oynatıcı';
 
   @override
   String get externalPlayerAppDescription =>
@@ -12461,7 +12461,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playerRouting => 'Oynatıcı Yönlendirme';
 
   @override
-  String get preferSoftwareDecoders => 'Yazılımsal kod çözücüleri tercih et';
+  String get preferSoftwareDecoders => 'Yazılımsal Kod Çözücüleri Tercih Et';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
@@ -12482,7 +12482,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.';
 
   @override
-  String get useExternalPlayer => 'Her zaman harici oynatıcı kullan';
+  String get useExternalPlayer => 'Her Zaman Harici Oynatıcı Kullan';
 
   @override
   String get useExternalPlayerSubtitle =>
@@ -12499,7 +12499,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get automaticQueuing => 'Otomatik Sıraya Ekleme';
 
   @override
-  String get preferSdhSubtitles => 'SDH altyazıları tercih et';
+  String get preferSdhSubtitles => 'SDH Altyazıları Tercih Et';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
@@ -14153,7 +14153,7 @@ class AppLocalizationsTr extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return '\'$libraryName\' kütüphaneniz, görselleri doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış (\'Görselleri medya klasörlerine kaydet\' seçeneği etkin). Ancak Jellyfin yazma erişimini test etti ve bu dizine dosya yazma izni olmadığını belirledi:\n\n$failedPath';
+    return '\"$libraryName\" kütüphaneniz, kapak görsellerini doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış (\'Kapak görsellerini medya klasörlerine kaydet\' seçeneği etkin). Ancak Jellyfin yazma erişimini test etti ve bu dizine dosya yazma iznine sahip değil:\n\n$failedPath';
   }
 
   @override
@@ -14619,7 +14619,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get libraryFolderView => 'Folder View';
 
   @override
-  String get personalRatingStyle => 'Kişisel derecelendirme tarzı';
+  String get personalRatingStyle => 'Kişisel Derecelendirme Tarzı';
 
   @override
   String get personalRatingThumbs => 'Beğen / Beğenme';
@@ -14743,23 +14743,21 @@ class AppLocalizationsTr extends AppLocalizations {
       'Fragmanlar yerleşik oynatıcı yerine YouTube uygulamasında veya tarayıcıda açılır';
 
   @override
-  String get hideDetailsMediaDescription =>
-      'Ayrıntılar Sayfasında Medya Açıklamasını Gizle';
+  String get hideDetailsMediaDescription => 'Medya Açıklamasını Gizle';
 
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Film veya bölüm açıklama metnini gizler.';
 
   @override
-  String get detailUseSeriesThumbnails =>
-      'Ayrıntılar Sayfasında Dizi Küçük Resimlerini Kullan';
+  String get detailUseSeriesThumbnails => 'Dizi Küçük Resimlerini Kullan';
 
   @override
   String get detailUseSeriesThumbnailsSubtitle =>
       'Klasik ayrıntılar sayfasındaki tüm küçük resimleri dizi küçük resmiyle değiştir';
 
   @override
-  String get hideHomeMediaDescription => 'Ana Sayfada Medya Açıklamasını Gizle';
+  String get hideHomeMediaDescription => 'Medya Açıklamasını Gizle';
 
   @override
   String get hideHomeMediaDescriptionSubtitle =>
@@ -14951,7 +14949,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get serverMessagesMarkAllRead => 'Hepsini okundu işaretle';
 
   @override
-  String get serverMessagesShowButton => 'Mesajlar butonunu göster';
+  String get serverMessagesShowButton => 'Mesajlar Butonunu Göster';
 
   @override
   String get serverMessagesShowButtonSubtitle =>

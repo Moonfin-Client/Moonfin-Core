@@ -1544,7 +1544,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get version => 'Versio';
 
   @override
-  String get cast => 'Peilaus';
+  String get cast => 'Striimaus';
 
   @override
   String get castMembers => 'Näyttelijät';
@@ -3133,7 +3133,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get themeAndAppearance => 'Teema ja ulkoasu';
 
   @override
-  String get focusBorderColor => 'Fokusreunuksen väri';
+  String get focusBorderColor => 'Kohdistuksen reunan väri';
 
   @override
   String get watchedIndicators => 'Katsotut indikaattorit';
@@ -3187,7 +3187,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get inVideo => 'Videossa';
 
   @override
-  String get seasonalEffects => 'Vuodenaikailmiöt';
+  String get seasonalEffects => 'Vuodenaika efektit';
 
   @override
   String get seasonalEffectsDescription =>
@@ -3330,15 +3330,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seasonalDensityHeavy => 'Painava';
 
   @override
-  String get seasonalFollower => 'Focus Follower';
+  String get seasonalFollower => 'Painopiste Seurantaan';
 
   @override
   String get seasonalFollowerDescription =>
-      'A holiday piece, like Halloween\'s planchette, follows what you select on Home';
+      'Juhla-aiheinen esine, kuten Halloweenin planchette, noudattaa sitä, mitä valitset Koti-sivulla';
 
   @override
   String get seasonalFollowerPointerDescription =>
-      'A holiday piece, like Halloween\'s planchette, replaces the mouse pointer on Home';
+      'Juhlapäivän symboli, kuten Halloweenin planchette, korvaa hiiren osoittimen Home-sivulla';
 
   @override
   String get seasonalRow => 'Lomateema rivi';
@@ -14972,52 +14972,54 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String setupStepOf(int current, int total) {
-    return 'Step $current of $total';
+    return 'Vaihe $current of $total';
   }
 
   @override
-  String get setupCurrent => 'Current';
+  String get setupCurrent => 'Nykyinen';
 
   @override
   String get setupTvHint =>
-      'Up and down to preview · OK to choose · Back twice to skip';
+      'Ylös ja alas esikatselua varten · OK valintaan · Kaksi kertaa Takaisin ohittaaksesi';
 
   @override
-  String get setupNavbarTopHint => 'Tabs across the top of the screen.';
+  String get setupNavbarTopHint => 'Välilehdet näytön yläreunassa.';
 
   @override
-  String get setupNavbarLeftHint => 'A slim rail of icons down the left side.';
+  String get setupNavbarLeftHint =>
+      'Vasemmalla puolella on kapea kuvakkeiden palkki.';
 
   @override
   String get setupNavbarBottomHint =>
-      'Tabs along the bottom edge, in easy reach of your thumb.';
+      'Alareunassa olevat välilehdet, jotka ovat helposti peukalon ulottuvilla.';
 
   @override
   String get setupMediaBarMoonfinHint =>
-      'Large artwork with the title, details and overview laid over it.';
+      'Suuri kuva sekä siihen lisättyjä tietoja ja yleiskatsaus.';
 
   @override
-  String get setupMediaBarMakdHint => 'Large artwork led by a big title logo.';
+  String get setupMediaBarMakdHint =>
+      'Suuri kuva, jota hallitsee iso otsikkologo.';
 
   @override
   String get setupMediaBarBookshelfHint =>
-      'Titles shelved as book spines, with the featured one face out.';
+      'Teokset on sijoitettu hyllylle selkämyksittäin, ja esillä oleva teos on käännetty etukannella ulospäin.';
 
   @override
   String get setupMediaBarGalleryHint =>
-      'The featured title opened up, with the next few lined up beside it.';
+      'Esillä oleva teos avautui, ja seuraavat teokset asettuivat sen viereen.';
 
   @override
   String get setupMediaBarBannerHint =>
-      'A shorter banner above your rows, so more of them fit on screen.';
+      'Lyhyempi otsikkopalkki rivien yläpuolella, jotta niitä mahtuu enemmän ruudulle.';
 
   @override
   String get setupMediaBarAyaHint =>
-      'Artwork first in a framed panel, with your rows right underneath.';
+      'Kuva ensin kehystetyssä paneelissa, ja rivisi sen alla.';
 
   @override
   String get setupMediaBarOffHint =>
-      'No featured area. Home opens straight onto your rows.';
+      'Ei esillä olevaa aluetta. Etusivu avautuu suoraan rivillesi.';
 
   @override
   String get runSetupAgain => 'Suorita asennus uudelleen';
