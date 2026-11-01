@@ -4,21 +4,34 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gamepads/gamepads.dart';
+// Transitive through gamepads; used to inject real plugin-stream events.
+// ignore: depend_on_referenced_packages
+import 'package:gamepads_platform_interface/gamepads_platform_interface.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin/data/services/core_download_service.dart';
 import 'package:moonfin/data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/playback/native_game_player.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/playback/native_controller_mapping_screen.dart';
+import 'package:moonfin/ui/screens/playback/game_emulator_screen.dart';
 import 'package:moonfin/ui/screens/playback/native_game_player_screen.dart';
+import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
+import 'package:moonfin/ui/widgets/overlay_sheet.dart' show DialogBackSuppressor;
 import 'package:moonfin/util/core_input_descriptors.dart';
 import 'package:moonfin/util/game_cores.dart';
+import 'package:moonfin/util/focus/gamepad/gamepad_navigation_scope.dart';
+import 'package:moonfin/util/focus/gamepad/gamepad_suppressor.dart';
 import 'package:moonfin/util/native_controller_mapping.dart';
 import 'package:moonfin/util/platform_detection.dart';
 // Transitive via path_provider; not worth promoting to a direct pubspec.yaml
@@ -26,9 +39,60 @@ import 'package:moonfin/util/platform_detection.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus_platform_interface/wakelock_plus_platform_interface.dart';
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+/// Mirrors the app-level observer that consumes Android's duplicate popRoute.
+class _DialogBackObserver with WidgetsBindingObserver {
+  int suppressedPops = 0;
+
+  @override
+  Future<bool> didPopRoute() async {
+    if (!DialogBackSuppressor.consume()) return false;
+    suppressedPops++;
+    return true;
+  }
+}
+
+class _RecordingScreensaver extends Mock implements ScreensaverController {
+  bool playbackActive = false;
+
+  @override
+  void setPlaybackActive(bool value) => playbackActive = value;
+}
+
+class _FakeCoreDownloads extends CoreDownloadService {
+  _FakeCoreDownloads() : super(GetIt.instance<PreferenceStore>());
+
+  int downloads = 0;
+  bool fail = false;
+  bool available = true;
+  Completer<void>? gate;
+  CancelToken? token;
+
+  @override
+  bool isAvailable(String coreId) => available && super.isAvailable(coreId);
+
+  @override
+  Future<void> download(
+    String coreId, {
+    void Function(double progress)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    downloads++;
+    token = cancelToken;
+    onProgress?.call(0.5);
+    if (gate case final gate?) await gate.future;
+    if (cancelToken?.cancelError case final error?) throw error;
+    if (fail) throw StateError('Download unavailable');
+    final dir = await coresDirectory();
+    await dir.create(recursive: true);
+    await File('${dir.path}/${coreFileName(coreId)}').writeAsBytes([1]);
+    onProgress?.call(1);
+  }
+}
 
 /// Real wakelock plugins talk to a native platform channel that has no
 /// handler in the widget-test harness. See the identical stub in
@@ -61,6 +125,7 @@ class _FakePathProviderPlatform extends PathProviderPlatform {
 /// texture are implemented meaningfully. downloadRom actually writes the ROM
 /// bytes to disk so the "already downloaded" check that follows it succeeds.
 class _FakeGamesApi extends GamesApi {
+  int backendOverrideWrites = 0;
   @override
   Future<List<GameLibrary>> getLibraries() async => const [];
 
@@ -101,7 +166,10 @@ class _FakeGamesApi extends GamesApi {
     String libraryId,
     String gameId, {
     String? backend,
-  }) async => null;
+  }) async {
+    backendOverrideWrites++;
+    return null;
+  }
 
   @override
   String thumbUrl({
@@ -164,8 +232,11 @@ class _FakeGamesApi extends GamesApi {
 class _FakeNativeGamePlayer implements NativeGamePlayer {
   final _eventsController = StreamController<Map<String, dynamic>>.broadcast();
   int stopCount = 0;
+  Completer<void>? stopGate;
+  int loadCount = 0;
   int pauseCount = 0;
   int resumeCount = 0;
+  final inputMasks = <int>[];
 
   @override
   Stream<Map<String, dynamic>> get events => _eventsController.stream;
@@ -234,6 +305,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
     Map<String, String>? options,
     bool hardwareRenderingEnabled = true,
   }) async {
+    loadCount++;
     loadOptions = options;
     this.hardwareRenderingEnabled = hardwareRenderingEnabled;
     this.romPath = romPath;
@@ -264,6 +336,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
   @override
   Future<void> stop() async {
     stopCount++;
+    await stopGate?.future;
   }
 
   /// Null captures nothing; a completer lets a test hold the save in flight.
@@ -282,7 +355,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
   @override
   Future<void> pulseButton(int index, {int durationMs = 150}) async {}
   @override
-  Future<void> setInput(int port, int mask) async {}
+  Future<void> setInput(int port, int mask) async => inputMasks.add(mask);
   @override
   Future<List<GameCoreOption>> getOptions() async => options;
   @override
@@ -328,7 +401,9 @@ class _PopCountingObserver extends NavigatorObserver {
 }
 
 String? _highlightedOverlayRowLabel(WidgetTester tester) {
-  for (final container in tester.widgetList<Container>(find.byType(Container))) {
+  for (final container in tester.widgetList<Container>(
+    find.byType(Container),
+  )) {
     final decoration = container.decoration;
     if (decoration is BoxDecoration && decoration.color == Colors.white) {
       final labels = find.descendant(
@@ -365,6 +440,10 @@ void main() {
         );
 
     await GetIt.instance.reset();
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<PreferenceStore>(store);
     client = _MockMediaServerClient();
     gamesApi = _FakeGamesApi();
     when(() => client.gamesApi).thenReturn(gamesApi);
@@ -387,13 +466,964 @@ void main() {
   });
 
   tearDown(() async {
+    DialogBackSuppressor.newBackPress();
     await GetIt.instance.reset();
     player.dispose();
     await tempRoot.delete(recursive: true);
     // A couple of tests flip this to reach the TV-only notice gate; reset
     // unconditionally so it never leaks into a later test in this file.
     PlatformDetection.setTvMode(false);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
   });
+
+  Future<void> advanceStartup(WidgetTester tester, bool Function() done) async {
+    for (var i = 0; i < 100 && !done(); i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 10)),
+      );
+      await tester.pump(const Duration(milliseconds: 10));
+    }
+    expect(done(), isTrue);
+  }
+
+  Future<void> pumpInstallingPlayer(
+    WidgetTester tester,
+    _FakeCoreDownloads downloads, {
+    String core = 'n64',
+  }) => tester.pumpWidget(
+    MaterialApp(
+      home: NativeGamePlayerScreen(
+        libraryId: 'lib1',
+        gameId: 'game1',
+        core: core,
+        startFresh: true,
+        player: player,
+        coreDownloads: downloads,
+      ),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    ),
+  );
+
+  Future<void> acceptCoreDownload(
+    WidgetTester tester, {
+    bool dontShowAgain = false,
+  }) async {
+    await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+    if (dontShowAgain) {
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pump();
+    }
+    await tester.tap(find.widgetWithText(FilledButton, 'Download'));
+    await tester.pump();
+  }
+
+  GoRouter sessionRouter(
+    _FakeCoreDownloads downloads, {
+    bool realFallback = false,
+  }) => GoRouter(
+    initialLocation: '/home',
+    routes: [
+      GoRoute(
+        path: '/home',
+        builder: (_, _) => const Scaffold(body: Text('game details')),
+      ),
+      GoRoute(
+        path: Destinations.gamePlayer,
+        builder: (_, state) {
+          if (state.uri.queryParameters['backend'] == 'emulatorjs' ||
+              !usesNativeGameBackendFor(state.uri.queryParameters['core']!)) {
+            if (realFallback) {
+              return GameEmulatorScreen(
+                libraryId: state.pathParameters['libraryId']!,
+                gameId: state.pathParameters['gameId']!,
+                core: state.uri.queryParameters['core']!,
+              );
+            }
+            return const Scaffold(body: Text('fallback session'));
+          }
+          return NativeGamePlayerScreen(
+            libraryId: state.pathParameters['libraryId']!,
+            gameId: state.pathParameters['gameId']!,
+            core: state.uri.queryParameters['core']!,
+            gameName: state.uri.queryParameters['name'],
+            romFileName: state.uri.queryParameters['romFile'],
+            biosId: state.uri.queryParameters['bios'],
+            startFresh: state.uri.queryParameters['fresh'] == '1',
+            player: player,
+            coreDownloads: downloads,
+          );
+        },
+      ),
+    ],
+  );
+
+  const fallbackLabel = 'Use EmulatorJS';
+
+  for (final key in [LogicalKeyboardKey.goBack, LogicalKeyboardKey.escape]) {
+    testWidgets('Android consent dismissal handles the follow-up pop only for $key', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      final downloads = _FakeCoreDownloads();
+      final router = sessionRouter(downloads);
+      final observer = _DialogBackObserver();
+      tester.binding.addObserver(observer);
+      try {
+        await tester.pumpWidget(MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        // Keep a page under the details page so a duplicate pop would be visible
+        // as a lost stack entry, even though this test uses the same route twice.
+        unawaited(router.push<void>('/home'));
+        await tester.pumpAndSettle();
+        unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        // Flutter's simulator has no Android goBack scancode; use Escape's
+        // physical key while preserving the logical Back event under test.
+        await tester.sendKeyDownEvent(key, physicalKey: PhysicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+        await tester.sendKeyUpEvent(key, physicalKey: PhysicalKeyboardKey.escape);
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(find.byType(NativeGamePlayerScreen), findsNothing);
+        expect(find.text('game details'), findsOneWidget);
+        expect(router.canPop(), isTrue);
+        expect(downloads.downloads, 0);
+        expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+
+        if (key == LogicalKeyboardKey.goBack) {
+          // Android <= 12 can send this after the unhandled key-up, after the
+          // dialog and player have both already left the stack.
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(observer.suppressedPops, 1);
+          expect(find.text('game details'), findsOneWidget);
+          expect(router.canPop(), isTrue);
+        }
+        expect(DialogBackSuppressor.consume(), isFalse);
+        // A subsequent genuine Back must still pop the details page normally.
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(router.canPop(), isFalse);
+      } finally {
+        tester.binding.removeObserver(observer);
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('TV Select starts Download without navigating or checking the opt-out', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setTvMode(true);
+    final downloads = _FakeCoreDownloads()..fail = true;
+    try {
+      await pumpInstallingPlayer(tester, downloads);
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(FocusManager.instance.primaryFocus?.debugLabel, 'Download native core');
+      expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await advanceStartup(tester, () => find.text('Retry').evaluate().isNotEmpty);
+      expect(downloads.downloads, 1);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  Future<void> pressPad(WidgetTester tester, String key) async {
+    for (final value in [1.0, 0.0]) {
+      GamepadsPlatformInterface.instance.emitGamepadEvent(GamepadEvent(
+        gamepadId: 'pad-1', timestamp: 0,
+        type: KeyType.button, key: key, value: value,
+      ));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+
+  for (final platform in [TargetPlatform.windows, TargetPlatform.linux]) {
+    testWidgets('gamepad navigates consent and returns to gameplay on $platform', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final prefs = UserPreferences(GetIt.instance<PreferenceStore>());
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      await prefs.set(UserPreferences.gamepadNavigationEnabled, true);
+      final previousNormalizer = Gamepads.normalizer;
+      // Use named Windows button events on both host-independent test paths.
+      Gamepads.normalizer = GamepadNormalizer.forPlatform(GamepadPlatform.windows);
+      final downloads = _FakeCoreDownloads();
+      final suppressionDepth = GamepadSuppressor.depth.value;
+      try {
+        await tester.pumpWidget(MaterialApp(
+          builder: (context, child) => GamepadNavigationScope(child: child!),
+          home: NativeGamePlayerScreen(
+            libraryId: 'lib1', gameId: 'game1', core: 'n64',
+            player: player, coreDownloads: downloads,
+          ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(GamepadSuppressor.depth.value, suppressionDepth);
+        final downloadFocus = FocusManager.instance.primaryFocus;
+        await pressPad(tester, 'dpadUp');
+        expect(FocusManager.instance.primaryFocus, isNot(same(downloadFocus)));
+        await pressPad(tester, 'a');
+        expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isTrue);
+        expect(player.inputMasks, isEmpty,
+          reason: 'Dialog navigation must not also reach gameplay input');
+        expect(downloads.downloads, 0);
+
+        await pressPad(tester, 'dpadDown');
+        if (platform == TargetPlatform.windows) {
+          // With two actions, Down reaches Use EmulatorJS; Right reaches Download.
+          expect(FocusManager.instance.primaryFocus, isNot(same(downloadFocus)));
+          await pressPad(tester, 'dpadRight');
+        }
+        expect(FocusManager.instance.primaryFocus, same(downloadFocus));
+        await pressPad(tester, 'a');
+        await advanceStartup(tester, () => find.byType(Texture).evaluate().isNotEmpty);
+        expect(downloads.downloads, 1);
+        expect(GamepadSuppressor.depth.value, suppressionDepth + 1);
+        player.inputMasks.clear();
+        await pressPad(tester, 'x');
+        expect(player.inputMasks, contains(1 << 1),
+          reason: 'Gamepad input must resume after the dialog closes');
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        Gamepads.normalizer = previousNormalizer;
+        debugDefaultTargetPlatformOverride = null;
+      }
+      expect(GamepadSuppressor.depth.value, suppressionDepth);
+    });
+  }
+
+  for (final (platform, action) in [
+    (TargetPlatform.windows, 'Use EmulatorJS'),
+    (TargetPlatform.windows, 'Back'),
+    (TargetPlatform.linux, 'Back'),
+  ]) {
+    testWidgets('gamepad can choose $action in consent on $platform', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final prefs = UserPreferences(GetIt.instance<PreferenceStore>());
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      await prefs.set(UserPreferences.gamepadNavigationEnabled, true);
+      final previousNormalizer = Gamepads.normalizer;
+      Gamepads.normalizer = GamepadNormalizer.forPlatform(GamepadPlatform.windows);
+      final downloads = _FakeCoreDownloads();
+      final router = sessionRouter(downloads);
+      final suppressionDepth = GamepadSuppressor.depth.value;
+      try {
+        await tester.pumpWidget(MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => GamepadNavigationScope(child: child!),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        if (action == 'Use EmulatorJS') {
+          await pressPad(tester, 'dpadLeft');
+          await pressPad(tester, 'a');
+        } else {
+          await pressPad(tester, 'b');
+        }
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(find.text(action == 'Back' ? 'game details' : 'fallback session'), findsOneWidget);
+        expect(downloads.downloads, 0);
+        expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+        expect(player.inputMasks, isEmpty);
+        expect(GamepadSuppressor.depth.value, suppressionDepth);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        Gamepads.normalizer = previousNormalizer;
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('disposing with consent open preserves another suppression owner', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    final suppressionDepth = GamepadSuppressor.depth.value;
+    try {
+      await pumpInstallingPlayer(tester, _FakeCoreDownloads());
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(GamepadSuppressor.depth.value, suppressionDepth);
+      // Another screen can take ownership while this player's dialog is open.
+      GamepadSuppressor.push();
+      try {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+        expect(GamepadSuppressor.depth.value, suppressionDepth + 1);
+      } finally {
+        GamepadSuppressor.pop();
+      }
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+    expect(GamepadSuppressor.depth.value, suppressionDepth);
+  });
+
+  for (final platform in [TargetPlatform.macOS, TargetPlatform.iOS]) {
+    testWidgets('bundled platforms never offer downloads on $platform', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final downloads = _FakeCoreDownloads();
+      try {
+        expect(supportsCoreDownloads, isFalse);
+        await pumpInstallingPlayer(tester, downloads, core: 'nes');
+        await advanceStartup(tester, () => find.byType(Texture).evaluate().isNotEmpty);
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(downloads.downloads, 0);
+        expect(downloads.downloadPromptChoice('fceumm'), isNull);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        // Drain the delayed analog-capability probe scheduled during startup.
+        await tester.pump(const Duration(seconds: 1));
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('unavailable core never offers a download', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads()..available = false;
+    try {
+      await pumpInstallingPlayer(tester, downloads);
+      await advanceStartup(tester, () => find.text('This system is not supported on this device.').evaluate().isNotEmpty);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(downloads.downloads, 0);
+      expect(player.loadCount, 0);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  for (final action in ['Back', 'Use EmulatorJS', 'Download']) {
+    testWidgets('unchecked $action allows the prompt on a later launch', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setTvMode(true);
+      final downloads = _FakeCoreDownloads()..fail = true;
+      final router = sessionRouter(downloads);
+      try {
+        await tester.pumpWidget(MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        final launch = Destinations.gamePlayerOf('lib1', 'game1', core: 'n64');
+        unawaited(router.push<void>(launch));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+        if (action == 'Use EmulatorJS') {
+          // Unchecking again must undo the opt-out before the action is taken.
+          await tester.tap(find.byType(CheckboxListTile));
+          await tester.pump();
+          await tester.tap(find.byType(CheckboxListTile));
+          await tester.pump();
+        }
+        if (action == 'Download') {
+          await acceptCoreDownload(tester);
+          await advanceStartup(tester, () => find.text('Retry').evaluate().isNotEmpty);
+          expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+        } else if (action == 'Back') {
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+        } else {
+          await tester.tap(find.text(action));
+          await tester.pumpAndSettle();
+        }
+        expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+        expect(usesNativeGameBackendFor('n64'), isTrue);
+        if (action != 'Back') {
+          router.pop();
+          await tester.pumpAndSettle();
+        }
+        expect(find.text('game details'), findsOneWidget);
+        unawaited(router.push<void>(launch));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        expect(downloads.downloads, action == 'Download' ? 1 : 0);
+        expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('refusal is remembered per core until manual installation', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setTvMode(true);
+    final downloads = _FakeCoreDownloads();
+    final router = sessionRouter(downloads);
+    final store = GetIt.instance<PreferenceStore>();
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      final launch = Destinations.gamePlayerOf('lib1', 'game1', core: 'n64');
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(find.text('Download native core for Nintendo 64?'), findsOneWidget);
+      expect(find.text('Don’t show this again for this missing core'), findsOneWidget);
+      expect(find.text('Cancel'), findsNothing);
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(downloads.downloads, 0);
+      expect(player.loadCount, 0);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+      expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(OutlinedButton, fallbackLabel));
+      await tester.pumpAndSettle();
+      expect(find.text('fallback session'), findsOneWidget);
+      expect(downloads.downloads, 0);
+      expect(CoreDownloadService(store).downloadPromptChoice('mupen64plus_next'),
+          CoreDownloadPromptChoice.emulatorJs);
+      expect(gameStateKey('game1', 'n64'), 'ejs-n64-game1');
+      expect(gamesApi.backendOverrideWrites, 0);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      // Another game on the same console shares the remembered choice.
+      unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game2', core: 'n64')));
+      await tester.pumpAndSettle();
+      expect(find.text('fallback session'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(downloads.downloads, 0);
+      router.pop();
+      await tester.pumpAndSettle();
+
+      unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game3', core: 'snes')));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(find.text('Download native core for Super Nintendo?'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+
+      // Simulate a manual install, including the downloader's installed record.
+      await tester.runAsync(() async {
+        final directory = await coresDirectory();
+        await directory.create(recursive: true);
+        await File('${directory.path}/${coreFileName('mupen64plus_next')}').writeAsBytes([1]);
+        await store.setStringList(installedCoresPreferenceKey, ['mupen64plus_next']);
+      });
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(Texture).evaluate().isNotEmpty);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(NativeGamePlayerScreen), findsOneWidget);
+      expect(downloads.downloads, 0);
+      expect(gameStateKey('game1', 'n64'), 'lr-n64-game1');
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('Back discards a checked opt-out and offers the prompt next time', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads();
+    final router = sessionRouter(downloads);
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      final launch = Destinations.gamePlayerOf('lib1', 'game1', core: 'n64');
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pump();
+      expect(find.text('Cancel'), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+      expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(downloads.downloads, 0);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('native-only platforms offer download without EmulatorJS', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    final downloads = _FakeCoreDownloads();
+    final router = sessionRouter(downloads);
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+      await tester.pump();
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(find.widgetWithText(FilledButton, 'Download'), findsOneWidget);
+      expect(find.text(fallbackLabel), findsNothing);
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(downloads.downloads, 0);
+      expect(find.text('Cancel'), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('native-only missing core shows guidance after hiding the download offer', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    final downloads = _FakeCoreDownloads();
+    await downloads.recordDownloadPromptChoice('mupen64plus_next', CoreDownloadPromptChoice.download);
+    final router = sessionRouter(downloads);
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+      await tester.pump();
+      await advanceStartup(tester, () => find.textContaining('Settings > Playback > Emulator Cores').evaluate().isNotEmpty);
+      expect(find.byType(NativeGamePlayerScreen), findsOneWidget);
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text(fallbackLabel), findsNothing);
+      expect(find.text('Retry'), findsNothing);
+      expect(downloads.downloads, 0);
+      expect(player.loadCount, 0);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('checked acceptance hides prompts after core removal', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setTvMode(true);
+    final downloads = _FakeCoreDownloads();
+    final router = sessionRouter(downloads);
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      final launch = Destinations.gamePlayerOf('lib1', 'game1', core: 'n64');
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await acceptCoreDownload(tester, dontShowAgain: true);
+      await advanceStartup(tester, () => find.byType(Texture).evaluate().isNotEmpty);
+      expect(downloads.downloads, 1);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), CoreDownloadPromptChoice.download);
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        final directory = await coresDirectory();
+        await File('${directory.path}/${coreFileName('mupen64plus_next')}').delete();
+      });
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(tester, () => find.text('fallback session').evaluate().isNotEmpty);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('The native core for this system is not installed.'), findsNothing);
+      expect(downloads.downloads, 1);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+    testWidgets('real fallback retains playback protection on $platform', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = platform;
+      PlatformDetection.setTvMode(platform == TargetPlatform.android);
+      final screensaver = _RecordingScreensaver();
+      GetIt.instance.registerSingleton<ScreensaverController>(screensaver);
+      final orientations = <List<dynamic>>[];
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'SystemChrome.setPreferredOrientations') {
+          orientations.add(List<dynamic>.from(call.arguments as List));
+        }
+        return null;
+      });
+      const gamepadChannel = MethodChannel('org.moonfin.androidtv/gamepad');
+      messenger.setMockMethodCallHandler(gamepadChannel, (_) async => null);
+      final router = sessionRouter(_FakeCoreDownloads(), realFallback: true);
+      try {
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        );
+        unawaited(router.push<void>(
+          Destinations.gamePlayerOf('lib1', 'game1', core: 'mame'),
+        ));
+        await tester.pumpAndSettle();
+        expect(screensaver.playbackActive, isTrue);
+
+        // Exercise the real destination's lifecycle without creating a native
+        // WebView in the widget harness. Playback protection is acquired before
+        // this server-capability check.
+        when(() => client.gamesApi).thenReturn(null);
+        await tester.tap(find.text(fallbackLabel));
+        await tester.pumpAndSettle();
+        expect(find.byType(GameEmulatorScreen), findsOneWidget);
+        expect(find.byType(NativeGamePlayerScreen), findsNothing);
+        expect(screensaver.playbackActive, isTrue);
+        if (platform == TargetPlatform.iOS) {
+          expect(orientations.last, [
+            'DeviceOrientation.landscapeLeft',
+            'DeviceOrientation.landscapeRight',
+          ]);
+        }
+
+        router.pop();
+        await tester.pumpAndSettle();
+        expect(screensaver.playbackActive, isFalse);
+        if (platform == TargetPlatform.iOS) {
+          expect(orientations.last, DeviceOrientation.values
+              .map((orientation) => orientation.toString()).toList());
+        }
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        messenger.setMockMethodCallHandler(gamepadChannel, null);
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('hidden prompt uses fallback on later launches after download failure', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads()..fail = true;
+    final router = sessionRouter(downloads);
+    try {
+      final store = GetIt.instance<PreferenceStore>();
+      final preferences = UserPreferences(store);
+      GetIt.instance.registerSingleton<UserPreferences>(preferences);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      final launch = Destinations.gamePlayerOf(
+        'lib1',
+        'game1',
+        core: 'n64',
+        name: 'Test Game',
+        romFileName: 'original.sfc',
+        biosId: 'bios-token',
+        startFresh: true,
+      );
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await acceptCoreDownload(tester, dontShowAgain: true);
+      await advanceStartup(
+        tester,
+        () => find.text('Retry').evaluate().isNotEmpty,
+      );
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(find.text('fallback session'), findsNothing);
+      await tester.tap(find.text(fallbackLabel));
+      await tester.pumpAndSettle();
+
+      expect(find.text('fallback session'), findsOneWidget);
+      expect(player.stopCount, 1);
+      final uri = GoRouterState.of(
+        tester.element(find.text('fallback session')),
+      ).uri;
+      expect(uri.path, '/game-player/lib1/game1');
+      expect(uri.queryParameters, containsPair('backend', 'emulatorjs'));
+      expect(uri.queryParameters, containsPair('romFile', 'game.sfc'));
+      expect(uri.queryParameters, containsPair('bios', 'bios-token'));
+      expect(uri.queryParameters, containsPair('name', 'Test Game'));
+      expect(uri.queryParameters, containsPair('core', 'n64'));
+      expect(uri.queryParameters, containsPair('fresh', '1'));
+      expect(preferences.get(UserPreferences.useNativeEmulator), isTrue);
+      expect(gamesApi.backendOverrideWrites, 0);
+      expect(gamesApi.saves, isEmpty);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+      unawaited(router.push<void>(launch));
+      await tester.pump();
+      await advanceStartup(
+        tester,
+        () => find.text('fallback session').evaluate().isNotEmpty,
+      );
+      expect(find.byType(NativeGamePlayerScreen), findsNothing);
+      expect(downloads.downloads, 1);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('The native core for this system is not installed.'), findsNothing);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('fallback after a fatal error waits for native teardown', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    final router = sessionRouter(_FakeCoreDownloads());
+    try {
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      unawaited(
+        router.push<void>(
+          Destinations.gamePlayerOf(
+            'lib1',
+            'game1',
+            core: 'snes',
+            startFresh: true,
+          ),
+        ),
+      );
+      await tester.pump();
+      await advanceStartup(
+        tester,
+        () => find.byType(Texture).evaluate().isNotEmpty,
+      );
+      player.stopGate = Completer<void>();
+      player.emitError('Core stopped working');
+      await tester.pump();
+      await tester.tap(find.text(fallbackLabel));
+      await tester.pump();
+      expect(find.text('fallback session'), findsNothing);
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, fallbackLabel),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(player.stopCount, 1);
+
+      player.stopGate!.complete();
+      await advanceStartup(
+        tester,
+        () => find.text('fallback session').evaluate().isNotEmpty,
+      );
+      expect(player.stopCount, 1);
+      expect(gamesApi.backendOverrideWrites, 0);
+    } finally {
+      if (player.stopGate case final gate? when !gate.isCompleted) {
+        gate.complete();
+      }
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('fallback is hidden on platforms without EmulatorJS', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    try {
+      await pumpInstallingPlayer(tester, _FakeCoreDownloads(), core: 'mame');
+      await tester.pump();
+      expect(find.text('This system is not supported yet.'), findsOneWidget);
+      expect(find.text(fallbackLabel), findsNothing);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets(
+    'unsupported systems show an error without installing or starting',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final downloads = _FakeCoreDownloads();
+      try {
+        await pumpInstallingPlayer(tester, downloads, core: 'mame');
+        await tester.pump();
+        expect(find.text('This system is not supported yet.'), findsOneWidget);
+        expect(downloads.downloads, 0);
+        expect(player.loadCount, 0);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
+  testWidgets('installs a missing native core with progress before starting', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads()..gate = Completer<void>();
+    try {
+      await pumpInstallingPlayer(tester, downloads, core: 'n64');
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(downloads.downloads, 0);
+      await acceptCoreDownload(tester);
+      await advanceStartup(tester, () => downloads.downloads == 1);
+      expect(find.text('Installing emulator…'), findsOneWidget);
+      expect(
+        tester
+            .widget<LinearProgressIndicator>(
+              find.byType(LinearProgressIndicator),
+            )
+            .value,
+        0.5,
+      );
+      expect(player.loadCount, 0);
+
+      downloads.gate!.complete();
+      await advanceStartup(
+        tester,
+        () => find.byType(Texture).evaluate().isNotEmpty,
+      );
+      expect(downloads.downloads, 1);
+      expect(player.loadCount, 1);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      // Upstream schedules a one-second touch-controller capability refresh.
+      await tester.pump(const Duration(seconds: 1));
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('reuses an installed native core without downloading', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads();
+    try {
+      await tester.runAsync(() async {
+        final dir = await coresDirectory();
+        await dir.create(recursive: true);
+        await File('${dir.path}/${coreFileName('mupen64plus_next')}').writeAsBytes([1]);
+      });
+      await pumpInstallingPlayer(tester, downloads);
+      await advanceStartup(
+        tester,
+        () => find.byType(Texture).evaluate().isNotEmpty,
+      );
+      expect(downloads.downloads, 0);
+      expect(player.loadCount, 1);
+      expect(find.byType(AlertDialog), findsNothing);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 1));
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('a failed core install offers Retry and stays on native', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final downloads = _FakeCoreDownloads()..fail = true;
+    try {
+      await pumpInstallingPlayer(tester, downloads);
+      await acceptCoreDownload(tester);
+      await advanceStartup(
+        tester,
+        () => find.text('Retry').evaluate().isNotEmpty,
+      );
+      expect(player.loadCount, 0);
+      expect(find.byType(Texture), findsNothing);
+      expect(find.textContaining('WebView'), findsNothing);
+
+      downloads.fail = false;
+      await tester.tap(find.text('Retry'));
+      await advanceStartup(
+        tester,
+        () => find.byType(Texture).evaluate().isNotEmpty,
+      );
+      expect(downloads.downloads, 2);
+      expect(player.loadCount, 1);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 1));
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets(
+    'leaving during core installation cancels it without starting playback',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final downloads = _FakeCoreDownloads()..gate = Completer<void>();
+      try {
+        await pumpInstallingPlayer(tester, downloads);
+        await acceptCoreDownload(tester);
+        await advanceStartup(tester, () => downloads.downloads == 1);
+        await tester.pumpWidget(const SizedBox());
+        expect(downloads.token!.isCancelled, isTrue);
+        downloads.gate!.complete();
+        await tester.runAsync(() async => await downloads.token!.whenCancel);
+        await tester.pump();
+        expect(player.loadCount, 0);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
 
   // The warning exists to point at a BETTER option going unused, not at an
   // empty slot: a remote really does feed port 0, so with no gamepad connected
@@ -502,40 +1532,41 @@ void main() {
         .withSnap(gameId, StickSnapMode.fourWay);
 
     test('sends the current game own table, not the default', () {
-      final sent =
-          jsonDecode(controllerMappingsPayload({pad: mapping}, gameId))
-              as Map<String, dynamic>;
+      final sent = jsonDecode(
+        controllerMappingsPayload({pad: mapping}, gameId),
+      ) as Map<String, dynamic>;
 
       expect(sent[pad], {'190': RetroPadButton.a.retroPadIndex});
     });
 
     test('sends the default for a game that has not diverged', () {
-      final sent =
-          jsonDecode(controllerMappingsPayload({pad: mapping}, 'burgertime'))
-              as Map<String, dynamic>;
+      final sent = jsonDecode(
+        controllerMappingsPayload({pad: mapping}, 'burgertime'),
+      ) as Map<String, dynamic>;
 
       expect(sent[pad], {'96': RetroPadButton.a.retroPadIndex});
     });
 
     test('sends a table for every connected profile', () {
-      final sent =
-          jsonDecode(
-                controllerMappingsPayload({
-                  pad: mapping,
-                  'android-p2': NativeControllerMapping.empty
-                      .withBindingForGame(gameId, 191, RetroPadButton.b),
-                }, gameId),
-              )
-              as Map<String, dynamic>;
+      final sent = jsonDecode(
+        controllerMappingsPayload({
+          pad: mapping,
+          'android-p2': NativeControllerMapping.empty.withBindingForGame(
+            gameId,
+            191,
+            RetroPadButton.b,
+          ),
+        }, gameId),
+      ) as Map<String, dynamic>;
 
       expect(sent.keys, containsAll(<String>[pad, 'android-p2']));
       expect(sent['android-p2'], {'191': RetroPadButton.b.retroPadIndex});
     });
 
     test('emits keycodes only, no metadata the parser would skip', () {
-      final sent =
-          jsonDecode(controllerMappingsPayload({pad: mapping}, gameId))
-              as Map<String, dynamic>;
+      final sent = jsonDecode(
+        controllerMappingsPayload({pad: mapping}, gameId),
+      ) as Map<String, dynamic>;
 
       final keys = (sent[pad] as Map<String, dynamic>).keys;
       expect(keys.every((key) => int.tryParse(key) != null), isTrue);
@@ -592,19 +1623,16 @@ void main() {
     );
   });
 
-  test(
-    'a rebound face button still resolves, and one binding does not move another',
-    () {
-      final mapping = NativeControllerMapping(const {1000: RetroPadButton.y});
+  test('a rebound face button still resolves, and one binding does not move another', () {
+    final mapping = NativeControllerMapping(const {1000: RetroPadButton.y});
 
-      expect(
-        desktopBoundBit(mapping, GamepadButton.a),
-        1 << RetroPadButton.y.retroPadIndex,
-      );
-      expect(desktopBoundBit(mapping, GamepadButton.b), isNull);
-      expect(desktopBoundBit(mapping, GamepadButton.leftTrigger), isNull);
-    },
-  );
+    expect(
+      desktopBoundBit(mapping, GamepadButton.a),
+      1 << RetroPadButton.y.retroPadIndex,
+    );
+    expect(desktopBoundBit(mapping, GamepadButton.b), isNull);
+    expect(desktopBoundBit(mapping, GamepadButton.leftTrigger), isNull);
+  });
 
   testWidgets(
     'back button escapes the error screen after a mid-game fatal error',
@@ -961,86 +1989,92 @@ void main() {
     }
   });
 
-  testWidgets('returning from an emulator option keeps and centers its cursor',
-      (tester) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-    try {
-      player.options = [
-        for (var i = 0; i < 8; i++)
-          GameCoreOption(
-            id: 'option-$i',
-            label: 'Option $i',
-            current: 'Default',
-            choices: const ['Default', 'Alternate'],
-          ),
-      ];
-      final router = GoRouter(
-        initialLocation: '/game',
-        routes: [
-          GoRoute(
-            path: '/game',
-            builder: (context, state) => NativeGamePlayerScreen(
-              libraryId: 'lib1',
-              gameId: 'game1',
-              core: 'snes',
-              startFresh: true,
-              player: player,
+  testWidgets(
+    'returning from an emulator option keeps and centers its cursor',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        player.options = [
+          for (var i = 0; i < 8; i++)
+            GameCoreOption(
+              id: 'option-$i',
+              label: 'Option $i',
+              current: 'Default',
+              choices: const ['Default', 'Alternate'],
             ),
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      );
-      for (var i = 0; i < 60 && find.byType(Texture).evaluate().isEmpty; i++) {
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 20)),
+        ];
+        final router = GoRouter(
+          initialLocation: '/game',
+          routes: [
+            GoRoute(
+              path: '/game',
+              builder: (context, state) => NativeGamePlayerScreen(
+                libraryId: 'lib1',
+                gameId: 'game1',
+                core: 'snes',
+                startFresh: true,
+                player: player,
+              ),
+            ),
+          ],
         );
-        await tester.pump(const Duration(milliseconds: 20));
+
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        );
+        for (
+          var i = 0;
+          i < 60 && find.byType(Texture).evaluate().isEmpty;
+          i++
+        ) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)),
+          );
+          await tester.pump(const Duration(milliseconds: 20));
+        }
+        expect(find.byType(Texture), findsOneWidget);
+
+        player.emitMenuPressed();
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('Emulator settings'),
+          200,
+          scrollable: find.byType(Scrollable).last,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Emulator settings'));
+        await tester.pumpAndSettle();
+
+        for (var i = 0; i < 6; i++) {
+          player.emitButton(5, true);
+          await tester.pump();
+        }
+        expect(_highlightedOverlayRowLabel(tester), startsWith('Option 6:'));
+
+        player.emitButton(0, true);
+        await tester.pumpAndSettle();
+        expect(find.text('Alternate'), findsOneWidget);
+
+        player.emitButton(8, true);
+        await tester.pumpAndSettle();
+
+        expect(_highlightedOverlayRowLabel(tester), startsWith('Option 6:'));
+        final position = tester
+            .state<ScrollableState>(find.byType(Scrollable).last)
+            .position;
+        final expected = (6 * 58 - (position.viewportDimension - 58) / 2)
+            .clamp(position.minScrollExtent, position.maxScrollExtent)
+            .toDouble();
+        expect(position.pixels, closeTo(expected, 1));
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
       }
-      expect(find.byType(Texture), findsOneWidget);
-
-      player.emitMenuPressed();
-      await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Emulator settings'),
-        200,
-        scrollable: find.byType(Scrollable).last,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Emulator settings'));
-      await tester.pumpAndSettle();
-
-      for (var i = 0; i < 6; i++) {
-        player.emitButton(5, true);
-        await tester.pump();
-      }
-      expect(_highlightedOverlayRowLabel(tester), startsWith('Option 6:'));
-
-      player.emitButton(0, true);
-      await tester.pumpAndSettle();
-      expect(find.text('Alternate'), findsOneWidget);
-
-      player.emitButton(8, true);
-      await tester.pumpAndSettle();
-
-      expect(_highlightedOverlayRowLabel(tester), startsWith('Option 6:'));
-      final position = tester
-          .state<ScrollableState>(find.byType(Scrollable).last)
-          .position;
-      final expected = (6 * 58 - (position.viewportDimension - 58) / 2)
-          .clamp(position.minScrollExtent, position.maxScrollExtent)
-          .toDouble();
-      expect(position.pixels, closeTo(expected, 1));
-    } finally {
-      debugDefaultTargetPlatformOverride = null;
-    }
-  });
+    },
+  );
 
   testWidgets(
     'exiting one game keeps another game\'s options for the same core',

@@ -17,56 +17,6 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('resolveNativeGameBackend', () {
-    test('uses EmulatorJS when native emulation is disabled', () {
-      expect(
-        resolveNativeGameBackend(
-          nativeSelected: false,
-          nativeSupported: true,
-          emulatorAvailable: true,
-          nativeCoreAvailable: true,
-        ),
-        isFalse,
-      );
-    });
-
-    test('uses native backend when its selected core is installed', () {
-      expect(
-        resolveNativeGameBackend(
-          nativeSelected: true,
-          nativeSupported: true,
-          emulatorAvailable: true,
-          nativeCoreAvailable: true,
-        ),
-        isTrue,
-      );
-    });
-
-    test('falls back to EmulatorJS when downloadable core is absent', () {
-      expect(
-        resolveNativeGameBackend(
-          nativeSelected: true,
-          nativeSupported: true,
-          emulatorAvailable: true,
-          nativeCoreAvailable: false,
-        ),
-        isFalse,
-      );
-    });
-
-    test('retains native route where EmulatorJS is unavailable', () {
-      expect(
-        resolveNativeGameBackend(
-          nativeSelected: true,
-          nativeSupported: false,
-          emulatorAvailable: false,
-          nativeCoreAvailable: false,
-        ),
-        isTrue,
-      );
-    });
-  });
-
   group('core mappings', () {
     test('every core id in the catalog is unique', () {
       final coreIds = gameCoreCatalog.map((core) => core.coreId).toList();
@@ -134,7 +84,7 @@ void main() {
       }
     });
 
-    test('leaves MAME on EmulatorJS', () {
+    test('does not advertise a native MAME core', () {
       expect(libretroCoreId('mame'), isNull);
     });
 
@@ -188,6 +138,7 @@ void main() {
         macosBundledCores,
       );
     });
+
   });
 
   group('Android routing', () {
@@ -207,8 +158,25 @@ void main() {
       await GetIt.instance.reset();
     });
 
-    test('falls back for Atari 2600 when Stella is not installed', () {
-      expect(usesNativeGameBackendFor('atari2600'), isFalse);
+    test('routes missing cores to native for a consent prompt', () {
+      expect(usesNativeGameBackendFor('atari2600'), isTrue);
+      expect(usesNativeGameBackendFor('n64'), isTrue);
+    });
+
+    test('remembered fallback uses WebView saves until manual installation', () async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString(
+        coreDownloadPromptPreferenceKey('mupen64plus_next'),
+        CoreDownloadPromptChoice.emulatorJs.name,
+      );
+      expect(usesNativeGameBackendFor('n64'), isFalse);
+      expect(gameStateKey('game1', 'n64'), 'ejs-n64-game1');
+      expect(usesNativeGameBackendFor('snes'), isTrue);
+      expect(GetIt.instance<UserPreferences>().get(UserPreferences.useNativeEmulator), isTrue);
+
+      await store.setStringList(installedCoresPreferenceKey, ['mupen64plus_next']);
+      expect(usesNativeGameBackendFor('n64'), isTrue);
+      expect(gameStateKey('game1', 'n64'), 'lr-n64-game1');
     });
 
     test('uses the native Atari 2600 core after installation', () async {
@@ -220,9 +188,12 @@ void main() {
       expect(usesNativeGameBackendFor('atari2600'), isTrue);
     });
 
-    test('keeps MAME on EmulatorJS even when native is selected', () {
-      expect(usesNativeGameBackendFor('mame'), isFalse);
-    });
+    test(
+      'reports unsupported cores in native instead of silently using WebView',
+      () {
+        expect(usesNativeGameBackendFor('mame'), isTrue);
+      },
+    );
 
     test('nativeCoreReachable ignores the native/EmulatorJS preference, unlike '
         'usesNativeGameBackendFor', () async {
@@ -241,13 +212,30 @@ void main() {
       expect(nativeCoreReachable('atari2600'), isTrue);
     });
 
-    test('nativeCoreReachable is false for an uninstalled core', () {
-      expect(nativeCoreReachable('atari2600'), isFalse);
+    test('an uninstalled downloadable core remains selectable', () {
+      expect(nativeCoreReachable('atari2600'), isTrue);
+      expect(nativeCoreReachable('mame'), isFalse);
     });
 
-    test('namespaces EmulatorJS save states by core', () {
-      expect(gameStateKey('opaque-token', 'arcade'), 'ejs-arcade-opaque-token');
-      expect(gameStateKey('opaque-token', 'mame'), 'ejs-mame-opaque-token');
+    test(
+      'native save namespace is stable before and after installation',
+      () async {
+        expect(gameStateKey('opaque-token', 'n64'), 'lr-n64-opaque-token');
+        await GetIt.instance<PreferenceStore>().setStringList(
+          installedCoresPreferenceKey,
+          ['mupen64plus_next'],
+        );
+        expect(gameStateKey('opaque-token', 'n64'), 'lr-n64-opaque-token');
+      },
+    );
+
+    test('uses WebView only when native emulation is disabled', () async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.useNativeEmulator,
+        false,
+      );
+      expect(usesNativeGameBackendFor('n64'), isFalse);
+      expect(gameStateKey('opaque-token', 'n64'), 'ejs-n64-opaque-token');
     });
 
     test('forced EmulatorJS never shares a native save namespace', () {
@@ -280,10 +268,14 @@ void main() {
       await GetIt.instance.reset();
     });
 
-    test('macOS does not claim an unbundled core is available', () {
-      expect(macosBundledCores.contains('fbneo'), isFalse);
-      expect(usesNativeGameBackendFor('arcade'), isFalse);
-    });
+    test(
+      'macOS keeps native selected but does not offer an unbundled core',
+      () {
+        expect(macosBundledCores.contains('fbneo'), isFalse);
+        expect(usesNativeGameBackendFor('arcade'), isTrue);
+        expect(nativeCoreReachable('arcade'), isFalse);
+      },
+    );
 
     test('macOS still plays a core it actually bundles', () {
       expect(macosBundledCores.contains('fceumm'), isTrue);
@@ -292,10 +284,11 @@ void main() {
   });
 
   group('legacyGameStateKey', () {
-    test('is the bare gameId for EmulatorJS-only cores', () {
-      // 'mame' has no libretro mapping, so it never routes through the
-      // native backend regardless of platform/preferences.
-      expect(legacyGameStateKey('opaque-token', 'mame'), 'opaque-token');
+    test('an explicit WebView choice uses its own legacy namespace', () {
+      expect(
+        legacyGameStateKey('opaque-token', 'mame', forceEmulatorJs: true),
+        'opaque-token',
+      );
     });
   });
 
@@ -311,11 +304,15 @@ void main() {
     });
 
     test('returns the new-key save and never touches the legacy key', () async {
-      when(
-        () => games.getSave('ejs-arcade-game1'),
-      ).thenAnswer((_) async => [1, 2, 3]);
+      when(() => games.getSave('ejs-arcade-game1'))
+          .thenAnswer((_) async => [1, 2, 3]);
 
-      final result = await loadGameStateWithMigration(games, 'game1', 'arcade');
+      final result = await loadGameStateWithMigration(
+        games,
+        'game1',
+        'arcade',
+        forceEmulatorJs: true,
+      );
 
       expect(result, [1, 2, 3]);
       verifyNever(() => games.getSave('game1'));
@@ -325,18 +322,17 @@ void main() {
     test(
       'falls back to the legacy key on a miss and migrates it to the new key',
       () async {
-        when(
-          () => games.getSave('ejs-arcade-game1'),
-        ).thenAnswer((_) async => null);
+        when(() => games.getSave('ejs-arcade-game1'))
+            .thenAnswer((_) async => null);
         when(() => games.getSave('game1')).thenAnswer((_) async => [4, 5, 6]);
-        when(
-          () => games.putSave('ejs-arcade-game1', any()),
-        ).thenAnswer((_) async {});
+        when(() => games.putSave('ejs-arcade-game1', any()))
+            .thenAnswer((_) async {});
 
         final result = await loadGameStateWithMigration(
           games,
           'game1',
           'arcade',
+          forceEmulatorJs: true,
         );
 
         expect(result, [4, 5, 6]);
@@ -347,15 +343,15 @@ void main() {
     test(
       'returns null when neither the new nor the legacy key has a save',
       () async {
-        when(
-          () => games.getSave('ejs-arcade-game1'),
-        ).thenAnswer((_) async => null);
+        when(() => games.getSave('ejs-arcade-game1'))
+            .thenAnswer((_) async => null);
         when(() => games.getSave('game1')).thenAnswer((_) async => null);
 
         final result = await loadGameStateWithMigration(
           games,
           'game1',
           'arcade',
+          forceEmulatorJs: true,
         );
 
         expect(result, isNull);

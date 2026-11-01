@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
@@ -8,14 +7,38 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../../util/game_cores.dart';
 
-/// Downloads and installs libretro cores from the libretro buildbot on Android
-/// and desktop. Cores are not bundled, so the user picks which systems to add
-/// from the emulator cores settings screen.
+/// Downloads and installs libretro cores from the Libretro buildbot on Android
+/// and non-Apple desktop platforms, where cores are not bundled with the app.
+/// Users choose which systems to add from the emulator cores settings screen
+/// or consent to downloading a missing core when launching a game.
 class CoreDownloadService {
   CoreDownloadService(this._store, {Dio? dio}) : _dio = dio ?? Dio();
 
   final PreferenceStore _store;
   final Dio _dio;
+
+  CoreDownloadPromptChoice? downloadPromptChoice(String coreId) {
+    final value = _store.getString(coreDownloadPromptPreferenceKey(coreId));
+    if (value == null) return null;
+    for (final choice in CoreDownloadPromptChoice.values) {
+      if (choice.name == value) return choice;
+    }
+    return null;
+  }
+
+  /// Save a response only when the user selects "Don't show this again".
+  /// Persist before acting so a download error still respects that choice.
+  Future<void> recordDownloadPromptChoice(
+    String coreId,
+    CoreDownloadPromptChoice choice,
+  ) async {
+    if (!await _store.setString(
+      coreDownloadPromptPreferenceKey(coreId),
+      choice.name,
+    )) {
+      throw StateError('Could not save the core download choice');
+    }
+  }
 
   /// The core ids recorded as installed.
   List<String> get installed =>
@@ -63,10 +86,7 @@ class CoreDownloadService {
       throw StateError('Core file missing from download');
     }
 
-    final dir = await coresDirectory();
-    if (!await dir.exists()) await dir.create(recursive: true);
-    final file = File('${dir.path}/${coreFileName(coreId)}');
-    await file.writeAsBytes(coreBytes, flush: true);
+    if (cancelToken?.cancelError case final error?) throw error;
 
     if (support != null) {
       await installSupportFiles(
@@ -75,8 +95,36 @@ class CoreDownloadService {
         onProgress: (p) => onProgress?.call(coreShare + p * (1 - coreShare)),
       );
     }
+    if (cancelToken?.cancelError case final error?) throw error;
 
+    final dir = await coresDirectory();
+    if (!await dir.exists()) await dir.create(recursive: true);
+    final file = File('${dir.path}/${coreFileName(coreId)}');
+    // Publish only a complete file: a failed or interrupted install must not
+    // leave a partial library that the next launch mistakes for a usable core.
+    final staging = await dir.createTemp('.$coreId-');
+    var published = false;
+    try {
+      final stagedFile = File('${staging.path}/core');
+      await stagedFile.writeAsBytes(coreBytes, flush: true);
+      if (cancelToken?.cancelError case final error?) throw error;
+      await stagedFile.rename(file.path);
+      published = true;
+    } finally {
+      try {
+        await staging.delete(recursive: true);
+      } catch (error) {
+        if (!published) rethrow;
+        // A leftover empty staging directory does not invalidate the installed
+        // binary or justify skipping its installed record.
+        debugPrint('Could not remove core staging directory: $error');
+      }
+    }
+
+    // Publication completed the install. Even if the caller closes now, record
+    // it so routing cannot mistake the complete binary for a missing core.
     await _markInstalled(coreId, true);
+    onProgress?.call(1);
   }
 
   /// Fetches the support files [coreId] needs and unpacks them into the system
@@ -90,21 +138,19 @@ class CoreDownloadService {
     final support = coreSupportFilesFor(coreId);
     if (support == null) return;
     if (await coreSupportFilesInstalled(coreId)) return;
-
     final response = await _dio.get<List<int>>(
       support.url,
       cancelToken: cancelToken,
       options: Options(responseType: ResponseType.bytes),
       onReceiveProgress: (received, total) {
-        if (onProgress != null && total > 0) {
-          onProgress(received / total);
-        }
+        if (onProgress != null && total > 0) onProgress(received / total);
       },
     );
     final bytes = response.data;
     if (bytes == null || bytes.isEmpty) {
       throw StateError('Empty support file download');
     }
+    if (cancelToken?.cancelError case final error?) throw error;
 
     // A partial unpack would look installed, so the payload lands in a scratch
     // folder and only takes the real name once it's complete.
@@ -117,6 +163,7 @@ class CoreDownloadService {
       if (!await File('${staging.path}/${support.markerFile}').exists()) {
         throw StateError('Support files incomplete');
       }
+      if (cancelToken?.cancelError case final error?) throw error;
       if (await target.exists()) await target.delete(recursive: true);
       await staging.rename(target.path);
     } catch (_) {
@@ -143,8 +190,10 @@ class CoreDownloadService {
   double _coreShare(String coreId, CoreSupportFiles support) {
     for (final core in downloadableCores) {
       if (core.coreId != coreId) continue;
-      final coreOnly = (core.approxSizeMb - support.approxSizeMb)
-          .clamp(1.0, core.approxSizeMb);
+      final coreOnly = (core.approxSizeMb - support.approxSizeMb).clamp(
+        1.0,
+        core.approxSizeMb,
+      );
       return coreOnly / (coreOnly + support.approxSizeMb);
     }
     return 0.5;
@@ -181,7 +230,10 @@ class CoreDownloadService {
 /// out of it, are skipped, since the archive comes off the network.
 @visibleForTesting
 void unpackSupportArchive(
-    List<int> zipBytes, String folder, Directory destination) {
+  List<int> zipBytes,
+  String folder,
+  Directory destination,
+) {
   final archive = ZipDecoder().decodeBytes(zipBytes);
   final prefix = '$folder/';
   for (final entry in archive) {
