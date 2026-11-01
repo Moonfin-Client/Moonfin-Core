@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/access_schedule_service.dart';
@@ -173,7 +174,7 @@ class _TimesUpState extends State<_TimesUp> {
   /// the screen is drawn again then. It can stay up all night.
   void _scheduleMidnight() {
     final moment = widget.now();
-    final next = DateTime(moment.year, moment.month, moment.day + 1);
+    final next = dateLike(moment, moment.year, moment.month, moment.day + 1);
     _midnight = Timer(next.difference(moment), () {
       if (!mounted) return;
       setState(() {});

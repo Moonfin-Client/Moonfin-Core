@@ -353,7 +353,27 @@ void main() {
       expect(AccessScheduleEvaluator.isAllowed(schedules, now), isTrue);
       expect(
         AccessScheduleEvaluator.nextBoundary(schedules, now),
-        _at(_monday, 20, 0, 1),
+        DateTime.utc(2026, 10, _monday, 20, 0, 1),
+      );
+    });
+
+    test('is a UTC date, so no device daylight saving hour is skipped', () {
+      // 02:30 on 2027-03-14 doesn't exist on a device in America/New_York,
+      // but a server in UTC reads it all the same.
+      final device = DateTime.utc(2027, 3, 14, 2, 30);
+      final clock = clockOf('2027-03-14T02:30:00Z', 0, device);
+      final now = clock.wallClock(device);
+
+      expect(now.isUtc, isTrue);
+      expect([now.hour, now.minute], [2, 30]);
+      final schedules = [_entry('Sunday', 3, 4)];
+      expect(
+        AccessScheduleEvaluator.nextAccessStart(schedules, now),
+        DateTime.utc(2027, 3, 14, 3),
+      );
+      expect(
+        AccessScheduleEvaluator.nextBoundary(schedules, now),
+        DateTime.utc(2027, 3, 14, 3),
       );
     });
 
@@ -370,6 +390,10 @@ void main() {
           'utcTime': '2026-10-19T23:30:00Z',
           'utcOffsetSeconds': 'x',
         }),
+        isNull,
+      );
+      expect(
+        ServerTime.tryParse({'utcTime': 123, 'utcOffsetSeconds': 0}),
         isNull,
       );
     });

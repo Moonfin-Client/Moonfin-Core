@@ -548,7 +548,7 @@ void main() {
 
           expect(h.service.status.allowed, isFalse);
           expect(h.blocked, 1);
-          expect(h.service.status.nextAccess, _at(26, 8));
+          expect(h.service.status.nextAccess, DateTime.utc(2026, 10, 26, 8));
           h.service.dispose();
         });
       },
@@ -615,14 +615,24 @@ void main() {
     });
 
     test(
-      'is not asked once the time is up, when the server refuses it too',
+      'keeps reading the clock while blocked, so its offset stays right',
       () {
         fakeAsync((async) {
-          final h = _Harness(
+          // Blocked at 21:00 UTC with a server offset of 0. The server then
+          // moves to UTC+1 a few minutes later, as across a daylight saving
+          // change, which moves its wall clock to 22:05, inside the window.
+          late final _Harness h;
+          h = _Harness(
             async,
-            _at(19, 21),
-            schedules: (_) => [_entry('Monday', 8, 20)],
-            serverTime: (_) => serverAt(19, 21, 0),
+            DateTime.utc(2026, 10, 19, 21).toLocal(),
+            schedules: (_) => [
+              _entry('Monday', 8, 20),
+              _entry('Monday', 22, 23),
+            ],
+            serverTime: (call) async => ServerTime(
+              utcTime: h.clock.now().toUtc(),
+              utcOffset: Duration(hours: call == 1 ? 0 : 1),
+            ),
           );
           h.service.setUser('child');
           h.settle();
@@ -630,11 +640,59 @@ void main() {
           expect(h.timeAsks, 1);
 
           h.elapse(const Duration(minutes: 5));
-          expect(h.timeAsks, 1);
+          expect(h.timeAsks, greaterThan(1));
+          expect(h.service.scheduleNow.hour, 22);
+          expect(h.service.status.allowed, isTrue);
           h.service.dispose();
         });
       },
     );
+
+    test('reads a launch that is already closed on the server clock', () {
+      fakeAsync((async) {
+        // Monday 12:00 UTC is 21:00 on the server, nine hours ahead:
+        // closed, and the next opening is the server's Tuesday 08:00.
+        late final _Harness h;
+        h = _Harness(
+          async,
+          DateTime.utc(2026, 10, 19, 12).toLocal(),
+          schedules: (_) => [_entry('Weekday', 8, 20)],
+          refuses: true,
+          serverTime: (_) async => ServerTime(
+            utcTime: h.clock.now().toUtc(),
+            utcOffset: const Duration(hours: 9),
+          ),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, DateTime.utc(2026, 10, 20, 8));
+        h.service.dispose();
+      });
+    });
+
+    test('asks the server and its clock together, not one after the other', () {
+      fakeAsync((async) {
+        final slow = Completer<ServerTime?>();
+        final h = _Harness(
+          async,
+          _at(19, 21),
+          schedules: (_) => [_entry('Monday', 8, 20)],
+          refuses: true,
+          serverTime: (_) => slow.future,
+        );
+        h.service.setUser('child');
+        h.settle();
+        expect(h.asks, 1);
+        expect(h.timeAsks, 1, reason: 'both are asked at once');
+
+        slow.complete(null);
+        h.settle();
+        expect(h.service.isBlocked, isTrue);
+        h.service.dispose();
+      });
+    });
 
     test('is not asked of a user without a schedule', () {
       fakeAsync((async) {

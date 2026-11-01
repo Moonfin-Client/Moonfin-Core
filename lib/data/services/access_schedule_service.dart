@@ -35,8 +35,10 @@ class AccessScheduleStatus {
 /// schedule the server is asked whether it's turning them away and its answer
 /// decides. The schedule times the looks and says when they can come back, on
 /// the server's clock when the Moonfin plugin reports it and on this device's
-/// otherwise. The server refuses everything once the time is up, the clock
-/// included, so it is read while the user is let in and kept.
+/// otherwise. The plugin answers for the clock even once the time is up, so
+/// it is read on every look and stays right across the server's daylight
+/// saving changes while the user waits. A failed read keeps the last clock,
+/// which is what an older plugin that turns the blocked user away gives.
 ///
 /// It looks again just before an opening or closing, when the app comes back
 /// to the foreground and when the server turns a request away. In between it
@@ -177,32 +179,39 @@ class AccessScheduleService extends ChangeNotifier {
     // An answer is as good as the newest one applied, even if a later look
     // failed, but never replaces the answer of a look started after it.
     if (look < _appliedLook) return;
-    // Only a schedule can close, so only then is the server asked.
+    // Only a schedule can close, so only then is the server asked whether it
+    // turns the user away and what its clock says. The two are asked together
+    // so a slow clock can't hold up a denial the server has already given.
+    // The clock isn't asked of a server that has said it can't tell.
     bool? refused;
-    final ask = serverRefuses;
-    if (fresh.isNotEmpty && ask != null) {
-      try {
-        refused = await ask();
-      } catch (_) {}
-      if (generation != _generation || look < _appliedLook) return;
-    }
-    // Not asked once the time is up, when the server refuses it too, nor of a
-    // server that has said it can't tell.
     var clock = _serverClock;
     var unsupported = _timeUnsupported;
+    final ask = serverRefuses;
     final askTime = loadServerTime;
-    if (fresh.isNotEmpty && askTime != null && !unsupported && !isBlocked) {
-      try {
-        final time = await askTime();
-        if (time == null) {
-          unsupported = true;
-          clock = null;
-        } else {
-          clock = ServerClock.from(time, now());
-        }
-      } catch (_) {
-        // Keeps the last clock.
+    if (fresh.isNotEmpty) {
+      Future<void> readRefusal() async {
+        if (ask == null) return;
+        try {
+          refused = await ask();
+        } catch (_) {}
       }
+
+      Future<void> readClock() async {
+        if (askTime == null || unsupported) return;
+        try {
+          final time = await askTime();
+          if (time == null) {
+            unsupported = true;
+            clock = null;
+          } else {
+            clock = ServerClock.from(time, now());
+          }
+        } catch (_) {
+          // Keeps the last clock.
+        }
+      }
+
+      await Future.wait([readRefusal(), readClock()]);
       if (generation != _generation || look < _appliedLook) return;
     }
     _appliedLook = look;

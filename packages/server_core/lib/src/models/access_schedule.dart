@@ -37,7 +37,8 @@ class AccessSchedule {
     _ => false,
   };
 
-  /// This entry's start on the day of [date], to the minute.
+  /// This entry's start on the day of [date], to the minute, in the same
+  /// kind of date as [date]: UTC fields for a UTC date, local otherwise.
   DateTime startOn(DateTime date) => _at(date, startHour);
 
   /// This entry's end on the day of [date], to the minute. An end of 24 is
@@ -46,14 +47,31 @@ class AccessSchedule {
 
   static DateTime _at(DateTime date, double hour) {
     final minutes = (hour * 60).round();
-    return DateTime(date.year, date.month, date.day, 0, minutes);
+    return dateLike(date, date.year, date.month, date.day, 0, minutes);
   }
 }
+
+/// A date of the same kind as [like]: UTC when it is, so the fields are taken
+/// as they are, and local otherwise. A server wall clock is carried in UTC
+/// dates (see [ServerClock.wallClock]) so this device's daylight saving rules
+/// never move it.
+DateTime dateLike(
+  DateTime like,
+  int year, [
+  int month = 1,
+  int day = 1,
+  int hour = 0,
+  int minute = 0,
+  int second = 0,
+]) => like.isUtc
+    ? DateTime.utc(year, month, day, hour, minute, second)
+    : DateTime(year, month, day, hour, minute, second);
 
 /// Whether and when a user may use the server, by the rules Jellyfin itself
 /// applies: an entry allows the time when it covers the day and the hour of day
 /// is between its start and its end, both included. A user with no entries is
 /// always allowed. Administrators are exempt, which is for the caller to check.
+/// The dates it returns are of the same kind as the `now` it is given.
 class AccessScheduleEvaluator {
   const AccessScheduleEvaluator._();
 
@@ -80,7 +98,7 @@ class AccessScheduleEvaluator {
     if (isAllowed(schedules, now)) return null;
     DateTime? earliest;
     for (var offset = 0; offset < _lookAheadDays; offset++) {
-      final day = DateTime(now.year, now.month, now.day + offset);
+      final day = dateLike(now, now.year, now.month, now.day + offset);
       for (final schedule in schedules) {
         if (!schedule.coversWeekday(day.weekday)) continue;
         final start = schedule.startOn(day);
@@ -102,7 +120,7 @@ class AccessScheduleEvaluator {
     }
 
     for (var offset = 0; offset < _lookAheadDays; offset++) {
-      final day = DateTime(now.year, now.month, now.day + offset);
+      final day = dateLike(now, now.year, now.month, now.day + offset);
       for (final schedule in schedules) {
         if (!schedule.coversWeekday(day.weekday)) continue;
         consider(schedule.startOn(day));
@@ -128,9 +146,11 @@ class ServerTime {
   /// Null when the answer doesn't carry a UTC time and an offset.
   static ServerTime? tryParse(Object? json) {
     if (json is! Map<String, dynamic>) return null;
-    final utc = DateTime.tryParse(json['utcTime'] as String? ?? '');
+    final text = json['utcTime'];
     final offset = json['utcOffsetSeconds'];
-    if (utc == null || offset is! num || !offset.isFinite) return null;
+    if (text is! String || offset is! num || !offset.isFinite) return null;
+    final utc = DateTime.tryParse(text);
+    if (utc == null) return null;
     return ServerTime(
       utcTime: utc.toUtc(),
       utcOffset: Duration(seconds: offset.round()),
@@ -158,18 +178,9 @@ class ServerClock {
   /// A date whose fields are the server's wall clock when this device's clock
   /// reads [deviceNow], whatever zone this device is in, so [AccessScheduleEvaluator]
   /// can read it as it reads any other date. It's for reading the fields and
-  /// not an instant. A wall time this device skips for daylight saving lands
-  /// an hour later.
-  DateTime wallClock(DateTime deviceNow) {
-    final wall = deviceNow.toUtc().add(skew + offset);
-    return DateTime(
-      wall.year,
-      wall.month,
-      wall.day,
-      wall.hour,
-      wall.minute,
-      wall.second,
-      wall.millisecond,
-    );
-  }
+  /// not an instant. It is a UTC date, so this device's daylight saving rules
+  /// can't skip or repeat any of its hours, and dates worked out from it should
+  /// be UTC too (see [dateLike]).
+  DateTime wallClock(DateTime deviceNow) =>
+      deviceNow.toUtc().add(skew + offset);
 }
