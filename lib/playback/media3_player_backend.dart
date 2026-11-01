@@ -1184,16 +1184,10 @@ class Media3PlayerBackend extends PlayerBackend
       'repeated_fields' => 'repeated fields',
       _ => 'unknown scan',
     };
-    final reason = switch (map['reason']) {
-      'header' => 'header',
-      'cadence' => 'cadence',
-      'timeout' => 'timeout',
-      'server rate, no header' => 'server rate, no header',
-      'initial hint' => 'initial hint',
-      'audio already open' => 'audio already open',
-      'switching disabled' => 'switching disabled',
-      _ => 'unknown reason',
-    };
+    final rawReason = map['reason']?.toString();
+    final reason = rawReason == null || rawReason.isEmpty
+        ? 'unknown reason'
+        : rawReason;
     final elapsed = '${_toInt(map['elapsedMs'])}ms';
     final rate = map['frameRate'];
     if (rate is! num || !rate.isFinite) {

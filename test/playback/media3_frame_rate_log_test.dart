@@ -432,6 +432,20 @@ void main() {
     },
   );
 
+  test('decision logs preserve native reasons and handle missing ones', () async {
+    for (final reason in ['measured while settling', 'future reason', '', null]) {
+      await _send(<String, dynamic>{
+        'event': 'frameRateDecision',
+        'reason': reason,
+      });
+      await pumpEventQueue();
+      expect(
+        lastLine(),
+        contains(reason == null || reason.isEmpty ? 'unknown reason' : reason),
+      );
+    }
+  });
+
   test('a decision without a rate remains readable', () async {
     await _send(<String, dynamic>{
       'event': 'frameRateDecision',
