@@ -214,13 +214,13 @@ class AccessScheduleService extends ChangeNotifier {
       final clockRead = readClock();
       await readRefusal();
       if (generation != _generation || look < _appliedLook) return;
-      // A refusal is applied as soon as it's known, on the last clock, so
-      // playback stops without waiting on the clock. The clock's answer then
-      // corrects the opening named.
-      if (refused == true) {
+      // The server's answer is applied as soon as it's known, on the last
+      // clock, so playback stops, or the user is let back in, without waiting
+      // on the clock. The clock's answer then corrects the opening named.
+      if (refused != null) {
         _appliedLook = look;
         _schedules = fresh;
-        _apply(failed: false, refused: true);
+        _apply(failed: false, refused: refused);
       }
       await clockRead;
       if (generation != _generation || look < _appliedLook) return;

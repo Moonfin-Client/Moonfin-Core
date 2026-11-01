@@ -706,6 +706,36 @@ void main() {
       });
     });
 
+    test('lets the user back in without waiting for a slow clock', () {
+      fakeAsync((async) {
+        // Refused on the first look, answered on the next while the clock
+        // read hangs.
+        final clock = async.getClock(_at(19, 21));
+        final slow = Completer<ServerTime?>();
+        var refusing = true;
+        final service = AccessScheduleService(
+          now: () => clock.now(),
+          loadSchedules: (_) async => [_entry('Monday', 8, 20)],
+          onBlocked: () async {},
+          serverRefuses: () async => refusing,
+          loadServerTime: () => slow.future,
+        );
+        service.setUser('child');
+        async.flushMicrotasks();
+        expect(service.isBlocked, isTrue);
+
+        refusing = false;
+        unawaited(service.refresh());
+        async.flushMicrotasks();
+        expect(service.isBlocked, isFalse, reason: 'before the clock answers');
+
+        slow.complete(null);
+        async.flushMicrotasks();
+        expect(service.isBlocked, isFalse);
+        service.dispose();
+      });
+    });
+
     test('is not asked of a user without a schedule', () {
       fakeAsync((async) {
         final h = _Harness(
