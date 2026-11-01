@@ -112,7 +112,8 @@ class CoreDownloadService {
       await staging.delete(recursive: true);
     }
 
-    if (cancelToken?.cancelError case final error?) throw error;
+    // Publication completed the install. Even if the caller closes now, record
+    // it so routing cannot mistake the complete binary for a missing core.
     await _markInstalled(coreId, true);
     onProgress?.call(1);
   }

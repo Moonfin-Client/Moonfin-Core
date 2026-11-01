@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:typed_data';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/services/core_download_service.dart';
 import 'package:moonfin/util/game_cores.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,8 @@ class _Paths extends PathProviderPlatform {
   @override
   Future<String?> getApplicationSupportPath() async => root;
 }
+
+class _MockDirectory extends Mock implements Directory {}
 
 class _Adapter implements HttpClientAdapter {
   final List<Uri> requests = [];
@@ -155,6 +158,39 @@ void main() {
       expect(service.installed, isEmpty);
     },
   );
+
+  test('cancellation after publication still records the installed core', () async {
+    final token = CancelToken();
+    final directory = await coresDirectory();
+    await directory.create(recursive: true);
+    final staging = await directory.createTemp('.fbneo-');
+    final coreDirectory = _MockDirectory();
+    final stagingDirectory = _MockDirectory();
+    when(() => coreDirectory.path).thenReturn(directory.path);
+    when(() => coreDirectory.exists()).thenAnswer((_) async => true);
+    when(() => coreDirectory.createTemp(any())).thenAnswer((_) async => stagingDirectory);
+    when(() => stagingDirectory.path).thenReturn(staging.path);
+    when(() => stagingDirectory.delete(recursive: true)).thenAnswer((_) async {
+      // The binary has been published, but final bookkeeping has not run.
+      final result = await staging.delete(recursive: true);
+      token.cancel('Player closed');
+      return result;
+    });
+    adapter.respond = (_) => ResponseBody.fromBytes(_zip('fbneo_libretro.so', [1]), 200);
+
+    await IOOverrides.runZoned(
+      () => service.download('fbneo', cancelToken: token),
+      createDirectory: (path) {
+        if (path == directory.path) return coreDirectory;
+        if (path == root.path) return root;
+        throw StateError('Unexpected directory: $path');
+      },
+    );
+
+    expect(token.isCancelled, isTrue);
+    expect(await installedCorePath('fbneo'), isNotNull);
+    expect(service.isInstalled('fbneo'), isTrue);
+  });
 
   test('cancellation does not publish or record a core', () async {
     final token = CancelToken();

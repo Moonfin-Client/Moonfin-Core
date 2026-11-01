@@ -473,6 +473,7 @@ void main() {
     // A couple of tests flip this to reach the TV-only notice gate; reset
     // unconditionally so it never leaks into a later test in this file.
     PlatformDetection.setTvMode(false);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
   });
 
   Future<void> advanceStartup(WidgetTester tester, bool Function() done) async {
@@ -562,7 +563,7 @@ void main() {
   for (final key in [LogicalKeyboardKey.goBack, LogicalKeyboardKey.escape]) {
     testWidgets('Android consent dismissal handles the follow-up pop only for $key', (tester) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      PlatformDetection.setTvMode(true);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
       final downloads = _FakeCoreDownloads();
       final router = sessionRouter(downloads);
       final observer = _DialogBackObserver();
