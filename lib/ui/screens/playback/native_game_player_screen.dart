@@ -187,6 +187,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   bool _coreInstallFailed = false;
   bool _coreDownloadConsented = false;
   bool _coreDownloadDialogOpen = false;
+  final _coreDownloadFocus = FocusNode(debugLabel: 'Download native core');
   bool _holdsGamepadSuppression = false;
   bool _showCoreDownloadHelp = false;
   GameDetail? _gameDetail;
@@ -419,6 +420,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     _overlayScroll.dispose();
     _settingsScroll.dispose();
     _pickerScroll.dispose();
+    _coreDownloadFocus.dispose();
     _releaseGamepadSuppression();
     // Best-effort restore if disposed without going through an exit path.
     unawaited(_restoreSystemUi());
@@ -1255,6 +1257,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   ) async {
     _coreDownloadDialogOpen = true;
     _releaseGamepadSuppression();
+    // Request focus after the dialog has mounted. On TV, route focus can land
+    // on the first focusable control before the button's autofocus takes effect.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _coreDownloadDialogOpen) _coreDownloadFocus.requestFocus();
+    });
     try {
       return await showDialog<CoreDownloadPromptChoice>(
         context: context,
@@ -1339,6 +1346,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
               ),
             FilledButton(
               autofocus: true,
+              focusNode: _coreDownloadFocus,
               onPressed: () => Navigator.pop(
                 context,
                 CoreDownloadPromptChoice.download,

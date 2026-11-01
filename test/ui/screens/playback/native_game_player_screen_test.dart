@@ -545,6 +545,26 @@ void main() {
 
   const fallbackLabel = 'Use EmulatorJS';
 
+  testWidgets('TV Select starts Download without navigating or checking the opt-out', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setTvMode(true);
+    final downloads = _FakeCoreDownloads()..fail = true;
+    try {
+      await pumpInstallingPlayer(tester, downloads);
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(Focus.of(tester.element(find.text('Download'))).hasFocus, isTrue);
+      expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await advanceStartup(tester, () => find.text('Retry').evaluate().isNotEmpty);
+      expect(downloads.downloads, 1);
+      expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
   Future<void> pressPad(WidgetTester tester, String key) async {
     for (final value in [1.0, 0.0]) {
       GamepadsPlatformInterface.instance.emitGamepadEvent(GamepadEvent(
