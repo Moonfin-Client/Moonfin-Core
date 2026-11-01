@@ -20,6 +20,7 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'mpv_client_certificate.dart';
 import 'mpv_letterbox_crop.dart';
+import 'mpv_player_registry.dart';
 import 'mpv_frame_sample.dart';
 import 'mpv_frame_sampler.dart';
 import 'pending_subtitle_choice.dart';
@@ -657,7 +658,7 @@ class MediaKitPlayerBackend extends PlayerBackend
               : (PlatformDetection.isLinux ? 'auto-safe' : null))
         : 'no';
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
         libass: _useLibass,
         libassAndroidFont: PlatformDetection.isAndroid
@@ -3749,7 +3750,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _tracksChangedController.close();
     _playingGateChangedController.close();
     _subtitleLoadingStream.close();
-    _player.dispose();
+    unawaited(MpvPlayerRegistry.instance.dispose(_player));
   }
 }
 

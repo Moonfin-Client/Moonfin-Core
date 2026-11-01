@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../data/database/offline_database.dart';
+import '../playback/mpv_player_registry.dart';
 import 'platform_detection.dart';
 
 class AppExit {
@@ -25,6 +26,7 @@ class AppExit {
   static Future<void> prepareForExit() async {
     if (_toreDown) return;
     _toreDown = true;
+    await MpvPlayerRegistry.instance.disposeAll();
     if (GetIt.instance.isRegistered<OfflineDatabase>()) {
       try {
         await GetIt.instance<OfflineDatabase>().close();
