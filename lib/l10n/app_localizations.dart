@@ -6724,6 +6724,120 @@ abstract class AppLocalizations {
   /// **'Tomorrow'**
   String get upcomingEpisodeTomorrow;
 
+  /// Home row title for upcoming movies from the Radarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Movies (Radarr)'**
+  String get radarrCalendarRow;
+
+  /// Home row title for upcoming episodes from the Sonarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming TV Shows (Sonarr)'**
+  String get sonarrCalendarRow;
+
+  /// Home row title when the Radarr and Sonarr calendars are merged
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Releases'**
+  String get mergedCalendarRow;
+
+  /// Subtitle under the home row that merges the Radarr and Sonarr calendars
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr and Sonarr Calendars'**
+  String get arrCalendarsRowSubtitle;
+
+  /// Subtitle under the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr Calendar'**
+  String get radarrCalendarRowSubtitle;
+
+  /// Subtitle under the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Sonarr Calendar'**
+  String get sonarrCalendarRowSubtitle;
+
+  /// Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})'**
+  String calendarReleaseIn(int days, String date);
+
+  /// Settings screen for the Radarr and Sonarr calendar home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Calendars'**
+  String get upcomingCalendars;
+
+  /// Subtitle of the Upcoming Calendars settings entry
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Upcoming Calendars from Radarr/Sonarr.'**
+  String get upcomingCalendarsDescription;
+
+  /// Turns on the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Radarr\'s Upcoming Calendar'**
+  String get enableRadarrCalendar;
+
+  /// Includes cinema release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Cinema Releases'**
+  String get radarrCalendarShowCinema;
+
+  /// Includes digital release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Digital Releases'**
+  String get radarrCalendarShowDigital;
+
+  /// Includes physical release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Physical Releases'**
+  String get radarrCalendarShowPhysical;
+
+  /// Shows the release date under each item of a calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Release Date on Home Screen'**
+  String get calendarShowReleaseDate;
+
+  /// Leaves out movies Radarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Movies Already on the Server'**
+  String get radarrCalendarHideDownloaded;
+
+  /// Turns on the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Sonarr\'s Upcoming Calendar'**
+  String get enableSonarrCalendar;
+
+  /// Shows the season and episode number in the Sonarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Display Episode Information'**
+  String get sonarrCalendarShowEpisodeInfo;
+
+  /// Leaves out episodes Sonarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Episodes Already on the Server'**
+  String get sonarrCalendarHideDownloaded;
+
+  /// Shows the Radarr and Sonarr calendars as a single home row
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sonarr and Radarr Calendars'**
+  String get mergeRadarrSonarrCalendars;
+
   /// Moves a button one place earlier in its row
   ///
   /// In en, this message translates to:

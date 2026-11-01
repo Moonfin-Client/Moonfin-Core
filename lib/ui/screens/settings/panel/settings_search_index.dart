@@ -270,7 +270,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   );
   final calendars = _SearchSection(
     slug: 'calendars',
-    path: [l10n.appearance, l10n.homeScreen, 'Upcoming Calendars'],
+    path: [l10n.appearance, l10n.homeScreen, l10n.upcomingCalendars],
     icon: Icons.calendar_month,
     open: () => push(const _UpcomingCalendarsScreen()),
   );
@@ -1188,46 +1188,56 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         calendars.screen(keywords: ['radarr', 'sonarr', 'upcoming releases']),
         calendars.leaf(
           'merge_radarr_sonarr_calendars',
-          'Merge Sonarr and Radarr Calendars',
+          l10n.mergeRadarrSonarrCalendars,
         ),
         calendars.leaf(
           'enable_radarr_calendar',
-          "Enable Radarr's Upcoming Calendar",
+          l10n.enableRadarrCalendar,
           keywords: ['movies'],
         ),
         calendars.leaf(
           'radarr_calendar_show_cinema',
-          'Show Upcoming Cinema Releases',
+          l10n.radarrCalendarShowCinema,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_digital',
-          'Show Upcoming Digital Releases',
+          l10n.radarrCalendarShowDigital,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_physical',
-          'Show Upcoming Physical Releases',
+          l10n.radarrCalendarShowPhysical,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_date',
-          'Show Release Date on Home Screen',
+          l10n.calendarShowReleaseDate,
+          header: 'Radarr',
+        ),
+        calendars.leaf(
+          'radarr_calendar_hide_downloaded',
+          l10n.radarrCalendarHideDownloaded,
           header: 'Radarr',
         ),
         calendars.leaf(
           'enable_sonarr_calendar',
-          "Enable Sonarr's Upcoming Calendar",
+          l10n.enableSonarrCalendar,
           keywords: ['shows', 'episodes'],
         ),
         calendars.leaf(
           'sonarr_calendar_show_episode_info',
-          'Display Episode Information',
+          l10n.sonarrCalendarShowEpisodeInfo,
           header: 'Sonarr',
         ),
         calendars.leaf(
           'sonarr_calendar_show_date',
-          'Show Release Date on Home Screen',
+          l10n.calendarShowReleaseDate,
+          header: 'Sonarr',
+        ),
+        calendars.leaf(
+          'sonarr_calendar_hide_downloaded',
+          l10n.sonarrCalendarHideDownloaded,
           header: 'Sonarr',
         ),
         seerrLists.screen(keywords: ['discovery rows', 'watchlist', 'trending']),

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
@@ -33,6 +34,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/bounded_concurrency.dart';
+import '../../../util/calendar_days.dart';
 import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -3505,10 +3507,19 @@ class HomeViewModel extends ChangeNotifier {
     final showDigital = _prefs.get(UserPreferences.radarrCalendarShowDigital);
     final showPhysical = _prefs.get(UserPreferences.radarrCalendarShowPhysical);
     final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
+    final hideDownloaded = _prefs.get(UserPreferences.radarrCalendarHideDownloaded);
+    final l10n = currentAppLocalizations();
+
+    // From today on. A release from yesterday isn't upcoming any more.
+    bool upcoming(DateTime date) => calendarDaysBetween(now, date) >= 0;
 
     final List<AggregatedItem> filtered = [];
 
     for (final item in rawItems) {
+      // Radarr already has a file for it, so it's on the server and not upcoming.
+      // Applied here rather than at fetch, so the cached row follows the setting.
+      if (hideDownloaded && item.rawData['HasFile'] == true) continue;
+
       final inCinemasStr = item.rawData['InCinemas'] as String?;
       final digitalReleaseStr = item.rawData['DigitalRelease'] as String?;
       final physicalReleaseStr = item.rawData['PhysicalRelease'] as String?;
@@ -3517,27 +3528,28 @@ class HomeViewModel extends ChangeNotifier {
       final digitalRelease = digitalReleaseStr != null ? DateTime.tryParse(digitalReleaseStr) : null;
       final physicalRelease = physicalReleaseStr != null ? DateTime.tryParse(physicalReleaseStr) : null;
 
-      final enabledReleases = <DateTime, String>{};
-      if (showCinema && inCinemas != null && inCinemas.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[inCinemas] = 'Cinema: ';
+      final enabledReleases = <DateTime>[];
+      if (showCinema && inCinemas != null && upcoming(inCinemas)) {
+        enabledReleases.add(inCinemas);
       }
-      if (showDigital && digitalRelease != null && digitalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[digitalRelease] = 'Digital: ';
+      if (showDigital && digitalRelease != null && upcoming(digitalRelease)) {
+        enabledReleases.add(digitalRelease);
       }
-      if (showPhysical && physicalRelease != null && physicalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[physicalRelease] = 'Physical: ';
+      if (showPhysical && physicalRelease != null && upcoming(physicalRelease)) {
+        enabledReleases.add(physicalRelease);
       }
 
       if (enabledReleases.isEmpty) continue;
 
-      final sortedDates = enabledReleases.keys.toList()..sort();
+      final sortedDates = enabledReleases..sort();
       final targetReleaseDate = sortedDates.first;
-      final releaseType = enabledReleases[targetReleaseDate]!;
 
       String? subtitleText;
       if (showDate) {
-        final dateStr = _formatDateHuman(targetReleaseDate);
-        subtitleText = '$releaseType$dateStr';
+        subtitleText = l10n.calendarReleaseIn(
+          calendarDaysBetween(now, targetReleaseDate),
+          _formatDateHuman(targetReleaseDate),
+        );
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);
@@ -3560,37 +3572,92 @@ class HomeViewModel extends ChangeNotifier {
     return filtered;
   }
 
+  /// The episode the Sonarr row shows for one series: the first one airing
+  /// today or later, skipping downloaded ones when [hideDownloaded] is on.
+  /// Null when none is left, and the series then drops out of the row.
+  @visibleForTesting
+  static Map? pickSonarrEpisode(
+    List episodes, {
+    required DateTime now,
+    required bool hideDownloaded,
+  }) {
+    Map? picked;
+    DateTime? pickedAirDate;
+
+    for (final episode in episodes) {
+      if (episode is! Map) continue;
+      if (hideDownloaded && episode['HasFile'] == true) continue;
+
+      final airDateUtc = DateTime.tryParse(episode['AirDateUtc'] as String? ?? '');
+      if (airDateUtc == null) continue;
+      if (calendarDaysBetween(now, airDateUtc.toLocal()) < 0) continue;
+
+      if (pickedAirDate == null || airDateUtc.isBefore(pickedAirDate)) {
+        picked = episode;
+        pickedAirDate = airDateUtc;
+      }
+    }
+
+    return picked;
+  }
+
   List<AggregatedItem> _formatSonarrItems(List<AggregatedItem> rawItems) {
     final showDate = _prefs.get(UserPreferences.sonarrCalendarShowDate);
     final showEpisodeInfo = _prefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    final hideDownloaded = _prefs.get(UserPreferences.sonarrCalendarHideDownloaded);
+    final now = DateTime.now();
+    final l10n = currentAppLocalizations();
 
-    return rawItems.map((item) {
-      final airDateUtcStr = item.rawData['CalendarDate'] as String?;
-      final airDateUtc = airDateUtcStr != null ? DateTime.tryParse(airDateUtcStr) : null;
-      if (airDateUtc == null) return item;
-      final airDay = sonarrAirDay(airDateUtc);
+    final formatted = <AggregatedItem>[];
 
-      final sNum = item.rawData['SeasonNumber'] as String? ?? '0';
-      final eNum = item.rawData['EpisodeNumber'] as String? ?? '0';
+    for (final item in rawItems) {
+      final picked = pickSonarrEpisode(
+        item.rawData['Episodes'] as List? ?? const [],
+        now: now,
+        hideDownloaded: hideDownloaded,
+      );
+      if (picked == null) continue;
+
+      final airDateUtc = DateTime.parse(picked['AirDateUtc'] as String);
+      final sNum = picked['SeasonNumber'] as String? ?? '0';
+      final eNum = picked['EpisodeNumber'] as String? ?? '0';
+      final episode = 'S${sNum}E$eNum';
+      // Same wording as the Radarr row, so both read "In 3 days (Nov 3)".
+      final release = l10n.calendarReleaseIn(
+        calendarDaysBetween(now, airDateUtc.toLocal()),
+        sonarrAirDay(airDateUtc),
+      );
 
       String? subtitleText;
       if (showDate && showEpisodeInfo) {
-        subtitleText = 'Next Episode: $airDay (S$sNum:E$eNum)';
+        subtitleText = '$episode · $release';
       } else if (showDate) {
-        subtitleText = 'Next Episode: $airDay';
+        subtitleText = release;
       } else if (showEpisodeInfo) {
-        subtitleText = 'Next Episode: (S$sNum:E$eNum)';
+        subtitleText = episode;
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);
       newRawData['Subtitle'] = subtitleText;
+      newRawData['SeasonNumber'] = sNum;
+      newRawData['EpisodeNumber'] = eNum;
+      newRawData['CalendarDate'] = airDateUtc.toIso8601String();
 
-      return AggregatedItem(
+      formatted.add(AggregatedItem(
         id: item.id,
         serverId: item.serverId,
         rawData: newRawData,
-      );
-    }).toList();
+      ));
+    }
+
+    // The episode picked can be a later one than the fetch sorted by.
+    formatted.sort((a, b) {
+      final dateA = a.rawData['CalendarDate'] as String? ?? '';
+      final dateB = b.rawData['CalendarDate'] as String? ?? '';
+      return dateA.compareTo(dateB);
+    });
+
+    return formatted;
   }
 
   Future<List<HomeRow>> _loadRadarrCalendarRow({bool forceRefresh = false}) async {
@@ -3696,12 +3763,14 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  /// Entries written before CacheVerV2 have a different shape, so the marker on
-  /// its own decides staleness. Artwork fields are deliberately not checked,
-  /// because an entry whose poster is genuinely missing is still valid and
-  /// refetching it only writes the same empty value back.
+  /// Entries written before CacheVerV3 have a different shape, so the marker on
+  /// its own decides staleness. V3 keeps whether each release is already
+  /// downloaded, which older entries lack and were filtered by instead.
+  /// Artwork fields are deliberately not checked, because an entry whose poster
+  /// is genuinely missing is still valid and refetching it only writes the same
+  /// empty value back.
   static bool _isStaleCalendarCache(List<AggregatedItem> items) =>
-      items.any((x) => !x.rawData.containsKey('CacheVerV2'));
+      items.any((x) => !x.rawData.containsKey('CacheVerV3'));
 
   Future<List<AggregatedItem>> _loadRadarrCalendarFromCache() async {
     try {
@@ -3879,7 +3948,8 @@ class HomeViewModel extends ChangeNotifier {
                 'DigitalRelease': digitalReleaseStr,
                 'PhysicalRelease': physicalReleaseStr,
                 'CalendarDate': defaultReleaseDate.toIso8601String(),
-                'CacheVerV2': true,
+                'HasFile': res['hasFile'] == true,
+                'CacheVerV3': true,
               },
             ),
             date: defaultReleaseDate,
@@ -3922,20 +3992,27 @@ class HomeViewModel extends ChangeNotifier {
         final airDateUtc = airDateUtcStr != null ? DateTime.tryParse(airDateUtcStr) : null;
         if (airDateUtc == null) continue;
 
+        // Every episode is kept, downloaded or not, so the row picks the one to
+        // show when it's drawn and follows the hide setting without a refetch.
+        final episode = {
+          'SeasonNumber': (res['seasonNumber'] ?? 0).toString(),
+          'EpisodeNumber': (res['episodeNumber'] ?? 0).toString(),
+          'AirDateUtc': airDateUtc.toIso8601String(),
+          'HasFile': res['hasFile'] == true,
+        };
+
         final existing = groupedEpisodes[tvdbId];
         if (existing == null) {
           groupedEpisodes[tvdbId] = {
             'series': seriesMap,
             'airDate': airDateUtc,
-            'seasonNumber': res['seasonNumber'],
-            'episodeNumber': res['episodeNumber'],
+            'episodes': [episode],
           };
         } else {
+          (existing['episodes'] as List).add(episode);
           final existingAirDate = existing['airDate'] as DateTime;
           if (airDateUtc.isBefore(existingAirDate)) {
             existing['airDate'] = airDateUtc;
-            existing['seasonNumber'] = res['seasonNumber'];
-            existing['episodeNumber'] = res['episodeNumber'];
           }
         }
       }
@@ -3991,9 +4068,6 @@ class HomeViewModel extends ChangeNotifier {
             } catch (_) {}
           }
 
-          final sNum = (episodeInfo['seasonNumber'] ?? 0).toString();
-          final eNum = (episodeInfo['episodeNumber'] ?? 0).toString();
-
           return _CalendarItemWithDate(
             item: AggregatedItem(
               id: tmdbId.toString(),
@@ -4005,10 +4079,9 @@ class HomeViewModel extends ChangeNotifier {
                 'PosterPath': posterPath,
                 'BackdropPath': backdropPath,
                 'SeerrMediaType': 'tv',
-                'SeasonNumber': sNum,
-                'EpisodeNumber': eNum,
+                'Episodes': episodeInfo['episodes'],
                 'CalendarDate': airDateUtc.toIso8601String(),
-                'CacheVerV2': true,
+                'CacheVerV3': true,
               },
             ),
             date: airDateUtc,
@@ -4032,36 +4105,21 @@ class HomeViewModel extends ChangeNotifier {
     return 'https://image.tmdb.org/t/p/w$width$path';
   }
 
-  /// The day a Sonarr episode airs, such as "Oct. 24th". Sonarr gives the
+  /// The day a Sonarr episode airs, such as "Oct 24". Sonarr gives the
   /// moment in UTC, so the day is the viewer's local one.
   @visibleForTesting
   static String sonarrAirDay(DateTime airDateUtc) =>
       _formatDateHuman(airDateUtc.toLocal());
 
   static String _formatDateHuman(DateTime date) {
-    final months = [
-      'Jan.',
-      'Feb.',
-      'Mar.',
-      'Apr.',
-      'May',
-      'Jun.',
-      'Jul.',
-      'Aug.',
-      'Sep.',
-      'Oct.',
-      'Nov.',
-      'Dec.'
-    ];
-    final month = months[date.month - 1];
-    final day = date.day;
-    final suffix = switch (day) {
-      1 || 21 || 31 => 'st',
-      2 || 22 => 'nd',
-      3 || 23 => 'rd',
-      _ => 'th',
-    };
-    return '$month $day$suffix';
+    try {
+      return DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
+    } catch (_) {
+      // The app loads the date data for its language at startup. Without it,
+      // in tests or for a language intl has no data for, fall back to English
+      // rather than failing the whole row.
+      return DateFormat.MMMd('en_US').format(date);
+    }
   }
 
   Future<List<HomeRow>> _loadMergedCalendarRow({bool forceRefresh = false}) async {
