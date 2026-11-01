@@ -69,6 +69,7 @@ import '../../../preference/seerr_row_config.dart';
 import '../../navigation/destinations.dart';
 import '../admin/admin_nav.dart';
 import '../setup/setup_wizard_gate.dart';
+import '../setup/setup_wizard_previews.dart' show SetupPreviewData;
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
@@ -85,6 +86,7 @@ import 'live_preview/settings_live_preview.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/support_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../home/home_view_model.dart';
@@ -149,6 +151,12 @@ part 'panel/automation_queue_screen.dart';
 part 'panel/advanced_options_screen.dart';
 part 'panel/syncplay_settings_screen.dart';
 part 'panel/settings_panel_tiles.dart';
+
+/// The Navigation Bar screen on its own, which the panel otherwise only opens
+/// from inside its private navigator.
+@visibleForTesting
+Widget navigationSettingsScreenForTesting() =>
+    const _NavigationCategoryScreen();
 
 bool get _showThemeEditorEntry =>
     PlatformDetection.isWeb && webRuntimeConfig.pluginMode;
