@@ -115,9 +115,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   final bool _musicOnAnyServer = musicOnAnySignedInServer();
   final bool _playlistsOnAnyServer = playlistsOnAnySignedInServer();
 
-  /// The disabled groups that are open, by [_getSectionCategory]. General
-  /// starts open since it's short.
-  final Set<int> _openGroups = {1};
+  /// The disabled groups that are open, by [_getSectionCategory].
+  final Set<int> _openGroups = {};
   final Map<int, FocusNode> _groupHeaderFocusNodes = {};
 
   /// Seerr slider rows whose slider Seerr still has but this client can't
@@ -1010,10 +1009,18 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         if (PlatformDetection.isTV) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
+            // The rows can't take focus while they load, so Settings parks it
+            // on the reset button on the way in. The first row takes it over.
+            final focused = FocusManager.instance.primaryFocus;
+            if (focused != null &&
+                (_focusNodes.contains(focused) ||
+                    _groupHeaderFocusNodes.containsValue(focused))) {
               return;
             }
-            final first = _visibleSectionIndices().firstOrNull;
+            // A disabled row waits in a closed group, so it can't take focus.
+            final first = _visibleSectionIndices()
+                .where((i) => _sections[i].enabled)
+                .firstOrNull;
             if (first != null) _focusSectionAndEnsureVisible(first);
           });
         }
