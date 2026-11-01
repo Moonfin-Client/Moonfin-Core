@@ -16489,5 +16489,51 @@
     "settingsPreviewSaved": "Tallennettu",
     "@settingsPreviewSaved": {
         "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "signedInOnThisDevice": "Kirjautunut sisään tällä laitteella",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "PIN koodi vaaditaan",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Salasana vaaditaan",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Jatka nimellä {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Vaihda {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Kirjautunut sisään käyttäjänä {user} palvelimella {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Aktiivinen",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
     }
 }
