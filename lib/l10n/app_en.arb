@@ -11092,6 +11092,49 @@
   "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
   "displayStudiosRows": "Display Studio Row",
   "displayStudiosRowsSubtitle": "Show Studio row in Home Sections.",
+  "sinceYouWatched": "Since You Watched",
+  "@sinceYouWatched": {
+    "description": "Settings section header for the Since You Watched rows"
+  },
+  "sinceYouWatchedRowTitle": "Since you watched",
+  "@sinceYouWatchedRowTitle": {
+    "description": "Home row title for a Since You Watched row before its source item is known"
+  },
+  "sinceYouWatchedItemRowTitle": "Since you watched \"{title}\"",
+  "@sinceYouWatchedItemRowTitle": {
+    "description": "Home row title for recommendations based on an item the user watched",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sinceYouWatchedRowNumber": "Since You Watched Row {number}",
+  "@sinceYouWatchedRowNumber": {
+    "description": "Name of one of the Since You Watched rows in the home sections list",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "displaySinceYouWatchedRows": "Display Since You Watched Rows",
+  "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
+  "sinceYouWatchedSource": "Recommendation Source",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceOnline": "TMDb Similarity",
+  "sinceYouWatchedSourceType": "Source Type",
+  "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
+  "sinceYouWatchedSourceItem": "Source Item",
+  "sinceYouWatchedSourceItemDescription": "Choose which source item to base recommendations on",
+  "sinceYouWatchedRecentlyWatched": "Recently Watched",
+  "sinceYouWatchedRandom": "Random",
+  "sinceYouWatchedNumRows": "Number of Rows to Add",
+  "sinceYouWatchedNumRowsDescription": "Choose how many Since You Watched rows to display (1-5)",
+  "sinceYouWatchedIncludeWatched": "Include Previously Watched",
+  "sinceYouWatchedIncludeWatchedSubtitle": "Include watched items in recommendations",
   "studiosRowSorting": "Studio Row Sorting",
   "studiosRowSortingDescription": "Studio row by name, recently added, and more.",
   "studiosRowSortOrderDescription": "Choose Ascending or Descending sort order.",

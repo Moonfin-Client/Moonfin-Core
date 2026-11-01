@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/ui/util/home_row_title_localizer.dart';
@@ -38,5 +39,31 @@ void main() {
 
   test('the pinned wording covers every row type', () {
     expect(_englishTitles.keys.toSet(), SeerrRowType.values.toSet());
+  });
+
+  group('a Since You Watched row', () {
+    String titleOf(String rowTitle) => localizeHomeRowTitle(
+          row: HomeRow(
+            id: 'sinceYouWatched2',
+            title: rowTitle,
+            rowType: HomeRowType.latestMedia,
+          ),
+          l10n: _l10n,
+        );
+
+    test('keeps the watched item in its title', () {
+      expect(titleOf('Since you watched "Dune"'), 'Since you watched "Dune"');
+    });
+
+    test('keeps quotes that are part of the item name', () {
+      expect(
+        titleOf('Since you watched "The "Best" Movie"'),
+        'Since you watched "The "Best" Movie"',
+      );
+    });
+
+    test('reads plainly while its item is still loading', () {
+      expect(titleOf('Since you watched'), 'Since you watched');
+    });
   });
 }
