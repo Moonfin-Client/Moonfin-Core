@@ -636,6 +636,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_watched_indicator_behavior',
     'pref_card_focus_expansion',
     'pref_home_rows_style',
+    'pref_mobile_cinema_enabled',
+    'pref_mobile_cinema_mode',
     'pref_modern_home_rows_padding',
     'pref_classic_home_rows_padding',
     'pref_modern_cards_my_media',
@@ -1264,6 +1266,16 @@ class UserPreferences extends ChangeNotifier {
   static final fullScreenRows = Preference(
     key: 'pref_home_rows_fullscreen',
     defaultValue: false,
+  );
+
+  static final mobileCinemaEnabled = Preference<bool>(
+    key: 'pref_mobile_cinema_enabled',
+    defaultValue: true,
+  );
+
+  static final mobileCinemaMode = Preference<String>(
+    key: 'pref_mobile_cinema_mode',
+    defaultValue: 'appleTv',
   );
 
   static final modernHomeRowsPadding = Preference<int>(

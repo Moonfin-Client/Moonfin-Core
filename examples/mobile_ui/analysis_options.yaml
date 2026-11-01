@@ -1,0 +1,6 @@
+analyzer:
+  errors:
+    deprecated_member_use: warning
+  exclude:
+    - build/**
+    - web/**

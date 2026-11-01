@@ -146,6 +146,8 @@ dependencies:
     path: packages/playback_silo
   moonfin_design:
     path: packages/design
+  moonfin_mobile_ui:
+    path: packages/mobile_ui
   jellyfin_preference:
     path: packages/preference
   moonfin_native_video:

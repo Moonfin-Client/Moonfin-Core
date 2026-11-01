@@ -235,6 +235,17 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
           _SectionHeader(l10n.settingsLooksSection),
           adaptiveListSection(
             children: [
+              if (isMobileUi)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mobileCinemaEnabled,
+                  title: 'Cinematic mobile home',
+                  subtitle:
+                      'Browse with Apple TV or Netflix mode. Switch modes on Home.',
+                  icon: Icons.movie_filter_outlined,
+                  onChanged: () {
+                    if (mounted) setState(() {});
+                  },
+                ),
               EnumPreferenceTile<HomeRowsStyle>(
                 preference: UserPreferences.homeRowsStyle,
                 title: l10n.rowsType,

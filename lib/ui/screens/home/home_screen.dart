@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin/util/language_matching.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:moonfin_mobile_ui/moonfin_mobile_ui.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
@@ -89,6 +90,7 @@ import '../../../util/game_library.dart';
 import 'home_row_prefetch.dart';
 import 'home_row_shift.dart';
 import 'home_view_model.dart';
+import 'mobile_home_content.dart';
 import '../../widgets/seerr/seerr_genre_label.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
@@ -537,6 +539,80 @@ class _HomeShellState extends State<_HomeShell>
   @override
   Widget build(BuildContext context) {
     final backdropStyle = _userPrefs.resolveHomeBackdropStyle();
+    if (PlatformDetection.useMobileUi &&
+        _userPrefs.get(UserPreferences.mobileCinemaEnabled) &&
+        !_userPrefs.get(UserPreferences.kidsModeEnabled)) {
+      final mode = MobileCinemaMode.fromPreference(
+        _userPrefs.get(UserPreferences.mobileCinemaMode),
+      );
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _showExitConfirmation(context);
+        },
+        child: Scaffold(
+          backgroundColor: MobileCinemaHome.backgroundFor(mode),
+          extendBody: mode == MobileCinemaMode.appleTv,
+          body: MobileHomeContent(
+            viewModel: _viewModel,
+            preferences: _userPrefs,
+            posterFor: (item, images) => item.serverId == 'seerr'
+                ? _ContentRowsState._seerrTmdbImageUrl(
+                    item.rawData['PosterPath'] as String?, 500,
+                  )
+                : _ContentRowsState._resolveImageUrl(item, images, 300, true, 1),
+            backdropFor: (item, images) => item.serverId == 'seerr'
+                ? _ContentRowsState._seerrTmdbImageUrl(
+                    (item.rawData['BackdropPath'] ?? item.rawData['PosterPath'])
+                        as String?,
+                    780,
+                  )
+                : _ContentRowsState._resolveLandscapeImageUrl(
+                    item, images, 350, 1,
+                  ),
+            onOpen: (item) {
+              final row = _viewModel.rows.firstWhereOrNull(
+                (row) => row.items.any(
+                  (candidate) => candidate.id == item.id &&
+                      candidate.serverId == item.serverId,
+                ),
+              );
+              if (row != null &&
+                  _ContentRowsState._isContinueWatchingOrNextUp(row) &&
+                  _userPrefs.get(UserPreferences.continueWatchingDefaultAction) ==
+                      ContinueWatchingDefaultAction.play) {
+                context.push(Destinations.item(
+                  item.id, serverId: item.serverId, autoPlay: true,
+                ));
+              } else if (item.serverId == 'seerr') {
+                _ContentRowsState._navigateToSeerrItem(context, item);
+              } else if (row?.rowType == HomeRowType.genres && row?.id == 'genres') {
+                context.push(Destinations.genre(item.name, genreId: item.id));
+              } else if (row?.rowType == HomeRowType.studios && row?.id == 'studios') {
+                context.push(Destinations.studio(item.name));
+              } else if (item.type == 'UserView' ||
+                  item.type == 'CollectionFolder') {
+                _ContentRowsState._navigateToLibrary(context, item);
+              } else {
+                context.push(
+                  Destinations.itemOrPhoto(
+                    item.id,
+                    serverId: item.serverId,
+                    type: item.type,
+                    channelId: item.channelId,
+                  ),
+                );
+              }
+            },
+          ),
+          bottomNavigationBar: MobileHomeNavigation(
+            viewModel: _viewModel,
+            preferences: _userPrefs,
+            onLibrary: (item) => _ContentRowsState._navigateToLibrary(context, item),
+          ),
+        ),
+      );
+    }
     final blurAmount = _userPrefs
         .get(UserPreferences.browsingBackgroundBlurAmount)
         .toDouble();

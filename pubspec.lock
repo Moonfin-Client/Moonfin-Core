@@ -1182,6 +1182,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  moonfin_mobile_ui:
+    dependency: "direct main"
+    description:
+      path: "packages/mobile_ui"
+      relative: true
+    source: path
+    version: "0.1.0"
   moonfin_native_video:
     dependency: "direct main"
     description:
