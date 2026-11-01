@@ -259,7 +259,16 @@ class ThemeMusicService implements AudioOwnable {
   void _fadeIn(int generation) {
     _fadeTimer?.cancel();
     final steps = _fadeDurationMs ~/ _fadeStepMs;
-    var step = 0;
+    // Pick up from the volume the player is at. A fresh player sits at 0, so
+    // the ramp starts from silence as before. When a fade-out is reversed
+    // (the Home screen starts one on push, then the detail screen claims the
+    // same theme), the player is still audible: starting over from 0 made the
+    // music dip to near-silence before climbing back for two seconds.
+    final target = _targetVolume * 100;
+    final current = _player?.currentVolume ?? 0;
+    var step = target > 0
+        ? ((current / target) * steps).clamp(0, steps - 1).floor()
+        : 0;
     _fadeTimer = Timer.periodic(Duration(milliseconds: _fadeStepMs), (timer) {
       if (generation != _playGeneration || _player == null) {
         timer.cancel();
