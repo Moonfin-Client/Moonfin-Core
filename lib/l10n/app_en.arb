@@ -192,6 +192,52 @@
   "@whosWatching": {
     "description": "Server user selection heading"
   },
+  "signedInOnThisDevice": "Signed in on this device",
+  "@signedInOnThisDevice": {
+    "description": "Status under a user on the Who's watching screen when this device already has their session"
+  },
+  "pinRequired": "PIN required",
+  "@pinRequired": {
+    "description": "Status under a user or account that asks for a PIN before signing in"
+  },
+  "passwordRequired": "Password required",
+  "@passwordRequired": {
+    "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+  },
+  "continueAsUser": "Continue as {name}",
+  "@continueAsUser": {
+    "description": "Phone button that signs in as the selected user on the Who's watching screen",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "switchToUser": "Switch to {name}",
+  "@switchToUser": {
+    "description": "Phone button in the Switch User sheet that switches to the selected account",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signedInAsOnServer": "Signed in as {user} on {server}",
+  "@signedInAsOnServer": {
+    "description": "Line at the top of the Switch User screen naming the current account and its server",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      },
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "accountActive": "Active",
+  "@accountActive": {
+    "description": "Marks the account that is signed in now in the Switch User screen"
+  },
   "addUser": "Add User",
   "@addUser": {
     "description": "Button to add a new user on the server screen"

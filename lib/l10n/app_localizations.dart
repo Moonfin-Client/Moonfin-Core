@@ -454,6 +454,48 @@ abstract class AppLocalizations {
   /// **'Who\'s watching?'**
   String get whosWatching;
 
+  /// Status under a user on the Who's watching screen when this device already has their session
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in on this device'**
+  String get signedInOnThisDevice;
+
+  /// Status under a user or account that asks for a PIN before signing in
+  ///
+  /// In en, this message translates to:
+  /// **'PIN required'**
+  String get pinRequired;
+
+  /// Status under a user on the Who's watching screen who needs a password to sign in
+  ///
+  /// In en, this message translates to:
+  /// **'Password required'**
+  String get passwordRequired;
+
+  /// Phone button that signs in as the selected user on the Who's watching screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as {name}'**
+  String continueAsUser(String name);
+
+  /// Phone button in the Switch User sheet that switches to the selected account
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to {name}'**
+  String switchToUser(String name);
+
+  /// Line at the top of the Switch User screen naming the current account and its server
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {user} on {server}'**
+  String signedInAsOnServer(String user, String server);
+
+  /// Marks the account that is signed in now in the Switch User screen
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get accountActive;
+
   /// Button to add a new user on the server screen
   ///
   /// In en, this message translates to:

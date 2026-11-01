@@ -25,6 +25,52 @@ class LoginScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMoonfin = ThemeRegistry.active.id == ThemeRegistry.moonfinId;
+    final cardColor = isMoonfin
+        ? _kMoonfinCardColor
+        : AppColorScheme.surface.withAlpha(0xCC);
+    final cardBorder = isMoonfin
+        ? Border.all(color: _kMoonfinCardBorderColor)
+        : Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder);
+    return LoginBackdrop(
+      child: Align(
+        alignment: const Alignment(0, -0.6),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ?header,
+                Container(
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: AppRadius.circular(_kCardRadius),
+                    border: cardBorder,
+                  ),
+                  padding: const EdgeInsets.all(32),
+                  child: child,
+                ),
+                ?footer,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The sign-in pages' background, for a page that lays itself out rather
+/// than sitting in [LoginScaffold]'s card.
+class LoginBackdrop extends StatelessWidget {
+  final Widget child;
+
+  const LoginBackdrop({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final isMoonfin = ThemeRegistry.active.id == ThemeRegistry.moonfinId;
     final gradientColors = isMoonfin
         ? const [Color(0xFF0a0a0a), Color(0xFF1a1a2e), Color(0xFF16213e)]
         : [
@@ -32,12 +78,6 @@ class LoginScaffold extends StatelessWidget {
             AppColorScheme.surfaceVariant,
             AppColorScheme.surface,
           ];
-      final cardColor = isMoonfin
-        ? _kMoonfinCardColor
-        : AppColorScheme.surface.withAlpha(0xCC);
-      final cardBorder = isMoonfin
-        ? Border.all(color: _kMoonfinCardBorderColor)
-        : Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -47,33 +87,7 @@ class LoginScaffold extends StatelessWidget {
             colors: gradientColors,
           ),
         ),
-        child: SafeArea(
-          child: Align(
-            alignment: const Alignment(0, -0.6),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ?header,
-                    Container(
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: AppRadius.circular(_kCardRadius),
-                        border: cardBorder,
-                      ),
-                      padding: const EdgeInsets.all(32),
-                      child: child,
-                    ),
-                    ?footer,
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        child: SafeArea(child: child),
       ),
     );
   }

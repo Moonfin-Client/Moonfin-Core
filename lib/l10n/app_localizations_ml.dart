@@ -143,6 +143,33 @@ class AppLocalizationsMl extends AppLocalizations {
   String get whosWatching => 'ആരാണ് നിരീക്ഷിക്കുന്നത്?';
 
   @override
+  String get signedInOnThisDevice => 'Signed in on this device';
+
+  @override
+  String get pinRequired => 'PIN required';
+
+  @override
+  String get passwordRequired => 'Password required';
+
+  @override
+  String continueAsUser(String name) {
+    return 'Continue as $name';
+  }
+
+  @override
+  String switchToUser(String name) {
+    return 'Switch to $name';
+  }
+
+  @override
+  String signedInAsOnServer(String user, String server) {
+    return 'Signed in as $user on $server';
+  }
+
+  @override
+  String get accountActive => 'Active';
+
+  @override
   String get addUser => 'ഉപയോക്താവിനെ ചേർക്കുക';
 
   @override
