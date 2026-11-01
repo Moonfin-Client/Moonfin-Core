@@ -10167,10 +10167,6 @@
     "@spotlightSeasonsEpisodes": {
         "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
     },
-    "spotlightFilmography": "",
-    "@spotlightFilmography": {
-        "description": "Title of the spotlight summary card that opens a person's filmography modal"
-    },
     "spotlightMoviesAndShows": "Film & Serie TV",
     "@spotlightMoviesAndShows": {
         "description": "Subtitle of the spotlight similar and recommendations card"
