@@ -23,6 +23,24 @@ class _ServerResolver extends MediaStreamResolver {
   );
 }
 
+/// A server whose streams' credentials expire.
+class _RenewingServerResolver extends _ServerResolver
+    implements StreamCredentialRefresher {
+  final List<bool> asked = <bool>[];
+
+  @override
+  Future<StreamCredentials?> currentCredentials(
+    StreamResolutionResult current, {
+    bool refresh = false,
+  }) async {
+    asked.add(refresh);
+    return const StreamCredentials(
+      streamUrl: 'https://server/movie',
+      requestHeaders: {'Authorization': 'Bearer fresh'},
+    );
+  }
+}
+
 class _Downloads extends Fake implements OfflineStreamResolver {
   @override
   Future<OfflineStreamResult?> resolve(String itemId) async =>
@@ -48,6 +66,51 @@ void main() {
     final result = await resolveWith(fromServer: false);
     expect(result.isLocalMedia, isTrue);
     expect(result.streamUrl, '/downloads/movie.mp4');
+  });
+
+  group('credential renewal', () {
+    const stream = StreamResolutionResult(
+      streamUrl: 'https://server/movie',
+      mediaSourceId: 'movie',
+      playMethod: StreamPlayMethod.directPlay,
+    );
+
+    test('reaches the server resolver for a server stream', () async {
+      final server = _RenewingServerResolver();
+      final resolver = LocalFirstMediaStreamResolver(
+        inner: server,
+        offline: _Downloads(),
+      );
+      final credentials = await resolver.currentCredentials(
+        stream,
+        refresh: true,
+      );
+      expect(credentials?.requestHeaders['Authorization'], 'Bearer fresh');
+      expect(server.asked, [true]);
+    });
+
+    test('has nothing for a download or a server without expiry', () async {
+      final server = _RenewingServerResolver();
+      final local = await LocalFirstMediaStreamResolver(
+        inner: server,
+        offline: _Downloads(),
+      ).resolve(movie);
+      expect(
+        await LocalFirstMediaStreamResolver(
+          inner: server,
+          offline: _Downloads(),
+        ).currentCredentials(local),
+        isNull,
+      );
+      expect(server.asked, isEmpty);
+      expect(
+        await LocalFirstMediaStreamResolver(
+          inner: _ServerResolver(),
+          offline: _Downloads(),
+        ).currentCredentials(stream),
+        isNull,
+      );
+    });
   });
 
   test('play from server skips the download while the server is up', () async {

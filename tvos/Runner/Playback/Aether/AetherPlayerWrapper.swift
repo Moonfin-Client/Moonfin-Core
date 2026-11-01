@@ -61,7 +61,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     /// Structured playback errors for the Dart transcode-fallback machinery.
     /// Payloads: `{"event": "playerError", "kind": ..., "recoverable": ...,
-    /// "message": ...}`.
+    /// "message": ...}`, and `{"event": "credentialsRefused", "status": ...}`
+    /// when the server refuses the session's credentials mid-play.
     var onPlayerError: (([String: Any]) -> Void)?
 
     // MARK: - Engine
@@ -295,6 +296,17 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         engine.$playbackPhase
             .receive(on: DispatchQueue.main)
             .sink { [weak self] phase in self?.applyPhase(phase) }
+            .store(in: &cancellables)
+
+        // AE#792: the server refused the session's credentials (an expired
+        // token). The engine holds the session a few seconds for new ones, so
+        // Dart is told to renew them rather than wait for the failure.
+        engine.sourceAuthorizationRefused
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self, self.ownsEngine else { return }
+                self.onPlayerError?(["event": "credentialsRefused", "status": status])
+            }
             .store(in: &cancellables)
 
         // A stall reports nothing new while the buffer drains under it, so
@@ -577,7 +589,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             if !didEmitLoadError {
                 let info = Self.sharedEngine()?.errorInfo
                 let kind = Self.classifySessionError(
-                    engineKind: info?.kind.rawValue, underlyingDomain: info?.underlyingDomain)
+                    engineKind: info?.kind.rawValue, underlyingDomain: info?.underlyingDomain,
+                    afterPlayback: sawPlaybackThisLoad)
                 emitError(kind: kind, recoverable: true, message: message)
             }
         }
@@ -966,6 +979,34 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         sourceConfiguration = configuration
     }
 
+    /// Gives the open stream new request headers, renewed credentials, from
+    /// its next request on (AE#792). A route whose requests AVFoundation
+    /// makes fixed them at load, so that one reloads at the playhead to carry
+    /// them, the way a background return does.
+    func updateRequestHeaders(_ headers: [String: String]) {
+        sourceConfiguration.headers = headers
+        guard ownsEngine, let engine = Self.sharedEngine() else { return }
+        guard engine.updateRequestHeaders(headers) == .installedForNextRebuild else { return }
+        let generation = loadGeneration
+        // Only a viewer pause stays paused: a buffering stream meant to play.
+        let wasPaused = state == .paused
+        secondaryReloadSelection.beginReload(previouslyActive: lastReadySecondaryActive)
+        primaryReloadSelection.beginReload(previouslyActive: lastReadyPrimaryActive)
+        Task { @MainActor [weak self] in
+            do {
+                try await engine.reloadAtCurrentPosition()
+            } catch {
+                // The stream keeps its old credentials, and fails over to the
+                // manager's reconnect once the server refuses them.
+                return
+            }
+            guard let self, self.ownsEngine, generation == self.loadGeneration else { return }
+            self.reapplySecondaryAfterReload(force: true)
+            if engine.isSessionReady { self.reapplyPrimaryAfterReload(force: true) }
+            if wasPaused { engine.pause() }
+        }
+    }
+
     func setForceSubtitlesDisabledOnStart(_ force: Bool) {
         forceSubtitlesDisabledOnStart = force
     }
@@ -1178,6 +1219,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     /// Engine error kinds where the connection failed, not the stream.
+    /// Engine error kinds where the server refused the session's
+    /// credentials. Once the stream has played that is a token that lapsed,
+    /// and renewed ones open the same stream again.
+    private nonisolated static let credentialErrorKinds: Set<String> = [
+        PlaybackErrorKind.sourceRefused.rawValue,
+    ]
+
     private nonisolated static let transportErrorKinds: Set<String> = [
         PlaybackErrorKind.vodSourceFailed.rawValue,
         PlaybackErrorKind.sourceRateLimited.rawValue,
@@ -1187,11 +1235,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     /// A mid-play failure only carries a message, so the engine's `errorInfo`
     /// is the only way to tell a dropped connection from a stream it can't
-    /// play. Only the second is worth a server transcode.
+    /// play. Only the second is worth a server transcode. A refusal before
+    /// the stream ever played still goes to one: the server may only be
+    /// refusing this route.
     nonisolated static func classifySessionError(
-        engineKind: String?, underlyingDomain: String?
+        engineKind: String?, underlyingDomain: String?, afterPlayback: Bool = false
     ) -> String {
         if underlyingDomain == NSURLErrorDomain { return "network" }
+        if afterPlayback, let engineKind, credentialErrorKinds.contains(engineKind) {
+            return "source_refused"
+        }
         if let engineKind, transportErrorKinds.contains(engineKind) { return "network" }
         return "unsupported_container"
     }
