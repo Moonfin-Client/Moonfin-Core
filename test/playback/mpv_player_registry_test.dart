@@ -56,6 +56,23 @@ void main() {
     expect(registry.liveCount, 0);
   });
 
+  test('releasing an owner twice disposes it once', () async {
+    var calls = 0;
+    final owner = Object();
+    registry.register(owner, () async => calls++);
+
+    await registry.disposeAll();
+    await registry.release(owner);
+
+    expect(calls, 1);
+  });
+
+  test('registering after shutdown starts is rejected', () async {
+    await registry.disposeAll();
+
+    expect(() => registry.register(Object(), () async {}), throwsStateError);
+  });
+
   test('prepareForExit gives every caller the same cleanup future', () {
     expect(identical(AppExit.prepareForExit(), AppExit.prepareForExit()), isTrue);
   });

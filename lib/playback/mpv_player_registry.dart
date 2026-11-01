@@ -21,24 +21,36 @@ class MpvPlayerRegistry {
 
   final Map<Object, Future<void> Function()> _live = {};
   final Map<Object, Future<void>> _inFlight = {};
+  final Expando<bool> _released = Expando<bool>();
+  bool _shuttingDown = false;
 
   int get liveCount => _live.length;
 
   Player create({PlayerConfiguration configuration = const PlayerConfiguration()}) {
+    _checkOpen();
     final player = Player(configuration: configuration);
     register(player, player.dispose);
     return player;
   }
 
+  void _checkOpen() {
+    if (_shuttingDown) {
+      throw StateError('MpvPlayerRegistry is shutting down');
+    }
+  }
+
   void register(Object owner, Future<void> Function() dispose) {
+    _checkOpen();
     _live[owner] = dispose;
   }
 
   /// Disposes [player] once. An owner stays tracked until its dispose has
   /// finished, and a second caller shares the same in-flight future.
   Future<void> dispose(Player player) {
-    if (!_live.containsKey(player)) return player.dispose();
-    return release(player);
+    if (_live.containsKey(player) || _released[player] == true) {
+      return release(player);
+    }
+    return player.dispose();
   }
 
   Future<void> release(Object owner) {
@@ -47,10 +59,14 @@ class MpvPlayerRegistry {
     return _inFlight[owner] ??= Future<void>.sync(dispose).whenComplete(() {
       _live.remove(owner);
       _inFlight.remove(owner);
+      _released[owner] = true;
     });
   }
 
+  /// Stops accepting new players, then disposes every live one. Called on
+  /// app exit, so a player created after the snapshot cannot outlive it.
   Future<void> disposeAll() async {
+    _shuttingDown = true;
     await Future.wait(
       _live.keys.toList().map(
         (owner) => release(owner).timeout(_disposeTimeout).catchError((Object e) {
