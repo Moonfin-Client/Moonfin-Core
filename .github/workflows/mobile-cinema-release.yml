@@ -48,8 +48,10 @@ jobs:
           flutter test
 
       - name: Build mobile release APK
+        # Keep pub enabled: Flutter regenerates the Android plugin registry in
+        # release mode here, excluding dev-only plugins such as integration_test.
         run: >-
-          flutter build apk --release --no-pub --flavor mobile
+          flutter build apk --release --flavor mobile
           --build-name "$BUILD_NAME" --build-number "$BUILD_NUMBER"
           --dart-define=DISTRIBUTION_CHANNEL=apk
 
