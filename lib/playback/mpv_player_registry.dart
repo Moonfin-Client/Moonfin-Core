@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart';
 
 /// Keeps every live media_kit [Player] reachable so app exit can dispose them.
@@ -11,11 +12,15 @@ import 'package:media_kit/media_kit.dart';
 class MpvPlayerRegistry {
   MpvPlayerRegistry._();
 
+  @visibleForTesting
+  MpvPlayerRegistry.forTest();
+
   static final MpvPlayerRegistry instance = MpvPlayerRegistry._();
 
   static const Duration _disposeTimeout = Duration(seconds: 2);
 
   final Map<Object, Future<void> Function()> _live = {};
+  final Map<Object, Future<void>> _inFlight = {};
 
   int get liveCount => _live.length;
 
@@ -29,19 +34,28 @@ class MpvPlayerRegistry {
     _live[owner] = dispose;
   }
 
+  /// Disposes [player] once. An owner stays tracked until its dispose has
+  /// finished, and a second caller shares the same in-flight future.
   Future<void> dispose(Player player) {
-    _live.remove(player);
-    return player.dispose();
+    if (!_live.containsKey(player)) return player.dispose();
+    return release(player);
+  }
+
+  Future<void> release(Object owner) {
+    final dispose = _live[owner];
+    if (dispose == null) return Future<void>.value();
+    return _inFlight[owner] ??= Future<void>.sync(dispose).whenComplete(() {
+      _live.remove(owner);
+      _inFlight.remove(owner);
+    });
   }
 
   Future<void> disposeAll() async {
-    final pending = _live.values.toList();
-    _live.clear();
     await Future.wait(
-      pending.map(
-        (dispose) => Future<void>.sync(dispose)
-            .timeout(_disposeTimeout)
-            .catchError((Object _) {}),
+      _live.keys.toList().map(
+        (owner) => release(owner).timeout(_disposeTimeout).catchError((Object e) {
+          debugPrint('[MpvPlayerRegistry] dispose of $owner did not finish: $e');
+        }),
       ),
     );
   }
