@@ -71,7 +71,7 @@ end
 # something a resolve should pick up on its own.
 # The fork also turns on the DualLayerDolbyVision trait, which Xcode 26 can't set from a project.
 aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = '8f8fc7f83d6fe65f955f4bdf30486ce2bc514ebf'
+aether_revision = 'd55f374108310435cb877a2f550e19ee996f92ba'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 
