@@ -343,6 +343,45 @@ void main() {
     await _done(tester, service);
   });
 
+  testWidgets('finds midnight again on a clock that changes under it', (
+    tester,
+  ) async {
+    // Shown on a clock that reads Monday 21:00, three hours to midnight. It
+    // then reads 23:30, as when the server's clock replaces this device's,
+    // and the screen is rebuilt. "Tomorrow" turns into "today" at the new
+    // clock's midnight, half an hour on, not three hours.
+    var moment = _at(19, 21);
+    final route = ValueNotifier('/home');
+    final service = AccessScheduleService(
+      now: () => moment,
+      loadSchedules: (_) async => [
+        _entry('Monday', 8, 20),
+        _entry('Tuesday', 8, 20),
+      ],
+      onBlocked: () async {},
+    );
+    service.setUser('child');
+    await tester.pumpWidget(_app(service, clock: () => moment, path: route));
+    await tester.pump();
+    final opening = _time(_at(20, 8));
+    expect(
+      find.text('You can use it again tomorrow at $opening.'),
+      findsOneWidget,
+    );
+
+    moment = _at(19, 23, 30);
+    route.value = '/home/again';
+    await tester.pump();
+    moment = _at(20, 0, 1);
+    await tester.pump(const Duration(minutes: 31));
+
+    expect(
+      find.text('You can use it again today at $opening.'),
+      findsOneWidget,
+    );
+    await _done(tester, service);
+  });
+
   testWidgets('steps aside for the user picker and comes back after it', (
     tester,
   ) async {

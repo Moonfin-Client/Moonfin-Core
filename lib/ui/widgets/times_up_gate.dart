@@ -182,6 +182,16 @@ class _TimesUpState extends State<_TimesUp> {
     });
   }
 
+  /// The clock [widget.now] reads can change under the screen, from this
+  /// device's to the server's once the server says what time it is, so the
+  /// next midnight is worked out again each time the screen is rebuilt.
+  @override
+  void didUpdateWidget(_TimesUp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _midnight?.cancel();
+    _scheduleMidnight();
+  }
+
   @override
   void dispose() {
     _midnight?.cancel();

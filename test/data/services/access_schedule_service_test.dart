@@ -736,6 +736,40 @@ void main() {
       });
     });
 
+    test('tells listeners when the clock moves while blocked', () {
+      fakeAsync((async) {
+        // Both looks find the user blocked with the same opening, the
+        // server's Tuesday 08:00, but the second clock runs half an hour
+        // ahead of the first, which moves the time the screen reads.
+        late final _Harness h;
+        h = _Harness(
+          async,
+          DateTime.utc(2026, 10, 19, 21).toLocal(),
+          schedules: (_) => [_entry('Weekday', 8, 20)],
+          refuses: true,
+          serverTime: (call) async => ServerTime(
+            utcTime: h.clock.now().toUtc().add(
+              Duration(minutes: call == 1 ? 0 : 30),
+            ),
+            utcOffset: const Duration(hours: 9),
+          ),
+        );
+        h.service.setUser('child');
+        h.settle();
+        final opening = h.service.status.nextAccess;
+        expect(opening, DateTime.utc(2026, 10, 20, 8));
+        var told = 0;
+        h.service.addListener(() => told++);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.timeAsks, 2);
+        expect(h.service.status.nextAccess, opening);
+        expect(told, greaterThan(0));
+        expect(h.service.scheduleNow.minute, 31);
+        h.service.dispose();
+      });
+    });
+
     test('is not asked of a user without a schedule', () {
       fakeAsync((async) {
         final h = _Harness(

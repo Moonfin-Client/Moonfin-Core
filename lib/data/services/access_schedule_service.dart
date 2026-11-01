@@ -227,9 +227,22 @@ class AccessScheduleService extends ChangeNotifier {
     }
     _appliedLook = look;
     _schedules = fresh;
+    final reframed = _newFrame(_serverClock, clock);
     _serverClock = clock;
     _timeUnsupported = unsupported;
     _apply(failed: false, refused: refused);
+    // The Time's up screen reads "today" and its midnight from [scheduleNow],
+    // which a new clock moves even when the status is the same.
+    if (reframed && isBlocked) notifyListeners();
+  }
+
+  /// Whether [after] reads a different wall clock from [before]: one appears
+  /// or goes, the offset changes, or the skew moves by more than a read's
+  /// round trip could.
+  static bool _newFrame(ServerClock? before, ServerClock? after) {
+    if (before == null || after == null) return before != after;
+    return before.offset != after.offset ||
+        (before.skew - after.skew).abs() > const Duration(minutes: 1);
   }
 
   void _apply({required bool failed, bool? refused}) {
