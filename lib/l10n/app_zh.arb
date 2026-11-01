@@ -986,7 +986,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "未找到该作者的图书。",
+    "noBooksFound": "未找到该作者的图书",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -1254,7 +1254,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "使用 OpenSubtitles 插件进行搜索",
+    "searchOpenSubtitlesPlugin": "使用 OpenSubtitles 搜索",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -2766,7 +2766,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "详情页背景模糊",
+    "detailsBackgroundBlur": "背景虚化",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -7668,7 +7668,7 @@
             }
         }
     },
-    "recommendationSystemSubtitle": "可选用「Moonfin本地资料库推荐算法」，或线上 TMDb 相似度匹配算法。注意：线上推荐功能需要对接 Seerr 服务。",
+    "recommendationSystemSubtitle": "使用 Moonfin Recommends 本地媒体库算法、Jellyfin Recommends 服务器引擎，或在线 TMDb 的相似度指标。注意：在线推荐需要集成 Seerr。",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -8215,7 +8215,7 @@
     },
     "audiobookNoChapters": "无章节",
     "settingsAlwaysExpandNavbarLabels": "始终显示顶部导航栏中的文本标签",
-    "detailScreenStyleSubtitle": "Moonfin 是经典布局；Modern 是自适应影院风布局。",
+    "detailScreenStyleSubtitle": "Moonfin 是经典布局；Modern 是自适应影院风布局。Spotlight 是一种以主视觉区优先、带有弹出式内容卡片的布局。Nouveau 是一种全屏布局，各个版块沿页面自上而下堆叠。Minimalist 是有封面图、一个播放按钮和各集列表。",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -8326,7 +8326,7 @@
     "adminNetworkingEnableIpv6": "启用 IPv6",
     "adminNetworkingLocalSubnetsHint": "逗号或换行分隔的 IP 地址或 CIDR 子网列表，视为本地网络。",
     "adminNetworkingPublishedUris": "发布的服务器 URI",
-    "recommendationsApplyParentalRatingCap": "是否启用家长分级上限限制？",
+    "recommendationsApplyParentalRatingCap": "启用推荐分级限制",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -8369,7 +8369,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "显示媒体技术参数？",
+    "showTechnicalDetails": "显示媒体详情",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -10147,7 +10147,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "显示文字？",
+    "showLoadingAnimationText": "显示文字",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
