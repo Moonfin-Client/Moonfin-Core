@@ -124,10 +124,26 @@ String localizeHomeRowTitle({
     return _localizeLatestRowTitle(row.title, l10n);
   }
 
+  if (row.id.startsWith('sinceYouWatched')) {
+    return _localizeSinceYouWatchedTitle(row.title, l10n);
+  }
+
   if (row.id.startsWith('imdb_')) {
     return row.title.replaceAll('IMDb ', '').replaceAll('IMDb', '').trim();
   }
   return row.title;
+}
+
+/// The data layer has no localizations, so it titles the row in English with the
+/// watched item in quotes, and the item is read back out here.
+String _localizeSinceYouWatchedTitle(String title, AppLocalizations l10n) {
+  const itemPrefix = 'Since you watched "';
+  if (title.startsWith(itemPrefix) && title.endsWith('"')) {
+    return l10n.sinceYouWatchedItemRowTitle(
+      title.substring(itemPrefix.length, title.length - 1),
+    );
+  }
+  return l10n.sinceYouWatchedRowTitle;
 }
 
 String _localizeLatestRowTitle(String title, AppLocalizations l10n) {

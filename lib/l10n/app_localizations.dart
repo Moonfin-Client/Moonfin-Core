@@ -21550,6 +21550,132 @@ abstract class AppLocalizations {
   /// **'Show Studio row in Home Sections.'**
   String get displayStudiosRowsSubtitle;
 
+  /// Settings section header for the Since You Watched rows
+  ///
+  /// In en, this message translates to:
+  /// **'Since You Watched'**
+  String get sinceYouWatched;
+
+  /// Home row title for a Since You Watched row before its source item is known
+  ///
+  /// In en, this message translates to:
+  /// **'Since you watched'**
+  String get sinceYouWatchedRowTitle;
+
+  /// Home row title for recommendations based on an item the user watched
+  ///
+  /// In en, this message translates to:
+  /// **'Since you watched \"{title}\"'**
+  String sinceYouWatchedItemRowTitle(String title);
+
+  /// Name of one of the Since You Watched rows in the home sections list
+  ///
+  /// In en, this message translates to:
+  /// **'Since You Watched Row {number}'**
+  String sinceYouWatchedRowNumber(int number);
+
+  /// No description provided for @displaySinceYouWatchedRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Since You Watched Rows'**
+  String get displaySinceYouWatchedRows;
+
+  /// No description provided for @displaySinceYouWatchedRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show and customize Since You Watched rows in Home Sections.'**
+  String get displaySinceYouWatchedRowsSubtitle;
+
+  /// No description provided for @sinceYouWatchedSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation Source'**
+  String get sinceYouWatchedSource;
+
+  /// No description provided for @sinceYouWatchedSourceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
+  String get sinceYouWatchedSourceDescription;
+
+  /// No description provided for @sinceYouWatchedSourceLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Recommends'**
+  String get sinceYouWatchedSourceLocal;
+
+  /// No description provided for @sinceYouWatchedSourceServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Jellyfin Recommends'**
+  String get sinceYouWatchedSourceServer;
+
+  /// No description provided for @sinceYouWatchedSourceOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDb Similarity'**
+  String get sinceYouWatchedSourceOnline;
+
+  /// No description provided for @sinceYouWatchedSourceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Source Type'**
+  String get sinceYouWatchedSourceType;
+
+  /// No description provided for @sinceYouWatchedSourceTypeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose type of items to recommend'**
+  String get sinceYouWatchedSourceTypeDescription;
+
+  /// No description provided for @sinceYouWatchedSourceItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Source Item'**
+  String get sinceYouWatchedSourceItem;
+
+  /// No description provided for @sinceYouWatchedSourceItemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which source item to base recommendations on'**
+  String get sinceYouWatchedSourceItemDescription;
+
+  /// No description provided for @sinceYouWatchedRecentlyWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Watched'**
+  String get sinceYouWatchedRecentlyWatched;
+
+  /// No description provided for @sinceYouWatchedRandom.
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get sinceYouWatchedRandom;
+
+  /// No description provided for @sinceYouWatchedNumRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Rows to Add'**
+  String get sinceYouWatchedNumRows;
+
+  /// No description provided for @sinceYouWatchedNumRowsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how many Since You Watched rows to display (1-5)'**
+  String get sinceYouWatchedNumRowsDescription;
+
+  /// No description provided for @sinceYouWatchedIncludeWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Include Previously Watched'**
+  String get sinceYouWatchedIncludeWatched;
+
+  /// No description provided for @sinceYouWatchedIncludeWatchedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include watched items in recommendations'**
+  String get sinceYouWatchedIncludeWatchedSubtitle;
+
   /// No description provided for @studiosRowSorting.
   ///
   /// In en, this message translates to:
