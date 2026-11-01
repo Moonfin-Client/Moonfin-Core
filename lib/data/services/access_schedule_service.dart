@@ -184,8 +184,12 @@ class AccessScheduleService extends ChangeNotifier {
     // so a slow clock can't hold up a denial the server has already given.
     // The clock isn't asked of a server that has said it can't tell.
     bool? refused;
-    var clock = _serverClock;
-    var unsupported = _timeUnsupported;
+    // What this look's own clock read says, used only when it answered: a
+    // read that fails leaves the stored clock as it is, which a look that
+    // overlapped this one may have brought up to date in the meantime.
+    ServerClock? clock;
+    var unsupported = false;
+    var clockAnswered = false;
     final ask = serverRefuses;
     final askTime = loadServerTime;
     if (fresh.isNotEmpty) {
@@ -197,17 +201,17 @@ class AccessScheduleService extends ChangeNotifier {
       }
 
       Future<void> readClock() async {
-        if (askTime == null || unsupported) return;
+        if (askTime == null || _timeUnsupported) return;
         try {
           final time = await askTime();
           if (time == null) {
             unsupported = true;
-            clock = null;
           } else {
             clock = ServerClock.from(time, now());
           }
+          clockAnswered = true;
         } catch (_) {
-          // Keeps the last clock.
+          // Keeps the stored clock.
         }
       }
 
@@ -227,9 +231,12 @@ class AccessScheduleService extends ChangeNotifier {
     }
     _appliedLook = look;
     _schedules = fresh;
-    final reframed = _newFrame(_serverClock, clock);
-    _serverClock = clock;
-    _timeUnsupported = unsupported;
+    var reframed = false;
+    if (clockAnswered) {
+      reframed = _newFrame(_serverClock, clock);
+      _serverClock = clock;
+      _timeUnsupported = unsupported;
+    }
     _apply(failed: false, refused: refused);
     // The Time's up screen reads "today" and its midnight from [scheduleNow],
     // which a new clock moves even when the status is the same.

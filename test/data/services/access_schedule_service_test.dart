@@ -770,6 +770,43 @@ void main() {
       });
     });
 
+    test('a failed read does not undo a clock an overlapping look brought', () {
+      fakeAsync((async) {
+        // Two looks overlap. The first one's clock answers; the second, which
+        // started before that answer came, then fails to read the clock. The
+        // first one's clock stays.
+        final first = Completer<ServerTime?>();
+        final second = Completer<ServerTime?>();
+        late final _Harness h;
+        h = _Harness(
+          async,
+          DateTime.utc(2026, 10, 19, 21).toLocal(),
+          schedules: (_) => [_entry('Weekday', 8, 20)],
+          serverTime: (call) => call == 1 ? first.future : second.future,
+        );
+        h.service.setUser('child');
+        h.settle();
+        unawaited(h.service.refresh());
+        h.settle();
+        expect(h.timeAsks, 2);
+
+        first.complete(
+          ServerTime(
+            utcTime: h.clock.now().toUtc(),
+            utcOffset: const Duration(hours: 9),
+          ),
+        );
+        h.settle();
+        expect(h.service.scheduleNow.hour, 6);
+
+        second.completeError(StateError('offline'));
+        h.settle();
+        expect(h.service.scheduleNow.isUtc, isTrue);
+        expect(h.service.scheduleNow.hour, 6);
+        h.service.dispose();
+      });
+    });
+
     test('is not asked of a user without a schedule', () {
       fakeAsync((async) {
         final h = _Harness(
