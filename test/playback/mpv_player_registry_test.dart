@@ -1,48 +1,56 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:moonfin/playback/mpv_player_registry.dart';
 import 'package:moonfin/util/app_exit.dart';
 
+class _FakePlayer extends Fake implements Player {
+  _FakePlayer(this._dispose);
+
+  final Future<void> Function() _dispose;
+  int disposeCalls = 0;
+
+  @override
+  Future<void> dispose() {
+    disposeCalls++;
+    return _dispose();
+  }
+}
+
 void main() {
   late MpvPlayerRegistry registry;
-  setUp(() => registry = MpvPlayerRegistry.forTest());
+  setUp(() => registry = MpvPlayerRegistry());
 
-  test('disposeAll disposes every registered player once', () async {
-    final disposed = <String>[];
-    registry.register(Object(), () async => disposed.add('a'));
-    registry.register(Object(), () async => disposed.add('b'));
+  _FakePlayer track(Future<void> Function() dispose) =>
+      registry.track(_FakePlayer(dispose)) as _FakePlayer;
+
+  test('disposeAll disposes every tracked player once', () async {
+    final a = track(() async {});
+    final b = track(() async {});
 
     await registry.disposeAll();
     await registry.disposeAll();
 
-    expect(disposed, unorderedEquals(['a', 'b']));
-    expect(registry.liveCount, 0);
+    expect(a.disposeCalls, 1);
+    expect(b.disposeCalls, 1);
   });
 
   test('disposeAll survives a player that throws or never finishes', () async {
-    final disposed = <String>[];
-    registry.register(Object(), () async => throw StateError('already disposed'));
-    registry.register(Object(), () => Future<void>.delayed(const Duration(days: 1)));
-    registry.register(Object(), () async => disposed.add('ok'));
+    track(() async => throw StateError('already disposed'));
+    track(() => Future<void>.delayed(const Duration(days: 1)));
+    final ok = track(() async {});
 
     await registry.disposeAll();
 
-    expect(disposed, ['ok']);
+    expect(ok.disposeCalls, 1);
   });
 
-  test('an owner stays tracked while its dispose is in flight', () async {
+  test('disposeAll waits for a dispose already in flight', () async {
     final gate = Completer<void>();
-    var calls = 0;
-    final owner = Object();
-    registry.register(owner, () {
-      calls++;
-      return gate.future;
-    });
+    final player = track(() => gate.future);
 
-    final first = registry.release(owner);
-    expect(registry.liveCount, 1);
-
+    final first = registry.dispose(player);
     final all = registry.disposeAll();
     var allDone = false;
     unawaited(all.then((_) => allDone = true));
@@ -52,25 +60,22 @@ void main() {
     gate.complete();
     await Future.wait([first, all]);
 
-    expect(calls, 1);
-    expect(registry.liveCount, 0);
+    expect(player.disposeCalls, 1);
   });
 
-  test('releasing an owner twice disposes it once', () async {
-    var calls = 0;
-    final owner = Object();
-    registry.register(owner, () async => calls++);
+  test('disposing a player again after exit released it does nothing', () async {
+    final player = track(() async {});
 
     await registry.disposeAll();
-    await registry.release(owner);
+    await registry.dispose(player);
 
-    expect(calls, 1);
+    expect(player.disposeCalls, 1);
   });
 
-  test('registering after shutdown starts is rejected', () async {
+  test('creating a player after shutdown starts is rejected', () async {
     await registry.disposeAll();
 
-    expect(() => registry.register(Object(), () async {}), throwsStateError);
+    expect(() => registry.create(), throwsStateError);
   });
 
   test('prepareForExit gives every caller the same cleanup future', () {
