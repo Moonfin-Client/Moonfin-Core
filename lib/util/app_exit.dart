@@ -16,16 +16,16 @@ class AppExit {
     'moonfin/appletv_system',
   );
 
-  static bool _toreDown = false;
+  static Future<void>? _teardown;
 
   /// Releases native resources that would otherwise be killed mid-operation
   /// when the process exits. Most importantly it closes the drift/SQLite
   /// database so its background isolate shuts down gracefully instead of
   /// aborting (SIGABRT) during teardown. Idempotent and safe to call from
   /// every exit path 
-  static Future<void> prepareForExit() async {
-    if (_toreDown) return;
-    _toreDown = true;
+  static Future<void> prepareForExit() => _teardown ??= _tearDown();
+
+  static Future<void> _tearDown() async {
     await MpvPlayerRegistry.instance.disposeAll();
     if (GetIt.instance.isRegistered<OfflineDatabase>()) {
       try {

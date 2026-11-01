@@ -44,6 +44,7 @@ import '../../playback/html_video_backend_profile.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
 import '../../playback/mpv_client_certificate.dart';
+import '../../playback/mpv_player_registry.dart';
 import '../../playback/silo_plugin_for.dart';
 import 'bounded_network_image.dart';
 import 'fullscreen_backdrop_switcher.dart';
@@ -1558,7 +1559,7 @@ class _MediaBarState extends State<MediaBar>
     final existing = _trailerPlayer;
     if (existing != null) return existing;
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: const PlayerConfiguration(libass: false),
     );
     _trailerPlayer = player;
@@ -1618,7 +1619,9 @@ class _MediaBarState extends State<MediaBar>
     _trailerPlayer = null;
     _trailerController = null;
     await player?.stop();
-    player?.dispose();
+    if (player != null) {
+      unawaited(MpvPlayerRegistry.instance.dispose(player));
+    }
   }
 
   void _clearSponsorBlockTracking() {
