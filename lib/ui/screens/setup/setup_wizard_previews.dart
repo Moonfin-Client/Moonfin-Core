@@ -16,7 +16,6 @@ import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
 import '../../../data/services/library_scope_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
-import '../../../data/services/server_messages_service.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/bottom_nav_tabs.dart';
@@ -26,10 +25,10 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
 import '../../../util/game_library.dart' show libraryIcon;
-import '../../../util/live_tv_library.dart' show librariesForNav;
+import '../../../util/live_tv_library.dart'
+    show isLiveTvLibrary, librariesForNav;
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
-import '../../../util/signed_in_server_features.dart';
 import '../../../util/tv_ui_scale.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/bottom_nav/bottom_nav_metrics.dart';
@@ -99,7 +98,7 @@ abstract final class SetupPreviewData {
 
   static Future<void> ensureLoaded() async {
     if (debugOverride != null) return;
-    unawaited(_loadLibraries());
+    unawaited(loadLibraries());
     if (_loading) return;
     if (items.isNotEmpty) return;
     final viewModel = _viewModel;
@@ -135,7 +134,12 @@ abstract final class SetupPreviewData {
     }
   }
 
-  static Future<void> _loadLibraries() async {
+  /// Whether the user's libraries include Live TV, the check the real navbar
+  /// makes before it shows its Live TV button. False until they've loaded.
+  static bool get hasLiveTv => libraries.value.any(isLiveTvLibrary);
+
+  /// Loads [libraries], for a screen that needs them with no preview up.
+  static Future<void> loadLibraries() async {
     if (_loadingLibraries) return;
     _loadingLibraries = true;
     try {
@@ -1764,18 +1768,27 @@ Widget settingsHomePreview() {
       final modern =
           previewValue(context, UserPreferences.homeRowsStyle) ==
           HomeRowsStyle.v2;
+      // Modern rows hold the first card in focus, the way Home looks with a
+      // row in focus, so the card's grown state and its details show.
       return switch (previewValue(context, UserPreferences.navbarPosition)) {
-        NavbarPosition.top => _topNavbarPreview(context, items, modern: modern),
+        NavbarPosition.top => _topNavbarPreview(
+          context,
+          items,
+          modern: modern,
+          focusFirst: modern,
+        ),
         NavbarPosition.left => _leftNavbarPreview(
           context,
           items,
           modern: modern,
+          focusFirst: modern,
         ),
         NavbarPosition.bottom => _bottomNavbarPreview(
           context,
           items,
           previewValue(context, UserPreferences.bottomNavbarStyle),
           modern: modern,
+          focusFirst: modern,
         ),
       };
     },
@@ -1792,9 +1805,9 @@ bool get _seerrAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().seerrAvailable;
 
-bool get _hasServerMessages =>
-    GetIt.instance.isRegistered<ServerMessagesService>() &&
-    GetIt.instance<ServerMessagesService>().messages.isNotEmpty;
+bool get _downloadsAvailable =>
+    GetIt.instance.isRegistered<UserRepository>() &&
+    DownloadsNavSlot.isAvailable();
 
 /// The user's libraries for a navbar that lists them one by one, minus the
 /// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
@@ -1852,7 +1865,7 @@ List<_NavButton> _navButtons(
   final liveTv =
       !kids &&
       on(UserPreferences.showLiveTvButton) &&
-      liveTvOnAnySignedInServer();
+      SetupPreviewData.hasLiveTv;
   final seerrLabel = GetIt.instance.isRegistered<SeerrPreferences>()
       ? GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)
       : l10n.seerr;
@@ -1885,16 +1898,13 @@ List<_NavButton> _navButtons(
         icon(glyph, label)
     else if (libraries)
       asset('assets/icons/clapperboard.png', l10n.libraries),
-    // Downloads only shows once something is saved, the way the real button
-    // does.
-    if (on(UserPreferences.showDownloadsButton) &&
-        PlatformDetection.supportsOfflineDownloads &&
-        !PlatformDetection.isWeb &&
-        DownloadsNavSlot.hasSavedMedia())
+    // The real Downloads and Messages buttons also wait for something saved
+    // or posted. The preview leaves that out so their switches show a change.
+    if (on(UserPreferences.showDownloadsButton) && _downloadsAvailable)
       icon(Icons.download_for_offline, l10n.savedMedia),
     if (on(UserPreferences.showFriendsButton) && FriendsNavSlot.isAvailable())
       icon(Icons.people_alt_rounded, l10n.friends),
-    if (on(UserPreferences.showServerMessagesButton) && _hasServerMessages)
+    if (on(UserPreferences.showServerMessagesButton))
       icon(Icons.info_outline_rounded, l10n.serverMessages),
     icon(Icons.settings_rounded, l10n.settings),
   ];
@@ -1989,6 +1999,7 @@ Widget _navbarRows(
   List<MediaBarSlideItem> items, {
   double topInset = 12,
   bool? modern,
+  bool focusFirst = false,
 }) {
   return Padding(
     padding: EdgeInsets.only(top: topInset),
@@ -2000,6 +2011,7 @@ Widget _navbarRows(
           context,
           items,
           modern: modern ?? !_phone,
+          focusFirst: focusFirst,
           rowGapOverride: 24,
         ),
       ),
@@ -2014,6 +2026,7 @@ Widget _topNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   bool? modern,
+  bool focusFirst = false,
 }) {
   final toolbarHeight = _tv ? 95.0 : (_phone ? 60.0 : 80.0);
   final hPad = _tv ? 48.0 : (_phone ? 12.0 : 32.0);
@@ -2119,7 +2132,14 @@ Widget _topNavbarPreview(
           ),
         ),
       ),
-      Expanded(child: _navbarRows(context, items, modern: modern)),
+      Expanded(
+        child: _navbarRows(
+          context,
+          items,
+          modern: modern,
+          focusFirst: focusFirst,
+        ),
+      ),
     ],
   );
 }
@@ -2130,6 +2150,7 @@ Widget _leftNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   bool? modern,
+  bool focusFirst = false,
 }) {
   final iconSize = _tv ? 24.0 : 28.0;
   final itemHeight = _tv ? 40.0 : 44.0;
@@ -2144,7 +2165,13 @@ Widget _leftNavbarPreview(
     children: [
       Positioned.fill(
         left: railInset,
-        child: _navbarRows(context, items, topInset: 24, modern: modern),
+        child: _navbarRows(
+          context,
+          items,
+          topInset: 24,
+          modern: modern,
+          focusFirst: focusFirst,
+        ),
       ),
       Positioned(
         left: 0,
@@ -2183,6 +2210,7 @@ Widget _bottomNavbarPreview(
   List<MediaBarSlideItem> items,
   BottomNavbarStyle style, {
   bool? modern,
+  bool focusFirst = false,
 }) {
   final l10n = AppLocalizations.of(context);
   final theme = BottomNavTheme.resolve(context, preview: true);
@@ -2204,7 +2232,7 @@ Widget _bottomNavbarPreview(
       previewValue(context, UserPreferences.bottomNavbarTabs),
       withoutSearch: style == BottomNavbarStyle.split,
       isAvailable: (tab) =>
-          tab != BottomNavTab.liveTv || liveTvOnAnySignedInServer(),
+          tab != BottomNavTab.liveTv || SetupPreviewData.hasLiveTv,
     ))
       bottomNavItemView(
         item,
@@ -2245,7 +2273,13 @@ Widget _bottomNavbarPreview(
   return Stack(
     children: [
       Positioned.fill(
-        child: _navbarRows(context, items, topInset: 24, modern: modern),
+        child: _navbarRows(
+          context,
+          items,
+          topInset: 24,
+          modern: modern,
+          focusFirst: focusFirst,
+        ),
       ),
       Align(
         alignment: Alignment.bottomCenter,
@@ -2530,20 +2564,21 @@ Widget _homeRowsColumn(
     );
   }
 
-  Widget cardsRow(List<Widget> cards) => Padding(
+  // The padding sits inside the scroll view and nothing clips, as on the real
+  // row, so a focused card's ring keeps the room around it.
+  Widget cardsRow(List<Widget> cards) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    physics: const NeverScrollableScrollPhysics(),
+    clipBehavior: Clip.none,
     padding: const EdgeInsets.fromLTRB(16, 5, 20, 5),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var i = 0; i < cards.length; i++) ...[
-            if (i > 0) const SizedBox(width: 12),
-            cards[i],
-          ],
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < cards.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          cards[i],
         ],
-      ),
+      ],
     ),
   );
 
@@ -2557,12 +2592,19 @@ Widget _homeRowsColumn(
       posterSize.landscapeHeight /
       PosterSize.medium.landscapeHeight;
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
+  final showOverview = !previewValue(
+    context,
+    UserPreferences.hideHomeMediaDescription,
+  );
 
   // The focused modern card: same height, morphed to 16:9 on the thumb image,
   // with the focus border and the ratings and overview block it grows below,
   // spanning wider than the card the way the real extended section does.
   Widget focusedCard(MediaBarSlideItem item) {
-    final width = posterHeight * 16 / 9;
+    final grown = posterHeight * 16 / 9;
+    // A phone caps a grown card at the row's width, the way Home does.
+    final rowWidth = _designSize().width - 32;
+    final width = _phone && grown > rowWidth ? rowWidth : grown;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -2640,7 +2682,7 @@ Widget _homeRowsColumn(
                     personal: true,
                     singleLine: !_phone,
                   ),
-                  if (item.overview != null)
+                  if (showOverview && item.overview != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
@@ -2734,7 +2776,7 @@ Widget _homeRowsColumn(
                       ),
                     ),
                   ),
-                  if (items.first.overview != null) ...[
+                  if (showOverview && items.first.overview != null) ...[
                     const SizedBox(height: 8),
                     Text(
                       items.first.overview!,

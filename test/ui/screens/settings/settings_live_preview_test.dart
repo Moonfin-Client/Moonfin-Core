@@ -1,6 +1,7 @@
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -773,6 +774,109 @@ void main() {
     expect(find.text('Shows on the Home preview'), findsOneWidget);
   });
 
+  /// The ring around the focused Modern card, the only 3 wide border drawn.
+  final focusRing = find.byWidgetPredicate((widget) {
+    if (widget is! DecoratedBox) return false;
+    final decoration = widget.decoration;
+    return decoration is BoxDecoration &&
+        decoration.border is Border &&
+        (decoration.border! as Border).top.width == 3.0;
+  });
+
+  Rect globalRect(RenderBox box) =>
+      MatrixUtils.transformRect(box.getTransformTo(null), Offset.zero & box.size);
+
+  /// Every box that clips on the way up from [finder], the stage among them,
+  /// holds all of it.
+  void expectUnclipped(WidgetTester tester, Finder finder, {String? reason}) {
+    final rect = globalRect(tester.renderObject<RenderBox>(finder));
+    var clips = 0;
+    for (RenderObject? node = tester.renderObject(finder).parent;
+        node != null;
+        node = node.parent) {
+      if (node is! RenderBox ||
+          !(node is RenderClipRect ||
+              node is RenderClipRRect ||
+              node is RenderClipPath ||
+              node is RenderAbstractViewport)) {
+        continue;
+      }
+      final clip = globalRect(node);
+      clips++;
+      expect(
+        rect.left >= clip.left - 0.01 &&
+            rect.top >= clip.top - 0.01 &&
+            rect.right <= clip.right + 0.01 &&
+            rect.bottom <= clip.bottom + 0.01,
+        isTrue,
+        reason: '${reason ?? ''} $rect cut by ${node.runtimeType} $clip',
+      );
+    }
+    expect(clips, greaterThan(0));
+  }
+
+  for (final layout in [
+    InterfaceLayout.tv,
+    InterfaceLayout.desktop,
+    InterfaceLayout.phone,
+  ]) {
+    testWidgets('on $layout the focused card keeps its ring inside the stage', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = layout == InterfaceLayout.desktop
+          ? TargetPlatform.linux
+          : TargetPlatform.android;
+      PlatformDetection.setInterfaceLayout(layout);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      final controller = SettingsPreviewController()
+        ..tryValue('pref_home_rows_style', HomeRowsStyle.v2);
+      Future<void> pump() async {
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 960,
+              height: 600,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+      }
+
+      // The ratings settings draw the rows on their own, Home draws them
+      // under each navbar this device has.
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Badges',
+          prefKey: 'homeRowsShowRatingBadges',
+        ),
+      );
+      await pump();
+      expect(focusRing, findsOneWidget);
+      expectUnclipped(tester, focusRing, reason: 'ratings');
+
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Row Type',
+          prefKey: 'pref_home_rows_style',
+        ),
+      );
+      for (final position in [
+        NavbarPosition.top,
+        NavbarPosition.left,
+        if (layout == InterfaceLayout.phone) NavbarPosition.bottom,
+      ]) {
+        controller.tryValue('pref_navbar_position', position);
+        await pump();
+        expect(focusRing, findsOneWidget, reason: '$position');
+        expectUnclipped(tester, focusRing, reason: '$position');
+      }
+      debugDefaultTargetPlatformOverride = null;
+    });
+  }
+
   group('on desktop', () {
     late AppLocalizations l10n;
 
@@ -946,9 +1050,22 @@ void main() {
       expect(find.byIcon(Icons.live_tv_rounded), findsNothing);
       expect(find.byIcon(Icons.groups_rounded), findsNothing);
 
+      // Live TV waits for a Live TV library, as the real button does.
+      controller.tryValue('pref_show_live_tv_button', true);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.live_tv_rounded), findsNothing);
+
+      SetupPreviewData.libraries.value = [
+        for (final (name, type) in [('Films', 'movies'), ('TV', 'livetv')])
+          AggregatedLibrary(
+            id: name,
+            name: name,
+            collectionType: type,
+            serverId: 'server',
+          ),
+      ];
       controller
         ..tryValue('pref_show_genres_button', false)
-        ..tryValue('pref_show_live_tv_button', true)
         ..tryValue('pref_syncplay_enabled', true)
         ..tryValue('pref_show_syncplay_button', true)
         ..tryValue('pref_show_libraries_individually', true);
@@ -971,18 +1088,43 @@ void main() {
         expect(order[i], greaterThan(order[i - 1]));
       }
 
-      // Nothing saved, no messages and no friends feature on this server, so
-      // those stay off whatever their switches say.
+      // Messages shows with its switch though the server has none right now.
+      // Friends still needs the server's friends feature, and Downloads a
+      // user who may download.
       controller
         ..tryValue('pref_show_downloads_button', true)
         ..tryValue('pref_show_server_messages_button', true)
         ..tryValue('pref_show_friends_button', true)
         ..tryValue('pref_show_libraries_in_toolbar', false);
       await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.info_outline_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.people_alt_rounded), findsNothing);
+      expect(find.byIcon(Icons.download_for_offline), findsNothing);
+      expect(find.byIcon(Icons.movie_rounded), findsNothing);
+
+      // Nothing is saved yet, and Downloads shows all the same.
+      final users = _Users();
+      when(() => users.currentUser).thenReturn(
+        PrivateUser(
+          id: 'user',
+          name: 'moonfin',
+          serverId: 'server',
+          accessToken: 'token',
+          lastUsed: DateTime(2026),
+          canDownload: true,
+        ),
+      );
+      GetIt.instance.registerSingleton<UserRepository>(users);
+      controller.tryValue('pref_show_downloads_button', true);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.download_for_offline), findsOneWidget);
+
+      controller
+        ..tryValue('pref_show_downloads_button', false)
+        ..tryValue('pref_show_server_messages_button', false);
+      await pumpPreview(tester, controller);
       expect(find.byIcon(Icons.download_for_offline), findsNothing);
       expect(find.byIcon(Icons.info_outline_rounded), findsNothing);
-      expect(find.byIcon(Icons.people_alt_rounded), findsNothing);
-      expect(find.byIcon(Icons.movie_rounded), findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
 
@@ -1004,6 +1146,87 @@ void main() {
       await pumpPreview(tester, controller);
       expect(find.text(l10n.continueWatching), findsOneWidget);
       expect(find.text(l10n.recentlyAdded), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Modern rows hold the first card in focus and Classic don\'t', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.homeRowsStyle,
+        HomeRowsStyle.v1,
+      );
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Row Type',
+            prefKey: 'pref_home_rows_style',
+          ),
+        );
+      await pumpPreview(tester, controller);
+      expect(focusRing, findsNothing);
+
+      // Modern tried in the picker grows the first card with its details.
+      controller.tryValue('pref_home_rows_style', HomeRowsStyle.v2);
+      for (final position in [NavbarPosition.top, NavbarPosition.left]) {
+        controller.tryValue('pref_navbar_position', position);
+        await pumpPreview(tester, controller);
+        expect(focusRing, findsOneWidget, reason: '$position');
+        expect(find.byType(RatingsRow), findsOneWidget, reason: '$position');
+        expect(
+          find.text(_fakeItems().first.overview!),
+          findsOneWidget,
+          reason: '$position',
+        );
+      }
+
+      // Canceling the picker goes back to the saved Classic rows.
+      controller.clearTry('pref_home_rows_style');
+      await pumpPreview(tester, controller);
+      expect(focusRing, findsNothing);
+      expect(find.byType(RatingsRow), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Hide Media Description hides the focused card\'s description', (
+      tester,
+    ) async {
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+      expect(
+        SettingsPreviewController.sceneForKey(
+          UserPreferences.hideHomeMediaDescription.key,
+        ),
+        SettingsPreviewScene.home,
+      );
+      final controller = SettingsPreviewController()
+        ..showScene(SettingsPreviewScene.details)
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Hide Media Description',
+            prefKey: 'pref_hide_home_media_description',
+          ),
+        );
+      final overview = find.text(_fakeItems().first.overview!);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(focusRing, findsOneWidget);
+      expect(overview, findsOneWidget);
+
+      // A switch saves at once, and the preview follows the saved value.
+      await prefs.set(UserPreferences.hideHomeMediaDescription, true);
+      await pumpPreview(tester, controller);
+      expect(overview, findsNothing);
+      expect(find.byType(RatingsRow), findsOneWidget);
+
+      await prefs.set(UserPreferences.hideHomeMediaDescription, false);
+      await pumpPreview(tester, controller);
+      expect(overview, findsOneWidget);
+
+      // A value being tried stands in the same way.
+      controller.tryValue('pref_hide_home_media_description', true);
+      await pumpPreview(tester, controller);
+      expect(overview, findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
 
@@ -1375,6 +1598,42 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 300));
     expect(tester.takeException(), isNull);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('a TV\'s Classic rows keep their info band and its description '
+      'follows Hide Media Description', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'Hide Media Description',
+          prefKey: 'pref_hide_home_media_description',
+        ),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final overview = find.text(_fakeItems().first.overview!);
+    await pump();
+    expect(focusRing, findsNothing);
+    expect(overview, findsOneWidget);
+
+    controller.tryValue('pref_hide_home_media_description', true);
+    await pump();
+    expect(overview, findsNothing);
+    expect(find.text(_fakeItems().first.title), findsWidgets);
     debugDefaultTargetPlatformOverride = null;
   });
 
