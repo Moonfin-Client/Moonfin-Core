@@ -124,6 +124,11 @@ Future<bool?> _serverRefusesUser() async {
   }
 }
 
+/// The server's clock and time zone from the Moonfin plugin, which is what
+/// the access schedule is judged by, or null when the server can't say.
+Future<ServerTime?> _loadServerTime() =>
+    _getIt<MediaServerClient>().usersApi.getServerTime();
+
 /// Stops whatever is playing when the user's access schedule closes.
 Future<void> _stopPlaybackForAccessSchedule() async {
   // Each step is best effort, so one that fails doesn't leave the rest undone.
@@ -173,6 +178,7 @@ void registerAppModule() {
       loadSchedules: _loadAccessSchedules,
       onBlocked: _stopPlaybackForAccessSchedule,
       serverRefuses: _serverRefusesUser,
+      loadServerTime: _loadServerTime,
     );
     // An administrator has no schedule to enforce.
     String? watched(User? user) =>

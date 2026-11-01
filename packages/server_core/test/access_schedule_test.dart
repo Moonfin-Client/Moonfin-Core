@@ -284,4 +284,118 @@ void main() {
       expect(UserPolicy.fromJson(json).toJson(), json);
     });
   });
+
+  group('server clock', () {
+    // 2026-10-19T23:30:00Z, a Monday evening in UTC.
+    final deviceNow = DateTime.utc(2026, 10, 19, 23, 30);
+    ServerClock clockOf(String utc, int offsetSeconds, [DateTime? at]) =>
+        ServerClock.from(
+          ServerTime.tryParse({
+            'utcTime': utc,
+            'utcOffsetSeconds': offsetSeconds,
+          })!,
+          at ?? deviceNow,
+        );
+    List<int> fields(DateTime d) => [d.weekday, d.hour, d.minute, d.second];
+
+    test(
+      'reads the wall clock east of UTC, where it is already the next day',
+      () {
+        final clock = clockOf('2026-10-19T23:30:00Z', 19800);
+
+        expect(clock.skew, Duration.zero);
+        expect(fields(clock.wallClock(deviceNow)), [DateTime.tuesday, 5, 0, 0]);
+      },
+    );
+
+    test(
+      'reads the wall clock west of UTC, where it is still the day before',
+      () {
+        final clock = clockOf('2026-10-19T23:30:00Z', -28800);
+
+        expect(fields(clock.wallClock(deviceNow)), [
+          DateTime.monday,
+          15,
+          30,
+          0,
+        ]);
+      },
+    );
+
+    test(
+      'keeps the skew of a server clock that disagrees, and keeps running',
+      () {
+        final clock = clockOf('2026-10-19T23:30:30Z', 0);
+
+        expect(clock.skew, const Duration(seconds: 30));
+        expect(
+          fields(clock.wallClock(deviceNow.add(const Duration(seconds: 90)))),
+          [DateTime.monday, 23, 32, 0],
+        );
+        expect(
+          clock.wallClock(deviceNow.add(const Duration(minutes: 30))).weekday,
+          DateTime.tuesday,
+        );
+      },
+    );
+
+    test('is the same wherever this device is', () {
+      final clock = clockOf('2026-10-19T23:30:00Z', -28800);
+
+      expect(clock.wallClock(deviceNow.toLocal()), clock.wallClock(deviceNow));
+    });
+
+    test('feeds the evaluator like any date', () {
+      final clock = clockOf('2026-10-19T20:00:00Z', -28800);
+      final schedules = [_entry('Monday', 8, 20)];
+      final now = clock.wallClock(DateTime.utc(2026, 10, 19, 20));
+
+      expect(AccessScheduleEvaluator.isAllowed(schedules, now), isTrue);
+      expect(
+        AccessScheduleEvaluator.nextBoundary(schedules, now),
+        DateTime.utc(2026, 10, _monday, 20, 0, 1),
+      );
+    });
+
+    test('is a UTC date, so no device daylight saving hour is skipped', () {
+      // 02:30 on 2027-03-14 doesn't exist on a device in America/New_York,
+      // but a server in UTC reads it all the same.
+      final device = DateTime.utc(2027, 3, 14, 2, 30);
+      final clock = clockOf('2027-03-14T02:30:00Z', 0, device);
+      final now = clock.wallClock(device);
+
+      expect(now.isUtc, isTrue);
+      expect([now.hour, now.minute], [2, 30]);
+      final schedules = [_entry('Sunday', 3, 4)];
+      expect(
+        AccessScheduleEvaluator.nextAccessStart(schedules, now),
+        DateTime.utc(2027, 3, 14, 3),
+      );
+      expect(
+        AccessScheduleEvaluator.nextBoundary(schedules, now),
+        DateTime.utc(2027, 3, 14, 3),
+      );
+    });
+
+    test('has no time for an answer that cant be used', () {
+      expect(ServerTime.tryParse(null), isNull);
+      expect(ServerTime.tryParse('x'), isNull);
+      expect(ServerTime.tryParse(<String, dynamic>{}), isNull);
+      expect(
+        ServerTime.tryParse({'utcTime': 'not a time', 'utcOffsetSeconds': 0}),
+        isNull,
+      );
+      expect(
+        ServerTime.tryParse({
+          'utcTime': '2026-10-19T23:30:00Z',
+          'utcOffsetSeconds': 'x',
+        }),
+        isNull,
+      );
+      expect(
+        ServerTime.tryParse({'utcTime': 123, 'utcOffsetSeconds': 0}),
+        isNull,
+      );
+    });
+  });
 }
