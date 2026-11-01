@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -10,67 +8,46 @@ import 'package:media_kit/media_kit.dart';
 /// calling that callback from its mpv threads, and the VM aborts with
 /// "GetFfiCallbackMetadata called after shutdown" (SIGABRT on Linux).
 class MpvPlayerRegistry {
-  MpvPlayerRegistry._();
-
   @visibleForTesting
-  MpvPlayerRegistry.forTest();
+  MpvPlayerRegistry();
 
-  static final MpvPlayerRegistry instance = MpvPlayerRegistry._();
+  static final MpvPlayerRegistry instance = MpvPlayerRegistry();
 
   static const Duration _disposeTimeout = Duration(seconds: 2);
 
-  final Map<Object, Future<void> Function()> _live = {};
-  final Map<Object, Future<void>> _inFlight = {};
-  final Expando<bool> _released = Expando<bool>();
+  final Map<Player, Future<void>?> _live = {};
   bool _shuttingDown = false;
 
-  int get liveCount => _live.length;
-
   Player create({PlayerConfiguration configuration = const PlayerConfiguration()}) {
-    _checkOpen();
-    final player = Player(configuration: configuration);
-    register(player, player.dispose);
-    return player;
-  }
-
-  void _checkOpen() {
     if (_shuttingDown) {
       throw StateError('MpvPlayerRegistry is shutting down');
     }
+    return track(Player(configuration: configuration));
   }
 
-  void register(Object owner, Future<void> Function() dispose) {
-    _checkOpen();
-    _live[owner] = dispose;
+  @visibleForTesting
+  Player track(Player player) {
+    _live[player] = null;
+    return player;
   }
 
-  /// Disposes [player] once. An owner stays tracked until its dispose has
-  /// finished, and a second caller shares the same in-flight future.
+  /// A dispose that's already running is shared so exit waits for it, and a
+  /// disposed player is skipped since media_kit throws on a second dispose.
   Future<void> dispose(Player player) {
-    if (_live.containsKey(player) || _released[player] == true) {
-      return release(player);
-    }
-    return player.dispose();
-  }
-
-  Future<void> release(Object owner) {
-    final dispose = _live[owner];
-    if (dispose == null) return Future<void>.value();
-    return _inFlight[owner] ??= Future<void>.sync(dispose).whenComplete(() {
-      _live.remove(owner);
-      _inFlight.remove(owner);
-      _released[owner] = true;
+    if (!_live.containsKey(player)) return Future<void>.value();
+    return _live[player] ??= player.dispose().whenComplete(() {
+      _live.remove(player);
     });
   }
 
-  /// Stops accepting new players, then disposes every live one. Called on
-  /// app exit, so a player created after the snapshot cannot outlive it.
+  /// New players are refused once this starts, since one created after the
+  /// snapshot would never be disposed and would outlive the VM.
   Future<void> disposeAll() async {
     _shuttingDown = true;
     await Future.wait(
       _live.keys.toList().map(
-        (owner) => release(owner).timeout(_disposeTimeout).catchError((Object e) {
-          debugPrint('[MpvPlayerRegistry] dispose of $owner did not finish: $e');
+        (player) => dispose(player).timeout(_disposeTimeout).catchError((Object e) {
+          debugPrint('[MpvPlayerRegistry] player dispose failed or timed out: $e');
         }),
       ),
     );
