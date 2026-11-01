@@ -25,6 +25,11 @@ subprojects {
     if (name == "file_picker") {
         plugins.withId("com.android.library") {
             pluginManager.apply("org.jetbrains.kotlin.android")
+            // The plugin also skips its Kotlin target on AGP 9. Match its
+            // Java 17 bytecode even when Gradle runs on a newer bundled JDK.
+            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+                compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            }
         }
     }
 }
