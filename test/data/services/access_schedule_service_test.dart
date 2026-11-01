@@ -672,13 +672,16 @@ void main() {
       });
     });
 
-    test('asks the server and its clock together, not one after the other', () {
+    test('blocks on a refusal without waiting for a slow clock', () {
       fakeAsync((async) {
+        // Monday 21:00 UTC is Tuesday 06:00 on a server nine hours ahead, so
+        // once the clock answers the next opening is the server's 08:00.
         final slow = Completer<ServerTime?>();
-        final h = _Harness(
+        late final _Harness h;
+        h = _Harness(
           async,
-          _at(19, 21),
-          schedules: (_) => [_entry('Monday', 8, 20)],
+          DateTime.utc(2026, 10, 19, 21).toLocal(),
+          schedules: (_) => [_entry('Weekday', 8, 20)],
           refuses: true,
           serverTime: (_) => slow.future,
         );
@@ -686,10 +689,19 @@ void main() {
         h.settle();
         expect(h.asks, 1);
         expect(h.timeAsks, 1, reason: 'both are asked at once');
+        expect(h.service.isBlocked, isTrue, reason: 'before the clock answers');
+        expect(h.blocked, 1);
 
-        slow.complete(null);
+        slow.complete(
+          ServerTime(
+            utcTime: h.clock.now().toUtc(),
+            utcOffset: const Duration(hours: 9),
+          ),
+        );
         h.settle();
         expect(h.service.isBlocked, isTrue);
+        expect(h.blocked, 1, reason: 'playback is stopped once');
+        expect(h.service.status.nextAccess, DateTime.utc(2026, 10, 20, 8));
         h.service.dispose();
       });
     });
