@@ -7,6 +7,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/models/user.dart';
+import '../../auth/services/household_service.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../auth/store/authentication_store.dart';
@@ -242,6 +243,13 @@ void registerAppModule() {
           : null,
     ),
     dispose: (service) => service.dispose(),
+  );
+  _getIt.registerLazySingleton(
+    () => HouseholdService(
+      client: () => _getIt.isRegistered<MediaServerClient>()
+          ? _getIt<MediaServerClient>()
+          : null,
+    ),
   );
   _getIt.registerLazySingleton(
     () => SeerrPreferences(

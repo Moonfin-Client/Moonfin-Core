@@ -15,10 +15,13 @@ import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import '../../../auth/models/login_state.dart';
 import '../../../auth/models/server.dart';
+import '../../../auth/models/user.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../../auth/repositories/server_repository.dart';
 import '../../../auth/repositories/server_user_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
+import '../../../auth/services/household_service.dart';
+import '../../../auth/store/authentication_preferences.dart';
 import '../../../auth/store/authentication_store.dart';
 import '../../../auth/store/client_certificate_store.dart';
 import '../../../data/services/media_server_client_factory.dart';
@@ -34,6 +37,7 @@ import '../../../util/web_diagnostics_failure.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/allow_self_signed_dialog.dart';
 import '../../widgets/client_certificate_dialog.dart';
+import '../../widgets/household_offer_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/pin_entry_dialog.dart';
 import '../../widgets/sign_in_qr_code.dart';
@@ -602,6 +606,10 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      await _offerHouseholdSetup(
+        serverId: authResult.serverId,
+        userId: authResult.userId,
+      );
       if (mounted) context.go(Destinations.home);
     }
   }
@@ -778,6 +786,101 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// A household manager signed in by hand: offer to add the rest of their
+  /// household to this device, so each account can be picked from Who's
+  /// watching without signing in. One offer per fresh sign in: Not Now asks
+  /// again at the next one, Don't Ask Again is kept for this manager.
+  /// Servers without the plugin's household endpoints are left untouched.
+  Future<void> _offerHouseholdSetup({
+    required String serverId,
+    required String userId,
+  }) async {
+    final serverType = _server?.serverType;
+    if (serverType != ServerType.jellyfin && serverType != ServerType.emby) {
+      return;
+    }
+    final prefs = GetIt.instance<AuthenticationPreferences>();
+    if (prefs.isHouseholdOfferSuppressed(serverId, userId)) return;
+
+    final service = GetIt.instance<HouseholdService>();
+    final info = await service.household();
+    if (!mounted ||
+        info == null ||
+        !info.isManager ||
+        !info.sessionsSupported) {
+      return;
+    }
+    final stored = GetIt.instance<AuthenticationStore>().getUsers(serverId);
+    final missing = missingHouseholdMembers(
+      info,
+      stored.map((user) => user.id),
+    );
+    if (missing.isEmpty) return;
+
+    final l10n = AppLocalizations.of(context);
+    final namesById = {for (final member in missing) member.id: member.name};
+    final imageTagsById = {
+      for (final member in missing) member.id: member.imageTag,
+    };
+    await HouseholdOfferDialog.show(
+      context,
+      message: l10n.householdOffer(
+        householdJoinNames([for (final member in missing) member.name]),
+      ),
+      onAddThem: () async {
+        final results = await service.createSessions(
+          [for (final member in missing) member.id],
+        );
+        if (!mounted) return;
+        if (results == null) {
+          await HouseholdNoticeDialog.show(context, l10n.householdAddFailed);
+          return;
+        }
+        final store = GetIt.instance<AuthenticationStore>();
+        final added = <String>[];
+        final failed = <String>[];
+        for (final result in results) {
+          final token = result.accessToken;
+          final name = result.name ?? namesById[result.userId];
+          if (token == null ||
+              token.isEmpty ||
+              result.userId.isEmpty ||
+              name == null ||
+              name.isEmpty) {
+            failed.add(namesById[result.userId] ?? result.userId);
+            continue;
+          }
+          await store.putUser(PrivateUser(
+            id: result.userId,
+            name: name,
+            serverId: serverId,
+            accessToken: token,
+            lastUsed: DateTime.now(),
+            imageTag: result.imageTag ?? imageTagsById[result.userId],
+          ));
+          added.add(name);
+        }
+        var message = '';
+        if (added.isNotEmpty) {
+          message = l10n.householdAdded(householdJoinNames(added));
+        }
+        if (failed.isNotEmpty) {
+          final couldNot = l10n.householdFailedToAdd(
+            householdJoinNames(failed),
+          );
+          message = message.isEmpty ? couldNot : '$message $couldNot';
+        }
+        if (!mounted || message.isEmpty) return;
+        await HouseholdNoticeDialog.show(context, message);
+      },
+    ).then((choice) async {
+      if (!mounted) return;
+      if (choice == HouseholdOfferChoice.dontAskAgain) {
+        await prefs.suppressHouseholdOffer(serverId, userId);
+      }
+    });
+  }
+
   /// A Silo account with several household profiles (or a PIN-locked one)
   /// signed in: its profiles are stored as the server's users, so the
   /// server's user grid is the "who's watching" picker.
@@ -863,6 +966,10 @@ class _LoginScreenState extends State<LoginScreen> {
               return;
             }
 
+            await _offerHouseholdSetup(
+              serverId: result.serverId,
+              userId: result.userId,
+            );
             if (mounted) context.go(Destinations.home);
             return;
           }

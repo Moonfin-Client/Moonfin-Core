@@ -196,6 +196,49 @@
   "@signedInOnThisDevice": {
     "description": "Status under a user on the Who's watching screen when this device already has their session"
   },
+  "householdOffer": "You manage {names}. Add them to this device so they can pick their account without signing in?",
+  "@householdOffer": {
+    "description": "Message in the dialog that offers a household manager to add the rest of their household after signing in",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "householdOfferAddThem": "Add Them",
+  "@householdOfferAddThem": {
+    "description": "Answer in the household offer dialog that signs the whole household in on this device"
+  },
+  "householdOfferNotNow": "Not Now",
+  "@householdOfferNotNow": {
+    "description": "Answer in the household offer dialog that skips the offer this once"
+  },
+  "householdOfferDontAskAgain": "Don't Ask Again",
+  "@householdOfferDontAskAgain": {
+    "description": "Answer in the household offer dialog that stops the offer for this manager"
+  },
+  "householdAdded": "Added {names}. They can now be picked from Who's watching.",
+  "@householdAdded": {
+    "description": "Result after adding a household to this device",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "householdAddFailed": "Couldn't add your household to this device. Try again the next time you sign in.",
+  "@householdAddFailed": {
+    "description": "Shown when the household offer's Add Them fails outright"
+  },
+  "householdFailedToAdd": "Couldn't add {names}.",
+  "@householdFailedToAdd": {
+    "description": "Part of the household offer result naming the accounts that did not get added",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "pinRequired": "PIN required",
   "@pinRequired": {
     "description": "Status under a user or account that asks for a PIN before signing in"

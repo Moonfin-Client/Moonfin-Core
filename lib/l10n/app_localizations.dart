@@ -460,6 +460,48 @@ abstract class AppLocalizations {
   /// **'Signed in on this device'**
   String get signedInOnThisDevice;
 
+  /// Message in the dialog that offers a household manager to add the rest of their household after signing in
+  ///
+  /// In en, this message translates to:
+  /// **'You manage {names}. Add them to this device so they can pick their account without signing in?'**
+  String householdOffer(String names);
+
+  /// Answer in the household offer dialog that signs the whole household in on this device
+  ///
+  /// In en, this message translates to:
+  /// **'Add Them'**
+  String get householdOfferAddThem;
+
+  /// Answer in the household offer dialog that skips the offer this once
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get householdOfferNotNow;
+
+  /// Answer in the household offer dialog that stops the offer for this manager
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t Ask Again'**
+  String get householdOfferDontAskAgain;
+
+  /// Result after adding a household to this device
+  ///
+  /// In en, this message translates to:
+  /// **'Added {names}. They can now be picked from Who\'s watching.'**
+  String householdAdded(String names);
+
+  /// Shown when the household offer's Add Them fails outright
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add your household to this device. Try again the next time you sign in.'**
+  String get householdAddFailed;
+
+  /// Part of the household offer result naming the accounts that did not get added
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add {names}.'**
+  String householdFailedToAdd(String names);
+
   /// Status under a user or account that asks for a PIN before signing in
   ///
   /// In en, this message translates to:

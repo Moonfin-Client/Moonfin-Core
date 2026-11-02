@@ -146,6 +146,34 @@ class AppLocalizationsSw extends AppLocalizations {
   String get signedInOnThisDevice => 'Signed in on this device';
 
   @override
+  String householdOffer(String names) {
+    return 'You manage $names. Add them to this device so they can pick their account without signing in?';
+  }
+
+  @override
+  String get householdOfferAddThem => 'Add Them';
+
+  @override
+  String get householdOfferNotNow => 'Not Now';
+
+  @override
+  String get householdOfferDontAskAgain => 'Don\'t Ask Again';
+
+  @override
+  String householdAdded(String names) {
+    return 'Added $names. They can now be picked from Who\'s watching.';
+  }
+
+  @override
+  String get householdAddFailed =>
+      'Couldn\'t add your household to this device. Try again the next time you sign in.';
+
+  @override
+  String householdFailedToAdd(String names) {
+    return 'Couldn\'t add $names.';
+  }
+
+  @override
   String get pinRequired => 'PIN required';
 
   @override

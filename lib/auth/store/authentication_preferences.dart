@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../../preference/preference_constants.dart';
@@ -44,6 +46,12 @@ class AuthenticationPreferences {
     values: UserSortBy.values,
   );
 
+  /// Managers who chose Don't Ask Again, as "serverId:userId" keys.
+  static final householdOfferSuppressed = Preference(
+    key: 'pref_household_offer_suppressed',
+    defaultValue: '',
+  );
+
   UserSelectBehavior get loginBehavior =>
       _store.get(autoLoginUserBehavior);
 
@@ -68,6 +76,24 @@ class AuthenticationPreferences {
   Future<void> clearAutoLogin() async {
     await _store.set(autoLoginServerId, '');
     await _store.set(autoLoginUserId, '');
+  }
+
+  /// Whether this manager on this server chose not to be offered the rest of
+  /// their household again after signing in.
+  bool isHouseholdOfferSuppressed(String serverId, String userId) =>
+      _householdOfferKeys().contains('$serverId:$userId');
+
+  Future<void> suppressHouseholdOffer(String serverId, String userId) async {
+    final keys = _householdOfferKeys()..add('$serverId:$userId');
+    await _store.set(householdOfferSuppressed, jsonEncode(keys.toList()));
+  }
+
+  Set<String> _householdOfferKeys() {
+    final raw = _store.get(householdOfferSuppressed);
+    final decoded = raw.isEmpty ? null : jsonDecode(raw);
+    return decoded is! List
+        ? <String>{}
+        : decoded.whereType<String>().toSet();
   }
 }
 
