@@ -464,6 +464,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalista';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => 'Pestanyes desplegades';
 
   @override
@@ -15075,6 +15078,13 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'La il·lustració, un botó de reproducció i els episodis.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion =>

@@ -467,6 +467,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimaliste';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => 'Onglets déployés';
 
   @override
@@ -15032,6 +15035,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'Le visuel, un bouton de lecture et les épisodes.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion =>

@@ -367,13 +367,15 @@ enum VisualThemeId {
 /// sectioned grid modals. [nouveau] is the full-screen layout, with every
 /// section stacked down the page rather than behind tabs or cards.
 /// [minimalist] strips the screen back to artwork, one play button and the
-/// episodes, and is what Kids Mode always shows. Stored per server and user.
+/// episodes, and is what Kids Mode always shows. [stage] leads with the poster,
+/// with play under it and the details beside it. Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
   spotlight,
   nouveau,
-  minimalist;
+  minimalist,
+  stage;
 }
 
 /// Selectable header layout for the library browse screen.

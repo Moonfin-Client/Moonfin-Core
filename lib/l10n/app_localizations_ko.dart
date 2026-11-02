@@ -463,6 +463,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalist';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => '탭 자동 펼치기';
 
   @override
@@ -14390,6 +14393,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get setupDetailMinimalistHint => '아트워크, 재생 버튼 하나, 에피소드로만 구성됩니다.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion => '하단 바를 어떻게 표시할까요?';

@@ -45,7 +45,93 @@ class DetailScreenSkeleton extends StatelessWidget {
         DetailScreenStyle.spotlight => _buildSpotlight(context),
         DetailScreenStyle.nouveau => _buildNouveau(context),
         DetailScreenStyle.minimalist => _buildMinimalist(context),
+        DetailScreenStyle.stage => _buildStage(context),
       },
+    );
+  }
+
+  /// The poster and its buttons on the left with the title block beside it,
+  /// or stacked under a centered poster on a phone.
+  Widget _buildStage(BuildContext context) {
+    final landscape = detailUsesLandscapeLayout(context);
+    final posterWidth = stagePosterWidth(
+      MediaQuery.sizeOf(context),
+      landscape: landscape,
+    );
+    final top = stageTopInset(context);
+    final side = stageLeadingInset(
+      context,
+      landscape: landscape,
+      prefs: _effectivePrefs,
+    );
+
+    final titleBlock = [
+      SkeletonBox(
+        width: landscape ? 340 : 220,
+        height: landscape ? 40 : 30,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      const SizedBox(height: 14),
+      const SkeletonBox(width: 260, height: 16),
+      const SizedBox(height: 12),
+      const SkeletonBox(width: 200, height: 22),
+      const SizedBox(height: 16),
+      for (var i = 0; i < 3; i++) ...[
+        SkeletonBox(width: i == 2 ? 320 : 520, height: 14),
+        const SizedBox(height: 8),
+      ],
+    ];
+
+    if (landscape) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(side, top, 48, 0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                SkeletonBox(
+                  width: posterWidth,
+                  height: posterWidth * 1.5,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                const SizedBox(height: 16),
+                SkeletonBox(
+                  width: posterWidth,
+                  height: 50,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ],
+            ),
+            const SizedBox(width: 40),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: titleBlock,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(side, top, side, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: SkeletonBox(
+              width: posterWidth,
+              height: posterWidth * 1.5,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ...titleBlock,
+        ],
+      ),
     );
   }
 

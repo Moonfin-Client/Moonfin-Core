@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -831,6 +831,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Minimalist'**
   String get detailScreenStyleMinimalist;
+
+  /// Detail screen style option: the poster leads, with play under it and the details beside it
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get detailScreenStyleStage;
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -26034,6 +26040,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Artwork, one play button and the episodes.'**
   String get setupDetailMinimalistHint;
+
+  /// Name of the poster-led detail layout, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get setupStyleStage;
+
+  /// What the Stage detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The poster up front, with play under it and the details beside it.'**
+  String get setupDetailStageHint;
 
   /// Setup question asking which style the bottom navigation bar should use
   ///

@@ -336,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -546,6 +546,10 @@
   "detailScreenStyleMinimalist": "Minimalist",
   "@detailScreenStyleMinimalist": {
     "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+  },
+  "detailScreenStyleStage": "Stage",
+  "@detailScreenStyleStage": {
+    "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
   },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
@@ -13411,6 +13415,14 @@
   "setupDetailMinimalistHint": "Artwork, one play button and the episodes.",
   "@setupDetailMinimalistHint": {
     "description": "What the minimalist detail screen style gives you"
+  },
+  "setupStyleStage": "Stage",
+  "@setupStyleStage": {
+    "description": "Name of the poster-led detail layout, offered in the setup wizard"
+  },
+  "setupDetailStageHint": "The poster up front, with play under it and the details beside it.",
+  "@setupDetailStageHint": {
+    "description": "What the Stage detail screen style gives you"
   },
   "setupNavbarStyleQuestion": "How should the bottom bar look?",
   "@setupNavbarStyleQuestion": {

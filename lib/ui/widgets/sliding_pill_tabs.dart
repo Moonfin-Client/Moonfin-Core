@@ -436,16 +436,20 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
               );
             }
           } else {
+            // With focus the pill grows into the pane's padding, so it fills
+            // the ring painted around the pane rather than sitting inside it.
+            final swell = _focused ? _kPanePadding : 0.0;
             stack = Stack(
+              clipBehavior: Clip.none,
               children: [
                 if (hasThumb)
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeOutCubic,
-                    top: 0,
-                    bottom: 0,
-                    left: _leftOf(_restIndex),
-                    width: _widths[_restIndex],
+                    top: -swell,
+                    bottom: -swell,
+                    left: _leftOf(_restIndex) - swell,
+                    width: _widths[_restIndex] + swell * 2,
                     child: Container(
                       decoration: BoxDecoration(
                         color: thumbColor,

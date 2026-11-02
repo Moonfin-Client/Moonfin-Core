@@ -2834,6 +2834,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.spotlight => _spotlightDetail(context, items.first),
       DetailScreenStyle.nouveau => _nouveauDetail(context, items),
       DetailScreenStyle.minimalist => _minimalistDetail(context, items.first),
+      DetailScreenStyle.stage => _stageDetail(context, items.first),
     };
   },
   fallback: _fallbackDetail(style),
@@ -3732,6 +3733,127 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
+/// The poster on the left with play under it and the title beside it, or
+/// stacked under a centered poster on a phone.
+Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
+  final landscape = !_phone;
+  final posterWidth = landscape ? 78.0 : 66.0;
+  final metaStyle = TextStyle(
+    fontSize: landscape ? 11 : 10,
+    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+  );
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+
+  final poster = SizedBox(
+    width: posterWidth,
+    child: AspectRatio(
+      aspectRatio: 2 / 3,
+      child: ClipRRect(
+        borderRadius: AppRadius.circular(6),
+        child: _artwork(item.posterUrl ?? item.backdropUrl),
+      ),
+    ),
+  );
+  final buttons = Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: 6,
+    children: [
+      Container(
+        height: landscape ? 20 : 18,
+        decoration: BoxDecoration(
+          color: AppColorScheme.accent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: [
+          for (final (icon, _) in _detailButtons(context, auto: 3))
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: AppColorScheme.onSurface.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 11, color: AppColorScheme.onSurface),
+            ),
+        ],
+      ),
+    ],
+  );
+  final text = Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: 6,
+    children: [
+      Text(
+        item.title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: landscape ? 18 : 15,
+          fontWeight: FontWeight.w700,
+          color: AppColorScheme.onSurface,
+        ),
+      ),
+      if (meta.isNotEmpty)
+        Text(
+          meta,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: metaStyle,
+        ),
+      if (item.overview != null && item.overview!.isNotEmpty)
+        Text(
+          item.overview!,
+          maxLines: landscape ? 3 : 2,
+          overflow: TextOverflow.ellipsis,
+          style: metaStyle,
+        ),
+      Row(spacing: 5, children: [_bar(46, 12, _weak), _bar(40, 12, _weak)]),
+    ],
+  );
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      ColoredBox(
+        color: AppColors.black.withValues(
+          alpha: 0.55 + 0.3 * _detailBackgroundAmount(context),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+        child: landscape
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: posterWidth,
+                    child: Column(
+                      spacing: 8,
+                      children: [poster, buttons],
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(child: text),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 10,
+                children: [
+                  Center(child: poster),
+                  text,
+                ],
+              ),
+      ),
+    ],
+  );
+}
+
 Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final item = items.first;
@@ -4220,6 +4342,40 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.stage) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              Column(
+                spacing: 5,
+                children: [_posterCard(30), _bar(30, 8, _strong)],
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    _bar(52, 9, _strong),
+                    _bar(40, 5, _weak),
+                    _bar(64, 5, _weak),
+                    _bar(58, 5, _weak),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.minimalist) {
     return Stack(
       fit: StackFit.expand,

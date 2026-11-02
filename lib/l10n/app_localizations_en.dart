@@ -242,7 +242,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it.';
 
   @override
   String get detailScreenStyleMoonfin => 'Classic';
@@ -462,6 +462,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailScreenStyleMinimalist => 'Minimalist';
+
+  @override
+  String get detailScreenStyleStage => 'Stage';
 
   @override
   String get expandedTabs => 'Expanded Tabs';
@@ -14753,6 +14756,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'Artwork, one play button and the episodes.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion => 'How should the bottom bar look?';

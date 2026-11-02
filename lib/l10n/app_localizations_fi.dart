@@ -468,6 +468,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalistinen';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => 'Laajennetut Välilehdet';
 
   @override
@@ -14932,6 +14935,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'Kuvitus, yksi toistopainike ja jaksot.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion =>

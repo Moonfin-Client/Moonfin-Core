@@ -479,6 +479,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalist';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => 'File extinse';
 
   @override
@@ -14977,6 +14980,13 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'Ilustrații, un singur buton de redare și episoadele.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion => 'Cum ar trebui să arate bara de jos?';

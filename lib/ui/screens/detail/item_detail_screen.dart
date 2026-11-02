@@ -54,6 +54,7 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'stage/stage_detail_content.dart';
 import 'person_links_row.dart';
 import 'playlist_sort_filter_bar.dart';
 import '../../widgets/skeleton/skeleton_detail_screen.dart';
@@ -893,6 +894,23 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           actionsExpanded: _actionsExpanded,
           onActionsExpandedChanged: (val) =>
               setState(() => _actionsExpanded = val),
+        ),
+
+        DetailScreenStyle.stage => StageDetailContent(
+          viewModel: _viewModel,
+          prefs: _prefs,
+          backdropUrl: _backdropUrl,
+          selectedMediaSourceId: _selectedMediaSourceId,
+          initialFocusNode: _ensureInitialFocusNode(),
+          onSelectedMediaSourceChanged: (id) {
+            setState(() => _selectedMediaSourceId = id);
+            _viewModel.load(mediaSourceId: id);
+          },
+          autoPlay: widget.autoPlay,
+          actionsExpanded: _actionsExpanded,
+          onActionsExpandedChanged: (val) =>
+              setState(() => _actionsExpanded = val),
+          onToggleNavbar: (show) => setState(() => _showNavbar = show),
         ),
       },
     };
@@ -4227,11 +4245,19 @@ class DetailPosterImage extends StatelessWidget {
   final AggregatedItem item;
   final ImageApi imageApi;
 
-  const DetailPosterImage({required this.item, required this.imageApi});
+  /// Classic's own poster size when left out.
+  final Size? size;
+
+  const DetailPosterImage({
+    super.key,
+    required this.item,
+    required this.imageApi,
+    this.size,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final posterSize = classicDetailPosterSize(context);
+    final posterSize = size ?? classicDetailPosterSize(context);
     final w = posterSize.width;
     final h = posterSize.height;
     final dpr = MediaQuery.devicePixelRatioOf(context);
@@ -4688,6 +4714,15 @@ class DetailActionButtons extends StatefulWidget {
   /// Adds a Collections button to the row when set.
   final VoidCallback? onCollectionsPressed;
 
+  /// Leaves the audio, subtitle and version buttons out of the row, for a
+  /// style that offers them on their own through
+  /// [DetailActionButtonsState.trackChoices].
+  final bool omitTrackButtons;
+
+  /// A focused circle keeps its resting size and shows its label under it
+  /// instead of growing to fit it, for a row too narrow for a circle to grow.
+  final bool labelsUnderCircles;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4714,6 +4749,8 @@ class DetailActionButtons extends StatefulWidget {
     this.playlistTracksOverride,
     this.onExtrasPressed,
     this.onCollectionsPressed,
+    this.omitTrackButtons = false,
+    this.labelsUnderCircles = false,
   });
 
   @override
@@ -6163,6 +6200,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     _focusTarget(widget.downTarget, alignment: 0.42);
   }
 
+  /// A full width Play sits over the other buttons rather than beside them,
+  /// so Right from it leaves the row when the host has somewhere to send it.
+  bool get _rightFromPlayLeavesRow =>
+      widget.fullWidthPrimary && widget.onArrowRightAtEnd != null;
+
   /// The width both button kinds are laid out at when focused, and the one the
   /// circles are actually capped to.
   static const _modernFocusedFloor = 200.0;
@@ -6871,15 +6913,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
-    // The arrangement is the user's own, and it can't speak for what this
-    // device allows, which is what isOffered is for. Kids Mode hands the
-    // screen to someone else entirely, so it offers its own fixed set rather
-    // than whatever the parent switched off for themselves.
-    final hidden = prefs.get(UserPreferences.kidsModeEnabled)
-        ? const <String>{}
-        : detailButtonLayout.hidden(prefs);
-    bool shows(DetailButton button) =>
-        button.isOffered && (!button.canHide || !hidden.contains(button.id));
+    final shows = _buttonVisibility();
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final isPhoto = item.type == 'Photo';
@@ -7068,7 +7102,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 )
               : null,
         ),
-      if (isPlayableVideo &&
+      if (!widget.omitTrackButtons &&
+          isPlayableVideo &&
           audioStreams.length > 1 &&
           shows(DetailButton.audio))
         DetailButton.audio: _DetailActionButton(
@@ -7076,7 +7111,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.audiotrack,
           onPressed: () => _showAudioSelector(context, audioStreams),
         ),
-      if (isPlayableVideo &&
+      if (!widget.omitTrackButtons &&
+          isPlayableVideo &&
           (subtitleStreams.isNotEmpty || _canDownloadRemoteSubtitles(item)) &&
           shows(DetailButton.subtitles))
         DetailButton.subtitles: _DetailActionButton(
@@ -7084,7 +7120,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.subtitles,
           onPressed: () => _openSubtitleSelector(context, item),
         ),
-      if (isPlayableMedia &&
+      if (!widget.omitTrackButtons &&
+          isPlayableMedia &&
           item.mediaSources.length > 1 &&
           shows(DetailButton.version))
         DetailButton.version: _DetailActionButton(
@@ -7681,6 +7718,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
           onArrowRight: () {
+            if (index == 0 && _rightFromPlayLeavesRow) {
+              widget.onArrowRightAtEnd!();
+              return;
+            }
             final step = isRtl ? -1 : 1;
             if (!_focusAdjacent(
               (i) => _primaryNodeAt(i, allButtons.length),
@@ -7756,6 +7797,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
           },
           onArrowRight: () {
+            if (index == 0 && _rightFromPlayLeavesRow) {
+              widget.onArrowRightAtEnd!();
+              return;
+            }
             // Skip any unmounted slot (e.g. hidden delete-download) and fall
             // through to the More button so it is always reachable.
             final step = isRtl ? -1 : 1;
@@ -10788,6 +10833,114 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       widget.onSelectedMediaSourceChanged(id);
     }
   }
+
+  /// The arrangement is the user's own, and it can't speak for what this
+  /// device allows, which is what isOffered is for. Kids Mode hands the
+  /// screen to someone else entirely, so it offers its own fixed set rather
+  /// than whatever the parent switched off for themselves.
+  bool Function(DetailButton) _buttonVisibility() {
+    final prefs = GetIt.instance<UserPreferences>();
+    final hidden = prefs.get(UserPreferences.kidsModeEnabled)
+        ? const <String>{}
+        : detailButtonLayout.hidden(prefs);
+    return (button) =>
+        button.isOffered && (!button.canHide || !hidden.contains(button.id));
+  }
+
+  /// The audio, subtitle and version pickers with what each is set to, for a
+  /// style that draws them away from the button row. A picker with nothing to
+  /// choose between is left out, the same as its button would be.
+  List<DetailTrackChoice> trackChoices(AppLocalizations l10n) {
+    final item = viewModel.item;
+    if (item == null || viewModel.isSeerrOnly) return const [];
+    const videoTypes = {'Movie', 'Episode', 'Video', 'MusicVideo'};
+    if (!videoTypes.contains(item.type)) return const [];
+
+    final source = selectedMediaSourceForItem(
+      item,
+      widget.selectedMediaSourceId,
+    );
+    final streams = _streamsForTrackSelectors(item, source);
+    final audio = streams.where((s) => s['Type'] == 'Audio').toList();
+    final subtitles = streams.where((s) => s['Type'] == 'Subtitle').toList();
+    final shows = _buttonVisibility();
+    String nameOf(Map<String, dynamic> stream) =>
+        stream['DisplayTitle'] as String? ??
+        stream['Language'] as String? ??
+        l10n.unknown;
+    Map<String, dynamic>? byIndex(List<Map<String, dynamic>> list, int? i) {
+      for (final s in list) {
+        if (s['Index'] == i) return s;
+      }
+      return null;
+    }
+
+    final choices = <DetailTrackChoice>[];
+    if (audio.length > 1 && shows(DetailButton.audio)) {
+      final current =
+          byIndex(audio, _effectiveAudioStreamIndex(audio)) ?? audio.first;
+      choices.add(DetailTrackChoice(DetailButton.audio, nameOf(current)));
+    }
+    if ((subtitles.isNotEmpty || _canDownloadRemoteSubtitles(item)) &&
+        shows(DetailButton.subtitles)) {
+      final current = byIndex(
+        subtitles,
+        _effectiveSubtitleStreamIndex(subtitles, audio),
+      );
+      choices.add(
+        DetailTrackChoice(
+          DetailButton.subtitles,
+          current == null ? l10n.none : nameOf(current),
+        ),
+      );
+    }
+    if (item.mediaSources.length > 1 && shows(DetailButton.version)) {
+      final current = source ?? item.mediaSources.first;
+      choices.add(
+        DetailTrackChoice(
+          DetailButton.version,
+          current['Name'] as String? ?? l10n.versionNumber(1),
+        ),
+      );
+    }
+    return choices;
+  }
+
+  /// Opens the picker a [trackChoices] entry stands for.
+  void openTrackPicker(DetailButton kind) {
+    final item = viewModel.item;
+    if (item == null) return;
+    switch (kind) {
+      case DetailButton.audio:
+        final source = selectedMediaSourceForItem(
+          item,
+          widget.selectedMediaSourceId,
+        );
+        _showAudioSelector(
+          context,
+          _streamsForTrackSelectors(
+            item,
+            source,
+          ).where((s) => s['Type'] == 'Audio').toList(),
+        );
+      case DetailButton.subtitles:
+        _openSubtitleSelector(context, item);
+      case DetailButton.version:
+        _showVersionSelector(context, item.mediaSources);
+      default:
+        break;
+    }
+  }
+}
+
+/// One picker from [DetailActionButtonsState.trackChoices]: which it is, and
+/// the track or version it's set to.
+@immutable
+class DetailTrackChoice {
+  final DetailButton kind;
+  final String current;
+
+  const DetailTrackChoice(this.kind, this.current);
 }
 
 Map<String, dynamic>? selectedMediaSourceForItem(
@@ -12619,7 +12772,9 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color iconColor,
     required Color labelColor,
   }) {
-    final isExpanded = showHighlight;
+    final host = context.findAncestorWidgetOfExactType<DetailActionButtons>();
+    final labelUnder = host?.labelsUnderCircles ?? false;
+    final isExpanded = showHighlight && !labelUnder;
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -12627,12 +12782,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
 
     // Portrait spans the primary Play full width (circular secondary actions
     // wrap beneath); landscape keeps it content-width, inline with them.
-    final fullWidth =
-        widget.isPrimary &&
-        (context
-                .findAncestorWidgetOfExactType<DetailActionButtons>()
-                ?.fullWidthPrimary ??
-            false);
+    final fullWidth = widget.isPrimary && (host?.fullWidthPrimary ?? false);
 
     if (fullWidth) {
       final fg = showHighlight
@@ -12775,7 +12925,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                 6.0 * scale)
             .clamp(0.0, maxWidth);
 
-    return AnimatedContainer(
+    final circle = AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
       height: height,
@@ -12832,6 +12982,37 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           ),
         ),
       ),
+    );
+    if (!labelUnder) return circle;
+
+    // The label's space is kept even with nothing in it, so the row doesn't
+    // shift as focus moves along it. A long label stays centered under its
+    // circle.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        circle,
+        SizedBox(height: 6 * scale),
+        SizedBox(
+          width: height,
+          height: 16 * scale,
+          child: OverflowBox(
+            maxWidth: 160 * scale,
+            child: Text(
+              showHighlight ? widget.label : '',
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColorScheme.onBackground,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -16474,12 +16655,17 @@ class SeerrAppearancesRow extends StatelessWidget {
   final FocusNode? firstFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
 
+  /// Sizes the posters to match a row beside it rather than the Home poster
+  /// size.
+  final double? customCardWidth;
+
   const SeerrAppearancesRow({
     required this.items,
     required this.prefs,
     this.scrollController,
     this.firstFocusNode,
     this.onItemKeyEvent,
+    this.customCardWidth,
   });
 
   @override
@@ -16494,9 +16680,12 @@ class SeerrAppearancesRow extends StatelessWidget {
         : desktopScale;
     final metadataScale = desktopScale;
     final posterSize = prefs.get(UserPreferences.posterSize).upToExtraLarge;
-    final cardHeight = posterSize.portraitHeight.toDouble() * platformScale;
+    final custom = customCardWidth;
+    final cardHeight = custom != null
+        ? custom * 1.5
+        : posterSize.portraitHeight.toDouble() * platformScale;
 
-    final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
+    final cardWidth = custom ?? (isMobile ? 120.0 : cardHeight * (2 / 3));
     final rowHeight =
         _kDetailRowTopInset +
         (isMobile ? 240.0 : cardHeight + (56 * metadataScale));

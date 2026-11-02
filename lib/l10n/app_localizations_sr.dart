@@ -479,6 +479,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Минималистички';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
   String get expandedTabs => 'Проширене картице';
 
   @override
@@ -14967,6 +14970,13 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get setupDetailMinimalistHint =>
       'Илустрација, једно дугме за репродукцију и епизоде.';
+
+  @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
 
   @override
   String get setupNavbarStyleQuestion => 'Како желите да изгледа доња трака?';
