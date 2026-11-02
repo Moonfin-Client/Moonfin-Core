@@ -370,7 +370,8 @@ enum VisualThemeId {
 /// episodes, and is what Kids Mode always shows. [stage] leads with the poster,
 /// with play under it and the details beside it. [premiere] centers the title
 /// over a backdrop that fills the screen, with every section down the page
-/// under it. Stored per server and user.
+/// under it. [quickLook] opens a drawer over the screen the title was picked
+/// on, with Modern a press away for the full page. Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
@@ -378,7 +379,8 @@ enum DetailScreenStyle {
   nouveau,
   minimalist,
   stage,
-  premiere;
+  premiere,
+  quickLook;
 }
 
 /// Selectable header layout for the library browse screen.

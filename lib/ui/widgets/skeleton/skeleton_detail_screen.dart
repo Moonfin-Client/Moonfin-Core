@@ -47,7 +47,94 @@ class DetailScreenSkeleton extends StatelessWidget {
         DetailScreenStyle.minimalist => _buildMinimalist(context),
         DetailScreenStyle.stage => _buildStage(context),
         DetailScreenStyle.premiere => _buildPremiere(context),
+        DetailScreenStyle.quickLook => _buildQuickLook(context),
       },
+    );
+  }
+
+  /// The drawer's backdrop over its title block and buttons, or on a phone
+  /// the sheet's poster with the title beside it.
+  Widget _buildQuickLook(BuildContext context) {
+    final landscape = detailUsesLandscapeLayout(context);
+    final lines = [
+      for (var i = 0; i < 3; i++) ...[
+        const SizedBox(height: 8),
+        SkeletonBox(width: i == 2 ? 200 : null, height: 12),
+      ],
+    ];
+
+    if (!landscape) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 38, 20, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(
+                  width: 84,
+                  height: 126,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                const SizedBox(width: 14),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SkeletonBox(width: 160, height: 22),
+                    SizedBox(height: 10),
+                    SkeletonBox(width: 120, height: 12),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            SkeletonBox(height: 48, borderRadius: BorderRadius.circular(24)),
+            const SizedBox(height: 10),
+            ...lines,
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SkeletonBox(
+          height: MediaQuery.sizeOf(context).height * 0.32 - 34,
+          borderRadius: BorderRadius.zero,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(26, 16, 26, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SkeletonBox(width: 240, height: 28),
+              const SizedBox(height: 10),
+              const SkeletonBox(width: 200, height: 14),
+              const SizedBox(height: 20),
+              Row(
+                spacing: 10,
+                children: [
+                  SkeletonBox(
+                    width: 130,
+                    height: 46,
+                    borderRadius: BorderRadius.circular(23),
+                  ),
+                  for (var i = 0; i < 4; i++)
+                    SkeletonBox(
+                      width: 46,
+                      height: 46,
+                      borderRadius: BorderRadius.circular(23),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ...lines,
+            ],
+          ),
+        ),
+      ],
     );
   }
 

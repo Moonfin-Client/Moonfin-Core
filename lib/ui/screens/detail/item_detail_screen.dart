@@ -55,6 +55,7 @@ import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
 import 'premiere/premiere_detail_content.dart';
+import 'quick_look/quick_look_detail_content.dart';
 import 'stage/stage_detail_content.dart';
 import 'person_links_row.dart';
 import 'playlist_sort_filter_bar.dart';
@@ -292,6 +293,10 @@ class ItemDetailScreen extends StatefulWidget {
   /// see [ItemDetailViewModel.contextSeasonId].
   final String? contextSeasonId;
 
+  /// Opens as Quick Look's drawer over the screen underneath, which keeps its
+  /// own backdrop and theme music.
+  final bool quickLook;
+
   const ItemDetailScreen({
     super.key,
     required this.itemId,
@@ -299,6 +304,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.autoPlay = false,
     this.seerrTitle,
     this.contextSeasonId,
+    this.quickLook = false,
   });
 
   @override
@@ -320,6 +326,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   String? _selectedMediaSourceId;
   bool _showNavbar = true;
   bool _actionsExpanded = false;
+  bool _fullPageOpened = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropItemId;
@@ -401,7 +408,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final nouveauHandled =
         nouveauState?.restoreBackdropAfterResume() ?? false;
 
-    if (!nouveauHandled) {
+    if (!nouveauHandled && !widget.quickLook) {
       final item = _viewModel.item;
       if (item != null) {
         _backgroundService.setBackground(item, context: BlurContext.details);
@@ -462,7 +469,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
-    if (_backgroundService.currentUrl == _backdropUrl.value) {
+    if (!widget.quickLook &&
+        _backgroundService.currentUrl == _backdropUrl.value) {
       _backgroundService.clearBackgrounds();
     }
     _backdropUrl.dispose();
@@ -496,6 +504,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     }
     setState(() {});
     final item = _viewModel.item;
+    if (item != null &&
+        widget.quickLook &&
+        !_fullPageOpened &&
+        _viewModel.state == ItemDetailState.ready &&
+        !detailPageDraws(item.type)) {
+      // Quick Look draws what Stage and Premiere do. Anything else gets its
+      // full page instead of a drawer.
+      _fullPageOpened = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openFullPage();
+      });
+      return;
+    }
     if (item != null) {
       bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
       if (item.type == 'Playlist' &&
@@ -511,8 +532,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
             ? _viewModel.tracks.first
             : item;
-        _backgroundService.setBackground(target, context: BlurContext.details);
-        _backdropUrl.value = _backgroundService.currentUrl;
+        if (!widget.quickLook) {
+          _backgroundService.setBackground(
+            target,
+            context: BlurContext.details,
+          );
+          _backdropUrl.value = _backgroundService.currentUrl;
+        }
 
         if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
           _onBackdropItemFocused(_viewModel.tracks.first);
@@ -524,11 +550,30 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _selectedMediaSourceId = null;
         }
       }
-      if (!_themeMusicStarted) {
+      if (!_themeMusicStarted && !widget.quickLook) {
         _themeMusicStarted = true;
         _themeMusicService.playForItem(item);
       }
     }
+  }
+
+  /// Swaps Quick Look's drawer for the full page at the same address.
+  void _openFullPage() {
+    final uri = GoRouterState.of(context).uri;
+    context.pushReplacement(
+      uri
+          .replace(queryParameters: {...uri.queryParameters, 'full': 'true'})
+          .toString(),
+    );
+  }
+
+  /// Quick Look's full page is Modern.
+  DetailScreenStyle get _style {
+    if (widget.quickLook) return DetailScreenStyle.quickLook;
+    final style = _prefs.effectiveDetailScreenStyle;
+    return style == DetailScreenStyle.quickLook
+        ? DetailScreenStyle.modern
+        : style;
   }
 
   void _onBackdropItemFocused(AggregatedItem focusedItem) {
@@ -608,7 +653,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   void _resumeThemeMusicIfEligible() {
     final item = _viewModel.item;
-    if (item == null) return;
+    if (item == null || widget.quickLook) return;
     // There is no theme song on a server that has never heard of this title.
     if (_viewModel.isSeerrOnly) return;
 
@@ -639,6 +684,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     // gating on it leaves those pages with no way back at all.
     final showBackButton =
         _viewModel.state != ItemDetailState.ready || _showNavbar;
+
+    if (widget.quickLook) {
+      return RequestInitialFocus(
+        targetNode: node,
+        child: QuickLookFrame(child: _buildBody(context)),
+      );
+    }
 
     Widget body = NavigationLayout(
       showBackButton: showBackButton,
@@ -786,7 +838,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
-        style: _prefs.effectiveDetailScreenStyle,
+        style: _style,
         prefs: _prefs,
       ),
       // Nothing about the title, deliberately. No artwork, no name, and no
@@ -830,7 +882,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           ],
         ),
       ),
-      ItemDetailState.ready => switch (_prefs.effectiveDetailScreenStyle) {
+      ItemDetailState.ready => switch (_style) {
         DetailScreenStyle.classic => _DetailContent(
           viewModel: _viewModel,
           prefs: _prefs,
@@ -937,6 +989,25 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 onToggleNavbar: (show) => setState(() => _showNavbar = show),
               )
             : _buildModernContent(),
+
+        DetailScreenStyle.quickLook =>
+          detailPageDraws(_viewModel.item?.type)
+            ? QuickLookDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onOpenFullPage: _openFullPage,
+              )
+            : const SizedBox.shrink(),
       },
     };
   }

@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -843,6 +843,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Premiere'**
   String get detailScreenStylePremiere;
+
+  /// Detail screen style option: a drawer over the screen the title was picked on, instead of a full page
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get detailScreenStyleQuickLook;
+
+  /// Button at the foot of the Quick Look drawer that opens the title's full details page
+  ///
+  /// In en, this message translates to:
+  /// **'Open full page'**
+  String get quickLookOpenFullPage;
+
+  /// Hint on the Quick Look drawer telling a TV viewer that the Back button closes it
+  ///
+  /// In en, this message translates to:
+  /// **'Back to close'**
+  String get quickLookBackToClose;
+
+  /// How many of a season's episodes have been watched, on a season card in the Quick Look drawer
+  ///
+  /// In en, this message translates to:
+  /// **'{played} of {total}'**
+  String quickLookSeasonPlayed(int played, int total);
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -26070,6 +26094,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The title centered over a full screen backdrop, with everything else down the page.'**
   String get setupDetailPremiereHint;
+
+  /// Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get setupStyleQuickLook;
+
+  /// What the Quick Look detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A drawer over the screen you were on, with play and the basics, and the full page a press away.'**
+  String get setupDetailQuickLookHint;
 
   /// Setup question asking which style the bottom navigation bar should use
   ///

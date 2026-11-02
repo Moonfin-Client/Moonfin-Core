@@ -2836,6 +2836,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.minimalist => _minimalistDetail(context, items.first),
       DetailScreenStyle.stage => _stageDetail(context, items.first),
       DetailScreenStyle.premiere => _premiereDetail(context, items.first),
+      DetailScreenStyle.quickLook => _quickLookDetail(context, items),
     };
   },
   fallback: _fallbackDetail(style),
@@ -3953,6 +3954,145 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
+/// The drawer down the right over a dimmed row of titles, or the sheet up
+/// from the foot of a phone.
+Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
+  final landscape = !_phone;
+  final item = items.first;
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+
+  final panel = ColoredBox(
+    color: Color.alphaBlend(
+      AppColorScheme.onSurface.withValues(alpha: 0.03),
+      AppColorScheme.background,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (landscape)
+          SizedBox(
+            height: 52,
+            child: _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Center(child: _bar(18, 3, _weak)),
+          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
+            children: [
+              Text(
+                item.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+              if (meta.isNotEmpty)
+                Text(
+                  meta,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                  ),
+                ),
+              Row(
+                spacing: 3,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 13,
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.accent,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                  ),
+                  for (final (icon, _) in _detailButtons(context, auto: 4))
+                    Container(
+                      width: 13,
+                      height: 13,
+                      decoration: BoxDecoration(
+                        color: AppColorScheme.onSurface.withValues(alpha: 0.18),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        icon,
+                        size: 8,
+                        color: AppColorScheme.onSurface,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        Container(
+          height: 12,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.25),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ColoredBox(color: AppColorScheme.background),
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Row(
+            spacing: 6,
+            children: [
+              for (final shown in items.take(5))
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: 2 / 3,
+                    child: ClipRRect(
+                      borderRadius: AppRadius.circular(4),
+                      child: _artwork(shown.posterUrl ?? shown.backdropUrl),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+      ColoredBox(color: AppColors.black.withValues(alpha: 0.62)),
+      Align(
+        alignment: landscape ? Alignment.centerRight : Alignment.bottomCenter,
+        child: FractionallySizedBox(
+          widthFactor: landscape ? 0.5 : 1,
+          heightFactor: landscape ? 1 : 0.8,
+          child: ClipRRect(
+            borderRadius: landscape
+                ? BorderRadius.zero
+                : const BorderRadius.vertical(top: Radius.circular(10)),
+            child: panel,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final item = items.first;
@@ -4441,6 +4581,47 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.quickLook) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        ColoredBox(color: AppColors.black.withValues(alpha: 0.62)),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FractionallySizedBox(
+            widthFactor: 0.5,
+            heightFactor: 1,
+            child: ColoredBox(
+              color: AppColorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    const Spacer(),
+                    _bar(48, 8, _strong),
+                    _bar(36, 5, _weak),
+                    Row(
+                      spacing: 4,
+                      children: [
+                        _bar(22, 8, _strong),
+                        _bar(8, 8, _weak),
+                        _bar(8, 8, _weak),
+                      ],
+                    ),
+                    const Spacer(flex: 2),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.premiere) {
     return Stack(
       fit: StackFit.expand,

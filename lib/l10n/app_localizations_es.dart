@@ -474,6 +474,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get detailScreenStylePremiere => 'Premiere';
 
   @override
+  String get detailScreenStyleQuickLook => 'Quick Look';
+
+  @override
+  String get quickLookOpenFullPage => 'Open full page';
+
+  @override
+  String get quickLookBackToClose => 'Back to close';
+
+  @override
+  String quickLookSeasonPlayed(int played, int total) {
+    return '$played of $total';
+  }
+
+  @override
   String get expandedTabs => 'Pestañas expandidas';
 
   @override
@@ -14977,6 +14991,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get setupDetailPremiereHint =>
       'The title centered over a full screen backdrop, with everything else down the page.';
+
+  @override
+  String get setupStyleQuickLook => 'Quick Look';
+
+  @override
+  String get setupDetailQuickLookHint =>
+      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
 
   @override
   String get setupNavbarStyleQuestion => 'How should the bottom bar look?';

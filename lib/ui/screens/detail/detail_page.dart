@@ -125,6 +125,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
   DetailPageSection? tracksSection(
     AppLocalizations l10n, {
     VoidCallback? onLeftEdge,
+    bool shareRow = false,
   }) {
     final choices = actionsKey.currentState?.trackChoices(l10n);
     if (choices == null && !pageViewModel.isSeerrOnly) {
@@ -143,6 +144,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
         onNavigateUp: () => moveUp(node),
         onNavigateDown: () => moveDown(node),
         onLeftEdge: onLeftEdge,
+        shareRow: shareRow,
       ),
     );
   }

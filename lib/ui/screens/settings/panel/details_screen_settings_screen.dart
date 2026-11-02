@@ -61,6 +61,8 @@ class _DetailsScreenSettingsScreenState
                       DetailScreenStyle.stage => l10n.detailScreenStyleStage,
                       DetailScreenStyle.premiere =>
                         l10n.detailScreenStylePremiere,
+                      DetailScreenStyle.quickLook =>
+                        l10n.detailScreenStyleQuickLook,
                     },
                   ),
                   EnumPreferenceTile<PersonalRatingStyle>(

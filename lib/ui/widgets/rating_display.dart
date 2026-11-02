@@ -60,11 +60,13 @@ class RatingsRow extends StatelessWidget {
   /// Null when there is nothing to draw, so the caller skips its spacing too.
   ///
   /// Drops scores outside their scale, since the server returns a zero for an
-  /// unrated item, and draws nothing at all in Kids Mode.
+  /// unrated item, and draws nothing at all in Kids Mode. A screen with no room
+  /// for the sources' names passes [labels] false.
   static Widget? forDetailScreen({
     required AggregatedItem item,
     required Map<String, double> extraRatings,
     required UserPreferences prefs,
+    bool labels = true,
   }) {
     if (!prefs.effectiveShowDetailRatings) return null;
 
@@ -87,7 +89,7 @@ class RatingsRow extends StatelessWidget {
         UserPreferences.enableAdditionalRatings,
       ),
       enabledRatings: prefs.get(UserPreferences.enabledRatings),
-      showLabels: prefs.get(UserPreferences.showRatingLabels),
+      showLabels: labels && prefs.get(UserPreferences.showRatingLabels),
       showBadges: prefs.get(UserPreferences.showRatingBadges),
     );
   }

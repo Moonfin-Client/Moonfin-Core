@@ -228,11 +228,13 @@ enum DetailSection {
   /// Whether picking [style] can put this section on screen. Minimalist only
   /// draws video pages and hands every other page to Spotlight, so it also
   /// shows whatever Spotlight does. Stage and Premiere hand people and
-  /// collections to Modern the same way.
+  /// collections to Modern the same way, and Quick Look's full page is Modern.
   bool isAvailableIn(DetailScreenStyle style) =>
       styles.contains(style) ||
       (style == DetailScreenStyle.minimalist &&
           styles.contains(DetailScreenStyle.spotlight)) ||
+      (style == DetailScreenStyle.quickLook &&
+          styles.contains(DetailScreenStyle.modern)) ||
       ((style == DetailScreenStyle.stage ||
               style == DetailScreenStyle.premiere) &&
           _drawnByModern &&

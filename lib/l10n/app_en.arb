@@ -336,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -554,6 +554,30 @@
   "detailScreenStylePremiere": "Premiere",
   "@detailScreenStylePremiere": {
     "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+  },
+  "detailScreenStyleQuickLook": "Quick Look",
+  "@detailScreenStyleQuickLook": {
+    "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+  },
+  "quickLookOpenFullPage": "Open full page",
+  "@quickLookOpenFullPage": {
+    "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+  },
+  "quickLookBackToClose": "Back to close",
+  "@quickLookBackToClose": {
+    "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+  },
+  "quickLookSeasonPlayed": "{played} of {total}",
+  "@quickLookSeasonPlayed": {
+    "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+    "placeholders": {
+      "played": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
@@ -13435,6 +13459,14 @@
   "setupDetailPremiereHint": "The title centered over a full screen backdrop, with everything else down the page.",
   "@setupDetailPremiereHint": {
     "description": "What the Premiere detail screen style gives you"
+  },
+  "setupStyleQuickLook": "Quick Look",
+  "@setupStyleQuickLook": {
+    "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+  },
+  "setupDetailQuickLookHint": "A drawer over the screen you were on, with play and the basics, and the full page a press away.",
+  "@setupDetailQuickLookHint": {
+    "description": "What the Quick Look detail screen style gives you"
   },
   "setupNavbarStyleQuestion": "How should the bottom bar look?",
   "@setupNavbarStyleQuestion": {
