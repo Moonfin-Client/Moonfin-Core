@@ -6,8 +6,10 @@ import androidx.media3.common.util.Consumer
 import androidx.media3.extractor.text.CuesWithTiming
 import androidx.media3.extractor.text.SubtitleParser
 import io.github.peerless2012.ass.media.AssHandler
+import io.github.peerless2012.ass.media.parser.AssNoOpSubtitleParser
 import io.github.peerless2012.ass.media.type.AssRenderType
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -51,6 +53,23 @@ class MoonfinAssParserFactoryTest {
     @Test
     fun `an ASS parse holds the libass lock`() {
         assertTrue(parsesUnderLock(MimeTypes.TEXT_SSA))
+    }
+
+    @Test
+    fun `embedded MKV dialogue parses without it`() {
+        val noOp = AssNoOpSubtitleParser()
+        val factory = MoonfinAssParserFactory(
+            object : SubtitleParser.Factory {
+                override fun supportsFormat(format: Format): Boolean = true
+
+                override fun getCueReplacementBehavior(format: Format): Int =
+                    Format.CUE_REPLACEMENT_BEHAVIOR_REPLACE
+
+                override fun create(format: Format): SubtitleParser = noOp
+            },
+            assHandler,
+        )
+        assertSame(noOp, factory.create(Format.Builder().setSampleMimeType(MimeTypes.TEXT_SSA).build()))
     }
 
     @Test
