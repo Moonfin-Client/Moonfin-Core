@@ -80,6 +80,55 @@ void main() {
     expect(SiloWatchPartyManager.rateFor(-0.6), closeTo(1.025, 1e-9));
   });
 
+  test('a start\'s delay is the time before its position moved', () {
+    // resume() at 1000 from 60 s; at 2000 it has played 400 ms, so it
+    // started moving at 1600.
+    expect(
+      SiloWatchPartyManager.startDelayMs(
+        calledAtMs: 1000,
+        fromMs: 60000,
+        positionMs: 60400,
+        atMs: 2000,
+      ),
+      600,
+    );
+    // First moved more than five seconds after resume(): a stall.
+    expect(
+      SiloWatchPartyManager.startDelayMs(
+        calledAtMs: 1000,
+        fromMs: 60000,
+        positionMs: 60300,
+        atMs: 9000,
+      ),
+      isNull,
+    );
+    // Not moved yet, or moved backwards by a seek.
+    expect(
+      SiloWatchPartyManager.startDelayMs(
+        calledAtMs: 1000,
+        fromMs: 60000,
+        positionMs: 60050,
+        atMs: 1500,
+      ),
+      isNull,
+    );
+    expect(
+      SiloWatchPartyManager.startDelayMs(
+        calledAtMs: 1000,
+        fromMs: 60000,
+        positionMs: 30000,
+        atMs: 1500,
+      ),
+      isNull,
+    );
+  });
+
+  test('the start lead takes the first start, then averages', () {
+    expect(SiloWatchPartyManager.nextStartLeadMs(0, 600), 600);
+    expect(SiloWatchPartyManager.nextStartLeadMs(600, 400), 500);
+    expect(SiloWatchPartyManager.nextStartLeadMs(0, 9000), 2000);
+  });
+
   test('the next episode follows season and episode order', () {
     Map<String, dynamic> ep(String id, int season, int number) => {
       'Id': id,
