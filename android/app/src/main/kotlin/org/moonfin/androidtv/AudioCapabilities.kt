@@ -11,6 +11,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import androidx.annotation.RequiresApi
+import org.moonfin.nativevideo.iec.Iec61937CarrierProbe
 
 object AudioCapabilities {
     private const val ROUTE_HDMI = "hdmi"
@@ -168,9 +169,9 @@ object AudioCapabilities {
         // IEC 61937 carriers for the Media3 app-side packer ("AudioTrack
         // (IEC)"): stream-rate stereo (AC3/DTS core), 192 kHz stereo (EAC3),
         // 192 kHz 8-channel HBR (DTS-HD MA/TrueHD MAT).
-        val canIecLow = probeIecCarrier(48_000, AudioFormat.CHANNEL_OUT_STEREO)
-        val canIecMid = probeIecCarrier(192_000, AudioFormat.CHANNEL_OUT_STEREO)
-        val canIecHbr = probeIecCarrier(192_000, AudioFormat.CHANNEL_OUT_7POINT1_SURROUND)
+        val canIecLow = Iec61937CarrierProbe.supports(48_000, AudioFormat.CHANNEL_OUT_STEREO)
+        val canIecMid = Iec61937CarrierProbe.supports(192_000, AudioFormat.CHANNEL_OUT_STEREO)
+        val canIecHbr = Iec61937CarrierProbe.supports(192_000, AudioFormat.CHANNEL_OUT_7POINT1_SURROUND)
 
         return mapOf(
             "supportsAc3" to supportsAc3,
@@ -196,40 +197,6 @@ object AudioCapabilities {
             "activeRouteType" to routeType,
             "routeSupportsHdAudio" to routeSupportsHdAudio,
         )
-    }
-
-    /**
-     * Whether an ENCODING_IEC61937 AudioTrack of the given carrier shape can
-     * play on the current route, using the same API ladder as the raw
-     * passthrough checks. Below API 29 there is no direct-playback query, so
-     * getMinBufferSize answers whether the platform knows the encoding at
-     * all, and only for the stereo carriers so HBR never over-claims.
-     */
-    private fun probeIecCarrier(sampleRate: Int, channelMask: Int): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false
-        val format = runCatching {
-            AudioFormat.Builder()
-                .setEncoding(AudioFormat.ENCODING_IEC61937)
-                .setSampleRate(sampleRate)
-                .setChannelMask(channelMask)
-                .build()
-        }.getOrNull() ?: return false
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return runCatching {
-                AudioManager.getDirectPlaybackSupport(format, directAudioAttributes) !=
-                    AudioManager.DIRECT_PLAYBACK_NOT_SUPPORTED
-            }.getOrDefault(false)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return runCatching {
-                AudioTrack.isDirectPlaybackSupported(format, directAudioAttributes)
-            }.getOrDefault(false)
-        }
-        if (channelMask != AudioFormat.CHANNEL_OUT_STEREO) return false
-        return runCatching {
-            AudioTrack.getMinBufferSize(sampleRate, channelMask, AudioFormat.ENCODING_IEC61937) > 0
-        }.getOrDefault(false)
     }
 
     private fun collectEncodings(devices: List<AudioDeviceInfo>): Set<Int> {

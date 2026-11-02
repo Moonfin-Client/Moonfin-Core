@@ -9,6 +9,11 @@ class Server {
   /// when they didn't type one. Only for display, since requests always go
   /// to [address].
   final String? displayAddress;
+
+  /// Every address plex.tv listed for a Plex server, best first. Each session
+  /// starts on the best one that answers, so a relay picked at sign-in
+  /// doesn't stick and [address] follows the device between home and away.
+  final List<String> candidateAddresses;
   final String version;
   final ServerType serverType;
   final String? loginDisclaimer;
@@ -22,6 +27,7 @@ class Server {
     required this.name,
     required this.address,
     this.displayAddress,
+    this.candidateAddresses = const [],
     required this.version,
     required this.serverType,
     this.loginDisclaimer,
@@ -50,6 +56,7 @@ class Server {
       displayAddress: clearDisplayAddress
           ? null
           : displayAddress ?? this.displayAddress,
+      candidateAddresses: candidateAddresses,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
@@ -64,6 +71,7 @@ class Server {
         'name': name,
         'address': address,
         'displayAddress': displayAddress,
+        'candidateAddresses': candidateAddresses,
         'version': version,
         'serverType': serverType.name,
         'loginDisclaimer': loginDisclaimer,
@@ -79,6 +87,9 @@ class Server {
       name: json['name'] as String? ?? '',
       address: json['address'] as String? ?? '',
       displayAddress: json['displayAddress'] as String?,
+      candidateAddresses:
+          (json['candidateAddresses'] as List?)?.whereType<String>().toList() ??
+              const [],
       version: json['version'] as String? ?? '',
       serverType: ServerType.values.firstWhere(
         (t) => t.name == json['serverType'],

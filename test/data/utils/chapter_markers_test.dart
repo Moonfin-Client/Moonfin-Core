@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/chapter_markers.dart';
 
 List<Map<String, dynamic>> _chapters(List<int> startsMs) =>
@@ -44,5 +45,51 @@ void main() {
       ], 120000),
       [30000],
     );
+  });
+
+  group('the version that plays', () {
+    Map<String, dynamic> chapter(String name, int seconds) => {
+      'Name': name,
+      'StartPositionTicks': seconds * 10000000,
+    };
+    final item = AggregatedItem(
+      id: 'film',
+      serverId: 's',
+      rawData: {
+        'Chapters': [chapter('Opening', 0)],
+        'MediaSources': [
+          {
+            'Id': 'uhd',
+            'Chapters': [chapter('Opening', 0)],
+          },
+          {
+            'Id': 'hd',
+            'Chapters': [chapter('Start', 0), chapter('Middle', 60)],
+          },
+          {'Id': 'plain'},
+        ],
+      },
+    );
+
+    test('a version with its own chapters gives those', () {
+      expect(
+        chaptersForItem(item, null, mediaSourceId: 'hd').map((c) => c['title']),
+        ['Start', 'Middle'],
+      );
+      expect(
+        chaptersForItem(item, null, mediaSourceId: 'hd').last['startMs'],
+        60000,
+      );
+    });
+
+    test('otherwise the item\'s', () {
+      for (final id in [null, 'plain', 'unknown']) {
+        expect(
+          chaptersForItem(item, null, mediaSourceId: id).map((c) => c['title']),
+          ['Opening'],
+          reason: '$id',
+        );
+      }
+    });
   });
 }

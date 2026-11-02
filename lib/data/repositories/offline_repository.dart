@@ -128,16 +128,7 @@ class OfflineRepository {
     final item = await getItem(itemId);
     if (item == null) return;
 
-    Map<String, dynamic> metadata;
-    try {
-      final decoded = jsonDecode(item.metadataJson);
-      metadata = decoded is Map<String, dynamic>
-          ? decoded
-          : <String, dynamic>{};
-    } catch (_) {
-      metadata = <String, dynamic>{};
-    }
-
+    final metadata = _metadataOf(item);
     final userData =
         (metadata['UserData'] as Map?)?.cast<String, dynamic>() ??
         <String, dynamic>{};
@@ -149,11 +140,54 @@ class OfflineRepository {
       }
     });
     metadata['UserData'] = userData;
-
-    await (_db.update(_db.downloadedItems)
-          ..where((t) => t.itemId.equals(itemId)))
-        .write(DownloadedItemsCompanion(metadataJson: Value(jsonEncode(metadata))));
+    await _writeMetadata(itemId, metadata);
   }
+
+  /// Adds [streams] to the stored item's streams and its first version's,
+  /// skipping any whose index is already there.
+  Future<void> addMediaStreams(
+    String itemId,
+    List<Map<String, dynamic>> streams,
+  ) async {
+    if (streams.isEmpty) return;
+    final item = await getItem(itemId);
+    if (item == null) return;
+
+    final metadata = _metadataOf(item);
+    List<dynamic> withStreams(Object? existing) {
+      final list = [...(existing as List?) ?? const []];
+      final indices = {
+        for (final s in list)
+          if (s is Map) s['Index'],
+      };
+      return [
+        ...list,
+        for (final s in streams)
+          if (!indices.contains(s['Index'])) s,
+      ];
+    }
+
+    metadata['MediaStreams'] = withStreams(metadata['MediaStreams']);
+    final sources = metadata['MediaSources'];
+    if (sources is List && sources.isNotEmpty && sources.first is Map) {
+      final first = sources.first as Map;
+      first['MediaStreams'] = withStreams(first['MediaStreams']);
+    }
+    await _writeMetadata(itemId, metadata);
+  }
+
+  Map<String, dynamic> _metadataOf(DownloadedItem item) {
+    try {
+      final decoded = jsonDecode(item.metadataJson);
+      return decoded is Map<String, dynamic> ? decoded : <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
+  Future<void> _writeMetadata(String itemId, Map<String, dynamic> metadata) =>
+      (_db.update(_db.downloadedItems)..where((t) => t.itemId.equals(itemId)))
+          .write(DownloadedItemsCompanion(metadataJson: Value(jsonEncode(metadata))));
 
   // ---------------------------------------------------------------------
   // Auto-download subscriptions

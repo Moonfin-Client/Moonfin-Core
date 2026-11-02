@@ -443,9 +443,11 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             communityRating: item.communityRating,
             criticRating: item.criticRating,
             enableAdditionalRatings: widget.prefs.get(
-              UserPreferences.enableAdditionalRatings,
+              UserPreferences.mediaBarEnableAdditionalRatings,
             ),
-            enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
+            enabledRatings: widget.prefs.get(
+              UserPreferences.mediaBarEnabledRatings,
+            ),
             showLabels: false,
             showBadges: false,
           ),

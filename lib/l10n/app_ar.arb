@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "اختر خلاصات الموضوع التي سيتم عرضها في Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "تطبيق",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "أنواع الكتب الصوتية",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "اختر الأنواع التي تريد عرضها في Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "اكتشف الكتب الصوتية",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "عناوين النطاق العام الشهيرة من LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} العناوين",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "قم بالتمرير إلى اليسار",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "يكتشف",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "العناوين الشائعة حسب الموضوع من Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "لا توجد عناصر مرجعية حتى الآن",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "تمكين عرض المجلد",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "إظهار خيار تصفح المجلد",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "رؤية المكتبة",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "المحتوى المميز والمظهر",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "حجم الملصق، نوع الصورة، عرض المجلد",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList وTMDB ومصادر التقييم",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "فشل في استخراج أرشيف .cbr.",
     "cb7ExtractionUnavailable": "استخراج CB7 غير متوفر على هذه المنصة.",
     "cb7ExtractionPluginUnavailable": "البرنامج المساعد لاستخراج CB7 غير متوفر على هذا النظام الأساسي.",
-    "closeGenrePanel": "إغلاق لوحة النوع",
     "loadingShuffle": "جارٍ التحميل العشوائي...",
     "libraryShuffleLabel": "تشغيل عشوائي للمكتبة",
     "randomShuffleLabel": "تشغيل عشوائي",

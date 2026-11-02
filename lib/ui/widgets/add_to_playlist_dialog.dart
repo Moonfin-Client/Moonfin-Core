@@ -129,8 +129,8 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
         final hintStyle = TextStyle(
           color: AppColorScheme.onSurface.withValues(alpha: 0.4),
         );
-        final preferSystemIme = GetIt.instance<UserPreferences>().get(
-          UserPreferences.preferSystemImeKeyboard,
+        final keyboardStyle = GetIt.instance<UserPreferences>().get(
+          UserPreferences.keyboardStyle,
         );
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -192,7 +192,7 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
                             isFocused: _nameFocusNode.hasFocus,
                             inputPurpose: InputPurpose.text,
                             keyboardType: KeyboardType.alphabetic,
-                            preferSystemIme: preferSystemIme,
+                            keyboardStyle: keyboardStyle,
                             hint: hint,
                             filled: true,
                             fillColor: fillColor,

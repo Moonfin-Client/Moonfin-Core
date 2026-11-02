@@ -34,4 +34,25 @@ void main() {
 
     expect(_ids(queue), ['e1', 'e2', 'e3']);
   });
+
+  test('a resume point past the first file starts in the part holding it', () {
+    final parts = [
+      for (final id in ['pt2', 'pt3'])
+        AggregatedItem(
+          id: id,
+          serverId: 's',
+          rawData: {'Id': id, 'RunTimeTicks': 900000000},
+        ),
+    ];
+    (int, Duration) start(int seconds) => startInParts(
+      startIndex: 1,
+      startPosition: Duration(seconds: seconds),
+      firstFile: const Duration(seconds: 90),
+      parts: parts,
+    );
+
+    expect(start(30), (1, const Duration(seconds: 30)));
+    expect(start(120), (2, const Duration(seconds: 30)));
+    expect(start(200), (3, const Duration(seconds: 20)));
+  });
 }

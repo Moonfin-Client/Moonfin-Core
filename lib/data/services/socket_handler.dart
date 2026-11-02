@@ -2,13 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:dio/dio.dart' show DioException;
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+import 'package:server_silo/server_silo.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../auth/services/silo_token_storage.dart';
 import 'log_service.dart';
 import 'websocket_message_parser.dart';
+
+part 'silo_events_socket_client.dart';
 
 abstract class ServerWebSocketClient {
   Stream<ServerWebSocketMessage> get messages;
@@ -30,11 +36,13 @@ abstract class ServerWebSocketClient {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinWebSocketClient(client),
       ServerType.emby => EmbyWebSocketClient(client),
+      ServerType.plex => PlexWebSocketClient(client),
+      ServerType.silo => SiloEventsSocketClient(client),
     };
   }
 }
 
-/// The reconnect, keep alive and logging machinery both server types share.
+/// The reconnect, keep alive and logging machinery every server type shares.
 /// Only the handshake and what counts as a keep alive differ between them.
 abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
   _ReconnectingWebSocketClient(
@@ -68,6 +76,10 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
   bool _disposed = false;
   bool _connecting = false;
 
+  /// Counts [disconnect] calls, so a connect that was still opening can tell
+  /// it was called off.
+  int _disconnects = 0;
+
   final _messageController =
       StreamController<ServerWebSocketMessage>.broadcast();
   final _connectionController = StreamController<void>.broadcast();
@@ -81,12 +93,23 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
   /// The url to open, or null when the client has nothing to connect with.
   Uri? buildUri();
 
+  /// Opens the socket, or answers null when there is nothing to connect with.
+  /// Jellyfin and Emby open [buildUri]. Silo first asks for a ticket.
+  Future<WebSocketChannel?> openChannel() async {
+    final uri = buildUri();
+    return uri == null ? null : WebSocketChannel.connect(uri);
+  }
+
   /// What to do with each frame the server sends.
   void handleMessage(dynamic data);
 
   /// Called once the socket is open, for the types that start their keep alive
   /// straight away rather than waiting to be told an interval.
   void onConnected() {}
+
+  /// Called when the server closes the socket, with its close code. True
+  /// reconnects at once instead of after the backoff (Silo's access change).
+  bool onServerClosed(int? closeCode) => false;
 
   @override
   Future<void> connect() async {
@@ -96,10 +119,15 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
       await disconnect();
       if (_disposed) return;
 
-      final uri = buildUri();
-      if (uri == null) return;
-
-      final socket = WebSocketChannel.connect(uri);
+      final opening = _disconnects;
+      final socket = await openChannel();
+      if (socket == null) return;
+      // Opening can take a request first (Silo's ticket). A disconnect or a
+      // dispose meanwhile wins, rather than this socket coming up after it.
+      if (_disposed || opening != _disconnects) {
+        unawaited(_closeQuietly(socket));
+        return;
+      }
       channel = socket;
       await socket.ready.timeout(_connectTimeout);
       _reconnectAttempt = 0;
@@ -114,8 +142,9 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
           _dropAndReconnect();
         },
         onDone: () {
+          final atOnce = onServerClosed(socket.closeCode);
           logLifecycle('$label WebSocket closed, reconnecting');
-          _dropAndReconnect();
+          _dropAndReconnect(atOnce: atOnce);
         },
       );
     } catch (e) {
@@ -128,12 +157,18 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
 
   /// Clearing the channel is what lets an immediate retry through, since a
   /// stale one left in place reads as a live connection.
-  void _dropAndReconnect() {
+  void _dropAndReconnect({bool atOnce = false}) {
     keepAliveTimer?.cancel();
     keepAliveTimer = null;
     final stale = channel;
     channel = null;
     unawaited(_closeQuietly(stale));
+    if (atOnce && !_disposed) {
+      _reconnectAttempt = 0;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = Timer(Duration.zero, () => connect());
+      return;
+    }
     scheduleReconnect();
   }
 
@@ -206,6 +241,7 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
 
   @override
   Future<void> disconnect() async {
+    _disconnects++;
     keepAliveTimer?.cancel();
     keepAliveTimer = null;
     _reconnectTimer?.cancel();
@@ -301,6 +337,107 @@ class EmbyWebSocketClient extends _ReconnectingWebSocketClient {
     } catch (e) {
       warn('Emby WebSocket message could not be parsed', e);
     }
+  }
+}
+
+/// Plex's socket announces playback on every device but never a watched
+/// toggle, so when a session pauses or stops, the item's user data is asked
+/// for again, along with its season and show for their unwatched counts.
+class PlexWebSocketClient extends _ReconnectingWebSocketClient {
+  PlexWebSocketClient(MediaServerClient client, {Duration? connectTimeout})
+    : super(client, 'Plex', connectTimeout: connectTimeout);
+
+  /// The last state each playback session reported. A paused player repeats
+  /// itself every few seconds, and only the change is worth a refresh.
+  final _sessionStates = <String, String>{};
+
+  @override
+  Uri? buildUri() {
+    final token = client.accessToken;
+    if (token == null) return null;
+    final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
+    return Uri.parse(
+      '$wsUrl/:/websockets/notifications?filters=playing'
+      '&X-Plex-Token=${Uri.encodeQueryComponent(token)}',
+    );
+  }
+
+  /// Plex's socket only talks one way.
+  @override
+  void send(String messageType, [Object? data]) {}
+
+  @override
+  void handleMessage(dynamic data) {
+    try {
+      final json = jsonDecode(data.toString()) as Map<String, dynamic>;
+      final container = json['NotificationContainer'] as Map?;
+      final sessions =
+          container?['PlaySessionStateNotification'] as List? ?? const [];
+      final changed = <String>{};
+      for (final session in sessions) {
+        if (session is! Map) continue;
+        final key = '${session['sessionKey']}';
+        final state = session['state']?.toString();
+        final previous = _sessionStates[key];
+        if (state == 'stopped' || state == null) {
+          _sessionStates.remove(key);
+        } else {
+          _sessionStates[key] = state;
+        }
+        if (state != previous &&
+            (state == 'paused' || state == 'stopped') &&
+            session['ratingKey'] != null) {
+          changed.add('${session['ratingKey']}');
+        }
+      }
+      if (changed.isNotEmpty) unawaited(_refresh(changed));
+    } catch (e) {
+      warn('Plex WebSocket message could not be parsed', e);
+    }
+  }
+
+  Future<void> _refresh(Set<String> ids) async {
+    try {
+      final items = await _withUserData(ids);
+      final parents = {
+        for (final item in items)
+          for (final key in const ['SeasonId', 'SeriesId'])
+            if (item[key] case final String id) id,
+      }..removeAll(ids);
+      if (parents.isNotEmpty) items.addAll(await _withUserData(parents));
+      if (_disposed) return;
+      emit(
+        UserDataChangedMessage(
+          userId: client.userId ?? '',
+          userDataList: [
+            for (final item in items)
+              if (item['UserData'] case final Map userData)
+                {
+                  // Plex drops the percentage once an item is finished, and a
+                  // missing key would leave the old progress bar up.
+                  'PlayedPercentage': null,
+                  ...userData.cast<String, dynamic>(),
+                  'ItemId': item['Id'],
+                },
+          ],
+        ),
+      );
+    } catch (e) {
+      warn('Plex watch state could not be refreshed', e);
+    }
+  }
+
+  Future<List<Map>> _withUserData(Set<String> ids) async {
+    final result = await client.itemsApi.getItems(
+      ids: ids.toList(),
+      fields: 'UserData',
+      limit: ids.length,
+      enableTotalRecordCount: false,
+    );
+    return [
+      for (final item in result['Items'] as List? ?? const [])
+        if (item is Map) item,
+    ];
   }
 }
 

@@ -252,11 +252,10 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
   }
 
   Widget? _buildLiveVideoSurface() {
-    if (PlatformDetection.isAppleTV) {
-      final listenable = widget.appleTvTextureId;
-      if (listenable == null) {
-        return null;
-      }
+    // The native Apple player hands its picture over as a texture on iOS as
+    // well, since its engine isn't the one the Aether view shows.
+    final listenable = widget.appleTvTextureId;
+    if (listenable != null) {
       return ValueListenableBuilder<int?>(
         valueListenable: listenable,
         builder: (context, textureId, _) {
@@ -275,6 +274,7 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
         },
       );
     }
+    if (PlatformDetection.isAppleTV) return null;
 
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return const AetherVideoView();

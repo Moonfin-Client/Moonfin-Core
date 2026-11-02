@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Vyberte, ktoré informačné kanály predmetov sa majú zobraziť v kanáli Objaviť.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Použiť",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Žánre audiokníh",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Vyberte žánre, ktoré sa majú zobraziť v Audioknihe Objaviť.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Objavte audioknihy",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Populárne tituly vo verejnej doméne od LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titulov",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Prejdite doľava",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Objavte",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populárne tituly podľa témy od Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Zatiaľ žiadne záložky",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Povoliť zobrazenie priečinka",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Zobraziť možnosť prehliadania priečinkov",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Viditeľnosť knižnice",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Odporúčaný obsah, vzhľad",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Veľkosť plagátu, typ obrázka, zobrazenie priečinka",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB a zdroje hodnotenia",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Nepodarilo sa rozbaliť archív .cbr.",
     "cb7ExtractionUnavailable": "Rozbaľovanie CB7 nie je na tejto platforme dostupné.",
     "cb7ExtractionPluginUnavailable": "Plugin na rozbaľovanie CB7 nie je na tejto platforme dostupný.",
-    "closeGenrePanel": "Zavrieť panel žánrov",
     "loadingShuffle": "Načítava sa náhodný výber...",
     "libraryShuffleLabel": "NÁHODNE Z KNIŽNICE",
     "randomShuffleLabel": "NÁHODNÝ VÝBER",

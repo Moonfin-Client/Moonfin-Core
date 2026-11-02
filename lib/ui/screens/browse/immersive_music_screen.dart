@@ -10,7 +10,6 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/row_focus_coordinator.dart';
 import '../../navigation/destinations.dart';
 import '../../util/home_row_title_localizer.dart';
@@ -21,7 +20,6 @@ import '../../widgets/media_card.dart';
 import '../../widgets/music/music_navigation.dart';
 import '../../widgets/music/music_widgets.dart';
 import '../../widgets/offline_aware_image.dart';
-import '../../widgets/sliding_pill_tabs.dart';
 import 'music_library_base.dart';
 
 /// The Immersive music library: the album being listened to on a full-width
@@ -37,26 +35,9 @@ class ImmersiveMusicScreen extends StatefulWidget {
   State<ImmersiveMusicScreen> createState() => _ImmersiveMusicScreenState();
 }
 
-/// Genre tiles cycle through these, dark enough for white labels.
-const _genreColors = [
-  Color(0xFF7A2E22),
-  Color(0xFF3B2D5C),
-  Color(0xFF6B2F4A),
-  Color(0xFF4D3B72),
-  Color(0xFFB4472F),
-  Color(0xFF1F3A5F),
-  Color(0xFF8A5A1E),
-  Color(0xFF14505C),
-];
-
 class _ImmersiveMusicScreenState
     extends MusicLibraryState<ImmersiveMusicScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
-
-  /// The segment the D-pad has reached in the pill tabs. Overview is 0 and
-  /// the screen itself. Select opens any other, a tap opens it at once.
-  int _tab = 0;
-  bool _pointerOnTabs = false;
 
   @override
   String get libraryId => widget.libraryId;
@@ -65,12 +46,6 @@ class _ImmersiveMusicScreenState
   void onLoaded() {
     vm.loadFeaturedAlbum();
     if (wide) vm.loadGenres();
-  }
-
-  void _openTab(String route) {
-    context.push(route).then((_) {
-      if (mounted) setState(() => _tab = 0);
-    });
   }
 
   String? get _albumId {
@@ -242,7 +217,7 @@ class _ImmersiveMusicScreenState
       VoidCallback? onNavigateLeft,
       VoidCallback? onNavigateRight,
     }) {
-      final button = _HeroButton(
+      final button = MusicPillButton(
         focusNode: node(id),
         icon: icon,
         label: label,
@@ -259,7 +234,7 @@ class _ImmersiveMusicScreenState
 
     final favorite = album == null
         ? null
-        : _HeroButton(
+        : MusicPillButton(
             focusNode: node('favorite'),
             icon: album.isFavorite
                 ? Icons.favorite_rounded
@@ -460,37 +435,14 @@ class _ImmersiveMusicScreenState
         ? null
         : vm.getMusicImageUrl(featured, maxHeight: 600);
 
-    final tabs = Focus(
-      canRequestFocus: false,
-      skipTraversal: true,
-      onFocusChange: (has) {
-        if (!has && _tab != 0) setState(() => _tab = 0);
-      },
-      onKeyEvent: (_, event) {
-        if (!isActivateKey(event) || _tab == 0) return KeyEventResult.ignored;
-        _openTab(categories[_tab - 1].route);
-        return KeyEventResult.handled;
-      },
-      child: Listener(
-        onPointerDown: (_) => _pointerOnTabs = true,
-        onPointerUp: (_) => scheduleMicrotask(() => _pointerOnTabs = false),
-        onPointerCancel: (_) => _pointerOnTabs = false,
-        child: SlidingPillTabs(
-          labels: [l10n.overview, for (final c in categories) c.label],
-          selectedIndex: _tab,
-          onChanged: (index) {
-            if (_pointerOnTabs) {
-              if (index > 0) _openTab(categories[index - 1].route);
-              return;
-            }
-            setState(() => _tab = index);
-          },
-          focusNode: node('tabs'),
-          onVerticalNavigation: (isUp) => move(headerIndex, isUp),
-          onExitLeft: focusBookSidebar,
-          onExitRight: node('search').requestFocus,
-        ),
-      ),
+    final tabs = MusicCategoryTabs(
+      labels: [l10n.overview, for (final c in categories) c.label],
+      current: 0,
+      onOpen: (index) => context.push(categories[index - 1].route),
+      focusNode: node('tabs'),
+      onVerticalNavigation: (isUp) => move(headerIndex, isUp),
+      onExitLeft: focusBookSidebar,
+      onExitRight: node('search').requestFocus,
     );
 
     final header = Padding(
@@ -526,9 +478,15 @@ class _ImmersiveMusicScreenState
     if (featured != null) {
       hero = LayoutBuilder(
         builder: (context, constraints) {
+          final available = constraints.maxWidth - inset - 48;
           // The album's songs need room beside the art and the title.
-          final showTracks =
-              tracks.isNotEmpty && constraints.maxWidth - inset - 48 >= 1000;
+          final showTracks = tracks.isNotEmpty && available >= 1000;
+          // On a narrower screen the art and the songs each shrink by up to 80,
+          // so Play, Shuffle and Favorite keep at least 360 between them.
+          final fit = showTracks
+              ? ((available - 1000) / 160).clamp(0.0, 1.0)
+              : 1.0;
+          final artSize = 220 + 80 * fit;
           final shown = tracks.take(6).toList();
           return Padding(
             key: sectionKey('hero'),
@@ -539,8 +497,8 @@ class _ImmersiveMusicScreenState
                 GestureDetector(
                   onTap: _openAlbum,
                   child: Container(
-                    width: 300,
-                    height: 300,
+                    width: artSize,
+                    height: artSize,
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       borderRadius: AppRadius.circular(16),
@@ -611,7 +569,7 @@ class _ImmersiveMusicScreenState
                 if (showTracks) ...[
                   const SizedBox(width: 40),
                   SizedBox(
-                    width: 420,
+                    width: 340 + 80 * fit,
                     child: _buildAlbumTracks(l10n, featured, shown, heroIndex),
                   ),
                 ],
@@ -734,6 +692,11 @@ class _ImmersiveMusicScreenState
           final available = constraints.maxWidth - inset - 48;
           final columns = ((available + spacing) / 200).floor().clamp(3, 8);
           final items = row.items.take(columns * 2).toList();
+          final expansion = _prefs.get(UserPreferences.cardFocusExpansion);
+          final headroom = MediaCard.focusHeadroom(
+            (available - spacing * (columns - 1)) / columns,
+            expansion: expansion,
+          );
           return MusicSection(
             title: localizeHomeRowTitle(row: row, l10n: l10n),
             large: true,
@@ -741,6 +704,7 @@ class _ImmersiveMusicScreenState
             child: MusicGrid(
               columns: columns,
               spacing: spacing,
+              headroom: headroom,
               children: [
                 for (var i = 0; i < items.length; i++)
                   MusicGridCard(
@@ -764,6 +728,7 @@ class _ImmersiveMusicScreenState
                         itemType: items[i].type,
                         isFavorite: items[i].isFavorite,
                         externalIsFocused: focused,
+                        cardFocusExpansion: expansion,
                         onTap: () => openItem(items[i]),
                       ),
                     ),
@@ -792,8 +757,12 @@ class _ImmersiveMusicScreenState
             large: true,
             padding: EdgeInsets.fromLTRB(inset, 0, 48, 0),
             trailing: BookSeeAllButton(
-              onPressed: () =>
-                  context.push(Destinations.libraryGenresOf(libraryId)),
+              onPressed: () => context.push(
+                Destinations.musicCategory(
+                  libraryId,
+                  MusicCategoryKind.genres.name,
+                ),
+              ),
               focusNode: seeAll,
               onNavigateUp: () => move(entryIndex, true),
               onNavigateDown: node('genre:0').requestFocus,
@@ -805,7 +774,7 @@ class _ImmersiveMusicScreenState
                 for (var i = 0; i < shown.length; i++)
                   MusicTile(
                     label: shown[i].name,
-                    color: _genreColors[i % _genreColors.length],
+                    color: kMusicTileColors[i % kMusicTileColors.length],
                     height: 96,
                     focusNode: node('genre:$i'),
                     onTap: () => context.push(
@@ -829,109 +798,6 @@ class _ImmersiveMusicScreenState
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-/// A hero action, a pill with [label] or a circle without one. Focus fills
-/// it with the button focus color, so it shows on the accent Play button too.
-class _HeroButton extends StatefulWidget {
-  final FocusNode focusNode;
-  final IconData icon;
-  final String? label;
-  final String? semanticLabel;
-  final Color? iconColor;
-  final bool primary;
-  final double height;
-  final VoidCallback onTap;
-  final VoidCallback onNavigateUp;
-  final VoidCallback onNavigateDown;
-  final VoidCallback? onNavigateLeft;
-  final VoidCallback? onNavigateRight;
-
-  const _HeroButton({
-    required this.focusNode,
-    required this.icon,
-    required this.height,
-    required this.onTap,
-    required this.onNavigateUp,
-    required this.onNavigateDown,
-    this.label,
-    this.semanticLabel,
-    this.iconColor,
-    this.primary = false,
-    this.onNavigateLeft,
-    this.onNavigateRight,
-  });
-
-  @override
-  State<_HeroButton> createState() => _HeroButtonState();
-}
-
-class _HeroButtonState extends State<_HeroButton> {
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final onSurface = AppColorScheme.onSurface;
-    final background = _focused
-        ? AppColorScheme.buttonFocused
-        : (widget.primary
-              ? AppColorScheme.accent
-              : onSurface.withValues(alpha: 0.14));
-    final foreground = _focused
-        ? AppColorScheme.onButtonFocused
-        : (widget.primary ? AppColorScheme.onAccent : onSurface);
-    final label = widget.label;
-    final height = widget.height;
-    return FocusableWrapper(
-      highlightOnHover: true,
-      focusNode: widget.focusNode,
-      borderRadius: height / 2,
-      disableScale: true,
-      semanticLabel: widget.semanticLabel,
-      onFocusChange: (focused) => setState(() => _focused = focused),
-      onSelect: widget.onTap,
-      onNavigateUp: widget.onNavigateUp,
-      onNavigateDown: widget.onNavigateDown,
-      onNavigateLeft: widget.onNavigateLeft,
-      onNavigateRight: widget.onNavigateRight,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 90),
-        width: label == null ? height : null,
-        height: height,
-        padding: label == null
-            ? null
-            : const EdgeInsets.symmetric(horizontal: 24),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: AppRadius.circular(height / 2),
-        ),
-        child: label == null
-            ? Icon(
-                widget.icon,
-                size: 22,
-                color: _focused ? foreground : (widget.iconColor ?? foreground),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(widget.icon, size: 22, color: foreground),
-                  const SizedBox(width: 8),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: widget.primary
-                          ? FontWeight.w800
-                          : FontWeight.w700,
-                      color: foreground,
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }

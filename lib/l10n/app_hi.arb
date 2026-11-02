@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "चुनें कि डिस्कवर में कौन सा विषय फ़ीड दिखाना है।",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "लागू करें",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ऑडियोबुक शैलियाँ",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "चुनें कि ऑडियोबुक डिस्कवर में कौन सी शैलियाँ दिखानी हैं।",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ऑडियोबुक खोजें",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox से लोकप्रिय सार्वजनिक डोमेन शीर्षक।",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} टाइटल",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "बाएँ स्क्रॉल करें",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "खोज करना",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library से विषय के अनुसार रुझान वाले शीर्षक।",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "अभी तक कोई बुकमार्क किया गया आइटम नहीं",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "फ़ोल्डर दृश्य सक्षम करें",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "फ़ोल्डर ब्राउज़िंग विकल्प दिखाएँ",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "पुस्तकालय दृश्यता",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "विशेष रुप से प्रदर्शित सामग्री, उपस्थिति",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "पोस्टर का आकार, छवि प्रकार, फ़ोल्डर दृश्य",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, और रेटिंग स्रोत",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr आर्काइव एक्सट्रैक्ट नहीं हो सका।",
     "cb7ExtractionUnavailable": "इस प्लेटफ़ॉर्म पर CB7 एक्सट्रैक्शन उपलब्ध नहीं है।",
     "cb7ExtractionPluginUnavailable": "इस प्लेटफ़ॉर्म पर CB7 एक्सट्रैक्शन प्लगइन उपलब्ध नहीं है।",
-    "closeGenrePanel": "शैली पैनल बंद करें",
     "loadingShuffle": "शफ़ल लोड हो रहा है...",
     "libraryShuffleLabel": "लाइब्रेरी शफ़ल",
     "randomShuffleLabel": "रैंडम शफ़ल",

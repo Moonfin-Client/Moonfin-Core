@@ -146,6 +146,8 @@ class PlatformDetection {
   static bool get supportsHevcMain10 => _capabilityBool('supportsHevcMain10');
   static int get hevcMainLevel => _capabilityInt('hevcMainLevel');
   static int get hevcMain10Level => _capabilityInt('hevcMain10Level');
+  static bool get offersHevcSoftwareDecode =>
+      _capabilityBool('offersHevcSoftwareDecode');
   static bool get supportsHevcDolbyVision =>
       _capabilityBool('supportsHevcDolbyVision');
   static bool get supportsHevcDolbyVisionEl =>
@@ -161,6 +163,8 @@ class PlatformDetection {
   static bool get supportsAv1Hdr10 => _capabilityBool('supportsAv1Hdr10');
   static bool get supportsAv1Hdr10Plus =>
       _capabilityBool('supportsAv1Hdr10Plus');
+  static bool get offersAv1SoftwareUhd =>
+      (isIOS || isAppleTV) && supportsAv1 && maxResolutionAv1Height < 2160;
 
   static bool get supportsVc1 => _capabilityBool('supportsVc1');
   static bool get supportsMpeg4 => _capabilityBool('supportsMpeg4');

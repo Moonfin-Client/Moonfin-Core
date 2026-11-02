@@ -3,11 +3,13 @@
 // the counts on the card subtitles. Cards whose every section would be empty
 // are omitted.
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/repositories/tmdb_repository.dart';
 import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
@@ -17,11 +19,15 @@ import 'package:moonfin/preference/detail_section_layout.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/spotlight_cards.dart';
+import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_modal_grids.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_section_modal.dart';
+import 'package:moonfin/ui/widgets/detail_reviews.dart';
 import 'package:moonfin/ui/widgets/seerr/seerr_collection_banner.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _Context extends Mock implements BuildContext {}
 
 class _Vm extends Mock implements ItemDetailViewModel {}
 
@@ -60,7 +66,19 @@ AggregatedItem _seerrMissing(String tmdbId, String name) => AggregatedItem(
   },
 );
 
-SpotlightCardActions _actions() => SpotlightCardActions(
+const TmdbReview _review = (
+  author: 'Critic',
+  rating: 8.0,
+  content: 'Loved it.',
+  createdAt: null,
+  avatarUrl: null,
+  url: null,
+);
+
+SpotlightCardActions _actions({
+  FocusNode Function(String trackId)? trackFocusNode,
+  FocusNode? collectionSortFocusNode,
+}) => SpotlightCardActions(
   openItem: (_) {},
   openSeerrItem: (_) {},
   openSeerrBrowse: (_, _, _, _) {},
@@ -71,7 +89,8 @@ SpotlightCardActions _actions() => SpotlightCardActions(
   playExtra: (_) {},
   playTrack: (_) {},
   playPlaylistTrack: (_) {},
-  trackFocusNode: (_) => FocusNode(),
+  trackFocusNode: trackFocusNode ?? (_) => FocusNode(),
+  collectionSortFocusNode: collectionSortFocusNode,
 );
 
 void main() {
@@ -89,6 +108,9 @@ void main() {
     // The seasons card reads Seerr's per-season status, and the app always has
     // these preferences registered.
     final seerrPrefs = _SeerrPrefs();
+    when(() => seerrPrefs.brand(any())).thenAnswer(
+      (i) => i.positionalArguments.first as String,
+    );
     when(() => seerrPrefs.showRequestStatus).thenReturn(false);
     GetIt.instance.registerSingleton<SeerrPreferences>(seerrPrefs);
 
@@ -133,6 +155,7 @@ void main() {
     when(() => vm.writers).thenReturn(const []);
     when(() => vm.features).thenReturn(const []);
     when(() => vm.similar).thenReturn(const []);
+    when(() => vm.reviews).thenReturn(const []);
     when(() => vm.similarSource).thenReturn(SimilarSource.jellyfin);
     when(() => vm.seasons).thenReturn(const []);
     when(() => vm.episodes).thenReturn(const []);
@@ -146,6 +169,7 @@ void main() {
     when(() => vm.filmographyMovies).thenReturn(const []);
     when(() => vm.filmographySeries).thenReturn(const []);
     when(() => vm.collectionItems).thenReturn(const []);
+    when(() => vm.collectionPlaylistItems).thenReturn(const []);
     when(() => vm.missingCollectionItems).thenReturn(const []);
     when(() => vm.playlistItems).thenReturn(const []);
     when(() => vm.parentCollections).thenReturn(const []);
@@ -367,6 +391,37 @@ void main() {
     expect(cards.single.sections[1].initiallyExpanded, isTrue);
   });
 
+  test('an episode in seriesEpisodes with null season groups under Specials', () {
+    when(() => vm.seriesEpisodes).thenReturn([
+      AggregatedItem(
+        id: 'ep-s1-1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'ep-s1-1',
+          'Type': 'Episode',
+          'Name': 'S1E1',
+          'ParentIndexNumber': 1,
+          'IndexNumber': 1,
+        },
+      ),
+      AggregatedItem(
+        id: 'ep-spec-1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'ep-spec-1',
+          'Type': 'Episode',
+          'Name': 'Special 1',
+          'IndexNumber': 1,
+        },
+      ),
+    ]);
+    final cards = cardsFor(_item('Episode', {'ParentIndexNumber': 1}));
+
+    expect(cards.single.sections.length, 2);
+    expect(cards.single.sections[0].title, 'Specials');
+    expect(cards.single.sections[1].title, 'Season 1');
+  });
+
   test('a music album gets the track list card', () {
     when(() => vm.tracks).thenReturn([
       AggregatedItem(
@@ -460,6 +515,165 @@ void main() {
     expect(crew.title, _l10n.crewContributionsSeerr);
     expect(crew.subtitle, _l10n.spotlightItemsCount(1));
     expect(crew.sections.single.title, _l10n.crewContributionsSeerr);
+  });
+
+  test('a person filmography card sorts movies and series according to sort preference', () async {
+    when(() => vm.filmographyMovies).thenReturn([
+      AggregatedItem(
+        id: 'm1',
+        serverId: 's',
+        rawData: const {'Id': 'm1', 'Name': 'Zeta Movie', 'PremiereDate': '2020-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 'm2',
+        serverId: 's',
+        rawData: const {'Id': 'm2', 'Name': 'Alpha Movie', 'PremiereDate': '2024-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 'm3',
+        serverId: 's',
+        rawData: const {'Id': 'm3', 'Name': 'Beta Movie', 'PremiereDate': '2026-01-01T00:00:00.000Z'},
+      ),
+    ]);
+    when(() => vm.filmographySeries).thenReturn([
+      AggregatedItem(
+        id: 's1',
+        serverId: 's',
+        rawData: const {'Id': 's1', 'Name': 'Zeta Series', 'PremiereDate': '2015-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 's2',
+        serverId: 's',
+        rawData: const {'Id': 's2', 'Name': 'Beta Series', 'PremiereDate': '2022-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 's3',
+        serverId: 's',
+        rawData: const {'Id': 's3', 'Name': 'Delta Series', 'PremiereDate': '2025-01-01T00:00:00.000Z'},
+      ),
+    ]);
+
+    final ctx = _Context();
+
+    // Default alphabetical
+    var cards = cardsFor(_item('Person'));
+    var filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Alpha Movie', 'Beta Movie', 'Zeta Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Beta Series', 'Delta Series', 'Zeta Series'],
+    );
+
+    // Release date descending (newest first)
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateDesc');
+    cards = cardsFor(_item('Person'));
+    filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Beta Movie', 'Alpha Movie', 'Zeta Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Delta Series', 'Beta Series', 'Zeta Series'],
+    );
+
+    // Release date ascending (oldest first)
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateAsc');
+    cards = cardsFor(_item('Person'));
+    filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Zeta Movie', 'Alpha Movie', 'Beta Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Zeta Series', 'Beta Series', 'Delta Series'],
+    );
+  });
+
+  test('a person Seerr cards sort and group credits according to preferences', () async {
+    const rawAppearances = [
+      SeerrDiscoverItem(id: 1, mediaType: 'tv', title: 'Zeta Show', releaseDate: '2020-01-01'),
+      SeerrDiscoverItem(id: 2, mediaType: 'movie', title: 'Alpha Show', releaseDate: '2024-01-01'),
+      SeerrDiscoverItem(id: 1, mediaType: 'movie', title: 'Alpha Movie Same ID', releaseDate: '2024-01-01'),
+    ];
+    const rawCrew = [
+      SeerrDiscoverItem(id: 10, mediaType: 'movie', title: 'Film A', job: 'Director', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 10, mediaType: 'movie', title: 'Film A', job: 'Writer', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 20, mediaType: 'movie', title: 'Film B', job: 'Producer', releaseDate: '2023-01-01'),
+    ];
+
+    final ctx = _Context();
+
+    // Default: alphabetical, group=false
+    await prefs.set(UserPreferences.personPageSortOption, 'alphabetical');
+    await prefs.set(UserPreferences.personPageGroupItems, false);
+    var cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    var appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    var crewCard = cards.firstWhere((c) => c.id == 'crew');
+
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Alpha Movie Same ID', 'Alpha Show', 'Zeta Show'],
+    );
+    // Ungrouped crew: has length 3
+    var crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(crewItems, hasLength(3));
+    expect(crewItems.map((i) => i.title), ['Film A', 'Film A', 'Film B']);
+
+    // Group items enabled: joins roles, keeps movie & tv separate even with same ID
+    await prefs.set(UserPreferences.personPageGroupItems, true);
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    final appearanceItems = (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(appearanceItems, hasLength(3)); // id:1 tv and id:1 movie are separate
+    expect(appearanceItems.map((i) => i.mediaType), containsAll(['tv', 'movie']));
+
+    crewCard = cards.firstWhere((c) => c.id == 'crew');
+    crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(crewItems, hasLength(2));
+    expect(crewItems.first.job, 'Director, Writer');
+
+    // Release date ascending
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateAsc');
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Zeta Show', 'Alpha Movie Same ID', 'Alpha Show'],
+    );
+
+    // Release date descending with tie-break
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateDesc');
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Alpha Show', 'Alpha Movie Same ID', 'Zeta Show'],
+    );
   });
 
   test('a person assigns unique backdrops across main backdrop and cards', () {
@@ -574,6 +788,29 @@ void main() {
 
     final similarCard = cards.singleWhere((c) => c.id == 'similar');
     expect(similarCard.sections.single.title, _l10n.similar);
+  });
+
+  test('reviews get their own card right after the recommendations', () async {
+    when(() => vm.similar).thenReturn([_child('s1', 'Movie')]);
+    when(() => vm.reviews).thenReturn(const [_review, _review]);
+
+    final cards = cardsFor(_item('Movie'));
+
+    expect(cards.map((c) => c.id), ['similar', 'reviews']);
+    final reviews = cards.last;
+    expect(reviews.title, _l10n.reviews);
+    expect(reviews.subtitle, '2 reviews');
+    expect(reviews.icon, Icons.rate_review_outlined);
+    expect(reviews.sections, hasLength(1));
+
+    await hide('reviews');
+    expect(cardsFor(_item('Movie')).map((c) => c.id), ['similar']);
+  });
+
+  test('no reviews means no reviews card', () {
+    when(() => vm.similar).thenReturn([_child('s1', 'Movie')]);
+
+    expect(cardsFor(_item('Series')).map((c) => c.id), ['similar']);
   });
 
   test('collections card prepends the collection itself as the first item with artwork', () {
@@ -983,6 +1220,43 @@ void main() {
     expect(focused?.debugLabel, 'SpotlightModalFirstCell');
   });
 
+  testWidgets('the reviews modal opens on the first review', (tester) async {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    when(() => vm.reviews).thenReturn(const [_review, _review]);
+    final reviews = cardFor('reviews', _item('Movie'))!;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => SpotlightSectionModal.show(
+                context,
+                title: reviews.effectiveModalTitle,
+                sections: reviews.sections,
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ReviewCard), findsNWidgets(2));
+    final focused = FocusManager.instance.primaryFocus;
+    expect(focused?.debugLabel, 'SpotlightModalFirstCell');
+    expect(
+      focused?.context?.findAncestorWidgetOfExactType<ReviewCard>(),
+      isNotNull,
+    );
+  });
+
   test('empty sections are dropped from a card', () {
     when(() => vm.actors).thenReturn([
       {'Id': 'p1', 'Name': 'Actor'},
@@ -1098,5 +1372,72 @@ void main() {
       ),
     ).called(1);
   });
-}
 
+  testWidgets('the playlist sort button is the only focus stop in its header', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    when(() => vm.playlistItems).thenReturn([_child('m1', 'Movie')]);
+    when(() => vm.collectionPlaylistItems).thenReturn([_child('m1', 'Movie')]);
+    when(() => vm.collectionSort).thenReturn(CollectionSortOption.server);
+    when(() => vm.playlistSortRefreshing).thenReturn(false);
+    when(() => vm.playlistIndexBuilding).thenReturn(false);
+    final sortNode = FocusNode(debugLabel: 'sort');
+    addTearDown(sortNode.dispose);
+    final trackNodes = <String, FocusNode>{};
+    final card = spotlightCardFor(
+      id: 'playlist_order',
+      vm: vm,
+      item: _item('BoxSet'),
+      prefs: prefs,
+      l10n: _l10n,
+      tmdbStudios: const [],
+      actions: _actions(
+        trackFocusNode: (id) => trackNodes.putIfAbsent(id, FocusNode.new),
+        collectionSortFocusNode: sortNode,
+      ),
+    )!;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => SpotlightSectionModal.show(
+                context,
+                title: card.effectiveModalTitle,
+                sections: card.sections,
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    for (final key in [
+      LogicalKeyboardKey.arrowRight,
+      LogicalKeyboardKey.arrowLeft,
+    ]) {
+      sortNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+      // The wrappers around the button sit above it in the focus tree, and
+      // landing on one leaves the remote on something with no focus ring.
+      expect(sortNode.ancestors, isNot(contains(FocusManager.instance.primaryFocus)));
+    }
+
+    sortNode.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(trackNodes['m1']?.hasPrimaryFocus, isTrue);
+  });
+}

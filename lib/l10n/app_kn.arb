@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discover ನಲ್ಲಿ ತೋರಿಸಲು ಯಾವ ವಿಷಯದ ಫೀಡ್‌ಗಳನ್ನು ಆರಿಸಿ.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "ಅನ್ವಯಿಸಿ",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ಆಡಿಯೋಬುಕ್ ಪ್ರಕಾರಗಳು",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "ಆಡಿಯೋಬುಕ್ ಡಿಸ್ಕವರ್‌ನಲ್ಲಿ ಯಾವ ಪ್ರಕಾರಗಳನ್ನು ತೋರಿಸಬೇಕೆಂದು ಆರಿಸಿ.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ಆಡಿಯೋಬುಕ್‌ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox ನಿಂದ ಜನಪ್ರಿಯ ಸಾರ್ವಜನಿಕ ಡೊಮೇನ್ ಶೀರ್ಷಿಕೆಗಳು.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} ಶೀರ್ಷಿಕೆಗಳು",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "ಎಡಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "ಅನ್ವೇಷಿಸಿ",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library ರಿಂದ ವಿಷಯದ ಮೂಲಕ ಟ್ರೆಂಡಿಂಗ್ ಶೀರ್ಷಿಕೆಗಳು.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "ಯಾವುದೇ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾದ ಐಟಂಗಳು ಇನ್ನೂ ಇಲ್ಲ",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ಫೋಲ್ಡರ್ ವೀಕ್ಷಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ಫೋಲ್ಡರ್ ಬ್ರೌಸಿಂಗ್ ಆಯ್ಕೆಯನ್ನು ತೋರಿಸಿ",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "ಲೈಬ್ರರಿ ಗೋಚರತೆ",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "ವೈಶಿಷ್ಟ್ಯಗೊಳಿಸಿದ ವಿಷಯ, ನೋಟ",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "ಪೋಸ್ಟರ್ ಗಾತ್ರ, ಚಿತ್ರದ ಪ್ರಕಾರ, ಫೋಲ್ಡರ್ ವೀಕ್ಷಣೆ",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, ಮತ್ತು ರೇಟಿಂಗ್ ಮೂಲಗಳು",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr ಆರ್ಕೈವ್ ಅನ್ನು ಹೊರತೆಗೆಯಲು ವಿಫಲವಾಗಿದೆ.",
     "cb7ExtractionUnavailable": "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ನಲ್ಲಿ CB7 ಹೊರತೆಗೆಯುವಿಕೆ ಲಭ್ಯವಿಲ್ಲ.",
     "cb7ExtractionPluginUnavailable": "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ನಲ್ಲಿ CB7 ಹೊರತೆಗೆಯುವಿಕೆ ಪ್ಲಗಿನ್ ಲಭ್ಯವಿಲ್ಲ.",
-    "closeGenrePanel": "ಪ್ರಕಾರ ಫಲಕವನ್ನು ಮುಚ್ಚಿ",
     "loadingShuffle": "ಷಫಲ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
     "libraryShuffleLabel": "ಲೈಬ್ರರಿ ಷಫಲ್",
     "randomShuffleLabel": "ಯಾದೃಚ್ಛಿಕ ಷಫಲ್",

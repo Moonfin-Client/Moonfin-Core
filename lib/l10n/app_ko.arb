@@ -224,7 +224,7 @@
     "@embyConnectNetworkError": {
         "description": "Generic network error during Emby Connect flow"
     },
-    "loadingLinkedServers": "연결된 서버를 로드하는 중...",
+    "loadingLinkedServers": "연결된 서버를 불러오는 중...",
     "@loadingLinkedServers": {
         "description": "Status text while fetching Emby Connect server list"
     },
@@ -261,7 +261,7 @@
     "@exit": {
         "description": "Exit button label"
     },
-    "noHomeRowsLoaded": "홈 행을 로드할 수 없습니다",
+    "noHomeRowsLoaded": "홈 행을 불러올 수 없습니다",
     "@noHomeRowsLoaded": {
         "description": "Heading when home screen has no rows to display"
     },
@@ -325,7 +325,7 @@
     "@suggestionsPlaceholder": {
         "description": "Placeholder text for suggestions screen"
     },
-    "failedToLoadLibraries": "라이브러리를 로드하지 못했습니다",
+    "failedToLoadLibraries": "라이브러리를 불러오지 못했습니다",
     "@failedToLoadLibraries": {
         "description": "Error when library list cannot be loaded"
     },
@@ -371,7 +371,7 @@
             }
         }
     },
-    "failedToLoadFavorites": "즐겨찾기를 로드하지 못했습니다",
+    "failedToLoadFavorites": "즐겨찾기를 불러오지 못했습니다",
     "@failedToLoadFavorites": {
         "description": "Error when favorites cannot be loaded"
     },
@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "둘러보기에 표시할 주제 피드를 선택하세요.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "적용",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -548,27 +544,6 @@
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
     },
-    "pickAudiobookGenres": "오디오북 둘러보기에 표시할 장르를 선택하세요.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "오디오북 둘러보기",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox의 인기 공개 도메인 타이틀.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count}개 작품",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "scrollLeft": "왼쪽으로 스크롤",
     "@scrollLeft": {
         "description": "Tooltip for scroll left button"
@@ -577,7 +552,7 @@
     "@scrollRight": {
         "description": "Tooltip for scroll right button"
     },
-    "couldNotLoadGenre": "지금은 이 장르를 로드할 수 없습니다.",
+    "couldNotLoadGenre": "지금은 이 장르를 불러올 수 없습니다.",
     "@couldNotLoadGenre": {
         "description": "Error when a genre row fails to load"
     },
@@ -601,7 +576,7 @@
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
-    "failedToLoadLibrary": "라이브러리를 로드하지 못했습니다",
+    "failedToLoadLibrary": "라이브러리를 불러오지 못했습니다",
     "@failedToLoadLibrary": {
         "description": "Error when a library cannot be loaded"
     },
@@ -745,10 +720,6 @@
     "@discover": {
         "description": "Section title for book discovery"
     },
-    "trendingTitlesOpenLibrary": "Open Library의 주제별 인기 도서.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
-    },
     "noBookmarkedItems": "아직 북마크한 항목이 없습니다",
     "@noBookmarkedItems": {
         "description": "Empty state for bookmarks grid"
@@ -810,11 +781,11 @@
     "@allLibraries": {
         "description": "Label when all libraries are selected"
     },
-    "books": "서적",
+    "books": "도서",
     "@books": {
         "description": "Book media tab label"
     },
-    "author": "작가",
+    "author": "저자",
     "@author": {
         "description": "Organize mode label for grouping by author"
     },
@@ -897,7 +868,7 @@
             }
         }
     },
-    "couldNotLoadSubject": "지금은 이 주제를 로드할 수 없습니다.",
+    "couldNotLoadSubject": "지금은 이 주제를 불러올 수 없습니다.",
     "@couldNotLoadSubject": {
         "description": "Error when a discover subject row fails to load"
     },
@@ -931,7 +902,7 @@
     "@itemListPlaceholder": {
         "description": "Placeholder text for an empty item list screen"
     },
-    "failedToLoad": "로드하지 못했습니다",
+    "failedToLoad": "불러오지 못했습니다",
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
@@ -1015,11 +986,11 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "이 저자에 대한 도서를 찾을 수 없습니다.",
+    "noBooksFound": "도서 없음",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
-    "unableToLoadAuthorDetails": "지금은 저자 정보를 로드할 수 없습니다.",
+    "unableToLoadAuthorDetails": "지금은 저자 정보를 불러올 수 없습니다.",
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
@@ -1212,11 +1183,11 @@
     "@downloadedTracksDeleted": {
         "description": "Success message after deleting downloaded tracks"
     },
-    "downloadedTracksDeleteFailed": "다운로드한 트랙 중 일부를 삭제할 수 없습니다.",
+    "downloadedTracksDeleteFailed": "다운로드한 트랙 중 일부를 삭제할 수 없습니다",
     "@downloadedTracksDeleteFailed": {
         "description": "Error message when some downloaded tracks could not be deleted"
     },
-    "noTracksLoaded": "로드된 트랙이 없습니다.",
+    "noTracksLoaded": "불러온 트랙이 없습니다",
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
@@ -1250,7 +1221,7 @@
             }
         }
     },
-    "itemDeleted": "항목이 삭제되었습니다.",
+    "itemDeleted": "항목이 삭제되었습니다",
     "@itemDeleted": {
         "description": "Success message after deleting an item"
     },
@@ -1283,7 +1254,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "OpenSubtitles 플러그인을 사용하여 검색",
+    "searchOpenSubtitlesPlugin": "OpenSubtitles를 사용하여 검색",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -1346,7 +1317,7 @@
     "@originalFilesNoReencoding": {
         "description": "Subtitle for original quality batch download option"
     },
-    "noEpisodesLoaded": "로드된 에피소드가 없습니다.",
+    "noEpisodesLoaded": "불러온 에피소드가 없습니다",
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
@@ -1375,11 +1346,11 @@
             }
         }
     },
-    "downloadedFilesDeleted": "다운로드한 파일이 삭제되었습니다.",
+    "downloadedFilesDeleted": "다운로드한 파일이 삭제되었습니다",
     "@downloadedFilesDeleted": {
         "description": "Success message after deleting downloaded files"
     },
-    "failedToDeleteFiles": "파일을 삭제하지 못했습니다.",
+    "failedToDeleteFiles": "파일을 삭제하지 못했습니다",
     "@failedToDeleteFiles": {
         "description": "Error message when file deletion fails"
     },
@@ -1602,11 +1573,11 @@
     "@stillWatching": {
         "description": "Title for the still watching screen"
     },
-    "unableToLoadTrailerStream": "예고편 스트림을 로드할 수 없습니다.",
+    "unableToLoadTrailerStream": "예고편 스트림을 불러올 수 없습니다.",
     "@unableToLoadTrailerStream": {
         "description": "Error when trailer stream cannot be loaded"
     },
-    "trailerTimedOut": "예고편을 로드하는 동안 시간이 초과되었습니다.",
+    "trailerTimedOut": "예고편을 불러오는 동안 시간이 초과되었습니다.",
     "@trailerTimedOut": {
         "description": "Error when trailer loading times out"
     },
@@ -1685,7 +1656,7 @@
             }
         }
     },
-    "queueIsEmpty": "대기열이 비어 있습니다.",
+    "queueIsEmpty": "대기열이 비어 있습니다",
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
@@ -1723,7 +1694,7 @@
             }
         }
     },
-    "longPressToUnlock": "잠금을 해제하려면 길게 누르세요.",
+    "longPressToUnlock": "잠금을 해제하려면 길게 누르세요",
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
@@ -2003,7 +1974,7 @@
     "@markAsRead": {
         "description": "Button or menu item to mark as read"
     },
-    "reloadReader": "리더 다시 로드",
+    "reloadReader": "리더 다시 불러오기",
     "@reloadReader": {
         "description": "Button or menu item to reload the reader"
     },
@@ -2102,7 +2073,7 @@
             }
         }
     },
-    "reloadReaderPlatformHint": "지원되는 플랫폼 대상(Android, iOS, macOS)으로 전환한 후 '리더 다시 로드'를 사용하세요.",
+    "reloadReaderPlatformHint": "지원되는 플랫폼 대상(Android, iOS, macOS)으로 전환한 후 '리더 다시 불러오기'를 사용하세요.",
     "@reloadReaderPlatformHint": {
         "description": "Hint text in fallback reader mode"
     },
@@ -2204,7 +2175,7 @@
             }
         }
     },
-    "failedToLoadRecordings": "녹화를 로드하지 못했습니다",
+    "failedToLoadRecordings": "녹화를 불러오지 못했습니다",
     "@failedToLoadRecordings": {
         "description": "Error when recordings fail to load"
     },
@@ -2220,7 +2191,7 @@
     "@tvSeries": {
         "description": "Section title for TV series recordings"
     },
-    "failedToLoadSchedule": "일정을 로드하지 못했습니다.",
+    "failedToLoadSchedule": "일정을 불러오지 못했습니다.",
     "@failedToLoadSchedule": {
         "description": "Error when schedule fails to load"
     },
@@ -2253,7 +2224,7 @@
     "@failedToCancelRecording": {
         "description": "Error when cancelling a recording fails"
     },
-    "failedToLoadSeriesRecordings": "시리즈 녹화물을 로드하지 못했습니다.",
+    "failedToLoadSeriesRecordings": "시리즈 녹화물을 불러오지 못했습니다.",
     "@failedToLoadSeriesRecordings": {
         "description": "Error when series recordings fail to load"
     },
@@ -2392,7 +2363,7 @@
     "@season": {
         "description": "Fallback name for a season"
     },
-    "errorLoadingEpisodes": "에피소드를 로드하는 중에 오류가 발생했습니다.",
+    "errorLoadingEpisodes": "에피소드를 불러오는 중에 오류가 발생했습니다.",
     "@errorLoadingEpisodes": {
         "description": "Error when loading episodes fails"
     },
@@ -2447,7 +2418,7 @@
     "@seriesNotFound": {
         "description": "Shown when a series cannot be found"
     },
-    "errorLoadingSeries": "시리즈를 로드하는 중에 오류가 발생했습니다.",
+    "errorLoadingSeries": "시리즈를 불러오는 중에 오류가 발생했습니다.",
     "@errorLoadingSeries": {
         "description": "Error when loading a series fails"
     },
@@ -2661,7 +2632,7 @@
     "@pluginAndRequests": {
         "description": "Integrations section description"
     },
-    "customizeAccountPlaybackInterface": "계정, 재생 및 인터페이스 동작 사용자 정의",
+    "customizeAccountPlaybackInterface": "계정, 재생 및 인터페이스 동작 사용자 지정",
     "@customizeAccountPlaybackInterface": {
         "description": "Settings screen subtitle"
     },
@@ -2860,11 +2831,11 @@
     "@showPreviewThumbnailsWhenSeeking": {
         "description": "Description for trick play"
     },
-    "showDescriptionOnPause": "일시중지 시 설명 표시",
+    "showDescriptionOnPause": "일시정지 시 설명 표시",
     "@showDescriptionOnPause": {
         "description": "Setting for showing description on pause"
     },
-    "dimVideoShowOverview": "일시중지된 동안 비디오를 어둡게 하고 개요 텍스트를 표시합니다.",
+    "dimVideoShowOverview": "일시정지된 동안 비디오를 어둡게 하고 개요 텍스트를 표시합니다.",
     "@dimVideoShowOverview": {
         "description": "Description for show description on pause"
     },
@@ -2996,7 +2967,7 @@
     "@advancedMpv": {
         "description": "Section title for advanced mpv settings"
     },
-    "enableCustomMpvConf": "사용자 정의 mpv.conf 활성화",
+    "enableCustomMpvConf": "사용자 지정 mpv.conf 활성화",
     "@enableCustomMpvConf": {
         "description": "Setting for custom mpv.conf"
     },
@@ -3105,7 +3076,7 @@
     "@skipForwardLength": {
         "description": "Setting for skip forward length"
     },
-    "customMpvConfPath": "사용자 정의 mpv.conf 경로",
+    "customMpvConfPath": "사용자 지정 mpv.conf 경로",
     "@customMpvConfPath": {
         "description": "Setting for custom mpv.conf path"
     },
@@ -3153,7 +3124,7 @@
     "@textStrokeColor": {
         "description": "Setting for subtitle text stroke color"
     },
-    "subtitleCustomization": "자막 사용자 정의",
+    "subtitleCustomization": "자막 사용자 지정",
     "@subtitleCustomization": {
         "description": "Title of the subtitle customization screen"
     },
@@ -3499,14 +3470,6 @@
     "showLibrariesFromAllServers": "연결된 모든 서버의 라이브러리 표시",
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
-    },
-    "enableFolderView": "폴더 보기 활성화",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "폴더 탐색 옵션 표시",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
     },
     "libraryVisibility": "라이브러리 표시 여부",
     "@libraryVisibility": {
@@ -4231,10 +4194,6 @@
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
     },
-    "posterSizeImageTypeFolderView": "포스터 크기, 이미지 유형, 폴더 보기",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
-    },
     "mdbListTmdbRatingSources": "MDBList, TMDB 및 평가 소스",
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
@@ -4538,7 +4497,7 @@
     "networking": "네트워킹",
     "next": "다음",
     "path": "경로",
-    "paused": "일시중지됨",
+    "paused": "일시정지됨",
     "permissions": "권한",
     "processing": "처리 중",
     "profile": "프로필",
@@ -4588,9 +4547,9 @@
     "adminDrawerRepositories": "저장소",
     "adminDrawerLiveTv": "라이브 TV",
     "adminExitTooltip": "관리자 종료",
-    "adminDashboardLoadFailed": "대시보드를 로드하지 못했습니다.",
+    "adminDashboardLoadFailed": "대시보드를 불러오지 못했습니다.",
     "adminMediaOverview": "미디어 개요",
-    "adminMediaTotalsError": "서버 미디어 총계를 로드할 수 없습니다.",
+    "adminMediaTotalsError": "서버 미디어 총계를 불러올 수 없습니다.",
     "adminMediaOverviewSubtitle": "이 서버에 있는 콘텐츠 규모를 한눈에 보여줍니다.",
     "adminPluginUpdatesAvailable": "업데이트 가능한 플러그인: {count}개",
     "@adminPluginUpdatesAvailable": {
@@ -4653,7 +4612,7 @@
     "adminServerRebootInProgress": "서버 재부팅 진행 중",
     "adminServerRebootMessage": "서버 재부팅이 진행 중입니다. Moonfin을 다시 시작해주세요.",
     "adminActiveSessions": "활성 세션",
-    "adminSessionsLoadFailed": "세션을 로드하지 못했습니다.",
+    "adminSessionsLoadFailed": "세션을 불러오지 못했습니다.",
     "adminNoActiveSessions": "활성 세션 없음",
     "adminRecentActivity": "최근 활동",
     "adminNoRecentActivity": "최근 활동 없음",
@@ -4715,11 +4674,11 @@
             }
         }
     },
-    "adminDevicesLoadFailed": "기기를 로드하지 못했습니다.",
+    "adminDevicesLoadFailed": "기기를 불러오지 못했습니다.",
     "adminSearchDevices": "기기 검색",
     "adminThisDevice": "이 기기",
     "adminEditName": "이름 수정",
-    "adminLibrariesLoadFailed": "라이브러리를 로드하지 못했습니다.",
+    "adminLibrariesLoadFailed": "라이브러리를 불러오지 못했습니다.",
     "adminNoLibraries": "구성된 라이브러리가 없습니다.",
     "adminScanAllLibraries": "모든 라이브러리 스캔",
     "adminAddLibrary": "라이브러리 추가",
@@ -4800,7 +4759,7 @@
             }
         }
     },
-    "adminLibraryLoadFailed": "라이브러리를 로드하지 못했습니다.",
+    "adminLibraryLoadFailed": "라이브러리를 불러오지 못했습니다.",
     "adminNoMediaPaths": "구성된 미디어 경로가 없습니다.",
     "adminAddPath": "경로 추가",
     "adminBrowseFilesystem": "서버 파일 시스템 찾아보기:",
@@ -4865,7 +4824,7 @@
             }
         }
     },
-    "adminUsersLoadFailed": "사용자를 로드하지 못했습니다.",
+    "adminUsersLoadFailed": "사용자를 불러오지 못했습니다.",
     "adminSearchUsers": "사용자 검색",
     "adminEditUser": "사용자 편집",
     "adminAddUser": "사용자 추가",
@@ -4900,7 +4859,7 @@
             }
         }
     },
-    "adminUserLoadFailed": "사용자를 로드하지 못했습니다.",
+    "adminUserLoadFailed": "사용자를 불러오지 못했습니다.",
     "adminBackToUsers": "사용자로 돌아가기",
     "adminSaveProfile": "프로필 저장",
     "adminDeleteUser": "사용자 삭제",
@@ -5007,7 +4966,7 @@
             }
         }
     },
-    "adminApiKeysLoadFailed": "API 키를 로드하지 못했습니다.",
+    "adminApiKeysLoadFailed": "API 키를 불러오지 못했습니다.",
     "adminApiKeysTitle": "API 키",
     "adminCreateKey": "키 생성",
     "adminNoApiKeys": "API 키를 찾을 수 없습니다.",
@@ -5060,12 +5019,12 @@
             }
         }
     },
-    "adminBackupsLoadFailed": "백업을 로드하지 못했습니다.",
+    "adminBackupsLoadFailed": "백업을 불러오지 못했습니다.",
     "adminCreateBackup": "백업 생성",
     "adminNoBackups": "백업을 찾을 수 없습니다.",
     "adminViewDetails": "세부정보 보기",
     "restore": "복원",
-    "adminLogsLoadFailed": "서버 로그를 로드하지 못했습니다.",
+    "adminLogsLoadFailed": "서버 로그를 불러오지 못했습니다.",
     "adminNoLogFiles": "로그 파일을 찾을 수 없습니다.",
     "adminLogCopied": "로그가 클립보드에 복사되었습니다.",
     "adminSaveLogFile": "로그 파일 저장",
@@ -5340,19 +5299,19 @@
     "adminParallelImageEncodingLimit": "병렬 이미지 인코딩 제한",
     "adminSlowResponseThreshold": "느린 응답 임계값(ms)",
     "adminBrandingSaved": "브랜딩 설정이 저장되었습니다.",
-    "adminBrandingLoadFailed": "브랜딩 설정을 로드하지 못했습니다.",
+    "adminBrandingLoadFailed": "브랜딩 설정을 불러오지 못했습니다.",
     "adminLoginDisclaimer": "로그인 면책조항",
     "adminLoginDisclaimerHint": "로그인 양식 아래에 표시되는 HTML",
     "adminCustomCss": "맞춤 CSS",
-    "adminCustomCssHint": "웹 인터페이스에 적용할 사용자 정의 CSS",
+    "adminCustomCssHint": "웹 인터페이스에 적용할 사용자 지정 CSS",
     "adminEnableSplashScreen": "스플래시 화면 활성화",
     "adminStreamingSaved": "스트리밍 설정이 저장되었습니다.",
-    "adminStreamingLoadFailed": "스트리밍 설정을 로드하지 못했습니다.",
+    "adminStreamingLoadFailed": "스트리밍 설정을 불러오지 못했습니다.",
     "adminStreamingDescription": "원격 연결에 대한 전역 스트리밍 비트 전송률 제한을 설정합니다.",
     "adminRemoteBitrateLimitMbps": "원격 클라이언트 비트 전송률 제한(Mbps)",
     "adminLeaveEmptyForUnlimited": "무제한으로 하려면 비워 두거나 0을 입력하세요",
     "adminPlaybackSaved": "재생 설정이 저장되었습니다.",
-    "adminPlaybackLoadFailed": "재생 설정을 로드하지 못했습니다.",
+    "adminPlaybackLoadFailed": "재생 설정을 불러오지 못했습니다.",
     "adminPlaybackTranscoding": "재생/트랜스코딩",
     "adminHardwareAcceleration": "하드웨어 가속",
     "adminVaapiDevice": "VA-API 장치",
@@ -5367,7 +5326,7 @@
     "adminSegmentKeepSeconds": "세그먼트 유지(초)",
     "adminThrottleBuffering": "스로틀 버퍼링",
     "adminTrickplaySaved": "Trickplay 설정이 저장되었습니다",
-    "adminTrickplayLoadFailed": "Trickplay 설정을 로드하지 못했습니다",
+    "adminTrickplayLoadFailed": "Trickplay 설정을 불러오지 못했습니다",
     "adminEnableHardwareAcceleration": "하드웨어 가속 활성화",
     "adminEnableKeyFrameExtraction": "키프레임만 추출 활성화",
     "adminKeyFrameSubtitle": "빠르지만 정확도가 낮음",
@@ -5382,7 +5341,7 @@
     "adminQualitySubtitle": "낮은 값 = 더 나은 품질, 더 큰 파일",
     "adminProcessThreads": "프로세스 스레드",
     "adminResumeSaved": "이어보기 설정이 저장되었습니다.",
-    "adminResumeLoadFailed": "이어보기 설정을 로드하지 못했습니다.",
+    "adminResumeLoadFailed": "이어보기 설정을 불러오지 못했습니다.",
     "adminResumeDescription": "콘텐츠가 부분적으로 재생되거나 완전히 재생된 것으로 표시되어야 하는 시점을 구성합니다.",
     "adminMinResumePercentage": "최소 이어보기 비율",
     "adminMinResumeSubtitle": "진행 상황을 저장하려면 콘텐츠를 이 비율 이상으로 재생해야 합니다.",
@@ -5390,10 +5349,10 @@
     "adminMaxResumeSubtitle": "이 비율 이후에는 콘텐츠가 완전히 재생된 것으로 간주됩니다.",
     "adminMinResumeDuration": "이어보기 최소 길이(초)",
     "adminMinResumeDurationSubtitle": "이보다 짧은 항목은 이어볼 수 없습니다",
-    "adminMinAudiobookResume": "오디오북 최소 이어보기 비율",
-    "adminMaxAudiobookResume": "오디오북 최대 이어보기 비율",
+    "adminMinAudiobookResume": "오디오북 최소 이어 듣기 비율",
+    "adminMaxAudiobookResume": "오디오북 최대 이어 듣기 비율",
     "adminNetworkingSaved": "네트워킹 설정이 저장되었습니다. 서버를 다시 시작해야 할 수도 있습니다.",
-    "adminNetworkingLoadFailed": "네트워킹 설정을 로드하지 못했습니다.",
+    "adminNetworkingLoadFailed": "네트워킹 설정을 불러오지 못했습니다.",
     "adminNetworkingWarning": "네트워킹 설정을 변경하면 서버를 다시 시작해야 할 수도 있습니다.",
     "adminEnableRemoteAccess": "원격 액세스 활성화",
     "ports": "포트",
@@ -5465,7 +5424,7 @@
             }
         }
     },
-    "adminMetadataEditorLoadFailed": "메타데이터 편집기를 로드하지 못했습니다.",
+    "adminMetadataEditorLoadFailed": "메타데이터 편집기를 불러오지 못했습니다.",
     "adminNoPeopleEntries": "인물 항목 없음",
     "adminNoExternalIds": "사용 가능한 외부 ID가 없습니다.",
     "adminImageUpdated": "{imageType} 이미지를 업데이트했습니다",
@@ -5609,7 +5568,7 @@
             }
         }
     },
-    "adminLiveTvLoadFailed": "라이브 TV 관리를 로드하지 못했습니다",
+    "adminLiveTvLoadFailed": "라이브 TV 관리를 불러오지 못했습니다",
     "adminTunerDevices": "튜너 장치",
     "adminNoTunerHosts": "구성된 튜너 호스트가 없습니다.",
     "adminGuideProviders": "편성표 제공자",
@@ -5942,7 +5901,7 @@
     "adminBrandingLoginDisclaimer": "로그인 면책조항",
     "adminBrandingLoginDisclaimerHint": "로그인 양식 아래에 표시되는 HTML",
     "adminBrandingCustomCss": "맞춤 CSS",
-    "adminBrandingCustomCssHint": "웹 인터페이스에 적용할 사용자 정의 CSS",
+    "adminBrandingCustomCssHint": "웹 인터페이스에 적용할 사용자 지정 CSS",
     "adminBrandingEnableSplash": "스플래시 화면 활성화",
     "adminPlaybackHwAccel": "하드웨어 가속",
     "adminPlaybackHwAccelLabel": "하드웨어 가속",
@@ -6143,7 +6102,7 @@
     "adminGeneralCachePath": "캐시 경로",
     "adminGeneralMetadataPath": "메타데이터 경로",
     "adminGeneralServerName": "서버 이름",
-    "adminSettingsLoadFailed": "설정을 로드하지 못했습니다.",
+    "adminSettingsLoadFailed": "설정을 불러오지 못했습니다.",
     "adminDiscover": "둘러보기",
     "adminChannelMappingsUpdateFailed": "매핑을 업데이트하지 못했습니다: {error}",
     "@adminChannelMappingsUpdateFailed": {
@@ -6170,7 +6129,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay에는 Jellyfin 서버가 필요합니다. 현재 서버에서는 지원하지 않습니다.",
     "syncPlayGroupFallbackName": "SyncPlay 그룹",
     "syncPlayGroupTooltip": "SyncPlay 그룹",
-    "syncPlayParticipantCount": "{count, plural, one {참가자 #명} other {참가자 #명}}",
+    "syncPlayParticipantCount": "{count, plural, one {참가자 {count}명} other {참가자 {count}명}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6211,7 +6170,7 @@
     "syncPlayJoin": "참여",
     "syncPlayStateIdle": "유휴",
     "syncPlayStateWaiting": "대기 중",
-    "syncPlayStatePaused": "일시중지됨",
+    "syncPlayStatePaused": "일시정지됨",
     "syncPlayStatePlaying": "재생 중",
     "syncPlayUserJoinedGroup": "{userName}이(가) SyncPlay 그룹에 참여했습니다",
     "@syncPlayUserJoinedGroup": {
@@ -6264,8 +6223,8 @@
     "noItems": "항목 없음",
     "switchUser": "사용자 전환",
     "remoteControl": "원격 제어",
-    "mediaBarLoading": "미디어 바 로드 중...",
-    "mediaBarError": "미디어 바를 로드하지 못했습니다",
+    "mediaBarLoading": "미디어 바 불러오는 중...",
+    "mediaBarError": "미디어 바를 불러오지 못했습니다",
     "offlineServerUnavailable": "인터넷에 연결되어 있지만 현재 서버를 사용할 수 없습니다.",
     "offlineNoInternet": "오프라인 상태입니다. 다운로드한 콘텐츠만 이용할 수 있습니다.",
     "offlineFileNotAvailable": "파일을 사용할 수 없음",
@@ -6354,7 +6313,7 @@
         }
     },
     "remoteControlTitle": "원격 제어",
-    "remoteFailedToLoadSessions": "세션을 로드하지 못했습니다.",
+    "remoteFailedToLoadSessions": "세션을 불러오지 못했습니다.",
     "remoteNoSessions": "제어 가능한 세션 없음",
     "remoteStartPlayback": "다른 기기에서 재생 시작",
     "unknownUser": "알 수 없음",
@@ -6414,7 +6373,7 @@
     "lyricsNotAvailable": "사용 가능한 가사가 없습니다.",
     "upNext": "다음 볼 항목",
     "playNext": "다음에 재생",
-    "stillWatchingContent": "재생이 일시중지되었습니다. 아직도 보고 있나요?",
+    "stillWatchingContent": "재생이 일시정지되었습니다. 아직도 보고 있나요?",
     "stillWatchingStop": "정지",
     "stillWatchingContinue": "계속",
     "skipSegment": "{segment} 건너뛰기",
@@ -6548,7 +6507,7 @@
     "settingsOfflineDownloads": "오프라인 다운로드",
     "settingsHigh": "높음",
     "settingsLow": "낮음",
-    "settingsCustomPath": "사용자 정의 경로",
+    "settingsCustomPath": "사용자 지정 경로",
     "settingsEnterDownloadFolderPath": "다운로드 폴더 경로를 입력하세요",
     "settingsConcurrentDownloads": "동시 다운로드",
     "settingsConcurrentDownloadsDescription": "한 번에 다운로드할 수 있는 최대 항목 수입니다.",
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr 압축 파일을 풀지 못했습니다.",
     "cb7ExtractionUnavailable": "이 플랫폼에서는 CB7 압축 해제를 사용할 수 없습니다.",
     "cb7ExtractionPluginUnavailable": "이 플랫폼에서는 CB7 압축 해제 플러그인을 사용할 수 없습니다.",
-    "closeGenrePanel": "장르 패널 닫기",
     "loadingShuffle": "셔플을 불러오는 중...",
     "libraryShuffleLabel": "라이브러리 셔플",
     "randomShuffleLabel": "랜덤 셔플",
@@ -8203,7 +8161,7 @@
     "adminDrawerNfo": "NFO 설정",
     "adminActivitySeverityAll": "모든 심각도",
     "adminActivityDateRange": "기간",
-    "adminRemoveDeviceConfirm": "'{name}' 기기를 삭제할까요? 이 기기에서 사용자가 다시 로그인해야 합니다.",
+    "adminRemoveDeviceConfirm": "\"{name}\" 기기를 삭제할까요? 이 기기에서 사용자가 다시 로그인해야 합니다.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8852,7 +8810,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "'{libraryName}' 라이브러리가 아트워크를 미디어 폴더에 직접 저장하도록 설정되어 있습니다('아트워크를 미디어 폴더에 저장'이 켜져 있음). 하지만 Jellyfin이 쓰기 권한을 확인한 결과 다음 디렉터리에 파일을 쓸 권한이 없습니다:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "\"{libraryName}\" 라이브러리가 아트워크를 미디어 폴더에 직접 저장하도록 설정되어 있습니다('아트워크를 미디어 폴더에 저장'이 켜져 있음). 하지만 Jellyfin이 쓰기 권한을 확인한 결과 다음 디렉터리에 파일을 쓸 권한이 없습니다:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9181,7 +9139,7 @@
     "@trailerCaptions": {
         "description": "Setting for YouTube trailer captions"
     },
-    "trailerCaptionsDescription": "미디어 바의 YouTube 예고편에 자막을 표시합니다",
+    "trailerCaptionsDescription": "YouTube 예고편에 자막을 표시합니다",
     "@trailerCaptionsDescription": {
         "description": "Description for YouTube trailer captions"
     },
@@ -11591,15 +11549,15 @@
     "@preferredSecondarySubtitleLanguage": {
         "description": "Preferred language used to sort secondary subtitle tracks in the picker. It doesn't turn subtitles on."
     },
-    "primarySubtitleSlot": "기본",
+    "primarySubtitleSlot": "기본 트랙",
     "@primarySubtitleSlot": {
         "description": "Label for the primary subtitle selection slot"
     },
-    "secondarySubtitleSlot": "보조",
+    "secondarySubtitleSlot": "보조 트랙",
     "@secondarySubtitleSlot": {
         "description": "Label for the secondary subtitle selection slot"
     },
-    "secondarySubtitleTrack": "보조 자막 트랙",
+    "secondarySubtitleTrack": "보조 자막",
     "@secondarySubtitleTrack": {
         "description": "Title of the picker for the secondary subtitle track"
     },
@@ -11649,7 +11607,7 @@
     "@showDownloadsButton": {
         "description": "Setting for showing downloads button"
     },
-    "libraryStyle": "메인 라이브러리 스타일",
+    "libraryStyle": "동영상 라이브러리 스타일",
     "@libraryStyle": {
         "description": "Label for the setting that picks the library page header layout"
     },
@@ -12481,7 +12439,7 @@
     "adminPageDescDevices": "로그인한 기기 및 이름",
     "adminPageDescApiKeys": "앱 및 스크립트용 키",
     "adminPageDescSettings": "서버 이름, 언어, 경로, 성능",
-    "adminPageDescBranding": "로그인 메시지, 사용자 정의 CSS, 시작 화면",
+    "adminPageDescBranding": "로그인 메시지, 사용자 지정 CSS, 시작 화면",
     "adminPageDescNetworking": "포트, HTTPS, LAN 및 원격 액세스",
     "adminPageDescPlugins": "설치된 플러그인 및 카탈로그",
     "adminPageDescRepositories": "플러그인을 가져오는 곳",
@@ -14654,5 +14612,1868 @@
     "librarySortLength": "길이",
     "@librarySortLength": {
         "description": "Sort option for music: by track or album length"
+    },
+    "animeMarkerSubbedShort": "자막",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "더빙",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "자막/더빙",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "signingIn": "로그인 중...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "quickConnectScanHint": "또는 서버에 로그인된 휴대폰으로 이 코드를 스캔하세요",
+    "@quickConnectScanHint": {
+        "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+    },
+    "quickConnectTapOrScanHint": "탭하여 브라우저에서 승인하거나 다른 기기로 스캔하세요",
+    "@quickConnectTapOrScanHint": {
+        "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+    },
+    "timesUpTitle": "이용 시간 종료",
+    "@timesUpTitle": {
+        "description": "Title of the screen that covers the app when the user's access schedule doesn't allow the current time"
+    },
+    "timesUpMessage": "지금은 이 계정을 사용할 수 없습니다.",
+    "@timesUpMessage": {
+        "description": "Explanation on the Time's up screen"
+    },
+    "timesUpResumesToday": "오늘 {time}부터 다시 사용할 수 있습니다.",
+    "@timesUpResumesToday": {
+        "description": "When access returns, on the Time's up screen, for a time later today",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesTomorrow": "내일 {time}부터 다시 사용할 수 있습니다.",
+    "@timesUpResumesTomorrow": {
+        "description": "When access returns, on the Time's up screen, for a time tomorrow",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesOn": "{day} {time}부터 다시 사용할 수 있습니다.",
+    "@timesUpResumesOn": {
+        "description": "When access returns, on the Time's up screen, for a time on a later day",
+        "placeholders": {
+            "day": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "loginForbidden": "지금은 이 계정으로 로그인할 수 없습니다. 허용된 시간이 아니거나 계정이 잠겼거나 비활성화되었을 수 있습니다. 나중에 다시 시도하거나 관리자에게 문의하세요.",
+    "@loginForbidden": {
+        "description": "Sign in error when the server refuses the account with a 403, which Jellyfin does for an access schedule, a lockout or a disabled account without saying which"
+    },
+    "signedInOnThisDevice": "이 기기에 로그인됨",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "PIN 필요",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "비밀번호 필요",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "{name}(으)로 계속",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "{name}(으)로 전환",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "{server}에 {user}(으)로 로그인됨",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "사용 중",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyboardStyle": "키보드 스타일",
+    "@keyboardStyle": {
+        "description": "Label for the setting that picks how the on-screen keyboard looks, or whether the TV's own keyboard is used"
+    },
+    "keyboardStyleDescription": "시스템은 TV 자체 키보드를 사용합니다. 클래식은 기존 Moonfin 키보드입니다. 글래스는 키가 더 큰 반투명 패널입니다. 도킹은 화면 아래쪽을 채우고 입력한 내용을 키 위에 표시합니다.",
+    "@keyboardStyleDescription": {
+        "description": "Explanation under the keyboard style setting"
+    },
+    "keyboardStyleNative": "시스템",
+    "@keyboardStyleNative": {
+        "description": "Keyboard style option: the TV or device's own system keyboard"
+    },
+    "keyboardStyleClassic": "클래식",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "keyboardStyleGlass": "글래스",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "keyboardStyleDocked": "도킹",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "keyboardSpace": "스페이스",
+    "@keyboardSpace": {
+        "description": "Label on the on-screen keyboard's space bar, lowercase like a printed key"
+    },
+    "keyboardHoldForAccents": "길게 눌러 악센트 입력",
+    "@keyboardHoldForAccents": {
+        "description": "On-screen keyboard hint next to an OK button cap: holding OK on a letter shows its accented versions"
+    },
+    "keyboardClose": "닫기",
+    "@keyboardClose": {
+        "description": "On-screen keyboard hint next to a Back button cap, lowercase like the hold for accents hint: Back closes the keyboard"
+    },
+    "signInWithPlex": "Plex로 로그인",
+    "@signInWithPlex": {
+        "description": "Plex sign-in option label and title of the Plex sign-in screen"
+    },
+    "plexLinkInstructions": "아무 기기에서나 plex.tv/link에 접속해 이 코드를 입력하세요",
+    "@plexLinkInstructions": {
+        "description": "Instructions above the code on the Plex sign-in screen"
+    },
+    "plexOpenLink": "plex.tv/link 열기",
+    "@plexOpenLink": {
+        "description": "Button that opens plex.tv/link in the browser with the code filled in"
+    },
+    "plexWaitingForApproval": "코드 승인을 기다리는 중...",
+    "@plexWaitingForApproval": {
+        "description": "Status shown while the app waits for the Plex code to be approved"
+    },
+    "plexSignInWithPassword": "비밀번호로 로그인",
+    "@plexSignInWithPassword": {
+        "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+    },
+    "plexVerificationCode": "인증 코드",
+    "@plexVerificationCode": {
+        "description": "Field for the account's two-step verification code, shown once Plex asks for it"
+    },
+    "plexNoServers": "이 계정에서 Plex 서버를 찾을 수 없습니다",
+    "@plexNoServers": {
+        "description": "Shown when the Plex account has no servers"
+    },
+    "keyNameDelete": "Delete",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "shortcutHideControls": "컨트롤 숨기기",
+    "@shortcutHideControls": {
+        "description": "What Backspace and Delete do in the player: hide the controls or the panel on top of them"
+    },
+    "bookReadingUnavailableTitle": "Apple TV에서는 도서를 읽을 수 없습니다",
+    "@bookReadingUnavailableTitle": {
+        "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
+    },
+    "bookReadingUnavailableMessage": "휴대폰, 태블릿 또는 컴퓨터의 Moonfin에서 열어 읽으세요. 오디오북은 여기서도 재생할 수 있습니다.",
+    "@bookReadingUnavailableMessage": {
+        "description": "Body of the dialog shown on Apple TV when the user tries to open a book or comic"
+    },
+    "seriesRecordingSkipsShowing": "시리즈 녹화에서 이 방송은 건너뜁니다",
+    "@seriesRecordingSkipsShowing": {
+        "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+    },
+    "seriesRecordingEpisodesQuestion": "어떤 에피소드를 녹화할까요?",
+    "@seriesRecordingEpisodesQuestion": {
+        "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+    },
+    "seriesRecordingAllEpisodes": "모든 에피소드",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "seriesRecordingAllEpisodesDescription": "재방송을 포함한 모든 방송",
+    "@seriesRecordingAllEpisodesDescription": {
+        "description": "Explains the All Episodes series recording choice"
+    },
+    "seriesRecordingNotRecordedEpisodes": "아직 녹화하지 않은 에피소드",
+    "@seriesRecordingNotRecordedEpisodes": {
+        "description": "Series recording choice that skips episodes already in the library"
+    },
+    "seriesRecordingNotRecordedEpisodesDescription": "라이브러리에 이미 있는 에피소드는 건너뛰고 각 에피소드를 한 번씩 녹화합니다",
+    "@seriesRecordingNotRecordedEpisodesDescription": {
+        "description": "Explains the Episodes Not Already Recorded series recording choice"
+    },
+    "seriesRecordingNewEpisodesOnly": "새 에피소드만",
+    "@seriesRecordingNewEpisodesOnly": {
+        "description": "Series recording choice that records only first airings"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "첫 방송만, 재방송 제외",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "시리즈 설정",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "시리즈 녹화를 업데이트했습니다",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "시리즈 녹화를 업데이트할 수 없습니다",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "seasonalFollower": "포커스 따라다니기",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "핼러윈의 플랑셰트 같은 시즌 장식이 홈에서 선택한 항목을 따라다닙니다",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "핼러윈의 플랑셰트 같은 시즌 장식이 홈에서 마우스 포인터를 대신합니다",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "invertGestureIndicators": "제스처 표시기 반전",
+    "@invertGestureIndicators": {
+        "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+    },
+    "invertGestureIndicatorsDescription": "밝기 및 볼륨 표시기를 스와이프한 쪽과 같은 쪽 또는 반대쪽에 표시합니다",
+    "@invertGestureIndicatorsDescription": {
+        "description": "Description explaining gesture indicator placement relative to the swipe side"
+    },
+    "gestureIndicatorSame": "같은 쪽",
+    "@gestureIndicatorSame": {
+        "description": "Option to display gesture indicators on the same side as the swipe"
+    },
+    "gestureIndicatorInverted": "반대쪽",
+    "@gestureIndicatorInverted": {
+        "description": "Option to display gesture indicators on the opposite side from the swipe"
+    },
+    "detailSectionSeerrStreaming": "스트리밍 서비스",
+    "@detailSectionSeerrStreaming": {
+        "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
+    },
+    "seerrStreamingOn": "스트리밍 서비스",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "detailSectionPersonLinks": "링크",
+    "@detailSectionPersonLinks": {
+        "description": "Details screen section: buttons that open a person's IMDb, TMDB and social media pages"
+    },
+    "detailSectionPersonLinksSubtitle": "IMDb, TMDB 및 소셜 미디어",
+    "@detailSectionPersonLinksSubtitle": {
+        "description": "Subtitle under the person links section switch"
+    },
+    "transcodeAudioCodecs": "트랜스코딩할 오디오 코덱",
+    "@transcodeAudioCodecs": {
+        "description": "Setting that lists the audio codecs the server converts instead of the device playing them"
+    },
+    "transcodeAudioCodecsDescription": "이 형식의 오디오는 그대로 보내지 않고 서버에서 변환합니다.",
+    "@transcodeAudioCodecsDescription": {
+        "description": "Description for the transcode audio codecs setting"
+    },
+    "secondarySubtitlesEnabledSubtitle": "두 번째 자막 트랙을 동시에 표시합니다. 자막 메뉴에서 먼저 기본 트랙과 보조 트랙 중 하나를 선택하게 됩니다",
+    "@secondarySubtitlesEnabledSubtitle": {
+        "description": "Subtitle of the setting that turns secondary subtitles on, explaining the extra step it adds to the subtitle menu"
+    },
+    "secondaryDelayAdjustment": "보조 자막 지연 조정",
+    "@secondaryDelayAdjustment": {
+        "description": "Title of the secondary subtitle delay menu. This adjustment is added to the primary subtitle delay."
+    },
+    "showLibrariesIndividually": "라이브러리 개별 표시",
+    "@showLibrariesIndividually": {
+        "description": "Setting that puts each library in the navigation bar as its own button instead of grouping them under the Libraries menu"
+    },
+    "showLibrariesIndividuallySubtitle": "라이브러리 메뉴 대신 탐색 바에 각 라이브러리를 개별 버튼으로 표시합니다",
+    "@showLibrariesIndividuallySubtitle": {
+        "description": "Subtitle for the Show Libraries Individually setting"
+    },
+    "musicLibraryStyle": "음악 라이브러리 스타일",
+    "@musicLibraryStyle": {
+        "description": "Label for the setting that picks the music library layout"
+    },
+    "musicLibraryStyleDescription": "클래식은 '다시 듣기' 카드 아래에 기존 행을 표시합니다. 빠른 접근은 최근 앨범과 재생목록 그리드로 시작합니다. 몰입형은 듣고 있는 앨범을 맨 위에 크게 보여줍니다.",
+    "@musicLibraryStyleDescription": {
+        "description": "Explanation under the music library style setting"
+    },
+    "musicLibraryStyleClassic": "클래식",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "musicLibraryStyleQuickAccess": "빠른 접근",
+    "@musicLibraryStyleQuickAccess": {
+        "description": "Music library style option: a grid of recent albums and playlists over the rows"
+    },
+    "musicLibraryStyleImmersive": "몰입형",
+    "@musicLibraryStyleImmersive": {
+        "description": "Music library style option: a full-width album hero over the rows"
+    },
+    "jumpBackIn": "다시 듣기",
+    "@jumpBackIn": {
+        "description": "Heading over the albums and playlists the user played recently in a music library"
+    },
+    "yourPlaylists": "내 재생목록",
+    "@yourPlaylists": {
+        "description": "Heading over the user's playlists in a music library"
+    },
+    "fromThisAlbum": "이 앨범의 트랙",
+    "@fromThisAlbum": {
+        "description": "Heading over the track list of the album shown in the music library hero"
+    },
+    "searchMusic": "음악 검색",
+    "@searchMusic": {
+        "description": "Placeholder and label for the search control in a music library"
+    },
+    "peekHomeRows": "홈 행 살짝 보이기",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "peekHomeRowsDescription": "미디어 바 아래쪽에 첫 번째 행의 위쪽 절반을 표시합니다",
+    "@peekHomeRowsDescription": {
+        "description": "Description of the Peek Home Rows media bar setting"
+    },
+    "trailerVolume": "예고편 볼륨",
+    "@trailerVolume": {
+        "description": "Setting for how loud media bar trailers play"
+    },
+    "trailerVolumeDescription": "미디어 바 예고편의 재생 볼륨",
+    "@trailerVolumeDescription": {
+        "description": "Description for the trailer volume slider"
+    },
+    "previewVolume": "미리보기 볼륨",
+    "@previewVolume": {
+        "description": "Setting for how loud media previews on cards play"
+    },
+    "previewVolumeDescription": "카드 미디어 미리보기의 재생 볼륨",
+    "@previewVolumeDescription": {
+        "description": "Description for the preview volume slider"
+    },
+    "continueWatchingDefaultAction": "기본 동작",
+    "@continueWatchingDefaultAction": {
+        "description": "Setting for default click action on Continue Watching and Next Up items"
+    },
+    "continueWatchingDefaultActionDescription": "계속 시청하기 또는 다음 볼 항목을 선택했을 때의 동작",
+    "@continueWatchingDefaultActionDescription": {
+        "description": "Description for Continue Watching and Next Up default click action setting"
+    },
+    "goToDetailsScreen": "상세 페이지로 이동",
+    "@goToDetailsScreen": {
+        "description": "Option to navigate to the details screen for an item"
+    },
+    "playImmediately": "바로 재생",
+    "@playImmediately": {
+        "description": "Option to play an item immediately"
+    },
+    "pinSynced": "PIN 동기화됨",
+    "@pinSynced": {
+        "description": "Shown under the PIN switch when the PIN is kept on the server, so it applies on every device"
+    },
+    "pinResetFailed": "서버의 PIN을 지우지 못했습니다. PIN이 아직 설정되어 있다면 서버 관리자에게 삭제를 요청하세요.",
+    "@pinResetFailed": {
+        "description": "Shown on sign in when Forgot PIN could not clear a PIN kept on the server"
+    },
+    "moonbaseAddress": "Moonbase 주소",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "stripDolbyVisionHdr10PlusTitle": "Dolby Vision + HDR10+ 영상을 HDR10+로 재생",
+    "@stripDolbyVisionHdr10PlusTitle": {
+        "description": "Setting title: drop the Dolby Vision layer from videos that carry both Dolby Vision and HDR10+"
+    },
+    "stripDolbyVisionHdr10PlusSubtitle": "HDR10+도 포함된 영상에서 Dolby Vision 레이어를 제거합니다. 이런 영상이 소리는 나지만 화면이 검게 나온다면 켜세요.",
+    "@stripDolbyVisionHdr10PlusSubtitle": {
+        "description": "Setting subtitle for dropping Dolby Vision from Dolby Vision plus HDR10+ videos"
+    },
+    "libraryCardTitles": "포스터 아래 제목 표시",
+    "@libraryCardTitles": {
+        "description": "Setting that shows or hides the title and details under each card in library grids"
+    },
+    "libraryCardTitlesDescription": "라이브러리 그리드에서 각 항목의 아트워크 아래에 제목과 세부 정보를 표시합니다.",
+    "@libraryCardTitlesDescription": {
+        "description": "Description of the Titles Under Posters setting"
+    },
+    "sorting": "정렬",
+    "imdbRowsSorting": "IMDb 행 정렬",
+    "imdbRowsSortingDescription": "IMDb 행을 이름, 출시일, 평점 등으로 정렬합니다.",
+    "imdbRowsSortOrderDescription": "IMDb 행을 오름차순 또는 내림차순으로 정렬합니다.",
+    "tmdbRowsSorting": "TMDB 행 정렬",
+    "tmdbRowsSortingDescription": "TMDB 행을 이름, 출시일, 평점 등으로 정렬합니다.",
+    "tmdbRowsSortOrderDescription": "TMDB 행을 오름차순 또는 내림차순으로 정렬합니다.",
+    "seerrRowsSorting": "Seerr 행 정렬",
+    "seerrRowsSortingDescription": "Seerr 행을 이름, 출시일, 평점 등으로 정렬합니다.",
+    "seerrRowsSortOrderDescription": "Seerr 행을 오름차순 또는 내림차순으로 정렬합니다.",
+    "externalRowSortDefault": "기본(목록 순서)",
+    "externalRowSortName": "이름",
+    "externalRowSortReleaseDate": "출시일",
+    "externalRowSortRating": "평점",
+    "externalRowSortPopularity": "인기도",
+    "externalRowSortShuffle": "셔플",
+    "hevcSoftwareDirectPlay": "HEVC 다이렉트 재생(소프트웨어 디코딩)",
+    "hevcSoftwareDirectPlaySubtitle": "서버에 트랜스코딩을 요청하지 않고 최대 1080p HEVC를 원본 파일 그대로 재생합니다. 이 Apple TV는 소프트웨어로 디코딩하므로 10비트나 높은 비트레이트의 무거운 파일은 끊길 수 있습니다.",
+    "av1SoftwareUhdDirectPlay": "4K AV1 다이렉트 재생(소프트웨어 디코딩)",
+    "av1SoftwareUhdDirectPlaySubtitle": "서버에 트랜스코딩을 요청하지 않고 HDR10을 포함한 1080p 초과 AV1을 원본 파일 그대로 재생합니다. 이 기기는 AV1을 소프트웨어로 디코딩하므로 4K나 높은 비트레이트의 무거운 파일은 끊길 수 있습니다.",
+    "externalPlayerLiveTvOnly": "라이브 TV만",
+    "@externalPlayerLiveTvOnly": {
+        "description": "Setting that limits the external player to Live TV channels"
+    },
+    "externalPlayerLiveTvOnlySubtitle": "라이브 TV에만 외부 플레이어를 사용하고 나머지는 내장 플레이어로 재생합니다.",
+    "@externalPlayerLiveTvOnlySubtitle": {
+        "description": "Description for the Live TV Only external player setting"
+    },
+    "personWebsite": "공식 웹사이트",
+    "@personWebsite": {
+        "description": "Tooltip for the button on a person page that opens their own website"
+    },
+    "watchPartyGroupSubtitles": "모두에게 같은 자막",
+    "@watchPartyGroupSubtitles": {
+        "description": "The Watch Party host's subtitle choice for the whole group"
+    },
+    "watchPartyOwnSubtitles": "각자 선택",
+    "@watchPartyOwnSubtitles": {
+        "description": "Watch Party subtitle option that leaves subtitles to each member"
+    },
+    "watchPartyLobby": "대기실",
+    "@watchPartyLobby": {
+        "description": "Watch Party status while nothing plays"
+    },
+    "watchPartyUpNextLabel": "다음 재생",
+    "@watchPartyUpNextLabel": {
+        "description": "Label over the title a Watch Party host has staged"
+    },
+    "watchPartyRoomSettings": "방 설정",
+    "@watchPartyRoomSettings": {
+        "description": "Heading over a Watch Party host's room switches"
+    },
+    "watchPartyCodeOrLink": "방 코드 또는 초대 링크",
+    "@watchPartyCodeOrLink": {
+        "description": "Join box on the Watch Party screen"
+    },
+    "watchPartyCopyInvite": "초대 링크 복사",
+    "@watchPartyCopyInvite": {
+        "description": "Host button that copies a Watch Party invite link"
+    },
+    "watchPartyInviteCopied": "초대 링크를 복사했습니다",
+    "@watchPartyInviteCopied": {
+        "description": "Snackbar after copying a Watch Party invite link"
+    },
+    "watchPartyLetEveryoneVote": "모두가 영화에 투표하기",
+    "@watchPartyLetEveryoneVote": {
+        "description": "Host switch that turns a Watch Party into a vote on movies"
+    },
+    "watchPartyVoteHelp": "영화를 추가해 모두가 투표하게 한 뒤 원하는 영화를 재생하세요. TV 에피소드는 여전히 호스트가 고릅니다.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "watchPartyGuestVoteHelp": "보고 싶은 작품에 투표하세요. 호스트가 그중 하나를 재생합니다.",
+    "@watchPartyGuestVoteHelp": {
+        "description": "Under a guest's vote list in a Watch Party"
+    },
+    "watchPartySearchMovies": "영화 검색",
+    "@watchPartySearchMovies": {
+        "description": "Hint in the host's movie search in a Watch Party vote"
+    },
+    "watchPartyNoSuggestions": "아직 투표할 영화가 없습니다.",
+    "@watchPartyNoSuggestions": {
+        "description": "Shown when a Watch Party vote has no movies"
+    },
+    "watchPartySuggested": "워치 파티 투표에 추가했습니다",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "watchPartyVoteCount": "{count, plural, one {{count}표} other {{count}표}}",
+    "@watchPartyVoteCount": {
+        "description": "How many votes a movie has in a Watch Party vote",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchParty": "워치 파티",
+    "@watchParty": {
+        "description": "Title of Silo's Watch Party screen"
+    },
+    "watchPartyUnavailable": "이 서버는 워치 파티를 지원하지 않습니다.",
+    "@watchPartyUnavailable": {
+        "description": "Shown when the Silo server has no Watch Party rooms"
+    },
+    "watchPartyRoomCode": "방 코드",
+    "@watchPartyRoomCode": {
+        "description": "Label for a Watch Party room's join code"
+    },
+    "watchPartyStart": "워치 파티 시작",
+    "@watchPartyStart": {
+        "description": "Button that opens a new Watch Party room"
+    },
+    "watchPartyPickTitle": "작품을 열고 '그룹과 함께 보기'를 선택해 모두가 볼 작품을 고르세요.",
+    "@watchPartyPickTitle": {
+        "description": "How a Watch Party host picks what to watch"
+    },
+    "watchPartyWaitingForHost": "호스트가 작품을 고르기를 기다리는 중입니다.",
+    "@watchPartyWaitingForHost": {
+        "description": "Shown to Watch Party guests before anything is picked"
+    },
+    "watchPartyShareCode": "다른 사람은 워치 파티 화면에서 이 코드로 참여합니다.",
+    "@watchPartyShareCode": {
+        "description": "Under a Watch Party room's code"
+    },
+    "watchPartyReconnecting": "다시 연결 중...",
+    "@watchPartyReconnecting": {
+        "description": "Watch Party connection status while the room socket reconnects"
+    },
+    "watchPartyOffline": "오프라인",
+    "@watchPartyOffline": {
+        "description": "After a Watch Party member's name when they are not connected"
+    },
+    "watchPartyStartForEveryone": "모두 함께 시작",
+    "@watchPartyStartForEveryone": {
+        "description": "Host button that starts the staged item for the whole Watch Party"
+    },
+    "watchPartyBackToLobby": "대기실로 돌아가기",
+    "@watchPartyBackToLobby": {
+        "description": "Host button that stops Watch Party playback"
+    },
+    "watchPartyGuestsCanPause": "게스트도 재생/일시정지 가능",
+    "@watchPartyGuestsCanPause": {
+        "description": "Host switch for guest transport control in a Watch Party"
+    },
+    "watchPartyEnd": "워치 파티 종료",
+    "@watchPartyEnd": {
+        "description": "Host button that closes the Watch Party room for everyone"
+    },
+    "watchPartyEnded": "워치 파티가 종료되었습니다.",
+    "@watchPartyEnded": {
+        "description": "Shown when the Watch Party room was closed"
+    },
+    "watchPartyStaged": "워치 파티 작품으로 선택했습니다",
+    "@watchPartyStaged": {
+        "description": "Snackbar after the host picks an item for the Watch Party"
+    },
+    "watchPartyUpNext": "다음 재생: {title}",
+    "@watchPartyUpNext": {
+        "description": "The item a Watch Party host has staged",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sortServerOrder": "서버 순서",
+    "sortCurrent": "정렬: {option}",
+    "@sortCurrent": {
+        "description": "Label beside a sort button showing the sort that is active",
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryFolderView": "폴더 보기",
+    "@libraryFolderView": {
+        "description": "Checkbox in a library's Sort and Filter options that lists the library one folder at a time instead of all its items at once"
+    },
+    "hideHomeWatchProgress": "시청 진행률 숨기기",
+    "@hideHomeWatchProgress": {
+        "description": "Setting title to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeWatchProgressSubtitle": "시청을 시작한 포스터의 진행률 막대를 숨깁니다.",
+    "@hideHomeWatchProgressSubtitle": {
+        "description": "Description for setting to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeUnwatchedCount": "미시청 개수 숨기기",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "hideHomeUnwatchedCountSubtitle": "남은 에피소드 수를 보여주는 배지를 숨깁니다.",
+    "@hideHomeUnwatchedCountSubtitle": {
+        "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
+    },
+    "setupStepOf": "{total}단계 중 {current}단계",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupCurrent": "현재",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "setupTvHint": "위/아래로 미리 보기 · OK로 선택 · 뒤로를 두 번 눌러 건너뛰기",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "setupNavbarTopHint": "화면 위쪽에 탭을 표시합니다.",
+    "@setupNavbarTopHint": {
+        "description": "What the Top Bar navigation position gives you"
+    },
+    "setupNavbarLeftHint": "왼쪽에 얇은 아이콘 막대를 표시합니다.",
+    "@setupNavbarLeftHint": {
+        "description": "What the Left Sidebar navigation position gives you"
+    },
+    "setupNavbarBottomHint": "엄지손가락이 닿기 쉬운 화면 아래쪽에 탭을 표시합니다.",
+    "@setupNavbarBottomHint": {
+        "description": "What the Bottom Bar navigation position gives you on phones"
+    },
+    "setupMediaBarMoonfinHint": "큰 아트워크 위에 제목, 세부 정보, 개요를 겹쳐 표시합니다.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "큰 제목 로고를 중심으로 한 큰 아트워크입니다.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "setupMediaBarBookshelfHint": "작품을 책등처럼 꽂아 두고, 추천 작품은 앞표지가 보이게 표시합니다.",
+    "@setupMediaBarBookshelfHint": {
+        "description": "What the Bookshelf media bar style looks like"
+    },
+    "setupMediaBarGalleryHint": "추천 작품을 펼쳐 보여주고 다음 몇 작품을 옆에 나란히 표시합니다.",
+    "@setupMediaBarGalleryHint": {
+        "description": "What the Gallery media bar style looks like"
+    },
+    "setupMediaBarBannerHint": "행 위에 더 낮은 배너를 두어 화면에 더 많은 행이 들어갑니다.",
+    "@setupMediaBarBannerHint": {
+        "description": "What the Banner media bar style looks like"
+    },
+    "setupMediaBarAyaHint": "액자 패널에 아트워크를 먼저 보여주고 바로 아래에 행을 표시합니다.",
+    "@setupMediaBarAyaHint": {
+        "description": "What the Aya media bar style looks like"
+    },
+    "setupMediaBarOffHint": "추천 영역 없이 홈에서 바로 행을 표시합니다.",
+    "@setupMediaBarOffHint": {
+        "description": "What turning the media bar off does to the Home screen"
+    },
+    "smartDownloadsEnableDescription": "어느 기기에서든 에피소드를 다 보면 Moonfin이 다음 에피소드를 다운로드합니다. 이렇게 다운로드된 에피소드는 시청 후 삭제됩니다.",
+    "@smartDownloadsEnableDescription": {
+        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+    },
+    "autoDownloadDeleteFollowedSubtitle": "팔로우한 시리즈에서 다운로드된 에피소드를 시청 후 언제 삭제할지 정합니다",
+    "@autoDownloadDeleteFollowedSubtitle": {
+        "description": "Explains the delete-after-watching setting"
+    },
+    "removeWatchedDownloads": "시청한 다운로드 삭제",
+    "@removeWatchedDownloads": {
+        "description": "Storage setting that picks how soon an episode or movie the user downloaded themselves is removed after it was watched"
+    },
+    "removeWatchedDownloadsSubtitle": "직접 다운로드한 에피소드와 영화를 언제 삭제할지 정합니다. 이 설정을 켠 뒤에 시청한 항목만 삭제됩니다",
+    "@removeWatchedDownloadsSubtitle": {
+        "description": "Explains the remove-watched-downloads setting"
+    },
+    "keepDownloaded": "다운로드 유지",
+    "@keepDownloaded": {
+        "description": "Toggle on the download sheet that stops watched downloads of this title from being removed automatically"
+    },
+    "keepDownloadedSubtitle": "시청 후에도 자동으로 삭제하지 않습니다",
+    "@keepDownloadedSubtitle": {
+        "description": "Explains the keep-downloaded toggle"
+    },
+    "cinemaSkipPrerolls": "시네마 모드 건너뛰기 버튼",
+    "cinemaSkipPrerollsDescription": "시네마 모드의 예고편, 광고 등 본편 전 영상이 재생되는 동안 건너뛰기 버튼을 표시합니다.",
+    "siloPasswordChangeTitle": "새 비밀번호 설정",
+    "@siloPasswordChangeTitle": {
+        "description": "Title of the dialog shown after signing in to a Silo server with a temporary password"
+    },
+    "siloPasswordChangeMessage": "이 계정은 임시 비밀번호를 사용 중입니다. 로그인을 완료하려면 새 비밀번호를 설정하세요.",
+    "@siloPasswordChangeMessage": {
+        "description": "Explanation in the Silo change-password dialog. The temporary password was set by the server's admin."
+    },
+    "siloPasswordChangeNew": "새 비밀번호",
+    "@siloPasswordChangeNew": {
+        "description": "Field label in the Silo change-password dialog"
+    },
+    "siloPasswordChangeConfirm": "새 비밀번호 확인",
+    "@siloPasswordChangeConfirm": {
+        "description": "Field label in the Silo change-password dialog: the new password typed a second time"
+    },
+    "siloPasswordChangeSubmit": "비밀번호 변경",
+    "@siloPasswordChangeSubmit": {
+        "description": "Button in the Silo change-password dialog that saves the new password and finishes signing in"
+    },
+    "siloPasswordChangeTooShort": "{count, plural, =1{1자 이상 입력하세요} other{{count}자 이상 입력하세요}}",
+    "@siloPasswordChangeTooShort": {
+        "description": "Error in the Silo change-password dialog when the new password is shorter than the server allows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPasswordChangeTooLong": "비밀번호가 너무 깁니다",
+    "@siloPasswordChangeTooLong": {
+        "description": "Error in the Silo change-password dialog when the new password is longer than the server allows"
+    },
+    "siloPasswordChangeMismatch": "비밀번호가 일치하지 않습니다",
+    "@siloPasswordChangeMismatch": {
+        "description": "Error in the Silo change-password dialog when the two new password fields differ"
+    },
+    "siloPasswordChangeSameAsTemporary": "임시 비밀번호와 다른 비밀번호를 사용하세요",
+    "@siloPasswordChangeSameAsTemporary": {
+        "description": "Error in the Silo change-password dialog when the new password equals the temporary one used to sign in"
+    },
+    "siloPasswordChangeFailed": "비밀번호를 변경하지 못했습니다. 다시 시도하세요.",
+    "@siloPasswordChangeFailed": {
+        "description": "Error in the Silo change-password dialog when the request failed (network or server error)"
+    },
+    "siloPasswordChangeUnavailable": "이 계정은 임시 비밀번호를 사용 중이며, 이 서버에서는 여기서 변경할 수 없습니다. Silo 웹 앱에서 변경한 후 다시 로그인하세요.",
+    "@siloPasswordChangeUnavailable": {
+        "description": "Sign-in error for a Silo account with a temporary password when the server has password changes switched off"
+    },
+    "siloPasswordChangedSignInAgain": "비밀번호가 변경되었습니다. 새 비밀번호로 로그인하세요.",
+    "@siloPasswordChangedSignInAgain": {
+        "description": "Shown on the sign-in screen when the Silo password was changed but the session could not continue"
+    },
+    "siloServerRowSubtitle": "서버 제공",
+    "@siloServerRowSubtitle": {
+        "description": "Subtitle of a Home row the media server curates itself (a Silo home section), on Home and in Home settings"
+    },
+    "homeScreenBackdrop": "홈 화면 배경",
+    "@homeScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the home screen"
+    },
+    "homeScreenBackdropFullScreen": "전체 화면",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "homeScreenBackdropCorner": "모서리",
+    "@homeScreenBackdropCorner": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+    },
+    "homeScreenBackdropTop": "상단",
+    "@homeScreenBackdropTop": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop across the top half of the screen, fading into the background toward the bottom"
+    },
+    "detailsScreenBackdrop": "상세 화면 배경",
+    "@detailsScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the item details screen"
+    },
+    "detailsBackdropSize": "배경 크기",
+    "@detailsBackdropSize": {
+        "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"
+    },
+    "detailsBackdropFullScreen": "전체 화면",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "detailsBackdropFit": "맞춤",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "libraryBackdrops": "라이브러리 배경",
+    "@libraryBackdrops": {
+        "description": "Setting to show or hide backdrop images while browsing library pages"
+    },
+    "playbackInfoChannel": "채널",
+    "@playbackInfoChannel": {
+        "description": "Playback information row label: the Live TV channel being watched"
+    },
+    "playbackInfoProgram": "프로그램",
+    "@playbackInfoProgram": {
+        "description": "Playback information row label: the Live TV program on now"
+    },
+    "playbackInfoWhy": "이유",
+    "@playbackInfoWhy": {
+        "description": "Playback information row label: why the server isn't sending the original file as is"
+    },
+    "playbackInfoQualityLimit": "품질 제한",
+    "@playbackInfoQualityLimit": {
+        "description": "Playback information row label: the maximum streaming bitrate the user picked"
+    },
+    "playbackInfoFrameRate": "프레임 레이트",
+    "@playbackInfoFrameRate": {
+        "description": "Playback information row label: video frames per second"
+    },
+    "playbackInfoDelivery": "전달 방식",
+    "@playbackInfoDelivery": {
+        "description": "Playback information row label: how the subtitles reach the player (embedded, external, burned in)"
+    },
+    "playbackInfoFile": "파일",
+    "@playbackInfoFile": {
+        "description": "Playback information section header for the media file"
+    },
+    "playbackInfoTechnical": "기술 정보",
+    "@playbackInfoTechnical": {
+        "description": "Playback information section header for details aimed at developers and testers"
+    },
+    "playbackInfoDevice": "기기",
+    "@playbackInfoDevice": {
+        "description": "Playback information row label: this device's model and operating system"
+    },
+    "playbackInfoAudioRoute": "오디오 출력",
+    "@playbackInfoAudioRoute": {
+        "description": "Playback information row label: where the sound goes, like HDMI or Bluetooth"
+    },
+    "playbackInfoSurround51": "5.1 서라운드",
+    "@playbackInfoSurround51": {
+        "description": "Playback information value: six channel surround audio"
+    },
+    "playbackInfoSurround71": "7.1 서라운드",
+    "@playbackInfoSurround71": {
+        "description": "Playback information value: eight channel surround audio"
+    },
+    "playbackInfoChannelCount": "{count}채널",
+    "@playbackInfoChannelCount": {
+        "description": "Playback information value: an audio channel count with no common layout name",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoBurnedIn": "서버에서 영상에 입힘",
+    "@playbackInfoBurnedIn": {
+        "description": "Playback information value: the server draws the subtitles into the video picture"
+    },
+    "playbackInfoOriginal": "{value}(원본 {original})",
+    "@playbackInfoOriginal": {
+        "description": "Playback information value: the bitrate being sent, with the file's own bitrate after it",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            },
+            "original": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoConvertedFrom": "{value}({source}에서 변환)",
+    "@playbackInfoConvertedFrom": {
+        "description": "Playback information value: what the player gets, with what the file had before the server converted it",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoResolutionConverted": "{name}({size}, {source}에서 변환)",
+    "@playbackInfoResolutionConverted": {
+        "description": "Playback information value: the resolution being sent, like 1080p (1920x1080, converted from 4K)",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "size": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoNoteDirectPlay": "원본 파일을 그대로 재생하고 있습니다.",
+    "@playbackInfoNoteDirectPlay": {
+        "description": "Playback information note under the play method for direct play"
+    },
+    "playbackInfoNoteDirectStream": "서버가 파일을 변환하지 않고 다시 패키징하고 있습니다.",
+    "@playbackInfoNoteDirectStream": {
+        "description": "Playback information note under the play method for direct stream"
+    },
+    "playbackInfoNoteTranscodeVideo": "이 기기에서 재생할 수 있도록 서버가 비디오를 변환하고 있습니다.",
+    "@playbackInfoNoteTranscodeVideo": {
+        "description": "Playback information note under the play method when only the video is transcoded"
+    },
+    "playbackInfoNoteTranscodeAudio": "이 기기에서 재생할 수 있도록 서버가 오디오를 변환하고 있습니다.",
+    "@playbackInfoNoteTranscodeAudio": {
+        "description": "Playback information note under the play method when only the audio is transcoded"
+    },
+    "playbackInfoNoteTranscodeBoth": "이 기기에서 재생할 수 있도록 서버가 비디오와 오디오를 변환하고 있습니다.",
+    "@playbackInfoNoteTranscodeBoth": {
+        "description": "Playback information note under the play method when the video and the audio are transcoded"
+    },
+    "playbackInfoNoteTranscodeUnknown": "이 기기에서 재생할 수 있도록 서버가 이 파일을 변환하고 있습니다.",
+    "@playbackInfoNoteTranscodeUnknown": {
+        "description": "Playback information note under the play method for a transcode when it isn't known what is converted"
+    },
+    "playbackInfoNoteOffline": "다운로드한 사본을 재생하고 있습니다.",
+    "@playbackInfoNoteOffline": {
+        "description": "Playback information note under the play method when a download plays"
+    },
+    "playbackInfoWhyForced": "설정에서 트랜스코딩이 강제되어 있습니다",
+    "@playbackInfoWhyForced": {
+        "description": "Playback information reason: a setting turned off direct play, so the server has to transcode"
+    },
+    "playbackInfoWhyBitrate": "비트레이트가 스트리밍 제한을 초과합니다",
+    "@playbackInfoWhyBitrate": {
+        "description": "Playback information reason: the file's bitrate is over the streaming limit, used when the two numbers can't be shown"
+    },
+    "playbackInfoWhyContainer": "이 기기에서 이 파일 형식을 재생할 수 없습니다",
+    "@playbackInfoWhyContainer": {
+        "description": "Playback information reason: the container format isn't supported, used when the file type isn't known"
+    },
+    "playbackInfoWhyVideo": "이 기기에서 이 비디오 형식을 재생할 수 없습니다",
+    "@playbackInfoWhyVideo": {
+        "description": "Playback information reason: the video format isn't supported, used when the server gives no detail or the detail isn't known"
+    },
+    "playbackInfoWhyHdr": "이 기기에서 이 HDR 형식을 표시할 수 없습니다",
+    "@playbackInfoWhyHdr": {
+        "description": "Playback information reason: the HDR format isn't supported, used when the HDR type isn't known"
+    },
+    "playbackInfoWhyAudio": "이 기기에서 이 오디오 형식을 재생할 수 없습니다",
+    "@playbackInfoWhyAudio": {
+        "description": "Playback information reason: the audio format isn't supported, used when the server gives no detail or the detail isn't known"
+    },
+    "playbackInfoWhySubtitles": "자막을 영상에 입히고 있습니다",
+    "@playbackInfoWhySubtitles": {
+        "description": "Playback information reason: the player can't show the subtitles, so the server draws them into the video, used when the subtitle format isn't known"
+    },
+    "playbackInfoWhyOther": "파일을 직접 재생할 수 없습니다",
+    "@playbackInfoWhyOther": {
+        "description": "Playback information reason: any other server reason"
+    },
+    "playbackInfoWhyBitrateLimit": "{bitrate}이(가) 스트리밍 제한({limit})을 초과합니다",
+    "@playbackInfoWhyBitrateLimit": {
+        "description": "Playback information reason: the file's bitrate, like 68.4 Mbps, is over the streaming limit, like 20 Mbps",
+        "placeholders": {
+            "bitrate": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyContainerName": "이 기기에서 {container} 파일을 열 수 없습니다",
+    "@playbackInfoWhyContainerName": {
+        "description": "Playback information reason: the container format, like MKV, isn't supported",
+        "placeholders": {
+            "container": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoCodec": "이 기기에서 {codec} 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoCodec": {
+        "description": "Playback information reason: the video codec, like HEVC or AV1, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfile": "이 기기에서 {codec} {profile} 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoProfile": {
+        "description": "Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            },
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoLevel": "이 기기에서 {codec} 레벨 {level} 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoLevel": {
+        "description": "Playback information reason: the video codec's level, like HEVC level 5.1, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            },
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoBitDepth": "이 기기에서 {bits}비트 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoBitDepth": {
+        "description": "Playback information reason: the video bit depth, like 10-bit, isn't supported",
+        "placeholders": {
+            "bits": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoWhyVideoResolution": "이 기기에서 {resolution} 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoResolution": {
+        "description": "Playback information reason: the video resolution, like 4K or 1080p, isn't supported",
+        "placeholders": {
+            "resolution": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoFrameRate": "이 기기에서 {fps}fps 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyVideoFrameRate": {
+        "description": "Playback information reason: the video frame rate in frames per second, like 59.94, isn't supported",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyInterlaced": "이 기기에서 인터레이스 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyInterlaced": {
+        "description": "Playback information reason: interlaced video isn't supported"
+    },
+    "playbackInfoWhyAnamorphic": "이 기기에서 아나모픽 비디오를 재생할 수 없습니다",
+    "@playbackInfoWhyAnamorphic": {
+        "description": "Playback information reason: anamorphic video isn't supported"
+    },
+    "playbackInfoWhyHdrName": "이 기기에서 {range}을(를) 표시할 수 없습니다",
+    "@playbackInfoWhyHdrName": {
+        "description": "Playback information reason: the HDR format, like Dolby Vision Profile 7 or HDR10+, isn't supported",
+        "placeholders": {
+            "range": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioCodec": "이 기기에서 {format} 오디오를 재생할 수 없습니다",
+    "@playbackInfoWhyAudioCodec": {
+        "description": "Playback information reason: the audio codec, like Dolby TrueHD or DTS, isn't supported",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioProfile": "이 기기에서 {fullFormat}을(를) 재생할 수 없습니다",
+    "@playbackInfoWhyAudioProfile": {
+        "description": "Playback information reason: the full audio format, like Dolby TrueHD with Atmos or DTS-HD Master Audio, isn't supported",
+        "placeholders": {
+            "fullFormat": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioChannels": "이 기기에서 {channels} 오디오를 재생할 수 없습니다",
+    "@playbackInfoWhyAudioChannels": {
+        "description": "Playback information reason: the audio channel layout, like 7.1 or 3-channel, isn't supported",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioSampleRate": "이 기기에서 {rate}kHz 오디오를 재생할 수 없습니다",
+    "@playbackInfoWhyAudioSampleRate": {
+        "description": "Playback information reason: the audio sample rate in kilohertz, like 96 or 44.1, isn't supported",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioBitDepth": "이 기기에서 {bits}비트 오디오를 재생할 수 없습니다",
+    "@playbackInfoWhyAudioBitDepth": {
+        "description": "Playback information reason: the audio bit depth, like 24-bit, isn't supported",
+        "placeholders": {
+            "bits": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoWhyAudioExternal": "오디오 트랙이 별도 파일에 있습니다",
+    "@playbackInfoWhyAudioExternal": {
+        "description": "Playback information reason: the picked audio track is an external file"
+    },
+    "playbackInfoWhySecondaryAudio": "이 기기는 첫 번째 오디오 트랙만 재생할 수 있습니다",
+    "@playbackInfoWhySecondaryAudio": {
+        "description": "Playback information reason: the device can't switch to an audio track other than the first"
+    },
+    "playbackInfoWhySubtitleFormat": "{format} 자막을 영상에 입히고 있습니다",
+    "@playbackInfoWhySubtitleFormat": {
+        "description": "Playback information reason: the player can't show this subtitle format, like PGS or ASS, so the server draws the subtitles into the video",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDroppedFrames": "드롭된 프레임",
+    "@playbackInfoDroppedFrames": {
+        "description": "Playback information row label: how many video frames the player skipped"
+    },
+    "playFromServer": "서버에서 재생",
+    "@playFromServer": {
+        "description": "Long-press menu action on a downloaded video: play it by streaming from the server instead of the downloaded copy, for example to get a higher quality than the download"
+    },
+    "settingsApplePlayerUi": "비디오 플레이어",
+    "@settingsApplePlayerUi": {
+        "description": "Settings label on iPhone, iPad and Apple TV for choosing which player plays video"
+    },
+    "settingsApplePlayerUiDescription": "Apple 기본 스타일 플레이어에는 전송, 오디오 지연, PiP 버튼이 없으며 화면 회전 잠금은 라이브 TV에서만 사용할 수 있습니다",
+    "@settingsApplePlayerUiDescription": {
+        "description": "Settings description for the video player choice, listing what the native Apple style player lacks"
+    },
+    "settingsApplePlayerUiStandard": "표준",
+    "@settingsApplePlayerUiStandard": {
+        "description": "Option for the regular Moonfin video player on iPhone and iPad"
+    },
+    "settingsApplePlayerUiNative": "Apple 기본 스타일",
+    "@settingsApplePlayerUiNative": {
+        "description": "Option for the native video player that the Apple TV app uses, offered on iPhone and iPad"
+    },
+    "playerTransportPosition": "재생 버튼",
+    "@playerTransportPosition": {
+        "description": "Settings label for where the play, skip and seek buttons sit in the video player"
+    },
+    "playerTransportPositionDescription": "재생, 건너뛰기, 탐색 버튼을 영상 가운데 또는 하단 바에 표시합니다",
+    "@playerTransportPositionDescription": {
+        "description": "Settings description for where the video player's play buttons sit"
+    },
+    "playerTransportOnScreen": "화면 가운데",
+    "@playerTransportOnScreen": {
+        "description": "Option that puts the play, skip and seek buttons in the middle of the video"
+    },
+    "playerTransportDocked": "하단 바",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "incompleteRecording": "불완전",
+    "@incompleteRecording": {
+        "description": "Badge and detail label for a Live TV recording that was written for less than its scheduled length"
+    },
+    "incompleteRecordingMinutes": "{expected}분 중 {recorded}분",
+    "@incompleteRecordingMinutes": {
+        "description": "How many minutes of an incomplete Live TV recording were written, out of its scheduled length with padding",
+        "placeholders": {
+            "recorded": {
+                "type": "int",
+                "example": "23"
+            },
+            "expected": {
+                "type": "int",
+                "example": "37"
+            }
+        }
+    },
+    "completeShowingScheduled": "{dateTime}에 전체 방송 녹화 예약됨",
+    "@completeShowingScheduled": {
+        "description": "Detail line status: a later complete showing of the incomplete episode will be recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "completeCopyRecorded": "{dateTime}에 전체 녹화본 녹화됨",
+    "@completeCopyRecorded": {
+        "description": "Detail line status: a complete copy of the incomplete episode has since been recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "noCompleteShowingFound": "전체 방송을 찾을 수 없음",
+    "@noCompleteShowingFound": {
+        "description": "Detail line status: no later complete showing of the incomplete episode was found in the guide"
+    },
+    "keepAsComplete": "완전한 녹화로 유지",
+    "@keepAsComplete": {
+        "description": "Action that clears the Incomplete mark on a Live TV recording for everyone on the server"
+    },
+    "keptAsComplete": "완전한 녹화로 표시했습니다",
+    "@keptAsComplete": {
+        "description": "Snackbar confirmation after Keep as Complete"
+    },
+    "unableToKeepAsComplete": "완전한 녹화로 표시할 수 없습니다",
+    "@unableToKeepAsComplete": {
+        "description": "Snackbar shown when Keep as Complete fails"
+    },
+    "recordPromptTitle": "{name} 녹화",
+    "@recordPromptTitle": {
+        "description": "Title of the Record prompt for a program that is already airing",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptStarted": "{minutes, plural, =1{이 방송은 1분 전에 시작되어 앞부분이 녹화되지 않습니다.} other{이 방송은 {minutes}분 전에 시작되어 앞부분이 녹화되지 않습니다.}}",
+    "@recordPromptStarted": {
+        "description": "First line of the Record prompt, saying how long ago the program started",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlsoRecordLater": "전체 녹화본을 얻기 위해 이후 방송도 녹화할까요?",
+    "@recordPromptAlsoRecordLater": {
+        "description": "Record prompt question when a future showing is shown below it"
+    },
+    "recordPromptSearchLater": "전체 녹화본을 얻기 위해 이후 방송을 찾으면 자동으로 녹화할까요?",
+    "@recordPromptSearchLater": {
+        "description": "Record prompt question when no future showing is known yet and Moonfin will look for one"
+    },
+    "recordPromptNow": "지금 방송",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "recordPromptLater": "이후 방송",
+    "@recordPromptLater": {
+        "description": "Label of the Record prompt card for the future showing that would also be recorded"
+    },
+    "recordPromptAired": "{minutes, plural, =1{이미 1분 방송됨} other{이미 {minutes}분 방송됨}}",
+    "@recordPromptAired": {
+        "description": "Beside the progress bar on the Record prompt's Now card",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptUncertainMatch": "제목과 설명으로만 일치 여부를 확인했습니다. 같은 프로그램인지 확인하세요.",
+    "@recordPromptUncertainMatch": {
+        "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+    },
+    "recordPromptDescriptionsDiffer": "설명이 달라 다른 프로그램일 수 있습니다.",
+    "@recordPromptDescriptionsDiffer": {
+        "description": "Caution under the future showing when its description differs from the program airing now"
+    },
+    "recordPromptSameEpisode": "같은 에피소드(S{season}E{episode})",
+    "@recordPromptSameEpisode": {
+        "description": "Note under the future showing when its season and episode match the program airing now",
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlreadyScheduled": "이미 녹화 예약됨",
+    "@recordPromptAlreadyScheduled": {
+        "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+    },
+    "recordPromptTomorrow": "내일",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "recordNowOnly": "지금 방송만 녹화",
+    "@recordNowOnly": {
+        "description": "Record prompt choice: only record the program that is airing now"
+    },
+    "recordNowAnd": "지금 및 {when} 녹화",
+    "@recordNowAnd": {
+        "description": "Record prompt choice: record now and the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordNowAndLater": "지금 및 이후 방송 녹화",
+    "@recordNowAndLater": {
+        "description": "Record prompt choice when no future showing is known yet: record now and let Moonfin find a future showing"
+    },
+    "recordOnlyLater": "{when}만 녹화",
+    "@recordOnlyLater": {
+        "description": "Record prompt choice: skip the airing now and record only the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordLaterShowingOnly": "이후 방송만 녹화",
+    "@recordLaterShowingOnly": {
+        "description": "Record prompt choice when no future showing is known yet: skip the airing now and let Moonfin record a future showing"
+    },
+    "laterShowingOnlyRequested": "이후 방송이 녹화됩니다.",
+    "@laterShowingOnlyRequested": {
+        "description": "Snackbar after choosing to record only the future showing"
+    },
+    "unableToRequestLaterShowingOnly": "이후 방송을 요청하지 못해 아무것도 녹화되지 않습니다.",
+    "@unableToRequestLaterShowingOnly": {
+        "description": "Snackbar when only the future showing was chosen and asking for it failed"
+    },
+    "laterShowingRequested": "녹화를 시작했습니다. 이후 방송도 녹화됩니다.",
+    "@laterShowingRequested": {
+        "description": "Snackbar after recording now and asking for a future showing"
+    },
+    "unableToRequestLaterShowing": "녹화를 시작했지만 이후 방송을 요청하지 못했습니다.",
+    "@unableToRequestLaterShowing": {
+        "description": "Snackbar when the recording started but asking for a future showing failed"
+    },
+    "siloCodeSignIn": "코드로 로그인",
+    "@siloCodeSignIn": {
+        "description": "Silo login screen: the toggle for signing in by approving a code from another device (Silo's name for what Jellyfin calls Quick Connect)"
+    },
+    "siloCodeSignInInstruction": "휴대폰으로 QR 코드를 스캔하거나, 로그인된 기기에서 {address}에 접속해 다음 코드를 입력하세요:",
+    "@siloCodeSignInInstruction": {
+        "description": "Silo login screen, sign in with a code: how to approve the code shown below",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "silo.example.com/activate"
+            }
+        }
+    },
+    "siloCodeSignInInstructionNoLink": "로그인된 기기의 Silo에서 다음 코드를 입력하세요:",
+    "@siloCodeSignInInstructionNoLink": {
+        "description": "Silo login screen, sign in with a code, when the server gave no page address"
+    },
+    "siloCodeSignInOpened": "코드를 확인했습니다. 다른 기기에서 로그인을 승인하세요.",
+    "@siloCodeSignInOpened": {
+        "description": "Silo login screen, sign in with a code: someone has looked the code up and is about to approve it"
+    },
+    "siloCodeSignInDenied": "이 로그인 요청이 거부되었습니다.",
+    "@siloCodeSignInDenied": {
+        "description": "Silo login screen, sign in with a code: the person approving refused the request"
+    },
+    "siloCodeSignInNewCode": "새 코드 받기",
+    "@siloCodeSignInNewCode": {
+        "description": "Silo login screen, sign in with a code: button that shows a new code after the last one ended"
+    },
+    "siloCodeSignInOff": "이 서버에서는 코드로 로그인하기가 꺼져 있습니다.",
+    "@siloCodeSignInOff": {
+        "description": "Silo login screen: the server doesn't offer sign-in with a code"
+    },
+    "siloCodeSignInPasswordChangeRequired": "이 계정은 임시 비밀번호를 사용 중입니다. 비밀번호로 한 번 로그인해 새 비밀번호로 바꾸세요.",
+    "@siloCodeSignInPasswordChangeRequired": {
+        "description": "Silo login screen: a code was approved for an account that must first replace its temporary password, which needs a password sign-in"
+    },
+    "siloApproveSignIn": "로그인 승인",
+    "@siloApproveSignIn": {
+        "description": "Title of the dialog where a signed-in Silo user types the code another device shows, to sign that device in (Silo's counterpart of authorizing a Quick Connect code)"
+    },
+    "siloApproveSignInHint": "다른 기기에 표시된 코드",
+    "@siloApproveSignInHint": {
+        "description": "Hint in the Silo approve-a-sign-in dialog's code field"
+    },
+    "siloApproveSignInApprove": "승인",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "siloApproveSignInDone": "승인했습니다. 다른 기기에서 로그인하는 중입니다.",
+    "@siloApproveSignInDone": {
+        "description": "Shown after a Silo sign-in code was approved"
+    },
+    "siloApproveSignInNoRequest": "이 코드로 대기 중인 로그인이 없습니다. 코드를 확인하거나 다른 기기에서 새 코드를 받으세요.",
+    "@siloApproveSignInNoRequest": {
+        "description": "Shown when Silo has no pending sign-in for the typed code (unknown, expired, already used or declined)"
+    },
+    "siloNativeOfferTitle": "Silo에 직접 연결할까요?",
+    "@siloNativeOfferTitle": {
+        "description": "Title of the dialog shown when the address being added is Silo's Jellyfin-compatible service and Silo's own API answers on another port of the same host"
+    },
+    "siloNativeOfferMessage": "이 주소는 {serverName}의 Jellyfin 호환 서비스입니다. Moonfin은 {address}에서 Silo에 직접 연결해 Silo 고유 기능을 사용할 수 있습니다.",
+    "@siloNativeOfferMessage": {
+        "description": "Body of the dialog offering to add a Silo server natively instead of through its Jellyfin-compatible service",
+        "placeholders": {
+            "serverName": {
+                "type": "String"
+            },
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloNativeOfferUse": "Silo 사용",
+    "@siloNativeOfferUse": {
+        "description": "Button: add the Silo server through its native API"
+    },
+    "siloNativeOfferKeep": "Jellyfin 유지",
+    "@siloNativeOfferKeep": {
+        "description": "Button: add the address as a Jellyfin server, as entered"
+    },
+    "siloAppUpdateRequired": "이 Silo 서버를 사용하려면 최신 버전의 Moonfin이 필요합니다. Moonfin을 업데이트하세요.",
+    "@siloAppUpdateRequired": {
+        "description": "Shown when a Silo server no longer speaks the API this version of Moonfin uses (its API is newer)"
+    },
+    "siloServerUpdateRequired": "이 Silo 서버는 이 버전의 Moonfin에서 사용하기에 너무 오래되었습니다. Silo를 업데이트하세요.",
+    "@siloServerUpdateRequired": {
+        "description": "Shown when a Silo server's API is older than the one this version of Moonfin uses"
+    },
+    "siloTooManyAttempts": "시도 횟수가 너무 많습니다. 나중에 다시 시도하세요.",
+    "@siloTooManyAttempts": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429) without saying how long to wait"
+    },
+    "siloTooManyAttemptsWait": "시도 횟수가 너무 많습니다. {wait} 후에 다시 시도하세요.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloServerBusy": "서버가 사용 중이거나 아직 시작 중입니다. 나중에 다시 시도하세요.",
+    "@siloServerBusy": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503) without saying how long to wait"
+    },
+    "siloServerBusyWait": "서버가 사용 중이거나 아직 시작 중입니다. {wait} 후에 다시 시도하세요.",
+    "@siloServerBusyWait": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloWaitSeconds": "{count, plural, =1{1초} other{{count}초}}",
+    "@siloWaitSeconds": {
+        "description": "How long to wait before trying again, in seconds; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloWaitMinutes": "{count, plural, =1{1분} other{{count}분}}",
+    "@siloWaitMinutes": {
+        "description": "How long to wait before trying again, in minutes; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPlaybackUnavailable": "이 Silo 서버에서는 재생할 수 없습니다.",
+    "@siloPlaybackUnavailable": {
+        "description": "Player message: the Silo server has playback switched off for this account"
+    },
+    "siloPlaybackUpdateRequired": "이 Silo 서버에서 재생하려면 최신 버전의 Moonfin이 필요합니다.",
+    "@siloPlaybackUpdateRequired": {
+        "description": "Player message: the Silo server no longer speaks the playback protocol this version of Moonfin uses"
+    },
+    "siloPlaybackEndedOnServer": "Silo 서버에서 재생이 종료되었습니다.",
+    "@siloPlaybackEndedOnServer": {
+        "description": "Player message: an administrator ended this playback session on the Silo server"
+    },
+    "siloPinTitle": "{name}의 PIN",
+    "@siloPinTitle": {
+        "description": "Title of the dialog asking for a Silo household profile's PIN; name is the profile's name",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinHint": "PIN",
+    "@siloPinHint": {
+        "description": "Field label in the Silo profile PIN dialog"
+    },
+    "siloPinUnlock": "잠금 해제",
+    "@siloPinUnlock": {
+        "description": "Button in the Silo profile PIN dialog that checks the PIN"
+    },
+    "siloPinWrong": "PIN이 올바르지 않습니다.",
+    "@siloPinWrong": {
+        "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
+    },
+    "siloPinLocked": "잘못된 PIN을 너무 많이 입력했습니다. 나중에 다시 시도하세요.",
+    "@siloPinLocked": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs, without saying for how long"
+    },
+    "siloPinLockedWait": "잘못된 PIN을 너무 많이 입력했습니다. {wait} 후에 다시 시도하세요.",
+    "@siloPinLockedWait": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs; wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinFailed": "PIN을 확인하지 못했습니다. 다시 시도하세요.",
+    "@siloPinFailed": {
+        "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
+    },
+    "siloSignOutAccount": "Silo 계정에서 로그아웃",
+    "@siloSignOutAccount": {
+        "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
+    },
+    "trailerCount": "{count, plural, =1{예고편 1개} other{예고편 {count}개}}",
+    "@trailerCount": {
+        "description": "How many trailers the trailer picker lists, shown in its header",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "trailerNumber": "예고편 {number}",
+    "@trailerNumber": {
+        "description": "Fallback name in the trailer picker for a trailer the server gave no name, numbered by its place in the list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "subtitled": "자막 포함",
+    "@subtitled": {
+        "description": "Chip in the trailer picker on a trailer that has subtitles burned into the video"
+    },
+    "rommAccount": "RomM 계정",
+    "@rommAccount": {
+        "description": "Title of the screen, and the button on a game library, for linking the user's own RomM account"
+    },
+    "rommAccountIntro": "RomM 계정을 연결하면 내 RomM 라이브러리에서 게임을 플레이하고 세이브를 RomM에 보관할 수 있습니다.",
+    "@rommAccountIntro": {
+        "description": "Explains what linking a RomM account does, shown above the Link button"
+    },
+    "rommLinkAccount": "RomM 계정 연결",
+    "@rommLinkAccount": {
+        "description": "Button that starts linking a RomM account"
+    },
+    "rommLinkInstructions": "RomM에 로그인한 후 이 코드를 입력해 계정을 연결하세요.",
+    "@rommLinkInstructions": {
+        "description": "Instructions above the code while a RomM link waits for approval"
+    },
+    "rommLinkScanOrVisit": "휴대폰으로 QR 코드를 스캔하거나 {url}에 접속하세요",
+    "@rommLinkScanOrVisit": {
+        "description": "Shown on TV beside the QR code while a RomM link waits for approval",
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "rommOpen": "RomM 열기",
+    "@rommOpen": {
+        "description": "Button that opens the RomM approval page in the browser with the code filled in"
+    },
+    "rommWaitingForApproval": "RomM에서 코드 승인을 기다리는 중...",
+    "@rommWaitingForApproval": {
+        "description": "Status shown while the app waits for the RomM code to be approved"
+    },
+    "rommLinkedAs": "{username}(으)로 연결됨",
+    "@rommLinkedAs": {
+        "description": "Shown when the user's RomM account is linked",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "rommLinked": "RomM 계정이 연결되어 있습니다.",
+    "@rommLinked": {
+        "description": "Shown when the user's RomM account is linked and the server sent no user name"
+    },
+    "rommUnlinkNote": "연결을 해제하면 Moonfin이 더 이상 RomM 키를 사용하지 않습니다. 키는 RomM의 API 토큰에서 직접 삭제할 때까지 RomM에 남아 있습니다.",
+    "@rommUnlinkNote": {
+        "description": "Explains what Unlink does on the RomM account screen"
+    },
+    "rommUnlink": "연결 해제",
+    "@rommUnlink": {
+        "description": "Button that unlinks the user's RomM account"
+    },
+    "rommLinkExpired": "승인되기 전에 코드가 만료되었습니다. 다시 연결해 새 코드를 받으세요.",
+    "@rommLinkExpired": {
+        "description": "Error when a RomM link code ran out of time"
+    },
+    "rommLinkDenied": "RomM에서 연결 요청이 거부되었습니다.",
+    "@rommLinkDenied": {
+        "description": "Error when the user declined the RomM link request"
+    },
+    "rommUnreachable": "Moonfin이 RomM에 연결할 수 없습니다. 잠시 후 다시 시도하세요.",
+    "@rommUnreachable": {
+        "description": "Error when the server couldn't reach RomM while linking"
+    },
+    "rommNotAvailable": "이 서버에는 RomM 라이브러리가 없습니다.",
+    "@rommNotAvailable": {
+        "description": "Shown on the RomM account screen when the server has no RomM library"
+    },
+    "rommAccountLoadFailed": "RomM 계정을 불러오지 못했습니다.",
+    "@rommAccountLoadFailed": {
+        "description": "Error when the RomM account status couldn't be loaded from the server"
+    },
+    "reviews": "리뷰",
+    "@reviews": {
+        "description": "Title of the row, tab and card on the details screen that lists TMDB user reviews"
+    },
+    "detailSectionReviews": "리뷰",
+    "@detailSectionReviews": {
+        "description": "Details screen section: user reviews from TMDB"
+    },
+    "spotlightReviewsCount": "{count, plural, =1{리뷰 1개} other{리뷰 {count}개}}",
+    "@spotlightReviewsCount": {
+        "description": "How many reviews a title has, under the Reviews card on the details screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "readOnTmdb": "TMDB에서 읽기",
+    "@readOnTmdb": {
+        "description": "Button in an opened review that opens the review on the TMDB website"
+    },
+    "addServerButtonSubtitle": "주소 또는 Plex·Emby Connect 계정으로 추가",
+    "@addServerButtonSubtitle": {
+        "description": "Second line of the Add Server button on the server screen"
+    },
+    "addServerChooseHow": "연결 방법을 선택하세요.",
+    "@addServerChooseHow": {
+        "description": "Subtitle of the first step of the Add Server dialog"
+    },
+    "addServerAddressChoice": "네트워크 또는 온라인의 Jellyfin, Emby, Silo",
+    "@addServerAddressChoice": {
+        "description": "Add Server dialog: what the Server Address option is for"
+    },
+    "addServerPlexChoice": "Plex 계정으로 서버 찾기",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "브라우저에서 여는 주소를 포트까지 포함해 입력하세요.",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "addServerDetectNote": "Jellyfin, Emby, Silo에서 사용할 수 있습니다. Plex 주소를 입력하면 Plex 로그인이 열립니다.",
+    "@addServerDetectNote": {
+        "description": "Add Server dialog: note under the address field"
+    },
+    "addServerChecking": "{address} 확인 중",
+    "@addServerChecking": {
+        "description": "Add Server dialog: shown under the field while the typed address is being tried",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "addServerUnreachableDetail": "주소와 포트를 확인하고 서버가 실행 중인지 확인하세요.",
+    "@addServerUnreachableDetail": {
+        "description": "Add Server dialog: detail under Unable to connect to server"
+    },
+    "addServerFound": "서버를 찾았습니다",
+    "@addServerFound": {
+        "description": "Add Server dialog: title once the address answered"
+    },
+    "addServerFoundNote": "계속해서 로그인할 사용자를 선택하세요.",
+    "@addServerFoundNote": {
+        "description": "Add Server dialog: under the server that was found"
+    },
+    "addServerUseDifferentAddress": "다른 주소 사용",
+    "@addServerUseDifferentAddress": {
+        "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
+    },
+    "musicArtistCount": "{count, plural, =1{아티스트 1명} other{아티스트 {count}명}}",
+    "@musicArtistCount": {
+        "description": "Count next to the title of a music library's Artists screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicSongCount": "{count, plural, =1{노래 1곡} other{노래 {count}곡}}",
+    "@musicSongCount": {
+        "description": "Count of songs, next to the Songs screen title and under a playlist",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicPlaylistCount": "{count, plural, =1{재생목록 1개} other{재생목록 {count}개}}",
+    "@musicPlaylistCount": {
+        "description": "Count next to the title of a music library's Playlists screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicPlayCount": "{count, plural, =1{1회 재생} other{{count}회 재생}}",
+    "@musicPlayCount": {
+        "description": "How many times a song was played, at the end of a Most Played row",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "allArtists": "모든 아티스트",
+    "@allArtists": {
+        "description": "Artists screen switch: every artist, not only those credited on albums"
+    },
+    "libraryZToA": "가나다 역순",
+    "@libraryZToA": {
+        "description": "Sort order from Z to A"
+    },
+    "musicSortYear": "연도",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "musicFilter": "필터",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "musicGenreFilterTitle": "장르별 필터",
+    "@musicGenreFilterTitle": {
+        "description": "Title of the genre list the Albums screen's Filter button opens"
+    },
+    "openAlbum": "앨범 열기",
+    "@openAlbum": {
+        "description": "Button that opens an album's details screen"
+    },
+    "openPlaylist": "재생목록 열기",
+    "@openPlaylist": {
+        "description": "Button that opens a playlist's details screen, where its order can be changed"
+    },
+    "allSongsAToZ": "모든 노래 가나다순",
+    "@allSongsAToZ": {
+        "description": "Songs screen button that opens the full list of songs by name"
+    },
+    "musicMix": "믹스",
+    "@musicMix": {
+        "description": "Small label over a music mix card, as in a playlist the app put together"
+    },
+    "musicMixEverything": "전체",
+    "@musicMixEverything": {
+        "description": "Songs screen mix card that shuffles the whole library"
+    },
+    "musicMixEverythingSubtitle": "무작위 300곡",
+    "@musicMixEverythingSubtitle": {
+        "description": "Line under the Everything mix card"
+    },
+    "mostPlayed": "가장 많이 재생한 곡",
+    "@mostPlayed": {
+        "description": "Songs screen mix card and list of the songs played most"
+    },
+    "musicMixMostPlayedSubtitle": "내 상위 100곡",
+    "@musicMixMostPlayedSubtitle": {
+        "description": "Line under the Most Played mix card"
+    },
+    "musicMixFreshArrivals": "새로 들어온 곡",
+    "@musicMixFreshArrivals": {
+        "description": "Songs screen mix card of the newest songs in the library"
+    },
+    "musicMixFreshArrivalsSubtitle": "최신 100곡",
+    "@musicMixFreshArrivalsSubtitle": {
+        "description": "Line under the Fresh Arrivals mix card"
+    },
+    "musicMixRediscover": "재발견",
+    "@musicMixRediscover": {
+        "description": "Songs screen mix card of favorite songs that haven't been played in a while"
+    },
+    "musicMixRediscoverSubtitle": "최근에 듣지 않은 즐겨찾기",
+    "@musicMixRediscoverSubtitle": {
+        "description": "Line under the Rediscover mix card"
+    },
+    "musicSortMostAlbums": "앨범 많은 순",
+    "@musicSortMostAlbums": {
+        "description": "Genres screen order: the genres with the most albums first"
+    },
+    "bookSeriesPosition": "{total}권 중 {index}권",
+    "@bookSeriesPosition": {
+        "description": "Series screen: where the reader is in a series, the next unread book's number and how many books it has",
+        "placeholders": {
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFavoriteCount": "{count, plural, =1{즐겨찾기 1개} other{즐겨찾기 {count}개}}",
+    "@bookFavoriteCount": {
+        "description": "Book library Favorites screen header count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookSortZToA": "가나다 역순",
+    "@bookSortZToA": {
+        "description": "Authors screen order, from Z back to A"
+    },
+    "bookSortMostTitles": "작품 많은 순",
+    "@bookSortMostTitles": {
+        "description": "Book genres screen order: the genres with the most titles first"
+    },
+    "bookSurpriseMe": "아무거나 추천",
+    "@bookSurpriseMe": {
+        "description": "Button on a book genre that opens a random unread title from it"
+    },
+    "bookShuffleAudiobooks": "오디오북 셔플",
+    "@bookShuffleAudiobooks": {
+        "description": "Button on an author that plays one of their audiobooks at random"
+    },
+    "bookStartReading": "읽기 시작",
+    "@bookStartReading": {
+        "description": "Button on an author that opens their first unread book"
+    },
+    "bookOtherBooks": "기타 도서",
+    "@bookOtherBooks": {
+        "description": "Heading over an author's books that aren't part of a series"
+    },
+    "bookDiscoverSearchBooks": "Open Library 검색",
+    "@bookDiscoverSearchBooks": {
+        "description": "Placeholder in the Discover search field for books"
+    },
+    "bookDiscoverSearchAudiobooks": "LibriVox 검색",
+    "@bookDiscoverSearchAudiobooks": {
+        "description": "Placeholder in the Discover search field for audiobooks"
+    },
+    "bookDiscoverFeatured": "추천",
+    "@bookDiscoverFeatured": {
+        "description": "Label over the highlighted title at the top of Discover"
+    },
+    "bookReaderControlsAutoHide": "컨트롤 자동 숨김",
+    "@bookReaderControlsAutoHide": {
+        "description": "Comic reader toggle while its bars fade out on their own"
+    },
+    "bookReaderControlsStayVisible": "컨트롤 항상 표시",
+    "@bookReaderControlsStayVisible": {
+        "description": "Comic reader toggle while its bars stay on screen"
+    },
+    "settingsLivePreview": "실시간 미리보기",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "settingsPreviewShowsOn": "{screen} 미리보기에 표시됨",
+    "@settingsPreviewShowsOn": {
+        "description": "Under the Settings live preview, says the focused setting changes the named preview screen",
+        "placeholders": {
+            "screen": {
+                "type": "String",
+                "example": "Home"
+            }
+        }
+    },
+    "settingsPreviewNotShown": "미리보기에 표시되지 않음",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsPreviewSaved": "저장됨",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
     }
 }

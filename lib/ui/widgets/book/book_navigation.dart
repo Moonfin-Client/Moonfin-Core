@@ -13,6 +13,40 @@ import '../adaptive/adaptive_dialog.dart';
 import '../navigation_layout.dart';
 import '../overlay_sheet.dart';
 
+/// The places a book library's navigation leads, each with its own screen.
+enum BookCategoryKind {
+  titles,
+  series,
+  authors,
+  genres,
+  collections,
+  favorites,
+  discover;
+
+  static BookCategoryKind? parse(String? name) =>
+      values.where((kind) => kind.name == name).firstOrNull;
+
+  String label(AppLocalizations l10n) => switch (this) {
+    titles => l10n.titles,
+    series => l10n.series,
+    authors => l10n.authors,
+    genres => l10n.genres,
+    collections => l10n.collections,
+    favorites => l10n.favorites,
+    discover => l10n.discover,
+  };
+
+  IconData get icon => switch (this) {
+    titles => Icons.library_books_outlined,
+    series => Icons.layers_outlined,
+    authors => Icons.person_outline_rounded,
+    genres => Icons.sell_outlined,
+    collections => Icons.collections_bookmark_outlined,
+    favorites => Icons.favorite_border_rounded,
+    discover => Icons.explore_outlined,
+  };
+}
+
 /// Opens a title from a book library on its details screen, or the browse
 /// page that fits a series, genre, collection or folder.
 void openBookLibraryItem(
@@ -22,8 +56,10 @@ void openBookLibraryItem(
 }) {
   final type = item.type;
   final isFolder = item.rawData['IsFolder'] as bool? ?? false;
-  // A series named only by metadata has no folder to open.
-  if (type == 'BookSeries' && !isFolder) {
+  // A series named only by metadata has no folder to open, and an author known
+  // only by name has no item.
+  if ((type == 'BookSeries' && !isFolder) ||
+      (type == 'Person' && item.id == item.name)) {
     context.push(Destinations.searchInLibrary(libraryId, query: item.name));
     return;
   }

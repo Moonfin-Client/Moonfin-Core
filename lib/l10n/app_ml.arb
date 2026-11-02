@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discover-ൽ കാണിക്കേണ്ട വിഷയ ഫീഡുകൾ തിരഞ്ഞെടുക്കുക.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "പ്രയോഗിക്കുക",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ഓഡിയോബുക്ക് വിഭാഗങ്ങൾ",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Audiobook Discover-ൽ കാണിക്കേണ്ട വിഭാഗങ്ങൾ തിരഞ്ഞെടുക്കുക.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ഓഡിയോബുക്കുകൾ കണ്ടെത്തുക",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox-ൽ നിന്നുള്ള ജനപ്രിയ പൊതു ഡൊമെയ്ൻ ശീർഷകങ്ങൾ.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} ശീർഷകങ്ങൾ",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "ഇടത്തേക്ക് സ്ക്രോൾ ചെയ്യുക",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "കണ്ടെത്തുക",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library എന്നതിൽ നിന്നുള്ള വിഷയം അനുസരിച്ച് ട്രെൻഡിംഗ് ശീർഷകങ്ങൾ.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "ബുക്ക്‌മാർക്ക് ചെയ്‌ത ഇനങ്ങളൊന്നുമില്ല",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ഫോൾഡർ കാഴ്ച പ്രവർത്തനക്ഷമമാക്കുക",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ഫോൾഡർ ബ്രൗസിംഗ് ഓപ്ഷൻ കാണിക്കുക",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "ലൈബ്രറി ദൃശ്യപരത",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "ഫീച്ചർ ചെയ്ത ഉള്ളടക്കം, രൂപം",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "പോസ്റ്റർ വലുപ്പം, ചിത്രത്തിൻ്റെ തരം, ഫോൾഡർ കാഴ്ച",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, റേറ്റിംഗ് ഉറവിടങ്ങൾ",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr ആർക്കൈവ് എക്‌സ്‌ട്രാക്‌റ്റുചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.",
     "cb7ExtractionUnavailable": "ഈ പ്ലാറ്റ്‌ഫോമിൽ CB7 എക്‌സ്‌ട്രാക്ഷൻ ലഭ്യമല്ല.",
     "cb7ExtractionPluginUnavailable": "CB7 എക്‌സ്‌ട്രാക്ഷൻ പ്ലഗിൻ ഈ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.",
-    "closeGenrePanel": "തരം പാനൽ അടയ്ക്കുക",
     "loadingShuffle": "ഷഫിൾ ലോഡുചെയ്യുന്നു...",
     "libraryShuffleLabel": "ലൈബ്രറി ഷഫിൾ",
     "randomShuffleLabel": "റാൻഡം ഷഫിൾ",

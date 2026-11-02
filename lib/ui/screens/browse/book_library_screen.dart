@@ -3,7 +3,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
-import 'book_browse_screen.dart';
+import '../../widgets/book/book_navigation.dart';
+import 'book_category_screen.dart';
 import 'classic_book_browse_screen.dart';
 import 'reading_room_book_screen.dart';
 
@@ -34,9 +35,11 @@ class BookLibraryScreen extends StatelessWidget {
               libraryId: libraryId,
               collectionType: collectionType,
             ),
-            BookLibraryStyle.bookstore => BookBrowseScreen(
+            BookLibraryStyle.bookstore => BookCategoryScreen(
               libraryId: libraryId,
+              kind: BookCategoryKind.titles,
               collectionType: collectionType,
+              root: true,
             ),
           },
     );

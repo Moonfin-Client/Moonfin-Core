@@ -1,0 +1,254 @@
+{
+ "items": [
+  {
+   "file_id": "4602",
+   "file_name": "The Salt Path (2025) Bluray-1080p [x264].mkv",
+   "file_path": "The Salt Path (2025) Bluray-1080p [x264].mkv",
+   "resolution": "1080p",
+   "codec_video": "h264",
+   "codec_audio": "eac3",
+   "hdr": false,
+   "container": "mkv",
+   "file_size": 14180829022,
+   "duration": 6922,
+   "bitrate": 16387,
+   "added_at": "2026-10-08T00:57:32.633Z",
+   "effective_audio_track_index": 0,
+   "effective_audio_language": "en",
+   "video_tracks": [
+    {
+     "title": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+     "codec": "h264",
+     "dv_config_present": false,
+     "dv_bl_compat_id_present": false,
+     "dv_enhancement_layer": "none",
+     "profile": "High",
+     "level": 41,
+     "width": 1920,
+     "height": 804,
+     "aspect_ratio": "160:67",
+     "interlaced": false,
+     "frame_rate": "24.000",
+     "video_range_type": "SDR",
+     "color_range": "tv",
+     "color_primaries": "bt709",
+     "color_space": "bt709",
+     "color_transfer": "bt709",
+     "bit_depth": 8,
+     "pixel_format": "yuv420p"
+    }
+   ],
+   "audio_tracks": [
+    {
+     "title": "EAC3 5.1",
+     "embedded_title": "EAC3 5.1",
+     "language": "en",
+     "codec": "eac3",
+     "layout": "5.1(side)",
+     "channels": 6,
+     "bitrate": 1024,
+     "sample_rate": 48000,
+     "default": true
+    }
+   ],
+   "subtitle_tracks": [
+    {
+     "index": 2,
+     "language": "en",
+     "codec": "hdmv_pgs_subtitle",
+     "title": "SDH",
+     "embedded_title": "SDH",
+     "forced": false,
+     "default": false,
+     "hearing_impaired": false,
+     "external": false
+    },
+    {
+     "index": 3,
+     "language": "ro",
+     "codec": "subrip",
+     "title": "SUBRIP",
+     "forced": false,
+     "default": false,
+     "hearing_impaired": false,
+     "external": false
+    }
+   ],
+   "chapters": [
+    {
+     "index": 0,
+     "title": "Chapter 01",
+     "start_seconds": 0,
+     "end_seconds": 617.333,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/0-6ac0f3a973fe8f974045a3f1a59ec1dfc1d5e4ede2f700331cc8d009c5f2871c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "AfgBA4ACvFexWSjnyMfv+5I="
+    },
+    {
+     "index": 1,
+     "title": "Chapter 02",
+     "start_seconds": 617.333,
+     "end_seconds": 1213.375,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/1-cc5f288b13be83510b6c259e3ec69e353889f958e58e425bfa22c1d49cccd257/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "UegJC4IGKVhtlrZ3FlAyn6U="
+    },
+    {
+     "index": 2,
+     "title": "Chapter 03",
+     "start_seconds": 1213.375,
+     "end_seconds": 1808.833,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/2-af7313d78b0c11e3472e07c5c88a36e55b13872bbb571af537f10915afd4d455/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "DQgKC4IJFkhvlVeIT1rixQY="
+    },
+    {
+     "index": 3,
+     "title": "Chapter 04",
+     "start_seconds": 1808.833,
+     "end_seconds": 2466.583,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/3-fb4a8b3ad7e309feef198766c1ac9748edfe73c205cfc91c00137a5a5b294a3a/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "lPgJI4Q4ODd/hrd4Z3BlCEc="
+    },
+    {
+     "index": 4,
+     "title": "Chapter 05",
+     "start_seconds": 2466.583,
+     "end_seconds": 3075.625,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/4-124b59ad7f06fb5fad4b316fb95844647ac3439847913a04185a80c7b4cbe6a3/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "XfgJE4KAVpqtZ6doEOoJpHs="
+    },
+    {
+     "index": 5,
+     "title": "Chapter 06",
+     "start_seconds": 3075.625,
+     "end_seconds": 3751.625,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/5-4767bae430ff6bb33540c1f4e761aded91322e2208b7ababfe461701b709a5f2/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "1ucJG4KHhXmPh4iId4B3B3g="
+    },
+    {
+     "index": 6,
+     "title": "Chapter 07",
+     "start_seconds": 3751.625,
+     "end_seconds": 4456.958,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/6-5703c01dc14f80c7ad52ddd3195411e79b38b369726b94d311801d30031513c6/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "UugFG4AF05VNU3x0iXAkbT8="
+    },
+    {
+     "index": 7,
+     "title": "Chapter 08",
+     "start_seconds": 4456.958,
+     "end_seconds": 5042.5,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/7-96ad3e271b09e649ac592cb59cb6e62076c440f2d9249422f57255cb5c733301/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "SugFC4BNv1iFpseoinBd8wg="
+    },
+    {
+     "index": 8,
+     "title": "Chapter 09",
+     "start_seconds": 5042.5,
+     "end_seconds": 5617.292,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/8-e0b9c7f2e24a47fee904cd8bca49989f458d8498ebfa06c67df3a42305ea5cd7/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "wvcBA4AGi3aRiqqrQ5pgtgY="
+    },
+    {
+     "index": 9,
+     "title": "Chapter 10",
+     "start_seconds": 5617.292,
+     "end_seconds": 6129.167,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/9-63fbb4c882bf9584844ef4aa360ca819e357605a01a5cd6ca4322a3d454f226f/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "lOcFC4Jphnd/iJiHdoBvV/c="
+    },
+    {
+     "index": 10,
+     "title": "Chapter 11",
+     "start_seconds": 6129.167,
+     "end_seconds": 6712.292,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/10-5a314abd4ce85b6b9a36349d25ddde9c4ff3e18058dfcff94a283b12cd548689/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "SfgBC4I+iWpvlHh3d693+Xs="
+    },
+    {
+     "index": 11,
+     "title": "Chapter 12",
+     "start_seconds": 6712.292,
+     "end_seconds": 6922,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4602/11-7e151c4dbed673859c53fcbc62b7011a5a7cfd7a1e3fc490535bfe8c2b47474b/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "wQcCA4AH2UWCbZRn+H9xAOg="
+    }
+   ]
+  },
+  {
+   "file_id": "4603",
+   "file_name": "The Salt Path 4kversion.mkv",
+   "file_path": "The Salt Path 4kversion.mkv",
+   "resolution": "2160p",
+   "codec_video": "hevc",
+   "codec_audio": "ac3",
+   "hdr": true,
+   "container": "mkv",
+   "file_size": 12700618556,
+   "duration": 6930,
+   "bitrate": 14661,
+   "added_at": "2026-10-08T03:53:00.531Z",
+   "effective_audio_track_index": 0,
+   "effective_audio_language": "en",
+   "video_tracks": [
+    {
+     "title": "H.265 / HEVC (High Efficiency Video Coding)",
+     "codec": "hevc",
+     "dv_config_present": false,
+     "dv_bl_compat_id_present": false,
+     "dv_enhancement_layer": "none",
+     "profile": "Main 10",
+     "level": 150,
+     "width": 3836,
+     "height": 1604,
+     "aspect_ratio": "959:401",
+     "interlaced": false,
+     "frame_rate": "24.000",
+     "video_range": "HDR",
+     "video_range_type": "HDR10",
+     "color_range": "tv",
+     "color_primaries": "bt2020",
+     "color_space": "bt2020nc",
+     "color_transfer": "smpte2084",
+     "bit_depth": 10,
+     "pixel_format": "yuv420p10le"
+    }
+   ],
+   "audio_tracks": [
+    {
+     "title": "ATSC A/52A (AC-3)",
+     "language": "en",
+     "codec": "ac3",
+     "layout": "5.1(side)",
+     "channels": 6,
+     "bitrate": 384,
+     "sample_rate": 48000,
+     "default": true
+    }
+   ],
+   "subtitle_tracks": [
+    {
+     "index": 2,
+     "language": "en",
+     "codec": "subrip",
+     "title": "English (CC)",
+     "embedded_title": "English (CC)",
+     "forced": false,
+     "default": false,
+     "hearing_impaired": false,
+     "external": false
+    }
+   ]
+  }
+ ]
+}

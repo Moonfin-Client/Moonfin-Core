@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Chọn nguồn cấp dữ liệu chủ đề để hiển thị trong Khám phá.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Áp dụng",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Thể loại sách nói",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Chọn thể loại sẽ hiển thị trong Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Khám phá sách nói",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Tiêu đề miền công cộng phổ biến từ LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "tiêu đề {count}",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Cuộn sang trái",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Phát hiện",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Tiêu đề thịnh hành theo chủ đề từ Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Chưa có mục nào được đánh dấu",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Bật chế độ xem thư mục",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Hiển thị tùy chọn duyệt thư mục",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Hiển thị thư viện",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Nội dung, hình thức nổi bật",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Kích thước áp phích, loại hình ảnh, chế độ xem thư mục",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB và các nguồn xếp hạng",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Không thể giải nén kho lưu trữ .cbr.",
     "cb7ExtractionUnavailable": "Trích xuất CB7 không có sẵn trên nền tảng này.",
     "cb7ExtractionPluginUnavailable": "Plugin trích xuất CB7 không có sẵn trên nền tảng này.",
-    "closeGenrePanel": "Đóng bảng thể loại",
     "loadingShuffle": "Đang tải ngẫu nhiên...",
     "libraryShuffleLabel": "PHÁT NGẪU NHIÊN THƯ VIỆN",
     "randomShuffleLabel": "PHÁT NGẪU NHIÊN TOÀN BỘ",

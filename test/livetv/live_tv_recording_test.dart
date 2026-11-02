@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
+import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/l10n/app_localizations_en.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/live_tv/live_tv_recording_dialog.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 void main() {
+  setUp(() async {
+    await GetIt.instance.reset();
+    SharedPreferences.setMockInitialValues(const {});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+  });
+
+  tearDown(() => GetIt.instance.reset());
+
   group('current program recording state', () {
     const program = {'Id': 'program-1', 'TimerId': 'timer-1'};
 
@@ -294,6 +314,60 @@ void main() {
       expect(opener.hasFocus, isTrue);
     });
 
+    testWidgets('a series rule that skips this showing says so', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(seriesTimerId: 'series-1'),
+      );
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsOneWidget,
+      );
+      expect(find.text('Series Settings'), findsOneWidget);
+    });
+
+    testWidgets('a showing the series rule will record has no skip note', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(
+          timerId: 'timer-1',
+          seriesTimerId: 'series-1',
+        ),
+      );
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsNothing,
+      );
+      expect(find.text('Series Settings'), findsOneWidget);
+    });
+
+    testWidgets('Series Settings is offered only with a series rule', (
+      tester,
+    ) async {
+      await open(tester);
+      expect(find.text('Series Settings'), findsNothing);
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('choosing Series Settings returns the change action', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(seriesTimerId: 'series-1'),
+      );
+      await tester.tap(find.text('Series Settings'));
+      await tester.pumpAndSettle();
+      expect(result, LiveTvRecordingAction.changeSeries);
+    });
+
     testWidgets('a non-series program offers only current-program recording', (
       tester,
     ) async {
@@ -388,6 +462,143 @@ void main() {
       expect(result, isNull);
       expect(opener.hasFocus, isTrue);
       expect(find.text('Open'), findsOneWidget);
+    });
+  });
+
+  group('recording flow shared by both Live TV players', () {
+    final en = AppLocalizationsEn();
+    late _MockLiveTvApi api;
+    String? message;
+    bool finished = false;
+
+    setUp(() {
+      api = _MockLiveTvApi();
+      message = null;
+      finished = false;
+    });
+
+    GuideProgram airingNow() {
+      final now = DateTime.now();
+      return GuideProgram(
+        id: 'program-1',
+        channelId: 'channel-1',
+        name: 'Current Show',
+        startDate: now.subtract(const Duration(minutes: 10)),
+        endDate: now.add(const Duration(minutes: 20)),
+        rawData: const {'Id': 'program-1'},
+      );
+    }
+
+    Future<void> run(
+      WidgetTester tester, {
+      required LiveTvRecordingState recording,
+      bool stillOnProgram = true,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () async {
+                  message = await runLiveTvRecordingFlow(
+                    context: context,
+                    liveTvApi: api,
+                    program: airingNow(),
+                    recording: recording,
+                    programTime: '9:00 PM - 9:30 PM',
+                    channel: '7 News',
+                    use24HourClock: false,
+                    stillOnProgram: () => stillOnProgram,
+                  );
+                  finished = true;
+                },
+                child: const Text('Record'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Record'));
+      await tester.pumpAndSettle();
+    }
+
+    test('only an airing on now can be recorded', () {
+      final now = DateTime.now();
+      GuideProgram program(Duration startsIn, {String id = 'p'}) =>
+          GuideProgram(
+            id: id,
+            channelId: 'c',
+            name: 'Show',
+            startDate: now.add(startsIn),
+            endDate: now.add(startsIn + const Duration(minutes: 30)),
+            rawData: const {},
+          );
+      expect(canRecordAiring(program(const Duration(minutes: -5))), isTrue);
+      expect(canRecordAiring(program(const Duration(minutes: 5))), isFalse);
+      expect(canRecordAiring(program(const Duration(hours: -1))), isFalse);
+      expect(
+        canRecordAiring(program(const Duration(minutes: -5), id: '')),
+        isFalse,
+      );
+      expect(canRecordAiring(null), isFalse);
+    });
+
+    testWidgets('cancelling this recording reports it and tells the others', (
+      tester,
+    ) async {
+      when(() => api.cancelTimer(any())).thenAnswer((_) async {});
+      final revision = liveTvRecordingRevision.value;
+      await run(
+        tester,
+        recording: const LiveTvRecordingState(
+          timerId: 'timer-1',
+          isRecording: true,
+        ),
+      );
+      await tester.tap(find.text(en.cancelCurrentRecording));
+      await tester.pumpAndSettle();
+      expect(finished, isTrue);
+      verify(() => api.cancelTimer('timer-1')).called(1);
+      expect(message, en.recordingCancelled);
+      expect(liveTvRecordingRevision.value, revision + 1);
+    });
+
+    testWidgets('closing the dialog changes nothing', (tester) async {
+      await run(tester, recording: const LiveTvRecordingState());
+      await tester.tap(find.text(en.close));
+      await tester.pumpAndSettle();
+      expect(finished, isTrue);
+      expect(message, isNull);
+      verifyZeroInteractions(api);
+    });
+
+    testWidgets('a player that left the airing drops the choice', (
+      tester,
+    ) async {
+      await run(
+        tester,
+        recording: const LiveTvRecordingState(timerId: 'timer-1'),
+        stillOnProgram: false,
+      );
+      await tester.tap(find.text(en.cancelCurrentRecording));
+      await tester.pumpAndSettle();
+      expect(finished, isTrue);
+      expect(message, isNull);
+      verifyZeroInteractions(api);
+    });
+
+    testWidgets('a failed request says what failed', (tester) async {
+      when(() => api.cancelTimer(any())).thenThrow(Exception('offline'));
+      await run(
+        tester,
+        recording: const LiveTvRecordingState(timerId: 'timer-1'),
+      );
+      await tester.tap(find.text(en.cancelCurrentRecording));
+      await tester.pumpAndSettle();
+      expect(message, en.failedToCancelRecording);
     });
   });
 }

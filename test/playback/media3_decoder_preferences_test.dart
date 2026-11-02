@@ -258,6 +258,57 @@ void main() {
     });
   });
 
+  group('Media3 Dolby Vision with HDR10+ strip', () {
+    test('stays off until the setting is on', () async {
+      final prefs = await _prefs();
+
+      expect(
+        Media3PlayerBackend.stripsDolbyVision(prefs, 'DOVIWithHDR10Plus'),
+        isFalse,
+      );
+    });
+
+    test('strips both Dolby Vision with HDR10+ range types', () async {
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.media3StripDolbyVisionWithHdr10Plus,
+        true,
+      );
+
+      expect(
+        Media3PlayerBackend.stripsDolbyVision(prefs, 'DOVIWithHDR10Plus'),
+        isTrue,
+      );
+      expect(
+        Media3PlayerBackend.stripsDolbyVision(prefs, 'DOVI_WITH_ELHDR10_PLUS'),
+        isTrue,
+      );
+    });
+
+    test('leaves every other range type alone', () async {
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.media3StripDolbyVisionWithHdr10Plus,
+        true,
+      );
+
+      for (final range in [
+        'DOVI',
+        'DOVIWithHDR10',
+        'DOVIWithEL',
+        'HDR10Plus',
+        'SDR',
+        null,
+      ]) {
+        expect(
+          Media3PlayerBackend.stripsDolbyVision(prefs, range),
+          isFalse,
+          reason: '$range',
+        );
+      }
+    });
+  });
+
   group('Media3 direct play containers', () {
     test('drops the containers media3 has no demuxer for', () {
       final containers = media3DirectPlayVideoContainers.split(',');

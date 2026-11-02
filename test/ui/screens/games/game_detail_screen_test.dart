@@ -14,10 +14,14 @@ import 'package:moonfin/data/services/retro_artwork/retro_artwork_transport.dart
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/games/game_detail_screen.dart';
+import 'package:moonfin/ui/widgets/focus/focusable_button.dart';
 import 'package:moonfin/ui/widgets/game/retro_artwork_image.dart';
 import 'package:moonfin/util/game_cores.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+const _playerButton = ValueKey('gameDetailPlayer');
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
 
@@ -267,6 +271,41 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> openPlayerPicker(WidgetTester tester) async {
+    await tester.ensureVisible(find.byKey(_playerButton));
+    await tester.tap(find.byKey(_playerButton));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('the headline drops No-Intro tags and the region moves to the facts', (
+    tester,
+  ) async {
+    when(() => gamesApi.getGame('library', 'game')).thenAnswer(
+      (_) async => const GameDetail(
+        id: 'game',
+        title: 'Super Mario World (USA)',
+        system: 'SNES',
+        core: 'snes',
+        fileName: 'Super Mario World (USA).sfc',
+        sizeBytes: 524288,
+        bios: [],
+        region: 'USA',
+        year: 1990,
+        genre: 'Platform',
+        players: 2,
+      ),
+    );
+
+    await pumpDetailScreen(tester);
+
+    expect(find.text('Super Mario World'), findsOneWidget);
+    expect(find.text('1990 · Platform · 2 players'), findsOneWidget);
+    expect(find.text('USA'), findsOneWidget);
+    expect(find.text('512 KB'), findsOneWidget);
+    expect(find.text('Super Mario World (USA).sfc'), findsOneWidget);
+    expect(find.text('No save on this server yet'), findsOneWidget);
+  });
+
   testWidgets('related art stays on the detail screen legacy adapter', (
     tester,
   ) async {
@@ -432,6 +471,38 @@ void main() {
     expect(playButton.focusNode!.hasFocus, isTrue);
   });
 
+  testWidgets('on TV the d-pad moves from Play to the player and opens the picker', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    tester.view.physicalSize = const Size(960, 540);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await pumpDetailScreen(tester);
+    await tester.pumpAndSettle();
+    expect(
+      FocusManager.instance.primaryFocus?.debugLabel,
+      'gameDetailPrimaryAction',
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pumpAndSettle();
+    expect(
+      FocusManager.instance.primaryFocus?.context
+          ?.findAncestorWidgetOfExactType<FocusableButton>()
+          ?.key,
+      _playerButton,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Choose player'), findsOneWidget);
+  });
+
   testWidgets('selecting a core stores the override and updates the detail', (
     tester,
   ) async {
@@ -443,13 +514,7 @@ void main() {
 
     await pumpDetailScreen(tester);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(FilledButton),
-        matching: find.text('FBNeo'),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await openPlayerPicker(tester);
     expect(find.text('Choose player'), findsOneWidget);
     final mameOption = find.descendant(
       of: find.byType(AlertDialog),
@@ -483,13 +548,7 @@ void main() {
     ).thenThrow(StateError('core update failed'));
 
     await pumpDetailScreen(tester);
-    await tester.tap(
-      find.descendant(
-        of: find.byType(FilledButton),
-        matching: find.text('FBNeo'),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await openPlayerPicker(tester);
     await tester.tap(
       find.descendant(
         of: find.byType(AlertDialog),
@@ -498,28 +557,23 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('WebView · EmulatorJS'), findsOneWidget);
+    expect(find.text('EmulatorJS'), findsOneWidget);
     expect(find.textContaining('Could not change player'), findsOneWidget);
   });
 
   testWidgets(
-    'selecting a core from the details panel stores the override and updates the detail',
+    "selecting a core from the phone layout's player card stores the override",
     (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       _stubBackendOverrideToEmulatorJs(gamesApi);
       _stubCoreOverrideToMame(gamesApi);
 
       await pumpDetailScreen(tester);
 
-      // Scroll down to see the details panel
-      // Find _CoreDetailRow by its unique chevron_right icon (private class can't be referenced)
-      final coreDetailRowFinder = find.byIcon(Icons.chevron_right);
-      await tester.ensureVisible(coreDetailRowFinder);
-      await tester.pumpAndSettle();
-
-      // Tap the core row in the details panel
-      expect(coreDetailRowFinder, findsOneWidget);
-      await tester.tap(coreDetailRowFinder);
-      await tester.pumpAndSettle();
+      expect(find.text('Change'), findsOneWidget);
+      await openPlayerPicker(tester);
 
       expect(find.text('Choose player'), findsOneWidget);
       final mameOption = find.descendant(
@@ -559,13 +613,7 @@ void main() {
 
     await pumpDetailScreen(tester);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(FilledButton),
-        matching: find.text('FBNeo'),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await openPlayerPicker(tester);
 
     expect(find.text('Choose player'), findsOneWidget);
     expect(
@@ -622,13 +670,7 @@ void main() {
 
       await pumpDetailScreen(tester);
 
-      await tester.tap(
-        find.descendant(
-          of: find.byType(FilledButton),
-          matching: find.text('FBNeo'),
-        ),
-      );
-      await tester.pumpAndSettle();
+      await openPlayerPicker(tester);
 
       final dialog = find.byType(AlertDialog);
       expect(dialog, findsOneWidget);
@@ -711,13 +753,7 @@ void main() {
         await pumpDetailScreen(tester);
 
         expect(find.text('Choose player'), findsNothing);
-        await tester.tap(
-          find.descendant(
-            of: find.byType(FilledButton),
-            matching: find.text('MAME'),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await openPlayerPicker(tester);
 
         final dialog = find.byType(AlertDialog);
         expect(dialog, findsOneWidget);
@@ -797,15 +833,7 @@ void main() {
 
         await pumpDetailScreen(tester);
 
-        // The main screen's core button shows the raw core id here since
-        // _coreLabel only special-cases the arcade family.
-        await tester.tap(
-          find.descendant(
-            of: find.byType(FilledButton),
-            matching: find.text('atari2600'),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await openPlayerPicker(tester);
 
         final dialog = find.byType(AlertDialog);
         expect(dialog, findsOneWidget);
@@ -901,13 +929,7 @@ void main() {
 
         await pumpDetailScreen(tester);
 
-        await tester.tap(
-          find.descendant(
-            of: find.byType(FilledButton),
-            matching: find.text('atari2600'),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await openPlayerPicker(tester);
 
         final dialog = find.byType(AlertDialog);
         expect(dialog, findsOneWidget);
@@ -934,7 +956,7 @@ void main() {
 
         await pumpDetailScreen(tester);
 
-        expect(find.widgetWithText(FilledButton, 'FBNeo'), findsNothing);
+        expect(find.byKey(_playerButton), findsNothing);
         expect(find.text('Choose player'), findsNothing);
         verifyNever(
           () => gamesApi.setGameBackendOverride(
@@ -975,7 +997,7 @@ void main() {
         await pumpDetailScreen(tester);
 
         // Only FBNeo is natively reachable, so the picker button is hidden.
-        expect(find.widgetWithText(FilledButton, 'FBNeo'), findsNothing);
+        expect(find.byKey(_playerButton), findsNothing);
         expect(find.text('Choose player'), findsNothing);
 
         debugDefaultTargetPlatformOverride = null;
@@ -1004,13 +1026,7 @@ void main() {
 
         await pumpDetailScreen(tester);
 
-        await tester.tap(
-          find.descendant(
-            of: find.byType(FilledButton),
-            matching: find.text('nes'),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await openPlayerPicker(tester);
 
         final dialog = find.byType(AlertDialog);
         expect(dialog, findsOneWidget, reason: 'more than one reachable row');

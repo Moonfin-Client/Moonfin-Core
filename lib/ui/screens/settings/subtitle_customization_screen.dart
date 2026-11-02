@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
+import '../../../playback/subtitle_style.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
@@ -13,8 +14,8 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/settings/settings_section_header.dart';
-import '../../widgets/subtitle_preview.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 
@@ -96,6 +97,7 @@ class _SubtitleCustomizationScreenState
     required double max,
     required double step,
     bool swallowDown = false,
+    bool normalizeStepGrid = false,
   }) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -121,7 +123,16 @@ class _SubtitleCustomizationScreenState
     if (key == LogicalKeyboardKey.arrowLeft ||
         key == LogicalKeyboardKey.arrowRight) {
       final delta = key == LogicalKeyboardKey.arrowLeft ? -step : step;
-      final next = (binding.value + delta).clamp(min, max);
+      final proposed = binding.value + delta;
+      final next = normalizeStepGrid
+          ? normalizeSteppedSubtitleOffsetChange(
+              storedValue: binding.value,
+              proposedValue: proposed,
+              min: min,
+              max: max,
+              step: step,
+            )
+          : proposed.clamp(min, max).toDouble();
       if (next != binding.value) binding.value = next;
       return KeyEventResult.handled;
     }
@@ -165,7 +176,6 @@ class _SubtitleCustomizationScreenState
             bottom: MediaQuery.of(context).padding.bottom + 16,
           ),
           children: [
-            const SubtitlePreview(),
             _ColorPickerTile(
               title: l10n.textFillColor,
               icon: Icons.format_color_text,
@@ -187,6 +197,7 @@ class _SubtitleCustomizationScreenState
               icon: Icons.format_size,
               label: l10n.subtitleSize,
               binding: _sizeBind,
+              previewKey: UserPreferences.subtitlesTextSize.key,
               outerNode: _sizeOuterNode,
               innerNode: _sizeInnerNode,
               focused: _sizeFocused,
@@ -206,6 +217,7 @@ class _SubtitleCustomizationScreenState
               icon: Icons.vertical_align_bottom,
               label: l10n.verticalOffset,
               binding: _offsetBind,
+              previewKey: UserPreferences.subtitlesOffsetPosition.key,
               outerNode: _offsetOuterNode,
               innerNode: _offsetInnerNode,
               focused: _offsetFocused,
@@ -215,9 +227,10 @@ class _SubtitleCustomizationScreenState
                 }
               },
               min: 0.0,
-              max: 0.5,
-              divisions: 50,
-              step: 0.01,
+              max: primarySubtitleMaxOffset,
+              divisions: 18,
+              step: 0.02,
+              normalizeStepGrid: true,
               labelBuilder: (v) => l10n.percentValue((v * 100).round()),
             ),
             SettingsSectionHeader(l10n.hdr),
@@ -258,6 +271,7 @@ class _SubtitleCustomizationScreenState
                           icon: Icons.format_size,
                           label: l10n.subtitleSize,
                           binding: _hdrSizeBind,
+                          previewKey: UserPreferences.subtitlesHdrTextSize.key,
                           outerNode: _hdrSizeOuterNode,
                           innerNode: _hdrSizeInnerNode,
                           focused: _hdrSizeFocused,
@@ -277,6 +291,8 @@ class _SubtitleCustomizationScreenState
                           icon: Icons.vertical_align_bottom,
                           label: l10n.verticalOffset,
                           binding: _hdrOffsetBind,
+                          previewKey:
+                              UserPreferences.subtitlesHdrOffsetPosition.key,
                           outerNode: _hdrOffsetOuterNode,
                           innerNode: _hdrOffsetInnerNode,
                           focused: _hdrOffsetFocused,
@@ -286,10 +302,11 @@ class _SubtitleCustomizationScreenState
                             }
                           },
                           min: 0.0,
-                          max: 0.5,
-                          divisions: 50,
-                          step: 0.01,
+                          max: primarySubtitleMaxOffset,
+                          divisions: 18,
+                          step: 0.02,
                           swallowDown: true,
+                          normalizeStepGrid: true,
                           labelBuilder: (v) =>
                               l10n.percentValue((v * 100).round()),
                         ),
@@ -308,6 +325,7 @@ class _SubtitleCustomizationScreenState
     required IconData icon,
     required String label,
     required PreferenceBinding<double> binding,
+    required String previewKey,
     required FocusNode outerNode,
     required FocusNode innerNode,
     required bool focused,
@@ -317,12 +335,13 @@ class _SubtitleCustomizationScreenState
     required int divisions,
     required double step,
     bool swallowDown = false,
+    bool normalizeStepGrid = false,
     required String Function(double) labelBuilder,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     final useTvFocusStyling = PlatformDetection.isTV;
     final activeFocusStyling = useTvFocusStyling && focused;
-    return ValueListenableBuilder<double>(
+    final tile = ValueListenableBuilder<double>(
       valueListenable: binding,
       builder: (context, value, _) => Padding(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
@@ -337,6 +356,7 @@ class _SubtitleCustomizationScreenState
             max: max,
             step: step,
             swallowDown: swallowDown,
+            normalizeStepGrid: normalizeStepGrid,
           ),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 90),
@@ -374,7 +394,15 @@ class _SubtitleCustomizationScreenState
                         min: min,
                         max: max,
                         divisions: divisions,
-                        onChanged: (v) => binding.value = v,
+                        onChanged: (v) => binding.value = normalizeStepGrid
+                            ? normalizeSteppedSubtitleOffsetChange(
+                                storedValue: binding.value,
+                                proposedValue: v,
+                                min: min,
+                                max: max,
+                                step: step,
+                              )
+                            : v,
                       )
                     : Slider(
                         focusNode: innerNode,
@@ -382,14 +410,26 @@ class _SubtitleCustomizationScreenState
                         min: min,
                         max: max,
                         divisions: divisions,
-                        label: labelBuilder(value),
-                        onChanged: (v) => binding.value = v,
+                        label: labelBuilder(value.clamp(min, max).toDouble()),
+                        onChanged: (v) => binding.value = normalizeStepGrid
+                            ? normalizeSteppedSubtitleOffsetChange(
+                                storedValue: binding.value,
+                                proposedValue: v,
+                                min: min,
+                                max: max,
+                                step: step,
+                              )
+                            : v,
                       ),
               ),
             ),
           ),
         ),
       ),
+    );
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(prefKey: previewKey, title: label),
+      child: tile,
     );
   }
 }
@@ -475,6 +515,16 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
 
   @override
   Widget build(BuildContext context) {
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+      ),
+      child: _buildTile(context),
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     return TvFocusHighlight(
       builder: (context, _) => ValueListenableBuilder<int>(
         valueListenable: _binding,
@@ -506,6 +556,8 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
     final l10n = AppLocalizations.of(context);
     final current = _binding.value;
     final isTV = PlatformDetection.isTV;
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final key = widget.preference.key;
     final entries = widget.allowTransparent
         ? subtitlePresetColors.entries
         : subtitlePresetColors.entries.where((e) => Color(e.value).a > 0);
@@ -517,32 +569,38 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
         title: Text(widget.title),
         children: entries.map((e) {
           final selected = e.value == current;
-          return TvFocusHighlight(
-            builder: (_, _) => ListTile(
-              autofocus: isTV && selected,
-              leading: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Color(e.value),
-                  shape: BoxShape.circle,
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.chipBorder,
+          return settingsPreviewOption(
+            onTry: preview == null
+                ? null
+                : () => preview.tryValue(key, e.value),
+            child: TvFocusHighlight(
+              builder: (_, _) => ListTile(
+                autofocus: isTV && selected,
+                leading: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Color(e.value),
+                    shape: BoxShape.circle,
+                    border: Border.fromBorderSide(
+                      ThemeRegistry.active.borders.chipBorder,
+                    ),
                   ),
                 ),
+                title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
+                trailing: selected ? const Icon(Icons.check) : null,
+                onTap: () {
+                  if (picked) return;
+                  picked = true;
+                  Navigator.pop(ctx, e.value);
+                },
               ),
-              title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
-              trailing: selected ? const Icon(Icons.check) : null,
-              onTap: () {
-                if (picked) return;
-                picked = true;
-                Navigator.pop(ctx, e.value);
-              },
             ),
           );
         }).toList(),
       ),
     );
+    preview?.clearTry(key);
     if (!mounted) return;
     _pickerOpen = false;
     if (result == null || result == _binding.value) return;

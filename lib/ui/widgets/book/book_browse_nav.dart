@@ -58,6 +58,7 @@ class BookLibraryRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final onSurface = AppColorScheme.onSurface;
+    final last = sections.lastOrNull?.entries.lastOrNull;
     return SizedBox(
       width: 248,
       child: SingleChildScrollView(
@@ -112,6 +113,9 @@ class BookLibraryRail extends StatelessWidget {
                   onSelect: entry.onSelect,
                   onNavigateRight: onNavigateRight,
                   onNavigateLeft: onNavigateLeft,
+                  // Down stops at the last entry rather than wandering into
+                  // the content beside the rail.
+                  onNavigateDown: identical(entry, last) ? () {} : null,
                   child: _RailRow(entry: entry),
                 ),
             ],
@@ -177,80 +181,6 @@ class _RailRow extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// The phone layout's browse entries, a strip of tiles with counts.
-class BookBrowseTiles extends StatelessWidget {
-  final List<BookBrowseEntry> entries;
-
-  const BookBrowseTiles({super.key, required this.entries});
-
-  @override
-  Widget build(BuildContext context) {
-    final onSurface = AppColorScheme.onSurface;
-    final accent = AppColorScheme.accent;
-    return SizedBox(
-      height: 60,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: entries.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
-          final entry = entries[index];
-          return Semantics(
-            button: true,
-            selected: entry.selected,
-            child: Material(
-              color: entry.selected
-                  ? accent.withValues(alpha: 0.18)
-                  : AppColorScheme.surface,
-              borderRadius: AppRadius.circular(14),
-              child: InkWell(
-                borderRadius: AppRadius.circular(14),
-                onTap: entry.onSelect,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: accent.withValues(alpha: 0.16),
-                          borderRadius: AppRadius.circular(10),
-                        ),
-                        child: Icon(entry.icon, size: 18, color: accent),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        entry.label,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: onSurface,
-                        ),
-                      ),
-                      if (entry.count != null) ...[
-                        const SizedBox(width: 10),
-                        Text(
-                          entry.count!,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: onSurface.withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

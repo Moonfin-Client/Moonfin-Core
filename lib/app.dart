@@ -91,6 +91,8 @@ class _MoonfinAppState extends State<MoonfinApp> {
   void initState() {
     super.initState();
     _prefs = GetIt.instance<UserPreferences>();
+    CustomKeyboard.onStylePicked = (style) =>
+        _prefs.set(UserPreferences.keyboardStyle, style);
     _themeController = AppThemeController.fromPreferences(_prefs);
     _lastResolvedLocale = _resolveLocale();
     AppUiIdiomResolver.setOverride(_prefs.get(UserPreferences.interfaceStyle));
@@ -261,6 +263,20 @@ class _MoonfinAppState extends State<MoonfinApp> {
                 return const Locale('en');
               },
               builder: (context, child) {
+                final l10n = AppLocalizations.of(context);
+                CustomKeyboard.strings = KeyboardStrings(
+                  space: l10n.keyboardSpace,
+                  delete: l10n.delete,
+                  search: l10n.search,
+                  done: l10n.done,
+                  holdForAccents: l10n.keyboardHoldForAccents,
+                  close: l10n.keyboardClose,
+                  nativeStyle: l10n.keyboardStyleNative,
+                  classicStyle: l10n.keyboardStyleClassic,
+                  glassStyle: l10n.keyboardStyleGlass,
+                  dockedStyle: l10n.keyboardStyleDocked,
+                );
+
                 var path =
                     appRouter.routerDelegate.currentConfiguration.uri.path;
                 try {

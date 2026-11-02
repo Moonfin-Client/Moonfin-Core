@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/preference/detail_section_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 class _PluginSync extends Mock implements PluginSyncService {}
 
@@ -24,6 +25,7 @@ void main() {
       containsAll([
         'seerrGenresTags',
         'seerrStats',
+        'seerrStreaming',
         'seerrRecommendations',
         'seerrSimilar',
         'seerrCollection',
@@ -76,6 +78,26 @@ void main() {
 
     when(() => plugin.seerrAvailable).thenReturn(true);
     expect(DetailSection.seerrStats.isOffered, isTrue);
+  });
+
+  test('reviews are only offered when the plugin serves them', () {
+    final plugin = _PluginSync();
+    when(() => plugin.tmdbReviewsAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(plugin);
+
+    expect(DetailSection.reviews.isOffered, isFalse);
+
+    when(() => plugin.tmdbReviewsAvailable).thenReturn(true);
+    expect(DetailSection.reviews.isOffered, isTrue);
+  });
+
+  // Issue #1721: the links open a browser, which a TV doesn't have.
+  test('person links are offered everywhere but TV', () {
+    expect(DetailSection.personLinks.isOffered, isTrue);
+
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    expect(DetailSection.personLinks.isOffered, isFalse);
   });
 
   test('visibility reads the hidden ids', () {

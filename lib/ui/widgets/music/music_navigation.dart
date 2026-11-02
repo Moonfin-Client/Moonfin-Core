@@ -11,7 +11,46 @@ import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
 
-/// A music library category, routing to the matching all-items screen.
+/// The screens a music library's categories open.
+enum MusicCategoryKind {
+  artists,
+  albums,
+  songs,
+  playlists,
+  genres,
+  favorites;
+
+  static MusicCategoryKind? parse(String? name) {
+    for (final kind in values) {
+      if (kind.name == name) return kind;
+    }
+    return null;
+  }
+}
+
+/// How a category screen drives a category bar or rail: the category
+/// showing, where Overview goes and how picking another swaps it in.
+class MusicCategoryNav {
+  final MusicCategoryKind current;
+  final VoidCallback onOverview;
+  final ValueChanged<MusicCategoryKind> onSelect;
+
+  /// Picking the category already showing, which goes into its content.
+  final VoidCallback onCurrent;
+
+  /// The focus node for an entry, `overview` or a category's name.
+  final FocusNode Function(String id) focusNode;
+
+  const MusicCategoryNav({
+    required this.current,
+    required this.onOverview,
+    required this.onSelect,
+    required this.onCurrent,
+    required this.focusNode,
+  });
+}
+
+/// A music library category, routing to its own screen.
 class MusicCategory {
   final IconData icon;
   final String label;
@@ -21,69 +60,41 @@ class MusicCategory {
 
 List<MusicCategory> musicCategories(BuildContext context, String libraryId) {
   final l10n = AppLocalizations.of(context);
+  String route(MusicCategoryKind kind) =>
+      Destinations.musicCategory(libraryId, kind.name);
   return [
-    MusicCategory(
-      Icons.person,
-      l10n.artists,
-      Destinations.library(libraryId, includeItemTypes: const ['AlbumArtist']),
-    ),
-    MusicCategory(
-      Icons.album,
-      l10n.albums,
-      Destinations.library(libraryId, includeItemTypes: const ['MusicAlbum']),
-    ),
-    MusicCategory(
-      Icons.music_note,
-      l10n.songs,
-      Destinations.library(libraryId, includeItemTypes: const ['Audio']),
-    ),
+    MusicCategory(Icons.person, l10n.artists, route(MusicCategoryKind.artists)),
+    MusicCategory(Icons.album, l10n.albums, route(MusicCategoryKind.albums)),
+    MusicCategory(Icons.music_note, l10n.songs, route(MusicCategoryKind.songs)),
     MusicCategory(
       Icons.queue_music,
       l10n.playlists,
-      Destinations.library(libraryId, includeItemTypes: const ['Playlist']),
+      route(MusicCategoryKind.playlists),
     ),
-    MusicCategory(
-      Icons.category,
-      l10n.genres,
-      Destinations.libraryGenresOf(libraryId),
-    ),
+    MusicCategory(Icons.category, l10n.genres, route(MusicCategoryKind.genres)),
     MusicCategory(
       Icons.favorite,
       l10n.favorites,
-      Destinations.library(libraryId, favorites: true),
+      route(MusicCategoryKind.favorites),
     ),
   ];
 }
 
 /// Where a music row's See All goes, or null for rows without one.
 String? musicSeeAllRoute(String libraryId, String rowId) {
+  String route(MusicCategoryKind kind, {String? show}) =>
+      Destinations.musicCategory(libraryId, kind.name, show: show);
   if (rowId.startsWith('musicalbum_')) {
-    return Destinations.library(
-      libraryId,
-      includeItemTypes: const ['MusicAlbum'],
-    );
+    return route(MusicCategoryKind.albums);
   } else if (rowId.startsWith('albumartist_')) {
-    return Destinations.library(
-      libraryId,
-      includeItemTypes: const ['AlbumArtist'],
-    );
+    return route(MusicCategoryKind.artists);
   } else if (rowId.startsWith('musicartist_')) {
-    return Destinations.library(
-      libraryId,
-      includeItemTypes: const ['MusicArtist'],
-    );
+    return route(MusicCategoryKind.artists, show: 'all');
   } else if (rowId == 'playlists') {
-    return Destinations.library(
-      libraryId,
-      includeItemTypes: const ['Playlist'],
-    );
+    return route(MusicCategoryKind.playlists);
   } else if (rowId.startsWith('favorites_')) {
-    // The row itself only holds albums, so keep the same shape behind See All.
-    return Destinations.library(
-      libraryId,
-      includeItemTypes: const ['MusicAlbum'],
-      favorites: true,
-    );
+    // The row itself only holds albums, so open Favorites on its albums.
+    return route(MusicCategoryKind.favorites, show: 'albums');
   }
   return null;
 }
@@ -177,6 +188,21 @@ Future<void> playMusicTrack(BuildContext context, AggregatedItem item) async {
   }
 }
 
+/// Plays [tracks] from [startIndex] and opens the player. Nothing happens
+/// when there's nothing to play.
+Future<void> playMusicTracks(
+  BuildContext context,
+  List<AggregatedItem> tracks, {
+  int startIndex = 0,
+}) async {
+  if (tracks.isEmpty) return;
+  await GetIt.instance<PlaybackManager>().playItems(
+    tracks,
+    startIndex: startIndex,
+  );
+  if (context.mounted) context.push(Destinations.audioPlayer);
+}
+
 /// Plays the songs under [parentId], an album or a whole library, in a
 /// random order.
 Future<void> shuffleMusic(
@@ -204,9 +230,7 @@ Future<void> shuffleMusic(
             ))
         .where((track) => track.id.isNotEmpty)
         .toList();
-    if (tracks.isEmpty) return;
-    await GetIt.instance<PlaybackManager>().playItems(tracks);
-    if (context.mounted) context.push(Destinations.audioPlayer);
+    if (context.mounted) await playMusicTracks(context, tracks);
   } catch (e) {
     debugPrint('Failed to shuffle music: $e');
   }

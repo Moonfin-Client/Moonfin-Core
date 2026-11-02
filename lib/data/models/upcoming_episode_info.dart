@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../util/calendar_days.dart';
 
 /// Information about a series' next upcoming episode to air.
 class UpcomingEpisodeInfo {
@@ -39,14 +40,7 @@ class UpcomingEpisodeInfo {
     final locale = Localizations.localeOf(context).toString();
 
     final localAirDate = airDate.toLocal();
-    final localNow = DateTime.now().toLocal();
-    final airDay = DateTime(
-      localAirDate.year,
-      localAirDate.month,
-      localAirDate.day,
-    );
-    final today = DateTime(localNow.year, localNow.month, localNow.day);
-    final diffDays = airDay.difference(today).inDays;
+    final diffDays = calendarDaysBetween(DateTime.now(), localAirDate);
 
     final String dateText;
     if (diffDays == 0) {

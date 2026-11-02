@@ -101,10 +101,16 @@ class UserDataSync extends ChangeNotifier {
     MediaServerClient client,
     Iterable<String> itemIds,
   ) async {
-    final ids = <String>{
+    final all = <String>{
       for (final id in itemIds)
         if (id.isNotEmpty) id,
     }.toList();
+    // A server that reads items one at a time narrows the list to what may
+    // have changed (Silo).
+    final api = client.itemsApi;
+    final ids = api is UserDataRefreshScope
+        ? (api as UserDataRefreshScope).userDataMayHaveChanged(all)
+        : all;
     if (ids.isEmpty) return;
 
     for (var start = 0; start < ids.length; start += _refreshChunkSize) {

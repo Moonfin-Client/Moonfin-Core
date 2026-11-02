@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Изберете која тема ќе се прикаже во Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Примени",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Жанрови на аудио книги",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Изберете кои жанрови да се прикажуваат во Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Откријте аудио книги",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Популарни наслови од јавен домен од LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} наслови",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Скролувајте лево",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Откријте",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Наслови во тренд по тема од Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Сè уште нема обележани ставки",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Овозможи Преглед на папка",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Прикажи ја опцијата за прелистување папки",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Видливост на библиотеката",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Избрана содржина, изглед",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Големина на постер, тип на слика, приказ на папка",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB и извори на оцени",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Неуспешно извлекување на .cbr архивата.",
     "cb7ExtractionUnavailable": "Извлекувањето на CB7 не е достапно на оваа платформа.",
     "cb7ExtractionPluginUnavailable": "Приклучокот за извлекување CB7 не е достапен на оваа платформа.",
-    "closeGenrePanel": "Затвори го панелот со жанрови",
     "loadingShuffle": "Се вчитува мешањето...",
     "libraryShuffleLabel": "МЕШАЊЕ НА БИБЛИОТЕКАТА",
     "randomShuffleLabel": "СЛУЧАЈНО МЕШАЊЕ",

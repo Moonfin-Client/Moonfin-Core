@@ -9,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/focus/focus_scroll.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -145,7 +146,9 @@ class _LiveTvScheduleScreenState extends State<LiveTvScheduleScreen> {
 
     if (confirmed == true) {
       try {
-        await _vm.cancelTimer(item.id);
+        await _vm.cancelTimer(
+          item.timerId ?? (throw StateError('No timer for ${item.name}')),
+        );
       } catch (_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -211,41 +214,43 @@ class _ScheduleGroupRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 60, bottom: 8),
-            child: Text(
-              group.dateLabel,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+    return RevealOnFocus(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 60, bottom: 8),
+              child: Text(
+                group.dateLabel,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 160,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              itemCount: group.items.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final item = group.items[index];
-                return _ScheduleCard(
-                  item: item,
-                  imageUrl: item.imageUrl(vm.imageApi),
-                  onFocused: () => vm.setFocusedItem(item),
-                  onTap: () => onCancelTimer(item),
-                );
-              },
+            SizedBox(
+              height: 160,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 60),
+                itemCount: group.items.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final item = group.items[index];
+                  return _ScheduleCard(
+                    item: item,
+                    imageUrl: item.imageUrl(vm.imageApi),
+                    onFocused: () => vm.setFocusedItem(item),
+                    onTap: () => onCancelTimer(item),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

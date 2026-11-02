@@ -276,7 +276,7 @@ class _MessageCardState extends State<_MessageCard> {
                             duration: const Duration(milliseconds: 150),
                             alignment: Alignment.topLeft,
                             child: _expanded
-                                ? _MessageBody(markdown: body)
+                                ? MessageMarkdown(markdown: body)
                                 : Text(
                                     stripMarkdown(body),
                                     maxLines: 2,
@@ -401,14 +401,14 @@ String stripMarkdown(String source) => source
     .replaceAll(RegExp(r'\n{2,}'), '\n')
     .trim();
 
-/// The formatted body of an opened message.
+/// The formatted body of an opened message, or of a review.
 ///
-/// Images are dropped on purpose: the body is admin free text, and loading a
-/// remote image from it would reach out to whatever host it names.
-class _MessageBody extends StatelessWidget {
+/// Images are dropped on purpose: the body is free text, and loading a remote
+/// image from it would reach out to whatever host it names.
+class MessageMarkdown extends StatelessWidget {
   final String markdown;
 
-  const _MessageBody({required this.markdown});
+  const MessageMarkdown({super.key, required this.markdown});
 
   @override
   Widget build(BuildContext context) {

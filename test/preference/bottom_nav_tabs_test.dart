@@ -18,8 +18,15 @@ void main() {
   group('parsePinnedBottomNavTabs', () {
     test('reads names case-insensitively and ignores whitespace', () {
       expect(
-        parsePinnedBottomNavTabs(' Search , LIVETV,folders'),
-        [BottomNavTab.search, BottomNavTab.liveTv, BottomNavTab.folders],
+        parsePinnedBottomNavTabs(' Search , LIVETV,Favorites'),
+        [BottomNavTab.search, BottomNavTab.liveTv, BottomNavTab.favorites],
+      );
+    });
+
+    test('drops a folders pin, which the bar no longer offers', () {
+      expect(
+        parsePinnedBottomNavTabs('search,folders,liveTv'),
+        [BottomNavTab.search, BottomNavTab.liveTv],
       );
     });
 

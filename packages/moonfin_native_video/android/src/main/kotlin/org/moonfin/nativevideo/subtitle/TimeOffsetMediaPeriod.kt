@@ -31,14 +31,22 @@ import java.io.IOException
 internal class TimeOffsetMediaPeriod(
     val wrappedMediaPeriod: MediaPeriod,
     initialOffsetUs: Long,
+    initialSecondaryOffsetUs: Long? = null,
+    private val onSecondaryError: (IOException) -> Unit = {},
     private val onLoadingChanged: () -> Unit = {},
 ) : MediaPeriod, MediaPeriod.Callback {
 
     @Volatile
-    private var timeOffsetUs = initialOffsetUs
+    private var primaryOffsetUs = initialOffsetUs
+    @Volatile
+    private var secondaryOffsetUs = initialSecondaryOffsetUs
+    private var secondarySelected = false
+    private val timeOffsetUs: Long
+        get() = if (secondarySelected) secondaryOffsetUs ?: primaryOffsetUs else primaryOffsetUs
 
     private var callback: MediaPeriod.Callback? = null
     private var trackSelected = false
+    private var subtitleFailed = false
     var isSubtitleLoading = false
         private set
 
@@ -47,7 +55,7 @@ internal class TimeOffsetMediaPeriod(
     ) {
         // A selected subtitle is still pending between retries, when isLoading
         // may be false. End-of-source marks completion without waiting for a cue.
-        val loading = trackSelected && bufferedPositionUs != C.TIME_END_OF_SOURCE
+        val loading = trackSelected && !subtitleFailed && bufferedPositionUs != C.TIME_END_OF_SOURCE
         if (isSubtitleLoading == loading) return
         isSubtitleLoading = loading
         onLoadingChanged()
@@ -58,8 +66,9 @@ internal class TimeOffsetMediaPeriod(
      * already taken keeps the old offset, so the caller re-selects the track
      * to have it read again.
      */
-    fun updateTimeOffsetUs(offsetUs: Long) {
-        timeOffsetUs = offsetUs
+    fun updateTimeOffsetUs(offsetUs: Long, secondaryUs: Long? = secondaryOffsetUs) {
+        primaryOffsetUs = offsetUs
+        secondaryOffsetUs = secondaryUs
     }
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
@@ -82,6 +91,10 @@ internal class TimeOffsetMediaPeriod(
         streamResetFlags: BooleanArray,
         positionUs: Long,
     ): Long {
+        // The last renderer is the secondary subtitle renderer. Choose the delay from
+        // the active renderer so the same file can switch between primary and secondary
+        // without rebuilding its source.
+        secondarySelected = secondaryOffsetUs != null && selections.lastOrNull() != null
         val offset = timeOffsetUs
         val childStreams = arrayOfNulls<SampleStream>(streams.size)
         for (i in streams.indices) {
@@ -99,8 +112,16 @@ internal class TimeOffsetMediaPeriod(
             val current = streams[i] as? OffsetSampleStream
             streams[i] = when {
                 childStream == null -> null
-                current == null || current.childStream !== childStream ->
-                    OffsetSampleStream(childStream) { timeOffsetUs }
+                current == null || current.childStream !== childStream -> {
+                    subtitleFailed = false
+                    OffsetSampleStream(childStream, onError = if (secondarySelected) { error ->
+                        // Report secondary subtitle errors without stopping video
+                        // playback.
+                        subtitleFailed = true
+                        updateSubtitleLoading()
+                        onSecondaryError(error)
+                    } else null) { timeOffsetUs }
+                }
                 else -> current
             }
         }
@@ -136,12 +157,14 @@ internal class TimeOffsetMediaPeriod(
     }
 
     override fun getBufferedPositionUs(): Long {
+        if (subtitleFailed) return C.TIME_END_OF_SOURCE
         val bufferedUs = wrappedMediaPeriod.bufferedPositionUs
         updateSubtitleLoading(bufferedUs)
         return if (bufferedUs == C.TIME_END_OF_SOURCE) C.TIME_END_OF_SOURCE else bufferedUs + timeOffsetUs
     }
 
     override fun getNextLoadPositionUs(): Long {
+        if (subtitleFailed) return C.TIME_END_OF_SOURCE
         // While its one request is out, a subtitle file reports the position
         // it started from. The merging period only lets the video load past
         // the lowest position any child reports, so a server slow to hand the
@@ -152,13 +175,13 @@ internal class TimeOffsetMediaPeriod(
     }
 
     override fun continueLoading(loadingInfo: LoadingInfo): Boolean =
-        wrappedMediaPeriod.continueLoading(
+        !subtitleFailed && wrappedMediaPeriod.continueLoading(
             loadingInfo.buildUpon()
                 .setPlaybackPositionUs(loadingInfo.playbackPositionUs - timeOffsetUs)
                 .build(),
         )
 
-    override fun isLoading(): Boolean = wrappedMediaPeriod.isLoading
+    override fun isLoading(): Boolean = !subtitleFailed && wrappedMediaPeriod.isLoading
 
     override fun reevaluateBuffer(positionUs: Long) =
         wrappedMediaPeriod.reevaluateBuffer(positionUs - timeOffsetUs)
@@ -188,19 +211,35 @@ internal class TimeOffsetMediaPeriod(
 @UnstableApi
 internal class OffsetSampleStream(
     val childStream: SampleStream,
+    private val onError: ((IOException) -> Unit)? = null,
     private val offsetUs: () -> Long,
 ) : SampleStream {
 
-    override fun isReady(): Boolean = childStream.isReady
+    private var failed = false
+
+    override fun isReady(): Boolean = failed || childStream.isReady
 
     @Throws(IOException::class)
-    override fun maybeThrowError() = childStream.maybeThrowError()
+    override fun maybeThrowError() {
+        if (failed) return
+        try {
+            childStream.maybeThrowError()
+        } catch (error: IOException) {
+            val report = onError ?: throw error
+            failed = true
+            report(error)
+        }
+    }
 
     override fun readData(
         formatHolder: FormatHolder,
         buffer: DecoderInputBuffer,
         readFlags: Int,
     ): Int {
+        if (failed) {
+            buffer.addFlag(C.BUFFER_FLAG_END_OF_STREAM)
+            return C.RESULT_BUFFER_READ
+        }
         val result = childStream.readData(formatHolder, buffer, readFlags)
         if (result == C.RESULT_BUFFER_READ && !buffer.isEndOfStream && buffer.timeUs != C.TIME_UNSET) {
             buffer.timeUs += offsetUs()
@@ -208,5 +247,5 @@ internal class OffsetSampleStream(
         return result
     }
 
-    override fun skipData(positionUs: Long): Int = childStream.skipData(positionUs - offsetUs())
+    override fun skipData(positionUs: Long): Int = if (failed) 0 else childStream.skipData(positionUs - offsetUs())
 }

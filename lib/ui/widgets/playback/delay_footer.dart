@@ -57,15 +57,17 @@ class _DelayFooterState extends State<DelayFooter> {
         children: [
           Row(
             children: [
-              Text(
-                widget.label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: AppTypography.fontSizeSm,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  widget.label,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: AppTypography.fontSizeSm,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 widget.formatDelay(_delay),
                 style: TextStyle(

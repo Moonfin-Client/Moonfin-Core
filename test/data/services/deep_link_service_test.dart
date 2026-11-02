@@ -68,5 +68,25 @@ void main() {
         '/item/abc123?autoPlay=true',
       );
     });
+
+    test('routes search host with an encoded query', () {
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://search?query=the%20matrix'),
+        ),
+        '/search?query=the%20matrix',
+      );
+    });
+
+    test('returns null for search without a query', () {
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://search')),
+        isNull,
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://search?query=')),
+        isNull,
+      );
+    });
   });
 }

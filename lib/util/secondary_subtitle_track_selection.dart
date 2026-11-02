@@ -68,17 +68,23 @@ int? restoreSecondarySubtitleTrack(
   return -1;
 }
 
-Map<String, dynamic> _identity(Map<String, dynamic> stream) => {
-  for (final key in const [
-    'Language',
-    'Title',
-    'DisplayTitle',
-    'Codec',
-    'IsExternal',
-    'IsForced',
-    'IsHearingImpaired',
-  ])
-    if (stream[key] != null) key: stream[key],
-};
+Map<String, dynamic> _identity(Map<String, dynamic> stream) {
+  // Transcoded downloads expose different playable codec/delivery fields,
+  // but retain the originating server stream for identity matching only.
+  final original = stream['OriginalSubtitleStream'];
+  final source = original is Map ? original : stream;
+  return {
+    for (final key in const [
+      'Language',
+      'Title',
+      'DisplayTitle',
+      'Codec',
+      'IsExternal',
+      'IsForced',
+      'IsHearingImpaired',
+    ])
+      if (source[key] != null) key: source[key],
+  };
+}
 
 String _signature(Map<String, dynamic> stream) => jsonEncode(_identity(stream));

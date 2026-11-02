@@ -80,7 +80,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
                   subtitle: Text(l10n.settingsOpenGroupsSubtitle),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => const SyncPlayScreen(),
+                      builder: (_) => watchTogetherScreen(),
                     ),
                   ),
                 ),

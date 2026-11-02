@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../data/services/incomplete_recordings_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../syncplay/syncplay_manager.dart';
+import '../../../watch_party/silo_watch_party_manager.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/signed_in_server_features.dart';
+import '../../widgets/live_tv/incomplete_recording.dart';
 
 /// The details screen action buttons a user can arrange. Play is absent on
 /// purpose, it always leads the row because it renders as the primary button
@@ -37,6 +41,7 @@ enum DetailButton {
   seerrWatchlist('seerrWatchlist'),
   seerrReportIssue('seerrReportIssue'),
   seerrManage('seerrManage'),
+  keepAsComplete('keepAsComplete'),
   admin('admin');
 
   const DetailButton(this.id, {this.canHide = true});
@@ -76,6 +81,10 @@ enum DetailButton {
       DetailButton.seerrManage =>
         GetIt.instance<PluginSyncService>().seerrAvailable,
       DetailButton.watchWithGroup => _syncPlayAvailable,
+      DetailButton.keepAsComplete =>
+        _incompleteRecordingsSupported && canManageLiveTv(),
+      // Not when no signed-in server has playlists (all Silo, say).
+      DetailButton.playlist => playlistsOnAnySignedInServer(),
       _ => true,
     };
   }
@@ -111,10 +120,25 @@ enum DetailButton {
     }
   }
 
+  /// Only the Moonfin plugin's Jellyfin build can mark recordings incomplete.
+  static bool get _incompleteRecordingsSupported {
+    try {
+      return GetIt.instance.isRegistered<IncompleteRecordingsService>() &&
+          GetIt.instance<IncompleteRecordingsService>().supported;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static bool get _syncPlayAvailable {
     try {
       if (GetIt.instance.isRegistered<SyncPlayManager>()) {
-        return GetIt.instance<SyncPlayManager>().syncPlayEnabled;
+        final syncPlay = GetIt.instance<SyncPlayManager>();
+        // Silo has its own Watch Party, under the same Watch Together switch.
+        return syncPlay.syncPlayEnabled ||
+            (syncPlay.syncPlayConfigured &&
+                GetIt.instance<SiloWatchPartyManager>().activeSiloClient !=
+                    null);
       }
       return GetIt.instance<UserPreferences>().get(UserPreferences.syncPlayEnabled);
     } catch (_) {
@@ -142,6 +166,7 @@ enum DetailButton {
     DetailButton.seerrWatchlist => Icons.bookmark_border,
     DetailButton.seerrReportIssue => Icons.report_problem_outlined,
     DetailButton.seerrManage => Icons.rule,
+    DetailButton.keepAsComplete => Icons.task_alt,
     DetailButton.admin => Icons.settings,
   };
 
@@ -166,6 +191,7 @@ enum DetailButton {
     DetailButton.seerrWatchlist => l10n.watchlist,
     DetailButton.seerrReportIssue => l10n.reportIssue,
     DetailButton.seerrManage => l10n.manageRequests,
+    DetailButton.keepAsComplete => l10n.keepAsComplete,
     DetailButton.admin => l10n.admin,
   };
 }

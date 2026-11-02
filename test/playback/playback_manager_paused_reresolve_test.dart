@@ -4,6 +4,7 @@ import 'package:playback_core/playback_core.dart';
 class _TestBackend extends Fake implements PlayerBackend {
   final List<String> playedUrls = <String>[];
   final List<bool> autoPlayValues = <bool>[];
+  final subtitleSessions = <int>[];
   int resumeCalls = 0;
   bool playing = false;
   Duration currentPosition = Duration.zero;
@@ -77,6 +78,7 @@ class _TestBackend extends Fake implements PlayerBackend {
     final autoPlay = payload['autoPlay'] != false;
     playedUrls.add(payload['url'] as String);
     autoPlayValues.add(autoPlay);
+    subtitleSessions.add(payload['subtitleDelaySessionId'] as int);
     currentPosition = startPosition;
     // The real backends load the source and only start it when asked, which
     // is the behaviour under test.
@@ -101,6 +103,9 @@ class _TestBackend extends Fake implements PlayerBackend {
 
   @override
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode) async {}
+
+  @override
+  Future<void> setSecondarySubtitleDelay(double seconds) async {}
 
   @override
   Future<void> waitForTracksReady() async {}
@@ -220,5 +225,31 @@ void main() {
     expect(resolver.calls, 2);
     expect(backend.autoPlayValues, [true, true]);
     expect(backend.isPlaying, isTrue);
+  });
+
+  test('subtitle session survives track, quality and background reloads', () async {
+    await startPlayback();
+    await manager.setSecondarySubtitleDelay(0.75);
+    final first = backend.subtitleSessions.last;
+    await manager.changeAudioTrack(3);
+    await manager.changeBitrate(8);
+    await manager.stopForBackground(manager.queueService.currentItem);
+    await manager.startQueuedPlayback(freshResolution: true);
+    expect(backend.subtitleSessions, everyElement(first));
+    expect(manager.secondarySubtitleDelaySeconds, 0.75);
+
+    // Explicitly starting the same item again is a new session too.
+    await manager.playFromQueue(0);
+    expect(backend.subtitleSessions.last, isNot(first));
+    expect(manager.secondarySubtitleDelaySeconds, 0);
+
+    await manager.playItems([
+      {'Id': 'episode-1', 'Type': 'Episode'},
+      {'Id': 'episode-2', 'Type': 'Episode'},
+    ]);
+    final next = backend.subtitleSessions.last;
+    expect(next, isNot(first));
+    await manager.nextInQueue();
+    expect(backend.subtitleSessions.last, isNot(next));
   });
 }

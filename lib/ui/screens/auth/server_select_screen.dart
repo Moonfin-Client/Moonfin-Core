@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -20,19 +19,19 @@ import '../../../data/services/media_server_client_factory.dart';
 import '../../../auth/services/server_discovery_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../platform/web_runtime_config.dart';
-import '../../../preference/user_preferences.dart';
 import '../../../util/app_beta.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
+import '../../../util/silo_failure_message.dart';
 import '../../../util/web_diagnostics_failure.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/allow_self_signed_dialog.dart';
-import '../../widgets/client_certificate_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/server_type_icon.dart';
+import 'add_server_dialog.dart';
 
 final _kAccent = AppColorScheme.accent;
 
@@ -252,6 +251,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
             false,
         canManageCollections:
           currentUser.policy?.enableCollectionManagement ?? false,
+        canManageLiveTv:
+          currentUser.policy?.enableLiveTvManagement ?? false,
       );
 
       await _authStore.putUser(user);
@@ -353,6 +354,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       case ServerConnected(:final id):
         if (!shouldHandleAdditionState) return;
         setState(() => _isConnecting = false);
+        // The dialog shows the server it found and says where to go next.
+        if (_isAddDialogOpen) return;
         _addressController.clear();
         if (_suppressAutoNavigationOnServerConnected) {
           return;
@@ -365,6 +368,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
         :final lastStatusCode,
         :final lastErrorMessage,
         :final untrustedCandidate,
+        :final unsupportedSilo,
       ):
         if (!shouldHandleAdditionState) return;
         final targetUrl = (lastCandidate != null && lastCandidate.isNotEmpty)
@@ -374,7 +378,9 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
         setState(() {
           _isConnecting = false;
           _untrustedAddress = untrustedCandidate;
-          _errorMessage = untrustedCandidate != null
+          _errorMessage = unsupportedSilo != null
+              ? SiloUpdateRequired.of(unsupportedSilo).message(l10n)
+              : untrustedCandidate != null
               ? l10n.untrustedServerCertificate
               : l10n.unableToConnectToServer;
         });
@@ -403,6 +409,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
 
   Future<void> _connectToDiscovered(DiscoveredServer discovered) async {
     if (_isConnecting) return;
+    // A Plex server is saved from its plex.tv sign-in.
+    if (discovered.serverType == ServerType.plex) {
+      context.go(Destinations.plexSignIn);
+      return;
+    }
     if (mounted) {
       setState(() {
         _isConnecting = true;
@@ -583,23 +594,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
 
               if (!_isWebPluginMode) {
                 actions.add(
-                  _buildFooterActionButton(
+                  AddServerButton(
                     onPressed: _isConnecting ? null : _showAddServerDialog,
-                    icon: const Icon(Icons.add, size: 16),
-                    label: l10n.addServer,
-                  ),
-                );
-
-                actions.add(
-                  _buildFooterActionButton(
-                    onPressed: _isConnecting
-                        ? null
-                        : () => context.go(Destinations.embyConnect),
-                    icon: const ServerTypeIcon(
-                      serverType: ServerType.emby,
-                      size: 16,
-                    ),
-                    label: l10n.embyConnect,
                   ),
                 );
               }
@@ -618,7 +614,9 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                 return const SizedBox.shrink();
               }
 
-              if (actions.length == 2 && !isVerySmall) {
+              if (actions.length == 2 &&
+                  !isVerySmall &&
+                  actions.every((action) => action is! AddServerButton)) {
                 return Row(
                   children: [
                     Expanded(child: actions[0]),
@@ -734,17 +732,33 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     _addressController.selection = TextSelection.collapsed(
       offset: _addressController.text.length,
     );
+    final AddServerOutcome? outcome;
     try {
-      await showFocusRestoringDialog<void>(
+      outcome = await showAddServerDialog(
         context: context,
-        builder: (ctx) => AddServerDialog(
-          l10n: AppLocalizations.of(context),
-          controller: _addressController,
-          serverRepo: _serverRepo,
-        ),
+        controller: _addressController,
+        serverRepo: _serverRepo,
       );
     } finally {
       _isAddDialogOpen = false;
+    }
+    if (!mounted) return;
+    switch (outcome) {
+      case AddServerSaved(:final serverId):
+        _addressController.clear();
+        context.go('${Destinations.server}?serverId=$serverId');
+      case AddServerPlexSignIn(:final address):
+        context.go(
+          Uri(
+            path: Destinations.plexSignIn,
+            queryParameters: address == null ? null : {'address': address},
+          ).toString(),
+        );
+      case AddServerEmbyConnect():
+        context.go(Destinations.embyConnect);
+      case null:
+        // The dialog may have saved or removed a server.
+        setState(() {});
     }
   }
 }
@@ -872,410 +886,6 @@ class _FocusableTileState extends State<_FocusableTile> {
             child: widget.child,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class AddServerDialog extends StatefulWidget {
-  final AppLocalizations l10n;
-  final TextEditingController controller;
-  final ServerRepository serverRepo;
-
-  const AddServerDialog({
-    super.key,
-    required this.l10n,
-    required this.controller,
-    required this.serverRepo,
-  });
-
-  @override
-  State<AddServerDialog> createState() => _AddServerDialogState();
-}
-
-class _AddServerDialogState extends State<AddServerDialog> {
-  final _userPreferences = GetIt.instance<UserPreferences>();
-  final _addressFocus = FocusNode(debugLabel: 'addServerAddress');
-  final _connectFocus = FocusNode(debugLabel: 'addServerConnect');
-  final _cancelFocus = FocusNode(debugLabel: 'addServerCancel');
-  final _allowFocus = FocusNode(debugLabel: 'addServerAllowSelfSigned');
-  final _certFocus = FocusNode(debugLabel: 'addServerClientCert');
-  final _tvFieldKey = GlobalKey<CustomTVTextFieldState>();
-
-  bool _isConnecting = false;
-  String? _errorMessage;
-  String? _untrustedAddress;
-  String? _clientCertAddress;
-  bool _dialogDismissed = false;
-  bool get _isMoonfin => ThemeRegistry.active.id == ThemeRegistry.moonfinId;
-
-  /// Known server addresses, freshest first, offered as keyboard chips so
-  /// re-adding a server is one press instead of a typed URL.
-  List<String> get _recentServerAddresses {
-    final servers = [...widget.serverRepo.servers]
-      ..sort((a, b) => b.dateLastAccessed.compareTo(a.dateLastAccessed));
-    return [
-      for (final server in servers) server.displayAddress ?? server.address,
-    ];
-  }
-
-  Color _dialogForeground(double alpha) {
-    return (_isMoonfin ? Colors.white : AppColorScheme.onSurface).withValues(
-      alpha: alpha,
-    );
-  }
-
-  Color get _dialogForegroundSolid {
-    return _isMoonfin ? Colors.white : AppColorScheme.onSurface;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _addressFocus.requestFocus();
-    });
-  }
-
-  @override
-  void dispose() {
-    _addressFocus.dispose();
-    _connectFocus.dispose();
-    _cancelFocus.dispose();
-    _allowFocus.dispose();
-    _certFocus.dispose();
-    super.dispose();
-  }
-
-  void _dismissDialog({bool suppressNextPopRoute = false}) {
-    if (_dialogDismissed || !mounted) return;
-    _dialogDismissed = true;
-    if (suppressNextPopRoute) {
-      DialogBackSuppressor.markDismissed();
-    }
-
-    final navigator = Navigator.of(context);
-    if (navigator.canPop()) {
-      navigator.pop();
-      return;
-    }
-
-    final rootNavigator = Navigator.of(context, rootNavigator: true);
-    if (rootNavigator.canPop()) {
-      rootNavigator.pop();
-    }
-  }
-
-  Future<void> _submit() => _connect(widget.controller.text.trim());
-
-  Future<void> _connect(String address) async {
-    if (address.isEmpty) return;
-
-    setState(() {
-      _isConnecting = true;
-      _errorMessage = null;
-      _untrustedAddress = null;
-      _clientCertAddress = null;
-    });
-
-    try {
-      final server = await widget.serverRepo.addServer(address);
-      if (!mounted) return;
-      if (server != null) {
-        _dismissDialog();
-        return;
-      }
-      final failure = widget.serverRepo.lastFailure;
-      final clientCert = failure?.clientCertCandidate;
-      if (clientCert != null) {
-        _clientCertAddress = clientCert;
-        _showError(widget.l10n.clientCertRequired, focus: _certFocus);
-        return;
-      }
-      // A proxy that turns a missing certificate away with a plain error page
-      // looks like any other failure, so the import is offered anyway, for
-      // the https address that failed that way rather than the last one tried,
-      // which is usually plain http.
-      final possible = failure?.possibleClientCertCandidate;
-      if (!PlatformDetection.isWeb && possible != null) {
-        _clientCertAddress = possible;
-      }
-      final untrusted = failure?.untrustedCandidate;
-      if (untrusted == null) {
-        _showError(widget.l10n.unableToConnectToServer);
-        return;
-      }
-      _untrustedAddress = untrusted;
-      _showError(widget.l10n.untrustedServerCertificate, focus: _allowFocus);
-    } catch (e) {
-      if (!mounted) return;
-      _showError(widget.l10n.unableToConnectToServer);
-    }
-  }
-
-  Future<void> _importClientCertAndRetry() async {
-    final address = _clientCertAddress;
-    if (address == null) return;
-    final saved = await showClientCertificateDialog(
-      context: context,
-      host: Uri.tryParse(address)?.host ?? address,
-    );
-    if (saved != null && mounted) await _connect(address);
-  }
-
-  Future<void> _allowSelfSignedAndRetry() async {
-    final address = _untrustedAddress;
-    if (address == null || !await confirmAllowSelfSignedCertificates(context)) {
-      return;
-    }
-    if (mounted) await _connect(address);
-  }
-
-  void _showError(String message, {FocusNode? focus}) {
-    setState(() {
-      _isConnecting = false;
-      _errorMessage = message;
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) (focus ?? _connectFocus).requestFocus();
-    });
-  }
-
-  void _cancel() {
-    _dismissDialog();
-  }
-
-  KeyEventResult _onDialogKey(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final key = event.logicalKey;
-
-    if (key.isBackKey) {
-      if (event is KeyDownEvent) {
-        if (PlatformDetection.isTV &&
-            (_tvFieldKey.currentState?.isKeyboardVisible ?? false)) {
-          _tvFieldKey.currentState?.closeKeyboard();
-          _addressFocus.requestFocus();
-          return KeyEventResult.handled;
-        }
-        // A focused text field owns backspace (editing the URL); only treat
-        // it as "close dialog" when no editable text has primary focus.
-        final focusContext = FocusManager.instance.primaryFocus?.context;
-        if (focusContext != null &&
-            focusContext.findAncestorWidgetOfExactType<EditableText>() !=
-                null) {
-          return KeyEventResult.ignored;
-        }
-        _dismissDialog(suppressNextPopRoute: true);
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.ignored;
-    }
-
-    if (!PlatformDetection.isTV) return KeyEventResult.ignored;
-
-    final onField = _addressFocus.hasFocus;
-    final onCancel = _cancelFocus.hasFocus;
-    final onConnect = _connectFocus.hasFocus;
-    // The address field, then whichever recovery buttons are showing, then
-    // the actions.
-    final column = [
-      _addressFocus,
-      if (_untrustedAddress != null) _allowFocus,
-      if (_clientCertAddress != null) _certFocus,
-      _connectFocus,
-    ];
-    final extraIndex = column.indexWhere(
-      (n) => n.hasFocus && n != _addressFocus && n != _connectFocus,
-    );
-
-    if (onField) {
-      if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
-        _tvFieldKey.currentState?.openKeyboard();
-        return KeyEventResult.handled;
-      }
-      if (key == LogicalKeyboardKey.arrowDown) {
-        column[1].requestFocus();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.ignored;
-    }
-
-    if (extraIndex > 0) {
-      if (key == LogicalKeyboardKey.arrowUp) {
-        column[extraIndex - 1].requestFocus();
-        return KeyEventResult.handled;
-      }
-      if (key == LogicalKeyboardKey.arrowDown) {
-        column[extraIndex + 1].requestFocus();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.ignored;
-    }
-
-    if (onCancel || onConnect) {
-      if (key == LogicalKeyboardKey.arrowUp) {
-        column[column.length - 2].requestFocus();
-        return KeyEventResult.handled;
-      }
-      if (key == LogicalKeyboardKey.arrowLeft && onConnect) {
-        _cancelFocus.requestFocus();
-        return KeyEventResult.handled;
-      }
-      if (key == LogicalKeyboardKey.arrowRight && onCancel) {
-        _connectFocus.requestFocus();
-        return KeyEventResult.handled;
-      }
-    }
-
-    return KeyEventResult.ignored;
-  }
-
-  ButtonStyle _actionStyle() {
-    return OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(20)),
-    ).copyWith(
-      side: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.focused) ||
-            states.contains(WidgetState.hovered)) {
-          return BorderSide(color: _kAccent, width: 2);
-        }
-        return BorderSide(color: _dialogForeground(0.2));
-      }),
-      foregroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.focused) ||
-            states.contains(WidgetState.hovered)) {
-          return _kAccent;
-        }
-        return _dialogForeground(0.85);
-      }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = widget.l10n;
-    final isTV = PlatformDetection.isTV;
-
-    final field = isTV
-        ? Focus(
-            focusNode: _addressFocus,
-            child: ListenableBuilder(
-              listenable: _addressFocus,
-              builder: (_, _) {
-                final focused = _addressFocus.hasFocus;
-                return CustomTVTextField(
-                  key: _tvFieldKey,
-                  controller: widget.controller,
-                  isFocused: focused,
-                  inputPurpose: InputPurpose.url,
-                  recentSuggestions: _recentServerAddresses,
-                  preferSystemIme: _userPreferences.get(
-                    UserPreferences.preferSystemImeKeyboard,
-                  ),
-                  hint: l10n.serverAddressHint,
-                  textFieldType: TextFieldType.url,
-                  keyboardType: KeyboardType.alphabetic,
-                  filled: true,
-                  fillColor: focused
-                      ? _dialogForegroundSolid
-                      : _dialogForeground(0.08),
-                  borderColor: Theme.of(context).colorScheme.outline,
-                  focusedBorderColor: _kAccent,
-                  hintStyle: TextStyle(
-                    color: focused
-                        ? AppColors.black.withValues(alpha: 0.5)
-                        : _dialogForeground(0.5),
-                  ),
-                  textStyle: TextStyle(
-                    color: focused ? AppColors.black : _dialogForegroundSolid,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.dns,
-                    color: focused ? AppColors.black : _dialogForegroundSolid,
-                  ),
-                  popParentOnKeyboardClose: false,
-                  onFieldSubmitted: (_) => _submit(),
-                );
-              },
-            ),
-          )
-        : TextField(
-            controller: widget.controller,
-            focusNode: _addressFocus,
-            decoration: InputDecoration(
-              labelText: l10n.serverAddress,
-              hintText: l10n.serverAddressHint,
-              border: const OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.dns),
-            ),
-            keyboardType: TextInputType.url,
-            autofocus: true,
-            onSubmitted: (value) => _submit(),
-          );
-
-    final cancelButton = OutlinedButton(
-      focusNode: _cancelFocus,
-      onPressed: _isConnecting ? null : _cancel,
-      style: _actionStyle(),
-      child: Text(widget.l10n.cancel),
-    );
-
-    final connectButton = OutlinedButton(
-      focusNode: _connectFocus,
-      onPressed: _isConnecting ? null : _submit,
-      style: _actionStyle(),
-      child: _isConnecting
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(widget.l10n.connect),
-    );
-
-    return Focus(
-      canRequestFocus: false,
-      skipTraversal: true,
-      onKeyEvent: _onDialogKey,
-      child: AlertDialog.adaptive(
-        title: Text(widget.l10n.connectToServer),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            field,
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                _errorMessage!,
-                style: const TextStyle(color: Color(0xFFef4444), fontSize: 12),
-              ),
-            ],
-            if (_untrustedAddress != null) ...[
-              const SizedBox(height: 12),
-              OutlinedButton(
-                focusNode: _allowFocus,
-                onPressed: _isConnecting ? null : _allowSelfSignedAndRetry,
-                style: _actionStyle(),
-                child: Text(widget.l10n.settingsAllowSelfSignedCerts),
-              ),
-            ],
-            if (_clientCertAddress != null) ...[
-              const SizedBox(height: 12),
-              OutlinedButton(
-                focusNode: _certFocus,
-                onPressed: _isConnecting ? null : _importClientCertAndRetry,
-                style: _actionStyle(),
-                child: Text(widget.l10n.clientCertAddButton),
-              ),
-            ],
-          ],
-        ),
-        actions: [cancelButton, connectButton],
       ),
     );
   }

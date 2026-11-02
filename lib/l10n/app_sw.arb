@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Chagua milisho ya mada ya kuonyesha katika Dokezo.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Tumia",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Aina za vitabu vya sauti",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Chagua aina za muziki za kuonyesha katika Gundua Kitabu cha Sauti.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Gundua Vitabu vya Sauti",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Majina maarufu ya kikoa cha umma kutoka LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "vichwa {count}",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Sogeza kushoto",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Gundua",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Vichwa vinavyovuma kulingana na mada kutoka Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Bado hakuna vipengee vilivyoalamishwa",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Washa Mwonekano wa Folda",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Onyesha chaguo la kuvinjari kwenye folda",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Mwonekano wa Maktaba",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Maudhui yaliyoangaziwa, mwonekano",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Saizi ya bango, aina ya picha, mwonekano wa folda",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, na vyanzo vya ukadiriaji",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Imeshindwa kutoa kumbukumbu ya .cbr.",
     "cb7ExtractionUnavailable": "Utoaji wa CB7 haupatikani kwenye jukwaa hili.",
     "cb7ExtractionPluginUnavailable": "Programu-jalizi ya kutoa CB7 haipatikani kwenye jukwaa hili.",
-    "closeGenrePanel": "Funga paneli ya aina",
     "loadingShuffle": "Inapakia mchanganyiko...",
     "libraryShuffleLabel": "MCHANGANYIKO WA MAKTABA",
     "randomShuffleLabel": "MCHANGANYIKO NASIBU",

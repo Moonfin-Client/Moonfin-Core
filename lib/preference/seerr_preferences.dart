@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../auth/repositories/session_repository.dart';
@@ -48,6 +49,14 @@ class SeerrPreferences {
   String labelOrDefault(String fallback) {
     final name = moonfinDisplayName.trim();
     return name.isNotEmpty ? name : fallback;
+  }
+
+  /// [text] with "Seerr" in it replaced by the server's name for its
+  /// requests, so a server whose requests aren't Seerr (Silo's own) isn't
+  /// called Seerr. Text stays as it is when there's no name.
+  String brand(String text) {
+    final name = moonfinDisplayName.trim();
+    return name.isEmpty ? text : text.replaceAll('Seerr', name);
   }
 
   String get moonfinVariant => normalizeVariant(_store.getString(_userKey('moonfin_variant')));
@@ -232,3 +241,9 @@ class SeerrPreferences {
     }
   }
 }
+
+/// [SeerrPreferences.brand] for widgets, which may build before the
+/// preferences are registered.
+String seerrBrand(String text) => GetIt.instance.isRegistered<SeerrPreferences>()
+    ? GetIt.instance<SeerrPreferences>().brand(text)
+    : text;

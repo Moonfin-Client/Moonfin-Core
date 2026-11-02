@@ -443,6 +443,23 @@ void main() {
       );
     });
 
+    test('says tomorrow across a daylight saving change', () {
+      // In a zone that moves its clocks forward overnight, the 14th is only
+      // 23 hours long.
+      final now = DateTime(2027, 3, 14, 1);
+      final next = DateTime(2027, 3, 15, 8);
+
+      expect(
+        timesUpResumeMessage(
+          l10n: l10n,
+          nextAccess: next,
+          now: now,
+          use24Hour: false,
+        ),
+        'You can use it again tomorrow at ${_time(next)}.',
+      );
+    });
+
     test('follows the 24 hour setting', () {
       expect(
         message(_at(19, 16, 30), use24Hour: true),

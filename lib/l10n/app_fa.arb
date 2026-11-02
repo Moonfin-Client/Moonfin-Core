@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "انتخاب کنید که کدام موضوع فیدها در Discover نمایش داده شود.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "اعمال",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ژانرهای کتاب صوتی",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "انتخاب کنید کدام ژانرها در Audiobook Discover نمایش داده شوند.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "کتاب های صوتی را کشف کنید",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "عناوین محبوب دامنه عمومی از LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "عناوین {count}",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "به سمت چپ حرکت کنید",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "کشف کنید",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "عناوین پرطرفدار بر اساس موضوع از Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "هنوز هیچ مورد نشانک گذاری شده ای وجود ندارد",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "نمای پوشه را فعال کنید",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "نمایش گزینه مرور پوشه",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "قابلیت مشاهده کتابخانه",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "محتوای ویژه، ظاهر",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "اندازه پوستر، نوع تصویر، نمای پوشه",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList، TMDB، و منابع رتبه بندی",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "بایگانی cbr. استخراج نشد.",
     "cb7ExtractionUnavailable": "استخراج CB7 در این پلتفرم در دسترس نیست.",
     "cb7ExtractionPluginUnavailable": "افزونه استخراج CB7 در این پلتفرم موجود نیست.",
-    "closeGenrePanel": "پانل ژانر را ببندید",
     "loadingShuffle": "در حال بارگیری ترکیبی...",
     "libraryShuffleLabel": "پخش تصادفی کتابخانه",
     "randomShuffleLabel": "پخش تصادفی",

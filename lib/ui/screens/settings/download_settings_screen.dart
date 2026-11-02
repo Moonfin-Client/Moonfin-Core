@@ -65,7 +65,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.storageAndDownloads)),
+        appBar: buildSettingsAppBar(context, Text(l10n.storage)),
         body: ListView(
           children: [
             // The discovery point for the whole feature on TV: the panel

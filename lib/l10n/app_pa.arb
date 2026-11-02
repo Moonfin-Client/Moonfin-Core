@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "ਚੁਣੋ ਕਿ ਡਿਸਕਵਰ ਵਿੱਚ ਕਿਹੜਾ ਵਿਸ਼ਾ ਫੀਡ ਦਿਖਾਉਣਾ ਹੈ।",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "ਲਾਗੂ ਕਰੋ",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ਆਡੀਓਬੁੱਕ ਸ਼ੈਲੀਆਂ",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "ਔਡੀਓਬੁੱਕ ਡਿਸਕਵਰ ਵਿੱਚ ਦਿਖਾਉਣ ਲਈ ਕਿਹੜੀਆਂ ਸ਼ੈਲੀਆਂ ਚੁਣੋ।",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ਆਡੀਓਬੁੱਕਾਂ ਦੀ ਖੋਜ ਕਰੋ",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox ਤੋਂ ਪ੍ਰਸਿੱਧ ਜਨਤਕ ਡੋਮੇਨ ਸਿਰਲੇਖ।",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} ਸਿਰਲੇਖ",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "ਖੱਬੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "ਖੋਜੋ",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library ਤੋਂ ਵਿਸ਼ੇ ਅਨੁਸਾਰ ਪ੍ਰਚਲਿਤ ਸਿਰਲੇਖ।",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "ਅਜੇ ਤੱਕ ਕੋਈ ਬੁੱਕਮਾਰਕ ਆਈਟਮਾਂ ਨਹੀਂ ਹਨ",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ਫੋਲਡਰ ਦ੍ਰਿਸ਼ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ਫੋਲਡਰ ਬ੍ਰਾਊਜ਼ਿੰਗ ਵਿਕਲਪ ਦਿਖਾਓ",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "ਲਾਇਬ੍ਰੇਰੀ ਦਰਿਸ਼ਗੋਚਰਤਾ",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "ਵਿਸ਼ੇਸ਼ ਸਮੱਗਰੀ, ਦਿੱਖ",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "ਪੋਸਟਰ ਦਾ ਆਕਾਰ, ਚਿੱਤਰ ਦੀ ਕਿਸਮ, ਫੋਲਡਰ ਦ੍ਰਿਸ਼",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, ਅਤੇ ਰੇਟਿੰਗ ਸਰੋਤ",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr ਆਰਕਾਈਵ ਕੱਢਣ ਵਿੱਚ ਅਸਫਲ।",
     "cb7ExtractionUnavailable": "ਇਸ ਪਲੇਟਫਾਰਮ 'ਤੇ CB7 ਕੱਢਣਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
     "cb7ExtractionPluginUnavailable": "ਇਸ ਪਲੇਟਫਾਰਮ 'ਤੇ CB7 ਕੱਢਣ ਵਾਲਾ ਪਲੱਗਇਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
-    "closeGenrePanel": "ਸ਼ੈਲੀ ਪੈਨਲ ਬੰਦ ਕਰੋ",
     "loadingShuffle": "ਸ਼ਫਲ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
     "libraryShuffleLabel": "ਲਾਇਬ੍ਰੇਰੀ ਸ਼ਫਲ",
     "randomShuffleLabel": "ਬੇਤਰਤੀਬ ਸ਼ਫਲ",

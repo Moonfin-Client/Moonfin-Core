@@ -12,7 +12,11 @@ import 'offline_stream_resolver.dart';
 /// `PlaybackManager._playCurrentItem` -> `resolver.resolve(item)` per queue
 /// item, wrapping here gives local-first behavior everywhere, including mixed
 /// queues where only some episodes are downloaded.
-class LocalFirstMediaStreamResolver extends MediaStreamResolver {
+///
+/// A replan (see [StreamReplanner]) always goes to the wrapped server
+/// resolver: it moves a server session, which a local file never has.
+class LocalFirstMediaStreamResolver extends MediaStreamResolver
+    implements StreamReplanner {
   final MediaStreamResolver _inner;
   final OfflineStreamResolver _offline;
   final Future<void> Function(String itemId)? _restoreSubtitles;
@@ -76,6 +80,27 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
     );
   }
 
+  @override
+  bool canReplan(StreamResolutionResult current) {
+    final inner = _inner;
+    return !current.isLocalMedia &&
+        inner is StreamReplanner &&
+        (inner as StreamReplanner).canReplan(current);
+  }
+
+  @override
+  Future<StreamResolutionResult> replan(
+    dynamic mediaItem,
+    StreamResolutionResult current,
+    ReplanRequest request,
+  ) {
+    final inner = _inner;
+    if (inner is! StreamReplanner) {
+      throw StateError('${inner.runtimeType} cannot replan');
+    }
+    return (inner as StreamReplanner).replan(mediaItem, current, request);
+  }
+
   Future<StreamResolutionResult?> _tryResolveLocal(
     dynamic mediaItem,
     String? requestedMediaSourceId,
@@ -101,17 +126,7 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
       // stream index to player track mapping that turns a selection into a
       // player call, so it describes those and nothing else.
       final mediaStreams = local.isTranscoded
-          ? [
-              for (final sub in local.externalSubtitles)
-                <String, dynamic>{
-                  'Type': 'Subtitle',
-                  'Index': sub.index,
-                  'IsExternal': true,
-                  'Codec': sub.codec,
-                  'Title': sub.title,
-                  'Language': sub.language,
-                },
-            ]
+          ? transcodedDownloadSubtitleStreams(local)
           : local.mediaStreams;
 
       return StreamResolutionResult(
@@ -161,4 +176,30 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
     if (dot < 0 || dot == path.length - 1) return null;
     return path.substring(dot + 1).toLowerCase();
   }
+}
+
+/// Describe the actual playable sidecars, but preserve each original stream's
+/// selection identity so a saved secondary language survives server/download
+/// switches. Playback must continue using the local codec and delivery flags.
+List<Map<String, dynamic>> transcodedDownloadSubtitleStreams(
+  OfflineStreamResult local,
+) {
+  final originals = <int, Map<String, dynamic>>{
+    for (final stream in local.mediaStreams)
+      if (stream['Type'] == 'Subtitle' && stream['Index'] is int)
+        stream['Index'] as int: stream,
+  };
+  return [
+    for (final sub in local.externalSubtitles)
+      <String, dynamic>{
+        'Type': 'Subtitle',
+        'Index': sub.index,
+        'IsExternal': true,
+        'Codec': sub.codec,
+        'Title': sub.title,
+        'Language': sub.language,
+        if (originals.containsKey(sub.index))
+          'OriginalSubtitleStream': originals[sub.index],
+      },
+  ];
 }

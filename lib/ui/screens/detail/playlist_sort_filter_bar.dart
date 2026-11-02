@@ -50,6 +50,18 @@ String librarySortLabel(LibrarySortBy sortBy, AppLocalizations l10n) {
   };
 }
 
+/// Returns a localized display label for an external row sort option.
+String externalRowSortLabel(ExternalRowSortBy sortBy, AppLocalizations l10n) {
+  return switch (sortBy) {
+    ExternalRowSortBy.none => l10n.externalRowSortDefault,
+    ExternalRowSortBy.name => l10n.externalRowSortName,
+    ExternalRowSortBy.releaseDate => l10n.externalRowSortReleaseDate,
+    ExternalRowSortBy.rating => l10n.externalRowSortRating,
+    ExternalRowSortBy.popularity => l10n.externalRowSortPopularity,
+    ExternalRowSortBy.shuffle => l10n.externalRowSortShuffle,
+  };
+}
+
 /// Returns a localized display label for a played status filter.
 String playlistPlayedStatusLabel(
   PlayedStatusFilter status,

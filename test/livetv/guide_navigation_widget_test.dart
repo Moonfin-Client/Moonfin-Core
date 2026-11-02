@@ -170,6 +170,7 @@ void main() {
     client = _MockMediaServerClient();
     liveTvApi = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTvApi);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userId).thenReturn('user');
 
     when(
@@ -497,6 +498,19 @@ void main() {
     expect(_focusedLabel(), 'GuideWindowBar:0');
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideFilter:0');
+  });
+
+  testWidgets('LEFT from the channel column jumps to the genre rail', (
+    tester,
+  ) async {
+    await pumpGuide(tester);
+
+    _nodeLabelled(tester, 'GuideChannel:5').requestFocus();
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.pumpAndSettle();
     expect(_focusedLabel(), 'GuideFilter:0');
   });

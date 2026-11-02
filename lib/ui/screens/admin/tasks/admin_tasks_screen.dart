@@ -95,30 +95,28 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
                 icon: Icons.schedule,
               ),
             ),
-            Padding(
+            // Scrolls instead of wrapping: plugin categories can fill a phone screen.
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilterChip(
-                      label: Text(l10n.all),
-                      selected: _categoryFilter == null,
-                      onSelected: (_) => setState(() => _categoryFilter = null),
+              child: Row(
+                spacing: 8,
+                children: [
+                  FilterChip(
+                    label: Text(l10n.all),
+                    selected: _categoryFilter == null,
+                    onSelected: (_) => setState(() => _categoryFilter = null),
+                  ),
+                  ...categories.map(
+                    (category) => FilterChip(
+                      label: Text(category),
+                      selected: _categoryFilter == category,
+                      onSelected: (_) => setState(() {
+                        _categoryFilter = _categoryFilter == category ? null : category;
+                      }),
                     ),
-                    ...categories.map(
-                      (category) => FilterChip(
-                        label: Text(category),
-                        selected: _categoryFilter == category,
-                        onSelected: (_) => setState(() {
-                          _categoryFilter = _categoryFilter == category ? null : category;
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             Expanded(

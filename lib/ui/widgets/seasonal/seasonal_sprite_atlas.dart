@@ -112,6 +112,10 @@ class SeasonalSpriteAtlas {
         SeasonalArtwork.ghost.paint(canvas, _logicalCell);
       case SeasonalSprite.candy:
         SeasonalArtwork.candy.paint(canvas, _logicalCell);
+      case SeasonalSprite.lantern:
+        _lantern(canvas);
+      case SeasonalSprite.egg:
+        _egg(canvas);
       default:
         if (sprite >= SeasonalSprite.bat) {
           _bat(canvas, sprite - SeasonalSprite.bat);
@@ -121,9 +125,11 @@ class SeasonalSpriteAtlas {
     }
   }
 
-  /// One frame of confetti or a petal turning over.
+  /// One frame of confetti, a petal or a heart turning over.
   static void _flipFrame(Canvas canvas, int sprite) {
-    final base = sprite >= SeasonalSprite.petal
+    final base = sprite >= SeasonalSprite.heart
+        ? SeasonalSprite.heart
+        : sprite >= SeasonalSprite.petal
         ? SeasonalSprite.petal
         : sprite >= SeasonalSprite.confettiDisc
         ? SeasonalSprite.confettiDisc
@@ -147,6 +153,30 @@ class SeasonalSpriteAtlas {
           ),
           paint,
         );
+      case SeasonalSprite.heart:
+        final heart = Path()
+          ..moveTo(16, 28)
+          ..cubicTo(6, 21, 2, 15, 2, 10)
+          ..cubicTo(2, 5, 6, 3, 9.5, 3)
+          ..cubicTo(12.5, 3, 15, 5, 16, 8)
+          ..cubicTo(17, 5, 19.5, 3, 22.5, 3)
+          ..cubicTo(26, 3, 30, 5, 30, 10)
+          ..cubicTo(30, 15, 26, 21, 16, 28)
+          ..close();
+        canvas.save();
+        canvas.translate(16, 16);
+        canvas.scale(squash, 1);
+        canvas.translate(-16, -16);
+        canvas.drawPath(
+          heart,
+          Paint()
+            ..shader = ui.Gradient.radial(
+              const Offset(11, 9),
+              20,
+              const [_white, Color(0xFFC8C8C8)],
+            ),
+        );
+        canvas.restore();
       default:
         // A cherry blossom petal, notched at the tip and a little darker at its base.
         final petal = Path()
@@ -170,6 +200,84 @@ class SeasonalSpriteAtlas {
             ),
         );
         canvas.restore();
+    }
+  }
+
+  /// A painted egg. The band and dots come out a darker shade of its color.
+  static void _egg(Canvas canvas) {
+    final egg = Rect.fromCenter(center: const Offset(16, 17), width: 20, height: 27);
+    canvas.drawOval(
+      egg,
+      Paint()
+        ..shader = ui.Gradient.radial(
+          const Offset(12, 11),
+          20,
+          const [_white, Color(0xFFDADADA)],
+        ),
+    );
+    canvas.save();
+    canvas.clipPath(Path()..addOval(egg));
+    final band = Path()..moveTo(4, 17);
+    for (var k = 0; k <= 8; k++) {
+      band.lineTo(4 + k * 3, k.isEven ? 15.5 : 19.5);
+    }
+    canvas.drawPath(
+      band,
+      Paint()
+        ..color = _vein
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..strokeJoin = StrokeJoin.round,
+    );
+    final dots = Paint()..color = _vein;
+    for (final dot in const [Offset(12, 9), Offset(20, 10), Offset(16, 25), Offset(11, 24), Offset(21, 24)]) {
+      canvas.drawCircle(dot, 1.3, dots);
+    }
+    canvas.restore();
+  }
+
+  /// A red paper lantern with gold caps and a tassel, lit from inside.
+  static void _lantern(Canvas canvas) {
+    const gold = Color(0xFFE0A526);
+    canvas.drawLine(
+      const Offset(16, 0.5),
+      const Offset(16, 4),
+      Paint()
+        ..color = gold
+        ..strokeWidth = 0.9,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(const Rect.fromLTWH(11, 3.5, 10, 3), const Radius.circular(1)),
+      Paint()..color = gold,
+    );
+    final body = Rect.fromCenter(center: const Offset(16, 15), width: 24, height: 18);
+    canvas.drawOval(
+      body,
+      Paint()
+        ..shader = ui.Gradient.radial(
+          const Offset(16, 15),
+          13,
+          const [Color(0xFFFFB04A), Color(0xFFE53322), Color(0xFF9E1414)],
+          const [0, 0.45, 1],
+        ),
+    );
+    final rib = Paint()
+      ..color = const Color(0x66600808)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    for (final width in const [8.0, 16.0]) {
+      canvas.drawOval(Rect.fromCenter(center: const Offset(16, 15), width: width, height: 18), rib);
+    }
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(const Rect.fromLTWH(11.5, 23, 9, 2.5), const Radius.circular(1)),
+      Paint()..color = gold,
+    );
+    final tassel = Paint()
+      ..color = const Color(0xFFD32F2F)
+      ..strokeWidth = 0.9
+      ..strokeCap = StrokeCap.round;
+    for (final x in const [14.5, 16.0, 17.5]) {
+      canvas.drawLine(Offset(16, 25.5), Offset(x, 31), tassel);
     }
   }
 

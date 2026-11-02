@@ -207,8 +207,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     final displayName = (user.name ?? l10n.unknown).trim();
     final initials =
         displayName.isEmpty ? '?' : displayName.characters.first.toUpperCase();
-    final lastActivity =
-        DateTime.tryParse('${user.raw['LastActivityDate'] ?? ''}');
+    final lastActivity = parseServerDate(user.raw['LastActivityDate']);
     final tag = user.primaryImageTag;
     String? avatarUrl;
     if (tag != null) {

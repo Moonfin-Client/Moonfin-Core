@@ -23,11 +23,15 @@ class JellyfinSystemApi implements SystemApi {
     try {
       final response = await _dio.get(
         '/System/Ping',
-        options: Options(responseType: ResponseType.plain),
+        options: Options(
+          responseType: ResponseType.plain,
+          receiveTimeout: SystemApi.pingTimeout,
+        ),
       );
       return response.statusCode == 200;
-    } catch (_) {
-      return false;
+    } catch (e) {
+      // A refusal for the token (revoked, say) still came from the server.
+      return pingAnsweredDespite(e);
     }
   }
 }

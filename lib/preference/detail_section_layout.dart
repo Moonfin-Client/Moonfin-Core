@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 
 import '../data/services/plugin_sync_service.dart';
 import '../l10n/app_localizations.dart';
+import '../util/platform_detection.dart';
 import 'button_layout.dart';
 import 'preference_constants.dart';
 import 'user_preferences.dart';
@@ -13,6 +14,8 @@ const _modern = DetailScreenStyle.modern;
 const _spotlight = DetailScreenStyle.spotlight;
 const _nouveau = DetailScreenStyle.nouveau;
 const _minimalist = DetailScreenStyle.minimalist;
+const _stage = DetailScreenStyle.stage;
+const _premiere = DetailScreenStyle.premiere;
 
 /// Where a [DetailSection] sits on the settings screen.
 enum DetailSectionGroup { header, sections, seerr, person, collection, other }
@@ -31,11 +34,15 @@ enum DetailSection {
     _spotlight,
     _nouveau,
     _minimalist,
+    _stage,
+    _premiere,
   }),
   tagline('tagline', Icons.format_quote, DetailSectionGroup.header, {
     _classic,
     _modern,
     _spotlight,
+    _stage,
+    _premiere,
   }),
   poster('poster', Icons.image_outlined, DetailSectionGroup.header, {_classic}),
   versionBadge(
@@ -54,18 +61,24 @@ enum DetailSection {
     _modern,
     _spotlight,
     _nouveau,
+    _stage,
+    _premiere,
   }),
   crew('crew', Icons.movie_creation_outlined, DetailSectionGroup.sections, {
     _classic,
     _modern,
     _spotlight,
     _nouveau,
+    _stage,
+    _premiere,
   }),
   studios('studios', Icons.business_outlined, DetailSectionGroup.sections, {
     _classic,
     _modern,
     _spotlight,
     _nouveau,
+    _stage,
+    _premiere,
   }),
   chapters('chapters', Icons.bookmarks_outlined, DetailSectionGroup.sections, {
     _classic,
@@ -78,16 +91,25 @@ enum DetailSection {
     _modern,
     _spotlight,
     _nouveau,
+    _minimalist,
+    _stage,
+    _premiere,
   }),
   collections(
     'collections',
     Icons.collections_bookmark_outlined,
     DetailSectionGroup.sections,
-    {_classic, _modern, _spotlight},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
   ),
   moreLikeThis(
     'moreLikeThis',
     Icons.recommend_outlined,
+    DetailSectionGroup.sections,
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+  ),
+  reviews(
+    'reviews',
+    Icons.rate_review_outlined,
     DetailSectionGroup.sections,
     {_classic, _modern, _spotlight, _nouveau},
   ),
@@ -95,7 +117,7 @@ enum DetailSection {
     'moreEpisodes',
     Icons.view_list_outlined,
     DetailSectionGroup.sections,
-    {_classic, _modern, _spotlight},
+    {_classic, _modern, _spotlight, _stage, _premiere},
   ),
   mediaInfo('mediaInfo', Icons.info_outline, DetailSectionGroup.sections, {
     _modern,
@@ -106,25 +128,33 @@ enum DetailSection {
     'seerrGenresTags',
     Icons.sell_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
   ),
   seerrStats('seerrStats', Icons.bar_chart, DetailSectionGroup.seerr, {
     _classic,
     _modern,
     _spotlight,
     _nouveau,
+    _stage,
+    _premiere,
   }),
+  seerrStreaming(
+    'seerrStreaming',
+    Icons.live_tv_outlined,
+    DetailSectionGroup.seerr,
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+  ),
   seerrRecommendations(
     'seerrRecommendations',
     Icons.auto_awesome_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
   ),
   seerrSimilar(
     'seerrSimilar',
     Icons.grid_view_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
   ),
   seerrCollection(
     'seerrCollection',
@@ -153,6 +183,12 @@ enum DetailSection {
   birthplace('birthplace', Icons.place_outlined, DetailSectionGroup.person, {
     _classic,
     _modern,
+    _nouveau,
+  }),
+  personLinks('personLinks', Icons.link, DetailSectionGroup.person, {
+    _classic,
+    _modern,
+    _spotlight,
     _nouveau,
   }),
   guestAppearances(
@@ -191,15 +227,33 @@ enum DetailSection {
 
   /// Whether picking [style] can put this section on screen. Minimalist only
   /// draws video pages and hands every other page to Spotlight, so it also
-  /// shows whatever Spotlight does.
+  /// shows whatever Spotlight does. Stage and Premiere hand people and
+  /// collections to Modern the same way, and Quick Look's full page is Modern.
   bool isAvailableIn(DetailScreenStyle style) =>
       styles.contains(style) ||
       (style == DetailScreenStyle.minimalist &&
-          styles.contains(DetailScreenStyle.spotlight));
+          styles.contains(DetailScreenStyle.spotlight)) ||
+      (style == DetailScreenStyle.quickLook &&
+          styles.contains(DetailScreenStyle.modern)) ||
+      ((style == DetailScreenStyle.stage ||
+              style == DetailScreenStyle.premiere) &&
+          _drawnByModern &&
+          styles.contains(DetailScreenStyle.modern));
 
-  /// Whether this device and server can show it at all.
-  bool get isOffered => switch (group) {
-    DetailSectionGroup.seerr =>
+  bool get _drawnByModern =>
+      group == DetailSectionGroup.person ||
+      group == DetailSectionGroup.collection ||
+      this == DetailSection.seerrPersonAppearances ||
+      this == DetailSection.seerrPersonCrew;
+
+  /// Whether this device and server can show it at all. A TV has no browser
+  /// to open a person's links in, and reviews need a plugin that serves them.
+  bool get isOffered => switch (this) {
+    DetailSection.personLinks => !PlatformDetection.isTV,
+    DetailSection.reviews =>
+      GetIt.instance.isRegistered<PluginSyncService>() &&
+          GetIt.instance<PluginSyncService>().tmdbReviewsAvailable,
+    _ when group == DetailSectionGroup.seerr =>
       GetIt.instance.isRegistered<PluginSyncService>() &&
           GetIt.instance<PluginSyncService>().seerrAvailable,
     _ => true,
@@ -219,10 +273,12 @@ enum DetailSection {
     DetailSection.extras => l10n.detailSectionExtras,
     DetailSection.collections => l10n.detailSectionCollections,
     DetailSection.moreLikeThis => l10n.detailSectionMoreLikeThis,
+    DetailSection.reviews => l10n.detailSectionReviews,
     DetailSection.moreEpisodes => l10n.detailSectionMoreEpisodes,
     DetailSection.mediaInfo => l10n.detailSectionMediaInfo,
     DetailSection.seerrGenresTags => l10n.detailSectionSeerrGenresTags,
     DetailSection.seerrStats => l10n.detailSectionSeerrStats,
+    DetailSection.seerrStreaming => l10n.detailSectionSeerrStreaming,
     DetailSection.seerrRecommendations =>
       l10n.detailSectionSeerrRecommendations,
     DetailSection.seerrSimilar => l10n.detailSectionSeerrSimilar,
@@ -232,6 +288,7 @@ enum DetailSection {
     DetailSection.seerrPersonCrew => l10n.detailSectionSeerrPersonCrew,
     DetailSection.biography => l10n.detailSectionBiography,
     DetailSection.birthplace => l10n.detailSectionBirthplace,
+    DetailSection.personLinks => l10n.detailSectionPersonLinks,
     DetailSection.guestAppearances => l10n.detailSectionGuestAppearances,
     DetailSection.musicVideos => l10n.detailSectionMusicVideos,
     DetailSection.playlistOrder => l10n.detailSectionPlaylistOrder,
@@ -247,6 +304,7 @@ enum DetailSection {
     DetailSection.mediaInfo => l10n.detailSectionMediaInfoSubtitle,
     DetailSection.seerrPersonAppearances ||
     DetailSection.seerrPersonCrew => l10n.detailSectionPersonPagesSubtitle,
+    DetailSection.personLinks => l10n.detailSectionPersonLinksSubtitle,
     _ => null,
   };
 }

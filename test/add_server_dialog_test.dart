@@ -6,20 +6,35 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
-import 'package:moonfin/ui/screens/auth/server_select_screen.dart';
+import 'package:moonfin/ui/screens/auth/add_server_dialog.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
-import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/auth/models/server_addition_state.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
-import 'package:moonfin/util/insecure_certificates.dart';
 
 class _MockServerRepository extends Mock implements ServerRepository {}
 
+final _server = Server(
+  id: 'server-1',
+  name: 'Living Room',
+  address: 'http://localhos:8096',
+  version: '10.11.0',
+  serverType: ServerType.jellyfin,
+  dateAdded: DateTime(2026),
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  late AppLocalizations l10n;
+
+  setUpAll(() async {
+    l10n = await AppLocalizations.delegate.load(const Locale('en'));
+  });
 
   setUp(() async {
     await GetIt.instance.reset();
@@ -35,12 +50,14 @@ void main() {
     gAllowSelfSignedCertificates = false;
   });
 
-  Future<({TextEditingController controller, Future<void> closed})> openDialog(
+  Future<({TextEditingController controller, Future<AddServerOutcome?> closed})>
+  openDialog(
     WidgetTester tester, {
     ServerRepository? serverRepo,
+    String address = 'http://localhos',
   }) async {
-    final controller = TextEditingController(text: 'http://localhos');
-    late Future<void> closed;
+    final controller = TextEditingController(text: address);
+    late Future<AddServerOutcome?> closed;
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildTheme(ThemeRegistry.active),
@@ -50,15 +67,10 @@ void main() {
           body: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {
-                // Same presentation path as the real screen: the dialog is
-                // wrapped by showFocusRestoringDialog's back-key handler.
-                closed = showFocusRestoringDialog<void>(
+                closed = showAddServerDialog(
                   context: context,
-                  builder: (ctx) => AddServerDialog(
-                    l10n: AppLocalizations.of(ctx),
-                    controller: controller,
-                    serverRepo: serverRepo ?? _MockServerRepository(),
-                  ),
+                  controller: controller,
+                  serverRepo: serverRepo ?? _MockServerRepository(),
                 );
               },
               child: const Text('Open'),
@@ -72,6 +84,19 @@ void main() {
     return (controller: controller, closed: closed);
   }
 
+  _MockServerRepository repoThatFinds(List<Server> saved) {
+    final repo = _MockServerRepository();
+    when(() => repo.servers).thenReturn(saved);
+    when(
+      () => repo.addServer(
+        any(),
+        offerSiloNative: any(named: 'offerSiloNative'),
+      ),
+    ).thenAnswer((_) async => _server);
+    when(() => repo.deleteServer(any())).thenAnswer((_) async {});
+    return repo;
+  }
+
   testWidgets('backspace deletes text instead of closing the dialog', (
     tester,
   ) async {
@@ -79,7 +104,7 @@ void main() {
     var didClose = false;
     closed.then((_) => didClose = true);
 
-    // Desktop branch: plain TextField, autofocused on open.
+    // The desktop field, focused on open.
     expect(find.byType(TextField), findsOneWidget);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
@@ -97,12 +122,11 @@ void main() {
     var didClose = false;
     closed.then((_) => didClose = true);
 
-    // Move focus off the field onto the Cancel button: backspace is now
-    // "back", not text editing.
+    // Move focus off the field onto Connect: backspace is now "back", not
+    // text editing, and an address filled in up front has no choices behind
+    // it to go back to.
     tester
-        .widget<OutlinedButton>(
-          find.widgetWithText(OutlinedButton, 'Cancel'),
-        )
+        .widget<FilledButton>(find.widgetWithText(FilledButton, 'Connect'))
         .focusNode
         ?.requestFocus();
     await tester.pump();
@@ -118,7 +142,13 @@ void main() {
     tester,
   ) async {
     final repo = _MockServerRepository();
-    when(() => repo.addServer(any())).thenAnswer((_) async => null);
+    when(() => repo.servers).thenReturn(const []);
+    when(
+      () => repo.addServer(
+        any(),
+        offerSiloNative: any(named: 'offerSiloNative'),
+      ),
+    ).thenAnswer((_) async => null);
     when(() => repo.lastFailure).thenReturn(
       const ServerUnableToConnect(
         candidatesTried: ['https://localhos', 'http://localhos'],
@@ -127,14 +157,13 @@ void main() {
     );
     await openDialog(tester, serverRepo: repo);
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Connect'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Connect'));
     await tester.pumpAndSettle();
 
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.untrustedServerCertificate), findsOneWidget);
 
     await tester.tap(
-      find.widgetWithText(OutlinedButton, l10n.settingsAllowSelfSignedCerts),
+      find.widgetWithText(TextButton, l10n.settingsAllowSelfSignedCerts),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.text(l10n.enable));
@@ -147,6 +176,102 @@ void main() {
       ),
       isTrue,
     );
-    verify(() => repo.addServer('https://localhos')).called(1);
+    verify(
+      () => repo.addServer(
+        'https://localhos',
+        offerSiloNative: any(named: 'offerSiloNative'),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('an empty address opens on the choices', (tester) async {
+    final (controller: _, :closed) = await openDialog(tester, address: '');
+
+    expect(find.text(l10n.addServerChooseHow), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
+
+    await tester.tap(find.text(l10n.signInWithPlex));
+    await tester.pumpAndSettle();
+
+    final outcome = await closed;
+    expect(outcome, isA<AddServerPlexSignIn>());
+    expect((outcome! as AddServerPlexSignIn).address, isNull);
+  });
+
+  testWidgets('Emby Connect closes with its own outcome', (tester) async {
+    final (controller: _, :closed) = await openDialog(tester, address: '');
+
+    await tester.tap(find.text(l10n.embyConnect));
+    await tester.pumpAndSettle();
+
+    expect(await closed, isA<AddServerEmbyConnect>());
+  });
+
+  testWidgets('back from the address field returns to the choices', (
+    tester,
+  ) async {
+    await openDialog(tester, address: '');
+
+    await tester.tap(find.text(l10n.serverAddress));
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsOneWidget);
+
+    await tester.tap(find.byTooltip(l10n.back));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text(l10n.addServerChooseHow), findsOneWidget);
+  });
+
+  testWidgets('a found server is shown before Continue signs in to it', (
+    tester,
+  ) async {
+    final repo = repoThatFinds(const []);
+    final (controller: _, :closed) = await openDialog(tester, serverRepo: repo);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Connect'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.addServerFound), findsOneWidget);
+    expect(find.text('Living Room'), findsOneWidget);
+    expect(find.text('Jellyfin'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, l10n.continueAction));
+    await tester.pumpAndSettle();
+
+    final outcome = await closed;
+    expect((outcome! as AddServerSaved).serverId, 'server-1');
+    verifyNever(() => repo.deleteServer(any()));
+  });
+
+  testWidgets('a different address removes the server the dialog just added', (
+    tester,
+  ) async {
+    final repo = repoThatFinds(const []);
+    await openDialog(tester, serverRepo: repo);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Connect'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(l10n.addServerUseDifferentAddress));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.deleteServer('server-1')).called(1);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text(l10n.addServerFound), findsNothing);
+  });
+
+  testWidgets('a different address keeps a server that was already saved', (
+    tester,
+  ) async {
+    final repo = repoThatFinds([_server]);
+    await openDialog(tester, serverRepo: repo);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Connect'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(l10n.addServerUseDifferentAddress));
+    await tester.pumpAndSettle();
+
+    verifyNever(() => repo.deleteServer(any()));
+    expect(find.byType(TextField), findsOneWidget);
   });
 }

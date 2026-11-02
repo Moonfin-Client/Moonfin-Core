@@ -1,3 +1,5 @@
+import '../util/server_date.dart';
+
 class DeviceInfoDto {
   final String id;
   final String? name;
@@ -35,9 +37,7 @@ class DeviceInfoDto {
         appVersion: json['AppVersion'] as String?,
         lastUserName: json['LastUserName'] as String?,
         lastUserId: json['LastUserId'] as String?,
-        dateLastActivity: json['DateLastActivity'] != null
-            ? DateTime.tryParse(json['DateLastActivity'] as String)
-            : null,
+        dateLastActivity: parseServerDate(json['DateLastActivity']),
         iconUrl: json['IconUrl'] as String?,
         reportedDeviceId: json['ReportedDeviceId'] as String?,
       );

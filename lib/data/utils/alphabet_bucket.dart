@@ -18,3 +18,10 @@ bool matchesAlphabetBucket(AggregatedItem item, String letter) {
   if (letter == '#') return !_leadingLetter.hasMatch(name);
   return name.startsWith(letter.toUpperCase());
 }
+
+/// The letter [item] files under on the alphabet strip, `#` for anything
+/// not starting with a letter.
+String alphabetBucketOf(AggregatedItem item) {
+  final name = alphabetSortKey(item);
+  return _leadingLetter.hasMatch(name) ? name[0] : '#';
+}

@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Επιλέξτε ποιο θέμα θα εμφανίζεται στο Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Εφαρμογή",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Είδη ακουστικών βιβλίων",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Επιλέξτε ποια είδη θα εμφανίζονται στο Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Ανακαλύψτε ηχητικά βιβλία",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Δημοφιλείς τίτλοι δημόσιου τομέα από LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} τίτλοι",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Κάντε κύλιση αριστερά",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Ανακαλύπτω",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Τάσεις τίτλων ανά θέμα από Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Δεν υπάρχουν ακόμα στοιχεία σελιδοδείκτη",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Ενεργοποίηση Προβολή φακέλου",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Εμφάνιση επιλογής περιήγησης φακέλου",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Βιβλιοθήκη Ορατότητα",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Επιλεγμένο περιεχόμενο, εμφάνιση",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Μέγεθος αφίσας, τύπος εικόνας, προβολή φακέλου",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB και πηγές αξιολόγησης",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Απέτυχε η εξαγωγή του αρχείου .cbr.",
     "cb7ExtractionUnavailable": "Η εξαγωγή CB7 δεν είναι διαθέσιμη σε αυτήν την πλατφόρμα.",
     "cb7ExtractionPluginUnavailable": "Το πρόσθετο εξαγωγής CB7 δεν είναι διαθέσιμο σε αυτήν την πλατφόρμα.",
-    "closeGenrePanel": "Κλείσιμο του πίνακα ειδών",
     "loadingShuffle": "Φόρτωση τυχαίας αναπαραγωγής...",
     "libraryShuffleLabel": "ΤΥΧΑΙΑ ΑΠΟ ΒΙΒΛΙΟΘΗΚΗ",
     "randomShuffleLabel": "ΤΥΧΑΙΑ ΕΠΙΛΟΓΗ",

@@ -31,6 +31,7 @@ import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/signed_in_server_features.dart';
 import 'settings_app_bar.dart';
 
 const double _kHomeSectionTileRadius = 16;
@@ -109,9 +110,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   /// the rows that need Live TV.
   bool _serverHasLiveTv = true;
 
-  /// The disabled groups that are open, by [_getSectionCategory]. General
-  /// starts open since it's short.
-  final Set<int> _openGroups = {1};
+  /// Read once: who is signed in doesn't change while this screen is open.
+  final bool _liveTvOnAnyServer = liveTvOnAnySignedInServer();
+  final bool _musicOnAnyServer = musicOnAnySignedInServer();
+  final bool _playlistsOnAnyServer = playlistsOnAnySignedInServer();
+
+  /// The disabled groups that are open, by [_getSectionCategory].
+  final Set<int> _openGroups = {};
   final Map<int, FocusNode> _groupHeaderFocusNodes = {};
 
   /// Seerr slider rows whose slider Seerr still has but this client can't
@@ -448,6 +453,18 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         type == HomeSectionType.audioPlaylists;
   }
 
+  /// Every music section, the audio rows and the music favorites alike.
+  static bool _isMusicSectionType(HomeSectionType type) => const {
+    HomeSectionType.resumeAudio,
+    HomeSectionType.audioArtists,
+    HomeSectionType.audioAlbums,
+    HomeSectionType.audioPlaylists,
+    HomeSectionType.favoriteArtists,
+    HomeSectionType.favoriteMusicVideos,
+    HomeSectionType.favoriteAlbums,
+    HomeSectionType.favoriteSongs,
+  }.contains(type);
+
   bool _isSinceYouWatchedSectionType(HomeSectionType type) {
     return type == HomeSectionType.sinceYouWatched1 ||
         type == HomeSectionType.sinceYouWatched2 ||
@@ -655,8 +672,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final hiddenByStudios =
         section.type == HomeSectionType.studios &&
         !_prefs.get(UserPreferences.displayStudiosRows);
+    // Also hidden when every signed-in server lacks Live TV (all Silo, say),
+    // since the rows could never show anything.
     final hiddenByLiveTv =
-        !_serverHasLiveTv &&
+        (!_serverHasLiveTv || !_liveTvOnAnyServer) &&
         (section.type == HomeSectionType.liveTv ||
             section.type == HomeSectionType.onNow ||
             section.type == HomeSectionType.activeRecordings);
@@ -707,6 +726,14 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final hiddenByRewatch =
         section.type == HomeSectionType.rewatch && !showRewatch;
 
+    // Every signed-in server lacks music (all Silo, say): its rows could never
+    // show anything.
+    final hiddenByMusic =
+        _isMusicSectionType(section.type) && !_musicOnAnyServer;
+
+    final hiddenByPlaylistSupport =
+        section.type == HomeSectionType.playlists && !_playlistsOnAnyServer;
+
     return hiddenByFavorites ||
         hiddenByCollections ||
         hiddenByServer ||
@@ -721,7 +748,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         hiddenBySeasonal ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
-        hiddenByRewatch;
+        hiddenByRewatch ||
+        hiddenByMusic ||
+        hiddenByPlaylistSupport;
   }
 
   List<int> _visibleSectionIndices() {
@@ -751,7 +780,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     3 => l10n.favorites,
     4 => l10n.homeRowsGenresAndStudios,
     5 => l10n.playlists,
-    6 => l10n.seerr,
+    6 => seerrBrand(l10n.seerr),
     7 => l10n.homeRowsExternalLists,
     _ => l10n.general,
   };
@@ -924,10 +953,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
       final seerrSlidersFuture = _fetchSeerrSlidersForHomeSections();
+      final serverSectionsFuture = _fetchServerSectionsForHomeSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
       final discoveredSeerrSliders = await seerrSlidersFuture;
+      final discoveredServerSections = await serverSectionsFuture;
       if (!mounted) return;
       var changed = false;
       setState(() {
@@ -943,6 +974,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         );
         final mergedSeerrSliderSections = discoveredSeerrSliders != null &&
             _mergeSeerrSliderSections(discoveredSeerrSliders);
+        final mergedServerSections = discoveredServerSections != null &&
+            _mergeServerSections(discoveredServerSections);
 
         final beforeIds = _sections.map((s) => s.stableId).toList();
         _sortSectionsEnabledAboveDisabled();
@@ -960,6 +993,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             mergedGenreSections ||
             mergedPlaylistSections ||
             mergedSeerrSliderSections ||
+            mergedServerSections ||
             sortChanged;
         _rebuildFocusNodes();
       });
@@ -975,10 +1009,18 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         if (PlatformDetection.isTV) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
+            // The rows can't take focus while they load, so Settings parks it
+            // on the reset button on the way in. The first row takes it over.
+            final focused = FocusManager.instance.primaryFocus;
+            if (focused != null &&
+                (_focusNodes.contains(focused) ||
+                    _groupHeaderFocusNodes.containsValue(focused))) {
               return;
             }
-            final first = _visibleSectionIndices().firstOrNull;
+            // A disabled row waits in a closed group, so it can't take focus.
+            final first = _visibleSectionIndices()
+                .where((i) => _sections[i].enabled)
+                .firstOrNull;
             if (first != null) _focusSectionAndEnsureVisible(first);
           });
         }
@@ -1358,6 +1400,80 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           s.pluginSource == HomeSectionPluginSource.genres &&
           s.serverId == serverId &&
           !freshIds.contains(s.stableId),
+    );
+    if (_sections.length != before) changed = true;
+
+    return changed;
+  }
+
+  /// The rows the active server curates itself (Silo's home sections), or
+  /// null when it has none to offer or they couldn't be read, in which case
+  /// the rows already listed are left as they are.
+  Future<List<ServerHomeSection>?> _fetchServerSectionsForHomeSections() async {
+    try {
+      final api = GetIt.instance<MediaServerClient>().itemsApi;
+      if (api is! ServerHomeSectionsApi) return null;
+      return await (api as ServerHomeSectionsApi).getServerHomeSections();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Lists the server's own rows as entries the user can switch on (off
+  /// until then), keeps their titles current and drops the ones the server
+  /// no longer has. Only this server's entries are touched.
+  bool _mergeServerSections(List<ServerHomeSection> discovered) {
+    final serverId = GetIt.instance<MediaServerClient>().baseUrl;
+    var changed = false;
+
+    bool isOwn(HomeSectionConfig s) =>
+        s.isPluginDynamic &&
+        s.pluginSource == HomeSectionPluginSource.server &&
+        s.serverId == serverId;
+
+    // A row Moonbase's admin defaults added by type ("type:<kind>") already
+    // stands for this server's first row of that kind, so only that one
+    // isn't listed again.
+    bool isType(HomeSectionConfig s) =>
+        s.isPluginDynamic &&
+        s.pluginSource == HomeSectionPluginSource.server &&
+        (s.pluginSection ?? '').startsWith('type:');
+    final byType = {
+      for (final s in _sections)
+        if (isType(s) && ((s.serverId ?? '').isEmpty || s.serverId == serverId))
+          s.pluginSection,
+    };
+
+    final freshIds = <String>{};
+    var nextOrder = _sections.length;
+    for (final section in discovered) {
+      final standsIn = byType.remove('type:${section.kind}');
+      final cfg = HomeSectionConfig.pluginDynamic(
+        serverId: serverId,
+        pluginSection: section.id,
+        pluginDisplayText: section.title,
+        pluginSource: HomeSectionPluginSource.server,
+        enabled: false,
+        order: nextOrder++,
+      );
+      freshIds.add(cfg.stableId);
+      final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
+      if (idx >= 0) {
+        if (_sections[idx].pluginDisplayText != section.title) {
+          _sections[idx] = _sections[idx].copyWith(
+            pluginDisplayText: section.title,
+          );
+          changed = true;
+        }
+      } else if (!standsIn) {
+        _addSection(cfg);
+        changed = true;
+      }
+    }
+
+    final before = _sections.length;
+    _sections.removeWhere(
+      (s) => isOwn(s) && !isType(s) && !freshIds.contains(s.stableId),
     );
     if (_sections.length != before) changed = true;
 
@@ -1776,89 +1892,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           ? cfg.pluginDisplayText!
           : (cfg.pluginSection ?? l10n.none);
     }
-    return _labelForType(cfg.type, l10n);
+    return homeSectionTypeLabel(cfg.type, l10n);
   }
-
-  String _labelForType(HomeSectionType type, AppLocalizations l10n) =>
-      switch (type) {
-        HomeSectionType.mediaBar => l10n.mediaBar,
-        HomeSectionType.latestMedia => l10n.latestMedia,
-        HomeSectionType.recentlyReleased => l10n.recentlyReleased,
-        HomeSectionType.libraryTilesSmall => l10n.myMedia,
-        HomeSectionType.libraryButtons => l10n.myMediaSmall,
-        HomeSectionType.resume => l10n.continueWatching,
-        HomeSectionType.resumeAudio => l10n.resumeAudio,
-        HomeSectionType.resumeBook => l10n.resumeBooks,
-        HomeSectionType.activeRecordings => l10n.activeRecordings,
-        HomeSectionType.nextUp => l10n.nextUp,
-        HomeSectionType.playlists => l10n.playlists,
-        HomeSectionType.audioArtists => l10n.artists,
-        HomeSectionType.audioAlbums => l10n.albums,
-        HomeSectionType.audioPlaylists => l10n.audioPlaylists,
-        HomeSectionType.favoriteMovies =>
-          'Favorite ${FavoriteTypeFilter.movie.displayName}',
-        HomeSectionType.favoriteSeries =>
-          'Favorite ${FavoriteTypeFilter.series.displayName}',
-        HomeSectionType.favoriteEpisodes =>
-          'Favorite ${FavoriteTypeFilter.episode.displayName}',
-        HomeSectionType.favoritePeople =>
-          'Favorite ${FavoriteTypeFilter.person.displayName}',
-        HomeSectionType.favoriteArtists =>
-          'Favorite ${FavoriteTypeFilter.musicArtist.displayName}',
-        HomeSectionType.favoriteMusicVideos =>
-          'Favorite ${FavoriteTypeFilter.musicVideo.displayName}',
-        HomeSectionType.favoriteAlbums =>
-          'Favorite ${FavoriteTypeFilter.musicAlbum.displayName}',
-        HomeSectionType.favoriteSongs =>
-          'Favorite ${FavoriteTypeFilter.audio.displayName}',
-        HomeSectionType.collections => l10n.collections,
-        HomeSectionType.genres => l10n.genres,
-        HomeSectionType.studios => l10n.studios,
-        HomeSectionType.liveTv => l10n.liveTV,
-        HomeSectionType.onNow => l10n.onNow,
-        HomeSectionType.seerrShortcuts => l10n.seerrShortcutsRow,
-        HomeSectionType.seerrRecentRequests => l10n.recentRequests,
-        HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
-        HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
-        HomeSectionType.seerrPopularMovies => l10n.popularMovies,
-        HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
-        HomeSectionType.seerrPopularSeries => l10n.popularSeries,
-        HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
-        HomeSectionType.seerrTrending => l10n.trending,
-        HomeSectionType.seerrMovieGenres => l10n.movieGenres,
-        HomeSectionType.seerrStudios => l10n.studios,
-        HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
-        HomeSectionType.seerrNetworks => l10n.networks,
-        HomeSectionType.radarrCalendar => 'Upcoming Movies (Radarr)',
-        HomeSectionType.sonarrCalendar => 'Upcoming TV Shows (Sonarr)',
-        HomeSectionType.imdbTop250Movies => l10n.imdbTop250Movies,
-        HomeSectionType.imdbTop250TvShows => l10n.imdbTop250TvShows,
-        HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
-        HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
-        HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
-        HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
-        HomeSectionType.tmdbPopularMovies => 'Popular Movies',
-        HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
-        HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',
-        HomeSectionType.tmdbUpcomingMovies => 'Upcoming Movies',
-        HomeSectionType.tmdbPopularTv => 'Popular TV',
-        HomeSectionType.tmdbTopRatedTv => 'Top Rated TV',
-        HomeSectionType.tmdbAiringTodayTv => 'Airing Today TV',
-        HomeSectionType.tmdbOnTheAirTv => 'On The Air TV',
-        HomeSectionType.tmdbTrendingMovieDaily => 'Trending Movies (Daily)',
-        HomeSectionType.tmdbTrendingMovieWeekly => 'Trending Movies (Weekly)',
-        HomeSectionType.tmdbTrendingTvDaily => 'Trending TV (Daily)',
-        HomeSectionType.tmdbTrendingTvWeekly => 'Trending TV (Weekly)',
-        HomeSectionType.tmdbTrendingAllWeekly => 'Trending All (Weekly)',
-        HomeSectionType.sinceYouWatched1 => 'Since You Watched Row 1',
-        HomeSectionType.sinceYouWatched2 => 'Since You Watched Row 2',
-        HomeSectionType.sinceYouWatched3 => 'Since You Watched Row 3',
-        HomeSectionType.sinceYouWatched4 => 'Since You Watched Row 4',
-        HomeSectionType.sinceYouWatched5 => 'Since You Watched Row 5',
-        HomeSectionType.rewatch => 'Rewatch',
-        HomeSectionType.seasonal => l10n.seasonalRow,
-        HomeSectionType.none => l10n.none,
-      };
 
   Widget _buildLoadingOverlay(BuildContext context) {
     final theme = Theme.of(context);
@@ -2951,6 +2986,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.playlists => 'Playlists row',
       HomeSectionPluginSource.seerr =>
         AppLocalizations.of(context).seerrDiscoveryRows,
+      HomeSectionPluginSource.server =>
+        AppLocalizations.of(context).siloServerRowSubtitle,
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {
@@ -3337,3 +3374,85 @@ class _SectionGroupHeaderState extends State<_SectionGroupHeader> {
     );
   }
 }
+
+/// The name a built-in home row goes by in settings.
+String homeSectionTypeLabel(HomeSectionType type, AppLocalizations l10n) =>
+    switch (type) {
+      HomeSectionType.mediaBar => l10n.mediaBar,
+      HomeSectionType.latestMedia => l10n.latestMedia,
+      HomeSectionType.recentlyReleased => l10n.recentlyReleased,
+      HomeSectionType.libraryTilesSmall => l10n.myMedia,
+      HomeSectionType.libraryButtons => l10n.myMediaSmall,
+      HomeSectionType.resume => l10n.continueWatching,
+      HomeSectionType.resumeAudio => l10n.resumeAudio,
+      HomeSectionType.resumeBook => l10n.resumeBooks,
+      HomeSectionType.activeRecordings => l10n.activeRecordings,
+      HomeSectionType.nextUp => l10n.nextUp,
+      HomeSectionType.playlists => l10n.playlists,
+      HomeSectionType.audioArtists => l10n.artists,
+      HomeSectionType.audioAlbums => l10n.albums,
+      HomeSectionType.audioPlaylists => l10n.audioPlaylists,
+      HomeSectionType.favoriteMovies =>
+        'Favorite ${FavoriteTypeFilter.movie.displayName}',
+      HomeSectionType.favoriteSeries =>
+        'Favorite ${FavoriteTypeFilter.series.displayName}',
+      HomeSectionType.favoriteEpisodes =>
+        'Favorite ${FavoriteTypeFilter.episode.displayName}',
+      HomeSectionType.favoritePeople =>
+        'Favorite ${FavoriteTypeFilter.person.displayName}',
+      HomeSectionType.favoriteArtists =>
+        'Favorite ${FavoriteTypeFilter.musicArtist.displayName}',
+      HomeSectionType.favoriteMusicVideos =>
+        'Favorite ${FavoriteTypeFilter.musicVideo.displayName}',
+      HomeSectionType.favoriteAlbums =>
+        'Favorite ${FavoriteTypeFilter.musicAlbum.displayName}',
+      HomeSectionType.favoriteSongs =>
+        'Favorite ${FavoriteTypeFilter.audio.displayName}',
+      HomeSectionType.collections => l10n.collections,
+      HomeSectionType.genres => l10n.genres,
+      HomeSectionType.studios => l10n.studios,
+      HomeSectionType.liveTv => l10n.liveTV,
+      HomeSectionType.onNow => l10n.onNow,
+      HomeSectionType.seerrShortcuts => seerrBrand(l10n.seerrShortcutsRow),
+      HomeSectionType.seerrRecentRequests => l10n.recentRequests,
+      HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
+      HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
+      HomeSectionType.seerrPopularMovies => l10n.popularMovies,
+      HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
+      HomeSectionType.seerrPopularSeries => l10n.popularSeries,
+      HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
+      HomeSectionType.seerrTrending => l10n.trending,
+      HomeSectionType.seerrMovieGenres => l10n.movieGenres,
+      HomeSectionType.seerrStudios => l10n.studios,
+      HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
+      HomeSectionType.seerrNetworks => l10n.networks,
+      HomeSectionType.radarrCalendar => 'Upcoming Movies (Radarr)',
+      HomeSectionType.sonarrCalendar => 'Upcoming TV Shows (Sonarr)',
+      HomeSectionType.imdbTop250Movies => l10n.imdbTop250Movies,
+      HomeSectionType.imdbTop250TvShows => l10n.imdbTop250TvShows,
+      HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
+      HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
+      HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
+      HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
+      HomeSectionType.tmdbPopularMovies => 'Popular Movies',
+      HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
+      HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',
+      HomeSectionType.tmdbUpcomingMovies => 'Upcoming Movies',
+      HomeSectionType.tmdbPopularTv => 'Popular TV',
+      HomeSectionType.tmdbTopRatedTv => 'Top Rated TV',
+      HomeSectionType.tmdbAiringTodayTv => 'Airing Today TV',
+      HomeSectionType.tmdbOnTheAirTv => 'On The Air TV',
+      HomeSectionType.tmdbTrendingMovieDaily => 'Trending Movies (Daily)',
+      HomeSectionType.tmdbTrendingMovieWeekly => 'Trending Movies (Weekly)',
+      HomeSectionType.tmdbTrendingTvDaily => 'Trending TV (Daily)',
+      HomeSectionType.tmdbTrendingTvWeekly => 'Trending TV (Weekly)',
+      HomeSectionType.tmdbTrendingAllWeekly => 'Trending All (Weekly)',
+      HomeSectionType.sinceYouWatched1 => 'Since You Watched Row 1',
+      HomeSectionType.sinceYouWatched2 => 'Since You Watched Row 2',
+      HomeSectionType.sinceYouWatched3 => 'Since You Watched Row 3',
+      HomeSectionType.sinceYouWatched4 => 'Since You Watched Row 4',
+      HomeSectionType.sinceYouWatched5 => 'Since You Watched Row 5',
+      HomeSectionType.rewatch => 'Rewatch',
+      HomeSectionType.seasonal => l10n.seasonalRow,
+      HomeSectionType.none => l10n.none,
+    };

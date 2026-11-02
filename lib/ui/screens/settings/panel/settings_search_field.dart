@@ -104,7 +104,7 @@ class _SettingsSearchField extends StatelessWidget {
             isFocused: focused,
             inputPurpose: InputPurpose.search,
             keyboardType: KeyboardType.alphabetic,
-            preferSystemIme: prefs.get(UserPreferences.preferSystemImeKeyboard),
+            keyboardStyle: prefs.get(UserPreferences.keyboardStyle),
             hint: hint,
             prefixIcon: Icon(Icons.search, color: iconColor, size: 24),
             textStyle: TextStyle(color: foreground),

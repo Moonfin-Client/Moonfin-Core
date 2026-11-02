@@ -210,6 +210,8 @@ class SeerrUser {
   final String? avatar;
   final String? apiKey;
   final int? permissions;
+  @JsonKey(readValue: _readUserSetting)
+  final String? streamingRegion;
 
   const SeerrUser({
     required this.id,
@@ -219,6 +221,7 @@ class SeerrUser {
     this.avatar,
     this.apiKey,
     this.permissions,
+    this.streamingRegion,
   });
 
   String get bestName => displayName ?? username ?? email ?? 'Unknown';
@@ -269,6 +272,11 @@ class SeerrUser {
 
   Map<String, dynamic> toJson() => _$SeerrUserToJson(this);
 }
+
+// auth/me nests the user's own settings under settings, but toJson writes them
+// flat, so a key is read from either place.
+Object? _readUserSetting(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? (json['settings'] as Map?)?[key];
 
 abstract final class SeerrPermission {
   static const none = 0;
@@ -388,6 +396,7 @@ class SeerrMovieDetails {
   final int? revenue;
   final double? voteAverage;
   final int? voteCount;
+  final double? popularity;
   final List<SeerrGenre> genres;
   final SeerrCredits? credits;
   final SeerrExternalIds? externalIds;
@@ -395,6 +404,7 @@ class SeerrMovieDetails {
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
   final SeerrCollectionRef? collection;
+  final List<SeerrWatchRegion> watchProviders;
 
   const SeerrMovieDetails({
     required this.id,
@@ -411,6 +421,7 @@ class SeerrMovieDetails {
     this.revenue,
     this.voteAverage,
     this.voteCount,
+    this.popularity,
     this.genres = const [],
     this.credits,
     this.externalIds,
@@ -418,6 +429,7 @@ class SeerrMovieDetails {
     this.keywords = const [],
     this.relatedVideos = const [],
     this.collection,
+    this.watchProviders = const [],
   });
 
   factory SeerrMovieDetails.fromJson(Map<String, dynamic> json) =>
@@ -443,6 +455,7 @@ class SeerrTvDetails {
   final int? numberOfEpisodes;
   final double? voteAverage;
   final int? voteCount;
+  final double? popularity;
   final List<SeerrGenre> genres;
   final SeerrCredits? credits;
   final List<SeerrNetwork> networks;
@@ -451,6 +464,7 @@ class SeerrTvDetails {
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
   final List<SeerrSeason> seasons;
+  final List<SeerrWatchRegion> watchProviders;
 
   const SeerrTvDetails({
     required this.id,
@@ -468,6 +482,7 @@ class SeerrTvDetails {
     this.numberOfEpisodes,
     this.voteAverage,
     this.voteCount,
+    this.popularity,
     this.genres = const [],
     this.credits,
     this.networks = const [],
@@ -476,6 +491,7 @@ class SeerrTvDetails {
     this.keywords = const [],
     this.relatedVideos = const [],
     this.seasons = const [],
+    this.watchProviders = const [],
   });
 
   String get displayTitle => name ?? title ?? '';
@@ -536,6 +552,40 @@ class SeerrStudio {
       _$SeerrStudioFromJson(json);
 
   Map<String, dynamic> toJson() => _$SeerrStudioToJson(this);
+}
+
+/// The services streaming a title in one country, which TMDB gets from
+/// JustWatch.
+@JsonSerializable()
+class SeerrWatchRegion {
+  @JsonKey(name: 'iso_3166_1')
+  final String region;
+  final List<SeerrWatchProvider> flatrate;
+
+  const SeerrWatchRegion({required this.region, this.flatrate = const []});
+
+  factory SeerrWatchRegion.fromJson(Map<String, dynamic> json) =>
+      _$SeerrWatchRegionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrWatchRegionToJson(this);
+}
+
+@JsonSerializable()
+class SeerrWatchProvider {
+  final int id;
+  final String name;
+  final String? logoPath;
+
+  const SeerrWatchProvider({
+    required this.id,
+    required this.name,
+    this.logoPath,
+  });
+
+  factory SeerrWatchProvider.fromJson(Map<String, dynamic> json) =>
+      _$SeerrWatchProviderFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrWatchProviderToJson(this);
 }
 
 @JsonSerializable()

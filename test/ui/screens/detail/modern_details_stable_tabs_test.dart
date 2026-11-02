@@ -115,6 +115,7 @@ void main() {
     when(() => vm.episodesLoaded).thenReturn(false);
     when(() => vm.seriesEpisodesLoaded).thenReturn(false);
     when(() => vm.similar).thenReturn([]);
+    when(() => vm.reviews).thenReturn(const []);
     when(() => vm.collectionItems).thenReturn([]);
     when(() => vm.missingCollectionItems).thenReturn([]);
     when(() => vm.parentCollections).thenReturn([]);
@@ -146,6 +147,8 @@ void main() {
     when(() => vm.filmographyMovies).thenReturn([]);
     when(() => vm.filmographySeries).thenReturn([]);
     when(() => vm.supportsNumericUserRatings).thenReturn(false);
+    when(() => vm.supportsPersonalRating).thenReturn(true);
+    when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.isRatingMutationInProgress).thenReturn(false);
     when(() => vm.contextSeasonId).thenReturn(null);
   });

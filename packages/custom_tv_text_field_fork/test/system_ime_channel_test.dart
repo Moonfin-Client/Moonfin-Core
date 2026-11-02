@@ -42,7 +42,7 @@ void main() {
           body: CustomTVTextField(
             key: key,
             controller: TextEditingController(),
-            preferSystemIme: true,
+            keyboardStyle: KeyboardStyle.native,
           ),
         ),
       ),

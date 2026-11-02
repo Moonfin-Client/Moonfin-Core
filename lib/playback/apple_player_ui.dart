@@ -17,12 +17,12 @@ import '../util/platform_detection.dart';
 /// carries a cast item.
 @visibleForTesting
 bool decideNativeApplePlayer({
-  required bool isIOS,
+  required bool offersChoice,
   required ApplePlayerUi pref,
   required CastTargetKind? castKind,
   required bool hasCastItem,
 }) {
-  if (!isIOS || pref != ApplePlayerUi.native) return false;
+  if (!offersChoice || pref != ApplePlayerUi.native) return false;
   if (castKind == null) return true;
   return castKind == CastTargetKind.airPlay && !hasCastItem;
 }
@@ -65,11 +65,15 @@ class ApplePlayerChoiceLatch {
   }
 }
 
+/// The platforms that let the viewer pick between the two players.
+bool get offersApplePlayerChoice =>
+    PlatformDetection.isIOS || PlatformDetection.isAppleTV;
+
 bool _decideNow() {
   final getIt = GetIt.instance;
   final cast = getIt.isRegistered<CastService>() ? getIt<CastService>() : null;
   return decideNativeApplePlayer(
-    isIOS: PlatformDetection.isIOS,
+    offersChoice: offersApplePlayerChoice,
     pref: getIt<UserPreferences>().get(UserPreferences.applePlayerUi),
     castKind: cast?.activeKind,
     hasCastItem: cast?.castItemNotifier.value != null,
@@ -81,14 +85,14 @@ final _latch = ApplePlayerChoiceLatch(_decideNow);
 /// For the player routes' page builders, keyed by the page so a rebuild of the
 /// same route never swaps its screen.
 bool useNativeApplePlayerForRoute(Object routeKey) {
-  if (!PlatformDetection.isIOS) return false;
+  if (!offersApplePlayerChoice) return false;
   return _latch.forRoute(routeKey);
 }
 
 /// For the backend selector and anything inside a player route. Follows the
 /// route's choice while one is up.
 bool useNativeApplePlayer() {
-  if (!PlatformDetection.isIOS) return false;
+  if (!offersApplePlayerChoice) return false;
   return _latch.current();
 }
 
@@ -101,6 +105,6 @@ bool? nativeTransportDocked(UserPreferences prefs) => PlatformDetection.isIOS
 
 /// Called when a player route leaves the navigator.
 void releaseApplePlayerRoute(Object? routeKey) {
-  if (!PlatformDetection.isIOS) return;
+  if (!offersApplePlayerChoice) return;
   _latch.release(routeKey);
 }

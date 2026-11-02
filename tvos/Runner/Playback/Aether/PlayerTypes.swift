@@ -144,6 +144,15 @@ struct PlayerTrack: Identifiable, Equatable {
     }
 }
 
+/// Text traits retained from the subtitle file. Global font and colors remain user-controlled.
+struct SubtitleStyledRun: Equatable {
+    let text: String
+    let isBold: Bool
+    let isItalic: Bool
+    let isUnderlined: Bool
+    let isStruckThrough: Bool
+}
+
 /// A timed subtitle cue in source-clock seconds. Text cues carry `text`.
 /// Bitmap cues carry a pre-rendered `bitmap` positioned by `normalizedRect`
 /// within `canvasSize`, the authored composition canvas that gets mapped onto
@@ -158,4 +167,9 @@ struct SubtitleEvent {
     let bitmapHeight: Int
     var normalizedRect: CGRect? = nil
     var canvasSize: CGSize? = nil
+    /// SRT/WebVTT alignment from 1 to 9. Nil defaults to bottom-center alignment, but an
+    /// explicit position can still place the cue elsewhere.
+    var alignment: Int? = nil
+    var position: CGPoint? = nil
+    var styledRuns: [SubtitleStyledRun]? = nil
 }

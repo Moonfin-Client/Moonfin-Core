@@ -2,13 +2,20 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 
 import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../navigation/destinations.dart';
+import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
+import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
@@ -16,6 +23,8 @@ import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart';
 import '../modern/modern_detail_content.dart';
 import '../spotlight/spotlight_detail_content.dart';
+import '../spotlight/widgets/spotlight_modal_grids.dart';
+import '../spotlight/widgets/spotlight_section_modal.dart';
 import 'minimalist_landscape_layout.dart';
 import 'minimalist_portrait_layout.dart';
 import 'widgets/minimalist_episodes_section.dart';
@@ -33,7 +42,8 @@ const _minimalistTypes = {
 };
 
 /// The smallest detail screen: artwork, the title, one play button and the
-/// episodes. No cast, no chapters, no collection, no recommendations.
+/// episodes. No cast, no chapters, no recommendations. Extras and collections
+/// each sit behind a button.
 ///
 /// Kids Mode always shows this one. Outside Kids Mode it's an ordinary style,
 /// for anyone who wants the screen to get out of the way.
@@ -179,12 +189,15 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
             children: [
               ColoredBox(color: AppColorScheme.background),
               if (url != null && url.isNotEmpty)
-                FullscreenBackdropSwitcher(
-                  imageUrl: url,
-                  duration: const Duration(milliseconds: 350),
-                  alignment: landscape
-                      ? Alignment.centerRight
-                      : Alignment.topCenter,
+                DetailBackdropFit(
+                  prefs: widget.prefs,
+                  child: FullscreenBackdropSwitcher(
+                    imageUrl: url,
+                    duration: const Duration(milliseconds: 350),
+                    alignment: landscape
+                        ? Alignment.centerRight
+                        : Alignment.topCenter,
+                  ),
                 ),
               ColoredBox(color: AppColors.black.withValues(alpha: alpha)),
             ],
@@ -246,9 +259,11 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     }
 
     if (!isEpisode) {
-      return KeyedSubtree(
+      return Column(
         key: const ValueKey('minimalist-branding'),
-        child: showMark,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [showMark, IncompleteRecordingDetailLine(itemId: item.id)],
       );
     }
 
@@ -269,6 +284,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        IncompleteRecordingDetailLine(itemId: item.id),
       ],
     );
   }
@@ -351,6 +367,21 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     required int? maxVisible,
     required bool overflowAsMenu,
   }) {
+    final item = _vm.item;
+    final hasEpisodes = item != null && _hasEpisodes(item);
+    // Kids Mode keeps to its own fixed set of buttons.
+    final kidsMode = widget.prefs.get(UserPreferences.kidsModeEnabled);
+    final sections = DetailSectionVisibility.of(widget.prefs);
+    final showExtras =
+        !hasEpisodes &&
+        !kidsMode &&
+        sections.shows(DetailSection.extras) &&
+        _vm.features.isNotEmpty;
+    final showCollections =
+        !kidsMode &&
+        sections.shows(DetailSection.collections) &&
+        _vm.parentCollections.isNotEmpty;
+
     return DetailActionButtons(
       key: const ValueKey('minimalist-actions'),
       viewModel: _vm,
@@ -358,7 +389,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       selectedMediaSourceId: widget.selectedMediaSourceId,
       onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
       tvPlayFocusNode: widget.initialFocusNode,
-      downTarget: _episodesFocusNode,
+      downTarget: hasEpisodes ? _episodesFocusNode : null,
       autoPlay: widget.autoPlay,
       modernStyle: true,
       fullWidthPrimary: !landscape,
@@ -366,6 +397,144 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       maxVisibleButtonsOverride: maxVisible,
       actionsExpanded: widget.actionsExpanded,
       onActionsExpandedChanged: widget.onActionsExpandedChanged,
+      onExtrasPressed: showExtras ? _openExtrasModal : null,
+      onCollectionsPressed: showCollections ? _openCollectionsModal : null,
+    );
+  }
+
+  Future<void> _openExtrasModal() async {
+    final l10n = AppLocalizations.of(context);
+    final item = _vm.item;
+    if (item == null) return;
+
+    SpotlightModalContent buildContent() {
+      final byCategory = <String, List<AggregatedItem>>{};
+      for (final extra in _vm.features) {
+        byCategory.putIfAbsent(getExtraCategory(extra), () => []).add(extra);
+      }
+      final orderedCategories = extraCategoriesOrder
+          .where(byCategory.containsKey)
+          .toList();
+      for (final cat in byCategory.keys) {
+        if (!orderedCategories.contains(cat)) orderedCategories.add(cat);
+      }
+
+      return (
+        title: l10n.detailSectionExtras,
+        icon: Icons.video_library_outlined,
+        sections: [
+          for (final category in orderedCategories)
+            SpotlightModalSection(
+              id: 'extras_$category',
+              title: getExtraCategoryLabel(category, l10n),
+              count: byCategory[category]!.length,
+              builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+                items: byCategory[category]!,
+                imageApi: _vm.imageApi,
+                prefs: widget.prefs,
+                aspectRatio: 16 / 9,
+                landscapeCells: true,
+                firstFocusNode: firstFocusNode,
+                onItemTap: (extra) {
+                  Navigator.of(context).pop(
+                    () => _playExtra(extra),
+                  );
+                },
+              ),
+            ),
+        ],
+      );
+    }
+
+    await _openSectionModal(buildContent);
+  }
+
+  Future<void> _openCollectionsModal() {
+    final l10n = AppLocalizations.of(context);
+    final showMissing = widget.prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+
+    SpotlightModalSection section(ParentCollection collection) {
+      final items = [
+        collection.boxSetItem,
+        ...(showMissing ? collection.itemsWithMissing : collection.items),
+      ];
+      return SpotlightModalSection(
+        id: 'collection_${collection.id}',
+        title: collection.name,
+        count: items.length,
+        builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+          items: items,
+          imageApi: _vm.imageApi,
+          prefs: widget.prefs,
+          firstFocusNode: firstFocusNode,
+          onItemTap: (entry) =>
+              Navigator.of(context).pop(() => _openCollectionItem(entry)),
+        ),
+      );
+    }
+
+    return _openSectionModal(
+      () => (
+        title: l10n.detailSectionCollections,
+        icon: Icons.collections_bookmark_outlined,
+        sections: [
+          for (final collection in _vm.parentCollections) section(collection),
+        ],
+      ),
+    );
+  }
+
+  // Titles the library lacks come from Seerr and open its request page.
+  void _openCollectionItem(AggregatedItem entry) => context.push(
+    entry.serverId == 'seerr'
+        ? Destinations.seerrMedia(
+            entry.id,
+            mediaType: entry.seerrMediaType,
+            title: entry.name,
+          )
+        : Destinations.item(entry.id, serverId: entry.serverId),
+  );
+
+  Future<void> _openSectionModal(
+    SpotlightModalContent Function() buildContent,
+  ) async {
+    final initialContent = buildContent();
+    if (initialContent.sections.isEmpty) return;
+
+    final focusedNode = FocusManager.instance.primaryFocus;
+    final action = await SpotlightSectionModal.show<VoidCallback>(
+      context,
+      title: initialContent.title,
+      icon: initialContent.icon,
+      sections: initialContent.sections,
+      returnFocus: focusedNode,
+      refreshOn: _vm,
+      refresh: buildContent,
+    );
+    if (mounted && action != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          action();
+        }
+      });
+    }
+  }
+
+  Future<void> _playExtra(AggregatedItem extra) async {
+    final manager = GetIt.instance<PlaybackManager>();
+    await launchPlayerWhilePreparing(
+      context,
+      manager: manager,
+      destination: Destinations.videoPlayer,
+      startPlayback: (launchSession) async {
+        await runPlaybackStart(
+          launchSession,
+          () => manager.playItems([extra], startIndex: 0),
+        );
+        return true;
+      },
     );
   }
 

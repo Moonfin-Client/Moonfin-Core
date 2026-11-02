@@ -1,3 +1,5 @@
+import 'package:server_core/server_core.dart';
+
 import '../data/models/aggregated_item.dart';
 
 const Duration _kFuturePremiereGrace = Duration(minutes: 5);
@@ -39,11 +41,7 @@ bool _isExplicitPlaceholder(Map<String, dynamic> raw) {
 }
 
 bool _isFuturePremiere(Map<String, dynamic> raw, {DateTime? now}) {
-  final rawPremiere = raw['PremiereDate'] as String?;
-  if (rawPremiere == null || rawPremiere.isEmpty) {
-    return false;
-  }
-  final premiere = DateTime.tryParse(rawPremiere);
+  final premiere = parseServerDate(raw['PremiereDate']);
   if (premiere == null) {
     return false;
   }

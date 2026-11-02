@@ -564,7 +564,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jellyfin_client.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/jellyfin_client";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Moonfin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Moonfin";
 			};
 			name = Debug;
 		};
@@ -579,7 +579,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jellyfin_client.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/jellyfin_client";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Moonfin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Moonfin";
 			};
 			name = Release;
 		};
@@ -594,7 +594,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jellyfin_client.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/jellyfin_client";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Moonfin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Moonfin";
 			};
 			name = Profile;
 		};
@@ -901,7 +901,7 @@
 			repositoryURL = "https://github.com/RadicalMuffinMan/AetherEngine";
 			requirement = {
 				kind = revision;
-				revision = 47cf2f94b38be8520b31d6e0aecdbf47ce7eb857;
+				revision = d55f374108310435cb877a2f550e19ee996f92ba;
 			};
 		};
 		755057A94BFFB3D132856F38 /* XCRemoteSwiftPackageReference "libass-build" */ = {

@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discoverలో ఏ సబ్జెక్ట్ ఫీడ్‌లను చూపించాలో ఎంచుకోండి.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "వర్తింపజేయండి",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ఆడియోబుక్ శైలులు",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "ఆడియోబుక్ డిస్కవర్‌లో ఏ జానర్‌లను చూపించాలో ఎంచుకోండి.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ఆడియోబుక్‌లను కనుగొనండి",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox నుండి ప్రసిద్ధ పబ్లిక్ డొమైన్ శీర్షికలు.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} శీర్షికలు",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "ఎడమవైపు స్క్రోల్ చేయండి",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "కనుగొనండి",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library నుండి విషయం వారీగా ట్రెండింగ్ శీర్షికలు.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "ఇంకా బుక్‌మార్క్ చేయబడిన అంశాలు ఏవీ లేవు",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ఫోల్డర్ వీక్షణను ప్రారంభించండి",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ఫోల్డర్ బ్రౌజింగ్ ఎంపికను చూపు",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "లైబ్రరీ దృశ్యమానత",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "ఫీచర్ చేయబడిన కంటెంట్, ప్రదర్శన",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "పోస్టర్ పరిమాణం, చిత్రం రకం, ఫోల్డర్ వీక్షణ",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB మరియు రేటింగ్ మూలాలు",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr ఆర్కైవ్‌ని సంగ్రహించడంలో విఫలమైంది.",
     "cb7ExtractionUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత అందుబాటులో లేదు.",
     "cb7ExtractionPluginUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.",
-    "closeGenrePanel": "కళా ప్రక్రియ ప్యానెల్‌ను మూసివేయండి",
     "loadingShuffle": "షఫుల్ లోడ్ అవుతోంది...",
     "libraryShuffleLabel": "లైబ్రరీ షఫుల్",
     "randomShuffleLabel": "యాదృచ్ఛిక షఫుల్",

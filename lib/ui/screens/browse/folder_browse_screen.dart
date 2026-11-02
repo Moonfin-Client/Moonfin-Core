@@ -10,6 +10,7 @@ import '../../../data/viewmodels/folder_browse_view_model.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -237,11 +238,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
-        // The root keeps the exact route, so the toolbar's Folders button
-        // still lights up on it.
-        activeRoute: widget.folderId == 'root'
-            ? Destinations.folderView
-            : '/folder/${widget.folderId}',
+        activeRoute: '/folder/${widget.folderId}',
         showBackButton: true,
         child: QuickReturnWrapper(
           scrollController: _scrollController,
@@ -286,31 +283,25 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
               ),
             Builder(
               builder: (context) {
+                final entry = _vm.breadcrumbs[i];
                 final isLast = i == _vm.breadcrumbs.length - 1;
-                final rawName = _vm.breadcrumbs[i].name;
-                final isRoot = i == 0 &&
-                    (_vm.breadcrumbs[i].id == 'root' ||
-                        rawName.toLowerCase() == 'root');
-                final displayName = isRoot
-                    ? AppLocalizations.of(context).folders
-                    : rawName;
-
                 return _BreadcrumbChip(
-                  label: displayName,
+                  label: entry.name,
                   isLast: isLast,
                   onTap: !isLast
-                      ? () {
-                          if (i == 0) {
-                            context.go(Destinations.folderView);
-                          } else {
-                            context.go(
-                              Destinations.folder(
-                                _vm.breadcrumbs[i].id,
-                                serverId: widget.serverId,
-                              ),
-                            );
-                          }
-                        }
+                      ? () => context.go(
+                          entry.isLibrary
+                              ? libraryRoute(
+                                  entry.id,
+                                  entry.collectionType,
+                                  entry.name,
+                                  serverId: widget.serverId,
+                                )
+                              : Destinations.folder(
+                                  entry.id,
+                                  serverId: widget.serverId,
+                                ),
+                        )
                       : null,
                 );
               },

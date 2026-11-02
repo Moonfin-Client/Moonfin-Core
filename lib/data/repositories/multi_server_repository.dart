@@ -6,6 +6,9 @@ import 'package:server_core/server_core.dart';
 
 import '../../auth/models/server.dart';
 import '../../auth/repositories/session_repository.dart';
+import '../../auth/models/user.dart';
+import '../../auth/services/silo_household.dart';
+import '../../auth/services/silo_token_storage.dart';
 import '../../auth/store/authentication_store.dart';
 import '../../auth/store/credential_store.dart';
 import '../../preference/preference_constants.dart';
@@ -55,7 +58,7 @@ class MultiServerRepository {
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
       'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
   // Cap image tags to one per type (server returns all by default)
-  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
+  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner,Logo';
   static const _imageTypeLimit = 1;
   static const _defaultLimit = 15;
   static const _maxItems = 100;
@@ -97,6 +100,7 @@ class MultiServerRepository {
     final activeServerId = _sessionRepo.activeServerId;
 
     final sessions = <ServerUserSession>[];
+    final siloTokens = SiloTokenStorage(_authStore);
 
     for (final server in servers) {
       try {
@@ -105,6 +109,7 @@ class MultiServerRepository {
 
         String? userId;
         String? accessToken;
+        PrivateUser? chosenUser;
 
         if (server.id == activeServerId && _sessionRepo.activeUserId != null) {
           final activeUser = users
@@ -113,22 +118,34 @@ class MultiServerRepository {
           if (activeUser != null && activeUser.accessToken.isNotEmpty) {
             userId = activeUser.id;
             accessToken = activeUser.accessToken;
+            chosenUser = activeUser;
           }
         }
 
         if (userId == null) {
           final token = await _credentialStore.getToken(server.id);
-          for (final user in users) {
+          // Another Silo server: its most recently used profile that needs
+          // no PIN now, not whichever profile was stored first.
+          final candidates = server.serverType == ServerType.silo
+              ? [
+                  ?SiloHousehold.profileForOtherServer(users, siloTokens),
+                ]
+              : users;
+          for (final user in candidates) {
             final userToken = token ?? user.accessToken;
             if (userToken.isNotEmpty) {
               userId = user.id;
               accessToken = userToken;
+              chosenUser = user;
               break;
             }
           }
         }
 
-        if (userId == null || accessToken == null || accessToken.isEmpty) {
+        if (userId == null ||
+            chosenUser == null ||
+            accessToken == null ||
+            accessToken.isEmpty) {
           continue;
         }
 
@@ -137,7 +154,13 @@ class MultiServerRepository {
           serverType: server.serverType,
           baseUrl: server.address,
         );
-        client.accessToken = accessToken;
+        // A Silo profile restores its account's pair and profile. Setting the
+        // stored access token would drop the active session's refresh token.
+        siloTokens.putLogin(
+          client: client,
+          user: chosenUser,
+          accessToken: accessToken,
+        );
         client.userId = userId;
 
         sessions.add(
@@ -1441,10 +1464,7 @@ class MultiServerRepository {
     return sorted;
   }
 
-  static DateTime? _parseDateCreated(dynamic value) {
-    if (value is String) return DateTime.tryParse(value);
-    return null;
-  }
+  static DateTime? _parseDateCreated(dynamic value) => parseServerDate(value);
 
   static int _compareNullableDate(DateTime? a, DateTime? b) {
     if (a == null && b == null) return 0;

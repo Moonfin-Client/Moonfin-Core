@@ -94,8 +94,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
   }
 
   DateTime? _backupDate(Map<String, dynamic> item) {
-    final raw = item['DateCreated'];
-    return raw is String ? DateTime.tryParse(raw) : null;
+    return parseServerDate(item['DateCreated']);
   }
 
   String _formatDate(DateTime? date) {

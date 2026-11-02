@@ -31,6 +31,7 @@ import 'package:moonfin/ui/screens/detail/nouveau/nouveau_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/people/nouveau_people_section.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/person/nouveau_filmography_section.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/person/nouveau_person_content.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/reviews/nouveau_reviews_section.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/shared/nouveau_segmented_selector.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
@@ -78,9 +79,19 @@ class _StubbedViewModel extends ItemDetailViewModel {
   SeerrMediaDetailViewModel? seerrOverride;
   List<AggregatedItem>? similarOverride;
   List<AggregatedItem>? filmographyOverride;
+  List<TmdbReview>? reviewsOverride;
 
   @override
   SeerrMediaDetailViewModel? get seerr => seerrOverride ?? super.seerr;
+
+  @override
+  List<TmdbReview> get reviews => reviewsOverride ?? super.reviews;
+
+  /// Hands reviews in after the page is up, the way the TMDB lookup lands.
+  void deliverReviews(List<TmdbReview> reviews) {
+    reviewsOverride = reviews;
+    notifyListeners();
+  }
 
   @override
   List<AggregatedItem> get similar => similarOverride ?? super.similar;
@@ -137,6 +148,7 @@ void main() {
 
     plugin = _PluginSync();
     when(() => plugin.seerrAvailable).thenReturn(false);
+    when(() => plugin.tmdbReviewsAvailable).thenReturn(false);
     GetIt.instance.registerSingleton<PluginSyncService>(plugin);
     GetIt.instance.registerSingleton<UserPreferences>(prefs);
     GetIt.instance.registerSingleton<UserRepository>(UserRepository());
@@ -669,6 +681,56 @@ void main() {
       await focusPlay(tester);
       await press(tester, LogicalKeyboardKey.arrowDown);
       expect(focusIn<NouveauDetailsSection>(), isTrue);
+    });
+
+    testWidgets('reviews join the chain when they land after the page', (
+      tester,
+    ) async {
+      useTv(tester);
+      const TmdbReview review = (
+        author: 'Critic',
+        rating: 8.0,
+        content: 'Loved it.',
+        createdAt: null,
+        avatarUrl: null,
+        url: null,
+      );
+      final vm = viewModel(
+        'Movie',
+        data: itemData('Movie', people: [actor]),
+      );
+      await pumpContent(tester, vm, initialFocusNode: play, size: tvSize);
+      expect(find.byType(NouveauReviewsSection), findsNothing);
+
+      vm.deliverReviews(const [review, review]);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(
+        find.byKey(const ValueKey('nouveau-section-reviews')),
+        findsOneWidget,
+      );
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauReviewsSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowRight);
+      expect(focusIn<NouveauReviewsSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(focusIn<NouveauReviewsSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(play.hasPrimaryFocus, isTrue);
+
+      await hide(tester, vm, 'reviews');
+      expect(find.byType(NouveauReviewsSection), findsNothing);
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
     });
 
     testWidgets('a details section with every group hidden leaves the chain', (

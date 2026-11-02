@@ -2,6 +2,8 @@ import 'dart:ui' as ui;
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:custom_tv_text_field/custom_tv_text_field.dart'
+    show KeyboardStyle;
 import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
@@ -49,6 +51,11 @@ class UserPreferences extends ChangeNotifier {
   static const seasonalPetals = 'petals';
   static const seasonalFireflies = 'fireflies';
   static const seasonalHalloween = 'halloween';
+  static const seasonalValentines = 'valentines';
+  static const seasonalEaster = 'easter';
+  static const seasonalPride = 'pride';
+  static const seasonalLunar = 'lunar';
+  static const seasonalDiwali = 'diwali';
   static const seasonalSurpriseValues = <String>{
     seasonalNone,
     seasonalSnow,
@@ -59,6 +66,11 @@ class UserPreferences extends ChangeNotifier {
     seasonalPetals,
     seasonalFireflies,
     seasonalHalloween,
+    seasonalValentines,
+    seasonalEaster,
+    seasonalPride,
+    seasonalLunar,
+    seasonalDiwali,
   };
 
   // The original Android TV client and older Smart-TV builds sync these names.
@@ -109,6 +121,26 @@ class UserPreferences extends ChangeNotifier {
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
 
+  // What a focused home card plays. episodePreviewEnabled says whether it
+  // plays anything, which older apps also read, and mediaPreviewMode says
+  // which kind.
+  static const mediaPreviewOff = 'off';
+  static const mediaPreviewMedia = 'media';
+  static const mediaPreviewTrailer = 'trailer';
+
+  // How the home screen shows the focused item's backdrop. homeBackdropEnabled
+  // says whether it shows one, which other apps also read, and
+  // homeBackdropStyle says how.
+  static const homeBackdropOff = 'off';
+  static const homeBackdropFullScreen = 'fullScreen';
+  static const homeBackdropCorner = 'corner';
+  static const homeBackdropTop = 'top';
+
+  // How a phone sizes the details backdrop: zoomed to fill the screen, or the
+  // whole picture across the top.
+  static const detailsBackdropFullScreen = 'fullScreen';
+  static const detailsBackdropFit = 'fit';
+
   final PreferenceStore _store;
 
   UserPreferences(this._store) {
@@ -120,6 +152,7 @@ class UserPreferences extends ChangeNotifier {
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
+    _migrateSystemImePreference();
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -278,6 +311,17 @@ class UserPreferences extends ChangeNotifier {
     }
   }
 
+  // Prefer System Keyboard became the Native keyboard style. Only an explicit
+  // on carries over, everyone else gets the new default.
+  void _migrateSystemImePreference() {
+    final legacy = getEffectivePreference(_legacyPreferSystemIme);
+    final style = getEffectivePreference(keyboardStyle);
+    if (_store.containsKey(style.key) || !_store.containsKey(legacy.key)) {
+      return;
+    }
+    if (_store.get(legacy)) _store.set(style, KeyboardStyle.native);
+  }
+
   // On first run, default the 12h/24h clock to the device's locale so users in
   // 24h regions aren't stuck on 12h. Runs once; an explicit choice is kept.
   void _seedClockFormatFromSystem() {
@@ -423,6 +467,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_favorites_view_style',
     'pref_group_items_into_collections',
     'pref_home_row_info_overlay',
+    'pref_imdb_rows_sort_by',
+    'pref_imdb_rows_sort_order',
     'pref_interface_style',
     'pref_live_direct',
     'pref_max_bitrate',
@@ -448,10 +494,14 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_require_rating',
     'pref_screensaver_size',
     'pref_screensaver_timeout',
+    'pref_seerr_rows_sort_by',
+    'pref_seerr_rows_sort_order',
     'pref_studios_row_selected_ids',
     'pref_studios_row_sort_by',
     'pref_studios_row_sort_order',
     'pref_syncplay_enabled',
+    'pref_tmdb_rows_sort_by',
+    'pref_tmdb_rows_sort_order',
     'showChapterMarkers',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
@@ -489,6 +539,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_hide_details_media_description',
     'pref_detail_use_series_thumbnails',
     'pref_hide_home_media_description',
+    'pref_hide_home_watch_progress',
+    'pref_hide_home_unwatched_count',
     'pref_display_audio_rows',
     'pref_display_since_you_watched_rows',
     'pref_since_you_watched_source',
@@ -530,12 +582,14 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_friends_button',
     'pref_show_book_discover_tab',
     'pref_show_media_details_on_library_page',
+    'pref_library_card_titles',
     'pref_use_detailed_sub_headings',
     'pref_hide_backdrops_in_libraries',
     'pref_show_clock',
     'pref_use_24_hour_clock',
     'pref_clock_behavior',
     'pref_prefer_system_ime_keyboard',
+    'pref_keyboard_style',
     'pref_audio_language',
     'pref_fallback_audio_language',
     'pref_prefer_default_audio_track',
@@ -550,8 +604,8 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_stroke_color',
     'subtitles_text_size',
     'subtitles_offset_position',
-    'secondary_subtitle_text_size',
-    'secondary_subtitle_offset_position',
+    'secondary_subtitle_size_adjustment',
+    'secondary_subtitle_offset_adjustment',
     'secondary_subtitle_text_color',
     'subtitles_default_to_none',
     'subtitles_hdr_separate',
@@ -604,15 +658,16 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_syncplay_button',
     'pref_show_downloads_button',
     'pref_show_libraries_in_toolbar',
+    'pref_show_libraries_individually',
     'pref_navbar_always_expanded',
     'pref_shuffle_content_type',
     'pref_merge_continue_watching_next_up',
     'pref_next_up_max_days',
     'enable_multi_server_libraries',
     'pref_merge_recent_rows_by_type',
-    'enable_folder_view',
     'seasonal_surprise',
     'seasonal_density',
+    'seasonal_follower',
     'seasonal_row_enabled',
     'seasonal_row_country',
     'seasonal_row_hidden_holidays',
@@ -627,16 +682,19 @@ class UserPreferences extends ChangeNotifier {
     'navbarColor',
     'mediaBarAutoAdvance',
     'mediaBarIntervalMs',
+    'mediaBarRowPeek',
     'mediaBarTrailerPreview',
     'mediaBarTrailerAudio',
     'trailerVolume',
     'mediaBarTrailerCaptions',
     'episodePreviewEnabled',
+    'mediaPreviewMode',
     'previewAudioEnabled',
     'previewVolume',
     'mediaBarLibraryIds',
     'mediaBarCollectionIds',
     'mediaBarExcludedGenres',
+    'mediaBarExternalLists',
     'themeMusicEnabled',
     'themeMusicVolume',
     'themeMusicOnHomeRows',
@@ -646,7 +704,9 @@ class UserPreferences extends ChangeNotifier {
     'pref_enable_series_thumbnails',
     'pref_media_type_badge_behavior',
     'pref_show_home_backdrop',
+    'pref_home_backdrop_style',
     'pref_show_details_backdrop',
+    'pref_details_backdrop_size',
     'detailsBackgroundBlurAmount',
     'browsingBackgroundBlurAmount',
     'enableAdditionalRatings',
@@ -659,6 +719,15 @@ class UserPreferences extends ChangeNotifier {
     'seerrBlockNsfw',
     'seerrShowMissingCollectionItems',
     'enabledRatings',
+    'homeRowsEnableAdditionalRatings',
+    'homeRowsEnabledRatings',
+    'homeRowsEnableEpisodeRatings',
+    'homeRowsShowRatingLabels',
+    'homeRowsShowRatingBadges',
+    'mediaBarEnableAdditionalRatings',
+    'mediaBarEnabledRatings',
+    'mediaBarShowRatingLabels',
+    'mediaBarShowRatingBadges',
     'home_sections_config',
     'pref_audio_display_latest',
     'pref_audio_display_last_played',
@@ -827,13 +896,15 @@ class UserPreferences extends ChangeNotifier {
     return _store.containsKey(pref.key);
   }
 
-  bool isRatingSourceEnabled(String source) =>
-      get(enabledRatings).split(',').map((s) => s.trim()).contains(source);
+  bool get canFetchEpisodeRatings => canFetchEpisodeRatingsFor(detailsRatings);
 
-  bool get canFetchEpisodeRatings =>
-      get(enableAdditionalRatings) &&
-      get(enableEpisodeRatings) &&
-      isRatingSourceEnabled('tmdb');
+  bool canFetchEpisodeRatingsFor(RatingSettings settings) {
+    final episodes = settings.episodeRatings;
+    return episodes != null &&
+        get(settings.additionalRatings) &&
+        get(episodes) &&
+        get(settings.sources).split(',').map((s) => s.trim()).contains('tmdb');
+  }
 
   /// What this device can afford, taking the user's choice over the probe.
   DevicePerformanceTier resolveDevicePerformanceTier() =>
@@ -1117,6 +1188,13 @@ class UserPreferences extends ChangeNotifier {
     return normalizeMediaBarMode(mode) != mediaBarModeOff;
   }
 
+  /// Banner already leaves the first row on screen, so only the other styles
+  /// let it peek over the bar.
+  static bool mediaBarModeAllowsRowPeek(String? mode) {
+    final normalized = normalizeMediaBarMode(mode);
+    return normalized != mediaBarModeOff && normalized != mediaBarModeBanner;
+  }
+
   /// Item types the media bar can show.
   ///
   /// Separate from where it draws items, which other clients call the source type. The two
@@ -1190,7 +1268,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final modernHomeRowsPadding = Preference<int>(
     key: 'pref_modern_home_rows_padding',
-    defaultValue: 420,
+    defaultValue: 360,
   );
 
   static final classicHomeRowsPadding = Preference<int>(
@@ -1226,9 +1304,38 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final homeBackdropStyle = Preference(
+    key: 'pref_home_backdrop_style',
+    defaultValue: homeBackdropFullScreen,
+  );
+
+  /// How the home screen draws the backdrop, off when the switch is off.
+  String resolveHomeBackdropStyle() {
+    if (!get(homeBackdropEnabled)) return homeBackdropOff;
+    return switch (get(homeBackdropStyle)) {
+      homeBackdropCorner => homeBackdropCorner,
+      homeBackdropTop => homeBackdropTop,
+      _ => homeBackdropFullScreen,
+    };
+  }
+
+  /// Brings the stored style in line with the switch, so the picker shows what
+  /// the home screen draws. A sync can flip the switch on its own.
+  Future<void> reconcileHomeBackdropStyle() async {
+    final resolved = resolveHomeBackdropStyle();
+    if (get(homeBackdropStyle) != resolved) {
+      await set(homeBackdropStyle, resolved);
+    }
+  }
+
   static final detailsBackdropEnabled = Preference(
     key: 'pref_show_details_backdrop',
     defaultValue: true,
+  );
+
+  static final detailsBackdropSize = Preference(
+    key: 'pref_details_backdrop_size',
+    defaultValue: detailsBackdropFullScreen,
   );
 
   /// Plays retro games through the native libretro backend instead of the
@@ -1476,6 +1583,42 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  static final imdbRowsSortBy = EnumPreference(
+    key: 'pref_imdb_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final imdbRowsSortOrder = EnumPreference(
+    key: 'pref_imdb_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
+  static final tmdbRowsSortBy = EnumPreference(
+    key: 'pref_tmdb_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final tmdbRowsSortOrder = EnumPreference(
+    key: 'pref_tmdb_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
+  static final seerrRowsSortBy = EnumPreference(
+    key: 'pref_seerr_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final seerrRowsSortOrder = EnumPreference(
+    key: 'pref_seerr_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
   static final genresRowItemFilter = EnumPreference(
     key: 'pref_genres_row_item_filter',
     defaultValue: GenresRowItemFilter.both,
@@ -1512,12 +1655,19 @@ class UserPreferences extends ChangeNotifier {
     values: AppTheme.values,
   );
 
-  static final preferSystemImeKeyboard = Preference(
+  /// Phones and desktops keep their own keyboard by default, every TV starts
+  /// on Docked.
+  static final keyboardStyle = EnumPreference(
+    key: 'pref_keyboard_style',
+    defaultValue: PlatformDetection.useMobileUi || PlatformDetection.isDesktop
+        ? KeyboardStyle.native
+        : KeyboardStyle.docked,
+    values: KeyboardStyle.values,
+  );
+
+  static final _legacyPreferSystemIme = Preference(
     key: 'pref_prefer_system_ime_keyboard',
-    defaultValue:
-        PlatformDetection.useMobileUi ||
-        PlatformDetection.isDesktop ||
-        PlatformDetection.isAppleTV,
+    defaultValue: false,
   );
 
   /// Whether a game controller drives the app UI. Games take the pad for
@@ -1697,6 +1847,16 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final hideHomeWatchProgress = Preference(
+    key: 'pref_hide_home_watch_progress',
+    defaultValue: false,
+  );
+
+  static final hideHomeUnwatchedCount = Preference(
+    key: 'pref_hide_home_unwatched_count',
+    defaultValue: false,
+  );
+
   /// Algorithm source for the similar items recommendation system. Stored per server and
   /// user, because it syncs to that server's profile.
   static final recommendationSystemSource = EnumPreference(
@@ -1836,6 +1996,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final showLibrariesIndividually = Preference(
+    key: 'pref_show_libraries_individually',
+    defaultValue: false,
+  );
+
   static final navbarAlwaysExpanded = Preference(
     key: 'pref_navbar_always_expanded',
     defaultValue: false,
@@ -1936,11 +2101,6 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
-  static final enableFolderView = Preference(
-    key: 'enable_folder_view',
-    defaultValue: false,
-  );
-
   static final groupItemsIntoCollections = Preference(
     key: 'pref_group_items_into_collections',
     defaultValue: false,
@@ -1975,6 +2135,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final showMediaDetailsOnLibraryPage = Preference(
     key: 'pref_show_media_details_on_library_page',
+    defaultValue: true,
+  );
+
+  static final libraryCardTitles = Preference(
+    key: 'pref_library_card_titles',
     defaultValue: true,
   );
 
@@ -2177,6 +2342,16 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: !(PlatformDetection.isAndroid && PlatformDetection.isTV),
   );
 
+  static final hevcSoftwareDirectPlay = Preference(
+    key: 'hevc_software_direct_play',
+    defaultValue: false,
+  );
+
+  static final av1SoftwareUhdDirectPlay = Preference(
+    key: 'av1_software_uhd_direct_play',
+    defaultValue: false,
+  );
+
   static final media3SkipSilence = Preference(
     key: 'media3_skip_silence',
     defaultValue: false,
@@ -2189,6 +2364,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final media3MapDolbyVisionProfile7ToHevc = Preference(
     key: 'media3_map_dolby_vision_profile7_to_hevc',
+    defaultValue: false,
+  );
+
+  static final media3StripDolbyVisionWithHdr10Plus = Preference(
+    key: 'media3_strip_dolby_vision_with_hdr10_plus',
     defaultValue: false,
   );
 
@@ -2427,11 +2607,14 @@ class UserPreferences extends ChangeNotifier {
     values: PlaybackEnginePreference.values,
   );
 
-  /// Which player iOS video plays through. Belongs to the device rather than
-  /// the account, so it isn't synced.
+  /// Which player video plays through on iOS and Apple TV. Belongs to the
+  /// device rather than the account, so it isn't synced. Apple TV keeps the
+  /// native player it always had unless the viewer switches.
   static final applePlayerUi = EnumPreference(
     key: 'pref_apple_player_ui',
-    defaultValue: ApplePlayerUi.flutter,
+    defaultValue: PlatformDetection.isAppleTV
+        ? ApplePlayerUi.native
+        : ApplePlayerUi.flutter,
     values: ApplePlayerUi.values,
   );
 
@@ -2479,6 +2662,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_subtitle_language',
     defaultValue: '',
   );
+  /// Off keeps the single subtitle list, without the step that picks a
+  /// primary or secondary track.
+  static final secondarySubtitlesEnabled = Preference<bool>(
+    key: 'pref_secondary_subtitles_enabled',
+    defaultValue: false,
+  );
   static final preferredSecondarySubtitleLanguage = Preference<String>(
     key: 'pref_secondary_subtitle_language',
     defaultValue: '',
@@ -2514,14 +2703,14 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.04,
   );
 
-  static final secondarySubtitleTextSize = Preference<double>(
-    key: 'secondary_subtitle_text_size',
+  static final secondarySubtitleSizeAdjustment = Preference<double>(
+    key: 'secondary_subtitle_size_adjustment',
     defaultValue: 0.0,
   );
 
   static final secondarySubtitleOffsetPosition = Preference<double>(
-    key: 'secondary_subtitle_offset_position',
-    defaultValue: 0.08,
+    key: 'secondary_subtitle_offset_adjustment',
+    defaultValue: 0.0,
   );
 
   /// -1 means the secondary track uses the primary subtitle color.
@@ -2855,6 +3044,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 10000,
   );
 
+  /// Shows the top half of the first home row over the bottom of the media
+  /// bar on TV and desktop.
+  static final mediaBarRowPeek = Preference(
+    key: 'mediaBarRowPeek',
+    defaultValue: false,
+  );
+
   static final mediaBarTrailerPreview = Preference(
     key: 'mediaBarTrailerPreview',
     defaultValue: true,
@@ -2891,10 +3087,40 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  /// The outside lists the media bar also draws from, by the id each one's
+  /// home row has.
+  static final mediaBarExternalLists = Preference(
+    key: 'mediaBarExternalLists',
+    defaultValue: '',
+  );
+
   static final episodePreviewEnabled = Preference(
     key: 'episodePreviewEnabled',
     defaultValue: false,
   );
+
+  static final mediaPreviewMode = Preference(
+    key: 'mediaPreviewMode',
+    defaultValue: mediaPreviewMedia,
+  );
+
+  /// The preview a focused home card plays, off when the switch is off.
+  String resolveMediaPreviewMode() {
+    if (!get(episodePreviewEnabled)) return mediaPreviewOff;
+    return get(mediaPreviewMode) == mediaPreviewTrailer
+        ? mediaPreviewTrailer
+        : mediaPreviewMedia;
+  }
+
+  /// Brings the stored mode in line with the switch, so the picker shows what
+  /// plays. An app that only knows the switch can flip it on its own, and
+  /// settings from before the mode existed only have the switch.
+  Future<void> reconcileMediaPreviewMode() async {
+    final resolved = resolveMediaPreviewMode();
+    if (get(mediaPreviewMode) != resolved) {
+      await set(mediaPreviewMode, resolved);
+    }
+  }
 
   static final previewAudioEnabled = Preference(
     key: 'previewAudioEnabled',
@@ -2978,6 +3204,85 @@ class UserPreferences extends ChangeNotifier {
     key: 'enabledRatings',
     defaultValue: 'stars,imdb,tmdb,tomatoes,metacritic',
   );
+
+  static final homeRowsEnableAdditionalRatings = Preference(
+    key: 'homeRowsEnableAdditionalRatings',
+    defaultValue: false,
+  );
+
+  static final homeRowsEnabledRatings = Preference(
+    key: 'homeRowsEnabledRatings',
+    defaultValue: 'stars,imdb,tmdb,tomatoes,metacritic',
+  );
+
+  static final homeRowsEnableEpisodeRatings = Preference(
+    key: 'homeRowsEnableEpisodeRatings',
+    defaultValue: true,
+  );
+
+  // Off unlike the Details Page one, so the home info area stays compact.
+  static final homeRowsShowRatingLabels = Preference(
+    key: 'homeRowsShowRatingLabels',
+    defaultValue: false,
+  );
+
+  static final homeRowsShowRatingBadges = Preference(
+    key: 'homeRowsShowRatingBadges',
+    defaultValue: true,
+  );
+
+  static final mediaBarEnableAdditionalRatings = Preference(
+    key: 'mediaBarEnableAdditionalRatings',
+    defaultValue: false,
+  );
+
+  static final mediaBarEnabledRatings = Preference(
+    key: 'mediaBarEnabledRatings',
+    defaultValue: 'stars,imdb,tmdb,tomatoes,metacritic',
+  );
+
+  static final mediaBarShowRatingLabels = Preference(
+    key: 'mediaBarShowRatingLabels',
+    defaultValue: true,
+  );
+
+  static final mediaBarShowRatingBadges = Preference(
+    key: 'mediaBarShowRatingBadges',
+    defaultValue: true,
+  );
+
+  /// The Details Page set, which every surface without its own set follows.
+  static final detailsRatings = RatingSettings(
+    additionalRatings: enableAdditionalRatings,
+    sources: enabledRatings,
+    episodeRatings: enableEpisodeRatings,
+    labels: showRatingLabels,
+    badges: showRatingBadges,
+  );
+
+  static final homeRowsRatings = RatingSettings(
+    additionalRatings: homeRowsEnableAdditionalRatings,
+    sources: homeRowsEnabledRatings,
+    episodeRatings: homeRowsEnableEpisodeRatings,
+    labels: homeRowsShowRatingLabels,
+    badges: homeRowsShowRatingBadges,
+  );
+
+  // The media bar only shows movies and series, so it has no episode switch.
+  static final mediaBarRatings = RatingSettings(
+    additionalRatings: mediaBarEnableAdditionalRatings,
+    sources: mediaBarEnabledRatings,
+    labels: mediaBarShowRatingLabels,
+    badges: mediaBarShowRatingBadges,
+  );
+
+  static bool mediaBarModeDrawsRatings(String? mode) =>
+      const {
+        mediaBarModeMoonfin,
+        mediaBarModeMakd,
+        mediaBarModeGallery,
+        mediaBarModeBanner,
+      }.contains(normalizeMediaBarMode(mode));
 
   /// Content ratings the viewer has blocked, as an upper cased CSV. Blocked
   /// means hidden from every list and refused on open and on play, not just
@@ -3367,6 +3672,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  /// Where Moonbase runs for a Plex server, as the user typed it. Empty means
+  /// next to the Plex server (`plexMoonbaseDefault`).
+  static Preference<String> moonbaseUrlForServer(String serverId) =>
+      Preference(key: 'pref_moonbase_url_$serverId', defaultValue: '');
+
   static Preference<bool> pluginSyncInitializedForServer(String serverKey) =>
       Preference(
         key: 'pref_plugin_sync_initialized_$serverKey',
@@ -3408,6 +3718,11 @@ class UserPreferences extends ChangeNotifier {
   static final seasonalDensity = Preference(
     key: 'seasonal_density',
     defaultValue: seasonalDensityNormal,
+  );
+
+  static final seasonalFollower = Preference(
+    key: 'seasonal_follower',
+    defaultValue: true,
   );
 
   static final seasonalRowEnabled = Preference(
@@ -3618,6 +3933,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: LibraryGroupBy.none,
     values: LibraryGroupBy.values,
   );
+
+  /// Only written once someone picks it, since the default depends on the
+  /// library's type.
+  static Preference<bool> libraryFolderView(String libraryId) =>
+      Preference(key: 'library_folder_view_$libraryId', defaultValue: false);
 
   static final allGenresImageType = EnumPreference(
     key: 'all_genres_image_type',
@@ -4139,7 +4459,7 @@ class UserPreferences extends ChangeNotifier {
         final lastPlayedStr =
             item.rawData['UserData']?['LastPlayedDate'] as String?;
         if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
-          final lastPlayed = DateTime.tryParse(lastPlayedStr);
+          final lastPlayed = parseServerDate(lastPlayedStr);
           final hiddenAt = DateTime.tryParse(hidden[matchedKey]!);
           if (lastPlayed != null &&
               hiddenAt != null &&
@@ -4186,7 +4506,7 @@ class UserPreferences extends ChangeNotifier {
         final lastPlayedStr =
             item.rawData['UserData']?['LastPlayedDate'] as String?;
         if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
-          final lastPlayed = DateTime.tryParse(lastPlayedStr);
+          final lastPlayed = parseServerDate(lastPlayedStr);
           final hiddenAt = DateTime.tryParse(hidden[seriesId]!);
           if (lastPlayed != null &&
               hiddenAt != null &&
@@ -4218,4 +4538,29 @@ class UserPreferences extends ChangeNotifier {
 
     return result;
   }
+}
+
+/// The ratings settings one surface reads.
+class RatingSettings {
+  const RatingSettings({
+    required this.additionalRatings,
+    required this.sources,
+    this.episodeRatings,
+    required this.labels,
+    required this.badges,
+  });
+
+  final Preference<bool> additionalRatings;
+  final Preference<String> sources;
+  final Preference<bool>? episodeRatings;
+  final Preference<bool> labels;
+  final Preference<bool> badges;
+
+  List<Preference<dynamic>> get all => [
+    sources,
+    additionalRatings,
+    ?episodeRatings,
+    labels,
+    badges,
+  ];
 }

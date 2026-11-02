@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Kies welke onderwerpfeeds u wilt weergeven in Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Toepassen",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Luisterboek-genres",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Kies welke genres je wilt weergeven in Luisterboek ontdekken.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Ontdek Luisterboeken",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Populaire titels uit het publieke domein van LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titels",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Scrol naar links",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Ontdekken",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populaire titels per onderwerp van de bibliotheek.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Er zijn nog geen items met bladwijzers",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Schakel Mapweergave in",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Toon de mapzoekoptie",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Zichtbaarheid van de bibliotheek",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Uitgelichte inhoud, uiterlijk",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Posterformaat, afbeeldingstype, mapweergave",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList-, TMDB- en beoordelingsbronnen",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Kan het .cbr-archief niet uitpakken.",
     "cb7ExtractionUnavailable": "CB7-extractie is niet beschikbaar op dit platform.",
     "cb7ExtractionPluginUnavailable": "De plug-in voor CB7-extractie is niet beschikbaar op dit platform.",
-    "closeGenrePanel": "Genrepaneel sluiten",
     "loadingShuffle": "Willekeurige selectie laden...",
     "libraryShuffleLabel": "WILLEKEURIG UIT BIBLIOTHEEK",
     "randomShuffleLabel": "VOLLEDIG WILLEKEURIG",

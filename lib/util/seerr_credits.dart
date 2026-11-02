@@ -1,3 +1,4 @@
+import '../data/models/aggregated_item.dart';
 import '../data/repositories/seerr_repository.dart';
 import '../data/services/seerr/seerr_api_models.dart';
 
@@ -43,9 +44,10 @@ List<SeerrDiscoverItem> groupSeerrCredits(
   List<SeerrDiscoverItem> list, {
   required bool isCrew,
 }) {
-  final grouped = <int, List<SeerrDiscoverItem>>{};
+  final grouped = <String, List<SeerrDiscoverItem>>{};
   for (final item in list) {
-    grouped.putIfAbsent(item.id, () => []).add(item);
+    final key = '${item.mediaType ?? ''}:${item.id}';
+    grouped.putIfAbsent(key, () => []).add(item);
   }
 
   return [
@@ -128,8 +130,52 @@ List<SeerrDiscoverItem> sortSeerrCredits(
     if (dateB == null) return -1;
 
     final comparison = dateA.compareTo(dateB);
+    if (comparison != 0) {
+      return ascending ? comparison : -comparison;
+    }
 
-    return ascending ? comparison : -comparison;
+    final titleComparison = byTitle(a, b);
+    return ascending ? titleComparison : -titleComparison;
+  });
+
+  return sorted;
+}
+
+/// Orders a person's Jellyfin filmography items by the person page sort preference.
+/// Items with no date at all sink to the bottom whichever way the dates run.
+List<AggregatedItem> sortJellyfinFilmography(
+  List<AggregatedItem> items,
+  String sortOption,
+) {
+  final sorted = List<AggregatedItem>.from(items);
+  if (sortOption == 'alphabetical') {
+    return sorted..sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+  }
+
+  final ascending = sortOption == 'releaseDateAsc';
+  sorted.sort((a, b) {
+    final dateA =
+        a.premiereDate ??
+        (a.productionYear != null ? DateTime(a.productionYear!) : null);
+    final dateB =
+        b.premiereDate ??
+        (b.productionYear != null ? DateTime(b.productionYear!) : null);
+
+    if (dateA == null && dateB == null) {
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    }
+    if (dateA == null) return 1;
+    if (dateB == null) return -1;
+
+    final comparison = dateA.compareTo(dateB);
+    if (comparison != 0) {
+      return ascending ? comparison : -comparison;
+    }
+
+    final nameComparison = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    return ascending ? nameComparison : -nameComparison;
   });
 
   return sorted;

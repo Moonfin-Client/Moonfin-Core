@@ -9,7 +9,9 @@ Widget _keyboardApp(
   InputPurpose purpose = InputPurpose.text,
   List<String> recents = const [],
   Locale? locale,
+  KeyboardStyle style = KeyboardStyle.classic,
 }) {
+  controller.style = style;
   return MaterialApp(
     locale: locale,
     supportedLocales: const [Locale('en'), Locale('fr'), Locale('de')],
@@ -242,6 +244,283 @@ void main() {
       // edits, unlike a submit chip.
       expect(controller.text, 'https://demo.moonfin.org:8096');
       expect(controller.isVisible, isTrue);
+    });
+  });
+
+  group('Docked keyboard', () {
+    test('every docked row is twelve cells in each arrangement', () {
+      for (final variant in KeyboardLayoutVariant.values) {
+        for (final shifted in [false, true]) {
+          final rows = KeyboardLayouts.dockedFor(variant, shifted: shifted);
+          expect(rows.map((row) => row.length), everyElement(12));
+          expect(rows[2].sublist(9, 11), ['.', '@']);
+          expect(rows[2], isNot(contains('SHIFT')));
+        }
+      }
+      expect(KeyboardLayouts.dockedNumeric.map((row) => row.length),
+          everyElement(12));
+      expect(
+        KeyboardLayouts.dockedFor(KeyboardLayoutVariant.qwerty, shifted: true)
+            [1][10],
+        '"',
+      );
+    });
+
+    testWidgets('spanning keys take one press to cross', (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      Future<void> press(List<LogicalKeyboardKey> keys) async {
+        for (final key in keys) {
+          await tester.sendKeyEvent(key);
+          await tester.pump();
+        }
+      }
+
+      const right = LogicalKeyboardKey.arrowRight;
+      const left = LogicalKeyboardKey.arrowLeft;
+      const up = LogicalKeyboardKey.arrowUp;
+      const down = LogicalKeyboardKey.arrowDown;
+      const ok = LogicalKeyboardKey.enter;
+
+      // Focus starts on q, one step right of the rail.
+      await press([ok]);
+      expect(controller.text, 'q');
+
+      // Three rows down is space, and up returns to the column it came from.
+      await press([down, down, down, ok]);
+      expect(controller.text, 'q ');
+      await press([up, ok]);
+      expect(controller.text, 'q z');
+
+      // Left past the rail wraps to Done, and up from Done is Delete.
+      await press([left, left, up, ok]);
+      expect(controller.text, 'q ');
+
+      // Right from the action column wraps to the rail, where ABC turns on
+      // caps and keeps focus.
+      await press([right, ok, right, ok]);
+      expect(controller.text, 'q A');
+
+      // Right off space skips its other cells, and Done spans two rows.
+      await press([down, down, right, right, right, right, up, ok]);
+      expect(controller.text, 'q ');
+      await press([down, down, ok]);
+      expect(controller.isVisible, isFalse);
+    });
+
+    testWidgets('the 123 rail key swaps in the symbols', (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      for (final key in [
+        LogicalKeyboardKey.arrowLeft,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.enter,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.enter,
+      ]) {
+        await tester.sendKeyEvent(key);
+        await tester.pump();
+      }
+      expect(controller.text, '-');
+    });
+
+    testWidgets('echo shows a ghost of the matching suggestion',
+        (tester) async {
+      final controller = KeyboardController()
+        ..setText('ali')
+        ..show();
+      await tester.pumpWidget(
+        _keyboardApp(
+          controller,
+          purpose: InputPurpose.username,
+          recents: const ['Alice'],
+          style: KeyboardStyle.docked,
+        ),
+      );
+      await tester.pump();
+
+      final echo = tester.widgetList<RichText>(find.byType(RichText)).firstWhere(
+        (text) => text.text.toPlainText().startsWith('ali'),
+      );
+      expect(echo.text.toPlainText(), contains('ce'));
+    });
+
+    testWidgets('a helper that gets added on leaves no ghost', (tester) async {
+      final controller = KeyboardController()
+        ..setText('ht')
+        ..show();
+      await tester.pumpWidget(
+        _keyboardApp(
+          controller,
+          purpose: InputPurpose.url,
+          style: KeyboardStyle.docked,
+        ),
+      );
+      await tester.pump();
+
+      final echo = tester.widgetList<RichText>(find.byType(RichText)).firstWhere(
+        (text) => text.text.toPlainText().startsWith('ht\u{FFFC}'),
+      );
+      expect(echo.text.toPlainText(), 'ht\u{FFFC}');
+    });
+  });
+
+  group('Glass keyboard', () {
+    testWidgets('labels space and the search key with words', (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(
+        _keyboardApp(
+          controller,
+          purpose: InputPurpose.search,
+          style: KeyboardStyle.glass,
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('space'), findsOneWidget);
+      expect(find.text('Search'), findsOneWidget);
+      await tester.tap(find.text('a'));
+      await tester.tap(find.text('space'));
+      await tester.pump();
+      expect(controller.text, 'a ');
+    });
+  });
+
+  group('Style picker', () {
+    final picked = <KeyboardStyle>[];
+
+    setUp(() {
+      picked.clear();
+      CustomKeyboard.onStylePicked = picked.add;
+    });
+    tearDown(() => CustomKeyboard.onStylePicked = null);
+
+    Future<void> press(WidgetTester tester, List<LogicalKeyboardKey> keys) async {
+      for (final key in keys) {
+        await tester.sendKeyEvent(key);
+        await tester.pump();
+      }
+    }
+
+    // From q on the dock, the keyboard key is the bottom of the rail.
+    const toKeyboardKey = [
+      LogicalKeyboardKey.arrowLeft,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.arrowDown,
+    ];
+
+    testWidgets('the keyboard key picks a style and switches to it',
+        (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      await press(tester, [...toKeyboardKey, LogicalKeyboardKey.enter]);
+      for (final name in ['Native', 'Classic', 'Glass', 'Docked']) {
+        expect(find.text(name), findsOneWidget);
+      }
+
+      await press(tester, [
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.enter,
+      ]);
+      expect(picked, [KeyboardStyle.glass]);
+      expect(controller.style, KeyboardStyle.glass);
+      expect(find.text('Docked'), findsNothing);
+      expect(find.text('space'), findsOneWidget);
+    });
+
+    testWidgets('Native hands the field to the system keyboard',
+        (tester) async {
+      var requested = false;
+      final controller = KeyboardController()
+        ..onRequestSystemKeyboard = (() => requested = true)
+        ..show();
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      await press(tester, [
+        ...toKeyboardKey,
+        LogicalKeyboardKey.enter,
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.enter,
+      ]);
+      expect(picked, [KeyboardStyle.native]);
+      expect(controller.style, KeyboardStyle.native);
+      expect(requested, isTrue);
+    });
+
+    testWidgets('Back closes the picker before the keyboard', (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      await press(tester, [...toKeyboardKey, LogicalKeyboardKey.enter]);
+      expect(controller.dismissPopup!(), isTrue);
+      await tester.pump();
+      expect(find.text('Classic'), findsNothing);
+      expect(controller.isVisible, isTrue);
+      expect(controller.dismissPopup!(), isFalse);
+      expect(picked, isEmpty);
+    });
+
+    testWidgets('one Back closes only the picker beside the app handler',
+        (tester) async {
+      final controller = KeyboardController()..show();
+      // Stands in for the app's own handler, which sees each key first.
+      bool appBack(KeyEvent event) {
+        if (event is! KeyDownEvent ||
+            event.logicalKey != LogicalKeyboardKey.escape) {
+          return false;
+        }
+        if (!(controller.dismissPopup?.call() ?? false)) controller.hide(false);
+        return true;
+      }
+
+      HardwareKeyboard.instance.addHandler(appBack);
+      addTearDown(() => HardwareKeyboard.instance.removeHandler(appBack));
+      await tester.pumpWidget(
+        _keyboardApp(controller, style: KeyboardStyle.docked),
+      );
+      await tester.pump();
+
+      await press(tester, [...toKeyboardKey, LogicalKeyboardKey.enter]);
+      await press(tester, [LogicalKeyboardKey.escape]);
+      expect(find.text('Classic'), findsNothing);
+      expect(controller.isVisible, isTrue);
+
+      await press(tester, [LogicalKeyboardKey.escape]);
+      expect(controller.isVisible, isFalse);
+    });
+
+    testWidgets('Classic opens the picker from its keyboard key',
+        (tester) async {
+      final controller = KeyboardController()..show();
+      await tester.pumpWidget(_keyboardApp(controller));
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.keyboard_alt_outlined));
+      await tester.pump();
+      expect(find.text('Glass'), findsOneWidget);
+      expect(controller.style, KeyboardStyle.classic);
     });
   });
 }

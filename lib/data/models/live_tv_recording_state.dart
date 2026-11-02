@@ -1,3 +1,12 @@
+import 'package:flutter/foundation.dart';
+import 'package:server_core/server_core.dart';
+
+/// Counts the recordings this app has created, changed or cancelled, so a Live
+/// TV surface holding programs from before the change can re-read them.
+final liveTvRecordingRevision = ValueNotifier<int>(0);
+
+void notifyLiveTvRecordingsChanged() => liveTvRecordingRevision.value++;
+
 class LiveTvRecordingState {
   final String? timerId;
   final String? seriesTimerId;
@@ -49,9 +58,7 @@ class LiveTvRecordingState {
             !sameId(candidate['SeriesTimerId'], seriesTimerId)) {
           continue;
         }
-        final start = DateTime.tryParse(
-          candidate['StartDate']?.toString() ?? '',
-        );
+        final start = parseServerDate(candidate['StartDate']);
         if (start != null &&
             start.isAfter(currentTime) &&
             (nextSeriesRecording == null ||

@@ -12,6 +12,11 @@ enum SeasonalEffect {
   petals,
   fireflies,
   halloween,
+  valentines,
+  easter,
+  pride,
+  lunar,
+  diwali,
 }
 
 /// How busy an effect is. The names match the synced preference values.
@@ -44,8 +49,9 @@ abstract final class SeasonalSprite {
   static const confettiStrip = 5;
   static const confettiDisc = confettiStrip + flipFrames;
   static const petal = confettiDisc + flipFrames;
+  static const heart = petal + flipFrames;
 
-  static const bauble = petal + flipFrames;
+  static const bauble = heart + flipFrames;
   static const star = bauble + 1;
 
   /// Wings up, level and down.
@@ -57,8 +63,12 @@ abstract final class SeasonalSprite {
   static const bee = blossom + 1;
   static const ghost = bee + 1;
   static const candy = ghost + 1;
+  static const lantern = candy + 1;
 
-  static const count = candy + 1;
+  /// White with a darker band, so it takes the particle's color like the confetti.
+  static const egg = lantern + 1;
+
+  static const count = egg + 1;
 }
 
 /// Where each sprite sits in the atlas image.
@@ -198,6 +208,45 @@ class SeasonalSimulation {
   ];
 
   static const _fireflyColors = <int>[0xFFE6FF70, 0xFFFFF59D, 0xFFD4FF4F];
+
+  static const _heartColors = <int>[
+    0xFFE53950,
+    0xFFD81B60,
+    0xFFFF4D6D,
+    0xFFFF8FAB,
+    0xFFC2185B,
+    0xFFFFB3C6,
+  ];
+
+  static const _easterColors = <int>[
+    0xFFB3E5FC,
+    0xFFF8BBD0,
+    0xFFFFF59D,
+    0xFFC5E1A5,
+    0xFFD1C4E9,
+    0xFFFFCCBC,
+  ];
+
+  /// The six rainbow stripes, then the light blue, pink and white of the transgender flag.
+  static const _prideColors = <int>[
+    0xFFE40303,
+    0xFFFF8C00,
+    0xFFFFED00,
+    0xFF008026,
+    0xFF004DFF,
+    0xFF750787,
+    0xFF5BCEFA,
+    0xFFF5A9B8,
+    0xFFFFFFFF,
+  ];
+
+  static const _emberColors = <int>[
+    0xFFFFD54F,
+    0xFFFFB300,
+    0xFFFF8F00,
+    0xFFFFE082,
+    0xFFFF7043,
+  ];
 
   static const _fireworkColors = <int>[
     0xFFFF5252,
@@ -356,11 +405,15 @@ class SeasonalSimulation {
             final turn = math.cos(_flip0[i] + _flipRate[i] * age);
             sprite += (turn.abs() * (SeasonalSprite.flipFrames - 1)).round();
             if (turn < 0) {
-              color = _shade(color, effect == SeasonalEffect.petals ? 0.86 : 0.72);
+              final light = effect == SeasonalEffect.petals ||
+                  effect == SeasonalEffect.easter;
+              color = _shade(color, light ? 0.86 : 0.72);
             }
           }
           if (sprite == SeasonalSprite.star) {
             alpha *= 0.7 + 0.3 * math.sin(age * 5 + _phase[i]);
+          } else if (sprite == SeasonalSprite.glow) {
+            alpha *= 0.65 + 0.35 * math.sin(age * 7 + _phase[i]);
           }
           n = _emit(n, sheet, transforms, rects, colors, sprite, _x[i], _y[i],
               _rot[i], _size[i], color, alpha * fade);
@@ -430,6 +483,7 @@ class SeasonalSimulation {
         SeasonalEffect.fireworks => 0,
         SeasonalEffect.fireflies => density.particles ~/ 2,
         SeasonalEffect.halloween => (density.particles * 0.6).round(),
+        SeasonalEffect.lunar => density.particles ~/ 2,
         _ => density.particles,
       };
 
@@ -504,8 +558,11 @@ class SeasonalSimulation {
   (double, double) get _fallRange => switch (effect) {
     SeasonalEffect.snow || SeasonalEffect.christmas => (0.045, 0.10),
     SeasonalEffect.leaves || SeasonalEffect.halloween => (0.035, 0.07),
-    SeasonalEffect.confetti => (0.07, 0.13),
-    SeasonalEffect.petals => (0.04, 0.075),
+    SeasonalEffect.confetti || SeasonalEffect.pride => (0.07, 0.13),
+    SeasonalEffect.petals ||
+    SeasonalEffect.valentines ||
+    SeasonalEffect.easter => (0.04, 0.075),
+    SeasonalEffect.lunar || SeasonalEffect.diwali => (0.03, 0.06),
     SeasonalEffect.fireworks || SeasonalEffect.fireflies => (1, 1),
   };
 
@@ -603,7 +660,9 @@ class SeasonalSimulation {
           alpha = _lerp(0.7, 1.0, depth);
           color = palette[(tint * palette.length).floor()];
         }
-      case SeasonalEffect.confetti:
+      case SeasonalEffect.confetti || SeasonalEffect.pride:
+        final palette =
+            effect == SeasonalEffect.pride ? _prideColors : _confettiColors;
         sprite = shape < 0.6
             ? SeasonalSprite.confettiStrip
             : SeasonalSprite.confettiDisc;
@@ -612,7 +671,7 @@ class SeasonalSimulation {
         freq = _lerp(1.5, 3.5, wobble);
         spin = (r.nextDouble() - 0.5) * 6;
         alpha = _lerp(0.85, 1.0, depth);
-        color = _confettiColors[(tint * _confettiColors.length).floor()];
+        color = palette[(tint * palette.length).floor()];
         flipRate = _lerp(4, 9, r.nextDouble());
         driftScale = 0.04;
       case SeasonalEffect.petals:
@@ -633,27 +692,92 @@ class SeasonalSimulation {
           color = _petalColors[(tint * _petalColors.length).floor()];
           flipRate = _lerp(1.5, 3.5, r.nextDouble());
         }
+      case SeasonalEffect.valentines:
+        sprite = SeasonalSprite.heart;
+        size = _lerp(12, 24, depth);
+        amp = _lerp(12, 36, depth);
+        freq = _lerp(0.8, 1.5, wobble);
+        spin = (r.nextDouble() - 0.5) * 0.6;
+        alpha = _lerp(0.75, 1.0, depth);
+        color = _heartColors[(tint * _heartColors.length).floor()];
+        flipRate = _lerp(1.2, 3, r.nextDouble());
+        driftScale = 0.035;
+      case SeasonalEffect.easter:
+        amp = _lerp(12, 40, depth);
+        freq = _lerp(0.8, 1.5, wobble);
+        driftScale = 0.035;
+        color = _easterColors[(tint * _easterColors.length).floor()];
+        // About one in three is a painted egg among pastel petals.
+        if (shape < 0.35) {
+          sprite = SeasonalSprite.egg;
+          size = _lerp(16, 26, depth);
+          spin = (r.nextDouble() - 0.5) * 0.8;
+          alpha = _lerp(0.85, 1.0, depth);
+        } else {
+          sprite = SeasonalSprite.petal;
+          size = _lerp(12, 20, depth);
+          spin = (r.nextDouble() - 0.5) * 0.6;
+          alpha = _lerp(0.75, 1.0, depth);
+          flipRate = _lerp(1.5, 3.5, r.nextDouble());
+        }
+      case SeasonalEffect.lunar:
+        amp = _lerp(6, 18, depth);
+        freq = _lerp(0.4, 0.9, wobble);
+        driftScale = 0.02;
+        if (shape < 0.45) {
+          sprite = SeasonalSprite.lantern;
+          size = _lerp(18, 34, depth);
+          alpha = _lerp(0.8, 1.0, depth);
+        } else {
+          sprite = SeasonalSprite.glow;
+          size = _lerp(5, 11, depth);
+          alpha = _lerp(0.5, 0.95, depth);
+          color = _emberColors[(tint * _emberColors.length).floor()];
+        }
+      case SeasonalEffect.diwali:
+        amp = _lerp(6, 20, depth);
+        freq = _lerp(0.5, 1.2, wobble);
+        driftScale = 0.02;
+        if (shape < 0.2) {
+          sprite = SeasonalSprite.star;
+          size = _lerp(10, 18, depth);
+          spin = (r.nextDouble() - 0.5) * 0.8;
+          alpha = _lerp(0.8, 1.0, depth);
+          color = tint < 0.5 ? 0xFFFFD54F : 0xFFFFF3C4;
+        } else {
+          sprite = SeasonalSprite.glow;
+          size = _lerp(6, 14, depth);
+          alpha = _lerp(0.65, 1.0, depth);
+          color = _emberColors[(tint * _emberColors.length).floor()];
+        }
       case SeasonalEffect.fireworks || SeasonalEffect.fireflies:
         break;
     }
 
+    // Lanterns and embers drift up from below instead of falling.
+    final rising =
+        effect == SeasonalEffect.lunar || effect == SeasonalEffect.diwali;
     _kind[j] = _kindFall;
     _sprite[j] = sprite;
     _size[j] = size;
     _alpha[j] = alpha;
     _color[j] = color;
     _x0[j] = r.nextDouble() * _width;
-    _y0[j] = -size;
+    _y0[j] = rising ? _height + size : -size;
     _vx[j] = drift * driftScale * _width;
-    _vy[j] = _lerp(slow, fast, depth) * _height;
+    _vy[j] = _lerp(slow, fast, depth) * _height * (rising ? -1 : 1);
     _amp[j] = amp;
     _freq[j] = freq;
     _phase[j] = r.nextDouble() * 2 * math.pi;
     _rot0[j] = r.nextDouble() * 2 * math.pi;
+    // A lantern hangs upright and only sways.
+    if (sprite == SeasonalSprite.lantern) _rot0[j] = 0;
     _spin[j] = spin;
     _flip0[j] = r.nextDouble() * 2 * math.pi;
     _flipRate[j] = flipRate;
-    _life[j] = (_height + margin - _y0[j]) / _vy[j];
+    _life[j] = rising
+        ? (_y0[j] + margin) / -_vy[j]
+        : (_height + margin - _y0[j]) / _vy[j];
     _age[j] = age;
   }
 
@@ -821,8 +945,12 @@ class SeasonalSimulation {
         if (effect == SeasonalEffect.leaves ||
             effect == SeasonalEffect.halloween) {
           rot += 0.6 * math.cos(swing);
-        } else if (effect == SeasonalEffect.petals) {
+        } else if (effect == SeasonalEffect.petals ||
+            effect == SeasonalEffect.valentines ||
+            effect == SeasonalEffect.easter) {
           rot += 0.4 * math.cos(swing);
+        } else if (effect == SeasonalEffect.lunar) {
+          rot += 0.12 * math.cos(swing);
         }
         _rot[i] = rot;
       case _kindRocket:

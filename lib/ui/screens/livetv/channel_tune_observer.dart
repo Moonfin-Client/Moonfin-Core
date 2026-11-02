@@ -2,6 +2,11 @@ import 'dart:async';
 
 import 'package:playback_core/playback_core.dart';
 
+/// PlaybackManager permits a 15-second ready wait and can retry once through a
+/// server transcode. This leaves enough room for both attempts plus their
+/// handoff.
+const channelTuneTimeout = Duration(seconds: 35);
+
 /// Starts one channel tune and waits for that attempt's terminal bring-up
 /// state. A terminal event is accepted only after an in-progress event exposes
 /// the attempt's session token, so late events from an older tune are ignored.

@@ -1,4 +1,6 @@
+import AVFoundation
 import AetherEngine
+import Combine
 import Flutter
 import UIKit
 
@@ -8,8 +10,13 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
     private let events: FlutterEventChannel
     private nonisolated(unsafe) var eventSink: FlutterEventSink?
     private let rootProvider: () -> UIViewController?
+    private let textures: FlutterTextureRegistry?
 
     private var player: AetherPlayerWrapper?
+    /// Set while the player is off screen for Flutter UI with playback still
+    /// running, which is how the Live TV guide keeps the channel playing.
+    private var suspendedFrames: EngineFrameTexture?
+    private var isSuspended = false
 
     /// The wrapper this channel is playing through, if any.
     var activePlayer: AetherPlayerWrapper? { player }
@@ -34,12 +41,16 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
 
     /// The root is looked up per presentation because on iOS the Flutter window
     /// can be missing when CarPlay starts the engine and come later.
-    init(messenger: FlutterBinaryMessenger, rootProvider: @escaping () -> UIViewController?) {
+    init(
+        messenger: FlutterBinaryMessenger, textures: FlutterTextureRegistry?,
+        rootProvider: @escaping () -> UIViewController?
+    ) {
         control = FlutterMethodChannel(
             name: "moonfin/native_apple_player_control", binaryMessenger: messenger)
         events = FlutterEventChannel(
             name: "moonfin/native_apple_player_events", binaryMessenger: messenger)
         self.rootProvider = rootProvider
+        self.textures = textures
         super.init()
         control.setMethodCallHandler { [weak self] call, result in
             if call.method == "getCapabilities" {
@@ -56,6 +67,10 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 Task { @MainActor in
                     result(self?.playerVC?.presentStillWatching() ?? false)
                 }
+                return
+            }
+            if call.method == "suspend" {
+                Task { @MainActor in self?.suspend(result: result) }
                 return
             }
             if call.method == "setVolume" {
@@ -105,6 +120,18 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             present(audioOnly: (args["audioOnly"] as? Bool) ?? false)
         case "dismiss":
             dismiss()
+        case "resume":
+            resumePresentation()
+        case "setReconnecting":
+            playerVC?.setReconnecting(args["label"] as? String)
+        case "showMessage":
+            playerVC?.presentMessage(
+                (args["message"] as? String) ?? "",
+                actionLabel: args["actionLabel"] as? String,
+                closeLabel: (args["closeLabel"] as? String) ?? "OK"
+            ) { [weak self] in
+                self?.send(["event": "messageAction"])
+            }
         case "remoteNavigation":
             if let command = args["command"] as? String {
                 playerVC?.handleRemoteNavigation(command)
@@ -215,6 +242,17 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             player?.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
             player?.disableSubtitles()
+        case "setSecondarySubtitle":
+            player?.setSecondarySubtitle(
+                embeddedTrackId: (args["embeddedTrackId"] as? NSNumber)?.intValue,
+                url: (args["url"] as? String).flatMap { urlFrom($0) })
+        case "setSecondarySubtitleDelay":
+            player?.setSecondarySubtitleDelay(ms(args["delayMs"]))
+        case "configureSecondarySubtitleStyle":
+            player?.configureSecondarySubtitleStyle(
+                fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
+                verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue,
+                textColor: (args["textColor"] as? NSNumber)?.intValue)
         case "setAudioDelay":
             player?.setAudioDelay(ms(args["delayMs"]))
         case "setSubtitleDelay":
@@ -263,6 +301,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             fontWeight: (args["fontWeight"] as? NSNumber)?.intValue,
             verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue)
         vc?.baseSubtitlePos = player.baseSubtitlePos
+        vc?.reapplySubtitleClearance()
     }
 
     private func present(audioOnly: Bool) {
@@ -294,6 +333,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         vc.onSelectSubtitle = { [weak self] index in
             self?.send(["event": "selectSubtitle", "index": index])
         }
+        vc.onSubtitleAction = { [weak self] action in
+            self?.send(action)
+        }
         // Keeps the stored delay on the Dart side in step with what the user
         // set here. Audio delay has no control on this path, so it stays zero.
         vc.onSubtitleDelayChanged = { [weak self] delayMs in
@@ -314,6 +356,12 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         }
         vc.onOpenGuide = { [weak self] in
             self?.send(["event": "openGuide"])
+        }
+        vc.onRecord = { [weak self] in
+            self?.send(["event": "record"])
+        }
+        vc.onToggleOrientation = { [weak self] in
+            self?.send(["event": "toggleOrientation"])
         }
         vc.onToggleFavorite = { [weak self] in
             self?.send(["event": "toggleFavorite"])
@@ -431,6 +479,13 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         lastCinemaSkipState = nil
         stopStateTimer()
         player?.shutdown()
+        suspendedFrames?.teardown()
+        suspendedFrames = nil
+        let wasSuspended = isSuspended
+        isSuspended = false
+        #if os(iOS)
+        IosNativePlayerHostController.orientationLock = nil
+        #endif
         let vc = playerVC
         playerVC = nil
         player = nil
@@ -443,7 +498,14 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             // presented the player closes the whole stack. On iOS the player
             // sits inside the scaling host, which is what was presented.
             let top = vc.parent ?? vc
-            if let presenter = top.presentingViewController {
+            if wasSuspended {
+                // Already off screen, so there's nothing for UIKit to dismiss.
+                vc.onExit = nil
+                #if os(iOS)
+                vc.restoreBrightness()
+                #endif
+                send(["event": "dismissed"])
+            } else if let presenter = top.presentingViewController {
                 // Still Watching answers "continue" when it leaves unanswered,
                 // which the session being torn down must not hear.
                 vc.onStillWatchingContinue = nil
@@ -460,6 +522,44 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             send(["event": "dismissed"])
         }
         onPlayerChanged?()
+    }
+
+    /// Takes the player off screen while the engine keeps playing, so Flutter
+    /// can show the Live TV guide or a dialog over the live picture.
+    private func suspend(result: @escaping FlutterResult) {
+        guard let vc = playerVC, !isSuspended else {
+            result(suspendedFrames?.textureId)
+            return
+        }
+        isSuspended = true
+        vc.keepsPlayingWhileHidden = true
+        if let textures {
+            suspendedFrames = EngineFrameTexture(textures: textures)
+        }
+        hostLog("suspended, frames \(suspendedFrames == nil ? "unavailable" : "shared")")
+        let top = vc.parent ?? vc
+        guard let presenter = top.presentingViewController else {
+            result(suspendedFrames?.textureId)
+            return
+        }
+        presenter.dismiss(animated: false) { [weak self] in
+            Task { @MainActor in result(self?.suspendedFrames?.textureId) }
+        }
+    }
+
+    private func resumePresentation() {
+        guard isSuspended, let vc = playerVC else { return }
+        isSuspended = false
+        suspendedFrames?.teardown()
+        suspendedFrames = nil
+        vc.keepsPlayingWhileHidden = false
+        guard let presenter = presentingController() else { return }
+        #if os(iOS)
+        let presented: UIViewController = IosNativePlayerHostController(content: vc)
+        #else
+        let presented: UIViewController = vc
+        #endif
+        presenter.present(presented, animated: false)
     }
 
     /// Engine lines otherwise only reach the device console, which a remote
@@ -508,7 +608,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 audioBridgeLossless: (args["audioBridgeLossless"] as? Bool) ?? false,
                 dolbyVisionBaseLayerOnly: (args["dolbyVisionBaseLayerOnly"] as? Bool) ?? false,
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
-                    from: args["externalSubtitles"])))
+                    from: args["externalSubtitles"]),
+                subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
@@ -527,11 +629,6 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                     + "subtitleTracks=\(player.subtitleTracks.count)")
             if let speed = (args["speed"] as? NSNumber)?.floatValue, speed != 1.0 {
                 player.setRate(speed)
-            }
-            if let delayMs = (args["subtitleDelayMs"] as? NSNumber)?.doubleValue,
-                delayMs != 0
-            {
-                player.setSubtitleDelay(delayMs / 1000.0)
             }
         }
     }
@@ -620,6 +717,94 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         if p.state == .error, !didReportTerminalError {
             didReportTerminalError = true
             send(["event": "error", "error": "Playback error"])
+        }
+    }
+}
+
+/// The picture the engine is playing, as a Flutter texture. While the player
+/// is suspended this is what keeps the live channel moving in the guide's
+/// mini player, from the same stream rather than a second tune.
+@MainActor
+final class EngineFrameTexture: NSObject, FlutterTexture {
+    private let textures: FlutterTextureRegistry
+    private(set) var textureId: Int64 = -1
+    // Flutter copies frames on its raster thread while the main thread swaps
+    // or clears the output.
+    private let outputLock = NSLock()
+    nonisolated(unsafe) private var lockedOutput: AVPlayerItemVideoOutput?
+    nonisolated private var output: AVPlayerItemVideoOutput? {
+        get {
+            outputLock.lock()
+            defer { outputLock.unlock() }
+            return lockedOutput
+        }
+        set {
+            outputLock.lock()
+            lockedOutput = newValue
+            outputLock.unlock()
+        }
+    }
+    private var item: AVPlayerItem?
+    private var itemSubscription: AnyCancellable?
+    private var displayLink: CADisplayLink?
+
+    /// Nil when the engine has no AVPlayer item, which is the software path.
+    init?(textures: FlutterTextureRegistry) {
+        guard let engine = AetherPlayerWrapper.sharedEngine(),
+            engine.currentAVPlayerItem != nil
+        else { return nil }
+        self.textures = textures
+        super.init()
+        textureId = textures.register(self)
+        // The engine swaps items in place on an audio switch or a recovery.
+        itemSubscription = engine.$currentAVPlayerItem
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] item in self?.attach(to: item) }
+        let link = CADisplayLink(target: self, selector: #selector(onFrame))
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    private func attach(to newItem: AVPlayerItem?) {
+        guard newItem !== item else { return }
+        if let item, let output { item.remove(output) }
+        item = newItem
+        output = nil
+        guard let newItem else { return }
+        let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+            kCVPixelBufferIOSurfacePropertiesKey as String: [:] as [String: Any],
+        ])
+        newItem.add(output)
+        self.output = output
+    }
+
+    @objc private func onFrame() {
+        guard let output, let item else { return }
+        if output.hasNewPixelBuffer(forItemTime: item.currentTime()) {
+            textures.textureFrameAvailable(textureId)
+        }
+    }
+
+    nonisolated func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
+        guard let output else { return nil }
+        let time = output.itemTime(forHostTime: CACurrentMediaTime())
+        guard output.hasNewPixelBuffer(forItemTime: time),
+            let buffer = output.copyPixelBuffer(forItemTime: time, itemTimeForDisplay: nil)
+        else { return nil }
+        return Unmanaged.passRetained(buffer)
+    }
+
+    func teardown() {
+        displayLink?.invalidate()
+        displayLink = nil
+        itemSubscription = nil
+        if let item, let output { item.remove(output) }
+        item = nil
+        output = nil
+        if textureId >= 0 {
+            textures.unregisterTexture(textureId)
+            textureId = -1
         }
     }
 }

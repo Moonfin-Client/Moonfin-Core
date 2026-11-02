@@ -282,14 +282,7 @@ class MusicBrowseViewModel extends ChangeNotifier {
     switch (item.type) {
       case 'Audio':
       case 'MusicAlbum':
-        if (item.artists.isNotEmpty) return item.artists.join(', ');
-        if (item.albumArtists.isNotEmpty) {
-          return item.albumArtists
-              .map((a) => a['Name'] as String? ?? '')
-              .where((n) => n.isNotEmpty)
-              .join(', ');
-        }
-        return item.albumArtist ?? '';
+        return musicArtistNames(item);
       case 'Playlist':
         final count = item.childCount;
         return count != null && count > 0 ? '$count items' : '';
@@ -301,37 +294,8 @@ class MusicBrowseViewModel extends ChangeNotifier {
     }
   }
 
-  String? getMusicImageUrl(AggregatedItem item, {int maxHeight = 300}) {
-    final albumPrimaryTag = item.rawData['AlbumPrimaryImageTag'] as String?;
-    final albumId = item.rawData['AlbumId']?.toString();
-    if (item.type == 'Audio' && albumPrimaryTag != null && albumId != null) {
-      return imageApi.getPrimaryImageUrl(
-        albumId,
-        maxHeight: maxHeight,
-        tag: albumPrimaryTag,
-      );
-    }
-    if (item.primaryImageTag != null) {
-      return imageApi.getPrimaryImageUrl(
-        item.id,
-        maxHeight: maxHeight,
-        tag: item.primaryImageTag,
-      );
-    }
-    final parentPrimaryTag =
-        (item.rawData['ParentPrimaryImageTag'] as String?) ??
-        (item.rawData['ImageTags'] as Map?)?['ParentPrimary'] as String?;
-    final parentPrimaryId =
-        item.rawData['ParentPrimaryImageItemId']?.toString() ?? item.parentId;
-    if (parentPrimaryTag != null && parentPrimaryId != null) {
-      return imageApi.getPrimaryImageUrl(
-        parentPrimaryId,
-        maxHeight: maxHeight,
-        tag: parentPrimaryTag,
-      );
-    }
-    return null;
-  }
+  String? getMusicImageUrl(AggregatedItem item, {int maxHeight = 300}) =>
+      musicItemImageUrl(imageApi, item, maxHeight: maxHeight);
 
   Future<void> loadMoreForRow(int rowIndex) async {
     if (rowIndex < 0 || rowIndex >= _rows.length) return;
@@ -370,4 +334,59 @@ class MusicBrowseViewModel extends ChangeNotifier {
     }
     return ('SortName', 'Ascending');
   }
+}
+
+/// Who made a song or album: its artists, or else its album artists.
+String musicArtistNames(AggregatedItem item) {
+  if (item.artists.isNotEmpty) return item.artists.join(', ');
+  final names = item.albumArtists
+      .map((artist) => artist['Name'] as String? ?? '')
+      .where((name) => name.isNotEmpty);
+  if (names.isNotEmpty) return names.join(', ');
+  return item.albumArtist ?? '';
+}
+
+/// A song's artist and album.
+String musicSongLine(AggregatedItem item) {
+  final artist = musicArtistNames(item);
+  final album = item.album;
+  if (album == null || album.isEmpty) return artist;
+  return artist.isEmpty ? album : '$artist · $album';
+}
+
+/// An item's art: a song's album art, the item's own, or else its parent's.
+String? musicItemImageUrl(
+  ImageApi imageApi,
+  AggregatedItem item, {
+  int maxHeight = 300,
+}) {
+  final albumPrimaryTag = item.rawData['AlbumPrimaryImageTag'] as String?;
+  final albumId = item.rawData['AlbumId']?.toString();
+  if (item.type == 'Audio' && albumPrimaryTag != null && albumId != null) {
+    return imageApi.getPrimaryImageUrl(
+      albumId,
+      maxHeight: maxHeight,
+      tag: albumPrimaryTag,
+    );
+  }
+  if (item.primaryImageTag != null) {
+    return imageApi.getPrimaryImageUrl(
+      item.id,
+      maxHeight: maxHeight,
+      tag: item.primaryImageTag,
+    );
+  }
+  final parentPrimaryTag =
+      (item.rawData['ParentPrimaryImageTag'] as String?) ??
+      (item.rawData['ImageTags'] as Map?)?['ParentPrimary'] as String?;
+  final parentPrimaryId =
+      item.rawData['ParentPrimaryImageItemId']?.toString() ?? item.parentId;
+  if (parentPrimaryTag != null && parentPrimaryId != null) {
+    return imageApi.getPrimaryImageUrl(
+      parentPrimaryId,
+      maxHeight: maxHeight,
+      tag: parentPrimaryTag,
+    );
+  }
+  return null;
 }

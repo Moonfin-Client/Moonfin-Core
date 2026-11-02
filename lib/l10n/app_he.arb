@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "בחר אילו עדכוני נושאים להציג ב-Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "החל",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ז'אנרים של ספרי שמע",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "בחר אילו ז'אנרים להצגה ב- Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "גלה ספרי אודיו",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "כותרים פופולריים ברשות הרבים מ-LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} כותרים",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "גלול שמאלה",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "לְגַלוֹת",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "כותרות פופולריות לפי נושא מ-Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "עדיין אין פריטים מסומנים",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "הפעל תצוגת תיקיות",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "הצג אפשרות גלישה בתיקייה",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "נראות הספרייה",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "תוכן מומלץ, מראה",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "גודל פוסטר, סוג תמונה, תצוגת תיקייה",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB ומקורות דירוג",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "חילוץ ארכיון .cbr נכשל.",
     "cb7ExtractionUnavailable": "חילוץ CB7 אינו זמין בפלטפורמה זו.",
     "cb7ExtractionPluginUnavailable": "תוסף החילוץ של CB7 אינו זמין בפלטפורמה זו.",
-    "closeGenrePanel": "סגור את פאנל הז'אנרים",
     "loadingShuffle": "טוען ערבוב...",
     "libraryShuffleLabel": "ערבוב ספרייה",
     "randomShuffleLabel": "ערבוב אקראי",

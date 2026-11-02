@@ -24,6 +24,7 @@ import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
 import '../../../../widgets/seerr/seerr_stats_card.dart';
+import '../../../../widgets/seerr/seerr_streaming_row.dart';
 import '../../item_detail_screen.dart' show selectedMediaSourceForItem;
 import '../shared/nouveau_spacing.dart';
 
@@ -123,6 +124,11 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
   bool get _hasSeerrChips => _seerrPieces.chips;
 
+  bool get _hasSeerrFacts {
+    final pieces = _seerrPieces;
+    return pieces.stats || pieces.streaming;
+  }
+
   // A node keeps its last context after its widget is gone, so a group that
   // was hidden would still look focusable without the mounted check.
   bool _canFocus(FocusNode node) =>
@@ -160,9 +166,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   GlobalKey? get bottomRevealKey {
-    final hasStats = _seerrPieces.stats;
-
-    if (hasStats || _hasTechnicalDetails) {
+    if (_hasSeerrFacts || _hasTechnicalDetails) {
       return _readingContentKey;
     }
 
@@ -239,9 +243,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   bool focusBottom() {
-    final hasStats = _seerrPieces.stats;
-
-    if ((hasStats || _hasTechnicalDetails) && _canFocus(_readingFocusNode)) {
+    if ((_hasSeerrFacts || _hasTechnicalDetails) &&
+        _canFocus(_readingFocusNode)) {
       _readingFocusNode.requestFocus();
 
       return true;
@@ -1033,7 +1036,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     if (!hasTechnicalDetails &&
         !hasStudios &&
         !seerrPieces.chips &&
-        !seerrPieces.stats) {
+        !seerrPieces.stats &&
+        !seerrPieces.streaming) {
       return const SizedBox.shrink();
     }
 
@@ -1081,7 +1085,10 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final hasSeerrStats = seerrState != null && seerrPieces.stats;
 
-    final hasReadingContent = hasSeerrStats || hasTechnicalDetails;
+    final hasSeerrStreaming = seerrState != null && seerrPieces.streaming;
+
+    final hasReadingContent =
+        hasSeerrStats || hasSeerrStreaming || hasTechnicalDetails;
 
     var fileName = '';
     var formattedSize = '';
@@ -1399,10 +1406,26 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
                             SeerrStatsCard(state: seerrState),
                           ],
 
-                          if (hasTechnicalDetails) ...[
+                          if (hasSeerrStreaming) ...[
                             SizedBox(
                               height:
                                   hasSeerrStats || hasSeerrChips || hasStudios
+                                  ? 26
+                                  : NouveauSpacing.detailsTitleToContent,
+                            ),
+
+                            SeerrStreamingRow(
+                              providers: seerrState.streamingProviders,
+                            ),
+                          ],
+
+                          if (hasTechnicalDetails) ...[
+                            SizedBox(
+                              height:
+                                  hasSeerrStats ||
+                                      hasSeerrStreaming ||
+                                      hasSeerrChips ||
+                                      hasStudios
                                   ? 46
                                   : NouveauSpacing.detailsTitleToContent,
                             ),

@@ -27,4 +27,17 @@ void main() {
       );
     });
   });
+
+  group('seerrStreamingRegion', () {
+    test("takes the user's own region first", () {
+      expect(seerrStreamingRegion('GB', 'DE'), 'GB');
+    });
+
+    test("falls back to the server's region, then the US", () {
+      expect(seerrStreamingRegion(null, 'DE'), 'DE');
+      expect(seerrStreamingRegion('', 'DE'), 'DE');
+      expect(seerrStreamingRegion(null, ''), 'US');
+      expect(seerrStreamingRegion(null, null), 'US');
+    });
+  });
 }

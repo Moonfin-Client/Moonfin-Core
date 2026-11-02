@@ -3,7 +3,7 @@ import 'user_preferences.dart';
 /// Destinations that can be pinned between Home and You on the mobile bottom
 /// navbar. The names are the wire format of [UserPreferences.bottomNavbarTabs],
 /// so renaming one breaks every synced profile that holds it.
-enum BottomNavTab { search, libraries, favorites, genres, liveTv, discover, folders }
+enum BottomNavTab { search, libraries, favorites, genres, liveTv, discover }
 
 const int kMaxPinnedBottomNavTabs = 3;
 
@@ -15,7 +15,6 @@ const List<BottomNavTab> _autoOrder = [
   BottomNavTab.liveTv,
   BottomNavTab.discover,
   BottomNavTab.genres,
-  BottomNavTab.folders,
 ];
 
 final Map<String, BottomNavTab> _byName = {
@@ -55,7 +54,6 @@ class BottomNavTabGates {
   final bool showLiveTv;
   final bool showSeerr;
   final bool seerrAvailable;
-  final bool folderView;
 
   const BottomNavTabGates({
     this.kidsMode = false,
@@ -65,7 +63,6 @@ class BottomNavTabGates {
     this.showLiveTv = false,
     this.showSeerr = true,
     this.seerrAvailable = false,
-    this.folderView = false,
   });
 
   factory BottomNavTabGates.fromPreferences(
@@ -80,7 +77,6 @@ class BottomNavTabGates {
       showLiveTv: prefs.get(UserPreferences.showLiveTvButton),
       showSeerr: prefs.get(UserPreferences.showSeerrButton),
       seerrAvailable: seerrAvailable,
-      folderView: prefs.get(UserPreferences.enableFolderView),
     );
   }
 
@@ -93,7 +89,6 @@ class BottomNavTabGates {
         BottomNavTab.genres => showGenres,
         BottomNavTab.liveTv => !kidsMode && showLiveTv,
         BottomNavTab.discover => !kidsMode && showSeerr && seerrAvailable,
-        BottomNavTab.folders => folderView,
       };
 
   /// The tabs the bar shows between Home and You. Automatic pins follow the

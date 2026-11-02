@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../screens/livetv/epg/epg_genre.dart';
 import '../offline_aware_image.dart';
+import 'live_tv_recording_icon.dart';
 
 /// One channel in the quick channel carousel. Pure presentation: the host
 /// owns scrolling, focus, and data. This only renders what it is given.
@@ -42,6 +43,7 @@ class ChannelCarouselCard extends StatelessWidget {
   final bool isLive;
   final double progress; // 0..1, meaningful only when isLive
   final bool hasTimer;
+  final bool hasSeriesTimer;
   final bool centered;
 
   /// Draws the program block as a skeleton: the schedule is still on its
@@ -117,6 +119,7 @@ class ChannelCarouselCard extends StatelessWidget {
     required this.isLive,
     required this.progress,
     required this.hasTimer,
+    this.hasSeriesTimer = false,
     required this.centered,
     this.programLoading = false,
     this.width = cardWidth,
@@ -350,12 +353,15 @@ class ChannelCarouselCard extends StatelessWidget {
           style: nameStyle,
         ),
       ),
-      if (hasTimer) ...[
+      if (LiveTvRecordingIcon.shows(
+        hasTimer: hasTimer,
+        hasSeriesTimer: hasSeriesTimer,
+      )) ...[
         const SizedBox(width: _statusGap),
-        Icon(
-          Icons.fiber_manual_record,
+        LiveTvRecordingIcon(
+          hasTimer: hasTimer,
+          hasSeriesTimer: hasSeriesTimer,
           size: inlineIconSize,
-          color: const Color(0xFFE0685C),
         ),
       ],
       if (logoUrl != null && logoUrl!.isNotEmpty) ...[

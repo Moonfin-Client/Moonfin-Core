@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Choisissez quels flux de sujets afficher dans Découvrir.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Appliquer",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -539,27 +535,6 @@
     "audiobookGenres": "Genres de livres audio",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Choisissez quels genres afficher dans Découvrir pour les livres audio.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Découvrir des livres audio",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Titres populaires du domaine public de LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titres",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Faire défiler vers la gauche",
     "@scrollLeft": {
@@ -736,10 +711,6 @@
     "discover": "Découvrir",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Titres tendance par sujet depuis Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Aucun élément dans les marque-pages pour le moment",
     "@noBookmarkedItems": {
@@ -3446,14 +3417,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Activer la vue dossiers",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Afficher l’option de navigation par dossiers",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Visibilité des bibliothèques",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4143,10 +4106,6 @@
     "featuredContentAppearance": "Contenu à la une, apparence",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Taille des affiches, type d’image, vue des dossiers",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB et sources des notes",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Échec de l'extraction de l'archive .cbr.",
     "cb7ExtractionUnavailable": "L'extraction CB7 n'est pas disponible sur cette plateforme.",
     "cb7ExtractionPluginUnavailable": "Le plugin d'extraction CB7 n'est pas disponible sur cette plateforme.",
-    "closeGenrePanel": "Fermer le panneau des genres",
     "loadingShuffle": "Chargement de la lecture aléatoire…",
     "libraryShuffleLabel": "BIBLIOTHÈQUE ALÉATOIRE",
     "randomShuffleLabel": "TRI ALÉATOIRE",
@@ -14816,5 +14774,13 @@
     "autoDownloadDeleteFollowedSubtitle": "Quand supprimer les épisodes téléchargés pour les séries que vous suivez, après les avoir vus",
     "@autoDownloadDeleteFollowedSubtitle": {
         "description": "Explains the delete-after-watching setting"
+    },
+    "animeMarkerSubbedShort": "Sub",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "Dub",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
     }
 }

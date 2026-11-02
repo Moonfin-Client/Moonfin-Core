@@ -8,6 +8,10 @@ description: Flutter library to load and cache network images.
 # paints blank so the image never shows again. Flutter's own
 # MultiFrameImageStreamCompleter already skips that decode, so this fork can be
 # retired once upstream does too.
+# Moonfin also adds two static hooks to CachedNetworkImageProvider:
+# cacheKeyFor (a cache key for URLs whose signature rotates) and urlResolver
+# (a placeholder URL resolved to the real one before downloading), both used by
+# Silo servers. Unset, nothing changes.
 # The upstream tests, docs, dev_dependencies and analysis_options.yaml were
 # dropped since only lib/ is consumed here.
 homepage: https://github.com/Baseflow/flutter_cached_network_image

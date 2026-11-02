@@ -1,0 +1,1214 @@
+{
+ "Items": [
+  {
+   "Name": "Independence Day",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659237",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Container": "mkv",
+   "PremiereDate": "2010-11-26T06:00:00.0000000Z",
+   "MediaSources": [
+    {
+     "Chapters": [
+      {
+       "StartPositionTicks": 0,
+       "Name": "Chapter 1",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 0
+      },
+      {
+       "StartPositionTicks": 2479980000,
+       "Name": "Chapter 2",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 1
+      },
+      {
+       "StartPositionTicks": 2483830845,
+       "Name": "Intro Start",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "IntroStart",
+       "ChapterIndex": 2
+      },
+      {
+       "StartPositionTicks": 2702736317,
+       "Name": "Intro End",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "IntroEnd",
+       "ChapterIndex": 3
+      },
+      {
+       "StartPositionTicks": 2705200000,
+       "Name": "Chapter 3",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 4
+      },
+      {
+       "StartPositionTicks": 7478300000,
+       "Name": "Chapter 4",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 5
+      },
+      {
+       "StartPositionTicks": 11108180000,
+       "Name": "Chapter 5",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 6
+      },
+      {
+       "StartPositionTicks": 13251990000,
+       "Name": "Chapter 6",
+       "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 7
+      }
+     ],
+     "Protocol": "File",
+     "Id": "mediasource_659237",
+     "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+     "Type": "Default",
+     "Container": "mkv",
+     "Size": 408765775,
+     "Name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265]",
+     "IsRemote": false,
+     "HasMixedProtocols": false,
+     "RunTimeTicks": 13570240000,
+     "SupportsTranscoding": true,
+     "SupportsDirectStream": true,
+     "SupportsDirectPlay": true,
+     "IsInfiniteStream": false,
+     "RequiresOpening": false,
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "SupportsProbing": true,
+     "MediaStreams": [
+      {
+       "Codec": "hevc",
+       "TimeBase": "1/1000",
+       "VideoRange": "SDR",
+       "DisplayTitle": "1080p HEVC",
+       "IsInterlaced": false,
+       "BitRate": 2409777,
+       "BitDepth": 10,
+       "RefFrames": 1,
+       "IsDefault": true,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Height": 1080,
+       "Width": 1920,
+       "AverageFrameRate": 23.809525,
+       "RealFrameRate": 23.809525,
+       "Profile": "Main 10",
+       "Type": "Video",
+       "AspectRatio": "16:9",
+       "Index": 0,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "PixelFormat": "yuv420p10le",
+       "Level": 120,
+       "IsAnamorphic": false,
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "eac3",
+       "Language": "eng",
+       "TimeBase": "1/1000",
+       "DisplayTitle": "English EAC3 stereo",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "ChannelLayout": "stereo",
+       "BitRate": 640000,
+       "Channels": 2,
+       "SampleRate": 48000,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Audio",
+       "Index": 1,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "srt",
+       "Language": "en",
+       "DisplayTitle": "English (SRT)",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Subtitle",
+       "Index": 2,
+       "IsExternal": true,
+       "IsTextSubtitleStream": true,
+       "SupportsExternalStream": true,
+       "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt",
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      }
+     ],
+     "Formats": [],
+     "Bitrate": 2409777,
+     "RequiredHttpHeaders": {},
+     "AddApiKeyToDirectStreamUrl": false,
+     "ReadAtNativeFramerate": false,
+     "DefaultAudioStreamIndex": 1,
+     "ItemId": "659237",
+     "MimeType": "video/x-matroska"
+    }
+   ],
+   "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+   "Overview": "Robin, Aqualad, and Kid Flash break into Cadmus and find that it is being run by Genomorphs.",
+   "Taglines": [],
+   "Genres": [
+    "Animation",
+    "Action",
+    "Adventure"
+   ],
+   "RunTimeTicks": 13570240000,
+   "Size": 408765775,
+   "Bitrate": 2409777,
+   "IndexNumber": 1,
+   "ParentIndexNumber": 1,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Imdb": "tt1758556",
+    "Tvdb": "3179501",
+    "TvRage": "1064973458"
+   },
+   "IsFolder": false,
+   "Type": "Episode",
+   "People": [
+    {
+     "Name": "René Auberjonois",
+     "Id": "291872",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "4b3524422e184613f745d731e0701c2c_638649967137136264"
+    },
+    {
+     "Name": "George Eads",
+     "Id": "468037",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "ed3af08558a70b370e2fbf13c79e2c8a_639275194822600319"
+    },
+    {
+     "Name": "Keith Szarabajka",
+     "Id": "309424",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "1925dceea011834994cbe59947a6a89a_638678595148874794"
+    },
+    {
+     "Name": "Alan Tudyk",
+     "Id": "300779",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "35051139152d89349d8f1ba499aafe8a_638633394727768082"
+    },
+    {
+     "Name": "Jay Oliva",
+     "Id": "297811",
+     "Type": "Director",
+     "PrimaryImageTag": "44dde318975acd7841eda61ae9ee667d_638831110479245116"
+    }
+   ],
+   "Studios": [],
+   "GenreItems": [
+    {
+     "Name": "Animation",
+     "Id": 361
+    },
+    {
+     "Name": "Action",
+     "Id": 312
+    },
+    {
+     "Name": "Adventure",
+     "Id": 359
+    }
+   ],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "SeasonId": "659232",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "SeasonName": "Season 1",
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "IsInterlaced": false,
+     "BitRate": 2409777,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1080,
+     "Width": 1920,
+     "AverageFrameRate": 23.809525,
+     "RealFrameRate": 23.809525,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "16:9",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "eac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English EAC3 stereo",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "stereo",
+     "BitRate": 640000,
+     "Channels": 2,
+     "SampleRate": 48000,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "ImageTags": {
+    "Primary": "c5bb5499fc33e6acae9c0315cf740d79_638938237856366770"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077",
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 2479980000,
+     "Name": "Chapter 2",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 2483830845,
+     "Name": "Intro Start",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "IntroStart",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 2702736317,
+     "Name": "Intro End",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "IntroEnd",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 2705200000,
+     "Name": "Chapter 3",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 7478300000,
+     "Name": "Chapter 4",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 11108180000,
+     "Name": "Chapter 5",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 13251990000,
+     "Name": "Chapter 6",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    }
+   ],
+   "MediaType": "Video"
+  },
+  {
+   "Name": "Fireworks",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659236",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Container": "mkv",
+   "PremiereDate": "2010-11-26T06:00:00.0000000Z",
+   "MediaSources": [
+    {
+     "Chapters": [
+      {
+       "StartPositionTicks": 0,
+       "Name": "Chapter 1",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 0
+      },
+      {
+       "StartPositionTicks": 839552238,
+       "Name": "Intro Start",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "IntroStart",
+       "ChapterIndex": 1
+      },
+      {
+       "StartPositionTicks": 844180000,
+       "Name": "Chapter 2",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 2
+      },
+      {
+       "StartPositionTicks": 1055640000,
+       "Name": "Chapter 3",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 3
+      },
+      {
+       "StartPositionTicks": 1064676616,
+       "Name": "Intro End",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "IntroEnd",
+       "ChapterIndex": 4
+      },
+      {
+       "StartPositionTicks": 4769760000,
+       "Name": "Chapter 4",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 5
+      },
+      {
+       "StartPositionTicks": 7726890000,
+       "Name": "Chapter 5",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 6
+      },
+      {
+       "StartPositionTicks": 13252820000,
+       "Name": "Chapter 6",
+       "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 7
+      }
+     ],
+     "Protocol": "File",
+     "Id": "mediasource_659236",
+     "Path": "Young Justice (2010) - S01E02 - Fireworks [HDTV-1080p][x265].mkv",
+     "Type": "Default",
+     "Container": "mkv",
+     "Size": 319734649,
+     "Name": "Young Justice (2010) - S01E02 - Fireworks [HDTV-1080p][x265]",
+     "IsRemote": false,
+     "HasMixedProtocols": false,
+     "RunTimeTicks": 13570240000,
+     "SupportsTranscoding": true,
+     "SupportsDirectStream": true,
+     "SupportsDirectPlay": true,
+     "IsInfiniteStream": false,
+     "RequiresOpening": false,
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "SupportsProbing": true,
+     "MediaStreams": [
+      {
+       "Codec": "hevc",
+       "TimeBase": "1/1000",
+       "VideoRange": "SDR",
+       "DisplayTitle": "1080p HEVC",
+       "IsInterlaced": false,
+       "BitRate": 1884916,
+       "BitDepth": 10,
+       "RefFrames": 1,
+       "IsDefault": true,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Height": 1080,
+       "Width": 1920,
+       "AverageFrameRate": 23.809525,
+       "RealFrameRate": 23.809525,
+       "Profile": "Main 10",
+       "Type": "Video",
+       "AspectRatio": "16:9",
+       "Index": 0,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "PixelFormat": "yuv420p10le",
+       "Level": 120,
+       "IsAnamorphic": false,
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "eac3",
+       "Language": "eng",
+       "TimeBase": "1/1000",
+       "DisplayTitle": "English EAC3 stereo",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "ChannelLayout": "stereo",
+       "BitRate": 640000,
+       "Channels": 2,
+       "SampleRate": 48000,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Audio",
+       "Index": 1,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "srt",
+       "Language": "en",
+       "DisplayTitle": "English (SRT)",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Subtitle",
+       "Index": 2,
+       "IsExternal": true,
+       "IsTextSubtitleStream": true,
+       "SupportsExternalStream": true,
+       "Path": "Young Justice (2010) - S01E02 - Fireworks [HDTV-1080p][x265].eng.srt",
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      }
+     ],
+     "Formats": [],
+     "Bitrate": 1884916,
+     "RequiredHttpHeaders": {},
+     "AddApiKeyToDirectStreamUrl": false,
+     "ReadAtNativeFramerate": false,
+     "DefaultAudioStreamIndex": 1,
+     "ItemId": "659236",
+     "MimeType": "video/x-matroska"
+    }
+   ],
+   "Path": "Young Justice (2010) - S01E02 - Fireworks [HDTV-1080p][x265].mkv",
+   "Overview": "The sidekicks find a clone of Superman known as Superboy. They free him from Cadmus' control, while battling Blockbuster.",
+   "Taglines": [],
+   "Genres": [
+    "Animation",
+    "Action",
+    "Adventure"
+   ],
+   "RunTimeTicks": 13570240000,
+   "Size": 319734649,
+   "Bitrate": 1884916,
+   "IndexNumber": 2,
+   "ParentIndexNumber": 1,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Imdb": "tt1758557",
+    "Tvdb": "3210051",
+    "TvRage": "1065006432"
+   },
+   "IsFolder": false,
+   "Type": "Episode",
+   "People": [
+    {
+     "Name": "René Auberjonois",
+     "Id": "291872",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "4b3524422e184613f745d731e0701c2c_638649967137136264"
+    },
+    {
+     "Name": "George Eads",
+     "Id": "468037",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "ed3af08558a70b370e2fbf13c79e2c8a_639275194822600319"
+    },
+    {
+     "Name": "Miguel Ferrer",
+     "Id": "299368",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "a37486a6302c8836aa044d1d17b3969b_638644720154817545"
+    },
+    {
+     "Name": "Mark Rolston",
+     "Id": "306052",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "9790e6a2b1c2cf023b422247729c518d_638624940814085678"
+    },
+    {
+     "Name": "Sam Liu",
+     "Id": "300610",
+     "Type": "Director",
+     "PrimaryImageTag": "05f3de4447824b04469d3ae0fa1a90b3_638868399504526932"
+    }
+   ],
+   "Studios": [],
+   "GenreItems": [
+    {
+     "Name": "Animation",
+     "Id": 361
+    },
+    {
+     "Name": "Action",
+     "Id": 312
+    },
+    {
+     "Name": "Adventure",
+     "Id": 359
+    }
+   ],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "SeasonId": "659232",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "SeasonName": "Season 1",
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "IsInterlaced": false,
+     "BitRate": 1884916,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1080,
+     "Width": 1920,
+     "AverageFrameRate": 23.809525,
+     "RealFrameRate": 23.809525,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "16:9",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "eac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English EAC3 stereo",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "stereo",
+     "BitRate": 640000,
+     "Channels": 2,
+     "SampleRate": 48000,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "Young Justice (2010) - S01E02 - Fireworks [HDTV-1080p][x265].eng.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "ImageTags": {
+    "Primary": "7002c18172b61b5ddfb839f2ab6d3f46_638938237856366770"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077",
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 839552238,
+     "Name": "Intro Start",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "IntroStart",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 844180000,
+     "Name": "Chapter 2",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 1055640000,
+     "Name": "Chapter 3",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 1064676616,
+     "Name": "Intro End",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "IntroEnd",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 4769760000,
+     "Name": "Chapter 4",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 7726890000,
+     "Name": "Chapter 5",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 13252820000,
+     "Name": "Chapter 6",
+     "ImageTag": "398fefb8e9400958e13d7609696397a8_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    }
+   ],
+   "MediaType": "Video"
+  },
+  {
+   "Name": "Welcome to Happy Harbor",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659255",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Container": "mkv",
+   "PremiereDate": "2011-01-21T06:00:00.0000000Z",
+   "MediaSources": [
+    {
+     "Chapters": [
+      {
+       "StartPositionTicks": 0,
+       "Name": "Chapter 1",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 0
+      },
+      {
+       "StartPositionTicks": 1337590000,
+       "Name": "Chapter 2",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 1
+      },
+      {
+       "StartPositionTicks": 1338308457,
+       "Name": "Intro Start",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "IntroStart",
+       "ChapterIndex": 2
+      },
+      {
+       "StartPositionTicks": 1559701491,
+       "Name": "Intro End",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "IntroEnd",
+       "ChapterIndex": 3
+      },
+      {
+       "StartPositionTicks": 1564900000,
+       "Name": "Chapter 3",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 4
+      },
+      {
+       "StartPositionTicks": 6083990000,
+       "Name": "Chapter 4",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 5
+      },
+      {
+       "StartPositionTicks": 8642800000,
+       "Name": "Chapter 5",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 6
+      },
+      {
+       "StartPositionTicks": 13242810000,
+       "Name": "Chapter 6",
+       "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+       "MarkerType": "Chapter",
+       "ChapterIndex": 7
+      }
+     ],
+     "Protocol": "File",
+     "Id": "mediasource_659255",
+     "Path": "Young Justice (2010) - S01E03 - Welcome to Happy Harbor [HDTV-1080p][x265].mkv",
+     "Type": "Default",
+     "Container": "mkv",
+     "Size": 415283823,
+     "Name": "Young Justice (2010) - S01E03 - Welcome to Happy Harbor [HDTV-1080p][x265]",
+     "IsRemote": false,
+     "HasMixedProtocols": false,
+     "RunTimeTicks": 13560320000,
+     "SupportsTranscoding": true,
+     "SupportsDirectStream": true,
+     "SupportsDirectPlay": true,
+     "IsInfiniteStream": false,
+     "RequiresOpening": false,
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "SupportsProbing": true,
+     "MediaStreams": [
+      {
+       "Codec": "hevc",
+       "TimeBase": "1/1000",
+       "VideoRange": "SDR",
+       "DisplayTitle": "1080p HEVC",
+       "IsInterlaced": false,
+       "BitRate": 2449994,
+       "BitDepth": 10,
+       "RefFrames": 1,
+       "IsDefault": true,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Height": 1080,
+       "Width": 1920,
+       "AverageFrameRate": 23.809525,
+       "RealFrameRate": 23.809525,
+       "Profile": "Main 10",
+       "Type": "Video",
+       "AspectRatio": "16:9",
+       "Index": 0,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "PixelFormat": "yuv420p10le",
+       "Level": 120,
+       "IsAnamorphic": false,
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "eac3",
+       "Language": "eng",
+       "TimeBase": "1/1000",
+       "DisplayTitle": "English EAC3 stereo",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "ChannelLayout": "stereo",
+       "BitRate": 640000,
+       "Channels": 2,
+       "SampleRate": 48000,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Audio",
+       "Index": 1,
+       "IsExternal": false,
+       "IsTextSubtitleStream": false,
+       "SupportsExternalStream": false,
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      },
+      {
+       "Codec": "srt",
+       "Language": "en",
+       "DisplayTitle": "English (SRT)",
+       "DisplayLanguage": "English",
+       "IsInterlaced": false,
+       "IsDefault": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "Type": "Subtitle",
+       "Index": 2,
+       "IsExternal": true,
+       "IsTextSubtitleStream": true,
+       "SupportsExternalStream": true,
+       "Path": "Young Justice (2010) - S01E03 - Welcome to Happy Harbor [HDTV-1080p][x265].eng.srt",
+       "Protocol": "File",
+       "ExtendedVideoType": "None",
+       "ExtendedVideoSubType": "None",
+       "ExtendedVideoSubTypeDescription": "None",
+       "AttachmentSize": 0
+      }
+     ],
+     "Formats": [],
+     "Bitrate": 2449994,
+     "RequiredHttpHeaders": {},
+     "AddApiKeyToDirectStreamUrl": false,
+     "ReadAtNativeFramerate": false,
+     "DefaultAudioStreamIndex": 1,
+     "ItemId": "659255",
+     "MimeType": "video/x-matroska"
+    }
+   ],
+   "Path": "Young Justice (2010) - S01E03 - Welcome to Happy Harbor [HDTV-1080p][x265].mkv",
+   "Overview": "After Speedy declines to join the new team, Robin, Aqualad and Kid Flash fear Young Justice is just a big joke…while new member Miss Martian fears there's no room for her to be part of it. So when the four heroes and Superboy come up against Mister Twister, it looks like all their fears have just been realized…",
+   "Taglines": [],
+   "Genres": [
+    "Animation",
+    "Action",
+    "Adventure"
+   ],
+   "RunTimeTicks": 13560320000,
+   "Size": 415283823,
+   "Bitrate": 2449994,
+   "IndexNumber": 3,
+   "ParentIndexNumber": 1,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Imdb": "tt1802127",
+    "Tvdb": "3417531",
+    "TvRage": "1065004679"
+   },
+   "IsFolder": false,
+   "Type": "Episode",
+   "People": [
+    {
+     "Name": "Jeff Bennett",
+     "Id": "297337",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "ba7f6e19b4fbb6d3515fdde7fe112564_638633395114633668"
+    },
+    {
+     "Name": "John de Lancie",
+     "Id": "321911",
+     "Type": "GuestStar",
+     "PrimaryImageTag": "e51cfb848121e1ee499ed2a9a8e0417b_638748732944723629"
+    },
+    {
+     "Name": "Jay Oliva",
+     "Id": "297811",
+     "Type": "Director",
+     "PrimaryImageTag": "44dde318975acd7841eda61ae9ee667d_638831110479245116"
+    }
+   ],
+   "Studios": [],
+   "GenreItems": [
+    {
+     "Name": "Animation",
+     "Id": 361
+    },
+    {
+     "Name": "Action",
+     "Id": 312
+    },
+    {
+     "Name": "Adventure",
+     "Id": 359
+    }
+   ],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "SeasonId": "659232",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "SeasonName": "Season 1",
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "IsInterlaced": false,
+     "BitRate": 2449994,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1080,
+     "Width": 1920,
+     "AverageFrameRate": 23.809525,
+     "RealFrameRate": 23.809525,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "16:9",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "eac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English EAC3 stereo",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "stereo",
+     "BitRate": 640000,
+     "Channels": 2,
+     "SampleRate": 48000,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "Young Justice (2010) - S01E03 - Welcome to Happy Harbor [HDTV-1080p][x265].eng.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "ImageTags": {
+    "Primary": "4e6a9effc43fa97c70696952b4d6677e_638938237860926841"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077",
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 1337590000,
+     "Name": "Chapter 2",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 1338308457,
+     "Name": "Intro Start",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "IntroStart",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 1559701491,
+     "Name": "Intro End",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "IntroEnd",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 1564900000,
+     "Name": "Chapter 3",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 6083990000,
+     "Name": "Chapter 4",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 8642800000,
+     "Name": "Chapter 5",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 13242810000,
+     "Name": "Chapter 6",
+     "ImageTag": "3a70b26166c6608ddc60be55225aa3f5_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    }
+   ],
+   "MediaType": "Video"
+  }
+ ],
+ "TotalRecordCount": 26
+}

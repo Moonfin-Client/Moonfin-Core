@@ -46,6 +46,10 @@ class MinimalistEpisodesSection extends StatefulWidget {
   /// Up out of the section, usually back to the play button.
   final bool Function(bool isUp)? onVerticalNavigation;
 
+  /// Left off the first tab or the first episode, for a layout that has
+  /// something to its left.
+  final VoidCallback? onLeftEdge;
+
   const MinimalistEpisodesSection({
     super.key,
     required this.viewModel,
@@ -54,6 +58,7 @@ class MinimalistEpisodesSection extends StatefulWidget {
     this.maxHeight,
     this.episodesFocusNode,
     this.onVerticalNavigation,
+    this.onLeftEdge,
   });
 
   @override
@@ -188,9 +193,12 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
         ? _selectedSeason!
         : fallback;
 
+    // The server lists specials where they aired among the seasons, so the
+    // Specials tab would come out of number order without this.
     final episodes = selected == null
         ? all
-        : all.where((e) => e.parentIndexNumber == selected).toList();
+        : (all.where((e) => e.parentIndexNumber == selected).toList()
+            ..sort(ItemDetailViewModel.compareEpisodes));
 
     // One season is no choice at all, so the strip only earns its space when
     // there's somewhere else to go, and the rail takes over as the way in.
@@ -219,6 +227,7 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
                 selectedIndex: selected == null ? 0 : seasons.indexOf(selected),
                 onChanged: (index) => _selectSeason(seasons[index]),
                 focusNode: widget.episodesFocusNode,
+                onExitLeft: widget.onLeftEdge,
                 onVerticalNavigation: (isUp) {
                   if (!isUp) {
                     _railKey.currentState?.requestFocusAt(0);
@@ -244,6 +253,7 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
                 height: railHeight,
                 controller: _railController,
                 focusNode: showTabs ? null : widget.episodesFocusNode,
+                onLeftEdge: widget.onLeftEdge,
                 clipBehavior: Clip.none,
                 // The row handles the remote's select and hold. The card below
                 // handles the pointer, so both have to agree.

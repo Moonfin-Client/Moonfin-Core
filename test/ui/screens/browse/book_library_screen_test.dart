@@ -18,13 +18,12 @@ import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moonfin/ui/screens/browse/book_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/book_category_screen.dart';
 import 'package:moonfin/ui/screens/browse/book_library_screen.dart';
 import 'package:moonfin/ui/screens/browse/classic_book_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/widgets/book/reading_room/reading_room_continue_card.dart';
-import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
-import 'package:moonfin/ui/widgets/book/discover/book_discover_tab.dart';
+import 'package:moonfin/ui/widgets/book/book_category_nav.dart';
 import 'package:moonfin/ui/widgets/left_sidebar.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/util/game_library.dart';
@@ -91,8 +90,7 @@ class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockImageApi extends Mock implements ImageApi {}
 
-/// An empty library is enough for the screen to settle, since the tabs are
-/// built independently of the content.
+/// An empty library, so the nav only offers Overview, Titles and Discover.
 class _FakeItemsApi extends Fake implements ItemsApi {
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -167,6 +165,10 @@ void main() {
         ),
         GoRoute(path: '/item/:id', builder: (_, state) => shows(state)),
         GoRoute(path: '/player/book/:id', builder: (_, state) => shows(state)),
+        GoRoute(
+          path: '/books/:id/:category',
+          builder: (_, state) => shows(state),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -184,7 +186,7 @@ void main() {
     testWidgets('Bookstore is the default', (tester) async {
       await pumpScreen(tester);
 
-      expect(find.byType(BookBrowseScreen), findsOneWidget);
+      expect(find.byType(BookCategoryScreen), findsOneWidget);
     });
 
     testWidgets('changing the style swaps the screen while it\'s open', (
@@ -195,7 +197,7 @@ void main() {
       await prefs.set(UserPreferences.bookLibraryStyle, BookLibraryStyle.classic);
       await tester.pumpAndSettle();
       expect(find.byType(ClassicBookBrowseScreen), findsOneWidget);
-      expect(find.byType(BookBrowseScreen), findsNothing);
+      expect(find.byType(BookCategoryScreen), findsNothing);
 
       await prefs.set(
         UserPreferences.bookLibraryStyle,
@@ -212,38 +214,51 @@ void main() {
       () => prefs.set(UserPreferences.bookLibraryStyle, BookLibraryStyle.classic),
     );
 
-    testWidgets('the Discover tab is offered by default', (tester) async {
+    List<String> stripLabels(WidgetTester tester) => [
+      for (final entry in tester
+          .widget<BookCategoryStrip>(find.byType(BookCategoryStrip))
+          .entries)
+        entry.label,
+    ];
+
+    testWidgets('the strip offers Discover by default', (tester) async {
       await pumpScreen(tester);
 
-      expect(find.byType(SlidingPillTabs), findsOneWidget);
+      expect(stripLabels(tester), ['Overview', 'Titles', 'Discover']);
     });
 
-    testWidgets('turning Discover off removes the tabs and Discover', (
+    testWidgets('turning Discover off takes it out of the strip', (
       tester,
     ) async {
       await prefs.set(UserPreferences.showBookDiscoverTab, false);
       await pumpScreen(tester);
 
-      expect(find.byType(SlidingPillTabs), findsNothing);
-      // A bare else fallback would still render Discover for any non-zero tab
-      // index, so this half is the regression that matters.
-      expect(find.byType(BookDiscoverTab), findsNothing);
+      expect(stripLabels(tester), isNot(contains('Discover')));
     });
 
-    testWidgets('the tabs follow the setting while the screen is open', (
+    testWidgets('the strip follows the setting while the screen is open', (
       tester,
     ) async {
       await prefs.set(UserPreferences.showBookDiscoverTab, false);
       await pumpScreen(tester);
-      expect(find.byType(SlidingPillTabs), findsNothing);
+      expect(stripLabels(tester), isNot(contains('Discover')));
 
       await prefs.set(UserPreferences.showBookDiscoverTab, true);
       await tester.pumpAndSettle();
 
-      expect(find.byType(SlidingPillTabs), findsOneWidget);
+      expect(stripLabels(tester), contains('Discover'));
     });
 
-    testWidgets('the sidebar moves the tabs past it on wide layouts', (
+    testWidgets('the strip opens a destination', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Titles'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('/books/lib-1/titles'), findsOneWidget);
+    });
+
+    testWidgets('the sidebar moves the strip past it on wide layouts', (
       tester,
     ) async {
       PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
@@ -251,18 +266,18 @@ void main() {
       await pumpScreen(tester);
 
       expect(
-        tester.getTopLeft(find.byType(SlidingPillTabs)).dx,
+        tester.getTopLeft(find.byType(BookCategoryStrip)).dx,
         closeTo(16 + 52, 1.0),
       );
     });
 
-    testWidgets('phones keep the tabs at the edge with the sidebar on', (
+    testWidgets('phones keep the strip at the edge with the sidebar on', (
       tester,
     ) async {
       await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
       await pumpScreen(tester);
 
-      expect(tester.getTopLeft(find.byType(SlidingPillTabs)).dx, 16);
+      expect(tester.getTopLeft(find.byType(BookCategoryStrip)).dx, 16);
     });
 
     group('focus on wide layouts', () {
@@ -295,13 +310,13 @@ void main() {
       ) async {
         await pumpWithBook(tester);
         FocusManager.instance.rootScope.descendants
-            .firstWhere((node) => node.debugLabel == 'bookTabs')
+            .firstWhere((node) => node.debugLabel == 'bookNav')
             .requestFocus();
         await tester.pump();
 
         await somethingChanges(tester);
 
-        expect(focused(), 'bookTabs');
+        expect(focused(), 'bookNav');
       });
 
       testWidgets('focus that falls off the page comes back to the content', (
@@ -326,20 +341,26 @@ void main() {
       ),
     );
 
-    testWidgets('the Discover tab is offered by default', (tester) async {
+    List<String> chipLabels(WidgetTester tester) => [
+      for (final entry in tester
+          .widget<BookCategoryChips>(find.byType(BookCategoryChips))
+          .entries)
+        entry.label,
+    ];
+
+    testWidgets('the chips offer Discover by default', (tester) async {
       await pumpScreen(tester);
 
-      expect(find.byType(SlidingPillTabs), findsOneWidget);
+      expect(chipLabels(tester), ['Overview', 'Titles', 'Discover']);
     });
 
-    testWidgets('turning Discover off removes the tabs and Discover', (
+    testWidgets('turning Discover off takes it out of the chips', (
       tester,
     ) async {
       await prefs.set(UserPreferences.showBookDiscoverTab, false);
       await pumpScreen(tester);
 
-      expect(find.byType(SlidingPillTabs), findsNothing);
-      expect(find.byType(BookDiscoverTab), findsNothing);
+      expect(chipLabels(tester), isNot(contains('Discover')));
     });
 
     group('on wide layouts', () {
@@ -382,8 +403,12 @@ void main() {
         await press(tester, LogicalKeyboardKey.arrowUp);
         expect(card(tester).focused, isTrue);
         await press(tester, LogicalKeyboardKey.arrowUp);
-        expect(focused(), 'bookTabs');
+        expect(focused(), 'bookSearch');
+        await press(tester, LogicalKeyboardKey.arrowUp);
+        expect(focused(), 'bookNav:overview');
 
+        await press(tester, LogicalKeyboardKey.arrowDown);
+        expect(focused(), 'bookSearch');
         await press(tester, LogicalKeyboardKey.arrowDown);
         await press(tester, LogicalKeyboardKey.arrowDown);
         await press(tester, LogicalKeyboardKey.arrowDown);

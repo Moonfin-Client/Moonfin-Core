@@ -93,7 +93,7 @@
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		404F43B1C55A457B8CDF7516 /* ChannelCarousel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChannelCarousel.swift; path = ../../../tvos/Runner/Playback/ChannelCarousel.swift; sourceTree = "<group>"; };
-		43968872AF676659C55033B9 /* AetherVideoPlatformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AetherVideoPlatformView.swift; sourceTree = "<group>"; };
+		43968872AF676659C55033B9 /* AetherVideoPlatformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoPlatformView.swift; path = ../../../tvos/Runner/Playback/Aether/AetherVideoPlatformView.swift; sourceTree = "<group>"; };
 		4556C2E3BDD198B9966DFC2C /* AppleTvThemeMusicChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleTvThemeMusicChannel.swift; path = ../../../tvos/Runner/AppleTvThemeMusicChannel.swift; sourceTree = "<group>"; };
 		4929DF52D477CEFE7CE4E5BB /* AppleTvPreviewChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleTvPreviewChannel.swift; path = ../../../tvos/Runner/AppleTvPreviewChannel.swift; sourceTree = "<group>"; };
 		4AF42BA2B13FB8F5632D568A /* NativeApplePlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NativeApplePlayerViewController.swift; path = ../../../tvos/Runner/Playback/NativeApplePlayerViewController.swift; sourceTree = "<group>"; };
@@ -914,7 +914,7 @@
 			repositoryURL = "https://github.com/RadicalMuffinMan/AetherEngine";
 			requirement = {
 				kind = revision;
-				revision = 47cf2f94b38be8520b31d6e0aecdbf47ce7eb857;
+				revision = d55f374108310435cb877a2f550e19ee996f92ba;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

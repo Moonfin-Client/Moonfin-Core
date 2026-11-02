@@ -47,7 +47,10 @@ void main() {
     expect(appBar.automaticallyImplyLeading, isFalse);
     expect(appBar.leading, isA<SizedBox>());
     expect(appBar.scrolledUnderElevation, 0);
-    expect(find.text('Storage & Downloads'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(AppBar), matching: find.text('Storage')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('TV offers the offline downloads opt-in as the first row', (

@@ -97,44 +97,49 @@ Future<Set<String>?> showMultiSelectDialog({
                             ),
                           ],
                         ),
+                        // The Apple alert sizes its content by its intrinsic
+                        // height, which a ListView can't report, so the rows
+                        // sit in a Column.
                         Flexible(
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: orderedEntries.asMap().entries.map((
-                              entry,
-                            ) {
-                              final i = entry.key;
-                              final e = entry.value;
-                              final ticked = working.contains(e.key);
-                              final locked = full && !ticked;
-                              return TvFocusHighlight(
-                                builder: (ctx, focused) => CheckboxListTile(
-                                  autofocus: i == 0,
-                                  dense: true,
-                                  visualDensity: VisualDensity.compact,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: orderedEntries.asMap().entries.map((
+                                entry,
+                              ) {
+                                final i = entry.key;
+                                final e = entry.value;
+                                final ticked = working.contains(e.key);
+                                final locked = full && !ticked;
+                                return TvFocusHighlight(
+                                  builder: (ctx, focused) => CheckboxListTile(
+                                    autofocus: i == 0,
+                                    dense: true,
+                                    visualDensity: VisualDensity.compact,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                    ),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    title: Opacity(
+                                      opacity: locked ? 0.4 : 1,
+                                      child: Text(e.value),
+                                    ),
+                                    value: ticked,
+                                    onChanged: (checked) {
+                                      if (checked == true && locked) return;
+                                      setDialogState(() {
+                                        if (checked == true) {
+                                          working.add(e.key);
+                                        } else {
+                                          working.remove(e.key);
+                                        }
+                                      });
+                                    },
                                   ),
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  title: Opacity(
-                                    opacity: locked ? 0.4 : 1,
-                                    child: Text(e.value),
-                                  ),
-                                  value: ticked,
-                                  onChanged: (checked) {
-                                    if (checked == true && locked) return;
-                                    setDialogState(() {
-                                      if (checked == true) {
-                                        working.add(e.key);
-                                      } else {
-                                        working.remove(e.key);
-                                      }
-                                    });
-                                  },
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ],

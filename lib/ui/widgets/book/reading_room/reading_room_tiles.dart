@@ -35,6 +35,9 @@ class ReadingRoomShelf extends StatelessWidget {
   final double height;
   final double leadingInset;
   final bool large;
+
+  /// Room above the cards for a focused one to grow into.
+  final double headroom;
   final LockedFocusItemBuilder<AggregatedItem> itemBuilder;
 
   /// The D-pad select key on an item.
@@ -60,6 +63,7 @@ class ReadingRoomShelf extends StatelessWidget {
     this.seeAllFocusNode,
     this.leadingInset = 16,
     this.large = false,
+    this.headroom = 0,
     this.onLongPress,
     this.onVerticalNavigation,
     this.onLeftEdge,
@@ -98,11 +102,11 @@ class ReadingRoomShelf extends StatelessWidget {
             items: items,
             hubKey: hubKey,
             controller: controller,
-            height: height,
+            height: height + headroom,
             itemExtent: itemExtent,
             itemSpacing: large ? 20 : 12,
             clipBehavior: Clip.none,
-            padding: EdgeInsets.fromLTRB(leadingInset, 5, 20, 5),
+            padding: EdgeInsets.fromLTRB(leadingInset, 5 + headroom, 20, 5),
             onVerticalNavigation: (isUp) {
               final seeAll = seeAllFocusNode;
               if (isUp && onSeeAll != null && seeAll != null) {

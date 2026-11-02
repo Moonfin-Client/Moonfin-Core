@@ -151,6 +151,7 @@ void main() {
     when(() => vm.writers).thenReturn(const []);
     when(() => vm.features).thenReturn(const []);
     when(() => vm.similar).thenReturn(const []);
+    when(() => vm.reviews).thenReturn(const []);
     when(() => vm.similarSource).thenReturn(SimilarSource.jellyfin);
     when(() => vm.seasons).thenReturn(const []);
     when(() => vm.episodes).thenReturn(const []);
@@ -183,6 +184,8 @@ void main() {
     when(() => vm.removeListener(any())).thenReturn(null);
     when(() => vm.ratings).thenReturn({});
     when(() => vm.supportsNumericUserRatings).thenReturn(false);
+    when(() => vm.supportsPersonalRating).thenReturn(true);
+    when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.isRatingMutationInProgress).thenReturn(false);
     when(() => vm.contextSeasonId).thenReturn(null);
   });

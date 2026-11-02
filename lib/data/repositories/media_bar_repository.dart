@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
@@ -6,12 +7,18 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/home_section_config.dart';
+import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/tmdb_thumb.dart';
 import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
+import '../services/custom_external_lists_service.dart';
 import '../services/library_scope_service.dart';
+import '../services/plugin_sync_service.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
+import 'tmdb_repository.dart';
 
 class MediaBarRepository {
 
@@ -62,6 +69,24 @@ class MediaBarRepository {
       'tvshows' => const ['tvshows'],
       _ => const ['tvshows', 'movies'],
     };
+
+    final externalPool = await _fetchExternalPool(
+      _splitCsv(UserPreferences.mediaBarExternalLists),
+      includeTypes,
+    );
+    // Lists picked on their own fill the bar alone. When they come back empty
+    // the bar falls back to the libraries the same way it does with no picks.
+    if (externalPool.isNotEmpty &&
+        libraryIds.isEmpty &&
+        collectionIds.isEmpty) {
+      final slides = await _mixInExternal(
+        const [],
+        externalPool,
+        maxItems,
+        excludedGenres,
+      );
+      if (slides.isNotEmpty) return MediaBarReady(slides);
+    }
 
     final allParentIds = <String>{};
     final allParentItemTypes = <String, List<String>>{};
@@ -192,11 +217,15 @@ class MediaBarRepository {
         );
       }
 
-      if (selected.isEmpty) {
+      final items = await _mixInExternal(
+        selected.map(_toSlideItem).toList(),
+        externalPool,
+        maxItems,
+        excludedGenres,
+      );
+      if (items.isEmpty) {
         return const MediaBarError('No items with backdrop images found');
       }
-
-      final items = selected.map(_toSlideItem).toList();
       return MediaBarReady(items);
     } catch (e) {
       final firstLibraryItems = await _fetchItemsFromFirstSeriesOrMoviesLibrary(
@@ -299,7 +328,7 @@ class MediaBarRepository {
         return const <Map<String, dynamic>>[];
       }
 
-      return _fetchItems(itemTypes, limit, parentId: libraryId);
+      return await _fetchItems(itemTypes, limit, parentId: libraryId);
     } catch (_) {
       return const <Map<String, dynamic>>[];
     }
@@ -493,6 +522,154 @@ class MediaBarRepository {
     }
   }
 
+  /// The titles of the picked outside lists that can go on the bar, shuffled
+  /// and without repeats. Empty without Moonbase.
+  Future<List<ImdbExternalListItem>> _fetchExternalPool(
+    List<String> listIds,
+    List<String> itemTypes,
+  ) async {
+    if (listIds.isEmpty) return const [];
+    final sync = GetIt.instance<PluginSyncService>();
+    if (!sync.pluginAvailable) return const [];
+    final lists = mediaBarExternalLists(
+      _prefs.homeSectionsConfig,
+      tmdbAvailable: sync.tmdbAvailable,
+    );
+    final service = GetIt.instance<CustomExternalListsService>();
+    final fetched = await Future.wait([
+      for (final id in listIds)
+        if (lists[id] case final config?)
+          () async {
+            try {
+              final cached = await service.loadCustomRowFromCache(
+                config,
+                maxAge: CustomExternalListsService.cacheMaxAge,
+              );
+              return cached.isNotEmpty
+                  ? cached
+                  : await service.fetchCustomRow(config);
+            } catch (_) {
+              return const <ImdbExternalListItem>[];
+            }
+          }(),
+    ]);
+
+    final filter = activeParentalFilter;
+    final seen = <String>{};
+    final pool = <ImdbExternalListItem>[];
+    for (final item in fetched.expand((items) => items)) {
+      final key = _externalId(item);
+      if (key.isEmpty || !seen.add(key)) continue;
+      if (!itemTypes.contains(item.type)) continue;
+      // A missing rating on an outside title means nobody looked it up, so
+      // it stays out once the viewer blocks anything, as on Home.
+      final rating = item.officialRating?.trim() ?? '';
+      if (filter.isActive &&
+          (rating.isEmpty || filter.isBlockedRating(rating))) {
+        continue;
+      }
+      if ((item.backdropUrl ?? '').isEmpty && !sync.tmdbDetailsAvailable) {
+        continue;
+      }
+      pool.add(item);
+    }
+    return pool..shuffle(_random);
+  }
+
+  /// [library] with titles from [external] shuffled in, [maxItems] in all.
+  /// Only the outside titles that make the cut are looked up on TMDB.
+  Future<List<MediaBarSlideItem>> _mixInExternal(
+    List<MediaBarSlideItem> library,
+    List<ImdbExternalListItem> external,
+    int maxItems,
+    Set<String> excludedGenres,
+  ) async {
+    if (external.isEmpty) return library;
+    final chosen = (<Object>[...library, ...external.take(maxItems)]
+          ..shuffle(_random))
+        .take(maxItems)
+        .toList();
+    final slides = <String, MediaBarSlideItem>{};
+    await mapBounded(
+      chosen.whereType<ImdbExternalListItem>().toList(),
+      _sourceConcurrency,
+      (item) async {
+        final slide = await _toExternalSlide(item);
+        if (slide == null || slide.genres.any(excludedGenres.contains)) {
+          return null;
+        }
+        slides[slide.itemId] = slide;
+        return null;
+      },
+    );
+    return [
+      for (final pick in chosen)
+        if (pick is MediaBarSlideItem)
+          pick
+        else
+          ?slides[_externalId(pick as ImdbExternalListItem)],
+    ];
+  }
+
+  static String _externalId(ImdbExternalListItem item) =>
+      item.tmdbId.isNotEmpty ? item.tmdbId : item.imdbId;
+
+  /// The slide for an outside title, filled in from TMDB through Moonbase
+  /// where it can be. Null when there is still no backdrop to show.
+  Future<MediaBarSlideItem?> _toExternalSlide(ImdbExternalListItem item) async {
+    final mediaType = item.type == 'Series' ? 'tv' : 'movie';
+    final tmdbId = item.tmdbId.isNotEmpty ? item.tmdbId : null;
+    final imdbId = item.imdbId.isNotEmpty ? item.imdbId : null;
+    final details = GetIt.instance<PluginSyncService>().tmdbDetailsAvailable
+        ? await GetIt.instance<TmdbRepository>().titleDetails(
+            type: mediaType,
+            tmdbId: tmdbId,
+            imdbId: imdbId,
+          )
+        : null;
+
+    final backdropUrl =
+        _tmdbImage(details?['backdropPath'] as String?, 1280) ??
+        _tmdbImage(item.backdropUrl, 1280);
+    if (backdropUrl == null) return null;
+    final runTimeTicks = (details?['runTimeTicks'] as num?)?.toInt();
+    final trailerUrl = details?['trailerUrl'] as String?;
+
+    return MediaBarSlideItem(
+      itemId: _externalId(item),
+      serverId: MediaBarSlideItem.externalServerId,
+      title: item.title,
+      overview: details?['overview'] as String?,
+      backdropUrl: backdropUrl,
+      bannerUrl: seerrThumbUrl(type: mediaType, tmdbId: tmdbId, imdbId: imdbId),
+      logoUrl: _tmdbImage(details?['logoPath'] as String?, 500),
+      posterUrl: _tmdbImage(item.posterUrl, 500),
+      officialRating: item.officialRating,
+      year: item.year,
+      genres:
+          (details?['genres'] as List?)?.cast<String>().take(3).toList() ??
+          const [],
+      runtime: runTimeTicks != null
+          ? Duration(microseconds: runTimeTicks ~/ 10)
+          : null,
+      communityRating:
+          (details?['rating'] as num?)?.toDouble() ?? item.rating,
+      tmdbId: tmdbId,
+      imdbId: imdbId,
+      itemType: item.type == 'Series' ? 'Series' : 'Movie',
+      remoteTrailers: [
+        if (trailerUrl != null) {'Url': trailerUrl},
+      ],
+    );
+  }
+
+  /// Outside lists hold either a TMDB image path or a full URL.
+  static String? _tmdbImage(String? path, int width) {
+    if (path == null || path.isEmpty) return null;
+    if (path.startsWith('http')) return path;
+    return 'https://image.tmdb.org/t/p/w$width$path';
+  }
+
   bool _hasBackdrop(Map<String, dynamic> item) {
     final tags = item['BackdropImageTags'] as List?;
     return tags != null && tags.isNotEmpty;
@@ -615,4 +792,34 @@ bool supportsMediaBarLibrary(
   if (type.isEmpty || type == 'mixed' || type == 'unknown') return true;
 
   return preferredTypes.contains(type);
+}
+
+/// The outside lists the bar can draw from, by the id each one's home row has,
+/// in the order the picker shows them: the IMDb charts, the TMDB charts when
+/// the server has a TMDB key, then the user's custom rows.
+Map<String, HomeSectionConfig> mediaBarExternalLists(
+  List<HomeSectionConfig> sections, {
+  required bool tmdbAvailable,
+}) {
+  // Built the way Home builds these rows, so both read the same cached list.
+  HomeSectionConfig chart(HomeSectionType type, String source, String path) =>
+      HomeSectionConfig.pluginDynamic(
+        serverId: MediaBarSlideItem.externalServerId,
+        pluginSection: type.serializedName,
+        pluginDisplayText: type.serializedName,
+        pluginSource: HomeSectionPluginSource.custom,
+        pluginAdditionalData: jsonEncode({'source': source, 'type': path}),
+      );
+  return {
+    for (final type in imdbChartSections)
+      type.serializedName: chart(type, 'imdb', type.serializedName),
+    if (tmdbAvailable)
+      for (final entry in tmdbChartPaths.entries)
+        entry.key.serializedName: chart(entry.key, 'tmdb_chart', entry.value),
+    for (final section in sections)
+      if (section.isPluginDynamic &&
+          section.pluginSource == HomeSectionPluginSource.custom &&
+          (section.pluginSection ?? '').isNotEmpty)
+        section.pluginSection!: section,
+  };
 }

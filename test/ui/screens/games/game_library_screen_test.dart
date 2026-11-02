@@ -32,6 +32,9 @@ void main() {
     client = _MockMediaServerClient();
     gamesApi = _MockGamesApi();
     when(() => client.gamesApi).thenReturn(gamesApi);
+    when(
+      () => gamesApi.getRommAccount(),
+    ).thenAnswer((_) async => RommAccount.unavailable);
     GetIt.instance.registerSingleton<MediaServerClient>(client);
     ThemeRegistry.setActiveById(ThemeRegistry.moonfinId);
   });
@@ -91,5 +94,27 @@ void main() {
       isFalse,
     );
     expect(find.byType(BackButton), findsOneWidget);
+  });
+
+  testWidgets('offers the RomM account only on a server that has RomM', (
+    tester,
+  ) async {
+    when(() => gamesApi.getSystems('retro')).thenAnswer((_) async => const []);
+    when(() => gamesApi.getRommAccount()).thenAnswer(
+      (_) async => const RommAccount(available: true, linked: false),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.buildTheme(ThemeRegistry.active),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const GameLibraryScreen(libraryId: 'retro'),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('RomM account'), findsOneWidget);
   });
 }

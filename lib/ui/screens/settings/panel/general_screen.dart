@@ -92,11 +92,17 @@ class _GeneralScreenState extends State<_GeneralScreen> {
               adaptiveListSection(
                 children: [
                   if (PlatformDetection.isTV)
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.preferSystemImeKeyboard,
-                      title: l10n.keyboardPreferSystemIme,
-                      subtitle: l10n.keyboardPreferSystemImeDescription,
+                    EnumPreferenceTile<KeyboardStyle>(
+                      preference: UserPreferences.keyboardStyle,
+                      title: l10n.keyboardStyle,
+                      description: l10n.keyboardStyleDescription,
                       icon: Icons.keyboard_alt_outlined,
+                      labelOf: (v) => switch (v) {
+                        KeyboardStyle.native => l10n.keyboardStyleNative,
+                        KeyboardStyle.classic => l10n.keyboardStyleClassic,
+                        KeyboardStyle.glass => l10n.keyboardStyleGlass,
+                        KeyboardStyle.docked => l10n.keyboardStyleDocked,
+                      },
                     ),
                   if (showSiriSensitivity)
                     EnumPreferenceTile<SiriRemoteSwipeSensitivity>(

@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Выберыце, якія тэматычныя стужкі паказваць у Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Ужыць",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Жанры аўдыёкніжкі",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Выберыце, якія жанры паказаць у Discover аўдыякніг.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Адкрыйце для сябе аўдыякнігі",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Папулярныя назвы грамадскага здабытку ад LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} назвы",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Пракрутка ўлева",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Адкрыйце для сябе",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Папулярныя назвы па тэмах ад Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Пакуль няма закладак",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Уключыць прагляд тэчак",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Паказаць параметр прагляду тэчак",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Бачнасць бібліятэкі",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Рэкамендаваны змест, знешні выгляд",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Памер плаката, тып выявы, выгляд папкі",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB і крыніцы рэйтынгаў",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Не ўдалося распакаваць архіў .cbr.",
     "cb7ExtractionUnavailable": "Здабыча CB7 недаступная на гэтай платформе.",
     "cb7ExtractionPluginUnavailable": "Убудова для здабывання CB7 недаступны на гэтай платформе.",
-    "closeGenrePanel": "Закрыць панэль жанраў",
     "loadingShuffle": "Загрузка перамешвання...",
     "libraryShuffleLabel": "ПЕРАМЯШАЦЬ БІБЛІЯТЭКУ",
     "randomShuffleLabel": "ВЫПАДКОВЫ ПАРАДАК",

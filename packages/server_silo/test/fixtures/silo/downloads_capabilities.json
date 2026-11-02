@@ -1,0 +1,39 @@
+{
+ "revision": "d727186c9b2dfce3ab55a6add3e75a053d457902078b74061128b39e8223a32d",
+ "state": "available",
+ "allowed": true,
+ "bounded_creation": true,
+ "subscription_mutations": true,
+ "bounded_subscription_sync": true,
+ "subscription_reads": true,
+ "bounded_manifests": true,
+ "file_delivery": true,
+ "enabled": true,
+ "download_allowed": true,
+ "proxy_delivery": true,
+ "ordered_status": true,
+ "quality_presets": [
+  "original"
+ ],
+ "quality_options": [
+  {
+   "preset": "original"
+  }
+ ],
+ "transcode_enabled": false,
+ "transcode_user_allowed": true,
+ "season_download": true,
+ "series_monitoring": true,
+ "monitoring_modes": [
+  "all",
+  "future",
+  "latest_season",
+  "specific_seasons"
+ ],
+ "bulk_quality": true,
+ "monitor_quality": true,
+ "preparation_progress": true,
+ "direct_download_links": true,
+ "prepare_again": true,
+ "revoked_removes_local": true
+}

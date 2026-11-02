@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discover қолданбасында көрсетілетін тақырып арналарын таңдаңыз.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Қолдану",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Аудиокітап жанрлары",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Аудиокітапты табуда көрсетілетін жанрларды таңдаңыз.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Аудиокітаптарды ашыңыз",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox ұсынған танымал қоғамдық домен атаулары.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} атау",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Солға айналдырыңыз",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Ашу",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library тақырыбы бойынша танымал тақырыптар.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Әлі бетбелгі қойылған элементтер жоқ",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Қалта көрінісін қосыңыз",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Қалтаны шолу опциясын көрсету",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Кітапхананың көрінуі",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Таңдаулы мазмұн, сыртқы түрі",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Постер өлшемі, сурет түрі, қалта көрінісі",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB және бағалау көздері",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr архивін шығарып алу мүмкін болмады.",
     "cb7ExtractionUnavailable": "CB7 шығарып алу бұл платформада қолжетімсіз.",
     "cb7ExtractionPluginUnavailable": "CB7 шығарып алу плагині бұл платформада қолжетімсіз.",
-    "closeGenrePanel": "Жанр панелін жабу",
     "loadingShuffle": "Араластыру жүктелуде...",
     "libraryShuffleLabel": "КІТАПХАНАНЫ АРАЛАСТЫРУ",
     "randomShuffleLabel": "КЕЗДЕЙСОҚ АРАЛАСТЫРУ",

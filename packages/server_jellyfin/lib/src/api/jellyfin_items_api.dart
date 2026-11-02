@@ -464,6 +464,7 @@ class JellyfinItemsApi implements ItemsApi {
     return response.data as Map<String, dynamic>;
   }
 
+  /// Jellyfin makes a new playlist public unless told otherwise.
   @override
   Future<Map<String, dynamic>> createPlaylist({
     required String name,
@@ -471,7 +472,7 @@ class JellyfinItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.post(
       '/Playlists',
-      data: {'Name': name, 'Ids': ?itemIds},
+      data: {'Name': name, 'Ids': ?itemIds, 'IsPublic': false},
     );
     return response.data as Map<String, dynamic>;
   }

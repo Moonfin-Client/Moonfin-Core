@@ -238,14 +238,13 @@ void main() {
       expect(all.items.map((i) => i.id), contains('c1'));
     });
 
-    test('comics rows ask the grid for a type the server knows', () {
+    test('comics rows open the comics titles', () {
       final vm = buildClassicVm();
       for (final id in ['latestComics_lib-1', 'allComics_lib-1']) {
-        final types = vm.seeAllTypesFor(
+        final scope = vm.seeAllScopeFor(
           HomeRow(id: id, title: '', rowType: HomeRowType.latestMedia),
         );
-        expect(types, isNot(contains('Comic')));
-        expect(types, contains('Book'));
+        expect(scope, BookScope.comics);
       }
     });
 

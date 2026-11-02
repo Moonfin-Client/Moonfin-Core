@@ -26,6 +26,8 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_silo/server_silo.dart'
+    show SiloUsersApi, siloAccessChangedEvent;
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
@@ -36,7 +38,10 @@ import '../../data/services/topshelf_service.dart';
 import '../../data/services/tv_channels_service.dart';
 import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../services/silo_household.dart';
+import '../services/silo_token_storage.dart';
 import '../../data/services/achievements_service.dart';
+import '../../data/services/plex_tv_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
@@ -60,9 +65,11 @@ import '../../util/focus/gamepad/gamepad_key_synthesizer.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
 import '../store/credential_store.dart';
+import '../models/server.dart';
 import '../models/user.dart';
 import 'server_repository.dart';
 import 'user_repository.dart';
+import '../../watch_party/silo_watch_party_manager.dart';
 
 enum SessionState { ready, restoring, switching }
 
@@ -120,6 +127,7 @@ class SessionRepository {
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
   RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
+  StreamSubscription<ServerWebSocketMessage>? _accessChangedSubscription;
   StreamSubscription<void>? _socketConnectionSubscription;
   double _lastUnmutedVolume = 100;
   Future<void> _remoteVolumeFlight = Future.value();
@@ -143,6 +151,8 @@ class SessionRepository {
     this._pluginSyncService, {
     GoRouter? router,
   }) : _router = router ?? appRouter;
+
+  late final _siloTokens = SiloTokenStorage(_authStore);
 
   final GoRouter _router;
 
@@ -266,6 +276,15 @@ class SessionRepository {
     }
     final user = users[userIndex];
 
+    // A PIN-locked Silo profile without a live proof can't act yet: whoever
+    // switches asks for the PIN first. At start-up this sends the
+    // person to the server's user grid, where tapping the profile asks.
+    if (_siloTokens.needsPin(user)) {
+      _logger.i('Silo profile $userId needs its PIN before it can be used');
+      _setState(SessionState.ready);
+      return false;
+    }
+
     final token = await _credentialStore.getToken(serverId);
     final accessToken = user.accessToken.isNotEmpty ? user.accessToken : token;
 
@@ -277,13 +296,27 @@ class SessionRepository {
       return false;
     }
 
+    // An address that never answers would hold startup for the whole probe,
+    // so the saved one is used past a short wait. The probe carries on and
+    // saves a better one for next time.
+    final address = await _bestPlexAddress(server)
+        .timeout(const Duration(seconds: 2), onTimeout: () => server.address);
     final client = _clientFactory.getClient(
       serverId: serverId,
       serverType: server.serverType,
-      baseUrl: server.address,
+      baseUrl: address,
     );
+    // A client kept from an earlier session still has the old address.
+    if (address != server.address) client.baseUrl = address;
 
-    client.accessToken = accessToken;
+    // A Silo profile restores its account's token pair and profile, because
+    // the stored access token alone can't refresh.
+    _siloTokens.putLogin(
+      client: client,
+      user: user,
+      accessToken: accessToken,
+      onEnded: () => _onSiloLoginEnded(serverId, userId, user.name),
+    );
     client.userId = userId;
 
     // A stored token can be long dead, and everything past this point fires
@@ -325,13 +358,21 @@ class SessionRepository {
     _bindRemoteCommandHandling();
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
+    _bindAccessChanges(client);
     userDataSync.bindTo(_socketHandler.events, userId: userId);
     _refreshCarBrowseTree(signedIn: true);
 
     _activeServerId = serverId;
     _activeUserId = userId;
 
-    _userRepository.setCurrentUser(user);
+    // A Silo profile records when it was last used: the account switcher
+    // sorts by it, and another server's rows read the most recent one.
+    var activeUser = user;
+    if (user.isSiloProfile) {
+      activeUser = user.copyWith(lastUsed: DateTime.now());
+      await _authStore.putUser(activeUser);
+    }
+    _userRepository.setCurrentUser(activeUser);
     await _authPrefs.setLastServerId(serverId);
     await _authPrefs.setLastUserId(userId);
 
@@ -362,6 +403,22 @@ class SessionRepository {
     return true;
   }
 
+  /// The best address a Plex server answers at right now, saved when it
+  /// changed. Without an answer the saved one stays.
+  Future<String> _bestPlexAddress(Server server) async {
+    if (server.candidateAddresses.length < 2 ||
+        !GetIt.instance.isRegistered<PlexTvService>()) {
+      return server.address;
+    }
+    final best = await GetIt.instance<PlexTvService>().findReachableUri(
+      server.candidateAddresses,
+      server.id,
+    );
+    if (best == null || best == server.address) return server.address;
+    await _serverRepository.saveServer(server.copyWith(address: best));
+    return best;
+  }
+
   Future<void> _postLoginSync(
     MediaServerClient client,
     PrivateUser user,
@@ -377,46 +434,15 @@ class SessionRepository {
       unawaited(GetIt.instance<CrashReportService>().flushPending());
     } catch (_) {}
 
-    try {
-      final serverUser =
-          preFetchedServerUser ?? await client.usersApi.getCurrentUser();
-      final isAdmin = serverUser.policy?.isAdministrator ?? false;
-      final canDownload = serverUser.policy?.enableContentDownloading ?? false;
-      final canManageSubtitles =
-          serverUser.policy?.canFetchRemoteSubtitles ?? false;
-      final canManageCollections =
-          serverUser.policy?.enableCollectionManagement ?? false;
-
-      if (isAdmin != user.isAdministrator ||
-          canDownload != user.canDownload ||
-          canManageSubtitles != user.canManageSubtitles ||
-          canManageCollections != user.canManageCollections) {
-        final updatedUser = user.copyWith(
-          isAdministrator: isAdmin,
-          canDownload: canDownload,
-          canManageSubtitles: canManageSubtitles,
-          canManageCollections: canManageCollections,
-        );
-        await _authStore.putUser(updatedUser);
-        _userRepository.setCurrentUser(updatedUser);
-      }
-
-      // init language prefs if not already set
-      if (serverUser.configuration != null) {
-        GetIt.instance<UserPreferences>().initLanguagePrefs(
-          serverUser.configuration!,
-        );
-      }
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        _logger.w('Access token expired or unauthorized. Logging out.');
-        await destroyCurrentSession(tokenKnownInvalid: true);
-        appRouter.go(
-          '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(user.name)}',
-        );
-        return;
-      }
-    } catch (_) {}
+    if (!await _refreshServerUser(
+      client,
+      user,
+      serverId,
+      preFetched: preFetchedServerUser,
+    )) {
+      return;
+    }
+    unawaited(_syncSiloHousehold(client, user, serverId));
 
     // The settings entry and the friends button stay hidden until this
     // answers. It doesn't wait for the settings sync, which on a first
@@ -431,6 +457,10 @@ class SessionRepository {
     }
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
+
+    // Moonbase for Plex has no push or Seerr proxy, and unlike Silo, Plex has
+    // no requests of its own to set up.
+    if (client.serverType == ServerType.plex) return;
 
     // Register the FCM token now that a session exists, and push the current
     // notification prefs so defaults reach the plugin. Startup registration
@@ -452,6 +482,106 @@ class SessionRepository {
     );
     if (seerrCameUp) {
       homeRefreshBus.requestNowOrAfterNavigation(newSectionsOnly: true);
+    }
+  }
+
+  /// Reads the signed-in user from the server and keeps the stored user's
+  /// permissions and the language preferences in step with it. Answers false
+  /// when the server turned the login down and the session was ended.
+  Future<bool> _refreshServerUser(
+    MediaServerClient client,
+    PrivateUser user,
+    String serverId, {
+    ServerUser? preFetched,
+  }) async {
+    try {
+      final serverUser = preFetched ?? await client.usersApi.getCurrentUser();
+      final isAdmin = serverUser.policy?.isAdministrator ?? false;
+      final canDownload = serverUser.policy?.enableContentDownloading ?? false;
+      final canManageSubtitles =
+          serverUser.policy?.canFetchRemoteSubtitles ?? false;
+      final canManageCollections =
+          serverUser.policy?.enableCollectionManagement ?? false;
+      final canManageLiveTv =
+          serverUser.policy?.enableLiveTvManagement ?? false;
+
+      if (isAdmin != user.isAdministrator ||
+          canDownload != user.canDownload ||
+          canManageSubtitles != user.canManageSubtitles ||
+          canManageCollections != user.canManageCollections ||
+          canManageLiveTv != user.canManageLiveTv) {
+        final updatedUser = user.copyWith(
+          isAdministrator: isAdmin,
+          canDownload: canDownload,
+          canManageSubtitles: canManageSubtitles,
+          canManageCollections: canManageCollections,
+          canManageLiveTv: canManageLiveTv,
+        );
+        await _authStore.putUser(updatedUser);
+        _userRepository.setCurrentUser(updatedUser);
+      }
+
+      // init language prefs if not already set
+      if (serverUser.configuration != null) {
+        GetIt.instance<UserPreferences>().initLanguagePrefs(
+          serverUser.configuration!,
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        _logger.w('Access token expired or unauthorized. Logging out.');
+        await destroyCurrentSession(tokenKnownInvalid: true);
+        appRouter.go(
+          '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(user.name)}',
+        );
+        return false;
+      }
+    } catch (_) {}
+    return true;
+  }
+
+  /// Reads the active Silo account's household again and stores it, so
+  /// profiles added, renamed, deleted or locked with a PIN on the web since
+  /// sign-in show in the user grid and the switcher. A login stored with the
+  /// main profile alone gets its other profiles this way. Best effort: the
+  /// next start tries again.
+  Future<void> _syncSiloHousehold(
+    MediaServerClient client,
+    PrivateUser user,
+    String serverId,
+  ) async {
+    final accountId = user.siloAccountId;
+    final silo = siloClientOf(client);
+    if (accountId == null || silo == null) return;
+    try {
+      final members = await (silo.usersApi as SiloUsersApi).getHousehold();
+      if (members.isEmpty) return;
+      await SiloHousehold(_authStore).store(
+        serverId: serverId,
+        accountId: accountId,
+        members: members,
+        accessToken: silo.session.accessToken ?? user.accessToken,
+      );
+    } catch (e) {
+      _logger.w('Reading the Silo household failed: $e');
+    }
+  }
+
+  /// Silo said the login's access changed: the libraries, rating limits or
+  /// permissions it decides may be different now. The Silo client has
+  /// already forgotten its reads. This reads the user again (a refused login
+  /// ends the session as at start) and reloads Home.
+  Future<void> _onSiloAccessChanged(MediaServerClient client) async {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (serverId == null || userId == null) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user == null) return;
+    if (await _refreshServerUser(client, user, serverId)) {
+      homeRefreshBus.requestNowOrAfterNavigation();
     }
   }
 
@@ -536,6 +666,70 @@ class SessionRepository {
     return false;
   }
 
+  /// Silo refused to renew the login of [userId] on [serverId] (revoked from
+  /// Silo's sessions page, or idle past the refresh token's expiry). If that
+  /// is still the active session, sign out the way a rejected token at
+  /// start-up does, and open the login screen with the name filled in.
+  ///
+  /// Jellyfin and Emby have no equivalent signal mid-session. Silo's refused
+  /// refresh is unambiguous, since only a 401 on the refresh ends a session.
+  void _onSiloLoginEnded(String serverId, String userId, String name) {
+    if (_activeServerId != serverId || _activeUserId != userId) return;
+    _logger.w('Silo refused to renew the login. Signing out.');
+    unawaited(() async {
+      // The login was the whole account's: its other profiles can't act
+      // without it either.
+      await _removeSiloSiblings(serverId, userId);
+      await destroyCurrentSession(tokenKnownInvalid: true);
+      _router.go(
+        '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(name)}',
+      );
+    }());
+  }
+
+  /// The other stored profiles of [userId]'s Silo account on [serverId].
+  /// Empty for Jellyfin and Emby users and for a lone profile.
+  List<PrivateUser> _siloSiblings(String serverId, String? userId) {
+    final users = _authStore.getUsers(serverId);
+    final accountId = users
+        .where((u) => u.id == userId)
+        .firstOrNull
+        ?.siloAccountId;
+    if (accountId == null) return const [];
+    return [
+      for (final u in users)
+        if (u.siloAccountId == accountId && u.id != userId) u,
+    ];
+  }
+
+  Future<void> _removeSiloSiblings(String serverId, String userId) async {
+    for (final sibling in _siloSiblings(serverId, userId)) {
+      await _authStore.removeUser(serverId, sibling.id);
+    }
+  }
+
+  /// Whether the active user is a Silo profile with other profiles of its
+  /// account stored here, so "Sign out of the account" means more than
+  /// "Sign out".
+  bool get activeUserHasSiloSiblings {
+    final serverId = _activeServerId;
+    return serverId != null &&
+        _siloSiblings(serverId, _activeUserId).isNotEmpty;
+  }
+
+  /// Signs the whole Silo account out on this device: every stored
+  /// profile of the active user's account goes, the login is ended on Silo
+  /// and its tokens are forgotten. For any other user it is the same as
+  /// [destroyCurrentSession].
+  Future<void> signOutSiloAccount() async {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (serverId != null && userId != null) {
+      await _removeSiloSiblings(serverId, userId);
+    }
+    await destroyCurrentSession();
+  }
+
   /// [tokenKnownInvalid] is set when the server has already rejected the
   /// token. The push unregister and the logout both authenticate with it, so
   /// sending them would only add 401s to the burst that got us here.
@@ -571,6 +765,11 @@ class SessionRepository {
     }
 
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<SiloWatchPartyManager>()) {
+      GetIt.instance<SiloWatchPartyManager>().onSessionChanged(
+        signedOut: true,
+      );
+    }
     if (GetIt.instance.isRegistered<AchievementsService>()) {
       GetIt.instance<AchievementsService>().reset();
     }
@@ -578,7 +777,13 @@ class SessionRepository {
       GetIt.instance<ServerMessagesService>().clear();
     }
 
-    if (serverId != null && !tokenKnownInvalid) {
+    // A Silo login belongs to the account, not the profile: signing out of
+    // one profile keeps it for the account's other stored profiles, and
+    // only the last one ends it on Silo. The tokens go with that
+    // last profile too (AuthenticationStore.removeUser).
+    final keepsSiloLogin =
+        serverId != null && _siloSiblings(serverId, userId).isNotEmpty;
+    if (serverId != null && !tokenKnownInvalid && !keepsSiloLogin) {
       try {
         final client = _clientFactory.getClientIfExists(serverId);
         await client?.authApi.logout();
@@ -589,6 +794,8 @@ class SessionRepository {
     _remoteCommandSubscription = null;
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
+    _accessChangedSubscription?.cancel();
+    _accessChangedSubscription = null;
     _socketConnectionSubscription?.cancel();
     _socketConnectionSubscription = null;
     userDataSync.reset();
@@ -596,7 +803,9 @@ class SessionRepository {
 
     if (serverId != null) {
       await _credentialStore.deleteToken(serverId);
-      if (userId != null) {
+      // A profile whose account stays signed in stays listed, so the user
+      // grid still offers every profile of the account.
+      if (userId != null && !keepsSiloLogin) {
         await _authStore.removeUser(serverId, userId);
       }
       _clientFactory.removeClient(serverId);
@@ -689,6 +898,15 @@ class SessionRepository {
     });
   }
 
+  void _bindAccessChanges(MediaServerClient client) {
+    _accessChangedSubscription?.cancel();
+    _accessChangedSubscription = _socketHandler.events.listen((event) {
+      if (event is ServerEventMessage && event.type == siloAccessChangedEvent) {
+        unawaited(_onSiloAccessChanged(client));
+      }
+    });
+  }
+
   Future<void> _reportRemoteCapabilities(MediaServerClient client) async {
     try {
       await client.sessionApi.reportCapabilities({
@@ -729,6 +947,14 @@ class SessionRepository {
       default:
         break;
     }
+  }
+
+  /// Marks [userId] on [serverId] as the active session without starting
+  /// it, for tests of what happens to an active session, such as sign-out.
+  @visibleForTesting
+  void setActiveSessionForTest(String serverId, String userId) {
+    _activeServerId = serverId;
+    _activeUserId = userId;
   }
 
   /// Lets a test drive a command straight in, so every name a control surface
@@ -1213,6 +1439,7 @@ class SessionRepository {
     _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
     _pluginEventSubscription?.cancel();
+    _accessChangedSubscription?.cancel();
     _stateController.close();
   }
 }

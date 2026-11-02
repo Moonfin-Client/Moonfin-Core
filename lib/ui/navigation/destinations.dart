@@ -36,6 +36,7 @@ class Destinations {
   static const startup = '/';
   static const serverSelect = '/server-select';
   static const embyConnect = '/emby-connect';
+  static const plexSignIn = '/plex-sign-in';
   static const webDiagnostics = '/_diag';
 
   static String webDiagnosticsRoute({
@@ -74,12 +75,13 @@ class Destinations {
   static const libraryBrowse = '/library/:libraryId';
   static const allGenres = '/genres';
   static const allFavorites = '/favorites';
-  static const folderView = '/folders';
   static const folderBrowse = '/folder/:folderId';
   static const collectionBrowse = '/collection/:collectionId';
   static const libraryViewRoute = '/library-view/:libraryId';
   static const musicBrowse = '/music/:libraryId';
+  static const musicCategoryBrowse = '/music/:libraryId/:category';
   static const bookBrowse = '/books/:libraryId';
+  static const bookCategoryBrowse = '/books/:libraryId/:category';
   static const genreBrowse = '/genre/:genreName';
   static const studioBrowse = '/studio/:studioName';
 
@@ -91,6 +93,7 @@ class Destinations {
   static const gameSystem = '/games/:libraryId/system/:systemId';
   static const gameDetail = '/game/:libraryId/:gameId';
   static const gamePlayer = '/game-player/:libraryId/:gameId';
+  static const rommAccount = '/romm-account';
 
   // Live TV
   static const liveTv = '/live-tv';
@@ -194,12 +197,14 @@ class Destinations {
   /// always the item's own season: a special inlined by
   /// DisplaySpecialsWithinSeasons is listed under a regular season while still
   /// living in Specials. Carrying it keeps the episode list and the play queue
-  /// on the season that was on screen.
+  /// on the season that was on screen. [full] opens the full page where Quick
+  /// Look would open its drawer.
   static String item(
     String itemId, {
     String? serverId,
     bool autoPlay = false,
     String? seasonContext,
+    bool full = false,
   }) {
     final base = '/item/$itemId';
     final params = <String>[
@@ -207,6 +212,7 @@ class Destinations {
       if (autoPlay) 'autoPlay=true',
       if (seasonContext != null && seasonContext.isNotEmpty)
         'seasonContext=${Uri.encodeQueryComponent(seasonContext)}',
+      if (full) 'full=true',
     ];
     return params.isEmpty ? base : '$base?${params.join('&')}';
   }
@@ -285,11 +291,33 @@ class Destinations {
 
   static String collection(String collectionId) => '/collection/$collectionId';
   static String musicLibrary(String libraryId) => '/music/$libraryId';
+
+  /// One of a music library's category screens. [show] picks what it opens
+  /// on, such as `all` for every artist or a favorites tab.
+  static String musicCategory(
+    String libraryId,
+    String category, {
+    String? show,
+  }) {
+    final base = '/music/$libraryId/$category';
+    return show == null ? base : '$base?show=${Uri.encodeQueryComponent(show)}';
+  }
   static String bookLibrary(String libraryId, {String? collectionType}) {
     final base = '/books/$libraryId';
     return collectionType != null && collectionType.isNotEmpty
         ? '$base?collectionType=${Uri.encodeComponent(collectionType)}'
         : base;
+  }
+
+  /// A book library's [category] screen. Titles take the format to show as
+  /// [scope].
+  static String bookCategory(
+    String libraryId,
+    String category, {
+    String? scope,
+  }) {
+    final base = '/books/$libraryId/$category';
+    return scope == null ? base : '$base?scope=${Uri.encodeQueryComponent(scope)}';
   }
 
   static String photo(String itemId) => '/player/photo/$itemId';
@@ -344,8 +372,12 @@ class Destinations {
   static String nextUpFor(String itemId) => '/player/next-up/$itemId';
   static String stillWatchingFor(String itemId) =>
       '/player/still-watching/$itemId';
+  /// Search from the request screens, landing on the Requests tab.
+  static const searchRequests = '/search?tab=requests';
   static String searchWith(String query) =>
       '/search?query=${Uri.encodeComponent(query)}';
+  static String searchRequestsWith(String query) =>
+      '$searchRequests&query=${Uri.encodeComponent(query)}';
   static String searchInLibrary(String libraryId, {String? query}) {
     final params = <String, String>{'libraryId': libraryId};
     if (query != null && query.trim().isNotEmpty) {

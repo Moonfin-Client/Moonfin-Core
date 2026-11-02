@@ -33,6 +33,7 @@ import 'data/services/crash_report_service.dart';
 import 'data/services/log_service.dart';
 import 'data/services/storage_path_service.dart';
 import 'util/scroll_sensitivity_binding.dart';
+import 'util/silo_image_hooks.dart';
 import 'util/webview_environment.dart';
 import 'data/services/theme_store_service.dart';
 import 'di/injection.dart';
@@ -931,6 +932,7 @@ void main() async {
   }
 
   _configureImageCache();
+  installSiloImageHooks();
   _capSkiaCache();
   await configureImageDiskCache(tier: _resolvedTier());
 

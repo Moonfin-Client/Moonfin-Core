@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/subtitle_style.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -91,6 +92,84 @@ void main() {
     expect(style.strokeColor, 0xFF333333);
     expect(style.fontSize, 30.0);
     expect(style.fontWeight, 700);
-    expect(style.verticalOffset, 0.2);
+    expect(style.verticalOffset, 0.20);
   });
+
+  test('saved offsets above 36% use the same SDR and HDR effective cap', () async {
+    final prefs = await _prefs();
+    await prefs.set(UserPreferences.subtitlesHdrSeparate, true);
+    await prefs.set(UserPreferences.subtitlesOffsetPosition, 0.50);
+    await prefs.set(UserPreferences.subtitlesHdrOffsetPosition, 0.38);
+    expect(SubtitleStyle.resolve(prefs, isHdr: false).verticalOffset, 0.36);
+    expect(SubtitleStyle.resolve(prefs, isHdr: true).verticalOffset, 0.36);
+    expect(prefs.get(UserPreferences.subtitlesOffsetPosition), 0.50);
+  });
+
+  test('legacy primary offsets normalize only when edited', () {
+    const min = 0.0;
+    const max = 0.36;
+    const step = 0.02;
+    expect(
+      normalizeSteppedSubtitleOffsetChange(
+        storedValue: 0.05,
+        proposedValue: 0.07,
+        min: min,
+        max: max,
+        step: step,
+      ),
+      0.06,
+    );
+    expect(
+      normalizeSteppedSubtitleOffsetChange(
+        storedValue: 0.05,
+        proposedValue: 0.03,
+        min: min,
+        max: max,
+        step: step,
+      ),
+      0.04,
+    );
+    expect(
+      normalizeSteppedSubtitleOffsetChange(
+        storedValue: 0.50,
+        proposedValue: 0.34,
+        min: min,
+        max: max,
+        step: step,
+      ),
+      0.36,
+    );
+  });
+
+  test(
+    'secondary preferences retain overrides and restore inheritance',
+    () async {
+      final prefs = await _prefs();
+      final manager = PlaybackManager();
+      addTearDown(prefs.dispose);
+      addTearDown(manager.dispose);
+      await prefs.set(UserPreferences.secondarySubtitleTextColor, 0xFFFFFF00);
+      await prefs.set(UserPreferences.secondarySubtitleOffsetPosition, 0.16);
+      for (final (primary, adjustment, expected) in [(20.0, 50.0, 30.0), (40.0, 50.0, 60.0), (12.0, -50.0, 6.0)]) {
+        await prefs.set(UserPreferences.subtitlesTextSize, primary);
+        await prefs.set(UserPreferences.secondarySubtitleSizeAdjustment, adjustment);
+        await syncSecondarySubtitleStyle(manager, prefs);
+        expect(manager.secondarySubtitleFontSize, expected);
+      }
+      expect(manager.secondarySubtitleTextColor, 0xFFFFFF00);
+      expect(manager.secondarySubtitleOffset, 0.06);
+
+      await prefs.set(UserPreferences.secondarySubtitleSizeAdjustment, 0.0);
+      await prefs.set(UserPreferences.secondarySubtitleTextColor, -1);
+      await syncSecondarySubtitleStyle(manager, prefs);
+      expect(manager.secondarySubtitleFontSize, isNull);
+      expect(manager.secondarySubtitleTextColor, isNull);
+      expect(manager.secondarySubtitleOffset, 0.06);
+      expect(prefs.get(UserPreferences.secondarySubtitleTextColor), -1);
+
+      await prefs.set(UserPreferences.secondarySubtitleOffsetPosition, -0.16);
+      await syncSecondarySubtitleStyle(manager, prefs);
+      expect(manager.secondarySubtitleOffset, 0.0);
+    },
+  );
 }

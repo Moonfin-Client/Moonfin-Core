@@ -252,6 +252,48 @@ void main() {
     },
   );
 
+  test('returning to Home brings back a row that loaded empty', () async {
+    final vm = await loadedWithEmptyResume();
+
+    final quick = vm.refreshResumeAndNextUp();
+    await resumeStarted.future;
+    resume.complete(populated('resume', HomeRowType.resume));
+    await quick;
+    expect(ids(vm), ['resume', 'nextUp']);
+  });
+
+  test('returning to Home still refreshes the rows on screen', () async {
+    when(() => source.loadNextUp('http://server')).thenAnswer(
+      (_) async => const HomeRow(
+        id: 'nextUp',
+        title: 'Next Up',
+        rowType: HomeRowType.nextUp,
+      ),
+    );
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    resume.complete(populated('resume', HomeRowType.resume));
+    await loading;
+    expect(ids(vm), ['resume']);
+    expectResumeLoad();
+
+    final quick = vm.refreshResumeAndNextUp();
+    await resumeStarted.future;
+    resume.complete(
+      HomeRow(
+        id: 'resume',
+        title: 'resume',
+        rowType: HomeRowType.resume,
+        items: [
+          AggregatedItem(id: 'played-since', serverId: 'server', rawData: {}),
+        ],
+      ),
+    );
+    await quick;
+    expect(vm.rows.single.items.single.id, 'played-since');
+  });
+
   test('a failed load is not taken for an empty section', () async {
     final vm = model();
     final loading = vm.load();
@@ -301,6 +343,31 @@ void main() {
     expect(ids(vm), isEmpty);
 
     resume.complete(populated('resume', HomeRowType.resume));
+    await pumpEventQueue();
+    expect(ids(vm), ['resume']);
+  });
+
+  test('returning to Home brings back merged Continue Watching', () async {
+    await prefs.set(UserPreferences.mergeContinueWatchingNextUp, true);
+    when(() => source.loadNextUp('http://server')).thenAnswer(
+      (_) async => const HomeRow(
+        id: 'nextUp',
+        title: 'Next Up',
+        rowType: HomeRowType.nextUp,
+      ),
+    );
+    final vm = model();
+    await vm.load();
+    await resumeStarted.future;
+    resume.complete(emptyResume);
+    await pumpEventQueue();
+    expect(ids(vm), isEmpty);
+    expectResumeLoad();
+
+    final quick = vm.refreshResumeAndNextUp();
+    await resumeStarted.future;
+    resume.complete(populated('resume', HomeRowType.resume));
+    await quick;
     await pumpEventQueue();
     expect(ids(vm), ['resume']);
   });

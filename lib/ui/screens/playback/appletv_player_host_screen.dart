@@ -13,6 +13,8 @@ import 'package:server_core/server_core.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/chapter_markers.dart';
+import '../../../data/utils/server_trickplay.dart';
+import '../../../data/utils/trickplay_headers.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/services/media_segment_service.dart';
@@ -22,6 +24,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
+import '../../../playback/appletv_subtitles.dart';
 import '../../../playback/playback_info_sections.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
@@ -64,7 +67,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   final _chaptersFetchedItemIds = <String>{};
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
-  SubtitleStyle? _lastSubtitleStyle;
+  (SubtitleStyle, double, double, int)? _lastSubtitleStyle;
   String _lastTrickplayPrefs = '';
   String _lastTimeSlots = '';
   TrickplayInfo? _trickplayInfo;
@@ -318,12 +321,24 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final backend = _backend;
     if (backend == null) return;
     try {
+      final manager = _manager;
+      if (manager == null) return;
+      final prefs = GetIt.instance<UserPreferences>();
       final style = SubtitleStyle.forResolution(
-        GetIt.instance<UserPreferences>(),
-        _manager?.currentResolution,
+        prefs,
+        manager.currentResolution,
       );
-      if (!force && style == _lastSubtitleStyle) return;
-      _lastSubtitleStyle = style;
+      final appearance = (
+        style,
+        prefs.get(UserPreferences.secondarySubtitleSizeAdjustment),
+        prefs.get(UserPreferences.secondarySubtitleOffsetPosition),
+        prefs.get(UserPreferences.secondarySubtitleTextColor),
+      );
+      final previous = _lastSubtitleStyle;
+      if (!force && appearance == previous) return;
+      _lastSubtitleStyle = appearance;
+      unawaited(syncSecondarySubtitleStyle(manager, prefs));
+      if (!force && style == previous?.$1) return;
       backend.configureSubtitleStyle(
         textColor: style.textColor,
         backgroundColor: style.backgroundColor,
@@ -562,14 +577,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       );
       timestampsMs = const [];
     }
-    final token = client.accessToken;
     return {
       'urls': urls,
       if (timestampsMs.isNotEmpty) 'timestampsMs': timestampsMs,
-      'headers': {
-        if (token != null && token.isNotEmpty)
-          'Authorization': 'MediaBrowser Token="$token"',
-      },
+      'headers': trickplayImageHeaders(client, withUserAgent: false),
       'width': info.width,
       'height': info.height,
       'cols': info.tileWidth,
@@ -606,6 +617,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (prefs == null) return;
     _configureCinemaSkip();
     _syncCinemaSkipButton();
+    final previousSubtitleAppearance = _lastSubtitleStyle;
     _pushSubtitleStyle();
     final slots = _timeSlotsSnapshot(prefs);
     if (slots != _lastTimeSlots) {
@@ -613,7 +625,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _pushTimeSlots();
     }
     final next = _trickplayPrefsSnapshot(prefs);
-    if (next == _lastTrickplayPrefs) return;
+    if (next == _lastTrickplayPrefs &&
+        previousSubtitleAppearance == _lastSubtitleStyle) {
+      return;
+    }
     _lastTrickplayPrefs = next;
     _pushMetadata();
   }
@@ -915,6 +930,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   List<Map<String, dynamic>> _currentChapters() => chaptersForItem(
     _manager?.queueService.currentItem,
     _manager?.currentOfflineMetadata,
+    mediaSourceId: _manager?.currentResolution?.mediaSourceId,
   );
 
   /// Hands the current item's chapter starts to the manager, which steps
@@ -999,10 +1015,13 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }
 
     final raw = _rawDataForQueueItem(item);
+    final client = _clientForQueueItem(item);
+    if (raw != null && client != null) {
+      await mergeServerTrickplay(client, itemId, raw, mediaSourceId);
+    }
     var info = raw == null
         ? null
         : TrickplayInfo.fromItemData(raw, mediaSourceId: mediaSourceId);
-    final client = _clientForQueueItem(item);
     if (info == null && client?.trickplayApi != null) {
       try {
         final thumbnailSet = await client!.trickplayApi!.getThumbnailSet(
@@ -1277,6 +1296,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         manager.subtitleStreamIndex,
         audio: false,
       ),
+      subtitleControls: appleTvSubtitleMetadata(
+        manager: manager,
+        prefs: GetIt.instance<UserPreferences>(),
+        l10n: AppLocalizations.of(context),
+        tracks: _trackOptions(
+          subtitleStreams,
+          manager.secondarySubtitleStreamIndex,
+          audio: false,
+        ),
+        sourceStreams: subtitleStreams,
+      ),
       logoUrl: _logoUrlForItem(item),
       streamInfoSections: _streamInfoSections(manager),
       streamInfoTitle: AppLocalizations.of(context).playbackInformation,
@@ -1479,6 +1509,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _handleUiAction(Map<String, dynamic> action) {
     final manager = _manager;
     if (manager == null) return;
+    final subtitleAction = handleAppleTvSubtitleAction(
+      action,
+      manager,
+      GetIt.instance<UserPreferences>(),
+    );
+    if (subtitleAction != null) {
+      unawaited(subtitleAction.then((_) {
+        if (mounted) _pushMetadata();
+      }));
+      return;
+    }
     switch (action['event']?.toString()) {
       case 'play':
         unawaited(manager.resume());

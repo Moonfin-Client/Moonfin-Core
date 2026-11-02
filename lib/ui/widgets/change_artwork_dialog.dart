@@ -487,8 +487,23 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   String _getCurrentImageUrl(String category, String tag, {int? imageIndex}) {
     final client = GetIt.instance<MediaServerClient>();
-    final indexParam = imageIndex != null ? '&imageIndex=$imageIndex' : '';
-    return '${client.baseUrl}/Items/${_item.id}/Images/$category?tag=$tag&maxWidth=300$indexParam';
+    final images = client.imageApi;
+    final id = _item.id;
+    return switch (category) {
+      'Primary' => images.getPrimaryImageUrl(id, maxWidth: 300, tag: tag),
+      'Backdrop' => images.getBackdropImageUrl(
+        id,
+        maxWidth: 300,
+        index: imageIndex,
+        tag: tag,
+      ),
+      'Logo' => images.getLogoImageUrl(id, maxWidth: 300, tag: tag),
+      'Banner' => images.getBannerImageUrl(id, maxWidth: 300, tag: tag),
+      'Thumb' => images.getThumbImageUrl(id, maxWidth: 300, tag: tag),
+      _ =>
+        '${client.baseUrl}/Items/$id/Images/$category?tag=$tag&maxWidth=300'
+            '${imageIndex != null ? '&imageIndex=$imageIndex' : ''}',
+    };
   }
 
   Future<void> _checkLibrariesWriteAccess() async {
@@ -1130,58 +1145,59 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
               title: Text(l10n.sources),
               content: SizedBox(
                 width: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: sources.length,
-                  itemBuilder: (context, index) {
-                    final src = sources[index];
-                    final isSelected = !_deselectedSources.contains(src);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: FocusableWrapper(
-                        borderRadius: 8,
-                        autofocus: index == 0,
-                        suppressFocusGlow: true,
-                        onSelect: () {
-                          setState(() {
-                            if (isSelected) {
-                              _deselectedSources.add(src);
-                            } else {
-                              _deselectedSources.remove(src);
-                            }
-                          });
-                          setDialogState(() {});
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: Row(
-                            children: [
-                              IgnorePointer(
-                                child: Checkbox(
-                                  value: isSelected,
-                                  onChanged: (val) {},
-                                  activeColor: AppColorScheme.accent,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  src,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: List.generate(sources.length, (index) {
+                      final src = sources[index];
+                      final isSelected = !_deselectedSources.contains(src);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: FocusableWrapper(
+                          borderRadius: 8,
+                          autofocus: index == 0,
+                          suppressFocusGlow: true,
+                          onSelect: () {
+                            setState(() {
+                              if (isSelected) {
+                                _deselectedSources.add(src);
+                              } else {
+                                _deselectedSources.remove(src);
+                              }
+                            });
+                            setDialogState(() {});
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: Row(
+                              children: [
+                                IgnorePointer(
+                                  child: Checkbox(
+                                    value: isSelected,
+                                    onChanged: (val) {},
+                                    activeColor: AppColorScheme.accent,
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    src,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    }),
+                  ),
                 ),
               ),
               actions: [

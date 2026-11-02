@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Kies watter onderwerpstrome om in Ontdek te wys.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Pas toe",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Oudioboek genres",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Kies watter genres om in Oudioboek Ontdek te wys.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Ontdek oudioboeke",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Gewilde publieke domein titels van LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titels",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Blaai links",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Ontdek",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Gewilde titels volgens onderwerp vanaf Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Nog geen geboekmerkte items nie",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Aktiveer gidsaansig",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Wys gidsblaai-opsie",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Biblioteeksigbaarheid",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Uitgestalte inhoud, voorkoms",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Plakkaatgrootte, beeldtipe, voueraansig",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB en graderingsbronne",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Kon nie .cbr-argief onttrek nie.",
     "cb7ExtractionUnavailable": "CB7-onttrekking is nie op hierdie platform beskikbaar nie.",
     "cb7ExtractionPluginUnavailable": "CB7-onttrekking-inprop is nie op hierdie platform beskikbaar nie.",
-    "closeGenrePanel": "Maak genrepaneel toe",
     "loadingShuffle": "Laai tans shuffle …",
     "libraryShuffleLabel": "BIBLIOTEEK-SKOMMEL",
     "randomShuffleLabel": "LUKRAAK SKOMMEL",

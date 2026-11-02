@@ -9,6 +9,16 @@ import UIKit
 final class IosNativePlayerHostController: UIViewController {
     private static let canvasWidth: CGFloat = 1920
 
+    /// The rotation lock a live player carries, true while it holds landscape.
+    /// Nil keeps the default: landscape on a phone, any way round on a tablet.
+    /// Panels follow it too, so one opening doesn't turn the screen.
+    static var orientationLock: Bool?
+
+    private static var allowedOrientations: UIInterfaceOrientationMask {
+        if let locked = orientationLock { return locked ? .landscape : .all }
+        return UIDevice.current.userInterfaceIdiom == .phone ? .landscape : .all
+    }
+
     private let content: UIViewController
     private let opaque: Bool
     private let closesOnOutsideTap: Bool
@@ -58,10 +68,17 @@ final class IosNativePlayerHostController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        guard UIDevice.current.userInterfaceIdiom == .phone else { return }
-        let scene = view.window?.windowScene ?? presentingViewController?.view.window?.windowScene
+        refreshOrientation()
+    }
+
+    func refreshOrientation() {
         setNeedsUpdateOfSupportedInterfaceOrientations()
-        scene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { _ in }
+        // Asking again while already in landscape can flip it to the other side.
+        guard Self.allowedOrientations == .landscape,
+            let scene = view.window?.windowScene ?? presentingViewController?.view.window?.windowScene,
+            !scene.interfaceOrientation.isLandscape
+        else { return }
+        scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { _ in }
     }
 
     @objc private func handleOutsideTap(_ recognizer: UITapGestureRecognizer) {
@@ -77,6 +94,6 @@ final class IosNativePlayerHostController: UIViewController {
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        UIDevice.current.userInterfaceIdiom == .phone ? .landscape : .all
+        Self.allowedOrientations
     }
 }

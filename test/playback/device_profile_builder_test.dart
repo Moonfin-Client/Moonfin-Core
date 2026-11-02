@@ -856,6 +856,33 @@ void main() {
       );
     });
 
+    test('hevcDirectPlayOnly keeps HEVC direct playable but out of HLS', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        supportsHevcMain10: true,
+        transcodeHevcAllowed: true,
+        hevcRequiresFmp4Hls: true,
+        hevcDirectPlayOnly: true,
+      );
+
+      final directPlayVideo = (profile['DirectPlayProfiles'] as List<dynamic>)
+          .cast<Map<dynamic, dynamic>>()
+          .singleWhere((entry) => entry['Type'] == 'Video');
+      expect(
+        (directPlayVideo['VideoCodec'] as String).split(','),
+        contains('hevc'),
+      );
+      for (final entry
+          in (profile['TranscodingProfiles'] as List<dynamic>)
+              .cast<Map<dynamic, dynamic>>()
+              .where((entry) => entry['Type'] == 'Video')) {
+        expect(
+          (entry['VideoCodec'] as String).split(','),
+          isNot(contains('hevc')),
+        );
+      }
+    });
+
     test('without hevcRequiresFmp4Hls no HLS HEVC allow-list is sent', () {
       final profile = DeviceProfileBuilder.build(
         supportsHevc: true,

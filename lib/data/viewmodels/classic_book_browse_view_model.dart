@@ -54,18 +54,32 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
   AggregatedItem? get featuredItem => _featured;
 
   int _titleCount = 0;
+  @override
   int get titleCount => _titleCount;
   int _genreCount = 0;
+  @override
   int get genreCount => _genreCount;
   int _seriesCount = 0;
+  @override
   int get seriesCount => _seriesCount;
   int _authorCount = 0;
+  @override
   int get authorCount {
     final scoped = _scopedAuthorsRow();
     if (scoped != null) {
       return scoped.totalCount > 0 ? scoped.totalCount : scoped.items.length;
     }
     return _authorCount;
+  }
+
+  @override
+  int get collectionCount => _collectionsRow?.items.length ?? 0;
+
+  @override
+  int get favoriteCount {
+    final row = _favoritesRow;
+    if (row == null) return 0;
+    return row.totalCount > 0 ? row.totalCount : row.items.length;
   }
 
   // The rows as loaded, so a format switch recomposes them without fetching
@@ -116,20 +130,24 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
   /// folder is one entry, rather than a grid of every volume.
   bool isSeriesRow(HomeRow row) => row.id == _seriesRowId;
 
-  /// Item types the See all grid shows for [row].
-  List<String> seeAllTypesFor(HomeRow row) {
-    if (row.id == _latestBooksRowId || row.id.startsWith('allBooks_')) return const ['Book'];
+  bool isFavoritesRow(HomeRow row) => row.id == _favoritesRowId;
+
+  bool isCollectionsRow(HomeRow row) => row.id == _collectionsRow?.id;
+
+  /// The format of titles the See All of [row] shows.
+  BookScope seeAllScopeFor(HomeRow row) {
+    if (row.id == _latestBooksRowId || row.id.startsWith('allBooks_')) {
+      return BookScope.books;
+    }
     if (row.id == _latestAudiobooksRowId ||
         row.id == _lastPlayedRowId ||
         row.id.startsWith('allAudiobooks_')) {
-      return audiobookTypes;
+      return BookScope.audiobooks;
     }
-    // Comic isn't a type the server knows, so asking for it gets rejected.
-    // Book is the type comics carry and the nearest the grid can request.
     if (row.id == _latestComicsRowId || row.id == _allComicsRowId) {
-      return const ['Book'];
+      return BookScope.comics;
     }
-    return scopedTypes;
+    return _scope;
   }
 
   /// Whether [row] can hold both formats at once, which is when cards show
@@ -201,11 +219,7 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
         _serverId,
         includeItemTypes: combinedTypes,
       );
-      final genresF = _dataSource.loadGenres(
-        _serverId,
-        includeItemTypes: combinedTypes,
-        parentId: libraryId,
-      );
+      final genresF = _loadGenres(l10n.genres);
       final collectionsF = _loadBookCollections();
       final allBooksF = isAudiobookLibrary
           ? null
@@ -471,7 +485,7 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
                 _latestComicsRow?.items.firstOrNull);
       final all = _allRow!;
       _titleCount = all.totalCount > 0 ? all.totalCount : all.items.length;
-      _genreCount = _genresRow?.items.length ?? 0;
+      _genreCount = _genresRow?.totalCount ?? 0;
       _authorCount = (_authorsRow?.totalCount ?? 0) > 0
           ? _authorsRow!.totalCount
           : (_authorsRow?.items.length ?? 0);
@@ -700,6 +714,41 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
       items: entries,
       rowType: HomeRowType.latestMedia,
       totalCount: entries.length,
+    );
+  }
+
+  /// The library's genres. The shared genre row leaves book types out of its
+  /// query, so this asks with them itself.
+  Future<HomeRow> _loadGenres(String title) async {
+    var items = const <AggregatedItem>[];
+    var total = 0;
+    try {
+      final resp = await _client.itemsApi.getGenres(
+        parentId: libraryId,
+        includeItemTypes: combinedTypes,
+        recursive: true,
+        sortBy: 'SortName',
+        sortOrder: 'Ascending',
+        limit: 50,
+        fields: 'ItemCounts,PrimaryImageAspectRatio',
+      );
+      items = [
+        for (final raw in (resp['Items'] as List? ?? const []).whereType<Map>())
+          if (raw['Id'] != null)
+            AggregatedItem(
+              id: raw['Id'].toString(),
+              serverId: _serverId,
+              rawData: raw.cast<String, dynamic>(),
+            ),
+      ];
+      total = resp['TotalRecordCount'] as int? ?? items.length;
+    } catch (_) {}
+    return HomeRow(
+      id: 'genres',
+      title: title,
+      items: items,
+      rowType: HomeRowType.genres,
+      totalCount: total,
     );
   }
 

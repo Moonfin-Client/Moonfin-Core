@@ -201,25 +201,6 @@ class _AppearanceScreenState extends State<_AppearanceScreen> {
                     },
                     onChanged: _pushPersonalizationSync,
                   ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.homeBackdropEnabled,
-                    title: l10n.homeScreenBackdrop,
-                    icon: Icons.photo,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.detailsBackdropEnabled,
-                    title: l10n.detailsScreenBackdrop,
-                    icon: Icons.photo,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.hideBackdropsInLibraries,
-                    title: l10n.libraryBackdrops,
-                    icon: Icons.photo,
-                    inverted: true,
-                    onChanged: _pushPersonalizationSync,
-                  ),
                   EnumPreferenceTile<OledMode>(
                     preference: UserPreferences.oledMode,
                     title: l10n.oledMode,

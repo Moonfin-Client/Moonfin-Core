@@ -21,6 +21,7 @@ class RetroArtworkImage extends StatefulWidget {
     required this.maxDecodeWidth,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
+    this.filterQuality = FilterQuality.medium,
     this.fillBehind = false,
     this.settleDelay = defaultSettleDelay,
     this.onLoadFinished,
@@ -42,6 +43,9 @@ class RetroArtworkImage extends StatefulWidget {
   final Duration settleDelay;
   final BoxFit fit;
   final Alignment alignment;
+
+  /// FilterQuality.none keeps an upscaled screenshot's pixels square.
+  final FilterQuality filterQuality;
 
   /// Paints a blurred copy of the same decoded image behind contained art.
   final bool fillBehind;
@@ -264,6 +268,7 @@ class _RetroArtworkImageState extends State<RetroArtworkImage> {
       image: provider,
       fit: widget.fit,
       alignment: widget.alignment,
+      filterQuality: widget.filterQuality,
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (frame != null || wasSynchronouslyLoaded) {
           _releaseDecode();

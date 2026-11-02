@@ -500,6 +500,7 @@ class EmbyItemsApi implements ItemsApi {
     return response.data as Map<String, dynamic>;
   }
 
+  /// Emby only reads Ids as a comma list and fails on an array.
   @override
   Future<Map<String, dynamic>> createPlaylist({
     required String name,
@@ -507,7 +508,7 @@ class EmbyItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.post(
       '/Playlists',
-      data: {'Name': name, 'Ids': ?itemIds},
+      queryParameters: {'Name': name, 'Ids': ?itemIds?.join(',')},
     );
     return response.data as Map<String, dynamic>;
   }
@@ -635,9 +636,12 @@ class EmbyItemsApi implements ItemsApi {
     );
   }
 
+  /// Emby has no playlist update route, so the name goes through the item
+  /// update, which wants the whole item back.
   @override
   Future<void> renamePlaylist(String playlistId, String name) async {
-    await _dio.post('/Playlists/$playlistId', data: {'Name': name});
+    final item = await getItem(playlistId);
+    await _dio.post('/Items/$playlistId', data: {...item, 'Name': name});
   }
 
   @override

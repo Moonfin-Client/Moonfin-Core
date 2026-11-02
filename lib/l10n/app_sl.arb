@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Izberite, katere vsebinske vire želite prikazati v Odkrivanju.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Uporabi",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Zvrsti zvočnih knjig",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Izberite, katere zvrsti želite prikazati v Odkrivanju zvočnih knjig.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Odkrijte zvočne knjige",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Priljubljeni naslovi javne domene LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} naslovov",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Pomaknite se levo",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Odkrij",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Priljubljeni naslovi po temah iz Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Zaznamkov še ni",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Omogoči pogled mape",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Pokaži možnost brskanja po mapah",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Vidnost knjižnice",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Predstavljena vsebina, videz",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Velikost plakata, vrsta slike, pogled mape",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB in viri ocen",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Arhiva .cbr ni bilo mogoče razširiti.",
     "cb7ExtractionUnavailable": "Razširjanje CB7 na tej platformi ni na voljo.",
     "cb7ExtractionPluginUnavailable": "Vtičnik za razširjanje CB7 na tej platformi ni na voljo.",
-    "closeGenrePanel": "Zapri ploščo žanrov",
     "loadingShuffle": "Nalaganje naključnega izbora...",
     "libraryShuffleLabel": "NAKLJUČNO IZ KNJIŽNICE",
     "randomShuffleLabel": "NAKLJUČNI IZBOR",

@@ -61,7 +61,21 @@ abstract class LiveTvApi {
   Future<void> createTimer(String programId);
 
   /// Records every showing of a program's series, not just this one.
-  Future<void> createSeriesTimer(String programId);
+  /// [settings] replaces fields of the server's defaults for the new rule,
+  /// such as `RecordNewOnly`.
+  Future<void> createSeriesTimer(
+    String programId, {
+    Map<String, dynamic>? settings,
+  });
+
+  Future<Map<String, dynamic>> getSeriesTimer(String seriesTimerId);
+
+  /// The server replaces every field of the rule with [seriesTimer], so pass
+  /// the whole rule from [getSeriesTimer] with only the changed fields altered.
+  Future<void> updateSeriesTimer(
+    String seriesTimerId,
+    Map<String, dynamic> seriesTimer,
+  );
 
   Future<void> cancelTimer(String timerId);
 

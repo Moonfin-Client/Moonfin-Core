@@ -43,6 +43,7 @@ void main() {
     when(() => repository.isItemResolved(itemId)).thenReturn(audio != null);
     when(() => repository.peekItem(itemId)).thenReturn(audio);
     when(() => repository.getForItem(itemId)).thenAnswer((_) async => audio);
+    when(() => repository.labelStyle).thenReturn(AnimeAudioLabelStyle.full);
     GetIt.instance.registerSingleton<AnimeMarkerRepository>(repository);
     addTearDown(() => GetIt.instance.reset());
   }

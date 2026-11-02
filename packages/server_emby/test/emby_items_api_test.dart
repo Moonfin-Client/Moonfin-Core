@@ -236,4 +236,29 @@ void main() {
       isFalse,
     );
   });
+
+  test('a new playlist sends its items as a comma list', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(
+      dio,
+      () => 'user-1',
+    ).createPlaylist(name: 'Mix', itemIds: ['a', 'b']);
+
+    expect(request()?.method, 'POST');
+    expect(request()?.path, '/Playlists');
+    expect(request()?.queryParameters, {'Name': 'Mix', 'Ids': 'a,b'});
+  });
+
+  test('a rename posts the whole item back with the new name', () async {
+    final (dio, request) = _recordingDio(
+      data: const {'Id': 'pl-1', 'Name': 'Old', 'Type': 'Playlist'},
+    );
+
+    await EmbyItemsApi(dio, () => 'user-1').renamePlaylist('pl-1', 'New');
+
+    expect(request()?.method, 'POST');
+    expect(request()?.path, '/Items/pl-1');
+    expect(request()?.data, {'Id': 'pl-1', 'Name': 'New', 'Type': 'Playlist'});
+  });
 }

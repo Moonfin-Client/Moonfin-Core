@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
@@ -29,16 +30,17 @@ import '../../../data/services/retro_artwork/retro_artwork_cache.dart';
 import '../../../data/services/retro_artwork/retro_artwork_data_source.dart';
 import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
 import '../../../util/game_artwork_cache.dart';
+import '../../../util/game_core_licenses.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/tv_image_cache_stub.dart'
     if (dart.library.io) '../../../util/tv_image_cache_io.dart';
 
-/// Premium, responsive game detail screen. Builds a cinematic hero from keyless libretro
-/// thumbnails (in-game snapshot backdrop + box-art poster), shows the data the games API
-/// exposes (system, core, size, BIOS, save state), and offers Continue/Play plus Restart.
-/// Portrait on mobile, landscape on desktop/TV, with d-pad focus in leanback mode.
+/// Responsive game detail screen led by the in-game snapshot, with the box art, title,
+/// one primary Play or Continue action, the player that will run it, and the metadata the
+/// games API exposes. Portrait on mobile, landscape on desktop/TV, with d-pad focus in
+/// leanback mode.
 class GameDetailScreen extends StatefulWidget {
   const GameDetailScreen({
     super.key,
@@ -478,12 +480,23 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        // Stays clear when the page scrolls under it, since the back button has its own backing.
+        notificationPredicate: (_) => false,
         foregroundColor: Colors.white,
         leading: Focus(
           canRequestFocus: false,
           skipTraversal: true,
           onKeyEvent: _handleAppBarKeyEvent,
-          child: const BackButton(),
+          // Keeps the arrow readable over a bright snapshot.
+          child: const Center(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Color(0x73101010),
+                shape: BoxShape.circle,
+              ),
+              child: BackButton(),
+            ),
+          ),
         ),
       ),
       body: _buildBody(),
@@ -599,25 +612,37 @@ class _PortraitBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Most retro screens are close to 8:7, so the snapshot shows nearly whole.
+    final snapHeight = (MediaQuery.sizeOf(context).width * 7 / 8).clamp(
+      240.0,
+      420.0,
+    );
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 320,
+            height: snapHeight + 64,
             child: Stack(
-              fit: StackFit.expand,
               children: [
-                _Backdrop(
-                  game: game,
-                  artworkScope: artworkScope,
-                  artworkDataSource: artworkDataSource,
-                  retroArtworkTransport: retroArtworkTransport,
-                  retroArtworkActivityGate: retroArtworkActivityGate,
-                  landscape: false,
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  height: snapHeight,
+                  child: _Backdrop(
+                    game: game,
+                    artworkScope: artworkScope,
+                    artworkDataSource: artworkDataSource,
+                    retroArtworkTransport: retroArtworkTransport,
+                    retroArtworkActivityGate: retroArtworkActivityGate,
+                    landscape: false,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: 0,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -627,15 +652,10 @@ class _PortraitBody extends StatelessWidget {
                         artworkDataSource: artworkDataSource,
                         retroArtworkTransport: retroArtworkTransport,
                         retroArtworkActivityGate: retroArtworkActivityGate,
-                        width: 104,
+                        width: 96,
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: _HeroTitle(game: game),
-                        ),
-                      ),
+                      const SizedBox(width: 16),
+                      Expanded(child: _HeroTitle(game: game)),
                     ],
                   ),
                 ),
@@ -643,19 +663,12 @@ class _PortraitBody extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
-            child: _MetaPills(
-              game: game,
-              hasSave: saveReadiness == _SaveReadiness.available,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: _ActionRow(
               game: game,
               saveReadiness: saveReadiness,
               tv: false,
-              fullWidthPrimary: true,
+              landscape: false,
               primaryFocusNode: primaryActionFocusNode,
               onPlay: onPlay,
               onRestart: onRestart,
@@ -663,30 +676,35 @@ class _PortraitBody extends StatelessWidget {
               onSelectCore: onSelectCore,
             ),
           ),
-          if (PlatformDetection.isAndroid && _usesNativeBackend(game))
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
-              child: _HardwareRenderingToggle(
-                enabled: hardwareRenderingEnabled,
-                onToggle: onToggleHardwareRendering,
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            child: _SaveStatus(readiness: saveReadiness),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: _PlayerCard(
+              game: game,
+              onSelectCore: onSelectCore,
+              hardwareRenderingEnabled: hardwareRenderingEnabled,
+              onToggleHardwareRendering: onToggleHardwareRendering,
             ),
+          ),
           if (game.overview != null && game.overview!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
-              child: _OverviewBlock(text: game.overview!),
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              child: _OverviewBlock(text: game.overview!, maxLines: 4),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
-            child: _DetailsPanel(
-              game: game,
-              hasSave: saveReadiness == _SaveReadiness.available,
-              onSelectCore: onSelectCore,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+            child: _Facts(game: game, twoColumns: true),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+            child: _FileLine(game: game),
           ),
           if (related.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 22, bottom: 24),
+              padding: const EdgeInsets.only(top: 30, bottom: 24),
               child: GamePosterRail(
                 title: 'More in ${game.system}',
                 games: related,
@@ -744,6 +762,11 @@ class _LandscapeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Keeps the text left of where the snapshot fades in.
+    final columnWidth = math.min(
+      640.0,
+      MediaQuery.sizeOf(context).width * 0.55 - 56,
+    );
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -757,77 +780,74 @@ class _LandscapeBody extends StatelessWidget {
         ),
         SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(40, 24, 40, 32),
+            padding: const EdgeInsets.fromLTRB(56, 12, 56, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Poster(
-                      game: game,
-                      artworkScope: artworkScope,
-                      artworkDataSource: artworkDataSource,
-                      retroArtworkTransport: retroArtworkTransport,
-                      retroArtworkActivityGate: retroArtworkActivityGate,
-                      width: tv ? 168 : 150,
-                    ),
-                    const SizedBox(width: 26),
-                    Expanded(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 560),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _HeroTitle(game: game, large: true),
-                            const SizedBox(height: 16),
-                            _MetaPills(
-                              game: game,
-                              hasSave:
-                                  saveReadiness == _SaveReadiness.available,
-                            ),
-                            const SizedBox(height: 20),
-                            _ActionRow(
-                              game: game,
-                              saveReadiness: saveReadiness,
-                              tv: tv,
-                              fullWidthPrimary: false,
-                              primaryFocusNode: primaryActionFocusNode,
-                              onPlay: onPlay,
-                              onRestart: onRestart,
-                              onRetrySave: onRetrySave,
-                              onSelectCore: onSelectCore,
-                            ),
-                            if (PlatformDetection.isAndroid &&
-                                _usesNativeBackend(game))
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12),
-                                child: _HardwareRenderingToggle(
-                                  enabled: hardwareRenderingEnabled,
-                                  onToggle: onToggleHardwareRendering,
-                                ),
-                              ),
-                            if (game.overview != null &&
-                                game.overview!.isNotEmpty) ...[
-                              const SizedBox(height: 22),
-                              _OverviewBlock(text: game.overview!),
-                            ],
-                            const SizedBox(height: 22),
-                            _DetailsPanel(
-                              game: game,
-                              hasSave:
-                                  saveReadiness == _SaveReadiness.available,
-                              onSelectCore: onSelectCore,
-                            ),
-                          ],
-                        ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: columnWidth),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // The actions sit above the middle of a 540 tall TV screen,
+                      // so focusing Play on open doesn't scroll the title away.
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _Poster(
+                            game: game,
+                            artworkScope: artworkScope,
+                            artworkDataSource: artworkDataSource,
+                            retroArtworkTransport: retroArtworkTransport,
+                            retroArtworkActivityGate: retroArtworkActivityGate,
+                            width: 104,
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(child: _HeroTitle(game: game, large: true)),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      _ActionRow(
+                        game: game,
+                        saveReadiness: saveReadiness,
+                        tv: tv,
+                        landscape: true,
+                        primaryFocusNode: primaryActionFocusNode,
+                        onPlay: onPlay,
+                        onRestart: onRestart,
+                        onRetrySave: onRetrySave,
+                        onSelectCore: onSelectCore,
+                      ),
+                      const SizedBox(height: 12),
+                      _SaveStatus(readiness: saveReadiness, large: true),
+                      if (game.overview != null &&
+                          game.overview!.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _OverviewBlock(
+                          text: game.overview!,
+                          maxLines: 3,
+                          large: true,
+                        ),
+                      ],
+                      const SizedBox(height: 22),
+                      _Facts(game: game, large: true),
+                      const SizedBox(height: 14),
+                      _FileLine(game: game),
+                      if (PlatformDetection.isAndroid &&
+                          _usesNativeBackend(game))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: _HardwareRenderingToggle(
+                            enabled: hardwareRenderingEnabled,
+                            onToggle: onToggleHardwareRendering,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 if (related.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(top: 28),
+                    padding: const EdgeInsets.only(top: 32),
                     child: GamePosterRail(
                       title: 'More in ${game.system}',
                       games: related,
@@ -847,8 +867,9 @@ class _LandscapeBody extends StatelessWidget {
   }
 }
 
-/// Full-bleed hero image. Tries the in-game snapshot, then the title screen, then a blurred
-/// box art, and finally a seeded color gradient, with scrims for text legibility.
+/// The in-game snapshot, falling back to the title screen, then a blurred box art, and
+/// finally a seeded color gradient. Portrait shows it full width above the title. Landscape
+/// keeps it whole on the right and fades it out toward the text.
 class _Backdrop extends StatelessWidget {
   const _Backdrop({
     required this.game,
@@ -868,7 +889,6 @@ class _Backdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = Theme.of(context).scaffoldBackgroundColor;
     final base = gameFallbackColor(game.id);
 
     final steps = <_BackdropStep>[
@@ -877,7 +897,7 @@ class _Backdrop extends StatelessWidget {
       const _BackdropStep('boxart', blur: true),
     ];
 
-    return Stack(
+    final image = Stack(
       fit: StackFit.expand,
       children: [
         DecoratedBox(
@@ -898,35 +918,96 @@ class _Backdrop extends StatelessWidget {
           retroArtworkActivityGate: retroArtworkActivityGate,
           index: 0,
         ),
-        if (landscape)
-          DecoratedBox(
+      ],
+    );
+
+    if (!landscape) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          _fade(
+            image,
+            const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.transparent],
+              stops: [0.5, 1],
+            ),
+          ),
+          const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [bg, bg.withValues(alpha: 0.35), Colors.transparent],
-                stops: const [0.30, 0.62, 0.92],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0x59000000), Colors.transparent],
+                stops: [0, 0.22],
               ),
             ),
           ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.transparent,
-                bg.withValues(alpha: landscape ? 0.4 : 0.75),
-                bg,
-              ],
-              stops: const [0.35, 0.78, 1.0],
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = math.min(
+          constraints.maxWidth,
+          constraints.maxHeight * 8 / 7,
+        );
+        // The fade spans a share of the screen, measured from the snapshot's left edge.
+        final scale = constraints.maxWidth / width;
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: width,
+              child: _fade(
+                _fade(
+                  image,
+                  LinearGradient(
+                    colors: const [
+                      Colors.transparent,
+                      Color(0x26FFFFFF),
+                      Colors.white,
+                    ],
+                    stops: [
+                      0,
+                      math.min(0.18 * scale, 1),
+                      math.min(0.4 * scale, 1),
+                    ],
+                  ),
+                ),
+                const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x1AFFFFFF),
+                    Colors.white,
+                    Colors.white,
+                    Color(0x26FFFFFF),
+                    Colors.transparent,
+                  ],
+                  stops: [0, 0.16, 0.62, 0.8, 0.92],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
+
+/// Fades [child] out where [gradient] is transparent, so whatever the page draws behind it
+/// shows through, including translucent theme backgrounds.
+Widget _fade(Widget child, Gradient gradient) => ShaderMask(
+  blendMode: BlendMode.dstIn,
+  shaderCallback: gradient.createShader,
+  child: child,
+);
 
 class _BackdropStep {
   const _BackdropStep(this.role, {required this.blur});
@@ -983,6 +1064,7 @@ class _BackdropImage extends StatelessWidget {
             maxDecodeWidth: BackgroundService.backdropMaxWidth,
             fit: BoxFit.cover,
             alignment: Alignment.center,
+            filterQuality: step.blur ? FilterQuality.low : FilterQuality.none,
             onLoadFinished: () =>
                 artworkDataSource?.reportImageLoaded(gameId, role: step.role),
             errorBuilder: (_, error) {
@@ -1169,24 +1251,32 @@ class _HeroTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          game.title,
+          game.system.toUpperCase(),
           style: TextStyle(
-            color: Colors.white,
-            fontSize: large ? 30 : 20,
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: large ? 14 : 12,
             fontWeight: FontWeight.w600,
-            height: 1.1,
+            letterSpacing: 1.5,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: large ? 8 : 4),
         Text(
-          game.system,
-          style: const TextStyle(color: Colors.white70, fontSize: 14),
+          _headlineTitle(game),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: large ? 40 : 26,
+            fontWeight: FontWeight.w700,
+            height: 1.08,
+          ),
         ),
         if (_metaSummary(game) case final summary?) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: large ? 10 : 6),
           Text(
             summary,
-            style: const TextStyle(color: Colors.white60, fontSize: 13),
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.75),
+              fontSize: large ? 17 : 14,
+            ),
           ),
         ],
       ],
@@ -1194,103 +1284,26 @@ class _HeroTitle extends StatelessWidget {
   }
 }
 
-/// A one-line "genre · year · players" summary from whatever metadata is present, or null
+/// The title without trailing No-Intro tags such as "(USA)" or "(Rev 1)". The region
+/// still shows in the facts below.
+String _headlineTitle(GameDetail game) {
+  final title = gameDisplayTitle(game.title, game.fileName);
+  final stripped = title
+      .replaceFirst(RegExp(r'(\s*[(\[][^()\[\]]*[)\]])+$'), '')
+      .trim();
+  return stripped.isEmpty ? title : stripped;
+}
+
+/// A one-line "year · genre · players" summary from whatever metadata is present, or null
 /// when the libretro lookup returned nothing usable.
 String? _metaSummary(GameDetail game) {
   final parts = <String>[
-    if (game.genre != null && game.genre!.isNotEmpty) game.genre!,
     if (game.year != null) '${game.year}',
+    if (game.genre != null && game.genre!.isNotEmpty) game.genre!,
     if (game.players != null && game.players! > 0)
       game.players == 1 ? '1 player' : '${game.players} players',
   ];
   return parts.isEmpty ? null : parts.join(' · ');
-}
-
-class _MetaPills extends StatelessWidget {
-  const _MetaPills({required this.game, required this.hasSave});
-
-  final GameDetail game;
-  final bool hasSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final native = _usesNativeBackend(game);
-    final pills = <Widget>[
-      if (game.region != null && game.region!.isNotEmpty) _Pill(text: game.region!),
-      if (game.sizeBytes > 0) _Pill(text: _formatBytes(game.sizeBytes)),
-      if (hasSave) const _Pill(text: 'Save found', accent: true),
-      if (game.bios.isNotEmpty) const _Pill(text: 'BIOS required'),
-      _BackendPill(native: native, core: game.core),
-    ];
-    return Wrap(spacing: 7, runSpacing: 7, children: pills);
-  }
-}
-
-/// Reports the actual route for this game, including any per-system fallback
-/// from a missing or unsupported native core to EmulatorJS. Purely
-/// informational -- changing the core happens through the core button in
-/// [_ActionRow] or the details panel, not by tapping this pill.
-class _BackendPill extends StatelessWidget {
-  const _BackendPill({required this.native, required this.core});
-
-  final bool native;
-  final String core;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = native ? const Color(0xFFA9F0CC) : const Color(0xFFB7DBFF);
-    final background = native
-        ? const Color(0x267FE0B0)
-        : const Color(0x263D9BFF);
-    final border = native ? const Color(0x4D7FE0B0) : const Color(0x4D3D9BFF);
-    final label = native
-        ? 'Native core · ${_coreLabel(core)}'
-        : 'WebView · EmulatorJS';
-    final pill = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            native ? Icons.memory_rounded : Icons.web_asset_rounded,
-            color: color,
-            size: 14,
-          ),
-          const SizedBox(width: 5),
-          Text(label, style: TextStyle(color: color, fontSize: 12)),
-        ],
-      ),
-    );
-    return Semantics(label: label, child: pill);
-  }
-}
-
-class _Pill extends StatelessWidget {
-  const _Pill({required this.text, this.accent = false});
-
-  final String text;
-  final bool accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = accent ? const Color(0xFFA9F0CC) : Colors.white;
-    final bg = accent ? const Color(0x267FE0B0) : const Color(0x1AFFFFFF);
-    final border = accent ? const Color(0x4D7FE0B0) : const Color(0x24FFFFFF);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: border),
-      ),
-      child: Text(text, style: TextStyle(color: color, fontSize: 12)),
-    );
-  }
 }
 
 class _ActionRow extends StatelessWidget {
@@ -1298,7 +1311,7 @@ class _ActionRow extends StatelessWidget {
     required this.game,
     required this.saveReadiness,
     required this.tv,
-    required this.fullWidthPrimary,
+    required this.landscape,
     required this.primaryFocusNode,
     required this.onPlay,
     required this.onRestart,
@@ -1309,7 +1322,9 @@ class _ActionRow extends StatelessWidget {
   final GameDetail game;
   final _SaveReadiness saveReadiness;
   final bool tv;
-  final bool fullWidthPrimary;
+
+  /// Landscape puts the player button in this row. Portrait has the player card instead.
+  final bool landscape;
   final FocusNode primaryFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
@@ -1337,103 +1352,380 @@ class _ActionRow extends StatelessWidget {
         : failed
         ? onRetrySave
         : onPlay;
-    final native = _usesNativeBackend(game);
-    final coreFill = _coreButtonFillColor(native);
+    final scheme = Theme.of(context).colorScheme;
+    final player = landscape
+        ? _PlayerButton(
+            game: game,
+            tv: tv,
+            onPressed: _canSelectCore(game) ? onSelectCore : null,
+          )
+        : null;
 
     if (tv) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
+      final radius = BorderRadius.circular(FocusTheme.defaultBorderRadius);
+      return Wrap(
+        spacing: 12,
+        runSpacing: 12,
         children: [
-          FocusableButton(
-            focusNode: primaryFocusNode,
-            autofocus: true,
-            autoScroll: true,
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-            onPressed: primaryAction,
-            child: _ActionLabel(
-              icon: primaryIcon,
-              label: primaryLabel,
-              color: Colors.white,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: scheme.primary,
+              borderRadius: radius,
             ),
-          ),
-          if (hasSave) ...[
-            const SizedBox(width: 12),
-            FocusableButton(
+            child: FocusableButton(
+              focusNode: primaryFocusNode,
+              autofocus: true,
               autoScroll: true,
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-              onPressed: onRestart,
-              child: const _ActionLabel(
-                icon: Icons.refresh,
-                label: 'Restart',
-                color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+              onPressed: primaryAction,
+              child: _ActionLabel(
+                icon: primaryIcon,
+                label: primaryLabel,
+                color: scheme.onPrimary,
               ),
             ),
-          ],
-          if (_canSelectCore(game)) ...[
-            const SizedBox(width: 12),
+          ),
+          if (hasSave)
             DecoratedBox(
               decoration: BoxDecoration(
-                color: coreFill,
-                borderRadius: BorderRadius.circular(
-                  FocusTheme.defaultBorderRadius,
-                ),
+                color: Colors.white.withValues(alpha: 0.12),
+                borderRadius: radius,
               ),
               child: FocusableButton(
                 autoScroll: true,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
+                  horizontal: 24,
+                  vertical: 16,
                 ),
-                onPressed: onSelectCore,
-                child: _ActionLabel(
-                  icon: Icons.memory,
-                  label: _coreLabel(game.core),
+                onPressed: onRestart,
+                child: const _ActionLabel(
+                  icon: Icons.refresh,
+                  label: 'Start fresh',
                   color: Colors.white,
                 ),
               ),
             ),
-          ],
+          ?player,
         ],
       );
     }
 
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+    );
+    const textStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
     final primary = FilledButton.icon(
       focusNode: primaryFocusNode,
       onPressed: primaryAction,
+      style: FilledButton.styleFrom(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+        minimumSize: const Size(0, 52),
+        padding: const EdgeInsets.symmetric(horizontal: 26),
+        shape: shape,
+        textStyle: textStyle,
+      ).copyWith(side: _focusRing),
       icon: Icon(primaryIcon),
       label: Text(primaryLabel),
     );
-    final restart = OutlinedButton.icon(
+    final restart = FilledButton.icon(
       onPressed: onRestart,
-      icon: const Icon(Icons.refresh),
-      label: const Text('Restart'),
-    );
-    final core = FilledButton.icon(
-      onPressed: onSelectCore,
       style: FilledButton.styleFrom(
-        backgroundColor: coreFill,
+        backgroundColor: Colors.white.withValues(alpha: 0.1),
         foregroundColor: Colors.white,
-      ),
-      icon: const Icon(Icons.memory),
-      label: Text(_coreLabel(game.core)),
+        minimumSize: const Size(0, 52),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        shape: shape,
+        textStyle: textStyle.copyWith(fontWeight: FontWeight.w500),
+      ).copyWith(side: _focusRing),
+      icon: const Icon(Icons.refresh),
+      label: const Text('Start fresh'),
     );
 
-    if (fullWidthPrimary) {
+    if (!landscape) {
       return Row(
         children: [
           Expanded(child: primary),
           if (hasSave) ...[const SizedBox(width: 10), restart],
-          if (_canSelectCore(game)) ...[const SizedBox(width: 10), core],
         ],
       );
     }
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [primary, if (hasSave) restart, ?player],
+    );
+  }
+}
+
+/// Material's own keyboard focus is a faint overlay, too quiet to follow with arrow keys
+/// or a remote on the phone and desktop layouts. Touch skips it, since the screen focuses
+/// Play on open.
+final _focusRing = WidgetStateProperty.resolveWith<BorderSide?>(
+  (states) =>
+      states.contains(WidgetState.focused) &&
+          FocusManager.instance.highlightMode ==
+              FocusHighlightMode.traditional
+      ? const BorderSide(color: Colors.white, width: 2)
+      : null,
+);
+
+/// Which player runs the game, as a button that opens the picker when there is a choice.
+class _PlayerButton extends StatelessWidget {
+  const _PlayerButton({
+    required this.game,
+    required this.tv,
+    required this.onPressed,
+  });
+
+  final GameDetail game;
+  final bool tv;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final native = _usesNativeBackend(game);
+    final name = _playerName(game);
+    final content = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        primary,
-        if (hasSave) ...[const SizedBox(width: 10), restart],
-        if (_canSelectCore(game)) ...[const SizedBox(width: 10), core],
+        _PlayerIcon(native: native, size: 32),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              native ? 'Native core' : 'EmulatorJS',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+    const padding = EdgeInsets.fromLTRB(12, 8, 20, 8);
+    final onPressed = this.onPressed;
+    // With only one player there is nothing to pick, so it reads as a label rather than a
+    // button the d-pad can't reach.
+    if (onPressed == null) {
+      return Padding(padding: padding, child: content);
+    }
+    if (tv) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(FocusTheme.defaultBorderRadius),
+        ),
+        child: FocusableButton(
+          key: const ValueKey('gameDetailPlayer'),
+          autoScroll: true,
+          padding: padding,
+          semanticLabel: 'Player, $name. Change',
+          onPressed: onPressed,
+          child: content,
+        ),
+      );
+    }
+    return FilledButton(
+      key: const ValueKey('gameDetailPlayer'),
+      onPressed: onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.white.withValues(alpha: 0.12),
+        foregroundColor: Colors.white,
+        minimumSize: const Size(0, 52),
+        padding: padding,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ).copyWith(side: _focusRing),
+      child: content,
+    );
+  }
+}
+
+/// Green for the native core, blue for EmulatorJS.
+class _PlayerIcon extends StatelessWidget {
+  const _PlayerIcon({required this.native, required this.size});
+
+  final bool native;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: native ? const Color(0x247FE0B0) : const Color(0x243D9BFF),
+        borderRadius: BorderRadius.circular(size / 4),
+      ),
+      child: Icon(
+        native ? Icons.memory_rounded : Icons.web_asset_rounded,
+        color: native ? const Color(0xFFA9F0CC) : const Color(0xFFB7DBFF),
+        size: size * 0.55,
+      ),
+    );
+  }
+}
+
+/// The libretro core's own name for the native player, such as "Snes9x", or the
+/// EmulatorJS core otherwise.
+String _playerName(GameDetail game) {
+  if (!_usesNativeBackend(game)) return _coreLabel(game.core);
+  final coreId = libretroCoreId(game.core);
+  return (coreId == null ? null : libretroCoreName(coreId)) ??
+      _coreLabel(game.core);
+}
+
+class _SaveStatus extends StatelessWidget {
+  const _SaveStatus({required this.readiness, this.large = false});
+
+  final _SaveReadiness readiness;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    final found = readiness == _SaveReadiness.available;
+    // While checking or after a failure the primary button already says so.
+    if (!found && readiness != _SaveReadiness.absent) {
+      return const SizedBox.shrink();
+    }
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: found ? const Color(0xFF7FE0B0) : null,
+            border: found
+                ? null
+                : Border.all(color: Colors.white54, width: 1.5),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            found
+                ? 'Save found. Continue picks up from it.'
+                : 'No save on this server yet',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.65),
+              fontSize: large ? 15 : 13,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Portrait's player summary: the core, a Change action when there is a choice, and the
+/// hardware rendering switch for Android's native player.
+class _PlayerCard extends StatelessWidget {
+  const _PlayerCard({
+    required this.game,
+    required this.onSelectCore,
+    required this.hardwareRenderingEnabled,
+    required this.onToggleHardwareRendering,
+  });
+
+  final GameDetail game;
+  final VoidCallback onSelectCore;
+  final bool hardwareRenderingEnabled;
+  final VoidCallback onToggleHardwareRendering;
+
+  @override
+  Widget build(BuildContext context) {
+    final native = _usesNativeBackend(game);
+    final name = _playerName(game);
+    final canSelect = _canSelectCore(game);
+    final accent = Theme.of(context).colorScheme.primary;
+    final summary = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          _PlayerIcon(native: native, size: 40),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  native
+                      ? 'Native core · runs on this device'
+                      : 'EmulatorJS · runs in a web view',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.62),
+                    fontSize: 12.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (canSelect) ...[
+            Text(
+              'Change',
+              style: TextStyle(
+                color: accent,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Icon(Icons.chevron_right, color: accent, size: 18),
+          ],
+        ],
+      ),
+    );
+    return adaptiveGlass(
+      context: context,
+      fallbackColor: const Color(0x14FFFFFF),
+      cornerRadius: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (canSelect)
+            FocusableButton(
+              key: const ValueKey('gameDetailPlayer'),
+              padding: EdgeInsets.zero,
+              borderRadius: 16,
+              autoScroll: true,
+              semanticLabel: 'Player, $name. Change',
+              onPressed: onSelectCore,
+              child: summary,
+            )
+          else
+            summary,
+          if (PlatformDetection.isAndroid && native) ...[
+            const Divider(height: 1, indent: 16, endIndent: 16),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: _HardwareRenderingToggle(
+                enabled: hardwareRenderingEnabled,
+                onToggle: onToggleHardwareRendering,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -1465,12 +1757,14 @@ class _HardwareRenderingToggle extends StatelessWidget {
             children: [
               Icon(Icons.memory_rounded, color: statusColor, size: 20),
               const SizedBox(width: 9),
-              const Text(
-                'Hardware rendering',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+              const Flexible(
+                child: Text(
+                  'Hardware rendering',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -1540,152 +1834,188 @@ class _ActionLabel extends StatelessWidget {
   }
 }
 
-class _OverviewBlock extends StatelessWidget {
-  const _OverviewBlock({required this.text});
+class _OverviewBlock extends StatefulWidget {
+  const _OverviewBlock({
+    required this.text,
+    required this.maxLines,
+    this.large = false,
+  });
 
   final String text;
+  final int maxLines;
+
+  /// Landscape drops the About heading and uses larger text.
+  final bool large;
+
+  @override
+  State<_OverviewBlock> createState() => _OverviewBlockState();
+}
+
+class _OverviewBlockState extends State<_OverviewBlock> {
+  bool _expanded = false;
+
+  bool _overflows(TextStyle style, double maxWidth) {
+    final painter = TextPainter(
+      text: TextSpan(text: widget.text, style: style),
+      maxLines: widget.maxLines,
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: maxWidth);
+    final overflows = painter.didExceedMaxLines;
+    painter.dispose();
+    return overflows;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Overview',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+    final style = TextStyle(
+      color: Colors.white.withValues(alpha: 0.78),
+      fontSize: widget.large ? 17 : 14,
+      height: 1.55,
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showToggle = _expanded || _overflows(style, constraints.maxWidth);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.large)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'About',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            Text(
+              widget.text,
+              style: style,
+              maxLines: _expanded ? null : widget.maxLines,
+              overflow: _expanded ? null : TextOverflow.ellipsis,
             ),
-          ),
-        ),
-        Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-            height: 1.4,
-          ),
-        ),
-      ],
+            if (showToggle)
+              Transform.translate(
+                offset: const Offset(-8, 0),
+                child: FocusableButton(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  autoScroll: true,
+                  onPressed: () => setState(() => _expanded = !_expanded),
+                  child: Text(
+                    _expanded ? 'Show less' : 'Read more',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: widget.large ? 15 : 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
 
-class _DetailsPanel extends StatelessWidget {
-  const _DetailsPanel({
+/// Label and value pairs for the metadata the hero doesn't already show. Two equal columns
+/// in portrait, one wrapping row in landscape.
+class _Facts extends StatelessWidget {
+  const _Facts({
     required this.game,
-    required this.hasSave,
-    required this.onSelectCore,
+    this.twoColumns = false,
+    this.large = false,
   });
 
   final GameDetail game;
-  final bool hasSave;
-  final VoidCallback onSelectCore;
+  final bool twoColumns;
+  final bool large;
 
   @override
   Widget build(BuildContext context) {
-    final rows = <Widget>[
-      if (game.genre != null && game.genre!.isNotEmpty)
-        _DetailRow(label: 'Genre', value: game.genre!),
-      if (game.developer != null && game.developer!.isNotEmpty)
-        _DetailRow(label: 'Developer', value: game.developer!),
-      if (game.publisher != null && game.publisher!.isNotEmpty)
-        _DetailRow(label: 'Publisher', value: game.publisher!),
-      if (game.franchise != null && game.franchise!.isNotEmpty)
-        _DetailRow(label: 'Franchise', value: game.franchise!),
-      if (game.year != null) _DetailRow(label: 'Year', value: '${game.year}'),
-      if (game.region != null && game.region!.isNotEmpty)
-        _DetailRow(label: 'Region', value: game.region!),
-      if (game.rating != null)
-        _DetailRow(
-          label: 'Rating',
-          value: '${game.rating!.toStringAsFixed(1)} / 5',
-        ),
-      _DetailRow(label: 'File', value: game.fileName),
-      if (game.sizeBytes > 0)
-        _DetailRow(label: 'Size', value: _formatBytes(game.sizeBytes)),
-      _canSelectCore(game)
-          ? _CoreDetailRow(game: game, onTap: onSelectCore)
-          : _DetailRow(label: 'Core', value: _coreLabel(game.core)),
-      _DetailRow(label: 'Save state', value: hasSave ? 'Found' : 'None'),
+    final facts = <(String, String)>[
+      if (game.developer case final v? when v.isNotEmpty) ('Developer', v),
+      if (game.publisher case final v? when v.isNotEmpty) ('Publisher', v),
+      if (game.franchise case final v? when v.isNotEmpty) ('Franchise', v),
+      if (game.region case final v? when v.isNotEmpty) ('Region', v),
+      if (game.rating case final v?) ('Rating', '${v.toStringAsFixed(1)} / 5'),
+      if (game.sizeBytes > 0) ('Size', _formatBytes(game.sizeBytes)),
       if (game.bios.isNotEmpty)
-        _DetailRow(
-          label: 'BIOS',
-          value: game.bios.map((b) => b.fileName).join(', '),
-        ),
+        ('BIOS', game.bios.map((b) => b.fileName).join(', ')),
     ];
-
-    return adaptiveGlass(
-      context: context,
-      fallbackColor: const Color(0x14FFFFFF),
-      cornerRadius: 14,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: rows,
-        ),
+    if (facts.isEmpty) return const SizedBox.shrink();
+    Widget cell((String, String) fact, double? width) => SizedBox(
+      width: width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            fact.$1,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.55),
+              fontSize: large ? 13 : 12,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            fact.$2,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: large ? 17 : 15,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
+    );
+    if (!twoColumns) {
+      return Wrap(
+        spacing: 40,
+        runSpacing: 16,
+        children: [for (final fact in facts) cell(fact, null)],
+      );
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = (constraints.maxWidth - 20) / 2;
+        return Wrap(
+          spacing: 20,
+          runSpacing: 16,
+          children: [for (final fact in facts) cell(fact, width)],
+        );
+      },
     );
   }
 }
 
-class _CoreDetailRow extends StatelessWidget {
-  const _CoreDetailRow({required this.game, required this.onTap});
+class _FileLine extends StatelessWidget {
+  const _FileLine({required this.game});
 
   final GameDetail game;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final recommended = game.recommendedCore;
-    final subtitle = recommended == null || recommended == game.core
-        ? null
-        : 'Recommended: ${_coreLabel(recommended)}';
-    return FocusableButton(
-      padding: EdgeInsets.zero,
-      borderRadius: 8,
-      semanticLabel: 'Core, ${_coreLabel(game.core)}',
-      autoScroll: true,
-      onPressed: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              width: 96,
-              child: Text(
-                'Core',
-                style: TextStyle(color: Colors.white60, fontSize: 13),
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _coreLabel(game.core),
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                  ),
-                  if (subtitle != null)
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 12,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.white60, size: 18),
-          ],
+    final color = Colors.white.withValues(alpha: 0.6);
+    return Row(
+      children: [
+        Icon(Icons.insert_drive_file_outlined, color: color, size: 16),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            game.fileName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: color, fontSize: 13),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -1949,48 +2279,10 @@ bool _usesEmulatorJsOverride(GameDetail game) =>
 bool _usesNativeBackend(GameDetail game) =>
     !_usesEmulatorJsOverride(game) && usesNativeGameBackendFor(game.core);
 
-/// The core-picker button's fill: same green/blue hues [_BackendPill] uses
-/// for native/WebView, so the two stay visually paired, but solid rather than
-/// tinted so the button reads as clickable the way [FilledButton] does.
-Color _coreButtonFillColor(bool native) =>
-    native ? const Color(0xFF2E9E6B) : const Color(0xFF2E74E0);
-
 /// Hidden when there is only one supported per-game player/core outcome. A
 /// backend choice and an arcade-core choice are separate capabilities: normal
 /// console games only write the former, while arcade games may write both.
 bool _canSelectCore(GameDetail game) => _buildCoreRows(game).length > 1;
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 96,
-            child: Text(
-              label,
-              style: const TextStyle(color: Colors.white60, fontSize: 13),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 String _formatBytes(int bytes) {
   if (bytes <= 0) return '';

@@ -74,7 +74,7 @@ class CustomTVTextField extends StatefulWidget {
   final InputPurpose inputPurpose;
   final KeyboardSuggestionBuilder? suggestionsBuilder;
   final List<String> recentSuggestions;
-  final bool preferSystemIme;
+  final KeyboardStyle keyboardStyle;
   final int maxLines;
   final bool popParentOnKeyboardClose;
 
@@ -114,7 +114,7 @@ class CustomTVTextField extends StatefulWidget {
     this.inputPurpose = InputPurpose.text,
     this.suggestionsBuilder,
     this.recentSuggestions = const [],
-    this.preferSystemIme = false,
+    this.keyboardStyle = KeyboardStyle.docked,
     this.maxLines = 1,
     this.popParentOnKeyboardClose = true,
   });
@@ -253,7 +253,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   }
 
   void _initController() {
-    _keyboardController = KeyboardController();
+    _keyboardController = KeyboardController()..style = widget.keyboardStyle;
     _keyboardController.setText(widget.controller.text);
     _keyboardController.onTextChanged = (text) => widget.controller.text = text;
     _keyboardController.onKeyboardClosed = (shouldPop) {
@@ -327,7 +327,10 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     widget.onVisibilityChanged?.call(visible);
   }
 
-  void _closeHandle() => closeKeyboard(submit: false);
+  void _closeHandle() {
+    if (_keyboardController.dismissPopup?.call() ?? false) return;
+    closeKeyboard(submit: false);
+  }
 
   /// Removes first so repeated visibility notifications can't stack duplicate
   /// handles for the same field.
@@ -350,8 +353,11 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       }
     }
 
-    if (!widget.preferSystemIme && oldWidget.preferSystemIme) {
-      _deactivateSystemIme();
+    if (widget.keyboardStyle != oldWidget.keyboardStyle) {
+      _keyboardController.style = widget.keyboardStyle;
+      if (oldWidget.keyboardStyle == KeyboardStyle.native) {
+        _deactivateSystemIme();
+      }
     }
   }
 
@@ -359,7 +365,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       _keyboardController.isVisible ? closeKeyboard() : openKeyboard();
 
   void openKeyboard() {
-    if (widget.preferSystemIme) {
+    if (_keyboardController.style == KeyboardStyle.native) {
       _activateSystemIme();
       return;
     }
@@ -552,6 +558,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
             inputPurpose: widget.inputPurpose,
             suggestionsBuilder: widget.suggestionsBuilder,
             recentSuggestions: widget.recentSuggestions,
+            obscureText: widget.obscureText,
           ),
         );
       },

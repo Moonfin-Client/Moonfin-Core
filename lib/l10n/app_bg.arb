@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Изберете кои тематични емисии да се показват в Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Прилагане",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Жанрове аудиокниги",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Изберете кои жанрове да се показват в Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Открийте аудиокниги",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Популярни обществени заглавия от LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} заглавия",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Превъртете наляво",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Открийте",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Популярни заглавия по теми от Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Все още няма отбелязани елементи",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Активиране на изглед на папка",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Показване на опцията за разглеждане на папки",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Видимост на библиотеката",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Представено съдържание, външен вид",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Размер на плаката, тип изображение, изглед на папка",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB и източници на рейтинг",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Неуспешно извличане на .cbr архив.",
     "cb7ExtractionUnavailable": "Извличането на CB7 не е налично на тази платформа.",
     "cb7ExtractionPluginUnavailable": "Плъгинът за извличане на CB7 не е наличен на тази платформа.",
-    "closeGenrePanel": "Затворете жанровия панел",
     "loadingShuffle": "Разбъркването се зарежда...",
     "libraryShuffleLabel": "РАЗБЪРКВАНЕ НА БИБЛИОТЕКАТА",
     "randomShuffleLabel": "СЛУЧАЙНО РАЗБЪРКВАНЕ",

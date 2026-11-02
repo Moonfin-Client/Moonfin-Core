@@ -40,6 +40,7 @@ class DeepLinkService {
   ///  - `moonfin://item?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///    (starts playback)
+  ///  - `moonfin://search?query=<text>` (opens search with the query text)
   ///
   /// `userId` optionally pins a stored user, skipping the profile picker on a
   /// cold start and switching to that user when another one is signed in. It
@@ -47,6 +48,11 @@ class DeepLinkService {
   /// bypasses a PIN, an always-authenticate setting or Kids Mode.
   static String? routeForDeepLink(Uri uri) {
     if (uri.scheme != 'moonfin') return null;
+    if (uri.host == 'search') {
+      final searchQuery = uri.queryParameters['query'];
+      if (searchQuery == null || searchQuery.isEmpty) return null;
+      return '/search?query=${Uri.encodeComponent(searchQuery)}';
+    }
     final id = uri.queryParameters['id'];
     if (id == null || id.isEmpty) return null;
     final serverId = uri.queryParameters['serverId'];

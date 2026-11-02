@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Elektu kiajn temajn fontojn montri en Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Apliki",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Aŭdlibroj Ĝenroj",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Elektu kiajn ĝenrojn montri en Aŭdlibro Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Malkovru Aŭdlibrojn",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Popularaj publikaj titoloj de LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titoloj",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Rulumu maldekstren",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Malkovru",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Tendencaj titoloj laŭ temo de Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Ankoraŭ neniuj legosignitaj eroj",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Ebligu Dosierujon",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Montru dosierujan foliumadan opcion",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Biblioteko Videbleco",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Elstara enhavo, aspekto",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Afiŝo grandeco, bildtipo, dosierujo vido",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, kaj taksaj fontoj",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Malsukcesis ĉerpi .cbr-arkivon.",
     "cb7ExtractionUnavailable": "CB7-ekstraktado ne haveblas sur ĉi tiu platformo.",
     "cb7ExtractionPluginUnavailable": "CB7-eltira kromaĵo ne haveblas sur ĉi tiu platformo.",
-    "closeGenrePanel": "Fermu ĝenran panelon",
     "loadingShuffle": "Ŝargante miksadon...",
     "libraryShuffleLabel": "BIBLIOTEKA MIKSADO",
     "randomShuffleLabel": "HAZARDA MIKSADO",

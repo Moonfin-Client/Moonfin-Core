@@ -350,6 +350,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
       // which has its own channel and its own wrapper around the shared engine.
       let nativeChannel = NativeApplePlayerChannel(
         messenger: messenger,
+        textures: sharedEngine.registrar(forPlugin: "moonfin_native_apple_player")?.textures(),
         rootProvider: { [weak self] in self?.flutterViewController })
       self.nativeVideoChannel = nativeChannel
       let pip = IosPiPController(

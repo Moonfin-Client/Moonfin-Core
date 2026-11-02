@@ -38,7 +38,7 @@ void main() {
           body: CustomTVTextField(
             key: key,
             controller: controller,
-            preferSystemIme: true,
+            keyboardStyle: KeyboardStyle.native,
             popParentOnKeyboardClose: false,
             onFieldSubmitted: (_) => submitted++,
           ),

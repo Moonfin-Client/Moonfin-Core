@@ -14,9 +14,16 @@ import '../services/row_data_source.dart';
 /// mixed libraries; single-format libraries always behave like [all].
 enum BookScope { all, books, audiobooks, comics }
 
-/// What the main area of the book library lists. The browse entries list the
-/// whole library, and only [titles] follows the format filter.
-enum BookPane { titles, series, authors, genres, collections, favorites }
+/// What the view model pages in from the server: the titles, which follow the
+/// format filter, or the collections holding books.
+enum BookPane { titles, collections }
+
+/// A library's favorites, split the way the Favorites screen shows them.
+typedef BookFavorites = ({
+  List<AggregatedItem> titles,
+  List<AggregatedItem> series,
+  List<AggregatedItem> authors,
+});
 
 typedef _PanePage = ({List<AggregatedItem> items, int read, bool hasMore});
 
@@ -40,12 +47,16 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
 
   static const _panePageSize = 60;
   static const _previewSize = 6;
+  // shortcut: a library with more authors or favorites than this shows the
+  // first ones, page these if one shows up.
+  static const _listLimit = 1000;
   // Each collection costs a request to check that it holds books.
   static const _collectionPageSize = 20;
   static const _paneFields =
       'DateCreated,Type,UserData,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentId,Path,People,AlbumArtist,Artists,ChildCount,ImageTags,'
       'SeriesId,SeriesPrimaryImageTag,PrimaryImageAspectRatio';
+  static const _collectionFields = '$_paneFields,Overview';
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -59,7 +70,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   @override
   bool get isAudiobookLibrary => _collectionType == 'audiobooks';
 
-  BookScope _scope = BookScope.all;
+  BookScope _scope;
   @override
   BookScope get scope => _scope;
 
@@ -74,18 +85,23 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   int get comicCount => _comicCount;
 
   int _titleCount = 0;
+  @override
   int get titleCount => _titleCount;
   int _genreCount = 0;
+  @override
   int get genreCount => _genreCount;
   List<AggregatedItem> _genrePreview = const [];
   List<AggregatedItem> get genrePreview => _genrePreview;
 
   // The browse entries list the whole library whatever the format filter
   // says, and so do their counts.
+  List<AggregatedItem> _titles = const [];
   List<AggregatedItem> _allSeries = const [];
   List<AggregatedItem> get allSeries => _allSeries;
+  @override
   int get seriesCount => _allSeries.length;
   int _authorCount = 0;
+  @override
   int get authorCount => _authorCount;
   List<AggregatedItem> _artists = const [];
   Map<String, int> _authorTitles = const {};
@@ -96,12 +112,28 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   int authorTitleCount(AggregatedItem author) =>
       _authorTitles[author.name.toLowerCase()] ?? 0;
 
+  List<AggregatedItem> _authors = const [];
+
+  /// Every author once [loadAuthors] is done: the library's artists and the
+  /// people credited as authors on its titles, by name.
+  List<AggregatedItem> get authors => _authors;
+  bool _authorsLoaded = false;
+  bool get authorsLoaded => _authorsLoaded;
+
+  Map<String, List<AggregatedItem>>? _titlesByGenre;
+
+  /// Each genre on the library's titles, with its titles newest first.
+  Map<String, List<AggregatedItem>> get titlesByGenre =>
+      _titlesByGenre ??= _groupByGenre();
+
+  @override
   int get favoriteCount {
     final row = _favoritesRow;
     if (row == null) return 0;
     return row.totalCount > 0 ? row.totalCount : row.items.length;
   }
 
+  @override
   int get collectionCount => _collectionsRow?.items.length ?? 0;
 
   /// Only the first collections get checked for books at load, so the count
@@ -110,20 +142,18 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       (_collectionsRow?.totalCount ?? 0) > _collectionsChecked;
   int _collectionsChecked = 0;
 
-  int titleCountFor(BookScope scope) => switch (scope) {
-    BookScope.all => _titleCount,
-    BookScope.books => _bookCount,
-    BookScope.audiobooks => _audiobookCount,
-    BookScope.comics => _comicCount,
-  };
-
   HomeRow? get resumeRow => _resumeRow;
 
-  BookPane _pane = BookPane.titles;
+  BookPane _pane;
   BookPane get pane => _pane;
 
   LibrarySortBy _titleSort;
   LibrarySortBy get titleSort => _titleSort;
+
+  String? _genre;
+
+  /// The one genre the titles are filtered to, or null for every genre.
+  String? get genre => _genre;
 
   List<AggregatedItem> _paneItems = const [];
   List<AggregatedItem> get paneItems => _paneItems;
@@ -155,10 +185,14 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     required RowDataSource dataSource,
     required MediaServerClient client,
     String? collectionType,
+    BookScope scope = BookScope.all,
+    BookPane pane = BookPane.titles,
     LibrarySortBy titleSort = LibrarySortBy.dateAdded,
   }) : _dataSource = dataSource, // ignore: prefer_initializing_formals
        _client = client, // ignore: prefer_initializing_formals
        _collectionType = collectionType, // ignore: prefer_initializing_formals
+       _scope = scope, // ignore: prefer_initializing_formals
+       _pane = pane, // ignore: prefer_initializing_formals
        _titleSort = titleSort; // ignore: prefer_initializing_formals
 
   Future<void> load() async {
@@ -216,6 +250,8 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       _genreCount = genres.total;
 
       final titles = await titlesF;
+      _titles = titles;
+      _titlesByGenre = null;
       _titleCount = titles.length;
       _bookCount = titles.where(isBookItem).length;
       _audiobookCount = titles.where(isAudiobookItem).length;
@@ -262,7 +298,17 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   void setTitleSort(LibrarySortBy value) {
     if (_titleSort == value) return;
     _titleSort = value;
-    if (_pane == BookPane.titles || _pane == BookPane.favorites) {
+    if (_pane == BookPane.titles) {
+      unawaited(reloadPane());
+    } else {
+      notifyListeners();
+    }
+  }
+
+  void setGenre(String? value) {
+    if (_genre == value) return;
+    _genre = value;
+    if (_pane == BookPane.titles) {
       unawaited(reloadPane());
     } else {
       notifyListeners();
@@ -310,60 +356,138 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     notifyListeners();
   }
 
+  /// The books of [series] in reading order, by number and then by name.
+  List<AggregatedItem> seriesBooks(AggregatedItem series) {
+    final ids = {...?(series.rawData['MemberIds'] as List?)};
+    return _titles.where((title) => ids.contains(title.id)).toList()
+      ..sort((a, b) {
+        final (x, y) = (a.indexNumber, b.indexNumber);
+        if (x != null && y != null && x != y) return x.compareTo(y);
+        if ((x == null) != (y == null)) return x == null ? 1 : -1;
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
+  }
+
+  /// The titles crediting [author].
+  List<AggregatedItem> titlesBy(AggregatedItem author) {
+    final name = author.name.toLowerCase();
+    return [
+      for (final title in _titles)
+        if (_authorNames(title).contains(name)) title,
+    ];
+  }
+
+  Future<void> loadAuthors() async {
+    var artists = const <AggregatedItem>[];
+    try {
+      artists = _pageOf(
+        await _client.itemsApi.getArtists(
+          parentId: libraryId,
+          userId: _client.userId,
+          sortBy: 'SortName',
+          sortOrder: 'Ascending',
+          recursive: true,
+          limit: _listLimit,
+          fields: 'PrimaryImageAspectRatio,SortName',
+        ),
+        0,
+        _listLimit,
+      ).items;
+    } catch (_) {}
+    if (_disposed) return;
+    final names = {for (final artist in artists) artist.name.toLowerCase()};
+    _authors = [
+      ...artists,
+      for (final author in _extraAuthors)
+        if (names.add(author.name.toLowerCase())) author,
+    ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    _authorsLoaded = true;
+    notifyListeners();
+  }
+
+  /// The favorite titles, series folders and artists.
+  Future<BookFavorites> loadFavorites() async {
+    Future<List<AggregatedItem>> listOf(
+      Future<Map<String, dynamic>> request,
+    ) async {
+      try {
+        return _pageOf(await request, 0, _listLimit).items;
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    Future<Map<String, dynamic>> titlesRequest({required bool typed}) =>
+        _client.itemsApi.getItems(
+          parentId: libraryId,
+          includeItemTypes: typed ? combinedTypes : null,
+          excludeItemTypes: typed
+              ? null
+              : const ['Folder', 'CollectionFolder', 'UserView'],
+          recursive: true,
+          isFavorite: true,
+          sortBy: 'SortName',
+          sortOrder: 'Ascending',
+          limit: _listLimit,
+          fields: _paneFields,
+          enableImageTypes: 'Primary',
+          imageTypeLimit: 1,
+        );
+
+    // Some servers return nothing when the query names book types, so an
+    // empty answer asks again without them.
+    Future<List<AggregatedItem>> favoriteTitles() async {
+      final typed = await listOf(titlesRequest(typed: true));
+      if (typed.isNotEmpty) return typed;
+      return listOf(titlesRequest(typed: false));
+    }
+
+    final titles = favoriteTitles();
+    final authors = listOf(
+      _client.itemsApi.getArtists(
+        parentId: libraryId,
+        userId: _client.userId,
+        isFavorite: true,
+        recursive: true,
+        sortBy: 'SortName',
+        sortOrder: 'Ascending',
+        limit: _listLimit,
+        fields: 'PrimaryImageAspectRatio,SortName',
+      ),
+    );
+    return (
+      titles: [
+        for (final title in await titles)
+          if (combinedTypes.contains(title.type)) title,
+      ],
+      series: [
+        for (final series in _allSeries)
+          if (series.isFavorite) series,
+      ],
+      authors: await authors,
+    );
+  }
+
+  Map<String, List<AggregatedItem>> _groupByGenre() {
+    final byGenre = <String, List<AggregatedItem>>{};
+    for (final title in _titles) {
+      for (final genre in (title.rawData['Genres'] as List? ?? const [])
+          .whereType<String>()) {
+        byGenre.putIfAbsent(genre, () => []).add(title);
+      }
+    }
+    String added(AggregatedItem item) =>
+        item.rawData['DateCreated'] as String? ?? '';
+    for (final titles in byGenre.values) {
+      titles.sort((a, b) => added(b).compareTo(added(a)));
+    }
+    return byGenre;
+  }
+
   Future<_PanePage> _fetchPanePage(int start) async {
     switch (_pane) {
       case BookPane.titles:
-        return _titlesPage(start, favorites: false);
-      case BookPane.favorites:
-        return _titlesPage(start, favorites: true);
-      case BookPane.series:
-        return (items: _allSeries, read: _allSeries.length, hasMore: false);
-      case BookPane.authors:
-        final page = _pageOf(
-          await _client.itemsApi.getArtists(
-            parentId: libraryId,
-            userId: _client.userId,
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
-            startIndex: start,
-            limit: _panePageSize,
-            recursive: true,
-            fields: 'PrimaryImageAspectRatio,SortName',
-          ),
-          start,
-          _panePageSize,
-        );
-        if (page.hasMore) return page;
-        // Ebook authors only exist as people on the titles, so they're listed
-        // after the artists.
-        final names = {
-          for (final author in [..._paneItems, ...page.items])
-            author.name.toLowerCase(),
-        };
-        return (
-          items: [
-            ...page.items,
-            for (final author in _extraAuthors)
-              if (names.add(author.name.toLowerCase())) author,
-          ],
-          read: page.read,
-          hasMore: false,
-        );
-      case BookPane.genres:
-        return _pageOf(
-          await _client.itemsApi.getGenres(
-            parentId: libraryId,
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
-            startIndex: start,
-            limit: _panePageSize,
-            recursive: true,
-            fields: 'ItemCounts,PrimaryImageAspectRatio',
-            includeItemTypes: combinedTypes,
-          ),
-          start,
-          _panePageSize,
-        );
+        return _titlesPage(start);
       case BookPane.collections:
         final page = _pageOf(
           await _client.itemsApi.getItems(
@@ -374,7 +498,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
             sortOrder: 'Ascending',
             startIndex: start,
             limit: _collectionPageSize,
-            fields: _paneFields,
+            fields: _collectionFields,
             enableImageTypes: 'Primary',
             imageTypeLimit: 1,
           ),
@@ -389,8 +513,8 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     }
   }
 
-  Future<_PanePage> _titlesPage(int start, {required bool favorites}) async {
-    final types = favorites ? combinedTypes : scopedTypes;
+  Future<_PanePage> _titlesPage(int start) async {
+    final types = scopedTypes;
     final sort = _titleSort;
     final descending = sort == LibrarySortBy.dateAdded ||
         sort == LibrarySortBy.premiereDate ||
@@ -402,7 +526,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
           ? const ['Folder', 'CollectionFolder', 'UserView']
           : null,
       recursive: true,
-      isFavorite: favorites ? true : null,
+      genres: _genre == null ? null : [_genre!],
       sortBy: sort.apiValue,
       sortOrder: descending ? 'Descending' : 'Ascending',
       startIndex: start,
@@ -426,7 +550,6 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       _panePageSize,
       keep: _paneUntyped ? (raw) => types.contains(raw['Type']) : null,
     );
-    if (favorites) return page;
     return (
       items: page.items.where(matchesScope).toList(),
       read: page.read,
@@ -480,7 +603,9 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
           limit: _titleScanLimit,
           sortBy: 'SortName',
           sortOrder: 'Ascending',
-          fields: 'SeriesName,ParentId,Path,People,AlbumArtist,Artists',
+          fields:
+              'SeriesName,ParentId,Path,People,AlbumArtist,Artists,Genres,'
+              'DateCreated,ProductionYear,RunTimeTicks',
           enableImageTypes: 'Primary',
           imageTypeLimit: 1,
           enableTotalRecordCount: false,
@@ -566,21 +691,38 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   static Map<String, int> _tallyAuthorTitles(List<AggregatedItem> titles) {
     final counts = <String, int>{};
     for (final title in titles) {
-      final raw = title.rawData;
-      final people = raw['People'] as List? ?? const [];
-      final artists = raw['Artists'] as List? ?? const [];
-      final names = <String>{
-        for (final person in people.whereType<Map>())
-          if (person['Type'] == 'Author' || person['Role'] == 'Author')
-            if (person['Name'] case final String name) name.toLowerCase(),
-        if (raw['AlbumArtist'] case final String name) name.toLowerCase(),
-        for (final artist in artists.whereType<String>()) artist.toLowerCase(),
-      };
-      for (final name in names) {
+      for (final name in _authorNames(title)) {
         counts.update(name, (n) => n + 1, ifAbsent: () => 1);
       }
     }
     return counts;
+  }
+
+  /// The lowercased names a title credits as its authors.
+  static Set<String> _authorNames(AggregatedItem title) {
+    final raw = title.rawData;
+    final people = raw['People'] as List? ?? const [];
+    final artists = raw['Artists'] as List? ?? const [];
+    return {
+      for (final person in people.whereType<Map>())
+        if (person['Type'] == 'Author' || person['Role'] == 'Author')
+          if (person['Name'] case final String name) name.toLowerCase(),
+      if (raw['AlbumArtist'] case final String name) name.toLowerCase(),
+      for (final artist in artists.whereType<String>()) artist.toLowerCase(),
+    };
+  }
+
+  /// Up to five covers from a collection's titles.
+  List<String> collectionCoverUrls(AggregatedItem collection) {
+    final covers = collection.rawData['BookCovers'] as List? ?? const [];
+    return [
+      for (final cover in covers.whereType<Map>())
+        imageApi.getPrimaryImageUrl(
+          cover['Id'] as String,
+          maxHeight: 400,
+          tag: cover['Tag'] as String?,
+        ),
+    ];
   }
 
   /// Up to three member covers of a series, for its stacked look.
@@ -628,10 +770,11 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     return raw.copyWith(items: await _holdingBooks(raw.items));
   }
 
-  /// The [boxes] holding something this library shows.
+  /// The [boxes] holding something this library shows, each with the covers
+  /// of its first titles and how many it holds.
   Future<List<AggregatedItem>> _holdingBooks(List<AggregatedItem> boxes) async {
     final types = combinedTypes;
-    final containsBooks = await Future.wait(
+    final checked = await Future.wait(
       boxes.map((box) async {
         try {
           final resp = await _client.itemsApi.getItems(
@@ -639,21 +782,33 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
             includeItemTypes: types,
             recursive: true,
             limit: 8,
+            enableImageTypes: 'Primary',
+            imageTypeLimit: 1,
           );
-          final items = (resp['Items'] as List?) ?? const [];
-          return items.any((it) {
-            final type = (it is Map ? it['Type'] : null) as String?;
-            return type != null && types.contains(type);
-          });
+          final books = [
+            for (final item in (resp['Items'] as List? ?? const []).whereType<Map>())
+              if (types.contains(item['Type'])) item,
+          ];
+          if (books.isEmpty) return null;
+          return AggregatedItem(
+            id: box.id,
+            serverId: box.serverId,
+            rawData: {
+              ...box.rawData,
+              'BookCovers': [
+                for (final book in books.take(5))
+                  if ((book['ImageTags'] as Map?)?['Primary'] case final String tag)
+                    {'Id': book['Id'].toString(), 'Tag': tag},
+              ],
+              'BookCount': resp['TotalRecordCount'] as int? ?? books.length,
+            },
+          );
         } catch (_) {
-          return false;
+          return null;
         }
       }),
     );
-    return [
-      for (var i = 0; i < boxes.length; i++)
-        if (containsBooks[i]) boxes[i],
-    ];
+    return checked.nonNulls.toList();
   }
 }
 
@@ -663,9 +818,22 @@ mixin BookLibraryHelpers {
   ImageApi get imageApi;
   bool get isAudiobookLibrary;
   BookScope get scope;
+  int get titleCount;
   int get bookCount;
   int get audiobookCount;
   int get comicCount;
+  int get seriesCount;
+  int get authorCount;
+  int get genreCount;
+  int get collectionCount;
+  int get favoriteCount;
+
+  int titleCountFor(BookScope scope) => switch (scope) {
+    BookScope.all => titleCount,
+    BookScope.books => bookCount,
+    BookScope.audiobooks => audiobookCount,
+    BookScope.comics => comicCount,
+  };
 
   /// True when the library holds 2 or more formats (books, audiobooks, comics),
   /// which turns on the format filter.
@@ -870,6 +1038,9 @@ AggregatedItem _seriesEntry(
       'Name': name,
       'Type': 'BookSeries',
       'ChildCount': members.length,
+      'MemberIds': [for (final member in members) member.id],
+      if (folder?.rawData['UserData'] case final Map userData)
+        'UserData': userData,
       'StackCovers': [
         for (final member in stack)
           {'Id': member.id, 'Tag': member.primaryImageTag},

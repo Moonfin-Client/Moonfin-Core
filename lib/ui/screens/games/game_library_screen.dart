@@ -39,6 +39,7 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
 
   bool _loading = true;
   bool _hasError = false;
+  bool _rommAvailable = false;
   List<GameSystem> _systems = const [];
   RetroArtworkActivityGate? _retroArtworkActivityGate;
   RetroArtworkTransport? _retroArtworkTransport;
@@ -51,6 +52,18 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
     super.initState();
     unawaited(_initializePreviewArtwork());
     _load();
+    unawaited(_checkRomm());
+  }
+
+  Future<void> _checkRomm() async {
+    try {
+      final account = await _client.gamesApi?.getRommAccount();
+      if (mounted && account?.available == true) {
+        setState(() => _rommAvailable = true);
+      }
+    } catch (_) {
+      // Without an answer the button stays hidden, and the library still works.
+    }
   }
 
   Future<void> _initializePreviewArtwork() async {
@@ -149,6 +162,14 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
         // it. Asking for home instead gives every platform a way out.
         leading: BackButton(onPressed: () => context.popOrHome()),
         title: Text(widget.title ?? l10n.games),
+        actions: [
+          if (_rommAvailable)
+            TextButton.icon(
+              onPressed: () => context.push(Destinations.rommAccount),
+              icon: const Icon(Icons.account_circle_outlined),
+              label: Text(l10n.rommAccount),
+            ),
+        ],
       ),
       body: _buildBody(),
     );

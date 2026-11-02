@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "டிஸ்கவரில் காட்ட வேண்டிய சப்ஜெக்ட் ஃபீட்களைத் தேர்ந்தெடுக்கவும்.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "பயன்படுத்து",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ஆடியோபுக் வகைகள்",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "ஆடியோபுக் டிஸ்கவரில் எந்த வகைகளைக் காட்ட வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ஆடியோ புத்தகங்களைக் கண்டறியுங்கள்",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox இலிருந்து பிரபலமான பொது டொமைன் தலைப்புகள்.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} தலைப்புகள்",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "இடதுபுறமாக உருட்டவும்",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "கண்டறியவும்",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library இலிருந்து பாடத்தின் அடிப்படையில் பிரபலமான தலைப்புகள்.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "இதுவரை புக்மார்க் செய்யப்பட்ட உருப்படிகள் எதுவும் இல்லை",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "கோப்புறைக் காட்சியை இயக்கு",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "கோப்புறை உலாவல் விருப்பத்தைக் காட்டு",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "நூலகத் தெரிவுநிலை",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "சிறப்பு உள்ளடக்கம், தோற்றம்",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "சுவரொட்டி அளவு, படத்தின் வகை, கோப்புறை காட்சி",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB மற்றும் மதிப்பீட்டு ஆதாரங்கள்",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr காப்பகத்தைப் பிரித்தெடுக்க முடியவில்லை.",
     "cb7ExtractionUnavailable": "இந்தத் தளத்தில் CB7 பிரித்தெடுத்தல் கிடைக்கவில்லை.",
     "cb7ExtractionPluginUnavailable": "இந்தத் தளத்தில் CB7 பிரித்தெடுத்தல் செருகுநிரல் கிடைக்கவில்லை.",
-    "closeGenrePanel": "வகைப் பலகத்தை மூடு",
     "loadingShuffle": "கலைத்தல் ஏற்றப்படுகிறது...",
     "libraryShuffleLabel": "நூலக கலைத்தல்",
     "randomShuffleLabel": "சீரற்ற கலைத்தல்",

@@ -15,13 +15,13 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/focus/row_focus_coordinator.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/book/book_category_nav.dart';
 import '../../widgets/book/book_empty_state.dart';
 import '../../widgets/book/book_format_badge.dart';
 import '../../widgets/book/book_navigation.dart';
 import '../../widgets/book/book_scope_filter.dart';
 import '../../widgets/book/book_see_all_button.dart';
 import '../../widgets/book/classic/book_card.dart';
-import '../../widgets/book/discover/book_discover_tab.dart';
 import '../../widgets/book/reading_room/reading_room_continue_card.dart';
 import '../../widgets/book/reading_room/reading_room_tiles.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -31,10 +31,10 @@ import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/left_sidebar.dart';
+import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
-import '../../widgets/sliding_pill_tabs.dart';
 import '../../widgets/top_toolbar.dart';
 
 /// The Reading Room book library: what's being read on large Continue cards
@@ -56,7 +56,6 @@ class ReadingRoomBookScreen extends StatefulWidget {
 class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   late final BookBrowseViewModel _vm;
   final _prefs = GetIt.instance<UserPreferences>();
-  int _tab = 0;
 
   final _coordinator = RowFocusCoordinator();
   // Never attached. As the initial focus target it keeps RequestInitialFocus
@@ -69,7 +68,6 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   /// D-pad focus is on the focused Continue card's button, not the card.
   bool _onContinueButton = false;
 
-  final _tabsFocusNode = FocusNode(debugLabel: 'bookTabs');
   final _searchFocusNode = FocusNode(debugLabel: 'bookSearch');
   final _scopeFocusNode = FocusNode(debugLabel: 'bookScopeFilter');
   final _browseAllFocusNode = FocusNode(debugLabel: 'bookBrowseAll');
@@ -78,6 +76,8 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   final _recentRowKey = GlobalKey<LockedFocusRowState>();
   final _seriesRowKey = GlobalKey<LockedFocusRowState>();
   final _headerKey = GlobalKey();
+  final _navKey = GlobalKey();
+  final Map<String, FocusNode> _navNodes = {};
   final _continueKey = GlobalKey();
   final _scopeKey = GlobalKey();
   final _recentKey = GlobalKey();
@@ -107,7 +107,9 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     _vm.removeListener(_onChanged);
     _vm.dispose();
     _initialFocusNode.dispose();
-    _tabsFocusNode.dispose();
+    for (final node in _navNodes.values) {
+      node.dispose();
+    }
     _searchFocusNode.dispose();
     _scopeFocusNode.dispose();
     _browseAllFocusNode.dispose();
@@ -160,12 +162,14 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   bool _move(int fromIndex, bool isUp) =>
       moveBookFocus(_coordinator, fromIndex, isUp);
 
-  void _browseAll() => context.push(
-    Destinations.library(
-      widget.libraryId,
-      includeItemTypes: _vm.scopedTypes,
-    ),
-  );
+  FocusNode _navNode(String id) =>
+      _navNodes.putIfAbsent(id, () => FocusNode(debugLabel: 'bookNav:$id'));
+
+  void _open(BookNavPlace place) =>
+      openBookPlace(context, widget.libraryId, place);
+
+  void _browseAll() =>
+      _open((kind: BookCategoryKind.titles, scope: _vm.scope));
 
   String _stats(AppLocalizations l10n) => [
     l10n.spotlightTitlesCount(_vm.titleCount),
@@ -202,27 +206,22 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     final l10n = AppLocalizations.of(context);
     final wide = _wide;
     final inset = (wide ? 48.0 : 16.0) + bookSidebarInset;
-    // _tab can still hold the Discover index after the setting is turned off,
-    // so the rest of this method reads the clamped value.
-    final showDiscover = _prefs.get(UserPreferences.showBookDiscoverTab);
-    final tab = showDiscover ? _tab : 0;
-    final onLibrary = tab == 0;
-    const none = <AggregatedItem>[];
     final resumeRow = _vm.resumeRow;
-    final resume = onLibrary ? resumeRow?.items ?? none : none;
-    final recent = onLibrary ? _vm.paneItems.take(20).toList() : none;
-    final series = onLibrary ? _vm.allSeries : none;
-    final authors = onLibrary ? _vm.authorPreview : none;
-    final genres = onLibrary ? _vm.genrePreview : none;
-    final showScope = onLibrary && _vm.isMixedLibrary;
-    final showBrowseAll = onLibrary && wide && _vm.titleCount > 0;
-    final headerNode = showDiscover
-        ? _tabsFocusNode
-        : (wide ? _searchFocusNode : null);
+    final resume = resumeRow?.items ?? const <AggregatedItem>[];
+    final recent = _vm.paneItems.take(20).toList();
+    final series = _vm.allSeries;
+    final authors = _vm.authorPreview;
+    final genres = _vm.genrePreview;
+    final showScope = _vm.isMixedLibrary;
+    final showBrowseAll = wide && _vm.titleCount > 0;
+    final headerNode = wide ? _searchFocusNode : null;
 
     var next = 0;
     int slot(bool present) => present ? next++ : -1;
-    final headerIndex = _headerIndex = slot(headerNode != null);
+    final navIndex = slot(true);
+    final headerIndex = _headerIndex = headerNode == null
+        ? navIndex
+        : slot(true);
     final continueIndex = slot(resume.isNotEmpty);
     final scopeIndex = slot(showScope || showBrowseAll);
     final recentIndex = slot(recent.isNotEmpty);
@@ -230,6 +229,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     final authorsIndex = slot(authors.isNotEmpty);
     final genresIndex = slot(genres.isNotEmpty);
     _coordinator.entries = [
+      RowFocusEntry.node(_navNode('overview'), containerKey: _navKey),
       if (headerNode != null)
         RowFocusEntry.node(headerNode, containerKey: _headerKey),
       if (resume.isNotEmpty)
@@ -251,7 +251,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
 
     final header = KeyedSubtree(
       key: _headerKey,
-      child: _buildHeader(l10n, inset, showDiscover, tab, headerIndex),
+      child: _buildHeader(l10n, inset, navIndex, headerIndex),
     );
     final backdropUrl = wide &&
             resume.isNotEmpty &&
@@ -273,12 +273,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
           ),
         ],
       ),
-      if (!onLibrary)
-        BookDiscoverTab(
-          libraryId: widget.libraryId,
-          isAudiobook: _vm.isAudiobookLibrary,
-        )
-      else if (_vm.titleCount == 0 && resume.isEmpty)
+      if (_vm.titleCount == 0 && resume.isEmpty)
         const BookEmptyState()
       else ...[
         if (scopeIndex >= 0)
@@ -300,8 +295,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   Widget _buildHeader(
     AppLocalizations l10n,
     double inset,
-    bool showDiscover,
-    int tab,
+    int navIndex,
     int headerIndex,
   ) {
     final wide = _wide;
@@ -319,29 +313,32 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
         style: TextStyle(fontSize: wide ? 15 : 13, color: muted),
       ),
     );
-    final tabs = showDiscover
-        ? SlidingPillTabs(
-            labels: [l10n.library, l10n.discover],
-            selectedIndex: tab,
-            onChanged: (v) => setState(() => _tab = v),
-            focusNode: _tabsFocusNode,
-            onVerticalNavigation: (isUp) => _move(headerIndex, isUp),
-            onExitLeft: focusBookSidebar,
-            onExitRight: wide ? _searchFocusNode.requestFocus : null,
-          )
-        : null;
     final top = MediaQuery.paddingOf(context).top + 56;
+    final nav = Padding(
+      key: _navKey,
+      padding: const EdgeInsets.only(bottom: 18),
+      child: BookCategoryChips(
+        entries: bookOverviewNavEntries(
+          l10n,
+          _vm,
+          place: (kind: null, scope: _vm.scope),
+          onSelect: _open,
+        ),
+        focusNodeFor: _navNode,
+        edges: BookNavEdges(
+          up: () => _move(navIndex, true),
+          down: () => _move(navIndex, false),
+          left: focusBookSidebar,
+        ),
+      ),
+    );
 
     if (!wide) {
       return Padding(
         padding: EdgeInsets.fromLTRB(inset, top + 4, 16, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            title,
-            stats,
-            if (tabs != null) ...[const SizedBox(height: 14), tabs],
-          ],
+          children: [nav, title, stats],
         ),
       );
     }
@@ -352,9 +349,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
       disableScale: true,
       onSelect: () =>
           context.push(Destinations.searchInLibrary(widget.libraryId)),
-      onNavigateLeft: showDiscover
-          ? _tabsFocusNode.requestFocus
-          : focusBookSidebar,
+      onNavigateLeft: focusBookSidebar,
       onNavigateUp: () => _move(headerIndex, true),
       onNavigateDown: () => _move(headerIndex, false),
       onNavigateRight: () {},
@@ -383,18 +378,23 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     );
     return Padding(
       padding: EdgeInsets.fromLTRB(inset, top + 16, 48, 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [title, stats],
-            ),
+          nav,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [title, stats],
+                ),
+              ),
+              const SizedBox(width: 32),
+              search,
+            ],
           ),
-          const SizedBox(width: 32),
-          if (tabs != null) ...[tabs, const SizedBox(width: 24)],
-          search,
         ],
       ),
     );
@@ -542,8 +542,10 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
                     : null,
               ),
             ),
-          const Spacer(),
-          if (showBrowseAll) browseAll,
+          if (showBrowseAll) ...[
+            const Spacer(),
+            browseAll,
+          ],
         ],
       ),
     );
@@ -556,6 +558,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     int entryIndex,
   ) {
     final cardWidth = _wide ? 160.0 : 120.0;
+    final expansion = _prefs.get(UserPreferences.cardFocusExpansion);
     return ReadingRoomShelf(
       title: l10n.recentlyAdded,
       onSeeAll: _browseAll,
@@ -568,6 +571,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
       height: cardWidth * 1.5 + 60,
       leadingInset: inset,
       large: _wide,
+      headroom: MediaCard.focusHeadroom(cardWidth * 1.5, expansion: expansion),
       onSelect: _openItem,
       onLongPress: _onItemLongPress,
       onVerticalNavigation: (isUp) => _move(entryIndex, isUp),
@@ -587,6 +591,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
             remainingIsTotal: (item.playedPercentage ?? 0) <= 0,
             showFormatBadge: _vm.isMixedLibrary,
             externalIsFocused: focused,
+            cardFocusExpansion: expansion,
             onTap: () => _openItem(item),
             onLongPress: () => _onItemLongPress(item),
           ),
@@ -605,7 +610,8 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     final fan = ReadingRoomSeriesTile.fanFor(coverWidth);
     return ReadingRoomShelf(
       title: l10n.series,
-      onSeeAll: () => context.push(Destinations.folder(widget.libraryId)),
+      onSeeAll: () =>
+          _open((kind: BookCategoryKind.series, scope: BookScope.all)),
       seeAllFocusNode: _tileNode('seeAll:series'),
       items: series,
       hubKey: 'books_${widget.libraryId}_series',
@@ -698,7 +704,7 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
             title: l10n.genres,
             seeAll: BookSeeAllButton(
               onPressed: () =>
-                  context.push(Destinations.libraryGenresOf(widget.libraryId)),
+                  _open((kind: BookCategoryKind.genres, scope: BookScope.all)),
               focusNode: genresSeeAll,
               onNavigateUp: () => _move(
                 genresBesideAuthors ? authorsIndex : genresIndex,

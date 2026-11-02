@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/access_schedule_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../../util/calendar_days.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
@@ -283,9 +284,7 @@ String? timesUpResumeMessage({
   final time = (use24Hour ? DateFormat.Hm(locale) : DateFormat.jm(locale))
       .format(nextAccess);
 
-  final today = DateTime(now.year, now.month, now.day);
-  final day = DateTime(nextAccess.year, nextAccess.month, nextAccess.day);
-  final daysAway = day.difference(today).inDays;
+  final daysAway = calendarDaysBetween(now, nextAccess);
   if (daysAway <= 0) return l10n.timesUpResumesToday(time);
   if (daysAway == 1) return l10n.timesUpResumesTomorrow(time);
   // A weekday name alone is only clear within the coming week. A week out it

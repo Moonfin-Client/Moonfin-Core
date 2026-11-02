@@ -10,8 +10,8 @@ void main() {
     expect(UserPreferences.applePlayerUi.defaultValue, ApplePlayerUi.flutter);
   });
 
-  test('only iOS can pick the native player', () {
-    // Tests run on the host, which is never iOS, so the answer has to come back
+  test('only iOS and Apple TV can pick the native player', () {
+    // Tests run on the host, which is neither, so the answer has to come back
     // false before anything reads the preference.
     expect(useNativeApplePlayer(), isFalse);
     expect(useNativeApplePlayerForRoute(const ValueKey('route')), isFalse);
@@ -19,20 +19,20 @@ void main() {
 
   group('decideNativeApplePlayer', () {
     bool decide({
-      bool isIOS = true,
+      bool offersChoice = true,
       ApplePlayerUi pref = ApplePlayerUi.native,
       CastTargetKind? castKind,
       bool hasCastItem = false,
     }) => decideNativeApplePlayer(
-      isIOS: isIOS,
+      offersChoice: offersChoice,
       pref: pref,
       castKind: castKind,
       hasCastItem: hasCastItem,
     );
 
-    test('needs iOS and the native preference', () {
+    test('needs a platform with the choice and the native preference', () {
       expect(decide(), isTrue);
-      expect(decide(isIOS: false), isFalse);
+      expect(decide(offersChoice: false), isFalse);
       expect(decide(pref: ApplePlayerUi.flutter), isFalse);
     });
 

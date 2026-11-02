@@ -90,7 +90,7 @@ List<Map<String, dynamic>> mergeLiveSessions(
   final merged = [...current];
   for (final session in pushed) {
     if (now != null) {
-      final last = DateTime.tryParse('${session['LastActivityDate'] ?? ''}');
+      final last = parseServerDate(session['LastActivityDate']);
       final active =
           last != null && !last.isBefore(now.subtract(const Duration(seconds: 95)));
       if (!active ||

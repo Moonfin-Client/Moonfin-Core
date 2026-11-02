@@ -230,7 +230,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
         await platform.setMediaPlaybackRequiresUserGesture(false);
       }
 
-      await controller.setBackgroundColor(const Color(0x00000000));
+      // macOS can't clear the WebView background, so it shows white until the
+      // page paints. The black mask covers it there until playback starts.
+      try {
+        await controller.setBackgroundColor(const Color(0x00000000));
+      } on UnimplementedError {
+        _startupChromeMaskVisible = !widget.ignorePointer;
+      }
       _controller = controller;
 
       await _loadHtml(controller);

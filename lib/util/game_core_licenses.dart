@@ -29,6 +29,10 @@ const Map<String, String> _coreLicenseNames = {
   'fbneo': 'FinalBurn Neo (Arcade core)',
 };
 
+/// The core's own name without the system in brackets, such as "Snes9x".
+String? libretroCoreName(String coreId) =>
+    _coreLicenseNames[coreId]?.split(' (').first;
+
 /// Adds the emulator cores present on this device to LicenseRegistry so they
 /// appear on the licenses screen: the bundled set on tvOS and macOS, the
 /// downloaded set elsewhere. Cores without a bundled license file are skipped.

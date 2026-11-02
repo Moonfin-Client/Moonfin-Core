@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -20,6 +23,7 @@ import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 import '../../data/services/remove_watched_planner.dart';
 import '../../data/services/remove_watched_service.dart';
+import '../../data/services/user_data_sync.dart';
 import '../../playback/local_aware_player_service.dart';
 import '../../playback/local_first_media_stream_resolver.dart';
 
@@ -38,11 +42,15 @@ import '../../playback/media_kit_player_backend.dart';
 import '../../playback/media3_player_backend.dart';
 import '../../playback/offline_stream_resolver.dart';
 import '../../playback/playback_profile_diagnostics.dart';
+import '../../playback/silo_playback_environment.dart';
+import '../../playback/server_shuffle_queue.dart';
+import '../../playback/silo_plugin_for.dart';
 import '../../playback/sleep_timer_controller.dart';
 import '../../platform/pip_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
+import '../../watch_party/silo_watch_party_manager.dart';
 import '../../util/platform_detection.dart';
 import '../../util/episode_playability.dart';
 import '../../util/season_queue_context.dart';
@@ -236,6 +244,9 @@ Future<List<dynamic>> _nextSeasonItemsProvider(
   int _,
 ) async {
   if (completedItem is! AggregatedItem) return const <dynamic>[];
+  // A server's shuffle grows by the item it picks next.
+  final shuffled = await ServerShuffleQueue.instance.extend(completedItem);
+  if (shuffled != null) return shuffled;
   if (!_isEpisodeQueueItem(completedItem)) return const <dynamic>[];
 
   final seriesId = completedItem.seriesId;
@@ -318,6 +329,37 @@ Future<List<dynamic>> _nextSeasonItemsProvider(
   }
 }
 
+/// Writes a series' track choice through to a server that keeps one
+/// ([SeriesTrackPreferencesApi], Silo). Best effort: the device's
+/// own choice is already saved.
+void _rememberSeriesTrackOnServer(
+  dynamic item,
+  String seriesId,
+  int streamIndex, {
+  required bool subtitle,
+}) {
+  if (item is! AggregatedItem) return;
+  final Object? items;
+  try {
+    items = _resolveClientForServerId(item.serverId)?.itemsApi;
+  } catch (_) {
+    return;
+  }
+  if (items is! SeriesTrackPreferencesApi) return;
+  final write = subtitle
+      ? items.setSeriesSubtitleChoice(
+          seriesId,
+          itemId: item.id,
+          streamIndex: streamIndex,
+        )
+      : items.setSeriesAudioChoice(
+          seriesId,
+          itemId: item.id,
+          streamIndex: streamIndex,
+        );
+  write.catchError((Object _) {});
+}
+
 void registerPlaybackModule() {
   final pipService = PipService();
   _getIt.registerSingleton<PipService>(pipService);
@@ -332,6 +374,9 @@ void registerPlaybackModule() {
   if (PlatformDetection.isAppleTV) {
     nativeApplePlayerBackend = NativeApplePlayerBackend(prefs);
     _getIt.registerSingleton<NativeApplePlayerBackend>(nativeApplePlayerBackend);
+    // Backs the Flutter player option. It sits idle until a video picks it.
+    iosBackend = AetherBackend(prefs);
+    _getIt.registerSingleton<AetherBackend>(iosBackend);
   } else if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
     // AetherEngine serves main playback on iOS and macOS: video, live TV,
     // music, audiobooks and offline. The media_kit backend isn't constructed,
@@ -442,7 +487,10 @@ void registerPlaybackModule() {
     );
   };
   manager.secondarySubtitleTrackSelector = (itemId, streams) {
-    if (itemId.isEmpty) return null;
+    if (itemId.isEmpty ||
+        !prefs.get(UserPreferences.secondarySubtitlesEnabled)) {
+      return null;
+    }
     return restoreSecondarySubtitleTrack(
       prefs.getItemSecondarySubtitleSelection(itemId),
       streams,
@@ -468,6 +516,12 @@ void registerPlaybackModule() {
     // leaves nothing to recognise it by later, so the last choice stays.
     if (pref.isEmpty) return;
     _getIt<UserPreferences>().setSeriesSubtitlePreference(series.seriesId, pref);
+    _rememberSeriesTrackOnServer(
+      manager.queueService.currentItem,
+      series.seriesId,
+      index,
+      subtitle: true,
+    );
   };
   manager.onAudioTrackSelected = (itemId, index) {
     final series = seriesStreams('audio');
@@ -478,13 +532,26 @@ void registerPlaybackModule() {
     );
     if (pref.isEmpty) return;
     _getIt<UserPreferences>().setSeriesAudioPreference(series.seriesId, pref);
+    _rememberSeriesTrackOnServer(
+      manager.queueService.currentItem,
+      series.seriesId,
+      index,
+      subtitle: false,
+    );
   };
 
   manager.setBackend(initialBackend);
   manager.setBackendSelector((resolution, currentBackend) {
     if (PlatformDetection.isAppleTV) {
-      if (currentBackend is NativeApplePlayerBackend) return currentBackend;
-      return _getIt<NativeApplePlayerBackend>();
+      // Music and audiobooks keep the native player whichever video player
+      // is picked.
+      final isAudio = resolution.mediaType.toLowerCase().contains('audio');
+      if (isAudio || useNativeApplePlayer()) {
+        if (currentBackend is NativeApplePlayerBackend) return currentBackend;
+        return _getIt<NativeApplePlayerBackend>();
+      }
+      if (currentBackend is AetherBackend) return currentBackend;
+      return _getIt<AetherBackend>();
     }
 
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
@@ -732,6 +799,9 @@ void registerPlaybackModule() {
   _getIt.registerLazySingleton<SyncPlayManager>(
     () => SyncPlayManager(_getIt<PlaybackManager>(), _getIt<UserPreferences>()),
   );
+  _getIt.registerLazySingleton<SiloWatchPartyManager>(
+    () => SiloWatchPartyManager(_getIt<PlaybackManager>()),
+  );
 
   _getIt.registerLazySingleton<AudiobookBookmarksService>(
     () => AudiobookBookmarksService(),
@@ -796,6 +866,14 @@ void setActiveStreamResolver(MediaServerClient client) {
       final p = EmbyPlugin(client);
       return (p.createStreamResolver(), p.createPlaySessionService());
     }(),
+    ServerType.plex => (
+      PlexMediaStreamResolver(client),
+      PlexPlaySessionService(client),
+    ),
+    ServerType.silo => () {
+      final p = siloPluginFor(client, environment: siloPlaybackEnvironment);
+      return (p.createStreamResolver(), p.createPlaySessionService());
+    }(),
   };
 
   // Local-first: completed downloads play from disk instead of streaming,
@@ -841,6 +919,25 @@ void _onItemStopped(dynamic item) {
   if (removeWatchedTypes.contains(item.type) &&
       _getIt.isRegistered<RemoveWatchedService>()) {
     _getIt<RemoveWatchedService>().onItemStopped(item.id);
+  }
+  // Plex sends no user data events, so the new resume point and watched state
+  // have to be asked for. Plex items don't name their server, so one without
+  // an id belongs to the active client.
+  if (!_getIt.isRegistered<MediaServerClientFactory>() ||
+      !_getIt.isRegistered<MediaServerClient>()) {
+    return;
+  }
+  final client = _getIt<MediaServerClientFactory>().clientForServerOrActive(
+    item.serverId,
+  );
+  if (client.serverType == ServerType.plex) {
+    unawaited(
+      userDataSync.refreshFromServer(client, [
+        item.id,
+        ?item.seasonId,
+        ?item.seriesId,
+      ]),
+    );
   }
 }
 

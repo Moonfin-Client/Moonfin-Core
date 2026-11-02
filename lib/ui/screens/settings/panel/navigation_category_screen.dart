@@ -17,6 +17,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
     super.initState();
     _syncService = GetIt.instance<PluginSyncService>();
     _syncService.addListener(_onSyncChanged);
+    unawaited(SetupPreviewData.loadLibraries());
   }
 
   @override
@@ -162,9 +163,10 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
             },
           ),
           // The switches write through their own bindings, so this watches
-          // the preferences to show the shuffle picker and follow the pins.
+          // the preferences to show the shuffle picker and follow the pins,
+          // and the libraries to offer Live TV once it turns out to be set up.
           ListenableBuilder(
-            listenable: prefs,
+            listenable: Listenable.merge([prefs, SetupPreviewData.libraries]),
             builder: (context, _) {
               // Tabs on the bottom bar are set from the tab pins, so this only
               // lists what the bottom navbar hub holds.
@@ -202,7 +204,8 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       icon: Icons.favorite,
                       onChanged: _pushPersonalizationSync,
                     ),
-                  if (!onBar.contains(BottomNavTab.liveTv))
+                  if (SetupPreviewData.hasLiveTv &&
+                      !onBar.contains(BottomNavTab.liveTv))
                     SwitchPreferenceTile(
                       key: const ValueKey(BottomNavTab.liveTv),
                       preference: UserPreferences.showLiveTvButton,
@@ -220,20 +223,23 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       icon: Icons.video_library,
                       onChanged: _pushPersonalizationSync,
                     ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.showSyncPlayButton,
-                    title: l10n.settingsSyncplayButton,
-                    subtitle: l10n.settingsSyncplayButtonSubtitle,
-                    icon: Icons.groups,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  if (!onBar.contains(BottomNavTab.folders))
+                  // The bottom navbar keeps its Libraries sheet, so this only
+                  // applies to the top bar and the sidebar.
+                  if (!NavigationLayout.usesBottomNavbar &&
+                      prefs.get(UserPreferences.showLibrariesInToolbar))
                     SwitchPreferenceTile(
-                      key: const ValueKey(BottomNavTab.folders),
-                      preference: UserPreferences.enableFolderView,
-                      title: l10n.enableFolderView,
-                      subtitle: l10n.showFolderBrowsingOption,
-                      icon: Icons.folder,
+                      preference: UserPreferences.showLibrariesIndividually,
+                      title: l10n.showLibrariesIndividually,
+                      subtitle: l10n.showLibrariesIndividuallySubtitle,
+                      icon: Icons.video_library,
+                      onChanged: _pushPersonalizationSync,
+                    ),
+                  if (prefs.get(UserPreferences.syncPlayEnabled))
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.showSyncPlayButton,
+                      title: l10n.settingsSyncplayButton,
+                      subtitle: l10n.settingsSyncplayButtonSubtitle,
+                      icon: Icons.groups,
                       onChanged: _pushPersonalizationSync,
                     ),
                   if (seerrEnabledOnAccount &&
@@ -242,8 +248,8 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                     SwitchPreferenceTile(
                       key: const ValueKey(BottomNavTab.discover),
                       preference: UserPreferences.showSeerrButton,
-                      title: l10n.showSeerrButton,
-                      subtitle: l10n.settingsShowSeerrButtonInNavigation,
+                      title: seerrBrand(l10n.showSeerrButton),
+                      subtitle: seerrBrand(l10n.settingsShowSeerrButtonInNavigation),
                       iconBuilder: (size, color) => Image.asset(
                         'assets/icons/seerr.png',
                         width: size,
@@ -251,21 +257,24 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       ),
                       onChanged: _pushPersonalizationSync,
                     ),
-                  if (PlatformDetection.supportsOfflineDownloads &&
-                      !PlatformDetection.isWeb)
+                  // Saved downloads keep the button even after downloading is turned off
+                  if (DownloadsNavSlot.isAvailable() ||
+                      DownloadsNavSlot.hasSavedMedia())
                     SwitchPreferenceTile(
                       preference: UserPreferences.showDownloadsButton,
                       title: l10n.showDownloadsButton,
                       icon: Icons.download_for_offline,
                       onChanged: _pushPersonalizationSync,
                     ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.showServerMessagesButton,
-                    title: l10n.serverMessagesShowButton,
-                    subtitle: l10n.serverMessagesShowButtonSubtitle,
-                    icon: Icons.info_outline_rounded,
-                    onChanged: _pushPersonalizationSync,
-                  ),
+                  // Server messages come from the Moonfin plugin.
+                  if (moonfinPluginOnAnySignedInServer())
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.showServerMessagesButton,
+                      title: l10n.serverMessagesShowButton,
+                      subtitle: l10n.serverMessagesShowButtonSubtitle,
+                      icon: Icons.info_outline_rounded,
+                      onChanged: _pushPersonalizationSync,
+                    ),
                   // Only where the plugin has friends on, so nobody is offered
                   // a button that would never show.
                   if (GetIt.instance<AchievementsService>().socialAvailable)

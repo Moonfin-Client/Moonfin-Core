@@ -31,6 +31,7 @@ SeerrMediaDetailState? seerrItemTabState(ItemDetailViewModel viewModel) {
   final hasContent = state.genres.isNotEmpty ||
       state.keywords.isNotEmpty ||
       state.networks.isNotEmpty ||
+      state.streamingProviders.isNotEmpty ||
       state.similar.isNotEmpty ||
       state.recommendations.isNotEmpty;
   return hasContent ? state : null;
@@ -44,6 +45,7 @@ class SeerrDetailPieces {
   const SeerrDetailPieces._({
     required this.chips,
     required this.stats,
+    required this.streaming,
     required this.recommendations,
     required this.similar,
     required this.collection,
@@ -52,6 +54,7 @@ class SeerrDetailPieces {
   static const none = SeerrDetailPieces._(
     chips: false,
     stats: false,
+    streaming: false,
     recommendations: false,
     similar: false,
     collection: false,
@@ -71,6 +74,9 @@ class SeerrDetailPieces {
       stats:
           visibility.shows(DetailSection.seerrStats) &&
           SeerrStatsCard.hasContent(state, l10n),
+      streaming:
+          visibility.shows(DetailSection.seerrStreaming) &&
+          state.streamingProviders.isNotEmpty,
       recommendations:
           visibility.shows(DetailSection.seerrRecommendations) &&
           state.recommendations.isNotEmpty,
@@ -85,11 +91,13 @@ class SeerrDetailPieces {
 
   final bool chips;
   final bool stats;
+  final bool streaming;
   final bool recommendations;
   final bool similar;
   final bool collection;
 
-  bool get hasAny => chips || stats || recommendations || similar || collection;
+  bool get hasAny =>
+      chips || stats || streaming || recommendations || similar || collection;
 }
 
 /// Season number to Seerr status for a series, empty when Seerr has nothing to

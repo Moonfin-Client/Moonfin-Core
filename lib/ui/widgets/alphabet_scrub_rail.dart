@@ -58,10 +58,14 @@ class AlphabetScrubRail extends StatefulWidget {
     super.key,
     required this.onLetter,
     this.letters = kAlphabetLetters,
+    this.available,
   });
 
   final ValueChanged<String> onLetter;
   final List<String> letters;
+
+  /// The letters with something under them. The rest are drawn dimmed.
+  final Set<String>? available;
 
   @override
   State<AlphabetScrubRail> createState() => _AlphabetScrubRailState();
@@ -242,22 +246,27 @@ class _AlphabetScrubRailState extends State<AlphabetScrubRail> {
     if (slots < 3) return const SizedBox.expand();
 
     final idle = AppColorScheme.onSurface.withValues(alpha: 0.7);
-    TextStyle style(bool active) => TextStyle(
-      fontSize: 10,
-      height: 1,
-      fontWeight: active ? FontWeight.w800 : FontWeight.w600,
-      color: active ? AppColorScheme.accent : idle,
+    final empty = AppColorScheme.onSurface.withValues(alpha: 0.3);
+    Widget letterText(String letter, {bool active = false}) => Text(
+      letter,
+      textScaler: TextScaler.noScaling,
+      style: TextStyle(
+        fontSize: 10,
+        height: 1,
+        fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+        color: active
+            ? AppColorScheme.accent
+            : widget.available?.contains(letter) ?? true
+            ? idle
+            : empty,
+      ),
     );
 
     final List<Widget> cells;
     if (slots >= count) {
       cells = [
         for (var i = 0; i < count; i++)
-          Text(
-            letters[i],
-            textScaler: TextScaler.noScaling,
-            style: style(i == _scrubIndex),
-          ),
+          letterText(letters[i], active: i == _scrubIndex),
       ];
     } else {
       // An odd number of cells keeps a letter at both ends, with dots
@@ -266,11 +275,7 @@ class _AlphabetScrubRailState extends State<AlphabetScrubRail> {
       cells = [
         for (var k = 0; k < shown; k++)
           k.isEven
-              ? Text(
-                  letters[(k * (count - 1) / (shown - 1)).round()],
-                  textScaler: TextScaler.noScaling,
-                  style: style(false),
-                )
+              ? letterText(letters[(k * (count - 1) / (shown - 1)).round()])
               : Container(
                   width: 3,
                   height: 3,

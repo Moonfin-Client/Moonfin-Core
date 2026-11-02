@@ -1,0 +1,15 @@
+{
+ "revision": "36a2e083a4eb0cfdd958408b85c9fef1843c8e8f3d8a7a298d6b5bd4a1fb7034",
+ "state": "disabled",
+ "allowed": false,
+ "status": "disabled",
+ "server_instance_id": "c621caf1-c95a-4626-a74f-bee7cf6b1402",
+ "accepted_schema_versions": [
+  1
+ ],
+ "max_bundle_bytes": 10485760,
+ "max_manifest_bytes": 65536,
+ "retention_days": 30,
+ "consent_notice_version": 1,
+ "upload_chunk_bytes": 786432
+}

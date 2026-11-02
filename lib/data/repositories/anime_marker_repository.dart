@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/signed_in_server_features.dart';
+
 /// The kind of an episode, for the purpose of drawing a badge on its card.
 enum AnimeEpisodeKind { mangaCanon, animeCanon, mixed, filler }
 
@@ -22,6 +24,14 @@ AnimeMarkerPlacement parseAnimeMarkerPlacement(Object? raw) => switch (raw) {
   'beside' => AnimeMarkerPlacement.beside,
   'thumbnail' => AnimeMarkerPlacement.thumbnail,
   _ => AnimeMarkerPlacement.below,
+};
+
+/// Anime Markers audio style
+enum AnimeAudioLabelStyle { full, short }
+
+AnimeAudioLabelStyle parseAnimeAudioLabelStyle(Object? raw) => switch (raw) {
+  'short' => AnimeAudioLabelStyle.short,
+  _ => AnimeAudioLabelStyle.full,
 };
 
 /// The marker for a single episode.
@@ -80,6 +90,8 @@ class AnimeMarkerRepository {
   );
 
   AnimeMarkerPlacement placement = AnimeMarkerPlacement.below;
+
+  AnimeAudioLabelStyle labelStyle = AnimeAudioLabelStyle.full;
 
   /// Series the plugin matched but hasnt fetched a table for yet. Not a cache: it becomes
   /// a real verdict on its own once the nightly task reaches the show.
@@ -189,7 +201,12 @@ class AnimeMarkerRepository {
     try {
       final baseUrl = _client.baseUrl;
       final token = _client.accessToken;
-      if (token == null || baseUrl.isEmpty) return completeWith(null);
+      // Anime markers come from the Moonfin plugin, which Silo never has.
+      if (token == null ||
+          baseUrl.isEmpty ||
+          !serverHasMoonfinPlugin(_client)) {
+        return completeWith(null);
+      }
 
       final response = await _dio.get(
         '$baseUrl/Moonfin/AnimeMarkers/Series',
@@ -244,6 +261,7 @@ class AnimeMarkerRepository {
       }
 
       placement = parseAnimeMarkerPlacement(data['placement']);
+      labelStyle = parseAnimeAudioLabelStyle(data['labelStyle']);
 
       final rawSeasons = data['seasons'];
       final seasons = <String, AnimeAudioKind>{};
@@ -347,7 +365,11 @@ class AnimeMarkerRepository {
     try {
       final token = _client.accessToken;
       final baseUrl = _client.baseUrl;
-      if (token == null || baseUrl.isEmpty) return;
+      if (token == null ||
+          baseUrl.isEmpty ||
+          !serverHasMoonfinPlugin(_client)) {
+        return;
+      }
 
       final response = await _dio.get(
         '$baseUrl/Moonfin/AnimeMarkers/Items',
@@ -360,6 +382,7 @@ class AnimeMarkerRepository {
       final data = response.data;
       if (data is Map<String, dynamic>) {
         placement = parseAnimeMarkerPlacement(data['placement']);
+        labelStyle = parseAnimeAudioLabelStyle(data['labelStyle']);
 
         if (data['items'] is Map) {
           (data['items'] as Map).forEach((key, value) {

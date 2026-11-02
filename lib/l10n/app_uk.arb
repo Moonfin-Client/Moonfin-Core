@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Виберіть тематичні канали для показу в Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Застосувати",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Жанри аудіокниг",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Виберіть, які жанри показувати в Discover аудіокниг.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Відкрийте для себе аудіокниги",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Популярні назви публічного домену від LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} назв",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Прокрутіть вліво",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Відкрийте для себе",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Популярні назви за темами з Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Ще немає закладок",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Увімкнути перегляд папок",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Показати опцію перегляду папок",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Видимість бібліотеки",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Рекомендований вміст, зовнішній вигляд",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Розмір плаката, тип зображення, вид папки",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB і джерела оцінок",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Не вдалося розпакувати архів .cbr.",
     "cb7ExtractionUnavailable": "Видобуток CB7 недоступний на цій платформі.",
     "cb7ExtractionPluginUnavailable": "Плагін вилучення CB7 недоступний на цій платформі.",
-    "closeGenrePanel": "Закрити панель жанрів",
     "loadingShuffle": "Завантаження перемішування...",
     "libraryShuffleLabel": "ПЕРЕМІШУВАННЯ БІБЛІОТЕКИ",
     "randomShuffleLabel": "ВИПАДКОВЕ ПЕРЕМІШУВАННЯ",

@@ -1,8 +1,3 @@
-// tvOS drives playback through NativeApplePlayerChannel and its native player UI,
-// so this channel is only built for the two platforms where Flutter owns the
-// OSD and the video arrives through a platform view.
-#if os(iOS) || os(macOS)
-
 import AVFoundation
 import AetherEngine
 import VideoToolbox
@@ -17,7 +12,8 @@ import UIKit
 import AppKit
 #endif
 
-/// Playback channel driving the shared AetherPlayerWrapper on iOS and macOS.
+/// Playback channel driving the shared AetherPlayerWrapper for the Flutter
+/// player on iOS, macOS and tvOS.
 /// One wrapper lives for the app's lifetime while video surfaces attach and
 /// detach around it, so background audio and PiP survive a route pop.
 @MainActor
@@ -61,7 +57,13 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
         super.init()
         control.setMethodCallHandler { [weak self] call, result in
             if call.method == "getCapabilities" {
+                #if os(tvOS)
+                // An Apple TV can be plugged into any screen, so this asks the
+                // display rather than assuming HDR the way a phone can.
+                result(VideoCapabilityDetector.deviceProfileCapabilities())
+                #else
                 result(AetherVideoCapabilities.deviceProfileCapabilities())
+                #endif
                 return
             }
             result(nil)
@@ -138,6 +140,17 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             player.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
             player.disableSubtitles()
+        case "setSecondarySubtitle":
+            player.setSecondarySubtitle(
+                embeddedTrackId: (args["embeddedTrackId"] as? NSNumber)?.intValue,
+                url: (args["url"] as? String).flatMap { urlFrom($0) })
+        case "setSecondarySubtitleDelay":
+            player.setSecondarySubtitleDelay(ms(args["delayMs"]))
+        case "configureSecondarySubtitleStyle":
+            player.configureSecondarySubtitleStyle(
+                fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
+                verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue,
+                textColor: (args["textColor"] as? NSNumber)?.intValue)
         case "setAudioDelay":
             player.setAudioDelay(ms(args["delayMs"]))
         case "setSubtitleDelay":
@@ -215,7 +228,9 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 audioBridgeLossless: (args["audioBridgeLossless"] as? Bool) ?? false,
                 dolbyVisionBaseLayerOnly: (args["dolbyVisionBaseLayerOnly"] as? Bool) ?? false,
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
-                    from: args["externalSubtitles"])))
+                    from: args["externalSubtitles"]),
+                subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
@@ -334,11 +349,15 @@ enum AetherVideoCapabilities {
         #endif
     }
 
-    // Even an M1 decodes heavy 4K HDR10 AV1 at about 2.9x real time, so only
-    // Intel Macs and iOS devices without AV1 hardware keep the 1080p SDR cap.
+    // Even an M1 decodes heavy 4K HDR10 AV1 at about 2.9x real time, so Apple
+    // Silicon Macs and M1 or M2 iPads lift the 1080p SDR cap. Those iPads are
+    // the only iOS devices with 8 GB or more and no AV1 hardware. iOS reports a
+    // little under the real size, which is why the check is 7 GB.
     private static var softwareAv1HandlesUhd: Bool {
         #if os(macOS) && arch(arm64)
             return true
+        #elseif os(iOS)
+            return ProcessInfo.processInfo.physicalMemory >= 7 << 30
         #else
             return false
         #endif
@@ -381,5 +400,3 @@ enum AetherVideoCapabilities {
         ]
     }
 }
-
-#endif

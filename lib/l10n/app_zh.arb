@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "选择要在“发现”中显示的主题源。",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "应用",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "有声读物类型",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "选择要在有声书发现页中显示的类型。",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "发现有声读物",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox 上热门的公版作品。",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} 部作品",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "向左滚动",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "发现",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library 上按主题推荐的热门作品。",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "还没有添加书签的媒体项",
     "@noBookmarkedItems": {
@@ -1015,7 +986,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "未找到该作者的图书。",
+    "noBooksFound": "未找到该作者的图书",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -1283,7 +1254,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "使用 OpenSubtitles 插件进行搜索",
+    "searchOpenSubtitlesPlugin": "使用 OpenSubtitles 搜索",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -2795,7 +2766,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "详情页背景模糊",
+    "detailsBackgroundBlur": "背景虚化",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -3499,14 +3470,6 @@
     "showLibrariesFromAllServers": "显示所有已连接服务器的媒体库",
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
-    },
-    "enableFolderView": "启用文件夹视图",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "显示文件夹浏览选项",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
     },
     "libraryVisibility": "媒体库可见性",
     "@libraryVisibility": {
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "特色内容、外观",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "海报尺寸、图片类型、文件夹视图",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList、TMDB 和评分来源",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "无法提取 .cbr 存档。",
     "cb7ExtractionUnavailable": "CB7 提取在此平台上不可用。",
     "cb7ExtractionPluginUnavailable": "CB7 提取插件在此平台上不可用。",
-    "closeGenrePanel": "关闭类型面板",
     "loadingShuffle": "正在加载随机内容...",
     "libraryShuffleLabel": "媒体库随机播放",
     "randomShuffleLabel": "随机播放",
@@ -7710,7 +7668,7 @@
             }
         }
     },
-    "recommendationSystemSubtitle": "可选用「Moonfin本地资料库推荐算法」，或线上 TMDb 相似度匹配算法。注意：线上推荐功能需要对接 Seerr 服务。",
+    "recommendationSystemSubtitle": "使用 Moonfin Recommends 本地媒体库算法、Jellyfin Recommends 服务器引擎，或在线 TMDb 的相似度指标。注意：在线推荐需要集成 Seerr。",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -8257,7 +8215,7 @@
     },
     "audiobookNoChapters": "无章节",
     "settingsAlwaysExpandNavbarLabels": "始终显示顶部导航栏中的文本标签",
-    "detailScreenStyleSubtitle": "Moonfin 是经典布局；Modern 是自适应影院风布局。",
+    "detailScreenStyleSubtitle": "Moonfin 是经典布局；Modern 是自适应影院风布局。Spotlight 是一种以主视觉区优先、带有弹出式内容卡片的布局。Nouveau 是一种全屏布局，各个版块沿页面自上而下堆叠。Minimalist 是有封面图、一个播放按钮和各集列表。",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -8368,7 +8326,7 @@
     "adminNetworkingEnableIpv6": "启用 IPv6",
     "adminNetworkingLocalSubnetsHint": "逗号或换行分隔的 IP 地址或 CIDR 子网列表，视为本地网络。",
     "adminNetworkingPublishedUris": "发布的服务器 URI",
-    "recommendationsApplyParentalRatingCap": "是否启用家长分级上限限制？",
+    "recommendationsApplyParentalRatingCap": "启用推荐分级限制",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -8411,7 +8369,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "显示媒体技术参数？",
+    "showTechnicalDetails": "显示媒体详情",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -10189,7 +10147,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "显示文字？",
+    "showLoadingAnimationText": "显示文字",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
@@ -10724,5 +10682,13 @@
                 "type": "String"
             }
         }
+    },
+    "animeMarkerFiller": "原创剧情",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "混合剧情",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
     }
 }

@@ -8,7 +8,6 @@ import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/external_player_policy.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/platform_detection.dart';
 import '../playback/appletv_livetv_player_host_screen.dart';
 import '../playback/external_player_host_screen.dart';
 import 'live_tv_player_screen.dart';
@@ -115,7 +114,7 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    return PlatformDetection.isAppleTV || useNativeApplePlayer()
+    return useNativeApplePlayer()
         ? AppleTvLiveTvPlayerHostScreen(
             channels: channels,
             startIndex: _startIndex,

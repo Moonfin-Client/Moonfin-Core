@@ -1,0 +1,98 @@
+{
+ "download_id": "dl_01HSCRUBBED",
+ "content_id": "series-imdb-tt1641384",
+ "episode_id": "episode-imdb-tt1641384-1-1",
+ "type": "episode",
+ "revision": 1,
+ "quality": "original",
+ "effective_quality": "original",
+ "delivery_format": "original",
+ "target_bitrate_kbps": 0,
+ "media_file_id": "4567",
+ "file_size": 2048,
+ "title": "Independence Day",
+ "year": 2010,
+ "overview": "\u2026",
+ "runtime": 1320,
+ "content_rating": "TV-PG",
+ "genres": [
+  "Animation"
+ ],
+ "series_id": "series-imdb-tt1641384",
+ "series_title": "Young Justice",
+ "season_number": 1,
+ "episode_number": 1,
+ "poster_thumbhash": "iQ",
+ "backdrop_thumbhash": "iA",
+ "series_poster_thumbhash": "iS",
+ "artwork_urls": {
+  "poster": "/api/v2/downloads/dl_01HSCRUBBED/artwork/poster",
+  "backdrop": "/api/v2/downloads/dl_01HSCRUBBED/artwork/backdrop",
+  "logo": "/api/v2/downloads/dl_01HSCRUBBED/artwork/logo",
+  "series_poster": "/api/v2/downloads/dl_01HSCRUBBED/artwork/series_poster"
+ },
+ "container": "mkv",
+ "codec_video": "h264",
+ "codec_audio": "aac",
+ "resolution": "1080p",
+ "hdr": false,
+ "duration_seconds": 1320,
+ "selected_audio_track_index": 0,
+ "audio_tracks": [
+  {
+   "index": 0,
+   "language": "en",
+   "codec": "aac",
+   "channels": 2,
+   "default": true
+  }
+ ],
+ "chapters": [
+  {
+   "index": 0,
+   "title": "Cold Open",
+   "start_seconds": 0,
+   "end_seconds": 120.5
+  }
+ ],
+ "intro": {
+  "start": 60.0,
+  "end": 90.0
+ },
+ "marker_segments": [],
+ "subtitles": [
+  {
+   "language": "en",
+   "format": "srt",
+   "forced": false,
+   "hearing_impaired": false,
+   "external": true,
+   "fetch_url": "/api/v2/downloads/dl_01HSCRUBBED/subtitles/external:0",
+   "file_size": 41234,
+   "revision": "r1"
+  },
+  {
+   "language": "es",
+   "format": "ass",
+   "forced": false,
+   "hearing_impaired": false,
+   "external": false,
+   "fetch_url": "/api/v2/downloads/dl_01HSCRUBBED/subtitles/embedded:1",
+   "title": "Signs"
+  }
+ ],
+ "stable_identity": {
+  "stable_type": "episode",
+  "provider_ids": {
+   "imdb": "tt1641384"
+  },
+  "season": 1,
+  "episode": 1
+ },
+ "integrity": {
+  "expected_bytes": 2048,
+  "metadata_etag": "SCRUBBED"
+ },
+ "manifest_version": 3,
+ "generated_at": "2026-10-18T20:05:00.000Z"
+}

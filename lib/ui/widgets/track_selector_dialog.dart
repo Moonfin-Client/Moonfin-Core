@@ -21,6 +21,8 @@ Future<T?> showStyledPlayerDialog<T>(
   double maxWidth = 440,
   bool useRootNavigator = true,
   bool barrierDismissible = true,
+  ImageProvider? titleImage,
+  bool sidePanel = false,
 }) {
   return showFocusRestoringDialog<T>(
     context: context,
@@ -44,12 +46,29 @@ Future<T?> showStyledPlayerDialog<T>(
               effectiveBottomInset -
               24;
 
-          final inner = playerDialogPanel(
-            constraints: BoxConstraints(
-              minWidth: 340,
-              maxWidth: maxWidth,
-              maxHeight: maxDialogHeight,
+          final titleText = Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+          );
+
+          final inner = playerDialogPanel(
+            constraints: sidePanel
+                ? BoxConstraints.tightFor(
+                    width: math.min(
+                      math.max(mediaQuery.size.width * 0.55, 340.0),
+                      maxWidth,
+                    ),
+                    height: maxDialogHeight,
+                  )
+                : BoxConstraints(
+                    minWidth: 340,
+                    maxWidth: maxWidth,
+                    maxHeight: maxDialogHeight,
+                  ),
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -58,14 +77,15 @@ Future<T?> showStyledPlayerDialog<T>(
                   padding: EdgeInsets.fromLTRB(24, 0, 24, subtitle != null ? 4 : 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: titleImage == null
+                        ? titleText
+                        : Image(
+                            image: titleImage,
+                            height: 44,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            errorBuilder: (_, _, _) => titleText,
+                          ),
                   ),
                 ),
                 if (subtitle != null)
@@ -101,10 +121,16 @@ Future<T?> showStyledPlayerDialog<T>(
           );
 
           return Dialog(
-            alignment: shiftUp ? const Alignment(0, -0.85) : Alignment.center,
+            alignment: sidePanel
+                ? Alignment.centerRight
+                : shiftUp
+                ? const Alignment(0, -0.85)
+                : Alignment.center,
             insetAnimationDuration: const Duration(milliseconds: 200),
             insetAnimationCurve: Curves.easeOutCubic,
-            insetPadding: shiftUp
+            insetPadding: sidePanel
+                ? const EdgeInsets.all(12)
+                : shiftUp
                 ? const EdgeInsets.fromLTRB(40, 20, 40, 360)
                 : const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
             backgroundColor: Colors.transparent,
@@ -188,6 +214,7 @@ class TrackSelectorDialog {
     required String title,
     required List<TrackOption> options,
     int? selectedIndex,
+    int? dividerBefore,
     Widget? footer,
     bool useRootNavigator = true,
   }) {
@@ -204,12 +231,25 @@ class TrackSelectorDialog {
         itemCount: options.length + (footer == null ? 0 : 1),
         itemBuilder: (_, i) => i == options.length
             ? footer!
-            : _TrackRow(
-                option: options[i],
-                isSelected: selectedIndex == i,
-                autofocus:
-                    selectedIndex == i || (selectedIndex == null && i == 0),
-                onTap: () => Navigator.pop(dialogCtx, i),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (i == dividerBefore)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(
+                        height: 1,
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
+                    ),
+                  _TrackRow(
+                    option: options[i],
+                    isSelected: selectedIndex == i,
+                    autofocus:
+                        selectedIndex == i || (selectedIndex == null && i == 0),
+                    onTap: () => Navigator.pop(dialogCtx, i),
+                  ),
+                ],
               ),
       ),
     );
@@ -244,6 +284,13 @@ class _TrackRowState extends State<_TrackRow> {
   void initState() {
     super.initState();
     _focusNode.addListener(() => setState(() => _isFocused = _focusNode.hasFocus));
+    if (widget.autofocus) {
+      // On TV a navigator observer focuses a new route's first focusable
+      // after autofocus resolves, so the selected row takes it back here.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _focusNode.requestFocus();
+      });
+    }
   }
 
   @override

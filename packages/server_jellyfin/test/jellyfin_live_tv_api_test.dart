@@ -134,5 +134,50 @@ void main() {
       expect(cap.all.last.path, '/LiveTv/SeriesTimers');
       expect(cap.all.last.data, {'ProgramId': 'program-1'});
     });
+
+    test('settings override the server defaults and keep the program id', () async {
+      final cap = _Capture()
+        ..defaultsBody = {
+          'RecordNewOnly': true,
+          'SkipEpisodesInLibrary': false,
+          'Days': <String>[],
+        };
+      final api  = JellyfinLiveTvApi(Dio()..interceptors.add(cap));
+
+      await api.createSeriesTimer(
+        'program-1',
+        settings: {'RecordNewOnly': false, 'SkipEpisodesInLibrary': true},
+      );
+
+      expect(cap.all.last.method, 'POST');
+      expect(cap.all.last.path, '/LiveTv/SeriesTimers');
+      final body = cap.all.last.data as Map<String, dynamic>;
+      expect(body['RecordNewOnly'], false);
+      expect(body['SkipEpisodesInLibrary'], true);
+      expect(body['Days'], <String>[]);
+      expect(body['ProgramId'], 'program-1');
+    });
+
+    test('reads one series timer from /LiveTv/SeriesTimers/{id}', () async {
+      final cap = _Capture();
+      final api  = JellyfinLiveTvApi(Dio()..interceptors.add(cap));
+
+      await api.getSeriesTimer('series-1');
+
+      expect(cap.last!.method, 'GET');
+      expect(cap.last!.path, '/LiveTv/SeriesTimers/series-1');
+    });
+
+    test('updating a series timer posts the given rule unchanged', () async {
+      final cap = _Capture();
+      final api  = JellyfinLiveTvApi(Dio()..interceptors.add(cap));
+      final rule = {'Id': 'series-1', 'Name': 'Show', 'RecordNewOnly': true};
+
+      await api.updateSeriesTimer('series-1', rule);
+
+      expect(cap.last!.method, 'POST');
+      expect(cap.last!.path, '/LiveTv/SeriesTimers/series-1');
+      expect(cap.last!.data, rule);
+    });
   });
 }

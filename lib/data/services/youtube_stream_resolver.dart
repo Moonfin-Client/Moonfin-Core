@@ -13,6 +13,12 @@ class YouTubeStream {
   const YouTubeStream(this.url, {this.audioLanguage});
 }
 
+typedef YouTubeVideoDetails = ({
+  String? title,
+  Duration? length,
+  String? channel,
+});
+
 /// Resolves a YouTube trailer through YouTube's own player API, asked as the
 /// Vision Pro app first for a manifest with every resolution in it, then as the
 /// Android app, whose muxed file stops at 360p.
@@ -29,6 +35,8 @@ class YouTubeStreamResolver {
   static void setDioForTesting(Dio dio) {
     _dio = dio;
     _visitorData = null;
+    _searches.clear();
+    _details.clear();
   }
 
   static const _youtubeOrigin = 'https://www.youtube.com';
@@ -141,6 +149,77 @@ class YouTubeStreamResolver {
     return resolve(videoId);
   }
 
+  static final _searches = <String, Future<String?>>{};
+
+  /// A YouTube link to the top search hit for [title]'s trailer, for a server
+  /// that keeps no trailer links of its own. Asked as the web client, whose
+  /// top hit is usually the studio's own upload. Kept per title, since the
+  /// media bar comes back to the same slides, but a failed search isn't kept
+  /// so the next try asks again.
+  static Future<String?> searchTrailer(String title, {int? year}) {
+    final query = [title, ?year, 'trailer'].join(' ');
+    return _searches.putIfAbsent(
+      query,
+      () => _searchVideoId(query).then((id) {
+        if (id == null) _searches.remove(query);
+        return id == null ? null : 'https://www.youtube.com/watch?v=$id';
+      }),
+    );
+  }
+
+  static Future<String?> _searchVideoId(String query) async {
+    try {
+      final response = await _dio
+          .post<Map<String, dynamic>>(
+            'https://www.youtube.com/youtubei/v1/search?prettyPrint=false',
+            data: {
+              'context': {
+                'client': {
+                  'clientName': 'WEB',
+                  'clientVersion': '2.20260101.00.00',
+                  'hl': 'en',
+                  'gl': 'US',
+                },
+              },
+              'query': query,
+              // Videos only, leaving out channels and playlists.
+              'params': 'EgIQAQ%3D%3D',
+            },
+            options: Options(
+              sendTimeout: _requestTimeout,
+              receiveTimeout: _requestTimeout,
+              headers: {
+                'Content-Type': 'application/json',
+                'Origin': _youtubeOrigin,
+                'Referer': _youtubeReferer,
+              },
+            ),
+          )
+          .timeout(_resolveTimeout);
+      return firstSearchVideoId(response.data);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The first video in a search answer, in the order YouTube ranked them.
+  @visibleForTesting
+  static String? firstSearchVideoId(Object? node) {
+    if (node is Map) {
+      final video = node['videoRenderer'];
+      if (video is Map && video['videoId'] is String) {
+        return video['videoId'] as String;
+      }
+      node = node.values;
+    }
+    if (node is Iterable) {
+      for (final child in node) {
+        if (firstSearchVideoId(child) case final id?) return id;
+      }
+    }
+    return null;
+  }
+
   /// Points mpv at [YouTubeStream.audioLanguage]. mpv keeps the choice across
   /// loads, so a reused player is cleared when there is no language.
   static Future<void> preferAudioLanguage(
@@ -155,24 +234,235 @@ class YouTubeStreamResolver {
     } catch (_) {}
   }
 
+  /// What mpv opens for a preview, with [player] set up to match. A YouTube
+  /// master is cut down to one variant, since mpv reads every variant of a
+  /// master before it starts, which takes several seconds on a TV where one
+  /// variant starts in about one. A master that can't be read keeps a 5 Mbps
+  /// cap, which lands on YouTube's 1080p H.264 variant rather than 4K VP9. The
+  /// player is reused, so anything else clears both settings.
+  static Future<Media> previewMedia(
+    Player player,
+    String url, {
+    required bool youTube,
+    Map<String, String> headers = const {},
+    int maxHeight = 1080,
+    String? audioLanguage,
+  }) async {
+    final variant = youTube
+        ? await _singleVariant(
+            url,
+            maxHeight: maxHeight,
+            audioLanguage: audioLanguage,
+          )
+        : null;
+    final platform = player.platform;
+    if (platform is NativePlayer) {
+      try {
+        final dynamic mpv = platform;
+        await mpv.setProperty('hls-bitrate', youTube ? '5000000' : 'max');
+        // A path list splits on colons, so a URL goes in through change-list.
+        await mpv.command(['change-list', 'audio-files', 'clr', '']);
+        final audio = variant?.audio;
+        if (audio != null) {
+          await mpv.command([
+            'change-list',
+            'audio-files',
+            'append',
+            audio,
+          ]);
+        }
+      } catch (_) {}
+    }
+    final mediaUrl = variant?.video ?? url;
+    final mediaHeaders = youTube ? youtubeHeaders : headers;
+    return mediaHeaders.isEmpty
+        ? Media(mediaUrl)
+        : Media(mediaUrl, httpHeaders: mediaHeaders);
+  }
+
+  /// One H.264 variant of a YouTube HLS master no taller than [maxHeight], and
+  /// the audio that goes with it. Null when [url] isn't a master or can't be
+  /// read.
+  static Future<({String video, String? audio})?> _singleVariant(
+    String url, {
+    int maxHeight = 1080,
+    String? audioLanguage,
+  }) async {
+    if (!url.contains('/hls_variant/')) return null;
+    try {
+      final response = await _dio
+          .get<String>(
+            url,
+            options: Options(
+              headers: youtubeHeaders,
+              responseType: ResponseType.plain,
+            ),
+          )
+          .timeout(_requestTimeout);
+      return pickVariant(
+        response.data ?? '',
+        Uri.parse(url),
+        maxHeight: maxHeight,
+        audioLanguage: audioLanguage,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The best variant in [master] no taller than [maxHeight], H.264 first,
+  /// with its original soundtrack. YouTube lists machine dubs ahead of the
+  /// original and marks none as the default, so the original is looked for by
+  /// name before [audioLanguage].
+  @visibleForTesting
+  static ({String video, String? audio})? pickVariant(
+    String master,
+    Uri base, {
+    required int maxHeight,
+    String? audioLanguage,
+  }) {
+    final lines = master.split('\n').map((line) => line.trim()).toList();
+    final audioGroups = <String, List<Map<String, String>>>{};
+    final variants = <({Map<String, String> attrs, String uri})>[];
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.startsWith('#EXT-X-MEDIA:')) {
+        final attrs = _hlsAttributes(line);
+        if (attrs['TYPE'] == 'AUDIO' && attrs['URI'] != null) {
+          audioGroups.putIfAbsent(attrs['GROUP-ID'] ?? '', () => []).add(attrs);
+        }
+      } else if (line.startsWith('#EXT-X-STREAM-INF:') &&
+          i + 1 < lines.length &&
+          lines[i + 1].isNotEmpty &&
+          !lines[i + 1].startsWith('#')) {
+        variants.add((attrs: _hlsAttributes(line), uri: lines[i + 1]));
+      }
+    }
+    if (variants.isEmpty) return null;
+
+    int height(Map<String, String> attrs) =>
+        int.tryParse(attrs['RESOLUTION']?.split('x').last ?? '') ?? 0;
+    int bandwidth(Map<String, String> attrs) =>
+        int.tryParse(attrs['BANDWIDTH'] ?? '') ?? 0;
+    bool h264(Map<String, String> attrs) =>
+        (attrs['CODECS'] ?? '').contains('avc1');
+
+    final fitting = variants
+        .where((v) => height(v.attrs) > 0 && height(v.attrs) <= maxHeight)
+        .toList();
+    final pool = fitting.any((v) => h264(v.attrs))
+        ? fitting.where((v) => h264(v.attrs)).toList()
+        : fitting;
+    final chosen = pool.isNotEmpty
+        ? pool.reduce(
+            (a, b) => bandwidth(b.attrs) > bandwidth(a.attrs) ? b : a,
+          )
+        : variants.reduce(
+            (a, b) => height(b.attrs) < height(a.attrs) ? b : a,
+          );
+
+    final group = audioGroups[chosen.attrs['AUDIO']] ?? const [];
+    final language = audioLanguage?.toLowerCase();
+    bool isOriginal(Map<String, String> track) =>
+        (track['NAME'] ?? '').toLowerCase().contains('original');
+    bool inLanguage(Map<String, String> track) =>
+        language != null &&
+        (track['LANGUAGE'] ?? '').toLowerCase().startsWith(language);
+    final track =
+        group.where(isOriginal).firstOrNull ??
+        group.where(inLanguage).firstOrNull ??
+        group.firstOrNull;
+    final audioUri = track?['URI'];
+    return (
+      video: base.resolve(chosen.uri).toString(),
+      audio: audioUri == null ? null : base.resolve(audioUri).toString(),
+    );
+  }
+
+  static final _hlsAttribute = RegExp(r'([A-Z0-9-]+)=("[^"]*"|[^,]*)');
+
+  static Map<String, String> _hlsAttributes(String line) {
+    final list = line.substring(line.indexOf(':') + 1);
+    return {
+      for (final match in _hlsAttribute.allMatches(list))
+        match.group(1)!: match.group(2)!.replaceAll('"', ''),
+    };
+  }
+
+  static final _details = <String, Future<YouTubeVideoDetails?>>{};
+
+  /// A video's title, length and channel, for listing it before it plays.
+  /// Kept per video, but a failed lookup isn't kept so the next try asks
+  /// again.
+  static Future<YouTubeVideoDetails?> details(String videoId) =>
+      _details.putIfAbsent(videoId, () async {
+        YouTubeVideoDetails? details;
+        try {
+          details = videoDetailsOf(
+            await _requestPlayerWithVisitor(
+              videoId,
+              _visionOs,
+            ).timeout(_resolveTimeout),
+          );
+        } catch (_) {}
+        if (details == null) _details.remove(videoId);
+        return details;
+      });
+
+  @visibleForTesting
+  static YouTubeVideoDetails? videoDetailsOf(Map<String, dynamic>? data) {
+    final details = data?['videoDetails'];
+    if (details is! Map) return null;
+    final seconds = int.tryParse('${details['lengthSeconds']}');
+    final title = details['title'];
+    final author = details['author'];
+    return (
+      title: title is String && title.isNotEmpty ? title : null,
+      length: seconds == null || seconds <= 0
+          ? null
+          : Duration(seconds: seconds),
+      channel: author is String && author.isNotEmpty ? author : null,
+    );
+  }
+
+  static const _visionOs = _InnertubeClient(
+    name: 'VISIONOS',
+    nameId: '101',
+    version: '1.02',
+    userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) '
+        'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 '
+        'Safari/605.1.15',
+    needsVisitor: true,
+    extra: {
+      'deviceMake': 'Apple',
+      'deviceModel': 'RealityDevice17,1',
+      'osName': 'visionOS',
+      'osVersion': '26.5.23O471',
+    },
+  );
+
+  /// Turns captions on or off for the next load. media_kit turns on any
+  /// subtitle track it finds, so off has to be asked for outright.
+  static Future<void> showCaptions(
+    Player player,
+    bool show, {
+    String? language,
+  }) async {
+    final platform = player.platform;
+    if (platform is! NativePlayer) return;
+    try {
+      final dynamic native = platform;
+      await Future<void>.value(native.setProperty('sid', show ? 'auto' : 'no'));
+      await Future<void>.value(
+        native.setProperty('slang', show ? language ?? '' : ''),
+      );
+    } catch (_) {}
+  }
+
   static Future<YouTubeStream?> _tryInnertube(String videoId) async {
     const clients = [
-      _InnertubeClient(
-        name: 'VISIONOS',
-        nameId: '101',
-        version: '1.02',
-        userAgent:
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) '
-            'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 '
-            'Safari/605.1.15',
-        needsVisitor: true,
-        extra: {
-          'deviceMake': 'Apple',
-          'deviceModel': 'RealityDevice17,1',
-          'osName': 'visionOS',
-          'osVersion': '26.5.23O471',
-        },
-      ),
+      _visionOs,
       _InnertubeClient(
         name: 'ANDROID',
         nameId: '3',

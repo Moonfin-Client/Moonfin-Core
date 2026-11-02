@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:kindle_unpack/kindle_unpack.dart';
 import 'package:server_core/server_core.dart';
 
@@ -49,6 +50,7 @@ class BookDocumentService {
     List<Uri> uris,
     Map<String, String> headers,
   ) async {
+    if (kIsWeb) return downloadBytesOverHttp(http.Client(), uris, headers);
     final client = HttpClient()..userAgent = serverUserAgent;
     try {
       HttpException? lastError;
@@ -82,6 +84,32 @@ class BookDocumentService {
     }
   }
 
+  /// The browser's way to download, since dart:io's HttpClient doesn't exist
+  /// there. Browsers set the User-Agent themselves. Closes [client].
+  @visibleForTesting
+  static Future<Uint8List> downloadBytesOverHttp(
+    http.Client client,
+    List<Uri> uris,
+    Map<String, String> headers,
+  ) async {
+    try {
+      http.ClientException? lastError;
+      for (final uri in uris) {
+        final response = await client.get(uri, headers: headers);
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          return response.bodyBytes;
+        }
+        lastError = http.ClientException(
+          'HTTP ${response.statusCode} while downloading book data from $uri',
+          uri,
+        );
+      }
+      throw lastError ?? http.ClientException('Failed to download book data');
+    } finally {
+      client.close();
+    }
+  }
+
   /// Convert a Kindle document (MOBI/AZW/AZW3/KF8) into EPUB bytes so it can be
   /// rendered through the normal EPUB pipeline. Parsing is CPU heavy, so run
   /// this off the UI isolate with compute(). Throws if the file is DRM
@@ -94,6 +122,7 @@ class BookDocumentService {
     List<Uri> uris,
     Map<String, String> headers,
   ) async {
+    if (kIsWeb) return probeExtensionOverHttp(http.Client(), uris, headers);
     final client = HttpClient()..userAgent = serverUserAgent;
     try {
       for (final uri in uris) {
@@ -121,28 +150,61 @@ class BookDocumentService {
         final mime = response.headers.contentType?.mimeType.toLowerCase();
         await response.drain<void>();
 
-        final fromDisposition =
-            BookReaderService.extractExtensionFromContentDisposition(disposition);
-        if (BookReaderService.isSupportedExtension(fromDisposition)) {
-          return fromDisposition;
-        }
-
-        final fromMime = BookReaderService.extensionFromMime(mime);
-        if (BookReaderService.isSupportedExtension(fromMime)) {
-          return fromMime;
-        }
-
-        final fromUri = BookReaderService.extractExtensionFromFileName(
-          uri.pathSegments.isEmpty ? uri.path : uri.pathSegments.last,
-        );
-        if (BookReaderService.isSupportedExtension(fromUri)) {
-          return fromUri;
-        }
+        final extension = _extensionFromResponse(uri, disposition, mime);
+        if (extension != null) return extension;
       }
     } finally {
       client.close(force: true);
     }
 
+    return null;
+  }
+
+  /// The browser's way to probe, for the same reason as
+  /// [downloadBytesOverHttp]. Closes [client].
+  @visibleForTesting
+  static Future<String?> probeExtensionOverHttp(
+    http.Client client,
+    List<Uri> uris,
+    Map<String, String> headers,
+  ) async {
+    try {
+      for (final uri in uris) {
+        final response = await client.get(
+          uri,
+          headers: {...headers, 'Range': 'bytes=0-0'},
+        );
+        if (response.statusCode < 200 || response.statusCode >= 400) continue;
+
+        final mime = response.headers['content-type']?.split(';').first.trim();
+        final extension = _extensionFromResponse(
+          uri,
+          response.headers['content-disposition'],
+          mime,
+        );
+        if (extension != null) return extension;
+      }
+    } finally {
+      client.close();
+    }
+
+    return null;
+  }
+
+  static String? _extensionFromResponse(
+    Uri uri,
+    String? disposition,
+    String? mime,
+  ) {
+    for (final extension in [
+      BookReaderService.extractExtensionFromContentDisposition(disposition),
+      BookReaderService.extensionFromMime(mime),
+      BookReaderService.extractExtensionFromFileName(
+        uri.pathSegments.isEmpty ? uri.path : uri.pathSegments.last,
+      ),
+    ]) {
+      if (BookReaderService.isSupportedExtension(extension)) return extension;
+    }
     return null;
   }
 

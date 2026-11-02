@@ -11,21 +11,21 @@ void main() {
       );
     });
 
-    test('is beside the code on a tablet in landscape', () {
+    test('is beside the code in a wide landscape window', () {
       expect(
         quickConnectQrBeside(isTV: false, screen: const Size(1280, 800)),
         isTrue,
       );
     });
 
-    test('is below the code on a tablet in portrait', () {
+    test('is below the code in a portrait window', () {
       expect(
         quickConnectQrBeside(isTV: false, screen: const Size(800, 1280)),
         isFalse,
       );
     });
 
-    test('is below the code on a phone in either orientation', () {
+    test('is below the code in a small window either way', () {
       expect(
         quickConnectQrBeside(isTV: false, screen: const Size(412, 915)),
         isFalse,

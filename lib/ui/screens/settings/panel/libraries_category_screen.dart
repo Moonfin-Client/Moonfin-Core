@@ -142,6 +142,20 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 onChanged: _pushPersonalizationSync,
               ),
               SwitchPreferenceTile(
+                preference: UserPreferences.libraryCardTitles,
+                title: l10n.libraryCardTitles,
+                subtitle: l10n.libraryCardTitlesDescription,
+                icon: Icons.title,
+                onChanged: _pushPersonalizationSync,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.hideBackdropsInLibraries,
+                title: l10n.libraryBackdrops,
+                icon: Icons.photo,
+                inverted: true,
+                onChanged: _pushPersonalizationSync,
+              ),
+              SwitchPreferenceTile(
                 preference: UserPreferences.useDetailedSubHeadings,
                 title: l10n.useDetailedSubHeadings,
                 subtitle: l10n.useDetailedSubHeadingsDescription,

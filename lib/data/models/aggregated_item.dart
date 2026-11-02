@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:server_core/server_core.dart';
+
 import '../database/offline_database.dart';
 
 class AggregatedItem {
@@ -206,27 +208,16 @@ class AggregatedItem {
   int? get seerrStatus => _toInt(rawData['SeerrStatus']);
   int? get childCount => _toInt(rawData['ChildCount']);
 
-  DateTime? get premiereDate {
-    final v = rawData['PremiereDate'] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? get premiereDate => parseServerDate(rawData['PremiereDate']);
 
   /// When the user last played the item, per the server.
-  DateTime? get lastPlayedDate {
-    final v = _userData?['LastPlayedDate'] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? get lastPlayedDate =>
+      parseServerDate(_userData?['LastPlayedDate']);
 
   /// When the server added the item to its library.
-  DateTime? get dateCreated {
-    final v = rawData['DateCreated'] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? get dateCreated => parseServerDate(rawData['DateCreated']);
 
-  DateTime? get endDate {
-    final v = rawData['EndDate'] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? get endDate => parseServerDate(rawData['EndDate']);
 
   List<String> get productionLocations =>
       _toListOfStrings(rawData['ProductionLocations']);

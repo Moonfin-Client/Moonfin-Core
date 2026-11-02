@@ -16,6 +16,7 @@ import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
 import '../../../../widgets/rating_display.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
+import '../../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../../widgets/seerr/seerr_status_dot.dart';
 import '../../../../widgets/seerr/seerr_status_pill.dart';
 import '../../detail_layout_metrics.dart';
@@ -268,8 +269,10 @@ class NouveauHeroState extends State<NouveauHero> {
         ? 13.5
         : (14.5 * scale).clamp(13.0, 15.5);
 
+    // On phones the genres stay up top and the rest of the hero sits down by
+    // the first row under it
     final genreBottomSpacing = isPhonePortrait
-        ? 14.0
+        ? 64.0
         : (17.0 * scale).clamp(14.0, 19.0);
 
     final reserveGenreRow =
@@ -379,6 +382,9 @@ class NouveauHeroState extends State<NouveauHero> {
       titleStyle: titleStyle,
       maxWidth: logoMaxWidth,
       maxHeight: logoMaxHeight,
+      alignment: isPhonePortrait
+          ? Alignment.bottomLeft
+          : Alignment.centerLeft,
     );
 
     final actions = DetailActionButtons(
@@ -491,6 +497,9 @@ class NouveauHeroState extends State<NouveauHero> {
     );
   }
 
+  Widget _incompleteLine() =>
+      IncompleteRecordingDetailLine(itemId: widget.viewModel.item?.id ?? '');
+
   Widget _buildPhoneContent({
     required BuildContext context,
     required Widget branding,
@@ -536,9 +545,15 @@ class NouveauHeroState extends State<NouveauHero> {
         if (reserveGenreRow)
           SizedBox(height: genreRowHeight + genreBottomSpacing),
 
-        branding,
+        // Drawn smaller than the room it takes, resting on the bottom of it,
+        // so it sits right on the info row and nothing under it moves
+        Transform.scale(
+          scale: 0.75,
+          alignment: Alignment.bottomLeft,
+          child: branding,
+        ),
 
-        const SizedBox(height: 22),
+        const SizedBox(height: 8),
 
         if (hasBadges) ...[
           _badgeRow(
@@ -558,6 +573,8 @@ class NouveauHeroState extends State<NouveauHero> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: metadata,
           ),
+
+        _incompleteLine(),
 
         if (ratingsRow != null) ...[
           const SizedBox(height: 12),
@@ -668,6 +685,7 @@ class NouveauHeroState extends State<NouveauHero> {
               children: metadata,
             ),
 
+          _incompleteLine(),
         ],
       ),
     );
@@ -1416,6 +1434,7 @@ class _NouveauBranding extends StatefulWidget {
   final TextStyle? titleStyle;
   final double maxWidth;
   final double maxHeight;
+  final Alignment alignment;
 
   const _NouveauBranding({
     required this.title,
@@ -1424,6 +1443,7 @@ class _NouveauBranding extends StatefulWidget {
     required this.titleStyle,
     required this.maxWidth,
     required this.maxHeight,
+    required this.alignment,
   });
 
   @override
@@ -1546,7 +1566,7 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
 
     if (companionTitle == null || companionTitle.trim().isEmpty) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: widget.alignment,
         child: LogoView(
           imageUrl: widget.logoUrl,
           maxHeight: widget.maxHeight,
@@ -1559,7 +1579,7 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
     final logoHeight = widget.maxHeight * 0.76;
 
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: widget.alignment,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1568,7 +1588,7 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
             width: logoWidth,
             height: widget.maxHeight,
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: widget.alignment,
               child: LogoView(
                 imageUrl: widget.logoUrl,
                 maxHeight: logoHeight,
@@ -1618,7 +1638,7 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
           ),
           _NouveauBrandingMode.fallback => Align(
             key: const ValueKey('nouveau-title'),
-            alignment: Alignment.centerLeft,
+            alignment: widget.alignment,
             child: Text(
               widget.title,
               maxLines: 2,

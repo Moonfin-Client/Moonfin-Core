@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Wähle aus, welche Themen-Feeds in \"Entdecken\" angezeigt werden.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Anwenden",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -539,27 +535,6 @@
     "audiobookGenres": "Hörbuch-Genres",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Wähle aus, welche Genres in \"Hörbücher entdecken\" angezeigt werden.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Hörbücher entdecken",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Beliebte freie Hörbücher von LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} Titel",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Nach links scrollen",
     "@scrollLeft": {
@@ -736,10 +711,6 @@
     "discover": "Entdecken",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Aktuelle Titel nach Thema von Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Noch keine mit Lesezeichen versehenen Inhalte",
     "@noBookmarkedItems": {
@@ -3446,14 +3417,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Ordneransicht aktivieren",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Ordner-Durchsuchen-Option anzeigen",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Bibliothekssichtbarkeit",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4143,10 +4106,6 @@
     "featuredContentAppearance": "Empfohlene Inhalte, Erscheinungsbild",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Postergröße, Bildtyp, Ordneransicht",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB und Bewertungsquellen",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Das Extrahieren des .cbr-Archivs ist fehlgeschlagen.",
     "cb7ExtractionUnavailable": "Die CB7-Extraktion ist auf dieser Plattform nicht verfügbar.",
     "cb7ExtractionPluginUnavailable": "Das CB7-Extraktions-Plugin ist auf dieser Plattform nicht verfügbar.",
-    "closeGenrePanel": "Schließen Sie das Genre-Panel",
     "loadingShuffle": "Zufallswiedergabe wird geladen...",
     "libraryShuffleLabel": "BIBLIOTHEK MISCHEN",
     "randomShuffleLabel": "ZUFÄLLIG MISCHEN",
@@ -10749,5 +10707,25 @@
     "savedMediaNoDownloads": "Noch nichts gespeichert",
     "@savedMediaNoDownloads": {
         "description": "Empty state title when no downloads are on the device"
+    },
+    "animeMarkerDubbed": "Synchronisiert",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbed": "Untertitelt",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerSubbedAndDubbed": "Untertitelt/Synchronisiert",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Ausstehend",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "timesUpMessage": "Dieses Konto ist derzeit nicht verfügbar.",
+    "@timesUpMessage": {
+        "description": "Explanation on the Time's up screen"
     }
 }

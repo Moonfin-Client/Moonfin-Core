@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,9 +20,11 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'mpv_client_certificate.dart';
 import 'mpv_letterbox_crop.dart';
+import 'mpv_player_registry.dart';
 import 'mpv_frame_sample.dart';
 import 'mpv_frame_sampler.dart';
 import 'pending_subtitle_choice.dart';
+import 'secondary_subtitle_position.dart';
 import 'server_transcode_capabilities.dart';
 
 class _ParsedMpvConfCacheEntry {
@@ -177,7 +180,11 @@ class _MediaKitDeviceProfileCapabilities {
 }
 
 class MediaKitPlayerBackend extends PlayerBackend
-    implements SubtitleLoadingBackend {
+    with SubtitleDelayState, WidgetsBindingObserver
+    implements
+        SubtitleLoadingBackend,
+        SecondarySubtitleBackend,
+        SecondarySubtitleAppearanceBackend {
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
@@ -236,6 +243,11 @@ class MediaKitPlayerBackend extends PlayerBackend
   // The viewer asked for no subtitles. Held here so the deferred visibility
   // pass can tell a fresh source apart from a choice it must not undo.
   bool _subtitlesDisabled = false;
+  bool _primaryIsBitmapSubtitle = false;
+  bool _primaryIsAssSubtitle = false;
+
+  bool get _primaryUsesTopFallback =>
+      _primaryIsBitmapSubtitle || _primaryIsAssSubtitle;
 
   String? _selectedExternalSubtitleUrl;
   bool _isSubtitleLoading = false;
@@ -274,13 +286,76 @@ class MediaKitPlayerBackend extends PlayerBackend
       <String, ({String? title, String? language, int sourceGeneration})>{};
   final _externalSubtitleLoads = <String, Future<void>>{};
   final _pendingSubtitleChoice = PendingSubtitleChoice();
+  int _secondarySubtitleGeneration = 0;
+  double _secondarySubtitleDelay = 0;
+  ({int? ordinal, String? url, String? codec, int generation})?
+      _pendingSecondarySubtitle;
+  // A new choice made while mpv is opening must not resolve against the old
+  // file's track list. Only the completed source may consume that choice.
+  int _secondarySourceReadyGeneration = 0;
+  late final Future<void> _secondaryControlsReady;
+  bool _secondaryDelaySupported = false;
+  bool _secondaryPositionSupported = false;
+  bool _secondaryScaleSupported = false;
+  bool _secondarySubtitleRequested = false;
+  double _secondaryVerticalOffset = 0;
+  double _secondaryScale = 1;
+  int? _lastSecondaryStackPosition;
+  String? _lastPrimaryText;
+  String? _lastSecondaryText;
+  int _primaryPlacementGeneration = 0;
+  DateTime? _lastSecondaryPositionCheck;
+  Completer<void>? _secondaryPositionUpdate;
+  StreamSubscription<Duration>? _secondaryPositionSub;
+  Timer? _secondaryMetricsTimer;
+  static final _mpvSrtAlignment = RegExp(r'\\an([1-9])');
+
+  @override
+  bool get supportsSecondarySubtitleDelay => _secondaryDelaySupported;
+  @override
+  bool get supportsSecondarySubtitlePosition => _secondaryPositionSupported;
+  // mpv has a dedicated secondary scale, but no independent secondary color.
+  @override
+  bool get supportsSecondarySubtitleStyle => false;
+  @override
+  bool get supportsSecondarySubtitleSize => _secondaryScaleSupported;
+  @override
+  bool get supportsSecondarySubtitleColor => false;
+
+  Future<void> _probeSecondaryControls() async {
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    _secondaryDelaySupported =
+        await _tryNativeGetProperty(native, 'secondary-sub-delay') != null;
+    _secondaryPositionSupported =
+        await _tryNativeGetProperty(native, 'secondary-sub-pos') != null;
+    _secondaryScaleSupported =
+        await _tryNativeGetProperty(native, 'secondary-sub-scale') != null;
+  }
 
   static const _externalSubtitleRetries = 5;
   static const _externalSubtitleRetryDelay = Duration(seconds: 10);
 
+  // Keep the last cues across dialogue gaps, but not across tracks or seeks.
+  void _resetPrimarySubtitlePlacement() {
+    _primaryPlacementGeneration++;
+    _lastPrimaryText = null;
+    _lastSecondaryText = null;
+    _lastSecondaryStackPosition = null;
+    _lastSecondaryPositionCheck = null;
+  }
+
   void _resetSubtitleState() {
     _subtitleSelectionGeneration++;
     _pendingEmbeddedSubtitle = null;
+    _secondarySubtitleGeneration++;
+    _pendingSecondarySubtitle = null;
+    _secondarySubtitleDelay = 0;
+    _secondarySubtitleRequested = false;
+    _subtitlesDisabled = false;
+    _primaryIsBitmapSubtitle = false;
+    _primaryIsAssSubtitle = false;
+    _resetPrimarySubtitlePlacement();
     _externalSubtitleLoads.clear();
     _pendingSubtitleChoice.nextSource();
   }
@@ -531,6 +606,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     this._hwDecodingEnabled,
   ) {
     _liveStartupObserverReady = _installLiveStartupObserver();
+    _secondaryControlsReady = _probeSecondaryControls();
     _letterboxHost = _MediaKitLetterboxHost(this);
     _letterboxCropper = MpvLetterboxCropper(
       _letterboxHost,
@@ -545,11 +621,30 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
     }
     _prefs.addListener(_onPreferencesChanged);
+    WidgetsBinding.instance.addObserver(this);
     _ccTracksSub = _player.stream.tracks.listen((_) {
       unawaited(_refreshEmbeddedCaptionTracks());
       unawaited(_retryPendingEmbeddedSubtitle());
+      unawaited(_applyPendingSecondarySubtitle());
     });
     _videoParamsSub = _player.stream.videoParams.listen(_onVideoParams);
+    hdrOutput.status.addListener(_refreshSubtitleFontSize);
+    _secondaryPositionSub = _player.stream.position.listen((_) {
+      if (_secondarySubtitleRequested && supportsSecondarySubtitlePosition) {
+        unawaited(_refreshStackedSecondaryPosition());
+      }
+    });
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (_isDisposed || !_secondarySubtitleRequested) return;
+    // mpv's OSD dimensions may settle after Flutter reports the new viewport.
+    // Debounce resize events so a paused player still recomputes wrapping.
+    _secondaryMetricsTimer?.cancel();
+    _secondaryMetricsTimer = Timer(const Duration(milliseconds: 100), () {
+      if (!_isDisposed) unawaited(_refreshStackedSecondaryPosition(force: true));
+    });
   }
 
   factory MediaKitPlayerBackend(
@@ -563,7 +658,7 @@ class MediaKitPlayerBackend extends PlayerBackend
               : (PlatformDetection.isLinux ? 'auto-safe' : null))
         : 'no';
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
         libass: _useLibass,
         libassAndroidFont: PlatformDetection.isAndroid
@@ -765,6 +860,22 @@ class MediaKitPlayerBackend extends PlayerBackend
     );
   }
 
+  /// The [Media] to open for [url]: with the stream's headers from
+  /// [payload] (`headers`, the resolution's request headers), which mpv then
+  /// sends on every request for this file, HLS playlists and segments
+  /// included. media_kit sets them when the file loads and clears them when
+  /// it unloads, so they never reach another file.
+  @visibleForTesting
+  static Media mediaForPayload(String url, Map<dynamic, dynamic> payload) {
+    final raw = payload['headers'];
+    final headers = <String, String>{
+      if (raw is Map)
+        for (final e in raw.entries)
+          if (e.key != null && e.value != null) '${e.key}': '${e.value}',
+    };
+    return headers.isEmpty ? Media(url) : Media(url, httpHeaders: headers);
+  }
+
   @override
   Future<void> play(
     dynamic mediaItem, {
@@ -776,16 +887,29 @@ class MediaKitPlayerBackend extends PlayerBackend
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
+    updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final generation = ++_playbackGeneration;
     _liveStartupGate = null;
 
     _resetSubtitleState();
+    if (!_ownsPlayback(generation)) return;
+    // Seed this source before awaiting preparation. Later user changes must
+    // replace these values and be reapplied after mpv resets the source.
+    _secondarySubtitleDelay =
+        (((payload['secondarySubtitleDelayMs'] as num?) ?? 0) / 1000)
+            .clamp(-5.0, 5.0);
+    _secondaryVerticalOffset =
+        PlaybackManager.clampSecondarySubtitleOffset(
+          (payload['secondarySubtitleOffset'] as num?)?.toDouble() ??
+              PlaybackManager.defaultSecondarySubtitleOffset,
+        );
     _setSelectedExternalSubtitle(
       payload['selectedExternalSubtitleUrl'] as String?,
     );
     final subtitleGeneration = _subtitleSelectionGeneration;
-    final media = Media(url);
+    final secondaryGeneration = _secondarySubtitleGeneration;
+    final media = mediaForPayload(url, payload);
     _currentUrl = media.uri;
     _isStale = true;
     _embeddedCaptionTracks = const [];
@@ -865,6 +989,39 @@ class MediaKitPlayerBackend extends PlayerBackend
       _enableNativeSubtitleRendering();
     }
     await _maybeEngageNativeHdr();
+    final native = _player.platform;
+    if (native is NativePlayer) {
+      await _nativeSetProperty(
+        native,
+        'sub-delay',
+        subtitleDelaySeconds.toStringAsFixed(3),
+      );
+    }
+    if (!_ownsPlayback(generation)) return;
+    await setSecondarySubtitleDelay(_secondarySubtitleDelay);
+    if (!_ownsPlayback(generation)) return;
+    await _reapplySecondarySubtitleAppearance();
+    if (!_ownsPlayback(generation)) return;
+    _secondarySourceReadyGeneration = generation;
+    if (secondaryGeneration == _secondarySubtitleGeneration) {
+      await setSecondarySubtitle(
+        embeddedTrackId: payload['secondarySubtitleTrackId'] as int?,
+        url: payload['secondarySubtitleUrl'] as String?,
+        codec: payload['secondarySubtitleCodec'] as String?,
+      );
+    } else {
+      // A newer choice arrived during open. Apply it to this file, including
+      // the external subtitle load that had to wait for the new source.
+      final pending = _pendingSecondarySubtitle;
+      await _applyPendingSecondarySubtitle();
+      if (pending != null && pending.url != null &&
+          _pendingSecondarySubtitle == pending &&
+          _isCurrentSecondarySubtitle(pending.generation)) {
+        unawaited(_loadSecondarySubtitle(
+          pending.url!, pending.codec, pending.generation,
+        ));
+      }
+    }
     unawaited(() async {
       await _configureLetterboxCropper();
       await _letterboxCropper.onSourceOpened(media.uri);
@@ -1042,6 +1199,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   void _onVideoParams(VideoParams params) {
     final loaded = params.gamma != null || params.primaries != null;
     _decodedVideoParams = loaded ? params : null;
+    if (loaded) _refreshSubtitleFontSize();
     if (!loaded || !PlatformDetection.supportsNativeHdrWindow) return;
     final status = hdrOutput.status.value;
     final engagedCheckDue =
@@ -1741,7 +1899,9 @@ class MediaKitPlayerBackend extends PlayerBackend
       final properties = passthroughMpvPropertiesFromSet(
         _prefs.resolvedPassthroughCodecs(),
         downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
-        includeAudioExclusive: PlatformDetection.isDesktop,
+        // Windows needs exclusive mode to bitstream. PipeWire can't link an
+        // exclusive stream while anything else plays, so Linux goes silent.
+        includeAudioExclusive: PlatformDetection.isWindows,
       );
 
       if (mapEquals(_appliedAudioPassthroughProperties, properties)) {
@@ -1790,6 +1950,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     } catch (_) {
       // The controller can be torn down while a resize is in flight.
     }
+    _refreshSubtitleFontSize();
   }
 
   Future<void> _configureLetterboxCropper() async {
@@ -2313,7 +2474,11 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   Future<void> seekTo(Duration position) async {
+    final generation = _playbackGeneration;
     await _player.seek(position);
+    if (!_ownsPlayback(generation)) return;
+    _resetPrimarySubtitlePlacement();
+    await _refreshStackedSecondaryPosition(force: true);
   }
 
   @override
@@ -2556,6 +2721,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
   }
 
+  static bool _isAssSubtitleCodec(String? codec) {
+    final normalized = codec?.trim().toLowerCase();
+    return normalized == 'ass' || normalized == 'ssa';
+  }
+
   @override
   Future<void> setSubtitleTrack(
     int mpvTrackId, {
@@ -2572,6 +2742,12 @@ class MediaKitPlayerBackend extends PlayerBackend
       isExternalSubtitle ? externalSubtitleUrl : null,
     );
     _subtitlesDisabled = false;
+    final usedTopFallback = _primaryUsesTopFallback;
+    _primaryIsBitmapSubtitle = isBitmapSubtitle;
+    _primaryIsAssSubtitle = _isAssSubtitleCodec(subtitleCodec);
+    if (usedTopFallback != _primaryUsesTopFallback) {
+      _resetPrimarySubtitlePlacement();
+    }
     try {
       final native = _player.platform as NativePlayer;
       final trackListBefore = await _tryNativeGetProperty(native, 'track-list');
@@ -2602,6 +2778,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       // A track that isn't there stays off. Falling back to a list position
       // can land on another language.
       if (sidToApply == null) {
+        _resetPrimarySubtitlePlacement();
         if (!isExternalSubtitle) {
           _pendingEmbeddedSubtitle = (
             ordinal: mpvTrackId,
@@ -2616,8 +2793,6 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _player.setSubtitleTrack(SubtitleTrack.no());
         if (!isCurrentSelection()) return;
         await _nativeSetProperty(native, 'sid', 'no');
-        if (!isCurrentSelection()) return;
-        await _nativeSetProperty(native, 'secondary-sid', 'no');
         if (!isCurrentSelection()) return;
         // Recheck after registering: discovery may have completed while the
         // original track-list read was in flight.
@@ -2652,6 +2827,10 @@ class MediaKitPlayerBackend extends PlayerBackend
         return;
       }
 
+      final previousSid = await _tryNativeGetProperty(native, 'sid');
+      if (!isCurrentSelection()) return;
+      if (previousSid != sidToApply) _resetPrimarySubtitlePlacement();
+
       // media_kit's own track list can lag behind mpv's, so a track it
       // doesn't know yet is selected by the sid mpv reported.
       final target =
@@ -2677,9 +2856,6 @@ class MediaKitPlayerBackend extends PlayerBackend
         if (!isCurrentSelection()) return;
       }
 
-      await _nativeSetProperty(native, 'secondary-sid', 'no');
-      if (!isCurrentSelection()) return;
-
       // Moonfin never shows a Flutter subtitle overlay (media_kit disables its
       // SubtitleView when libass is on, and it stays hidden otherwise), so mpv
       // has to draw every subtitle including plain text like SRT and VTT.
@@ -2702,6 +2878,13 @@ class MediaKitPlayerBackend extends PlayerBackend
         _setSubtitleLoading(false);
       }
       _subtitleDebug('set track=$mpvTrackId threw: $e');
+    } finally {
+      if (isCurrentSelection()) {
+        await _applyPendingSecondarySubtitle();
+        if (isCurrentSelection()) {
+          await _refreshStackedSecondaryPosition(force: true);
+        }
+      }
     }
   }
 
@@ -2822,16 +3005,26 @@ class MediaKitPlayerBackend extends PlayerBackend
     _setSelectedExternalSubtitle(null);
     final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = false;
+    final usedTopFallback = _primaryUsesTopFallback;
+    _primaryIsBitmapSubtitle = false;
+    _primaryIsAssSubtitle = false;
+    if (usedTopFallback) _resetPrimarySubtitlePlacement();
     final platform = _player.platform;
     if (platform is! NativePlayer) return;
     final sid = _ccTrackSids[id - 1].toString();
-    await _nativeSetProperty(platform, 'sid', sid);
+    final previousSid = await _tryNativeGetProperty(platform, 'sid');
     if (!_isLatestSubtitleSelection(generation)) return;
-    await _nativeSetProperty(platform, 'secondary-sid', 'no');
+    if (previousSid != sid) _resetPrimarySubtitlePlacement();
+    await _nativeSetProperty(platform, 'sid', sid);
     if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-visibility', 'yes');
     if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-ass', 'yes');
+    if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyPendingSecondarySubtitle();
+    if (_isLatestSubtitleSelection(generation)) {
+      await _refreshStackedSecondaryPosition(force: true);
+    }
   }
 
   @override
@@ -2840,16 +3033,23 @@ class MediaKitPlayerBackend extends PlayerBackend
     final generation = ++_subtitleSelectionGeneration;
     _pendingEmbeddedSubtitle = null;
     _subtitlesDisabled = true;
+    _primaryIsBitmapSubtitle = false;
+    _primaryIsAssSubtitle = false;
+    // Turning primary Off clears saved placement, but ordinary dialogue gaps don't.
+    _resetPrimarySubtitlePlacement();
     await _player.setSubtitleTrack(SubtitleTrack.no());
     if (!_isLatestSubtitleSelection(generation)) return;
     try {
       final native = _player.platform as NativePlayer;
       await _nativeSetProperty(native, 'sid', 'no');
       if (!_isLatestSubtitleSelection(generation)) return;
-      await _nativeSetProperty(native, 'secondary-sid', 'no');
-      if (!_isLatestSubtitleSelection(generation)) return;
       await _nativeSetProperty(native, 'sub-visibility', 'no');
     } catch (_) {}
+    if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyPendingSecondarySubtitle();
+    if (_isLatestSubtitleSelection(generation)) {
+      await _refreshStackedSecondaryPosition(force: true);
+    }
   }
 
   @override
@@ -2912,8 +3112,352 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   Future<void> setSubtitleDelay(double seconds) async {
-    final native = _player.platform as NativePlayer;
+    subtitleDelaySeconds = seconds;
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
     await _nativeSetProperty(native, 'sub-delay', seconds.toStringAsFixed(3));
+    await setSecondarySubtitleDelay(_secondarySubtitleDelay);
+    if (!supportsSecondarySubtitleDelay) {
+      await _refreshStackedSecondaryPosition(force: true);
+    }
+  }
+
+  @override
+  Future<void> setSecondarySubtitle({
+    String? url,
+    String? codec,
+    String? language,
+    int? embeddedTrackId,
+  }) async {
+    final generation = ++_secondarySubtitleGeneration;
+    _secondarySubtitleRequested = embeddedTrackId != null || url?.isNotEmpty == true;
+    _lastSecondaryText = null;
+    _lastSecondaryStackPosition = null;
+    final ordinal = embeddedTrackId != null && embeddedTrackId > 0
+        ? embeddedTrackId
+        : null;
+    final externalUrl = url?.isNotEmpty == true ? url : null;
+    _pendingSecondarySubtitle = ordinal == null && externalUrl == null
+        ? null
+        : (ordinal: ordinal, url: externalUrl, codec: codec, generation: generation);
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    if (!_secondarySubtitleRequested) _lastPrimaryText = null;
+    await _nativeSetProperty(native, 'secondary-sid', 'no');
+    if (!_isCurrentSecondarySubtitle(generation) ||
+        _secondarySourceReadyGeneration != _playbackGeneration) {
+      return;
+    }
+    await _applyPendingSecondarySubtitle();
+    if (!_isCurrentSecondarySubtitle(generation) ||
+        _pendingSecondarySubtitle == null ||
+        ordinal != null ||
+        externalUrl == null) {
+      return;
+    }
+    // The server may still be extracting this file. Load it in the background using the
+    // existing subtitle-add and retry logic so playback and later selections can
+    // continue.
+    unawaited(_loadSecondarySubtitle(externalUrl, codec, generation));
+  }
+
+  bool _isCurrentSecondarySubtitle(int generation) =>
+      !_isDisposed && generation == _secondarySubtitleGeneration;
+
+  Future<void> _applyPendingSecondarySubtitle() async {
+    final pending = _pendingSecondarySubtitle;
+    final native = _player.platform;
+    if (pending == null ||
+        native is! NativePlayer ||
+        _secondarySourceReadyGeneration != _playbackGeneration ||
+        !_isCurrentSecondarySubtitle(pending.generation)) {
+      return;
+    }
+    final raw = await _tryNativeGetProperty(native, 'track-list');
+    if (!_isCurrentSecondarySubtitle(pending.generation) ||
+        _secondarySourceReadyGeneration != _playbackGeneration ||
+        _pendingSecondarySubtitle != pending) {
+      return;
+    }
+    final embedded = _extractTrackEntries(raw, type: 'sub')
+        .where(
+          (entry) => !entry.external && !_isClosedCaptionCodec(entry.codec),
+        )
+        .toList();
+    final ordinal = pending.ordinal;
+    final sid = ordinal != null
+        ? (ordinal <= embedded.length
+              ? embedded[ordinal - 1].id.toString()
+              : null)
+        : _externalSubtitleSid(raw, pending.url!);
+    if (sid == null) return;
+    await _nativeSetProperty(native, 'secondary-sid', sid);
+    if (!_isCurrentSecondarySubtitle(pending.generation) ||
+        _pendingSecondarySubtitle != pending) {
+      return;
+    }
+    // mpv can reject the secondary selection while the same track is primary, including
+    // its automatic startup selection. Keep the request pending until the primary
+    // changes and the secondary selection succeeds.
+    final selectedSid = await _tryNativeGetProperty(native, 'secondary-sid');
+    if (!_isCurrentSecondarySubtitle(pending.generation) ||
+        _pendingSecondarySubtitle != pending ||
+        selectedSid != sid) {
+      return;
+    }
+    _pendingSecondarySubtitle = null;
+    await _nativeSetProperty(native, 'secondary-sub-visibility', 'yes');
+    await _refreshStackedSecondaryPosition(force: true);
+    _subtitleDebug('secondary sid=$sid embedded=${ordinal != null}');
+  }
+
+  Future<void> _loadSecondarySubtitle(
+    String url,
+    String? codec,
+    int generation,
+  ) async {
+    bool isCurrent() =>
+        _isCurrentSecondarySubtitle(generation) &&
+        _pendingSecondarySubtitle != null;
+    try {
+      await addExternalSubtitle(url, codec: codec);
+      if (!isCurrent()) return;
+      await _applyPendingSecondarySubtitle();
+      if (!isCurrent()) return;
+      await _retryExternalSubtitle(
+        url,
+        isCurrentSelection: isCurrent,
+        selectTrack: _applyPendingSecondarySubtitle,
+      );
+    } catch (error) {
+      _subtitleDebug('secondary subtitle load failed: $error');
+    }
+  }
+
+  @override
+  Future<void> setSecondarySubtitleDelay(double seconds) async {
+    _secondarySubtitleDelay = seconds.clamp(-5.0, 5.0);
+    await _secondaryControlsReady;
+    if (_isDisposed || !supportsSecondarySubtitleDelay) return;
+    final native = _player.platform as NativePlayer;
+    await _nativeSetProperty(
+      native, 'secondary-sub-delay',
+      (subtitleDelaySeconds + _secondarySubtitleDelay).toStringAsFixed(3),
+    );
+    if (_secondarySubtitleRequested && supportsSecondarySubtitlePosition) {
+      // The native subtitle cue can change after the delay property returns.
+      // Re-read its bounds once the playback thread has had time to settle.
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await _refreshStackedSecondaryPosition(force: true);
+    }
+  }
+
+  @override
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {
+    final primarySize = (_lastFontSize ?? 24).clamp(6.0, 72.0);
+    _secondaryScale = fontSize == null
+        ? 1
+        : (fontSize / primarySize).clamp(0.5, 1.5).toDouble();
+    _secondaryVerticalOffset = PlaybackManager.clampSecondarySubtitleOffset(
+      verticalOffset ?? PlaybackManager.defaultSecondarySubtitleOffset,
+    );
+    await _reapplySecondarySubtitleAppearance();
+  }
+
+  Future<void> _reapplySecondarySubtitleAppearance() async {
+    await _secondaryControlsReady;
+    if (_isDisposed) return;
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    if (supportsSecondarySubtitleSize) {
+      await _nativeSetProperty(
+        native,
+        'secondary-sub-scale',
+        _secondaryScale.toStringAsFixed(3),
+      );
+    }
+    if (!supportsSecondarySubtitlePosition) return;
+    await _refreshStackedSecondaryPosition(force: true);
+  }
+
+  // libass sizes plain text on a 720-line canvas. Measure wrapping at that
+  // scale too. A fixed character count misses wide glyphs and narrow windows.
+  double _subtitleHeight(String text, double fontSize, double width) {
+    if (text.isEmpty) return 0;
+    final plain = text
+        .replaceAll(RegExp(r'\{[^}]*\}'), '')
+        .replaceAll(r'\N', '\n');
+    final painter = TextPainter(
+      text: TextSpan(
+        text: plain,
+        style: TextStyle(
+          fontFamily: _libassFontFamily,
+          fontSize: fontSize,
+          fontWeight: (_lastFontWeight ?? 400) >= 700
+              ? FontWeight.bold
+              : FontWeight.normal,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: width.clamp(1.0, 10000.0));
+    final lines = painter.computeLineMetrics().length;
+    final height =
+        painter.height.clamp(fontSize * lines, double.infinity) / 720;
+    painter.dispose();
+    return height;
+  }
+
+  Future<void> _refreshStackedSecondaryPosition({bool force = false}) async {
+    final pending = _secondaryPositionUpdate;
+    if (pending != null) {
+      if (!force) return;
+      await pending.future;
+      return _refreshStackedSecondaryPosition(force: true);
+    }
+    if (_isDisposed ||
+        !_secondarySubtitleRequested ||
+        !_secondaryPositionSupported) {
+      return;
+    }
+    final now = DateTime.now();
+    if (!force &&
+        _lastSecondaryPositionCheck != null &&
+        now.difference(_lastSecondaryPositionCheck!) <
+            const Duration(milliseconds: 350)) {
+      return;
+    }
+    _lastSecondaryPositionCheck = now;
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    final update = _secondaryPositionUpdate = Completer<void>();
+    final generation = _secondarySubtitleGeneration;
+    final placementGeneration = _primaryPlacementGeneration;
+    bool isCurrent() =>
+        _isCurrentSecondarySubtitle(generation) &&
+        placementGeneration == _primaryPlacementGeneration &&
+        _secondarySubtitleRequested;
+    try {
+      final primaryAss =
+          await _tryNativeGetProperty(native, 'sub-text/ass') ?? '';
+      final secondaryText =
+          await _tryNativeGetProperty(native, 'secondary-sub-text') ?? '';
+      if (!isCurrent()) return;
+      final fontSize =
+          double.tryParse(
+            await _tryNativeGetProperty(native, 'sub-font-size') ?? '',
+          ) ??
+          (((_lastFontSize ?? 24) / 24) * 55).round().clamp(24, 120).toDouble();
+      final margin =
+          (double.tryParse(
+                await _tryNativeGetProperty(native, 'sub-margin-y') ?? '',
+              ) ??
+              (_lastVerticalOffset ?? 0.04) * 720) /
+          720;
+      // mpv exposes OSD dimensions as scalar subproperties, not JSON strings.
+      final osdWidth = double.tryParse(
+            await _tryNativeGetProperty(native, 'osd-width') ?? '',
+          ) ?? 0;
+      final osdHeight = double.tryParse(
+            await _tryNativeGetProperty(native, 'osd-height') ?? '',
+          ) ?? 0;
+      final width = osdWidth.isFinite &&
+              osdHeight.isFinite &&
+              osdWidth > 0 &&
+              osdHeight > 0
+          ? osdWidth / osdHeight * 720
+          : 1280.0;
+      final marginX =
+          double.tryParse(
+            await _tryNativeGetProperty(native, 'sub-margin-x') ?? '',
+          ) ??
+          25;
+      final primaryScale =
+          double.tryParse(
+            await _tryNativeGetProperty(native, 'sub-scale') ?? '',
+          ) ??
+          1;
+      final secondaryScale =
+          double.tryParse(
+            await _tryNativeGetProperty(native, 'secondary-sub-scale') ?? '',
+          ) ??
+          1;
+      if (!isCurrent()) return;
+      if (!_subtitlesDisabled &&
+          !_primaryUsesTopFallback &&
+          primaryAss.isNotEmpty) {
+        _lastPrimaryText = primaryAss;
+      }
+      if (secondaryText.trim().isNotEmpty) {
+        _lastSecondaryText = secondaryText;
+      }
+
+      // Retain both cues through dialogue gaps, but remeasure them with the current
+      // font and viewport so size and window changes can't leave stale geometry.
+      final primaryText = _lastPrimaryText ?? '';
+      final secondaryMeasurementText =
+          secondaryText.trim().isNotEmpty
+          ? secondaryText
+          : (_lastSecondaryText ?? 'Ag');
+      final alignment =
+          int.tryParse(_mpvSrtAlignment.firstMatch(primaryText)?[1] ?? '') ?? 2;
+      final availableWidth = width - marginX * 2;
+      final primaryHeight = _subtitleHeight(
+        primaryText,
+        fontSize * primaryScale,
+        availableWidth,
+      );
+      final secondaryHeight = _subtitleHeight(
+        secondaryMeasurementText,
+        fontSize * secondaryScale,
+        availableWidth,
+      );
+      final primaryAnchor = mpvPrimaryStackingAnchor(alignment, margin: margin);
+
+      // secondary-sub-pos sets the bottom edge. For text primaries whose placement
+      // mpv exposes reliably, keep the secondary stacked relative to that text.
+      // PGS/bitmap and ASS/SSA can have authored geometry that mpv doesn't expose
+      // as usable bounds here, so reserve a stable top lane instead. Before the
+      // first secondary cue arrives, a one-line estimate prevents a flash at the
+      // top edge. Dialogue gaps reuse the last non-empty cue and remeasure it.
+      final useTopFallback =
+          _primaryUsesTopFallback || _lastPrimaryText == null;
+      final secondaryTop = useTopFallback
+          ? (margin + _secondaryVerticalOffset)
+                .clamp(0.0, (1 - secondaryHeight).clamp(0.0, 1.0))
+          : stackedSecondaryTop(
+              alignment: alignment,
+              primaryAnchor: primaryAnchor,
+              primaryHeight: primaryHeight,
+              secondaryHeight: secondaryHeight,
+              offset: _secondaryVerticalOffset,
+            );
+      // mpv passes 100 - sub-pos to libass as line_position. For ordinary
+      // bottom-aligned text, libass interpolates that value between the normal
+      // bottom margin and the top of the frame. Invert that interpolation here:
+      // a desired screen-space bottom edge must be normalized by (1 - margin).
+      final position = _subtitlesDisabled
+          ? 100
+          : ((secondaryTop + secondaryHeight) /
+                    (1 - margin).clamp(0.01, 1.0) *
+                    100)
+                .round()
+                .clamp(0, 150);
+      if (force || position != _lastSecondaryStackPosition) {
+        await _nativeSetProperty(native, 'secondary-sub-pos', '$position');
+        if (isCurrent()) {
+          _lastSecondaryStackPosition = position;
+        }
+      }
+    } catch (_) {
+      // If a position update fails, keep the current subtitle selection.
+    } finally {
+      _secondaryPositionUpdate = null;
+      update.complete();
+    }
   }
 
   @override
@@ -2924,11 +3468,25 @@ class MediaKitPlayerBackend extends PlayerBackend
     String? codec,
   }) async {
     final sourceGeneration = _pendingSubtitleChoice.source;
+    final alreadyRegistered =
+        _externalSubtitles[url]?.sourceGeneration == sourceGeneration;
     _externalSubtitles[url] = (
       title: title,
       language: language,
       sourceGeneration: sourceGeneration,
     );
+    if (alreadyRegistered) {
+      final raw = await _tryNativeGetProperty(
+        _player.platform as NativePlayer, 'track-list',
+      );
+      if (_isDisposed || sourceGeneration != _pendingSubtitleChoice.source) {
+        return;
+      }
+      if (_externalSubtitleSid(raw, url) != null) {
+        await _pendingSubtitleChoice.added(url, sourceGeneration);
+        return;
+      }
+    }
     await _addExternalSubtitle(url);
     await _pendingSubtitleChoice.added(url, sourceGeneration);
 
@@ -3011,11 +3569,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
       await _nativeSetProperty(native, 'sub-border-size', '2');
     }
-    final fontSize = _lastFontSize;
-    if (fontSize != null) {
-      final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
-      await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
-    }
+    await _writeSubtitleFontSize(native);
     final fontWeight = _lastFontWeight;
     if (fontWeight != null) {
       // mpv holds this across titles, so it has to be written either way or a
@@ -3034,6 +3588,67 @@ class MediaKitPlayerBackend extends PlayerBackend
     // Last, because it decides whether the colors above reach an ASS subtitle
     // at all.
     await _applyAssOverrideMode();
+    await _refreshStackedSecondaryPosition(force: true);
+  }
+
+  Future<void> _writeSubtitleFontSize(NativePlayer native) async {
+    final fontSize = _lastFontSize;
+    if (fontSize == null) return;
+    final mpvSize = mpvSubtitleFontSize(fontSize) * _textSubtitleScale;
+    await _nativeSetProperty(
+      native,
+      'sub-font-size',
+      mpvSize.round().toString(),
+    );
+  }
+
+  void _refreshSubtitleFontSize() {
+    if (_isDisposed) return;
+    unawaited(() async {
+      try {
+        await _writeSubtitleFontSize(_player.platform as NativePlayer);
+      } catch (_) {}
+    }());
+  }
+
+  /// A native window or surface draws the black bars too, so mpv already
+  /// sizes text against the screen there. A crop is left alone because mpv
+  /// lays subtitles out on the uncropped frame.
+  double get _textSubtitleScale {
+    final params = _decodedVideoParams;
+    final width = params?.dw;
+    final height = params?.dh;
+    if (_useNativeSurface ||
+        hdrOutput.isEngaged ||
+        _letterboxCropper.geometry != null ||
+        width == null ||
+        height == null ||
+        height <= 0) {
+      return 1;
+    }
+    // The screen shape is only read when the size is written, so a window
+    // resized wider than 16:9 waits for the next title or style change.
+    final screen = PlatformDispatcher.instance.implicitView?.physicalSize;
+    return textSubtitleFrameScale(
+      frameAspect: width / height,
+      screenAspect: screen == null || screen.height <= 0
+          ? 16 / 9
+          : screen.width / screen.height,
+    );
+  }
+
+  /// How much to enlarge text subtitles on a frame wider than the screen.
+  ///
+  /// mpv sizes text subtitles against the frame it draws into, and the
+  /// texture is the video alone, so a scope title gets smaller text than a
+  /// 16:9 one. This brings it back to the size a 16:9 title gets on the same
+  /// screen, and leaves frames no wider than that alone.
+  static double textSubtitleFrameScale({
+    required double frameAspect,
+    required double screenAspect,
+  }) {
+    final reference = screenAspect > 16 / 9 ? screenAspect : 16 / 9;
+    return frameAspect > reference ? frameAspect / reference : 1;
   }
 
   @override
@@ -3123,15 +3738,19 @@ class MediaKitPlayerBackend extends PlayerBackend
     _presenterWatchdog?.cancel();
     _renegotiateSettleTimer?.cancel();
     _letterboxGeometrySub?.cancel();
+    hdrOutput.status.removeListener(_refreshSubtitleFontSize);
     _pendingEmbeddedSubtitle = null;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
+    _secondaryPositionSub?.cancel();
+    _secondaryMetricsTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _tracksChangedController.close();
     _playingGateChangedController.close();
     _subtitleLoadingStream.close();
-    _player.dispose();
+    unawaited(MpvPlayerRegistry.instance.dispose(_player));
   }
 }
 

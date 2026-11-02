@@ -34,6 +34,20 @@ void main() {
     });
   }
 
+  test('PlayStation player URL ends in the file name so a .pbp loads', () {
+    final player = Uri.parse(
+      createApi().playerUrl(
+        libraryId: 'Retro Games',
+        gameId: 'opaque-token',
+        core: 'psx',
+        romFileName: 'Crash Bandicoot (USA).pbp',
+      ),
+    );
+
+    final rom = Uri.parse(player.queryParameters['rom']!);
+    expect(rom.pathSegments.last, 'Crash Bandicoot (USA).pbp');
+  });
+
   test('non-arcade player URL retains the legacy token-only route', () {
     final player = Uri.parse(
       createApi().playerUrl(
@@ -64,6 +78,83 @@ void main() {
     expect(save.path, endsWith('/Saves/ejs-arcade-opaque-token'));
     expect(save.queryParameters['kind'], 'state');
     expect(save.queryParameters['ApiKey'], 'test-token');
+  });
+
+  test('player URL asks for the battery save only when starting fresh', () {
+    Uri sramOf({required bool includeSaveUrl}) {
+      final player = Uri.parse(
+        createApi().playerUrl(
+          libraryId: 'Retro Games',
+          gameId: 'romm-12',
+          core: 'snes',
+          includeSaveUrl: includeSaveUrl,
+          saveId: 'ejs-snes-romm-12',
+          includeSramUrl: true,
+        ),
+      );
+      return Uri.parse(player.queryParameters['sram'] ?? '');
+    }
+
+    final fresh = sramOf(includeSaveUrl: false);
+    expect(fresh.path, endsWith('/Saves/romm-12'));
+    expect(fresh.queryParameters['kind'], 'sram');
+    expect(fresh.queryParameters['ApiKey'], 'test-token');
+    expect(sramOf(includeSaveUrl: true).toString(), isEmpty);
+  });
+
+  test('RomM account reads a pending link and treats junk as absent', () {
+    final account = RommAccount.fromJson({
+      'available': true,
+      'linked': false,
+      'username': null,
+      'pending': {
+        'userCode': 'ABCD1234',
+        'verificationUrl': 'http://romm:8080/pair/device',
+        'verificationUrlComplete': 'http://romm:8080/pair/device?code=ABCD1234',
+        'expiresInSeconds': 540,
+        'intervalSeconds': 5,
+      },
+      'error': null,
+    });
+    expect(account.available, isTrue);
+    expect(account.linked, isFalse);
+    expect(account.pending?.userCode, 'ABCD1234');
+    expect(account.pending?.verificationUrlComplete, endsWith('code=ABCD1234'));
+    expect(account.pending?.intervalSeconds, 5);
+
+    final odd = RommAccount.fromJson({
+      'available': 'yes',
+      'pending': {'verificationUrl': 'http://romm/pair'},
+      'error': 3,
+    });
+    expect(odd.available, isFalse);
+    expect(odd.error, isNull);
+    expect(odd.pending?.verificationUrlComplete, 'http://romm/pair');
+    expect(odd.pending?.intervalSeconds, 5);
+  });
+
+  test('RomM account calls read a 404 as an older plugin', () async {
+    final dio = Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) => handler.reject(
+            DioException(
+              requestOptions: options,
+              response: Response(requestOptions: options, statusCode: 404),
+              type: DioExceptionType.badResponse,
+            ),
+          ),
+        ),
+      );
+    final api = MoonbaseGamesApi(
+      dio,
+      () => 'http://redstar.example:8101',
+      () => 'test-token',
+      ServerType.jellyfin,
+    );
+
+    expect((await api.getRommAccount()).available, isFalse);
+    expect((await api.startRommLink()).available, isFalse);
   });
 
   test(

@@ -44,6 +44,15 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download Apple test results
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: apple-test-results
+          path: apple-test-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Post PR comment
         if: steps.results.outcome == 'success'
         uses: actions/github-script@v7
@@ -53,11 +62,6 @@ jobs:
 
             const outcomes = JSON.parse(fs.readFileSync('build-results/outcomes.json', 'utf8'));
 
-            let tests = null;
-            try {
-              tests = JSON.parse(fs.readFileSync('test-results/test-results.json', 'utf8'));
-            } catch (_) {}
-
             // The artifact was produced by the pull request's own code, so
             // numbers are clamped and names are escaped before they reach a
             // comment posted with the repository's token.
@@ -66,6 +70,24 @@ jobs:
               .replace(/[`\r\n|]/g, ' ')
               .replace(/@/g, '@\u200b')
               .slice(0, 200);
+
+            const parts = ['test-results', 'apple-test-results'].flatMap(dir => {
+              try {
+                return [JSON.parse(fs.readFileSync(`${dir}/test-results.json`, 'utf8'))];
+              } catch (_) {
+                return [];
+              }
+            });
+            const sum = (key) => parts.reduce((n, part) => n + clamp(part[key]), 0);
+            const concat = (key) => parts.flatMap(part => Array.isArray(part[key]) ? part[key] : []);
+            const tests = parts.length === 0 ? null : {
+              passed: sum('passed'),
+              failed: sum('failed'),
+              failures: concat('failures'),
+              more_failures: sum('more_failures'),
+              analyzer_errors: sum('analyzer_errors'),
+              analyzer_sample: concat('analyzer_sample'),
+            };
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const runId = context.payload.workflow_run.id;
@@ -110,7 +132,7 @@ jobs:
 
             const statuses = rows.map(statusOf);
             const buildsPassed = statuses.every(s => s === 'success');
-            const testsPassed = outcomes.tests === 'success';
+            const testsPassed = outcomes.tests === 'success' && outcomes.apple_tests === 'success';
             const passed = buildsPassed && testsPassed;
 
             const testLines = [];

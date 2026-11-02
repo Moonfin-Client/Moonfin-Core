@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
@@ -189,8 +190,30 @@ void main() {
       await focusCardShowing(tester, _seriesTimerName);
       await pressKey(tester, LogicalKeyboardKey.enter);
 
-      expect(find.text((await l10n()).cancelSeriesRecordingQuestion),
-          findsOneWidget);
+      expect(find.text((await l10n()).seriesRecordingSettings),
+          findsOneWidget,
+          reason: 'Enter should open the series recording options');
+      expect(find.text((await l10n()).cancelSeriesRecording), findsOneWidget);
+    });
+
+    testWidgets('the Series tab picks up a rule added while it is open',
+        (tester) async {
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.textContaining((await l10n()).seriesRecordings));
+      await tester.pumpAndSettle();
+
+      when(() => liveTvApi.getSeriesTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            <String, dynamic>{'Id': 'st-1', 'Name': _seriesTimerName},
+            <String, dynamic>{'Id': 'st-2', 'Name': 'Added Series'},
+          ],
+        },
+      );
+      notifyLiveTvRecordingsChanged();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Added Series'), findsOneWidget);
     });
 
     testWidgets('the recordings header fits a phone screen', (tester) async {
@@ -234,6 +257,146 @@ void main() {
       await pressKey(tester, LogicalKeyboardKey.arrowRight);
 
       expect(find.text((await l10n()).cancelRecording), findsNothing);
+    });
+  });
+
+  group('moving up the schedule brings each row title back into view', () {
+    // Five rows, a day apart, so the list scrolls.
+    void serveFiveDays() {
+      final first = DateTime.now().add(const Duration(hours: 1));
+      when(() => liveTvApi.getTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            for (var day = 0; day < 5; day++)
+              <String, dynamic>{
+                'Id': 'timer-$day',
+                'Name': 'Show $day',
+                'StartDate': first
+                    .add(Duration(days: day))
+                    .toUtc()
+                    .toIso8601String(),
+              },
+          ],
+        },
+      );
+    }
+
+    Future<void> moveDownAndBackUp(WidgetTester tester) async {
+      final list = find.byWidgetPredicate(
+        (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+      );
+      double offset() =>
+          tester.state<ScrollableState>(list.first).position.pixels;
+
+      await focusCardShowing(tester, 'Show 0');
+      for (var i = 0; i < 4; i++) {
+        await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      }
+      expect(offset(), greaterThan(0));
+
+      for (var i = 0; i < 4; i++) {
+        await pressKey(tester, LogicalKeyboardKey.arrowUp);
+      }
+
+      expect(offset(), 0);
+    }
+
+    testWidgets('on the Recordings Schedule tab', (tester) async {
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.text('${(await l10n()).schedule} (5)'));
+      await tester.pumpAndSettle();
+
+      await moveDownAndBackUp(tester);
+    });
+
+    testWidgets('on the Schedule screen', (tester) async {
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      await moveDownAndBackUp(tester);
+    });
+
+    testWidgets('keeps the card in view when a row is taller than the list',
+        (tester) async {
+      // A large UI scale on a short screen.
+      tester.view.physicalSize = const Size(800, 300);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      final list = find.byWidgetPredicate(
+        (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+      );
+      final viewport = tester.getRect(list.first);
+      await focusCardShowing(tester, 'Show 0');
+      await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      await pressKey(tester, LogicalKeyboardKey.arrowUp);
+
+      final card = tester.getRect(
+        find.descendant(of: list.first, matching: find.text('Show 1')),
+      );
+      expect(card.top, greaterThanOrEqualTo(viewport.top));
+      expect(card.bottom, lessThanOrEqualTo(viewport.bottom));
+    });
+  });
+
+  group('cancelling a scheduled recording', () {
+    // Jellyfin includes the timer's program under the program's own id.
+    void serveTimerWithProgram() {
+      final start = DateTime.now().add(const Duration(hours: 1));
+      when(() => liveTvApi.getTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            <String, dynamic>{
+              'Id': 'timer-1',
+              'Name': _scheduledName,
+              'StartDate': start.toUtc().toIso8601String(),
+              'ProgramInfo': <String, dynamic>{
+                'Id': 'program-1',
+                'Name': _scheduledName,
+                'TimerId': 'timer-1',
+                'StartDate': start.toUtc().toIso8601String(),
+              },
+            },
+          ],
+        },
+      );
+      when(() => liveTvApi.cancelTimer(any())).thenAnswer((_) async {});
+    }
+
+    Future<void> cancel(WidgetTester tester) async {
+      await focusCardShowing(tester, _scheduledName);
+      await pressKey(tester, LogicalKeyboardKey.enter);
+      await tester.tap(find.text((await l10n()).yesCancel));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the Schedule screen cancels by the timer id', (tester) async {
+      serveTimerWithProgram();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      await cancel(tester);
+
+      verify(() => liveTvApi.cancelTimer('timer-1')).called(1);
+      expect(find.text((await l10n()).failedToCancelRecording), findsNothing);
+    });
+
+    testWidgets('the Recordings Schedule tab cancels by the timer id',
+        (tester) async {
+      serveTimerWithProgram();
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.text('${(await l10n()).schedule} (1)'));
+      await tester.pumpAndSettle();
+
+      await cancel(tester);
+
+      verify(() => liveTvApi.cancelTimer('timer-1')).called(1);
+      expect(find.text((await l10n()).failedToCancelRecording), findsNothing);
     });
   });
 

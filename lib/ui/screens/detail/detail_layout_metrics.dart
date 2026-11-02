@@ -61,6 +61,69 @@ bool detailUsesLandscapeLayout(BuildContext context) =>
     PlatformDetection.useDesktopUi ||
     MediaQuery.orientationOf(context) == Orientation.landscape;
 
+/// A phone held upright can show the whole backdrop under the toolbar, fading
+/// into the page below it, instead of zooming it to fill the screen. On a
+/// phone shaped screen that picture ends about where the title starts.
+class DetailBackdropFit extends StatelessWidget {
+  final Widget child;
+  final UserPreferences prefs;
+
+  /// Overrides this screen's shape and the saved setting, for the settings
+  /// preview, which always draws a phone upright and may be trying a value.
+  final bool? fits;
+
+  const DetailBackdropFit({
+    super.key,
+    required this.child,
+    required this.prefs,
+    this.fits,
+  });
+
+  // Eased stops, so the picture melts into the page rather than ending on a line
+  static const _fade = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0x00FFFFFF),
+      Color(0xFFFFFFFF),
+      Color(0xFFFFFFFF),
+      Color(0xD9FFFFFF),
+      Color(0x80FFFFFF),
+      Color(0x26FFFFFF),
+      Color(0x00FFFFFF),
+    ],
+    stops: [0, 0.15, 0.6, 0.68, 0.8, 0.92, 1.0],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final fits =
+        this.fits ??
+        (PlatformDetection.useMobileUi &&
+            !detailUsesLandscapeLayout(context) &&
+            prefs.get(UserPreferences.detailsBackdropSize) ==
+                UserPreferences.detailsBackdropFit);
+    if (!fits) return child;
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top +
+            TopToolbar.baseHeightFor(context),
+      ),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: _fade.createShader,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The Classic poster, which is the only detail style that has one.
 Size classicDetailPosterSize(BuildContext context, {UserPreferences? prefs}) {
   if (!useDesktopDetailLayout(context)) {
@@ -121,6 +184,36 @@ double nouveauHeroMinHeight(Size size) {
 double nouveauHorizontalInset(Size size) => PlatformDetection.isTV
     ? 56.0
     : (size.width * 0.046).clamp(56.0, 96.0);
+
+/// The Stage poster's width. Beside the details it takes a share of the
+/// screen's height, and above them on a phone a share of its width.
+double stagePosterWidth(Size size, {required bool landscape}) => landscape
+    ? (size.height * 0.36).clamp(140.0, 300.0)
+    : (size.width * 0.46).clamp(150.0, 230.0);
+
+/// How far the Stage page sits in from the leading edge. A left sidebar takes
+/// more room than a toolbar along the top.
+double stageLeadingInset(
+  BuildContext context, {
+  required bool landscape,
+  UserPreferences? prefs,
+}) {
+  if (!landscape) return detailIsCompact(context) ? 20.0 : 36.0;
+  final sidebar =
+      _resolvePrefs(prefs)?.get(UserPreferences.navbarPosition) ==
+      NavbarPosition.left;
+  return sidebar ? 120.0 : 48.0;
+}
+
+/// Where the Stage page starts, clear of the toolbar.
+double stageTopInset(BuildContext context) =>
+    MediaQuery.paddingOf(context).top + TopToolbar.baseHeightFor(context) + 8;
+
+/// How tall the Premiere backdrop is. It fills the first screen of a TV or
+/// a desktop, and the top of a phone's.
+double premiereHeroHeight(Size size, {required bool landscape}) => landscape
+    ? size.height
+    : (size.height * 0.62).clamp(360.0, 640.0);
 
 /// The Minimalist episode rail.
 ///
@@ -201,3 +294,15 @@ double minimalistEpisodeCardWidth(
 /// a modal, and Nouveau has no track list at all, which leaves the screen with
 /// nothing on it but buttons.
 bool detailFallsBackToModern(String? type) => type == 'Playlist';
+
+/// Whether Stage or Premiere draws this item type. Everything else, a person,
+/// an album or a playlist, goes to Modern, which already knows how to lay
+/// those out.
+bool detailPageDraws(String? type) => const {
+  'Movie',
+  'Series',
+  'Season',
+  'Episode',
+  'Video',
+  'MusicVideo',
+}.contains(type);

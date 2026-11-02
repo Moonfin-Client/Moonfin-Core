@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:server_core/server_core.dart';
@@ -113,6 +114,25 @@ void main() {
     when(() => client.liveTvApi).thenReturn(liveTv);
     when(() => client.userId).thenReturn('user');
     when(() => _guide(liveTv)).thenAnswer((_) async => {'Items': <dynamic>[]});
+  });
+
+  test('Plex leaves out the genre filters its programs never carry', () {
+    when(() => client.serverType).thenReturn(ServerType.plex);
+    expect(
+      LiveTvGuideViewModel(client).filters,
+      isNot(
+        anyOf(
+          contains(GuideFilter.sports),
+          contains(GuideFilter.news),
+          contains(GuideFilter.kids),
+        ),
+      ),
+    );
+
+    for (final type in [ServerType.jellyfin, ServerType.emby]) {
+      when(() => client.serverType).thenReturn(type);
+      expect(LiveTvGuideViewModel(client).filters, GuideFilter.values);
+    }
   });
 
   test('load() fetches only the first batch; loadMorePrograms() paginates the rest', () async {
@@ -1199,6 +1219,99 @@ void main() {
 
       verify(() => _guide(liveTv, category: GuideFilter.kids)).called(2);
       expect(vm.filteredChannels.map((c) => c.id), ['c5']);
+    });
+  });
+
+  group('recording changes refresh the loaded rows in place', () {
+    Map<String, dynamic> recorded(Map<String, dynamic> program) => {
+      ...program,
+      'TimerId': 'timer-1',
+    };
+
+    test('recordingChanged re-reads programs without a loading state', () async {
+      _stubChannels(liveTv, [_channel('c0')]);
+      when(() => _guide(liveTv)).thenAnswer(
+        (_) async => {
+          'Items': [_program('p0', 'c0')],
+        },
+      );
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      expect(vm.programsForChannel('c0').single.hasTimer, isFalse);
+
+      when(() => _guide(liveTv)).thenAnswer(
+        (_) async => {
+          'Items': [recorded(_program('p0', 'c0'))],
+        },
+      );
+      final states = <GuideState>[];
+      vm.addListener(() => states.add(vm.state));
+      final revision = liveTvRecordingRevision.value;
+      await vm.recordingChanged();
+
+      expect(states, isNot(contains(GuideState.loading)));
+      expect(vm.state, GuideState.ready);
+      expect(vm.programsForChannel('c0').single.hasTimer, isTrue);
+      expect(liveTvRecordingRevision.value, revision + 1);
+    });
+
+    test('a category filter refreshes its own rows too', () async {
+      _stubChannels(liveTv, List.generate(10, (i) => _channel('c$i')));
+      when(() => _guide(liveTv, category: GuideFilter.kids)).thenAnswer(
+        (_) async => {
+          'Items': [_program('k1', 'c5', isKids: true)],
+        },
+      );
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      vm.setFilter(GuideFilter.kids);
+      await Future<void>.delayed(Duration.zero);
+      expect(vm.programsForChannel('c5').single.hasTimer, isFalse);
+
+      when(() => _guide(liveTv, category: GuideFilter.kids)).thenAnswer(
+        (_) async => {
+          'Items': [recorded(_program('k1', 'c5', isKids: true))],
+        },
+      );
+      final states = <GuideState>[];
+      vm.addListener(() => states.add(vm.state));
+      await vm.recordingChanged();
+
+      expect(states, isNot(contains(GuideState.loading)));
+      expect(vm.filteredChannels.map((c) => c.id), ['c5']);
+      expect(vm.programsForChannel('c5').single.hasTimer, isTrue);
+    });
+
+    test('reloadIfRecordingsChanged does nothing until a recording changes', () async {
+      _stubChannels(liveTv, [_channel('c0')]);
+      when(() => _guide(liveTv)).thenAnswer(
+        (_) async => {
+          'Items': [_program('p0', 'c0')],
+        },
+      );
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      clearInteractions(liveTv);
+
+      await vm.reloadIfRecordingsChanged();
+      verifyNever(() => _guide(liveTv));
+
+      when(() => _guide(liveTv)).thenAnswer(
+        (_) async => {
+          'Items': [recorded(_program('p0', 'c0'))],
+        },
+      );
+      final states = <GuideState>[];
+      vm.addListener(() => states.add(vm.state));
+      notifyLiveTvRecordingsChanged();
+      await vm.reloadIfRecordingsChanged();
+
+      expect(states, isNot(contains(GuideState.loading)));
+      expect(vm.programsForChannel('c0').single.hasTimer, isTrue);
+
+      clearInteractions(liveTv);
+      await vm.reloadIfRecordingsChanged();
+      verifyNever(() => _guide(liveTv));
     });
   });
 

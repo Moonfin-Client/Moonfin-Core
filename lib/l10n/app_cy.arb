@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Dewiswch pa ffrydiau pwnc i'w dangos yn Darganfod.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Gweithredu",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Genres Llyfrau Llafar",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Dewiswch pa genres i'w dangos yn Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Darganfod Llyfrau Llafar",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Teitlau parth cyhoeddus poblogaidd gan LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} teitl",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Sgroliwch i'r chwith",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Darganfod",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Teitlau tueddu fesul pwnc o Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Dim eitemau wedi'u nod tudalen eto",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Galluogi Gweld Ffolder",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Dangos opsiwn pori ffolder",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Gwelededd Llyfrgell",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Cynnwys dan sylw, ymddangosiad",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Maint poster, math o ddelwedd, golwg ffolder",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, a ffynonellau graddio",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Wedi methu ag echdynnu archif .cbr.",
     "cb7ExtractionUnavailable": "Nid yw echdynnu CB7 ar gael ar y platfform hwn.",
     "cb7ExtractionPluginUnavailable": "Nid yw ategyn echdynnu CB7 ar gael ar y platfform hwn.",
-    "closeGenrePanel": "Panel genre agos",
     "loadingShuffle": "Wrthi'n llwytho siffrwd…",
     "libraryShuffleLabel": "HAPCHWARAE'R LLYFRGELL",
     "randomShuffleLabel": "HAPCHWARAE AR HAP",

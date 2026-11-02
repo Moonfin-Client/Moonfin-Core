@@ -432,6 +432,10 @@ class h extends EventTarget {
   _ready() {
     this._init(), this.dispatchEvent(new CustomEvent("ready"));
   }
+  // Local font-registration signal: worker readiness precedes async font loads.
+  _fontAdded() {
+    this.dispatchEvent(new CustomEvent("fontAdded"));
+  }
   /**
    * Send data and execute function in the worker.
    * @param  {String} target Target function.

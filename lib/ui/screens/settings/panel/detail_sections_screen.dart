@@ -35,8 +35,12 @@ class _DetailSectionsScreen extends StatelessWidget {
             listenable: prefs,
             builder: (context, _) {
               final style = prefs.get(UserPreferences.detailScreenStyle);
+              final musicOnAnyServer = musicOnAnySignedInServer();
               final offered = DetailSection.values
                   .where((s) => s.isOffered && s.isAvailableIn(style))
+                  // Lyrics belong to songs: not offered when no signed-in
+                  // server has music (all Silo, say).
+                  .where((s) => s != DetailSection.lyrics || musicOnAnyServer)
                   .toList();
               return ListView(
                 children: [

@@ -1,6 +1,8 @@
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/modern_row.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 void main() {
   group('ModernCardExpansion', () {
@@ -76,6 +78,127 @@ void main() {
       expect(expansion.tapToOpen('a'), isTrue);
       expect(grown(), isFalse);
       expansion.dispose();
+    });
+  });
+
+  group('modernDetailsWidth', () {
+    // An 800px row (the test window) of 20 cards, 100px apart plus 10px spacing, growing to 300.
+    Future<ScrollController> row(WidgetTester tester, {double offset = 0}) async {
+      final controller = ScrollController(initialScrollOffset: offset);
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: SizedBox(
+              width: 800,
+              height: 100,
+              child: ListView(
+                controller: controller,
+                scrollDirection: Axis.horizontal,
+                children: const [SizedBox(width: 5000)],
+              ),
+            ),
+          ),
+        ),
+      );
+      return controller;
+    }
+
+    double width(ScrollController controller, int index, {bool hovered = false}) =>
+        modernDetailsWidth(
+          controller: controller,
+          index: index,
+          itemCount: 20,
+          itemExtent: 100,
+          itemSpacing: 10,
+          focusedWidth: 300,
+          maxWidth: 2000,
+          leadingInset: 0,
+          trailingInset: 0,
+          hovered: hovered,
+        );
+
+    testWidgets('stops at twice the card width', (tester) async {
+      expect(width(await row(tester), 0), 600);
+    });
+
+    testWidgets('a card that cannot scroll to the edge gets the room left', (tester) async {
+      expect(width(await row(tester), 19), 300);
+    });
+
+    testWidgets('a hovered card gets the room from where it sits', (tester) async {
+      expect(width(await row(tester), 5, hovered: true), 250);
+    });
+
+    testWidgets('a hovered card in a scrolled row starts from the offset', (tester) async {
+      expect(width(await row(tester, offset: 500), 9, hovered: true), 310);
+    });
+
+    testWidgets('a TV keeps the whole row', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic));
+      expect(width(await row(tester), 0), 800);
+    });
+  });
+
+  group('ModernHoverBuilder', () {
+    late ModernCardExpansion expansion;
+    late ScrollController controller;
+    late List<bool> builds;
+
+    Future<void> pump(WidgetTester tester) async {
+      expansion = ModernCardExpansion();
+      controller = ScrollController();
+      addTearDown(expansion.dispose);
+      addTearDown(controller.dispose);
+      builds = [];
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  children: const [SizedBox(width: 5000)],
+                ),
+              ),
+              ModernHoverBuilder(
+                expansion: expansion,
+                cardKey: 'a',
+                controller: controller,
+                builder: (context, hovered) {
+                  builds.add(hovered);
+                  return const SizedBox();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    testWidgets('rebuilds when the pointer lands on a card focus already grew', (tester) async {
+      await pump(tester);
+      expansion.hoveredKey.value = 'a';
+      await tester.pump();
+      expect(builds, [false, true]);
+    });
+
+    testWidgets('follows the row only while hovered', (tester) async {
+      await pump(tester);
+      controller.jumpTo(100);
+      await tester.pump();
+      expect(builds, [false]);
+
+      expansion.hoveredKey.value = 'a';
+      await tester.pump();
+      controller.jumpTo(200);
+      await tester.pump();
+      expect(builds, [false, true, true]);
     });
   });
 }

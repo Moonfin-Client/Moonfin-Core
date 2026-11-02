@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Pasirinkite, kuriuos temų kanalus rodyti „Discover“.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Taikyti",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Garsinių knygų žanrai",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Pasirinkite, kuriuos žanrus rodyti garso knygoje Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Atraskite garsines knygas",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Populiarūs viešojo domeno pavadinimai iš LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "Pavadinimų: {count}",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Slinkite kairėn",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Atrask",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populiarūs pavadinimai pagal temą iš Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Dar nėra pažymėtų elementų",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Įgalinti aplanko rodinį",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Rodyti aplanko naršymo parinktį",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Bibliotekos matomumas",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Teminis turinys, išvaizda",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Plakato dydis, vaizdo tipas, aplanko vaizdas",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB ir reitingų šaltiniai",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Nepavyko išskleisti .cbr archyvo.",
     "cb7ExtractionUnavailable": "CB7 ištraukimas šioje platformoje negalimas.",
     "cb7ExtractionPluginUnavailable": "CB7 ištraukimo įskiepis nepasiekiamas šioje platformoje.",
-    "closeGenrePanel": "Uždaryti žanro skydelį",
     "loadingShuffle": "Įkeliamas maišymas...",
     "libraryShuffleLabel": "BIBLIOTEKOS MAIŠYMAS",
     "randomShuffleLabel": "ATSITIKTINIS MAIŠYMAS",

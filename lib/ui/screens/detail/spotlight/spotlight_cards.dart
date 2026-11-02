@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../data/models/aggregated_item.dart';
@@ -11,12 +13,18 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/media_source_summary.dart';
+import '../../../../util/focus/dpad_keys.dart';
+import '../../../../util/seerr_credits.dart';
+import '../../../widgets/detail_reviews.dart';
+import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_item_status.dart'
     show SeerrDetailPieces, seerrItemSeasonStatus, seerrItemTabState;
 import '../../../widgets/seerr/seerr_stats_card.dart';
+import '../../../widgets/seerr/seerr_streaming_row.dart';
 import '../../../widgets/seerr/seerr_tags_dialog.dart' show SeerrTagsContent;
+import '../collection_sort_dialog.dart';
 import '../item_detail_screen.dart'
     show DetailTrackList, selectedMediaSourceForItem;
 import '../modern/modern_detail_content.dart'
@@ -29,6 +37,7 @@ import 'spotlight_images.dart';
 import 'widgets/spotlight_file_details_section.dart';
 import 'widgets/spotlight_modal_grids.dart';
 import 'widgets/spotlight_section_modal.dart';
+import '../../../../preference/seerr_preferences.dart';
 
 /// The item-level actions a Spotlight summary card's modal content can invoke.
 /// Every implementation closes the modal before navigating or starting
@@ -53,6 +62,7 @@ class SpotlightCardActions {
   final void Function(int index) playTrack;
   final void Function(int index) playPlaylistTrack;
   final FocusNode Function(String trackId) trackFocusNode;
+  final FocusNode? collectionSortFocusNode;
 
   const SpotlightCardActions({
     required this.openItem,
@@ -66,6 +76,7 @@ class SpotlightCardActions {
     required this.playTrack,
     required this.playPlaylistTrack,
     required this.trackFocusNode,
+    this.collectionSortFocusNode,
   });
 }
 
@@ -218,6 +229,22 @@ class _SpotlightCardsBuilder {
 
   bool _shows(DetailSection section) => _visibility.shows(section);
 
+  String get _personSortOption =>
+      prefs.get(UserPreferences.personPageSortOption);
+  bool get _personGroupItems =>
+      prefs.get(UserPreferences.personPageGroupItems);
+
+  List<AggregatedItem> _sortJellyfin(List<AggregatedItem> list) =>
+      sortJellyfinFilmography(list, _personSortOption);
+
+  List<SeerrDiscoverItem> _prepareSeerr(
+    List<SeerrDiscoverItem> list, {
+    required bool isCrew,
+  }) {
+    final grouped = _personGroupItems ? groupSeerrCredits(list, isCrew: isCrew) : list;
+    return sortSeerrCredits(grouped, _personSortOption);
+  }
+
   late final SeerrMediaDetailState? _seerrState = seerrItemTabState(vm);
 
   /// The Seerr parts that have data and that the viewer left on.
@@ -235,6 +262,7 @@ class _SpotlightCardsBuilder {
         'seerr_details': _seerrDetailsCard,
         'people': _peopleCard,
         'similar': _similarCard,
+        'reviews': _reviewsCard,
       };
     }
     return switch (item.type) {
@@ -243,6 +271,7 @@ class _SpotlightCardsBuilder {
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
+        'reviews': _reviewsCard,
         'collections': _collectionsCard,
       },
       'Season' => {
@@ -281,6 +310,7 @@ class _SpotlightCardsBuilder {
         'chapters_extras': _chaptersExtrasCard,
         'file_details': _fileDetailsCard,
         'similar': _similarCard,
+        'reviews': _reviewsCard,
         'collections': _collectionsCard,
       },
     };
@@ -571,7 +601,12 @@ class _SpotlightCardsBuilder {
     final tagCount = pieces.chips ? SeerrTagsContent.chipCount(state) : 0;
     final factCount = pieces.stats ? SeerrStatsCard.factCount(state, l10n) : 0;
     final collection = pieces.collection ? state.movie?.collection : null;
-    if (tagCount == 0 && factCount == 0 && collection == null) return null;
+    if (tagCount == 0 &&
+        factCount == 0 &&
+        !pieces.streaming &&
+        collection == null) {
+      return null;
+    }
 
     final subtitle = [
       if (factCount > 0) l10n.spotlightFactsCount(factCount),
@@ -602,6 +637,12 @@ class _SpotlightCardsBuilder {
           SpotlightModalSection(
             focusable: false,
             builder: (context, _) => SeerrStatsCard(state: state),
+          ),
+        if (pieces.streaming)
+          SpotlightModalSection(
+            focusable: false,
+            builder: (context, _) =>
+                SeerrStreamingRow(providers: state.streamingProviders),
           ),
         if (collection != null)
           SpotlightModalSection(
@@ -679,18 +720,45 @@ class _SpotlightCardsBuilder {
               focusable: false,
               builder: (context, _) => SeerrStatsCard(state: seerrState),
             ),
+          if (pieces.streaming)
+            SpotlightModalSection(
+              focusable: false,
+              builder: (context, _) =>
+                  SeerrStreamingRow(providers: seerrState.streamingProviders),
+            ),
         ],
         if (similar.isNotEmpty) _mediaSection(librarySectionTitle, similar),
         if (seerrRecommendations.isNotEmpty)
           _seerrSection(
-            l10n.spotlightRecommendationsSeerr,
+            seerrBrand(l10n.spotlightRecommendationsSeerr),
             seerrRecommendations,
           ),
         if (seerrSimilar.isNotEmpty)
           _seerrSection(
-            similar.isEmpty ? l10n.similar : l10n.spotlightSimilarSeerr,
+            similar.isEmpty ? l10n.similar : seerrBrand(l10n.spotlightSimilarSeerr),
             seerrSimilar,
           ),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _reviewsCard() {
+    if (!_shows(DetailSection.reviews)) return null;
+    final reviews = vm.reviews;
+    if (reviews.isEmpty) return null;
+    return SpotlightCardSpec(
+      id: 'reviews',
+      title: l10n.reviews,
+      subtitle: l10n.spotlightReviewsCount(reviews.length),
+      imageUrl: fallbackImageUrl,
+      icon: Icons.rate_review_outlined,
+      sections: [
+        SpotlightModalSection(
+          builder: (context, firstFocusNode) => DetailReviewsGrid(
+            reviews: reviews,
+            firstFocusNode: firstFocusNode,
+          ),
+        ),
       ],
     );
   }
@@ -788,12 +856,16 @@ class _SpotlightCardsBuilder {
     final episodes = allEpisodes.isNotEmpty ? allEpisodes : vm.episodes;
     if (episodes.isEmpty) return null;
 
-    final defaultSeason = item.parentIndexNumber ?? 1;
+    final defaultSeason =
+        allEpisodes.isNotEmpty ? 0 : (item.parentIndexNumber ?? 1);
     final sorted = [...episodes]..sort((a, b) {
       final sa = a.parentIndexNumber ?? defaultSeason;
       final sb = b.parentIndexNumber ?? defaultSeason;
       if (sa != sb) return sa.compareTo(sb);
-      return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
+      final ea = a.indexNumber ?? 0;
+      final eb = b.indexNumber ?? 0;
+      if (ea != eb) return ea.compareTo(eb);
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
 
     final Map<int, List<AggregatedItem>> seasonGroups = {};
@@ -963,9 +1035,9 @@ class _SpotlightCardsBuilder {
         );
 
   SpotlightCardSpec? _personFilmographyCard() {
-    final movies = vm.filmographyMovies;
-    final series = vm.filmographySeries;
-    final other = vm.filmography;
+    final movies = _sortJellyfin(vm.filmographyMovies);
+    final series = _sortJellyfin(vm.filmographySeries);
+    final other = _sortJellyfin(vm.filmography);
     final hasLibrary = movies.isNotEmpty || series.isNotEmpty;
     if (!hasLibrary && other.isEmpty) {
       return null;
@@ -1000,22 +1072,23 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _personAppearancesCard() {
     if (!_shows(DetailSection.seerrPersonAppearances)) return null;
-    if (seerrAppearances.isEmpty) return null;
+    final items = _prepareSeerr(seerrAppearances, isCrew: false);
+    if (items.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['appearances'] ??
-        _firstSeerrPoster(seerrAppearances) ??
+        _firstSeerrPoster(items) ??
         fallbackImageUrl;
 
     return SpotlightCardSpec(
       id: 'appearances',
-      title: l10n.appearancesSeerr,
-      subtitle: l10n.spotlightItemsCount(seerrAppearances.length),
+      title: seerrBrand(l10n.appearancesSeerr),
+      subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.star_outline,
       sections: [
         _seerrSection(
-          l10n.appearancesSeerr,
-          seerrAppearances,
+          seerrBrand(l10n.appearancesSeerr),
+          items,
           showCredit: true,
         ),
       ],
@@ -1024,22 +1097,23 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _personCrewCard() {
     if (!_shows(DetailSection.seerrPersonCrew)) return null;
-    if (seerrCrewCredits.isEmpty) return null;
+    final items = _prepareSeerr(seerrCrewCredits, isCrew: true);
+    if (items.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['crew'] ??
-        _firstSeerrPoster(seerrCrewCredits) ??
+        _firstSeerrPoster(items) ??
         fallbackImageUrl;
 
     return SpotlightCardSpec(
       id: 'crew',
-      title: l10n.crewContributionsSeerr,
-      subtitle: l10n.spotlightItemsCount(seerrCrewCredits.length),
+      title: seerrBrand(l10n.crewContributionsSeerr),
+      subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.movie_creation_outlined,
       sections: [
         _seerrSection(
-          l10n.crewContributionsSeerr,
-          seerrCrewCredits,
+          seerrBrand(l10n.crewContributionsSeerr),
+          items,
           showCredit: true,
         ),
       ],
@@ -1081,7 +1155,13 @@ class _SpotlightCardsBuilder {
       title: l10n.spotlightMoviesAndShows,
       subtitle: subtitle,
       imageUrl:
-          _firstItemLandscape(items) ?? fallbackImageUrl,
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            item,
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          fallbackImageUrl ??
+          _firstItemLandscape(items),
       icon: Icons.collections_bookmark_outlined,
       sections: [
         if (movies.isNotEmpty) _mediaSection(l10n.movies, movies),
@@ -1138,30 +1218,111 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _boxSetPlaylistOrderCard() {
     if (!_shows(DetailSection.playlistOrder)) return null;
-    final items = vm.playlistItems;
-    if (items.isEmpty) return null;
+    final hasPlaylistItems = vm.playlistItems.isNotEmpty;
+    final tracks = vm.collectionPlaylistItems;
+    final collectionImageUrl =
+        spotlightLandscapeImageUrl(
+          _imageApi,
+          item,
+          fallbackUrl: fallbackImageUrl,
+        ) ??
+        fallbackImageUrl;
+    final trackImageUrls = tracks
+        .map((t) => spotlightLandscapeImageUrl(_imageApi, t))
+        .whereType<String>();
+
     return SpotlightCardSpec(
       id: 'playlist_order',
       title: l10n.spotlightPlaylistOrder,
-      subtitle: l10n.spotlightItemsCount(items.length),
+      subtitle: l10n.spotlightItemsCount(tracks.length),
+      // Prefers art that differs from the Movies & Shows card beside it.
       imageUrl:
-          spotlightLandscapeImageUrl(
-            _imageApi,
-            items.first,
-            fallbackUrl: fallbackImageUrl,
-          ),
+          trackImageUrls.where((url) => url != collectionImageUrl).firstOrNull ??
+          trackImageUrls.firstOrNull ??
+          fallbackImageUrl,
       icon: Icons.format_list_numbered,
       sections: [
         SpotlightModalSection(
           title: l10n.spotlightPlaylistOrder,
-          count: items.length,
-          builder: (context, firstFocusNode) => DetailTrackList(
-            tracks: items,
-            imageApi: _imageApi,
-            showAlbum: true,
-            getFocusNode: actions.trackFocusNode,
-            onPlayTrack: actions.playPlaylistTrack,
-          ),
+          count: tracks.length,
+          headerActionBuilder: (context) {
+            final firstTrackId = tracks.firstOrNull?.id;
+            return Focus(
+              canRequestFocus: false,
+              onKeyEvent: (_, event) {
+                if (firstTrackId != null &&
+                    event is KeyDownEvent &&
+                    event.logicalKey.isDownKey) {
+                  actions.trackFocusNode(firstTrackId).requestFocus();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: InkWell(
+                canRequestFocus: false,
+                onTap: () => showCollectionSortDialog(context, vm: vm),
+                borderRadius: AppRadius.circular(8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FocusableToolbarButton(
+                      icon: Icons.sort_rounded,
+                      focusNode: actions.collectionSortFocusNode,
+                      size: 30,
+                      iconSize: 18,
+                      tooltip: l10n.playlistSortOptions,
+                      onTap: () => showCollectionSortDialog(context, vm: vm),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.sortCurrent(
+                        getCollectionSortLabel(vm.collectionSort, l10n),
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          builder: (context, firstFocusNode) {
+            if (vm.playlistSortRefreshing ||
+                (vm.playlistIndexBuilding && !hasPlaylistItems)) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return DetailTrackList(
+              tracks: tracks,
+              imageApi: _imageApi,
+              isPlaylist: true,
+              showAlbum: true,
+              getFocusNode: actions.trackFocusNode,
+              onPlayTrack: (index) => hasPlaylistItems
+                  ? actions.playPlaylistTrack(index)
+                  : actions.openItem(tracks[index]),
+              reorderable: hasPlaylistItems && vm.collectionSort == CollectionSortOption.custom,
+              onReorder: hasPlaylistItems
+                  ? (oldIndex, newIndex) {
+                      var target = newIndex;
+                      if (target > oldIndex) {
+                        target -= 1;
+                      }
+                      vm.reorderCollectionPlaylistItem(oldIndex, target);
+                    }
+                  : null,
+              onMoveUp: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index - 1)
+                  : null,
+              onMoveDown: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index + 1)
+                  : null,
+              onFirstTrackUp: () => actions.collectionSortFocusNode?.requestFocus(),
+            );
+          },
         ),
       ],
     );

@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "«بايقاش» تا قايسى مەزمۇننى كۆرسىتىدىغانلىقىنى تاللاڭ.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "قوللىنىش",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ئۈندىدار ژانىرى",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Audiobook بايقاشتا قايسى ژانىرلارنى كۆرسىتىشنى تاللاڭ.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ئۈندىدارنى بايقاش",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox دىكى داڭلىق ئاممىۋى تور نامى.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} ئەسەر",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "سولغا يۆتكەڭ",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "بايقاش",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "تېما Open Library دىن تېما بويىچە يۈزلىنىش.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "تېخى خەتكۈچلەنمىگەن تۈرلەر يوق",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ھۆججەت قىسقۇچنى قوزغىتىش",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ھۆججەت قىسقۇچنى كۆرۈش تاللانمىسىنى كۆرسەت",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "كۈتۈپخانىنىڭ كۆرۈنۈشچانلىقى",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "ئالاھىدە مەزمۇن ، كۆرۈنۈش",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "ئېلاننىڭ چوڭلۇقى ، رەسىم تىپى ، ھۆججەت قىسقۇچ كۆرۈنۈشى",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList ، TMDB ۋە باھالاش مەنبەسى",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr ئارخىپىنى ئاجرىتىش مەغلۇپ بولدى.",
     "cb7ExtractionUnavailable": "بۇ سۇپىدا CB7 ئاجرىتىش ئىقتىدارى يوق.",
     "cb7ExtractionPluginUnavailable": "بۇ سۇپىدا CB7 ئاجرىتىش قىستۇرمىسى يوق.",
-    "closeGenrePanel": "ژانىر تاختىسىنى تاقاش",
     "loadingShuffle": "تەرتىپسىز قويۇش يۈكلىنىۋاتىدۇ...",
     "libraryShuffleLabel": "ئامبار تەرتىپسىز قويۇش",
     "randomShuffleLabel": "خالىغانچە تەرتىپسىز قويۇش",

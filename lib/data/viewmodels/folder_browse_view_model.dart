@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
-import '../repositories/user_views_repository.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/playlist_utils.dart';
@@ -12,8 +10,17 @@ import '../utils/playlist_utils.dart';
 class BreadcrumbEntry {
   final String id;
   final String name;
+  final String type;
+  final String? collectionType;
 
-  const BreadcrumbEntry({required this.id, required this.name});
+  const BreadcrumbEntry({
+    required this.id,
+    required this.name,
+    this.type = '',
+    this.collectionType,
+  });
+
+  bool get isLibrary => type == 'CollectionFolder';
 }
 
 enum FolderBrowseState { loading, ready, error }
@@ -76,42 +83,6 @@ class FolderBrowseViewModel extends ChangeNotifier {
     _hasMoreFromPageSize = false;
     _notify();
 
-    if (folderId == 'root' || folderId.isEmpty) {
-      try {
-        _breadcrumbs.clear();
-        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
-        final userViews =
-            await GetIt.instance<UserViewsRepository>().getUserViews();
-        if (_disposed) return;
-        _items = userViews.map((lib) {
-          return AggregatedItem(
-            id: lib.id,
-            serverId: lib.serverId,
-            rawData: {
-              'Id': lib.id,
-              'Name': lib.name,
-              'Type': 'CollectionFolder',
-              'CollectionType': lib.collectionType,
-              'IsFolder': true,
-              'ImageTags': lib.imageTags ?? {},
-              'BackdropImageTags': lib.backdropImageTags ?? [],
-            },
-          );
-        }).toList();
-        _totalCount = _items.length;
-        _rawItemsFetched = _items.length;
-        _totalCountKnown = true;
-        _hasMoreFromPageSize = false;
-        _state = FolderBrowseState.ready;
-      } catch (e) {
-        if (_disposed) return;
-        _error = e;
-        _state = FolderBrowseState.error;
-      }
-      _notify();
-      return;
-    }
-
     try {
       final chain = <BreadcrumbEntry>[];
       var currentId = folderId;
@@ -123,11 +94,20 @@ class FolderBrowseViewModel extends ChangeNotifier {
           if (_disposed) return;
           final name = data['Name'] as String? ?? '';
           final type = (data['Type'] as String?) ?? '';
-          chain.insert(0, BreadcrumbEntry(id: currentId, name: name));
+          final collectionType =
+              (data['CollectionType'] as String?)?.toLowerCase();
+          chain.insert(
+            0,
+            BreadcrumbEntry(
+              id: currentId,
+              name: name,
+              type: type,
+              collectionType: collectionType,
+            ),
+          );
 
-          final collectionType = data['CollectionType'] as String?;
           if (collectionType != null && collectionType.isNotEmpty) {
-            _rootCollectionType = collectionType.toLowerCase();
+            _rootCollectionType = collectionType;
           }
 
           final parentId = data['ParentId'] as String?;
@@ -143,7 +123,6 @@ class FolderBrowseViewModel extends ChangeNotifier {
       if (_disposed) return;
       if (chain.isNotEmpty) {
         _breadcrumbs.clear();
-        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
         for (final entry in chain) {
           final isRootDuplicate = entry.id == 'root' ||
               entry.name.toLowerCase() == 'root' ||
@@ -153,7 +132,6 @@ class FolderBrowseViewModel extends ChangeNotifier {
           }
         }
       } else if (!_breadcrumbs.any((b) => b.id == folderId)) {
-        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
         _breadcrumbs.add(BreadcrumbEntry(id: folderId, name: ''));
       }
 

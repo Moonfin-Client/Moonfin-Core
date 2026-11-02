@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Valige, milliseid teemavooge Discoveris kuvada.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Rakenda",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Audioraamatu žanrid",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Valige, milliseid žanre Audiobook Discoveris kuvada.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Avastage heliraamatuid",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVoxi populaarsed üldkasutatavad pealkirjad.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} pealkirjad",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Kerige vasakule",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Avastage",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populaarsed pealkirjad teemade kaupa Open Libraryst.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Järjehoidjatesse lisatud üksusi pole veel",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Luba kaustavaade",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Kuva kaustade sirvimise valik",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Raamatukogu nähtavus",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Esiletõstetud sisu, välimus",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Plakati suurus, pildi tüüp, kausta vaade",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB ja reitinguallikad",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr arhiivi ekstraktimine ebaõnnestus.",
     "cb7ExtractionUnavailable": "CB7 ekstraheerimine pole sellel platvormil saadaval.",
     "cb7ExtractionPluginUnavailable": "CB7 ekstraheerimise pistikprogramm pole sellel platvormil saadaval.",
-    "closeGenrePanel": "Sule žanri paneel",
     "loadingShuffle": "Juhusliku esituse laadimine...",
     "libraryShuffleLabel": "KOGU SEGAMINE",
     "randomShuffleLabel": "JUHUSLIK SEGAMINE",

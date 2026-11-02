@@ -110,7 +110,7 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
           controller: widget.controller,
           isFocused: hasFocus,
           inputPurpose: InputPurpose.search,
-          preferSystemIme: _prefs.get(UserPreferences.preferSystemImeKeyboard),
+          keyboardStyle: _prefs.get(UserPreferences.keyboardStyle),
           popParentOnKeyboardClose: false,
           hint: effectiveHint,
           prefixIcon: Icon(Icons.search, color: foreground),

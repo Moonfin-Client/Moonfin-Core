@@ -8,6 +8,7 @@ import '../../util/accent_folding.dart';
 import '../services/storage_path_service.dart';
 import 'offline_catalog.dart';
 import 'offline_errors.dart';
+import 'offline_media_segments.dart';
 import 'offline_views.dart';
 
 /// Serves the standard Jellyfin items envelopes from the local downloads
@@ -41,10 +42,8 @@ class OfflineItemsApi implements ItemsApi {
 
   String? _str(Map<String, dynamic> m, String key) => m[key]?.toString();
 
-  DateTime? _date(Map<String, dynamic> m, String key) {
-    final v = m[key] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? _date(Map<String, dynamic> m, String key) =>
+      parseServerDate(m[key]);
 
   /// Resolves a parentId to the entries inside it.
   List<OfflineEntry> _scope(
@@ -1103,7 +1102,7 @@ class OfflineItemsApi implements ItemsApi {
 
   @override
   Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async =>
-      const [];
+      storedMediaSegments(_catalog.byId(itemId)?.metadata);
 
   @override
   Future<List<Map<String, dynamic>>> searchRemoteSubtitles(

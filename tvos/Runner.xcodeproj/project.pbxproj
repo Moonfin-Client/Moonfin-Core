@@ -45,6 +45,7 @@
 		BC59339B180C88464B1212F8 /* SubtitleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A0477050CD294B7CB8C754 /* SubtitleOverlay.swift */; };
 		C1F1E8188A6812EC3C6A9EF1 /* AppleTvGameInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A868E735744FD641776321 /* AppleTvGameInputViewController.swift */; };
 		CAE8045C3AB63C66024FA6B7 /* AetherVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78635028C38C060155519D22 /* AetherVideoChannel.swift */; };
+		A3E7D10500000000000000C1 /* AetherVideoPlatformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E7D10600000000000000C2 /* AetherVideoPlatformView.swift */; };
 		D806D8D63D0DFDE94D61895A /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69C2A2281BE7FC2256E62A2C /* TVServices.framework */; };
 		D81EC9F73053545200B9517B /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = D81EC9F63053545200B9517B /* FlutterGeneratedPluginSwiftPackage */; };
 		D8C7A8FA09A6FD717A2D9A10 /* mgba_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 98DD98A0507A79F82DE9B512 /* mgba_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -122,6 +123,7 @@
 		7159A7791642FD80F3643C71 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		78635028C38C060155519D22 /* AetherVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoChannel.swift; path = Aether/AetherVideoChannel.swift; sourceTree = "<group>"; };
+		A3E7D10600000000000000C2 /* AetherVideoPlatformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoPlatformView.swift; path = Aether/AetherVideoPlatformView.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7B47F49C774D38D5782E3CF3 /* MoonfinTvosStubs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoonfinTvosStubs.swift; sourceTree = "<group>"; };
 		912CE3E99D0758A55751A1AC /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				2508F7D351997BD3CFD96028 /* Native */,
 				0BA87242020D32A77511E6D3 /* AetherPlayerWrapper.swift */,
 				78635028C38C060155519D22 /* AetherVideoChannel.swift */,
+				A3E7D10600000000000000C2 /* AetherVideoPlatformView.swift */,
 				F0BD358BD8ADA249714B0CC1 /* AssRenderer.swift */,
 				DDC62E8B96B51BBBCBA1EC23 /* EngineTrustPolicy.swift */,
 				81BEA439F41D2A8701F2EC3E /* ClientIdentityStore.swift */,
@@ -581,6 +584,7 @@
 				2567189A5ED4D6CF76A03672 /* LibretroCore.swift in Sources */,
 				28586AEB6E5AC8DAEF7571AA /* AetherPlayerWrapper.swift in Sources */,
 				CAE8045C3AB63C66024FA6B7 /* AetherVideoChannel.swift in Sources */,
+				A3E7D10500000000000000C1 /* AetherVideoPlatformView.swift in Sources */,
 				76204B7FA09C5286ACA2FE6C /* AssRenderer.swift in Sources */,
 				6A5B8E29CBD0D987A4C5E44A /* EngineTrustPolicy.swift in Sources */,
 				583F601A53A8E8037B41AB76 /* ClientIdentityStore.swift in Sources */,
@@ -1006,7 +1010,7 @@
 			repositoryURL = "https://github.com/RadicalMuffinMan/AetherEngine";
 			requirement = {
 				kind = revision;
-				revision = 47cf2f94b38be8520b31d6e0aecdbf47ce7eb857;
+				revision = d55f374108310435cb877a2f550e19ee996f92ba;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

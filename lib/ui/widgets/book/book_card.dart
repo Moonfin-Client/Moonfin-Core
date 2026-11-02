@@ -27,6 +27,7 @@ class BookCard extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onFocus;
   final KeyEventResult Function(FocusNode, KeyEvent)? onKeyEvent;
+  final bool cardFocusExpansion;
 
   const BookCard({
     super.key,
@@ -41,6 +42,7 @@ class BookCard extends StatelessWidget {
     this.focusNode,
     this.onFocus,
     this.onKeyEvent,
+    this.cardFocusExpansion = true,
   });
 
   @override
@@ -57,6 +59,7 @@ class BookCard extends StatelessWidget {
       isFavorite: item.isFavorite,
       isPlayed: item.isPlayed,
       playedPercentage: isAudiobook ? null : item.playedPercentage,
+      cardFocusExpansion: cardFocusExpansion,
       focusNode: focusNode,
       onFocus: onFocus,
       onKeyEvent: onKeyEvent,

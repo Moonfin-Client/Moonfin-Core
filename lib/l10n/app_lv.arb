@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Izvēlieties, kuras tēmu plūsmas rādīt programmā Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Lietot",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Audiogrāmatu žanri",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Izvēlieties, kurus žanrus rādīt programmā Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Atklājiet audiogrāmatas",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Populāri publiskā domēna nosaukumi no LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} virsraksti",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Ritiniet pa kreisi",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Atklājiet",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populārākie nosaukumi pēc tēmas no Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Vēl nav grāmatzīmēs pievienotu vienumu",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Iespējot mapju skatu",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Rādīt mapju pārlūkošanas opciju",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Bibliotēkas redzamība",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Piedāvātais saturs, izskats",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Plakāta izmērs, attēla veids, mapes skats",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB un reitingu avoti",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Neizdevās izpakot .cbr arhīvu.",
     "cb7ExtractionUnavailable": "CB7 izpakošana šajā platformā nav pieejama.",
     "cb7ExtractionPluginUnavailable": "CB7 izpakošanas spraudnis šajā platformā nav pieejams.",
-    "closeGenrePanel": "Aizvērt žanru paneli",
     "loadingShuffle": "Ielādē jaukšanu...",
     "libraryShuffleLabel": "BIBLIOTĒKAS JAUKŠANA",
     "randomShuffleLabel": "NEJAUŠA JAUKŠANA",

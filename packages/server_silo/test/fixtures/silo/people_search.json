@@ -1,0 +1,45 @@
+{
+ "items": [
+  {
+   "id": "146552330928538932",
+   "name": "Alex Vincent",
+   "bio": "Alexander Vincent LoScialpo (born April 29, 1981) is an American actor. He was born in Newark, New Jersey and grew up in Maywood, New Jersey. He graduated from Hackensack High School in Hackensack, New Jersey in 1999. He also obtained an Associate Degree in Recording Arts from Full Sail University. He is known for his role as Andy Barclay in the Child's Play franchise, having played the character in Child's Play (1988), Child's Play 2 (1990), Curse of Chucky (2013), Cult of Chucky (2017) and again for the Syfy/USA Network television series Chucky (2021-2024).",
+   "birth_date": "1981-04-29",
+   "birthplace": "Newark, New Jersey, USA",
+   "homepage": "http://www.alexvincentonline.com",
+   "photo_url": "/api/v2/artwork/tmdb/people/65683/profile/w500.29ecc92bd1f752dff562b10ab107065bb28ef2987fe821466bf5246150391975.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "4AcWFQapmI95SId3d4qYlwd4YYAo",
+   "tmdb_id": "65683",
+   "imdb_id": "nm0898571",
+   "tvdb_id": "517730"
+  },
+  {
+   "id": "146552598491645236",
+   "name": "Allen Vincent",
+   "birth_date": "1903-08-28",
+   "death_date": "1979-11-30",
+   "birthplace": "Spokane, Washington, USA",
+   "photo_url": "/api/v2/artwork/tmdb/people/1128883/profile/w500.a984e2fa9a8d59e5bb119b851fad95f9a4785329bab572059f12c832c19c47f8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "EwgKBQAKg5V4KKdYhnaJdwAAAAAA",
+   "tmdb_id": "1128883",
+   "imdb_id": "nm0898573"
+  },
+  {
+   "id": "146552340107642164",
+   "name": "Altair Vincent",
+   "tmdb_id": "1375676"
+  },
+  {
+   "id": "146552235820729652",
+   "name": "Anne Vince",
+   "tmdb_id": "94980",
+   "imdb_id": "nm0898534",
+   "tvdb_id": "8217251"
+  },
+  {
+   "id": "146552515210659124",
+   "name": "Bernard Vincent",
+   "tmdb_id": "2700008"
+  }
+ ]
+}

@@ -41,21 +41,28 @@ class _OsdButtonsScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Text(l10n.buttonOrderHint, style: hint),
               ),
-              ButtonLayoutList(
-                layout: osdButtonLayout,
-                entries: [
-                  for (final button in OsdButton.values.where(
-                    (button) => button.isOffered,
-                  ))
-                    ButtonLayoutEntry(
-                      id: button.id,
-                      title: button.label(l10n),
-                      subtitle: button == OsdButton.syncPlay
-                          ? l10n.buttonShownInSyncPlayGroup
-                          : null,
-                      icon: button.icon,
-                    ),
-                ],
+              SettingsPreviewReporter(
+                describe: () => SettingsPreviewEntry(
+                  prefKey: osdButtonLayout.orderPreference.key,
+                  title: l10n.osdButtons,
+                  description: l10n.osdButtonsDescription,
+                ),
+                child: ButtonLayoutList(
+                  layout: osdButtonLayout,
+                  entries: [
+                    for (final button in OsdButton.values.where(
+                      (button) => button.isOffered,
+                    ))
+                      ButtonLayoutEntry(
+                        id: button.id,
+                        title: button.label(l10n),
+                        subtitle: button == OsdButton.syncPlay
+                            ? l10n.buttonShownInSyncPlayGroup
+                            : null,
+                        icon: button.icon,
+                      ),
+                  ],
+                ),
               ),
             ],
           ),

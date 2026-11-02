@@ -262,11 +262,15 @@ class PlaybackStopReport {
   final String? playSessionId;
   final int? positionTicks;
 
+  /// The item's length. Plex drops a position that comes without one.
+  final int? runTimeTicks;
+
   const PlaybackStopReport({
     required this.itemId,
     this.mediaSourceId,
     this.playSessionId,
     this.positionTicks,
+    this.runTimeTicks,
   });
 
   Map<String, dynamic> toJson() => {
@@ -274,5 +278,6 @@ class PlaybackStopReport {
         if (mediaSourceId != null) 'MediaSourceId': mediaSourceId,
         if (playSessionId != null) 'PlaySessionId': playSessionId,
         if (positionTicks != null) 'PositionTicks': positionTicks,
+        if (runTimeTicks != null) 'RunTimeTicks': runTimeTicks,
       };
 }

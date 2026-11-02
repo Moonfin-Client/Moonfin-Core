@@ -272,51 +272,20 @@ class _QuickAccessMusicScreenState
         children: [
           for (var i = 0; i < labels.length; i++) ...[
             if (i > 0) const SizedBox(width: 8),
-            _chip(labels, categories, i, entryIndex),
+            MusicChip(
+              label: labels[i],
+              selected: i == 0,
+              focusNode: node('chip:$i'),
+              onTap: i == 0
+                  ? () {}
+                  : () => context.push(categories[i - 1].route),
+              onNavigateUp: () => move(entryIndex, true),
+              onNavigateDown: () => move(entryIndex, false),
+              onNavigateLeft: i == 0 ? _focusLeft : null,
+              onNavigateRight: i == labels.length - 1 ? () {} : null,
+            ),
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _chip(
-    List<String> labels,
-    List<MusicCategory> categories,
-    int i,
-    int entryIndex,
-  ) {
-    final selected = i == 0;
-    return FocusableWrapper(
-      highlightOnHover: true,
-      focusNode: node('chip:$i'),
-      borderRadius: 18,
-      disableScale: true,
-      autoScroll: true,
-      onSelect: selected ? () {} : () => context.push(categories[i - 1].route),
-      onNavigateUp: () => move(entryIndex, true),
-      onNavigateDown: () => move(entryIndex, false),
-      onNavigateLeft: i == 0 ? _focusLeft : null,
-      onNavigateRight: i == labels.length - 1 ? () {} : null,
-      child: Container(
-        height: 36,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColorScheme.accent
-              : AppColorScheme.onSurface.withValues(alpha: 0.08),
-          borderRadius: AppRadius.circular(18),
-        ),
-        child: Text(
-          labels[i],
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            color: selected
-                ? AppColorScheme.onAccent
-                : AppColorScheme.onSurface.withValues(alpha: 0.9),
-          ),
-        ),
       ),
     );
   }
@@ -390,7 +359,7 @@ class _QuickAccessMusicScreenState
       IconData? icon,
       String? imageUrl,
       bool selected = false,
-    }) => _RailItem(
+    }) => MusicRailItem(
       label: label,
       icon: icon,
       imageUrl: imageUrl,
@@ -468,89 +437,6 @@ class _QuickAccessMusicScreenState
               ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-/// One stop in the Quick Access rail: an icon or a playlist's art, and its
-/// label.
-class _RailItem extends StatelessWidget {
-  final String label;
-  final IconData? icon;
-  final String? imageUrl;
-  final bool selected;
-  final FocusNode focusNode;
-  final VoidCallback onTap;
-  final VoidCallback? onNavigateUp;
-  final VoidCallback? onNavigateDown;
-  final VoidCallback onNavigateLeft;
-  final VoidCallback onNavigateRight;
-
-  const _RailItem({
-    required this.label,
-    required this.selected,
-    required this.focusNode,
-    required this.onTap,
-    required this.onNavigateLeft,
-    required this.onNavigateRight,
-    this.icon,
-    this.imageUrl,
-    this.onNavigateUp,
-    this.onNavigateDown,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = AppColorScheme.accent;
-    final color = selected
-        ? accent
-        : AppColorScheme.onSurface.withValues(alpha: 0.86);
-    return FocusableWrapper(
-      highlightOnHover: true,
-      focusNode: focusNode,
-      borderRadius: 10,
-      disableScale: true,
-      autoScroll: true,
-      onSelect: onTap,
-      onNavigateUp: onNavigateUp,
-      onNavigateDown: onNavigateDown,
-      onNavigateLeft: onNavigateLeft,
-      onNavigateRight: onNavigateRight,
-      child: Container(
-        height: icon != null ? 44 : 48,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: selected ? accent.withValues(alpha: 0.16) : null,
-          borderRadius: AppRadius.circular(10),
-        ),
-        child: Row(
-          children: [
-            if (icon != null)
-              Icon(icon, size: 20, color: color)
-            else
-              ClipRRect(
-                borderRadius: AppRadius.circular(6),
-                child: SizedBox.square(
-                  dimension: 32,
-                  child: musicArt(imageUrl, icon: Icons.queue_music),
-                ),
-              ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: icon != null ? 15 : 14,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  color: color,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

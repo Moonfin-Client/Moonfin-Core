@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Välj vilka ämnesflöden som ska visas i Discover.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Tillämpa",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -539,27 +535,6 @@
     "audiobookGenres": "Ljudbok genrer",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Välj vilka genrer som ska visas i Audiobook Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Upptäck ljudböcker",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Populära publika titlar från LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} titlar",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Bläddra åt vänster",
     "@scrollLeft": {
@@ -736,10 +711,6 @@
     "discover": "Upptäcka",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populära titlar efter ämne från Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Inga bokmärkta objekt ännu",
     "@noBookmarkedItems": {
@@ -3446,14 +3417,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Aktivera mappvy",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Visa mappsökningsalternativ",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Bibliotekets synlighet",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4143,10 +4106,6 @@
     "featuredContentAppearance": "Utvalt innehåll, utseende",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Affischstorlek, bildtyp, mappvy",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB och betygskällor",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Kunde inte extrahera .cbr-arkivet.",
     "cb7ExtractionUnavailable": "CB7-extrahering är inte tillgänglig på den här plattformen.",
     "cb7ExtractionPluginUnavailable": "Pluginet för CB7-extrahering är inte tillgängligt på den här plattformen.",
-    "closeGenrePanel": "Stäng genrepanelen",
     "loadingShuffle": "Läser in blandning...",
     "libraryShuffleLabel": "BIBLIOTEKSBLANDNING",
     "randomShuffleLabel": "SLUMPMÄSSIG BLANDNING",

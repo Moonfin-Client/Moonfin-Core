@@ -1,0 +1,774 @@
+{
+ "MediaSources": [
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 3000000000,
+     "Name": "Chapter 2",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 6000000000,
+     "Name": "Chapter 3",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 9000000000,
+     "Name": "Chapter 4",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 12000000000,
+     "Name": "Chapter 5",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 15000000000,
+     "Name": "Chapter 6",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 18000000000,
+     "Name": "Chapter 7",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 21000000000,
+     "Name": "Chapter 8",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    },
+    {
+     "StartPositionTicks": 24000000000,
+     "Name": "Chapter 9",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 8
+    },
+    {
+     "StartPositionTicks": 27000000000,
+     "Name": "Chapter 10",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 9
+    },
+    {
+     "StartPositionTicks": 30000000000,
+     "Name": "Chapter 11",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 10
+    },
+    {
+     "StartPositionTicks": 33000000000,
+     "Name": "Chapter 12",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 11
+    },
+    {
+     "StartPositionTicks": 36000000000,
+     "Name": "Chapter 13",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 12
+    },
+    {
+     "StartPositionTicks": 39000000000,
+     "Name": "Chapter 14",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 13
+    },
+    {
+     "StartPositionTicks": 42000000000,
+     "Name": "Chapter 15",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 14
+    },
+    {
+     "StartPositionTicks": 45000000000,
+     "Name": "Chapter 16",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 15
+    },
+    {
+     "StartPositionTicks": 48000000000,
+     "Name": "Chapter 17",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 16
+    },
+    {
+     "StartPositionTicks": 51000000000,
+     "Name": "Chapter 18",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 17
+    },
+    {
+     "StartPositionTicks": 54000000000,
+     "Name": "Chapter 19",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 18
+    },
+    {
+     "StartPositionTicks": 57000000000,
+     "Name": "Chapter 20",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 19
+    },
+    {
+     "StartPositionTicks": 60000000000,
+     "Name": "Chapter 21",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 20
+    },
+    {
+     "StartPositionTicks": 63000000000,
+     "Name": "Chapter 22",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 21
+    },
+    {
+     "StartPositionTicks": 66000000000,
+     "Name": "Chapter 23",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 22
+    },
+    {
+     "StartPositionTicks": 69000000000,
+     "Name": "Chapter 24",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 23
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_691242",
+   "Path": "The Salt Path (2025) WEBDL-2160p [h265].mkv",
+   "Type": "Default",
+   "Container": "mkv",
+   "Size": 12700618556,
+   "Name": "(2025) WEBDL-2160p [h265]",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 69302500000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "Language": "eng",
+     "ColorTransfer": "smpte2084",
+     "ColorPrimaries": "bt2020",
+     "ColorSpace": "bt2020nc",
+     "TimeBase": "1/1000",
+     "VideoRange": "HDR 10",
+     "DisplayTitle": "4K HDR 10 HEVC",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "BitRate": 14661079,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1604,
+     "Width": 3836,
+     "AverageFrameRate": 24,
+     "RealFrameRate": 24,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "959:401",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 150,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "Hdr10",
+     "ExtendedVideoSubType": "Hdr10",
+     "ExtendedVideoSubTypeDescription": "HDR 10",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "ac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English AC3 5.1 (Default)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "5.1",
+     "BitRate": 384000,
+     "Channels": 6,
+     "SampleRate": 48000,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "subrip",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "Title": "English (CC)",
+     "DisplayTitle": "English (SUBRIP)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": false,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0,
+     "SubtitleLocationType": "InternalStream"
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 14661079,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 1,
+   "ItemId": "691242",
+   "MimeType": "video/x-matroska"
+  },
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 3000000000,
+     "Name": "Chapter 2",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 6000000000,
+     "Name": "Chapter 3",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 9000000000,
+     "Name": "Chapter 4",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 12000000000,
+     "Name": "Chapter 5",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 15000000000,
+     "Name": "Chapter 6",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 18000000000,
+     "Name": "Chapter 7",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 21000000000,
+     "Name": "Chapter 8",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    },
+    {
+     "StartPositionTicks": 24000000000,
+     "Name": "Chapter 9",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 8
+    },
+    {
+     "StartPositionTicks": 27000000000,
+     "Name": "Chapter 10",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 9
+    },
+    {
+     "StartPositionTicks": 30000000000,
+     "Name": "Chapter 11",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 10
+    },
+    {
+     "StartPositionTicks": 33000000000,
+     "Name": "Chapter 12",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 11
+    },
+    {
+     "StartPositionTicks": 36000000000,
+     "Name": "Chapter 13",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 12
+    },
+    {
+     "StartPositionTicks": 39000000000,
+     "Name": "Chapter 14",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 13
+    },
+    {
+     "StartPositionTicks": 42000000000,
+     "Name": "Chapter 15",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 14
+    },
+    {
+     "StartPositionTicks": 45000000000,
+     "Name": "Chapter 16",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 15
+    },
+    {
+     "StartPositionTicks": 48000000000,
+     "Name": "Chapter 17",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 16
+    },
+    {
+     "StartPositionTicks": 51000000000,
+     "Name": "Chapter 18",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 17
+    },
+    {
+     "StartPositionTicks": 54000000000,
+     "Name": "Chapter 19",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 18
+    },
+    {
+     "StartPositionTicks": 57000000000,
+     "Name": "Chapter 20",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 19
+    },
+    {
+     "StartPositionTicks": 60000000000,
+     "Name": "Chapter 21",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 20
+    },
+    {
+     "StartPositionTicks": 63000000000,
+     "Name": "Chapter 22",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 21
+    },
+    {
+     "StartPositionTicks": 66000000000,
+     "Name": "Chapter 23",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 22
+    },
+    {
+     "StartPositionTicks": 69000000000,
+     "Name": "Chapter 24",
+     "ImageTag": "2f3a42114bcf433d89c1a6e1a5b6b977_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 23
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_691255",
+   "Path": "The Salt Path 4kversion.mkv",
+   "Type": "Grouping",
+   "Container": "mkv",
+   "Size": 12700618556,
+   "Name": "4kversion",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 69302500000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "Language": "eng",
+     "ColorTransfer": "smpte2084",
+     "ColorPrimaries": "bt2020",
+     "ColorSpace": "bt2020nc",
+     "TimeBase": "1/1000",
+     "VideoRange": "HDR 10",
+     "DisplayTitle": "4K HDR 10 HEVC",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "BitRate": 14661079,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1604,
+     "Width": 3836,
+     "AverageFrameRate": 24,
+     "RealFrameRate": 24,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "959:401",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 150,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "Hdr10",
+     "ExtendedVideoSubType": "Hdr10",
+     "ExtendedVideoSubTypeDescription": "HDR 10",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "ac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English AC3 5.1 (Default)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "5.1",
+     "BitRate": 384000,
+     "Channels": 6,
+     "SampleRate": 48000,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "subrip",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "Title": "English (CC)",
+     "DisplayTitle": "English (SUBRIP)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": false,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0,
+     "SubtitleLocationType": "InternalStream"
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 14661079,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 1,
+   "ItemId": "691255",
+   "MimeType": "video/x-matroska"
+  },
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 01",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 6173330000,
+     "Name": "Chapter 02",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 12133750000,
+     "Name": "Chapter 03",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 18088330000,
+     "Name": "Chapter 04",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 24665830000,
+     "Name": "Chapter 05",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 30756250000,
+     "Name": "Chapter 06",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 37516250000,
+     "Name": "Chapter 07",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 44569580000,
+     "Name": "Chapter 08",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    },
+    {
+     "StartPositionTicks": 50425000000,
+     "Name": "Chapter 09",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 8
+    },
+    {
+     "StartPositionTicks": 56172920000,
+     "Name": "Chapter 10",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 9
+    },
+    {
+     "StartPositionTicks": 61291670000,
+     "Name": "Chapter 11",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 10
+    },
+    {
+     "StartPositionTicks": 67122920000,
+     "Name": "Chapter 12",
+     "ImageTag": "d8f9fce1ebad9973624f0ef31e6fe17d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 11
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_691256",
+   "Path": "The Salt Path (2025) Bluray-1080p [x264].mkv",
+   "Type": "Grouping",
+   "Container": "mkv",
+   "Size": 14180829022,
+   "Name": "(2025) Bluray-1080p [x264]",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 69227520000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "h264",
+     "ColorTransfer": "bt709",
+     "ColorPrimaries": "bt709",
+     "ColorSpace": "bt709",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p H264",
+     "NalLengthSize": "4",
+     "IsInterlaced": false,
+     "BitRate": 16387504,
+     "BitDepth": 8,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 804,
+     "Width": 1920,
+     "AverageFrameRate": 24,
+     "RealFrameRate": 24,
+     "Profile": "High",
+     "Type": "Video",
+     "AspectRatio": "160:67",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p",
+     "Level": 41,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "eac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "Title": "EAC3 5.1",
+     "DisplayTitle": "English EAC3 5.1 (Default)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "5.1",
+     "BitRate": 1024000,
+     "Channels": 6,
+     "SampleRate": 48000,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "PGSSUB",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "Title": "SDH",
+     "DisplayTitle": "English (SDH PGSSUB)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": true,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0,
+     "SubtitleLocationType": "InternalStream"
+    },
+    {
+     "Codec": "subrip",
+     "Language": "rum",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "Romanian (SUBRIP)",
+     "DisplayLanguage": "Romanian",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 3,
+     "IsExternal": false,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0,
+     "SubtitleLocationType": "InternalStream"
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 16387504,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 1,
+   "ItemId": "691256",
+   "MimeType": "video/x-matroska"
+  }
+ ],
+ "PlaySessionId": "ee24848fbf6349be9343105c6d813fb8"
+}

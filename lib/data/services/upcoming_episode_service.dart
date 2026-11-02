@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 import '../../preference/user_preferences.dart';
 import '../models/upcoming_episode_info.dart';
 import '../repositories/seerr_repository.dart';
+import 'moonbase_endpoint.dart';
 import 'plugin_sync_service.dart';
 
 /// Service that resolves upcoming episode air dates for a TV series,
@@ -201,15 +202,13 @@ class UpcomingEpisodeService {
     // Otherwise, try Moonbase server proxy if available:
     if (GetIt.instance.isRegistered<MediaServerClient>()) {
       final client = GetIt.instance<MediaServerClient>();
-      final token = client.accessToken;
-      if (token != null) {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep != null) {
         try {
           final response = await _dio.get(
-            '${client.baseUrl}/Moonfin/Tmdb/NextEpisode',
+            '${ep.base}/Moonfin/Tmdb/NextEpisode',
             queryParameters: {'tmdbId': tmdbId},
-            options: Options(headers: {
-              'Authorization': 'MediaBrowser Token="$token"',
-            }),
+            options: Options(headers: ep.headers),
           );
           if (response.statusCode == 200 && response.data is Map) {
             final data = response.data;

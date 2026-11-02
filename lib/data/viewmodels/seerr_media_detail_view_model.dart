@@ -22,6 +22,15 @@ bool seerrPublicFlag(
   required bool fallback,
 }) => settings.containsKey(key) ? settings[key] == true : fallback;
 
+/// Where to look up a title's streaming services, in the order Seerr's own
+/// page uses: the user's region, then the server's, then the US.
+@visibleForTesting
+String seerrStreamingRegion(String? user, String? server) {
+  if (user != null && user.isNotEmpty) return user;
+  if (server != null && server.isNotEmpty) return server;
+  return 'US';
+}
+
 /// One quality track (HD or 4K) of a title: its media status, the requests
 /// for that track, and the flags the UI reads. Seerr stores the two
 /// qualities independently, as status vs status4k and SeerrRequest.is4k, so
@@ -208,6 +217,7 @@ class SeerrMediaDetailState {
   final bool isTogglingWatchlist;
   final bool onUserWatchlist;
   final String? watchlistError;
+  final String streamingRegion;
 
   const SeerrMediaDetailState({
     this.isLoading = false,
@@ -225,6 +235,7 @@ class SeerrMediaDetailState {
     this.isTogglingWatchlist = false,
     this.onUserWatchlist = false,
     this.watchlistError,
+    this.streamingRegion = 'US',
   });
 
   bool get isMovie => movie != null;
@@ -267,6 +278,14 @@ class SeerrMediaDetailState {
       movie?.keywords ?? tv?.keywords ?? [];
   List<SeerrVideo> get relatedVideos =>
       movie?.relatedVideos ?? tv?.relatedVideos ?? const [];
+
+  List<SeerrWatchProvider> get streamingProviders {
+    final regions = movie?.watchProviders ?? tv?.watchProviders ?? const [];
+    for (final entry in regions) {
+      if (entry.region == streamingRegion) return entry.flatrate;
+    }
+    return const [];
+  }
 
   SeerrVideo? get bestTrailer {
     final videos = relatedVideos;
@@ -334,6 +353,7 @@ class SeerrMediaDetailState {
     bool? isTogglingWatchlist,
     bool? onUserWatchlist,
     String? watchlistError,
+    String? streamingRegion,
   }) =>
       SeerrMediaDetailState(
         isLoading: isLoading ?? this.isLoading,
@@ -351,6 +371,7 @@ class SeerrMediaDetailState {
         isTogglingWatchlist: isTogglingWatchlist ?? this.isTogglingWatchlist,
         onUserWatchlist: onUserWatchlist ?? this.onUserWatchlist,
         watchlistError: watchlistError,
+        streamingRegion: streamingRegion ?? this.streamingRegion,
       );
 }
 
@@ -369,6 +390,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   // alone rather than disappearing.
   bool _movie4kEnabled = true;
   bool _series4kEnabled = true;
+  String? _serverStreamingRegion;
 
   static const _downloadPollInterval = Duration(seconds: 15);
   static const _waitingPollInterval = Duration(seconds: 30);
@@ -474,11 +496,28 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         'series4kEnabled',
         fallback: _series4kEnabled,
       );
+      final region = settings['streamingRegion'];
+      _serverStreamingRegion = region is String ? region : null;
+      final streamingRegion = _streamingRegionFor(_state.currentUser);
+      if (streamingRegion != _state.streamingRegion) {
+        // copyWith clears the error fields it isn't handed, so pass them on.
+        _state = _state.copyWith(
+          streamingRegion: streamingRegion,
+          error: _state.error,
+          requestError: _state.requestError,
+          requestErrorKind: _state.requestErrorKind,
+          requestSuccess: _state.requestSuccess,
+          watchlistError: _state.watchlistError,
+        );
+      }
       notifyListeners();
     } catch (_) {
       // Keep the permissive defaults.
     }
   }
+
+  String _streamingRegionFor(SeerrUser? user) =>
+      seerrStreamingRegion(user?.streamingRegion, _serverStreamingRegion);
 
   /// The search hit of the kind that was asked for.
   ///
@@ -555,6 +594,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
             tv: details,
             currentUser: user,
             onUserWatchlist: onWatchlist,
+            streamingRegion: _streamingRegionFor(user),
           );
           notifyListeners();
           _loadRelated(tmdbId, 'tv');
@@ -575,6 +615,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
             movie: details,
             currentUser: user,
             onUserWatchlist: onWatchlist,
+            streamingRegion: _streamingRegionFor(user),
           );
           notifyListeners();
           _loadRelated(tmdbId, 'movie');

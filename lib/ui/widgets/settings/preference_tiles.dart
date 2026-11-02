@@ -14,6 +14,7 @@ import '../adaptive/sf_symbol.dart';
 import '../overlay_sheet.dart';
 import 'multi_select_dialog.dart';
 import 'preference_binding.dart';
+import 'settings_preview_scope.dart';
 
 Widget withBackClose(BuildContext dialogContext, Widget child) {
   final closeDialog = createDialogBackCloseHandler(dialogContext);
@@ -382,6 +383,17 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
 
   @override
   Widget build(BuildContext context) {
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+        description: widget.subtitle,
+      ),
+      child: _buildTile(context),
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     return TvFocusHighlight(
       enabled: widget.enabled,
       builder: (context, focused) {
@@ -442,6 +454,8 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final ValueChanged<T>? onChangedValue;
   final List<T>? values;
   final bool autofocus;
+  final bool enabled;
+  final FocusNode? focusNode;
 
   const EnumPreferenceTile({
     super.key,
@@ -456,6 +470,8 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.onChangedValue,
     this.values,
     this.autofocus = false,
+    this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -465,15 +481,17 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
 class _EnumPreferenceTileState<T extends Enum>
     extends State<EnumPreferenceTile<T>> {
   late PreferenceBinding<T> _binding;
-  late final FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ??
+      (_internalFocusNode ??= FocusNode(
+        debugLabel: 'EnumPreferenceTile_${widget.preference.key}',
+      ));
   bool _pickerOpen = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(
-      debugLabel: 'EnumPreferenceTile_${widget.preference.key}',
-    );
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
@@ -492,7 +510,7 @@ class _EnumPreferenceTileState<T extends Enum>
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     _binding.dispose();
     super.dispose();
   }
@@ -500,14 +518,29 @@ class _EnumPreferenceTileState<T extends Enum>
   @override
   Widget build(BuildContext context) {
     final values = widget.values ?? widget.preference.values.toList();
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+        description: widget.description,
+        options: [for (final v in values) widget.labelOf(v)],
+        currentIndex: () => values.indexOf(_binding.value),
+      ),
+      child: _buildTile(context, values),
+    );
+  }
+
+  Widget _buildTile(BuildContext context, List<T> values) {
     return TvFocusHighlight(
+      enabled: widget.enabled,
       builder: (context, focused) => ValueListenableBuilder<T>(
         valueListenable: _binding,
         builder: (context, value, _) {
           final current = values.contains(value) ? value : values.first;
           final label = widget.labelOf(current);
           return ListTile(
-            focusNode: _focusNode,
+            enabled: widget.enabled,
+            focusNode: _effectiveFocusNode,
             autofocus: widget.autofocus,
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
@@ -530,7 +563,7 @@ class _EnumPreferenceTileState<T extends Enum>
             isThreeLine: widget.description != null,
             titleAlignment: ListTileTitleAlignment.center,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            onTap: () => _showPicker(context, current),
+            onTap: widget.enabled ? () => _showPicker(context, current) : null,
           );
         },
       ),
@@ -540,6 +573,8 @@ class _EnumPreferenceTileState<T extends Enum>
   void _showPicker(BuildContext context, T current) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final key = widget.preference.key;
     final result = await showSettingsPicker<T>(
       context,
       title: widget.title,
@@ -547,7 +582,11 @@ class _EnumPreferenceTileState<T extends Enum>
       current: current,
       labelOf: widget.dialogLabelOf ?? widget.labelOf,
       subtitleOf: widget.dialogSubtitleOf,
+      onTry: preview == null
+          ? null
+          : (value, index) => preview.tryValue(key, value, index: index),
     );
+    preview?.clearTry(key);
     _pickerOpen = false;
     if (!mounted || result == null || result == _binding.value) return;
     _binding.value = result;
@@ -555,9 +594,9 @@ class _EnumPreferenceTileState<T extends Enum>
     widget.onChangedValue?.call(result);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted &&
-          !_focusNode.hasFocus &&
+          !_effectiveFocusNode.hasFocus &&
           (ModalRoute.of(context)?.isCurrent ?? true)) {
-        _focusNode.requestFocus();
+        _effectiveFocusNode.requestFocus();
       }
     });
   }
@@ -573,6 +612,7 @@ Future<T?> showSettingsPicker<T>(
   required T current,
   required String Function(T value) labelOf,
   String Function(T value)? subtitleOf,
+  void Function(T value, int index)? onTry,
 }) {
   final selectedIndex = values.indexOf(current);
   final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
@@ -588,54 +628,57 @@ Future<T?> showSettingsPicker<T>(
           final i = entry.key;
           final v = entry.value;
           final selected = v == current;
-          return TvFocusHighlight(
-            builder: (_, focused) {
-              final invert = focused && settingsTileInvertsOnFocus;
-              return ListTile(
-                autofocus: i == autofocusIndex,
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                title: Text(
-                  labelOf(v),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: invert
-                        ? AppColors.black.withValues(alpha: 0.87)
-                        : AppColorScheme.onSurface,
+          return settingsPreviewOption(
+            onTry: onTry == null ? null : () => onTry(v, i),
+            child: TvFocusHighlight(
+              builder: (_, focused) {
+                final invert = focused && settingsTileInvertsOnFocus;
+                return ListTile(
+                  autofocus: i == autofocusIndex,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  title: Text(
+                    labelOf(v),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: invert
+                          ? AppColors.black.withValues(alpha: 0.87)
+                          : AppColorScheme.onSurface,
+                    ),
                   ),
-                ),
-                subtitle: subtitleOf != null
-                    ? Text(
-                        subtitleOf(v),
-                        style: TextStyle(
-                          fontSize: 12,
+                  subtitle: subtitleOf != null
+                      ? Text(
+                          subtitleOf(v),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: invert
+                                ? AppColors.black.withValues(alpha: 0.54)
+                                : AppColorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
+                          ),
+                        )
+                      : null,
+                  isThreeLine: subtitleOf != null,
+                  trailing: selected
+                      ? Icon(
+                          Icons.check,
                           color: invert
                               ? AppColors.black.withValues(alpha: 0.54)
-                              : AppColorScheme.onSurface.withValues(
-                                  alpha: 0.6,
-                                ),
-                        ),
-                      )
-                    : null,
-                isThreeLine: subtitleOf != null,
-                trailing: selected
-                    ? Icon(
-                        Icons.check,
-                        color: invert
-                            ? AppColors.black.withValues(alpha: 0.54)
-                            : (AppUiIdiomResolver.isApple
-                                ? AppColorScheme.accent
-                                : null),
-                      )
-                    : null,
-                onTap: () {
-                  if (picked) return;
-                  picked = true;
-                  Navigator.pop(ctx, v);
-                },
-              );
-            },
+                              : (AppUiIdiomResolver.isApple
+                                  ? AppColorScheme.accent
+                                  : null),
+                        )
+                      : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, v);
+                  },
+                );
+              },
+            ),
           );
         }).toList(),
       ),
@@ -757,9 +800,16 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
   Widget build(BuildContext context) {
     final invert =
         widget.enabled && _outerFocused && settingsTileInvertsOnFocus;
-    return Opacity(
-      opacity: widget.enabled ? 1.0 : 0.4,
-      child: _buildTile(context, invert: invert),
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+        description: widget.description,
+      ),
+      child: Opacity(
+        opacity: widget.enabled ? 1.0 : 0.4,
+        child: _buildTile(context, invert: invert),
+      ),
     );
   }
 
@@ -929,6 +979,20 @@ class _StringPickerPreferenceTileState
 
   @override
   Widget build(BuildContext context) {
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+        description: widget.description,
+        options: widget.options.values.toList(),
+        currentIndex: () =>
+            widget.options.keys.toList().indexOf(_binding.value),
+      ),
+      child: _buildTile(context),
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     return TvFocusHighlight(
       builder: (context, focused) => ValueListenableBuilder<String>(
         valueListenable: _binding,
@@ -965,6 +1029,8 @@ class _StringPickerPreferenceTileState
   void _showPicker(BuildContext context, String current) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final key = widget.preference.key;
     final entries = widget.options.entries.toList();
     final selectedIndex = entries.indexWhere((e) => e.key == current);
     final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
@@ -980,22 +1046,28 @@ class _StringPickerPreferenceTileState
             final i = entry.key;
             final e = entry.value;
             final selected = e.key == current;
-            return TvFocusHighlight(
-              builder: (_, _) => ListTile(
-                autofocus: i == autofocusIndex,
-                title: Text(e.value, style: _kSettingsTitleTextStyle),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  if (picked) return;
-                  picked = true;
-                  Navigator.pop(ctx, e.key);
-                },
+            return settingsPreviewOption(
+              onTry: preview == null
+                  ? null
+                  : () => preview.tryValue(key, e.key, index: i),
+              child: TvFocusHighlight(
+                builder: (_, _) => ListTile(
+                  autofocus: i == autofocusIndex,
+                  title: Text(e.value, style: _kSettingsTitleTextStyle),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, e.key);
+                  },
+                ),
               ),
             );
           }).toList(),
         ),
       ),
     );
+    preview?.clearTry(key);
     _pickerOpen = false;
     if (!mounted || result == null) return;
     if (result != _binding.value) {
@@ -1186,6 +1258,20 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
 
   @override
   Widget build(BuildContext context) {
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+        description: widget.description,
+        options: widget.options.values.toList(),
+        currentIndex: () =>
+            widget.options.keys.toList().indexOf(_binding.value),
+      ),
+      child: _buildTile(context),
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     return TvFocusHighlight(
       builder: (context, focused) => ValueListenableBuilder<int>(
         valueListenable: _binding,
@@ -1222,6 +1308,8 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
   void _showPicker(BuildContext context, int current) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final key = widget.preference.key;
     final entries = widget.options.entries.toList();
     final selectedIndex = entries.indexWhere((e) => e.key == current);
     final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
@@ -1237,25 +1325,31 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
             final i = entry.key;
             final e = entry.value;
             final selected = e.key == current;
-            return TvFocusHighlight(
-              builder: (_, _) => ListTile(
-                autofocus: i == autofocusIndex,
-                title: Text(
-                  widget.dialogOptions?[e.key] ?? e.value,
-                  style: _kSettingsTitleTextStyle,
+            return settingsPreviewOption(
+              onTry: preview == null
+                  ? null
+                  : () => preview.tryValue(key, e.key, index: i),
+              child: TvFocusHighlight(
+                builder: (_, _) => ListTile(
+                  autofocus: i == autofocusIndex,
+                  title: Text(
+                    widget.dialogOptions?[e.key] ?? e.value,
+                    style: _kSettingsTitleTextStyle,
+                  ),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, e.key);
+                  },
                 ),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  if (picked) return;
-                  picked = true;
-                  Navigator.pop(ctx, e.key);
-                },
               ),
             );
           }).toList(),
         ),
       ),
     );
+    preview?.clearTry(key);
     _pickerOpen = false;
     if (!mounted || result == null) return;
     if (result != _binding.value) {

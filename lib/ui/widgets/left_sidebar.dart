@@ -36,7 +36,7 @@ import 'settings/settings_panel.dart';
 import '../screens/downloads/downloads_panel.dart';
 import 'downloads_nav_slot.dart';
 import 'friends_nav_slot.dart';
-import '../screens/syncplay/syncplay_screen.dart';
+import '../screens/watch_party/watch_together_route.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'seerr_icons.dart';
 import 'server_messages_dialog.dart';
@@ -50,8 +50,8 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../navigation/app_router.dart';
 import 'offline_aware_image.dart';
-import 'paced_network_image.dart';
 import 'adaptive/sf_symbol.dart';
+import 'user_avatar_image.dart';
 
 const _kExpandedWidthDesktop = 240.0;
 const _kExpandedWidthMobile = 260.0;
@@ -440,6 +440,19 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     }
     _sidebarHadFocus = hasFocus;
     LeftSidebar.isFocusedNotifier.value = hasFocus;
+  }
+
+  void _openLibrary(AggregatedLibrary lib) {
+    _onNavigate();
+    _markNavigationAwayFromSidebar();
+    context.navigateTopLevel(
+      libraryRoute(
+        lib.id,
+        lib.collectionType,
+        lib.name,
+        serverId: lib.serverId,
+      ),
+    );
   }
 
   void _markNavigationAwayFromSidebar() {
@@ -942,7 +955,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     final navLibraries = _navLibraries;
     final showLibraries =
         !kidsMode && _prefs.get(UserPreferences.showLibrariesInToolbar);
-    final showFolders = _prefs.get(UserPreferences.enableFolderView);
+    final showLibrariesIndividually =
+        _prefs.get(UserPreferences.showLibrariesIndividually);
     final showSyncPlay =
         !kidsMode &&
         _prefs.get(UserPreferences.syncPlayEnabled) &&
@@ -1083,23 +1097,6 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       context.navigateTopLevel(Destinations.liveTvGuide);
                     },
                   ),
-                if (showFolders)
-                  _SidebarItem(
-                    key: const ValueKey('sidebar-folders'),
-                    icon: Icons.folder_rounded,
-                    label: l10n.folders,
-                    baseColor: nextMainSidebarColor(),
-                    showLabel: _showLabels,
-                    onPressed: () {
-                      _onNavigate();
-                      if (_isActive(Destinations.folderView)) {
-                        _exitSidebarToContent();
-                        return;
-                      }
-                      _markNavigationAwayFromSidebar();
-                      context.navigateTopLevel(Destinations.folderView);
-                    },
-                  ),
                 if (showSyncPlay)
                   _SidebarItem(
                     key: const ValueKey('sidebar-syncplay'),
@@ -1112,7 +1109,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       _markNavigationAwayFromSidebar();
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => const SyncPlayScreen(),
+                          builder: (_) => watchTogetherScreen(),
                         ),
                       );
                     },
@@ -1138,7 +1135,19 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       context.navigateTopLevel(Destinations.seerrDiscover);
                     },
                   ),
-                if (showLibraries && navLibraries.isNotEmpty) ...[
+                if (showLibraries && showLibrariesIndividually)
+                  for (final lib in navLibraries)
+                    _SidebarItem(
+                      // Two servers can share a library id, so the key is the
+                      // library itself.
+                      key: ObjectKey(lib),
+                      icon: libraryIcon(lib),
+                      label: lib.name,
+                      baseColor: nextMainSidebarColor(),
+                      showLabel: _showLabels,
+                      onPressed: () => _openLibrary(lib),
+                    )
+                else if (showLibraries && navLibraries.isNotEmpty) ...[
                   _SidebarItem(
                     key: const ValueKey('sidebar-libraries'),
                     baseColor: nextMainSidebarColor(),
@@ -1183,18 +1192,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                                     label: lib.name,
                                     baseColor: nextLibrarySidebarColor(),
                                     showLabel: _showLabels,
-                                    onPressed: () {
-                                      _onNavigate();
-                                      _markNavigationAwayFromSidebar();
-                                      context.navigateTopLevel(
-                                        libraryRoute(
-                                          lib.id,
-                                          lib.collectionType,
-                                          lib.name,
-                                          serverId: lib.serverId,
-                                        ),
-                                      );
-                                    },
+                                    onPressed: () => _openLibrary(lib),
                                   ),
                                 )
                                 .toList(),
@@ -1348,27 +1346,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
         ),
       ),
       child: ClipOval(
-        child: _userImageUrl != null
-            ? Image(
-                // The server sends the avatar at its stored size, so decode
-                // at the painted size instead of a full bitmap per user.
-                image: ResizeImage.resizeIfNeeded(
-                  ArtworkDecode.widthFor(
-                    40,
-                    MediaQuery.devicePixelRatioOf(context),
-                  ),
-                  null,
-                  PacedNetworkImage(
-                    _userImageUrl!,
-                    headers: serverImageHeaders,
-                  ),
-                ),
-                fit: BoxFit.cover,
-                width: 40,
-                height: 40,
-                errorBuilder: (_, _, _) => fallback,
-              )
-            : fallback,
+        // Decoded at the painted size, SVG presets drawn as vectors.
+        child: UserAvatarImage(
+          url: _userImageUrl,
+          size: 40,
+          fallback: fallback,
+        ),
       ),
     );
 

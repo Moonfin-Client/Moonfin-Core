@@ -1,0 +1,12 @@
+{
+ "id": "9",
+ "username": "user",
+ "email": "user@example.invalid",
+ "role": "admin",
+ "permissions": [
+  "marker_edit",
+  "metadata_curation"
+ ],
+ "download_allowed": true,
+ "password_change_required": false
+}

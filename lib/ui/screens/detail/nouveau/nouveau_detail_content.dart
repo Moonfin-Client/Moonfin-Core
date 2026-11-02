@@ -30,6 +30,7 @@ import 'nouveau_portrait_layout.dart';
 import 'people/nouveau_people_section.dart';
 import 'person/nouveau_person_content.dart';
 import 'person/nouveau_person_hero.dart';
+import 'reviews/nouveau_reviews_section.dart';
 import 'shared/nouveau_spacing.dart';
 
 class NouveauDetailContent extends StatefulWidget {
@@ -84,6 +85,9 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
 
   final GlobalKey<NouveauDiscoverySectionState> _discoverySectionKey =
       GlobalKey<NouveauDiscoverySectionState>();
+
+  final GlobalKey<NouveauReviewsSectionState> _reviewsSectionKey =
+      GlobalKey<NouveauReviewsSectionState>();
 
   final GlobalKey<NouveauPeopleSectionState> _peopleSectionKey =
       GlobalKey<NouveauPeopleSectionState>();
@@ -148,13 +152,15 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       _ when key == _episodesSectionKey =>
         item.type == 'Series' || item.type == 'Season',
       _ when key == _collectionSectionKey =>
-        NouveauCollectionSection.shouldInclude(_vm),
+        NouveauCollectionSection.shouldInclude(_vm, _visibility),
       _ when key == _chaptersSectionKey =>
         _visibility.shows(DetailSection.chapters) && item.chapters.isNotEmpty,
       _ when key == _extrasSectionKey =>
         _visibility.shows(DetailSection.extras) && _vm.features.isNotEmpty,
       _ when key == _discoverySectionKey =>
         NouveauDiscoverySection.shouldInclude(_vm, _visibility),
+      _ when key == _reviewsSectionKey =>
+        _visibility.shows(DetailSection.reviews) && _vm.reviews.isNotEmpty,
       _ when key == _peopleSectionKey =>
         _visibleActors.isNotEmpty ||
             _visibleDirectors.isNotEmpty ||
@@ -204,6 +210,8 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
         _extrasSectionKey.currentState?.canFocusTop ?? false,
       _ when key == _discoverySectionKey =>
         _discoverySectionKey.currentState?.canFocusTop ?? false,
+      _ when key == _reviewsSectionKey =>
+        _reviewsSectionKey.currentState?.canFocusTop ?? false,
       _ when key == _peopleSectionKey =>
         _peopleSectionKey.currentState?.canFocusTop ?? false,
       _ => false,
@@ -415,6 +423,13 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       );
     }
 
+    if (target == _reviewsSectionKey) {
+      return _focusAndReveal(
+        _reviewsSectionKey,
+        () => _reviewsSectionKey.currentState?.focusBottom() ?? false,
+      );
+    }
+
     if (target == _peopleSectionKey) {
       return _focusAndReveal(
         _peopleSectionKey,
@@ -473,6 +488,13 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       return _focusAndReveal(
         _chaptersSectionKey,
         () => _chaptersSectionKey.currentState?.focusTop() ?? false,
+      );
+    }
+
+    if (target == _reviewsSectionKey) {
+      return _focusAndReveal(
+        _reviewsSectionKey,
+        () => _reviewsSectionKey.currentState?.focusTop() ?? false,
       );
     }
 
@@ -773,7 +795,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
         NouveauSpacing.mobileHorizontalInset + safePadding.left,
         safePadding.top + 80,
         NouveauSpacing.mobileHorizontalInset + safePadding.right,
-        20,
+        8,
       );
     }
 
@@ -1157,6 +1179,10 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       sectionWidgets[_discoverySectionKey] = _buildDiscoverySection();
     }
 
+    if (_sectionVisible(_reviewsSectionKey, item)) {
+      sectionWidgets[_reviewsSectionKey] = _buildReviewsSection();
+    }
+
     if (_sectionVisible(_peopleSectionKey, item)) {
       sectionWidgets[_peopleSectionKey] = _buildCastCrewSection(item);
     }
@@ -1195,10 +1221,11 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
   List<GlobalKey> _orderedMediaSectionKeys(AggregatedItem item) {
     return <GlobalKey>[
       _episodesSectionKey,
-      _collectionSectionKey,
       _chaptersSectionKey,
       _extrasSectionKey,
+      _collectionSectionKey,
       _discoverySectionKey,
+      _reviewsSectionKey,
       _peopleSectionKey,
     ].where((key) => _sectionVisible(key, item)).toList();
   }
@@ -1222,6 +1249,10 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
 
     if (key == _discoverySectionKey) {
       return 'discovery';
+    }
+
+    if (key == _reviewsSectionKey) {
+      return 'reviews';
     }
 
     return 'people';
@@ -1289,13 +1320,16 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       children: [
         ColoredBox(color: base),
 
-        FullscreenBackdropSwitcher(
-          imageUrl: backdropUrl != null && backdropUrl.isNotEmpty
-              ? backdropUrl
-              : null,
-          duration: const Duration(milliseconds: 350),
-          alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
-          fadeInDuration: Duration.zero,
+        DetailBackdropFit(
+          prefs: widget.prefs,
+          child: FullscreenBackdropSwitcher(
+            imageUrl: backdropUrl != null && backdropUrl.isNotEmpty
+                ? backdropUrl
+                : null,
+            duration: const Duration(milliseconds: 350),
+            alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
+            fadeInDuration: Duration.zero,
+          ),
         ),
 
         ColoredBox(color: Colors.black.withValues(alpha: overlayAlpha)),
@@ -1429,6 +1463,16 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       onNavigateUp: () => _moveUp(_discoverySectionKey),
       onNavigateDown: () => _moveDown(_discoverySectionKey),
       onRevealRequested: _scheduleOuterReveal,
+    );
+  }
+
+  Widget _buildReviewsSection() {
+    return NouveauReviewsSection(
+      key: _reviewsSectionKey,
+      reviews: _vm.reviews,
+      prefs: widget.prefs,
+      onNavigateUp: () => _moveUp(_reviewsSectionKey),
+      onNavigateDown: () => _moveDown(_reviewsSectionKey),
     );
   }
 

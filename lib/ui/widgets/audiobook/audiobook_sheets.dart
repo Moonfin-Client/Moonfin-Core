@@ -838,7 +838,7 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
     final apple = PlatformDetection.isApple;
     final isTV = PlatformDetection.isTV;
     final prefs = GetIt.instance<UserPreferences>();
-    final preferSystemIme = prefs.get(UserPreferences.preferSystemImeKeyboard);
+    final keyboardStyle = prefs.get(UserPreferences.keyboardStyle);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final bottomPadding = AppSpacing.spaceLg;
 
@@ -898,7 +898,7 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
                 isFocused: _tvFocusNode.hasFocus,
                 hint: l10n.audiobookNoteHint,
                 maxLines: 1,
-                preferSystemIme: preferSystemIme,
+                keyboardStyle: keyboardStyle,
                 keyboardType: KeyboardType.alphabetic,
                 popParentOnKeyboardClose: false,
                 borderColor: AppColorScheme.onSurface.withValues(alpha: 0.15),

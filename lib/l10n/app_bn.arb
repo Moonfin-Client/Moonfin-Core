@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "ডিসকভারে কোন বিষয়ের ফিড দেখানো হবে তা বেছে নিন।",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "প্রয়োগ করুন",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "অডিওবুক জেনারস",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "অডিওবুক ডিসকভারে কোন জেনার দেখানো হবে তা বেছে নিন।",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "অডিওবুক আবিষ্কার করুন",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox থেকে জনপ্রিয় পাবলিক ডোমেন শিরোনাম।",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} শিরোনাম",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "বাম দিকে স্ক্রোল করুন",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "আবিষ্কার করুন",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library থেকে বিষয় অনুসারে ট্রেন্ডিং শিরোনাম।",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "এখনও কোন বুকমার্ক করা আইটেম",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ফোল্ডার ভিউ সক্ষম করুন",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ফোল্ডার ব্রাউজিং অপশন দেখান",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "লাইব্রেরি দৃশ্যমানতা",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "বৈশিষ্ট্যযুক্ত বিষয়বস্তু, চেহারা",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "পোস্টারের আকার, ছবির ধরন, ফোল্ডার ভিউ",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, এবং রেটিং সোর্স",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr সংরক্ষণাগার বের করতে ব্যর্থ হয়েছে৷",
     "cb7ExtractionUnavailable": "এই প্ল্যাটফর্মে CB7 নিষ্কাশন উপলব্ধ নয়।",
     "cb7ExtractionPluginUnavailable": "এই প্ল্যাটফর্মে CB7 নিষ্কাশন প্লাগইন উপলব্ধ নয়।",
-    "closeGenrePanel": "জেনার প্যানেল বন্ধ করুন",
     "loadingShuffle": "শাফেল লোড হচ্ছে...",
     "libraryShuffleLabel": "লাইব্রেরি শাফল",
     "randomShuffleLabel": "এলোমেলো শাফল",

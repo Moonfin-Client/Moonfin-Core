@@ -524,10 +524,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "选择要在“发现”中显示的主题源。",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "申请",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -543,27 +539,6 @@
     "audiobookGenres": "有声读物流派",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "选择要在有声读物探索中显示的流派。",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "发现有声读物",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "来自 LibriVox 的热门公共领域标题。",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} 标题",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "向左滚动",
     "@scrollLeft": {
@@ -740,10 +715,6 @@
     "discover": "发现",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library 中按主题划分的热门标题。",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "还没有添加书签的项目",
     "@noBookmarkedItems": {
@@ -3492,14 +3463,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "启用文件夹视图",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "显示文件夹浏览选项",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "图书馆可见性",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4166,10 +4129,6 @@
     "featuredContentAppearance": "特色内容、外观",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "海报尺寸、图像类型、文件夹视图",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList、TMDB 和评级源",
     "@mdbListTmdbRatingSources": {
@@ -7214,7 +7173,6 @@
     "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
     "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
     "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
-    "closeGenrePanel": "Close genre panel",
     "loadingShuffle": "Loading shuffle...",
     "libraryShuffleLabel": "LIBRARY SHUFFLE",
     "randomShuffleLabel": "RANDOM SHUFFLE",

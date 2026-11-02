@@ -16,6 +16,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../util/game_cores.dart';
+import '../../../util/game_sram_sync.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/focus/gamepad/android_gamepad_channel.dart';
@@ -91,6 +92,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
   bool _holdsGameplayArtworkBlock = false;
   ScreensaverController? _screensaverController;
   bool _hasSave = false;
+  GameSramSync? _sram;
 
   // EmulatorJS settings (control remaps + options) sync per user, not per game, so they use a
   // fixed sentinel id + the "settings" save kind. Restored into localStorage at document start
@@ -310,6 +312,12 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
       }
     } catch (_) {}
 
+    // Progress the server never got goes up first, and then the page isn't
+    // handed the server's older copy.
+    final sram = await GameSramSync.open(games, widget.gameId);
+    _sram = sram;
+    final localSramWins = await sram?.prepare(download: false) ?? false;
+
     final url = games.playerUrl(
       libraryId: widget.libraryId,
       gameId: widget.gameId,
@@ -320,6 +328,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
       // Auto-load only when resuming and a save exists (avoids a 404 fetch otherwise).
       includeSaveUrl: hasSave && !widget.startFresh,
       saveId: gameStateKey(widget.gameId, widget.core, forceEmulatorJs: true),
+      includeSramUrl: !localSramWins,
     );
 
     if (!mounted) return;
@@ -1244,6 +1253,33 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     return true;
   }
 
+  /// Reads the battery save out of the WebView and syncs it under the bare
+  /// game id. Never throws, so it can't hold up leaving the game.
+  Future<void> _saveSram() async {
+    final controller = _controller;
+    final games = _client.gamesApi;
+    if (controller == null || games == null || !_emulatorReady) return;
+    try {
+      final value = await _invokePlayer('moonfinGetSram', const [], () async {
+        final result = await controller.callAsyncJavaScript(
+          functionBody:
+              'return window.moonfinGetSram ? window.moonfinGetSram() : null;',
+        );
+        return result?.value;
+      });
+      if (value is! String || value.isEmpty) return;
+      final bytes = base64.decode(value);
+      final sram = _sram;
+      if (sram != null) {
+        await sram.finish(bytes);
+      } else {
+        await games.putSave(widget.gameId, bytes, kind: 'sram');
+      }
+    } catch (error) {
+      debugPrint('[GameEmulatorScreen] SRAM sync failed: $error');
+    }
+  }
+
   /// Reads EmulatorJS's settings out of the WebView and syncs them to the server (per user).
   Future<void> _saveSettings() async {
     final controller = _controller;
@@ -1299,13 +1335,16 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
   }
 
   Future<void> _persistOnExit({required bool saveState}) async {
-    await persistGameEmulatorExit(
-      saveState: saveState,
-      persistState: () async {
-        await _saveState();
-      },
-      persistSettings: _saveSettings,
-    );
+    await Future.wait([
+      persistGameEmulatorExit(
+        saveState: saveState,
+        persistState: () async {
+          await _saveState();
+        },
+        persistSettings: _saveSettings,
+      ),
+      _saveSram(),
+    ]);
   }
 
   @override

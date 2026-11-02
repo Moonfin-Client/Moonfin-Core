@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "เลือกฟีดหัวเรื่องที่จะแสดงใน Discover",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "นำไปใช้",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ประเภทหนังสือเสียง",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "เลือกแนวเพลงที่จะแสดงใน Audiobook Discover",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ค้นพบหนังสือเสียง",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "ชื่อโดเมนสาธารณะยอดนิยมจาก LibriVox",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} ชื่อ",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "เลื่อนไปทางซ้าย",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "ค้นพบ",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "ชื่อที่กำลังมาแรงตามหัวเรื่องจาก Open Library",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "ยังไม่มีรายการที่บุ๊กมาร์กไว้",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "เปิดใช้งานมุมมองโฟลเดอร์",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "แสดงตัวเลือกการเรียกดูโฟลเดอร์",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "การมองเห็นห้องสมุด",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "เนื้อหาเด่น รูปลักษณ์ภายนอก",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "ขนาดโปสเตอร์ ประเภทรูปภาพ มุมมองโฟลเดอร์",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB และแหล่งที่มาของการจัดอันดับ",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "ไม่สามารถแยกไฟล์เก็บถาวร .cbr",
     "cb7ExtractionUnavailable": "การแยก CB7 ไม่พร้อมใช้งานบนแพลตฟอร์มนี้",
     "cb7ExtractionPluginUnavailable": "ปลั๊กอินการแยก CB7 ไม่พร้อมใช้งานบนแพลตฟอร์มนี้",
-    "closeGenrePanel": "ปิดแผงประเภท",
     "loadingShuffle": "กำลังโหลดแบบสุ่ม...",
     "libraryShuffleLabel": "สุ่มจากคลังสื่อ",
     "randomShuffleLabel": "สุ่มทั้งหมด",

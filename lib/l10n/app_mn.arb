@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discover дээр ямар сэдвийн хангамжийг харуулахыг сонгоно уу.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Хэрэглэх",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Аудио номын төрөл",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Аудио ном Discover дээр ямар төрлийг харуулахаа сонгоно уу.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Аудио номтой танилц",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox-аас алдартай нийтийн домэйн гарчиг.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} гарчиг",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Зүүн тийш гүйлгэх",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Танилцах",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library сэдвийн дагуу трэнд болж буй гарчиг.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Одоогоор хавчуурга тэмдэглэсэн зүйл алга",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Фолдер харахыг идэвхжүүлэх",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Фолдер үзэх сонголтыг харуулах",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Номын сангийн харагдах байдал",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Онцлох агуулга, гадаад төрх",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Зурагт хуудасны хэмжээ, зургийн төрөл, хавтас харах",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, үнэлгээний эх сурвалжууд",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr архивыг задалж чадсангүй.",
     "cb7ExtractionUnavailable": "Энэ платформ дээр CB7 задлалт боломжгүй.",
     "cb7ExtractionPluginUnavailable": "Энэ платформ дээр CB7 задлах залгаас боломжгүй.",
-    "closeGenrePanel": "Төрлийн самбарыг хаах",
     "loadingShuffle": "Холимогийг ачаалж байна...",
     "libraryShuffleLabel": "САНГИЙН ХОЛИМОГ",
     "randomShuffleLabel": "САНАМСАРГҮЙ ХОЛИМОГ",

@@ -216,4 +216,29 @@ void main() {
     expect(request?.method, 'GET');
     expect(request?.path, '/Items/Latest');
   });
+
+  test('a new playlist is made private', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => 'user-1',
+    ).createPlaylist(name: 'Mix', itemIds: ['a']);
+
+    expect(request?.path, '/Playlists');
+    expect(request?.data, {
+      'Name': 'Mix',
+      'Ids': ['a'],
+      'IsPublic': false,
+    });
+  });
 }

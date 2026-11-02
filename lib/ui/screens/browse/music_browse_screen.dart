@@ -159,7 +159,7 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
           Row(
             children: [
               if (isDesktop)
-                _MusicCategoryRail(
+                MusicCategoryRail(
                   libraryId: widget.libraryId,
                   libraryName: _vm.libraryName,
                 ),
@@ -202,7 +202,7 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
                                           onHover: () => _setBackdrop(featured),
                                         ),
                                       if (!isDesktop)
-                                        _MusicCategoryBar(
+                                        MusicCategoryBar(
                                           key: const ValueKey('category_bar'),
                                           libraryId: widget.libraryId,
                                         ),
@@ -566,18 +566,89 @@ class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
   );
 }
 
-/// Horizontal category chips (mobile / TV) under the hero.
-class _MusicCategoryBar extends StatefulWidget {
-  final String libraryId;
-  const _MusicCategoryBar({super.key, required this.libraryId});
+/// One entry of a category bar or rail.
+typedef _CategoryEntry = ({
+  String id,
+  IconData icon,
+  String label,
+  bool selected,
+  VoidCallback onTap,
+});
 
-  @override
-  State<_MusicCategoryBar> createState() => _MusicCategoryBarState();
+/// The categories as bar or rail entries. With [nav] they lead with
+/// Overview and pick the category showing.
+List<_CategoryEntry> _categoryEntries(
+  BuildContext context,
+  String libraryId,
+  MusicCategoryNav? nav,
+) {
+  final categories = musicCategories(context, libraryId);
+  return [
+    if (nav != null)
+      (
+        id: 'overview',
+        icon: Icons.space_dashboard_outlined,
+        label: AppLocalizations.of(context).overview,
+        selected: false,
+        onTap: nav.onOverview,
+      ),
+    for (var i = 0; i < categories.length; i++)
+      (
+        id: MusicCategoryKind.values[i].name,
+        icon: categories[i].icon,
+        label: categories[i].label,
+        selected: nav?.current == MusicCategoryKind.values[i],
+        onTap: nav == null
+            ? () => context.push(categories[i].route)
+            : nav.current == MusicCategoryKind.values[i]
+            ? nav.onCurrent
+            : () => nav.onSelect(MusicCategoryKind.values[i]),
+      ),
+  ];
 }
 
-class _MusicCategoryBarState extends State<_MusicCategoryBar>
+/// Horizontal category chips (mobile / TV) under the hero, or along the top
+/// of a category screen when [nav] drives them.
+class MusicCategoryBar extends StatefulWidget {
+  final String libraryId;
+  final MusicCategoryNav? nav;
+  final EdgeInsets? padding;
+  final VoidCallback? onNavigateUp;
+  final VoidCallback? onNavigateDown;
+  final VoidCallback? onNavigateLeft;
+
+  const MusicCategoryBar({
+    super.key,
+    required this.libraryId,
+    this.nav,
+    this.padding,
+    this.onNavigateUp,
+    this.onNavigateDown,
+    this.onNavigateLeft,
+  });
+
+  @override
+  State<MusicCategoryBar> createState() => _MusicCategoryBarState();
+}
+
+class _MusicCategoryBarState extends State<MusicCategoryBar>
     with AutomaticKeepAliveClientMixin {
   final _scrollController = ScrollController();
+  final _selectedKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // A category screen opens with the chip of the category showing in view.
+    if (widget.nav != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final selected = _selectedKey.currentContext;
+        if (mounted && selected != null) {
+          Scrollable.ensureVisible(selected, alignment: 0.5);
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -608,44 +679,72 @@ class _MusicCategoryBarState extends State<_MusicCategoryBar>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final categories = musicCategories(context, widget.libraryId);
+    final nav = widget.nav;
+    final entries = _categoryEntries(context, widget.libraryId, nav);
+    // Few enough to build at once, so the chip of the category showing is
+    // always there to scroll to.
     return SizedBox(
       height: 56,
-      child: ListView.separated(
+      child: SingleChildScrollView(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: EdgeInsets.fromLTRB(_horizontalPadding, 6, _horizontalPadding, 8),
-        itemCount: categories.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 10),
-        itemBuilder: (context, i) {
-          final c = categories[i];
-          return _CategoryButton(
-            icon: c.icon,
-            label: c.label,
-            isFirst: i == 0,
-            isLast: i == categories.length - 1,
-            onFocused: () => _ensureVisible(i == 0),
-            onTap: () => context.push(c.route),
-          );
-        },
+        padding:
+            widget.padding ??
+            EdgeInsets.fromLTRB(_horizontalPadding, 6, _horizontalPadding, 8),
+        child: Row(
+          children: [
+            for (var i = 0; i < entries.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              MusicCategoryButton(
+                key: entries[i].selected ? _selectedKey : null,
+                icon: entries[i].icon,
+                label: entries[i].label,
+                selected: entries[i].selected,
+                focusNode: nav?.focusNode(entries[i].id),
+                isFirst: i == 0,
+                isLast: i == entries.length - 1,
+                onFocused: () => _ensureVisible(i == 0),
+                onTap: entries[i].onTap,
+                onNavigateUp: widget.onNavigateUp,
+                onNavigateDown: widget.onNavigateDown,
+                onNavigateLeft: i == 0 ? widget.onNavigateLeft : null,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Vertical category rail shown on the left of the desktop layout.
-class _MusicCategoryRail extends StatelessWidget {
+/// Vertical category rail shown on the left of the desktop layout, and of a
+/// category screen when [nav] drives it.
+class MusicCategoryRail extends StatelessWidget {
   final String libraryId;
   final String libraryName;
-  const _MusicCategoryRail({
+  final MusicCategoryNav? nav;
+
+  /// Room over the rail for the app's top navbar.
+  final double topPadding;
+  final VoidCallback? onNavigateUp;
+  final VoidCallback? onNavigateLeft;
+  final VoidCallback? onNavigateRight;
+
+  const MusicCategoryRail({
+    super.key,
     required this.libraryId,
     required this.libraryName,
+    this.nav,
+    this.topPadding = 0,
+    this.onNavigateUp,
+    this.onNavigateLeft,
+    this.onNavigateRight,
   });
 
   @override
   Widget build(BuildContext context) {
-    final categories = musicCategories(context, libraryId);
+    final entries = _categoryEntries(context, libraryId, nav);
     final title = libraryName.isEmpty
         ? AppLocalizations.of(context).music
         : libraryName;
@@ -658,7 +757,7 @@ class _MusicCategoryRail extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(28, 24, 20, 18),
+              padding: EdgeInsets.fromLTRB(28, 24 + topPadding, 20, 18),
               child: Text(
                 title,
                 maxLines: 1,
@@ -673,15 +772,23 @@ class _MusicCategoryRail extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: categories.length,
+                itemCount: entries.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 4),
                 itemBuilder: (context, i) {
-                  final c = categories[i];
-                  return _CategoryButton(
-                    icon: c.icon,
-                    label: c.label,
+                  final entry = entries[i];
+                  return MusicCategoryButton(
+                    icon: entry.icon,
+                    label: entry.label,
                     vertical: true,
-                    onTap: () => context.push(c.route),
+                    selected: entry.selected,
+                    focusNode: nav?.focusNode(entry.id),
+                    onTap: entry.onTap,
+                    onNavigateUp: i == 0 ? onNavigateUp : null,
+                    onNavigateDown: nav != null && i == entries.length - 1
+                        ? () {}
+                        : null,
+                    onNavigateLeft: onNavigateLeft,
+                    onNavigateRight: onNavigateRight,
                   );
                 },
               ),
@@ -694,8 +801,9 @@ class _MusicCategoryRail extends StatelessWidget {
 }
 
 /// A focusable category control rendered either as a horizontal pill (chip
-/// bar) or a full-width tile (desktop rail)
-class _CategoryButton extends StatefulWidget {
+/// bar) or a full-width tile (desktop rail). The category showing is tinted
+/// with the accent.
+class MusicCategoryButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -703,8 +811,15 @@ class _CategoryButton extends StatefulWidget {
   final bool isFirst;
   final bool isLast;
   final bool vertical;
+  final bool selected;
+  final FocusNode? focusNode;
+  final VoidCallback? onNavigateUp;
+  final VoidCallback? onNavigateDown;
+  final VoidCallback? onNavigateLeft;
+  final VoidCallback? onNavigateRight;
 
-  const _CategoryButton({
+  const MusicCategoryButton({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
@@ -712,19 +827,29 @@ class _CategoryButton extends StatefulWidget {
     this.isFirst = false,
     this.isLast = false,
     this.vertical = false,
+    this.selected = false,
+    this.focusNode,
+    this.onNavigateUp,
+    this.onNavigateDown,
+    this.onNavigateLeft,
+    this.onNavigateRight,
   });
 
   @override
-  State<_CategoryButton> createState() => _CategoryButtonState();
+  State<MusicCategoryButton> createState() => _CategoryButtonState();
 }
 
-class _CategoryButtonState extends State<_CategoryButton> with FocusStateMixin {
+class _CategoryButtonState extends State<MusicCategoryButton>
+    with FocusStateMixin {
   @override
   Widget build(BuildContext context) {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final active = showFocusBorder;
+    final selected = widget.selected && !active;
     final fg = active
         ? AppColorScheme.onAccent
+        : selected
+        ? AppColorScheme.accent
         : AppColorScheme.onSurface.withAlpha(220);
 
     return MouseRegion(
@@ -732,6 +857,7 @@ class _CategoryButtonState extends State<_CategoryButton> with FocusStateMixin {
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
+        focusNode: widget.focusNode,
         onFocusChange: (hasFocus) {
           setFocused(hasFocus);
           if (hasFocus) widget.onFocused?.call();
@@ -740,6 +866,22 @@ class _CategoryButtonState extends State<_CategoryButton> with FocusStateMixin {
           if (isActivateKey(event)) {
             widget.onTap();
             return KeyEventResult.handled;
+          }
+          if (event.isActionable) {
+            final key = event.logicalKey;
+            final edge = key.isUpKey
+                ? widget.onNavigateUp
+                : key.isDownKey
+                ? widget.onNavigateDown
+                : key.isLeftKey
+                ? widget.onNavigateLeft
+                : key.isRightKey
+                ? widget.onNavigateRight
+                : null;
+            if (edge != null) {
+              edge();
+              return KeyEventResult.handled;
+            }
           }
           if (event.isActionable && !widget.vertical) {
             if (widget.isFirst && event.logicalKey.isLeftKey) {
@@ -762,6 +904,8 @@ class _CategoryButtonState extends State<_CategoryButton> with FocusStateMixin {
             decoration: BoxDecoration(
               color: active
                   ? AppColorScheme.accent
+                  : selected
+                  ? AppColorScheme.accent.withValues(alpha: 0.16)
                   : (widget.vertical
                         ? Colors.transparent
                         : AppColorScheme.onSurface.withAlpha(22)),

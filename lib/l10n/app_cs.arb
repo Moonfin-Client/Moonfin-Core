@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Vyberte, které zdroje předmětů se mají zobrazit v kanálu Objevit.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Použít",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Žánry audioknih",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Vyberte žánry, které chcete zobrazit v Audioknihě Discover.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Objevte audioknihy",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Oblíbené tituly ve veřejném vlastnictví od LibriVox.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} tituly",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Přejděte doleva",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Objevit",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Populární tituly podle tématu z Open Library.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Zatím žádné položky v záložkách",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Povolit zobrazení složek",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Zobrazit možnost procházení složek",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Viditelnost knihovny",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Doporučený obsah, vzhled",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Velikost plakátu, typ obrázku, zobrazení složky",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB a zdroje hodnocení",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Nepodařilo se extrahovat archiv .cbr.",
     "cb7ExtractionUnavailable": "Extrakce CB7 není na této platformě k dispozici.",
     "cb7ExtractionPluginUnavailable": "Zásuvný modul pro extrakci CB7 není na této platformě dostupný.",
-    "closeGenrePanel": "Zavřít panel žánru",
     "loadingShuffle": "Načítání náhodného přehrávání...",
     "libraryShuffleLabel": "ZAMÍCHÁNÍ KNIHOVNY",
     "randomShuffleLabel": "NÁHODNÉ ZAMÍCHÁNÍ",

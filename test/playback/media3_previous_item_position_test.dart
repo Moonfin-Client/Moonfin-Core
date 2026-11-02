@@ -101,6 +101,18 @@ void main() {
     },
   );
 
+  test('ignores the stopped item position before the next load', () async {
+    await tick(_endMs);
+    await backend.stop();
+    final reported = <Duration>[];
+    final sub = backend.positionStream.listen(reported.add);
+
+    // The next episode is still resolving.
+    await tick(_endMs);
+    await sub.cancel();
+    expect(reported, isEmpty);
+  });
+
   test('a second play before the first tick keeps the old position', () async {
     await tick(_endMs);
     await backend.play('https://server.test/next.mp4');

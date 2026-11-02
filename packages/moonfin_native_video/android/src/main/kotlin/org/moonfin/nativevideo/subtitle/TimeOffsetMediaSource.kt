@@ -5,6 +5,7 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.WrappingMediaSource
 import androidx.media3.exoplayer.upstream.Allocator
+import java.io.IOException
 
 /**
  * Wraps one sideloaded subtitle source so its whole timeline can slide by a
@@ -18,6 +19,8 @@ import androidx.media3.exoplayer.upstream.Allocator
 internal class TimeOffsetMediaSource(
     child: MediaSource,
     initialOffsetUs: Long,
+    initialSecondaryOffsetUs: Long? = null,
+    private val onSecondaryError: (IOException) -> Unit = {},
 ) : WrappingMediaSource(child) {
 
     private val activePeriods = ArrayList<TimeOffsetMediaPeriod>()
@@ -33,10 +36,14 @@ internal class TimeOffsetMediaSource(
     @Volatile
     private var timeOffsetUs: Long = initialOffsetUs
 
-    fun setTimeOffsetUs(offsetUs: Long) {
+    @Volatile
+    private var secondaryOffsetUs = initialSecondaryOffsetUs
+
+    fun setTimeOffsetUs(offsetUs: Long, secondaryUs: Long? = secondaryOffsetUs) {
         timeOffsetUs = offsetUs
+        secondaryOffsetUs = secondaryUs
         for (period in activePeriods) {
-            period.updateTimeOffsetUs(offsetUs)
+            period.updateTimeOffsetUs(offsetUs, secondaryUs)
         }
     }
 
@@ -49,6 +56,8 @@ internal class TimeOffsetMediaSource(
         val period = TimeOffsetMediaPeriod(
             super.createPeriod(id, allocator, startPositionUs - offset),
             offset,
+            secondaryOffsetUs,
+            onSecondaryError = onSecondaryError,
             onLoadingChanged = ::updateSubtitleLoading,
         )
         activePeriods.add(period)

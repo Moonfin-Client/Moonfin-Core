@@ -337,7 +337,7 @@ void main() {
         );
 
         await press(tester, LogicalKeyboardKey.enter);
-        expect(find.textContaining('AlbumArtist'), findsOneWidget);
+        expect(find.text('/music/lib-1/artists'), findsOneWidget);
       });
 
       testWidgets('Favorite favorites the album', (tester) async {
@@ -359,7 +359,7 @@ void main() {
         await tester.tap(find.text('Albums').first);
         await tester.pumpAndSettle();
 
-        expect(find.textContaining('MusicAlbum'), findsOneWidget);
+        expect(find.text('/music/lib-1/albums'), findsOneWidget);
       });
     });
   });

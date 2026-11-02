@@ -150,11 +150,28 @@ class JellyfinLiveTvApi implements LiveTvApi {
   }
 
   @override
-  Future<void> createSeriesTimer(String programId) async {
+  Future<void> createSeriesTimer(
+    String programId, {
+    Map<String, dynamic>? settings,
+  }) async {
     await _dio.post(
       '/LiveTv/SeriesTimers',
-      data: await _timerDefaults(programId),
+      data: {...await _timerDefaults(programId), ...?settings},
     );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getSeriesTimer(String seriesTimerId) async {
+    final response = await _dio.get('/LiveTv/SeriesTimers/$seriesTimerId');
+    return response.data as Map<String, dynamic>;
+  }
+
+  @override
+  Future<void> updateSeriesTimer(
+    String seriesTimerId,
+    Map<String, dynamic> seriesTimer,
+  ) async {
+    await _dio.post('/LiveTv/SeriesTimers/$seriesTimerId', data: seriesTimer);
   }
 
   /// The server's own defaults for a program, which both kinds of timer post

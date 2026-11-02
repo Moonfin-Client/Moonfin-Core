@@ -41,8 +41,8 @@ void main() {
 
   group('activeBarIndex', () {
     final items = resolveBarItems(
-      const BottomNavTabGates(folderView: true),
-      'search,libraries,folders',
+      const BottomNavTabGates(),
+      'search,libraries,favorites',
     );
 
     int? active(String? route, {bool hubOpen = false}) =>
@@ -54,8 +54,8 @@ void main() {
       expect(active('/library/abc'), 2);
       expect(active('/music/abc'), 2);
       expect(active('/books/abc'), 2);
-      expect(active('/folders'), 3);
-      expect(active('/folder/xyz'), 3);
+      expect(active('/folder/xyz'), 2);
+      expect(active('/favorites'), 3);
     });
 
     test('lights nothing on a screen that belongs to no tab', () {
@@ -83,6 +83,7 @@ void main() {
       bool shuffle = true,
       bool syncPlay = false,
       bool quickConnect = false,
+      bool remoteControl = true,
       Set<BottomNavTab> alsoOnBar = const {},
     }) =>
         resolveHubTiles(
@@ -93,6 +94,7 @@ void main() {
           shuffle: shuffle,
           syncPlay: syncPlay,
           quickConnect: quickConnect,
+          remoteControl: remoteControl,
           alsoOnBar: alsoOnBar,
         );
 
@@ -107,20 +109,27 @@ void main() {
       ]);
     });
 
-    test('Kids Mode keeps what children may use', () {
+    test('no remote control tile for a server without it (Silo)', () {
+      expect(
+        tiles(remoteControl: false),
+        isNot(contains(
+          const BottomNavHubTile.action(BottomNavHubAction.remoteControl),
+        )),
+      );
+    });
+
+        test('Kids Mode keeps what children may use', () {
       final kids = tiles(
         gates: const BottomNavTabGates(
           kidsMode: true,
           showLiveTv: true,
           seerrAvailable: true,
-          folderView: true,
         ),
         saved: true,
       );
       expect(kids.map((t) => t.tab), isNot(contains(BottomNavTab.libraries)));
       expect(kids.map((t) => t.tab), isNot(contains(BottomNavTab.liveTv)));
       expect(kids.map((t) => t.tab), isNot(contains(BottomNavTab.discover)));
-      expect(kids, contains(const BottomNavHubTile.tab(BottomNavTab.folders)));
       expect(kids,
           contains(const BottomNavHubTile.action(BottomNavHubAction.saved)));
     });

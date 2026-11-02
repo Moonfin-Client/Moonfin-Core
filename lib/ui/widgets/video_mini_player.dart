@@ -14,6 +14,8 @@ import 'package:server_core/server_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/models/trickplay_info.dart';
 import '../../data/models/trickplay_preview_layout.dart';
+import '../../data/utils/server_trickplay.dart';
+import '../../data/utils/trickplay_headers.dart';
 import '../../data/models/media_segment.dart';
 import '../../data/services/media_segment_service.dart';
 import '../../data/services/media_server_client_factory.dart';
@@ -412,6 +414,13 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     }
     if (item.id == _trickplayItemId && sourceId == _trickplaySourceId) return;
 
+    await mergeServerTrickplay(
+      _clientFor(item),
+      item.id,
+      item.rawData,
+      sourceId,
+    );
+    if (!mounted || generation != _trickplayGeneration) return;
     var info = TrickplayInfo.fromItemData(
       item.rawData,
       mediaSourceId: sourceId,
@@ -471,14 +480,9 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
       );
     }
     if (url == null) return null;
-    final token = client.accessToken;
     return TrickplayTile(
       url: url,
-      headers: {
-        ...serverImageHeaders,
-        if (token != null && token.isNotEmpty)
-          'Authorization': 'MediaBrowser Token="$token"',
-      },
+      headers: trickplayImageHeaders(client),
       resolution: resolution,
     );
   }

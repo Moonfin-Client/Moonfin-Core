@@ -15,6 +15,7 @@ import '../../../util/focus/row_focus_coordinator.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../widgets/book/book_category_nav.dart';
 import '../../widgets/book/book_empty_state.dart';
 import '../../widgets/book/book_format_badge.dart' show bookProgressMeta;
 import '../../widgets/book/book_navigation.dart';
@@ -22,7 +23,6 @@ import '../../widgets/book/classic/book_hero.dart';
 import '../../widgets/book/classic/book_scope_filter.dart';
 import '../../widgets/book/classic/book_shelf_row.dart';
 import '../../widgets/book/classic/book_stats_band.dart';
-import '../../widgets/book/discover/book_discover_tab.dart';
 import '../../widgets/focus/can_claim_initial_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
@@ -31,7 +31,6 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/left_sidebar.dart';
 import '../../widgets/navigation_layout.dart';
-import '../../widgets/sliding_pill_tabs.dart';
 import '../../widgets/top_toolbar.dart';
 
 class ClassicBookBrowseScreen extends StatefulWidget {
@@ -52,7 +51,6 @@ class ClassicBookBrowseScreen extends StatefulWidget {
 class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
   late final ClassicBookBrowseViewModel _vm;
   final _prefs = GetIt.instance<UserPreferences>();
-  int _tab = 0;
 
   final _coordinator = RowFocusCoordinator();
   // Never attached. As the initial focus target it keeps RequestInitialFocus
@@ -62,10 +60,10 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
   bool _landedOnContent = false;
   final _heroCtaFocusNode = FocusNode(debugLabel: 'bookHeroCta');
   final _scopeFocusNode = FocusNode(debugLabel: 'bookScopeFilter');
-  final _tabsFocusNode = FocusNode(debugLabel: 'bookTabs');
+  final _navFocusNode = FocusNode(debugLabel: 'bookNav');
   final _heroContainerKey = GlobalKey();
   final _scopeContainerKey = GlobalKey();
-  final _tabsContainerKey = GlobalKey();
+  final _navContainerKey = GlobalKey();
   final Map<String, GlobalKey<LockedFocusRowState>> _rowKeys = {};
   final Map<String, GlobalKey> _rowContainerKeys = {};
   final Map<String, FocusNode> _seeAllNodes = {};
@@ -92,7 +90,7 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
     _initialFocusNode.dispose();
     _heroCtaFocusNode.dispose();
     _scopeFocusNode.dispose();
-    _tabsFocusNode.dispose();
+    _navFocusNode.dispose();
     for (final node in _seeAllNodes.values) {
       node.dispose();
     }
@@ -157,21 +155,20 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
   }
 
   void _onSeeAll(HomeRow row) {
-    if (row.rowType == HomeRowType.genres) {
-      context.push(Destinations.libraryGenresOf(widget.libraryId));
-      return;
-    }
-    if (_vm.isSeriesRow(row)) {
-      context.push(Destinations.folder(widget.libraryId));
-      return;
-    }
-    context.push(
-      Destinations.library(
-        widget.libraryId,
-        includeItemTypes: _vm.seeAllTypesFor(row),
-      ),
-    );
+    final kind = row.rowType == HomeRowType.genres
+        ? BookCategoryKind.genres
+        : _vm.isSeriesRow(row)
+        ? BookCategoryKind.series
+        : _vm.isCollectionsRow(row)
+        ? BookCategoryKind.collections
+        : _vm.isFavoritesRow(row)
+        ? BookCategoryKind.favorites
+        : BookCategoryKind.titles;
+    _open((kind: kind, scope: _vm.seeAllScopeFor(row)));
   }
+
+  void _open(BookNavPlace place) =>
+      openBookPlace(context, widget.libraryId, place);
 
   bool _moveVertical(int fromIndex, bool isUp) =>
       moveBookFocus(_coordinator, fromIndex, isUp);
@@ -240,21 +237,16 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
     final l10n = AppLocalizations.of(context);
     final topReserve = MediaQuery.paddingOf(context).top + 56;
     final featured = _vm.featuredItem;
-    // _tab can still hold the Discover index after the setting is turned off,
-    // so the rest of this method reads the clamped value.
-    final showDiscover = _prefs.get(UserPreferences.showBookDiscoverTab);
-    final tab = showDiscover ? _tab : 0;
-    final showScope = _vm.isMixedLibrary && tab == 0;
-    final rows = tab == 0 ? _vm.rows : const <HomeRow>[];
+    final showScope = _vm.isMixedLibrary;
+    final rows = _vm.rows;
 
     // Rebuild the vertical focus chain to match this build's composition.
     final entries = <RowFocusEntry>[
+      RowFocusEntry.node(_navFocusNode, containerKey: _navContainerKey),
       if (featured != null)
         RowFocusEntry.node(_heroCtaFocusNode, containerKey: _heroContainerKey),
       if (showScope)
         RowFocusEntry.node(_scopeFocusNode, containerKey: _scopeContainerKey),
-      if (showDiscover)
-        RowFocusEntry.node(_tabsFocusNode, containerKey: _tabsContainerKey),
       for (final row in rows)
         RowFocusEntry.row(
           _rowKey(row.id),
@@ -263,19 +255,46 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
     ];
     _coordinator.entries = entries;
     var entryIndex = 0;
+    final navIndex = entryIndex++;
     final heroIndex = featured != null ? entryIndex++ : -1;
     final scopeIndex = showScope ? entryIndex++ : -1;
-    final tabsIndex = showDiscover ? entryIndex++ : -1;
     final firstRowIndex = entryIndex;
 
+    final nav = Padding(
+      key: _navContainerKey,
+      padding: EdgeInsets.fromLTRB(16 + bookSidebarInset, 6, 16, 10),
+      child: BookCategoryStrip(
+        title: _vm.libraryName.isNotEmpty ? _vm.libraryName : l10n.books,
+        entries: bookOverviewNavEntries(
+          l10n,
+          _vm,
+          place: (kind: null, scope: _vm.scope),
+          onSelect: _open,
+        ),
+        focusNode: _navFocusNode,
+        fontSize: PlatformDetection.useMobileUi ? 20 : 24,
+        onVerticalNavigation: (isUp) => _moveVertical(navIndex, isUp),
+        onExitLeft: focusBookSidebar,
+      ),
+    );
+
     return [
+      // The strip sits over the top of the hero, whose backdrop runs up
+      // behind the navbar.
       if (featured != null)
-        KeyedSubtree(
-          key: _heroContainerKey,
-          child: _buildHero(l10n, featured, topReserve, heroIndex),
+        Stack(
+          children: [
+            KeyedSubtree(
+              key: _heroContainerKey,
+              child: _buildHero(l10n, featured, topReserve + 56, heroIndex),
+            ),
+            Positioned(top: topReserve, left: 0, right: 0, child: nav),
+          ],
         )
-      else
+      else ...[
         SizedBox(height: topReserve),
+        nav,
+      ],
       Padding(
         padding: EdgeInsets.only(left: bookSidebarInset),
         child: BookStatsBand(stats: _stats(l10n)),
@@ -298,31 +317,11 @@ class _ClassicBookBrowseScreenState extends State<ClassicBookBrowseScreen> {
             ),
           ),
         ),
-      if (showDiscover)
-        Padding(
-          key: _tabsContainerKey,
-          padding: EdgeInsets.fromLTRB(16 + bookSidebarInset, 6, 16, 10),
-          child: SlidingPillTabs(
-            labels: [l10n.library, l10n.discover],
-            selectedIndex: tab,
-            onChanged: (v) => setState(() => _tab = v),
-            focusNode: _tabsFocusNode,
-            onVerticalNavigation: (isUp) => _moveVertical(tabsIndex, isUp),
-            onExitLeft: focusBookSidebar,
-          ),
-        ),
-      if (tab == 1)
-        BookDiscoverTab(
-          libraryId: widget.libraryId,
-          isAudiobook: _vm.isAudiobookLibrary,
-        )
-      else ...[
-        if (rows.isNotEmpty)
-          for (var i = 0; i < rows.length; i++)
-            _buildShelf(rows[i], l10n, firstRowIndex + i)
-        else
-          const BookEmptyState(),
-      ],
+      if (rows.isNotEmpty)
+        for (var i = 0; i < rows.length; i++)
+          _buildShelf(rows[i], l10n, firstRowIndex + i)
+      else
+        const BookEmptyState(),
     ];
   }
 

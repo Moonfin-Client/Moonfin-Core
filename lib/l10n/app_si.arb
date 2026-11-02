@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Discover හි පෙන්විය යුතු විෂය සංග්‍රහ තෝරන්න.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "යොදන්න",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "ශ්‍රව්‍ය පොත් ප්‍රභේද",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Audiobook Discover හි පෙන්විය යුතු ප්‍රභේද තෝරන්න.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "ශ්‍රව්‍ය පොත් සොයා ගන්න",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "LibriVox වෙතින් ජනප්‍රිය පොදු වසම් මාතෘකා.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "මාතෘකා {count}",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "වමට අනුචලනය කරන්න",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "සොයා ගන්න",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Open Library සිට විෂය අනුව නැඟී එන මාතෘකා.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "තවමත් පිටු සලකුණු කළ අයිතම නැත",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "ෆෝල්ඩර දර්ශනය සබල කරන්න",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "ෆෝල්ඩර බ්‍රවුසින් විකල්පය පෙන්වන්න",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "පුස්තකාල දෘශ්‍යතාව",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "විශේෂාංග අන්තර්ගතය, පෙනුම",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "පෝස්ටර් ප්‍රමාණය, රූප වර්ගය, ෆෝල්ඩර දර්ශනය",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB, සහ ශ්‍රේණිගත කිරීමේ මූලාශ්‍ර",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": ".cbr සංරක්ෂිතය උපුටා ගැනීමට අසමත් විය.",
     "cb7ExtractionUnavailable": "මෙම වේදිකාවේ CB7 උපුටාගැනීම නොමැත.",
     "cb7ExtractionPluginUnavailable": "මෙම වේදිකාවේ CB7 උපුටාගැනීමේ ප්ලගිනය නොමැත.",
-    "closeGenrePanel": "ප්‍රභේද පැනලය වසන්න",
     "loadingShuffle": "කලවම් කිරීම පූරණය වෙමින්...",
     "libraryShuffleLabel": "පුස්තකාල කලවම් කිරීම",
     "randomShuffleLabel": "අහඹු කලවම් කිරීම",

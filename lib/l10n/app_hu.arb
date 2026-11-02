@@ -528,10 +528,6 @@
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Válaszd ki, mely témacsatornák jelenjenek meg a Felfedezésben.",
-    "@pickDiscoverySubjects": {
-        "description": "Instruction text in discovery subject picker"
-    },
     "apply": "Alkalmaz",
     "@apply": {
         "description": "Button label to apply selected options"
@@ -547,27 +543,6 @@
     "audiobookGenres": "Hangoskönyv műfajok",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
-    },
-    "pickAudiobookGenres": "Válaszd ki, mely műfajokat szeretnéd megjeleníteni a Hangoskönyv-felfedezésben.",
-    "@pickAudiobookGenres": {
-        "description": "Instruction text in audiobook genre picker"
-    },
-    "discoverAudiobooks": "Fedezd fel a hangoskönyveket",
-    "@discoverAudiobooks": {
-        "description": "Section title for audiobook discovery"
-    },
-    "librivoxDescription": "Népszerű, szabadon hozzáférhető művek a LibriVoxtól.",
-    "@librivoxDescription": {
-        "description": "Subtitle for audiobook discovery section"
-    },
-    "titlesCount": "{count} cím",
-    "@titlesCount": {
-        "description": "Label showing number of titles",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "scrollLeft": "Görgess balra",
     "@scrollLeft": {
@@ -744,10 +719,6 @@
     "discover": "Felfedezés",
     "@discover": {
         "description": "Section title for book discovery"
-    },
-    "trendingTitlesOpenLibrary": "Felkapott címek témakör szerint az Open Libraryből.",
-    "@trendingTitlesOpenLibrary": {
-        "description": "Subtitle for book discovery section"
     },
     "noBookmarkedItems": "Még nincsenek könyvjelzővel ellátott tételek",
     "@noBookmarkedItems": {
@@ -3500,14 +3471,6 @@
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
     },
-    "enableFolderView": "Mappanézet engedélyezése",
-    "@enableFolderView": {
-        "description": "Setting for enabling folder view"
-    },
-    "showFolderBrowsingOption": "Mappaböngészési opció megjelenítése",
-    "@showFolderBrowsingOption": {
-        "description": "Description for folder view"
-    },
     "libraryVisibility": "Könyvtár láthatósága",
     "@libraryVisibility": {
         "description": "Section title for library visibility"
@@ -4230,10 +4193,6 @@
     "featuredContentAppearance": "Kiemelt tartalom, megjelenés",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
-    },
-    "posterSizeImageTypeFolderView": "Poszter mérete, képtípus, mappanézet",
-    "@posterSizeImageTypeFolderView": {
-        "description": "Library display settings subtitle"
     },
     "mdbListTmdbRatingSources": "MDBList, TMDB és értékelési források",
     "@mdbListTmdbRatingSources": {
@@ -7300,7 +7259,6 @@
     "failedToExtractCbrArchive": "Nem sikerült kicsomagolni a .cbr archívumot.",
     "cb7ExtractionUnavailable": "A CB7-kicsomagolás nem érhető el ezen a platformon.",
     "cb7ExtractionPluginUnavailable": "A CB7-kicsomagoló beépülő modul nem érhető el ezen a platformon.",
-    "closeGenrePanel": "Műfajpanel bezárása",
     "loadingShuffle": "Keverés betöltése...",
     "libraryShuffleLabel": "Könyvtár keverése",
     "randomShuffleLabel": "Véletlenszerű keverés",

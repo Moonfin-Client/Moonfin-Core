@@ -62,8 +62,9 @@ end
 # Pinned to a revision of the fork, which carries client certificate support
 # upstream doesn't have yet. An engine bump is a deliberate change rather than
 # something a resolve should pick up on its own.
+# The fork also turns on the DualLayerDolbyVision trait, which Xcode 26 can't set from a project.
 aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = '47cf2f94b38be8520b31d6e0aecdbf47ce7eb857'
+aether_revision = 'd55f374108310435cb877a2f550e19ee996f92ba'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 

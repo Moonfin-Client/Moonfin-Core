@@ -854,34 +854,8 @@ Map<String, dynamic>? _pickAudio(
 String? _trackName(Map<String, dynamic> stream) {
   final code = normalizeLanguage(stream['Language']?.toString());
   final iso3 = toIso3Language(code);
-  return kIso6392Languages[_bibliographicCodes[iso3] ?? iso3] ??
-      _text(stream['Title']);
+  return kIso6392Languages[iso3] ?? _text(stream['Title']);
 }
-
-// Servers tag tracks with either ISO 639-2 spelling, and the name table uses
-// the terminology one.
-const _bibliographicCodes = {
-  'alb': 'sqi',
-  'arm': 'hye',
-  'baq': 'eus',
-  'bur': 'mya',
-  'chi': 'zho',
-  'cze': 'ces',
-  'dut': 'nld',
-  'fre': 'fra',
-  'geo': 'kat',
-  'ger': 'deu',
-  'gre': 'ell',
-  'ice': 'isl',
-  'mac': 'mkd',
-  'mao': 'mri',
-  'may': 'msa',
-  'per': 'fas',
-  'rum': 'ron',
-  'slo': 'slk',
-  'tib': 'bod',
-  'wel': 'cym',
-};
 
 bool _differs(String? out, String? source, String Function(String) name) =>
     out != null && source != null && name(out) != name(source);

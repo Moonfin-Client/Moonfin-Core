@@ -77,6 +77,11 @@ String? _serverDetail(Object? data) {
         break;
       }
     }
+    // plex.tv sends its reasons as a list.
+    if (data['errors'] case [{'message': final String message}, ...]
+        when text == null) {
+      text = message;
+    }
   } else if (data is String && !data.contains('<')) {
     text = data;
   }

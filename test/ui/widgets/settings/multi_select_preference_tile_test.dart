@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoAlertDialog;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -6,6 +7,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/settings/multi_select_dialog.dart';
 import 'package:moonfin/ui/widgets/settings/preference_tiles.dart';
+import 'package:moonfin/util/idiom/app_ui_idiom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Issue #1283: the subtitle download languages checklist keeps the pick order,
@@ -137,6 +139,52 @@ void main() {
 
     expect(find.text('Tout sélectionner'), findsOneWidget);
     expect(find.text('Enregistrer'), findsOneWidget);
+  });
+
+  testWidgets('a long list fills the Apple dialog', (tester) async {
+    AppUiIdiomResolver.setOverride(InterfaceStyle.apple);
+    addTearDown(() => AppUiIdiomResolver.setOverride(InterfaceStyle.automatic));
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    Set<String>? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(platform: TargetPlatform.iOS),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async => result = await showMultiSelectDialog(
+              context: context,
+              title: 'Source Libraries',
+              items: {for (var i = 10; i < 40; i++) '$i': 'Library $i'},
+              selected: const {},
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(CupertinoAlertDialog)).height,
+      greaterThan(600),
+    );
+    await tester.ensureVisible(find.text('Library 39'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Library 39'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Save'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(result, {'39'});
   });
 
   testWidgets('cancel leaves the setting alone', (tester) async {

@@ -1,0 +1,15 @@
+{
+ "revision": "c85cb38964d505f17a3fd95f7d05ee4db67acf03f7e0239c650796fb3af7aa40",
+ "state": "available",
+ "allowed": true,
+ "cooldown_seconds": 604800,
+ "statuses": [
+  "queued",
+  "cooldown",
+  "disabled"
+ ],
+ "supported_types": [
+  "movie",
+  "series"
+ ]
+}

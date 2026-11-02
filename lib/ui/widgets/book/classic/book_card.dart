@@ -27,6 +27,7 @@ class BookCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool? externalIsFocused;
+  final bool cardFocusExpansion;
 
   const BookCard({
     super.key,
@@ -42,6 +43,7 @@ class BookCard extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.externalIsFocused,
+    this.cardFocusExpansion = true,
   });
 
   bool get _isPoster => !isAudiobook;
@@ -69,6 +71,7 @@ class BookCard extends StatelessWidget {
       isPlayed: item.isPlayed,
       playedPercentage: _isPoster ? item.playedPercentage : null,
       externalIsFocused: externalIsFocused,
+      cardFocusExpansion: cardFocusExpansion,
       onTap: onTap,
       onLongPress: onLongPress,
       overlayOccupiesTopLeft: showFormatBadge && !isPerson,

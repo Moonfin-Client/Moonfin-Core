@@ -149,7 +149,11 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
       widths.add(box.size.width);
     }
     if (widths.isEmpty || listEquals(widths, _widths)) return;
+    final first = _widths.isEmpty;
     setState(() => _widths = widths);
+    // The first measurement rebuilds the strip around a new scroll view, so a
+    // segment picked from the start is only brought into view after it.
+    if (first && widget.selectedIndex > 0) _revealSelected();
   }
 
   void _scheduleEnsureVisible() {
@@ -163,6 +167,16 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
+    });
+  }
+
+  /// Scrolls the strip, and only the strip, to the selected segment.
+  void _revealSelected() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _selectedKey?.currentContext;
+      final object = ctx?.findRenderObject();
+      if (!mounted || ctx == null || object == null) return;
+      Scrollable.maybeOf(ctx)?.position.ensureVisible(object, alignment: 0.5);
     });
   }
 
@@ -422,16 +436,20 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
               );
             }
           } else {
+            // With focus the pill grows into the pane's padding, so it fills
+            // the ring painted around the pane rather than sitting inside it.
+            final swell = _focused ? _kPanePadding : 0.0;
             stack = Stack(
+              clipBehavior: Clip.none,
               children: [
                 if (hasThumb)
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeOutCubic,
-                    top: 0,
-                    bottom: 0,
-                    left: _leftOf(_restIndex),
-                    width: _widths[_restIndex],
+                    top: -swell,
+                    bottom: -swell,
+                    left: _leftOf(_restIndex) - swell,
+                    width: _widths[_restIndex] + swell * 2,
                     child: Container(
                       decoration: BoxDecoration(
                         color: thumbColor,

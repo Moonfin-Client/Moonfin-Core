@@ -1,0 +1,6 @@
+{
+  "ticket": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "expires_in": 30,
+  "max_connection_seconds": 300,
+  "protocol": "silo.events.v2"
+}

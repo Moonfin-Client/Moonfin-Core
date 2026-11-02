@@ -144,6 +144,15 @@ void main() {
       expect(isArcadeFamilyCore('nes'), isFalse);
     });
 
+    test('isPlayStationDiscFile takes disc images and refuses a PSN .pkg', () {
+      expect(isPlayStationDiscFile('Crash Bandicoot (USA).CUE'), isTrue);
+      expect(isPlayStationDiscFile('Crash Bandicoot (Track 1).bin'), isTrue);
+      expect(isPlayStationDiscFile('Final Fantasy VII (Disc 1).chd'), isTrue);
+      expect(isPlayStationDiscFile('EBOOT.PBP'), isTrue);
+      expect(isPlayStationDiscFile('GZnkJzlCwmDBOkwvDBGq.pkg'), isFalse);
+      expect(isPlayStationDiscFile('readme'), isFalse);
+    });
+
     // FBNeo's license asks that frontends not redistribute the core, and the
     // Apple builds can only run what ships inside the bundle, so they leave it
     // out. Android and desktop are unaffected because the user downloads the

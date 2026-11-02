@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-import '../../l10n/current_app_localizations.dart';
 import '../../util/platform_detection.dart';
 
 typedef VoiceSearchTextListener =
@@ -22,13 +22,17 @@ class VoiceSearchController extends ChangeNotifier {
   VoiceSearchController({stt.SpeechToText? speechToText})
     : _speechToText = speechToText ?? stt.SpeechToText();
 
+  /// Linux and tvOS have no speech recognizer for the plugin to use.
+  static bool get isSupported =>
+      !PlatformDetection.isLinux && !PlatformDetection.isAppleTV;
+
   final stt.SpeechToText _speechToText;
+  VoidCallback? _onListenError;
 
   bool _isListening = false;
   bool _isInitializing = false;
   bool _isReady = false;
   String? _lastErrorCode;
-  String? _lastErrorMessage;
   bool _lastErrorPermanent = false;
   bool _permissionDenied = false;
   bool _permissionPermanentlyDenied = false;
@@ -37,30 +41,30 @@ class VoiceSearchController extends ChangeNotifier {
   bool get isInitializing => _isInitializing;
   bool get isReady => _isReady;
   String? get lastErrorCode => _lastErrorCode;
-  String? get lastErrorMessage => _lastErrorMessage;
   bool get lastErrorPermanent => _lastErrorPermanent;
   bool get permissionDenied => _permissionDenied;
   bool get permissionPermanentlyDenied => _permissionPermanentlyDenied;
 
   void clearError() {
     _lastErrorCode = null;
-    _lastErrorMessage = null;
     _lastErrorPermanent = false;
     _permissionDenied = false;
     _permissionPermanentlyDenied = false;
     notifyListeners();
   }
 
+  /// [onError] runs when the recognizer gives up after it started, for example
+  /// when it heard nothing.
   Future<VoiceSearchStartResult> startListening({
     required String localeCode,
     required VoiceSearchTextListener onText,
+    VoidCallback? onError,
   }) async {
     if (_isListening) {
       return VoiceSearchStartResult.listeningStarted;
     }
 
     _lastErrorCode = null;
-    _lastErrorMessage = null;
     _lastErrorPermanent = false;
     _permissionDenied = false;
     _permissionPermanentlyDenied = false;
@@ -76,6 +80,12 @@ class VoiceSearchController extends ChangeNotifier {
       return VoiceSearchStartResult.unavailable;
     }
 
+    // The plugin is one instance for the whole app and only takes listeners on
+    // its first initialize, so each listen points them back at this controller.
+    _speechToText
+      ..statusListener = _onStatus
+      ..errorListener = _onError;
+    _onListenError = onError;
     try {
       await _speechToText.listen(
         localeId: localeCode,
@@ -96,12 +106,8 @@ class VoiceSearchController extends ChangeNotifier {
       );
       _setListening(true);
       return VoiceSearchStartResult.listeningStarted;
-    } catch (error) {
-      _setError(
-        code: 'speech_listen_failed',
-        message: error.toString(),
-        permanent: false,
-      );
+    } catch (_) {
+      _setError(code: 'speech_listen_failed', permanent: false);
       return VoiceSearchStartResult.failed;
     }
   }
@@ -127,7 +133,6 @@ class VoiceSearchController extends ChangeNotifier {
 
     final permission = await _ensureMicrophonePermission();
     if (permission != _MicrophonePermissionState.granted) {
-      final l10n = currentAppLocalizations();
       _permissionDenied = permission == _MicrophonePermissionState.denied;
       _permissionPermanentlyDenied =
           permission == _MicrophonePermissionState.permanentlyDenied;
@@ -135,9 +140,6 @@ class VoiceSearchController extends ChangeNotifier {
         code: _permissionPermanentlyDenied
             ? 'permission_permanently_denied'
             : 'permission_denied',
-        message: _permissionPermanentlyDenied
-            ? l10n.microphonePermissionPermanentlyDenied
-            : l10n.microphonePermissionDenied,
         permanent: _permissionPermanentlyDenied,
       );
       return false;
@@ -145,28 +147,17 @@ class VoiceSearchController extends ChangeNotifier {
 
     _isInitializing = true;
     notifyListeners();
-    final available = await _speechToText.initialize(
-      onStatus: (status) {
-        _setListening(status == 'listening');
-      },
-      onError: (error) {
-        _setError(
-          code: error.errorMsg,
-          message: error.errorMsg,
-          permanent: error.permanent,
-        );
-        _setListening(false);
-      },
-    );
+    bool available;
+    try {
+      available = await _speechToText.initialize();
+    } catch (_) {
+      // Android throws when the device has no speech recognizer.
+      available = false;
+    }
     _isInitializing = false;
     _isReady = available;
     if (!available) {
-      final l10n = currentAppLocalizations();
-      _setError(
-        code: 'speech_unavailable',
-        message: l10n.speechRecognitionUnavailable,
-        permanent: false,
-      );
+      _setError(code: 'speech_unavailable', permanent: false);
     }
     notifyListeners();
     return available;
@@ -200,6 +191,22 @@ class VoiceSearchController extends ChangeNotifier {
     return _MicrophonePermissionState.denied;
   }
 
+  void _onStatus(String status) {
+    // Windows also reports sound starting and stopping while it listens.
+    if (status == stt.SpeechToText.listeningStatus) {
+      _setListening(true);
+    } else if (status == stt.SpeechToText.notListeningStatus ||
+        status == stt.SpeechToText.doneStatus) {
+      _setListening(false);
+    }
+  }
+
+  void _onError(SpeechRecognitionError error) {
+    _setError(code: error.errorMsg, permanent: error.permanent);
+    _setListening(false);
+    _onListenError?.call();
+  }
+
   void _setListening(bool value) {
     if (_isListening == value) return;
     _isListening = value;
@@ -208,12 +215,10 @@ class VoiceSearchController extends ChangeNotifier {
 
   void _setError({
     required String code,
-    required String message,
     required bool permanent,
     bool notify = true,
   }) {
     _lastErrorCode = code;
-    _lastErrorMessage = message;
     _lastErrorPermanent = permanent;
     if (notify) {
       notifyListeners();
@@ -222,6 +227,12 @@ class VoiceSearchController extends ChangeNotifier {
 
   @override
   void dispose() {
+    // A newer controller may already have taken the listeners.
+    if (_speechToText.statusListener == _onStatus) {
+      _speechToText
+        ..statusListener = null
+        ..errorListener = null;
+    }
     _speechToText.cancel();
     super.dispose();
   }

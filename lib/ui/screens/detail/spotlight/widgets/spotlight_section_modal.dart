@@ -23,6 +23,7 @@ class SpotlightModalSection {
   /// False for content with nothing in it the remote can land on, like the
   /// Seerr stats. The opening focus skips it for the next section down.
   final bool focusable;
+  final Widget Function(BuildContext context)? headerActionBuilder;
   final Widget Function(BuildContext context, FocusNode? firstFocusNode)
   builder;
 
@@ -34,6 +35,7 @@ class SpotlightModalSection {
     this.collapsible = false,
     this.initiallyExpanded = true,
     this.focusable = true,
+    this.headerActionBuilder,
   });
 }
 
@@ -217,6 +219,7 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
   }
 
   Widget _sectionHeader(
+    BuildContext context,
     TextTheme textTheme,
     SpotlightModalSection section,
     String title,
@@ -261,6 +264,10 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
               ),
             ),
           ),
+        ],
+        if (section.headerActionBuilder != null) ...[
+          const SizedBox(width: 14),
+          section.headerActionBuilder!(context),
         ],
       ],
     );
@@ -317,6 +324,7 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
                   bottom: _isSectionExpanded(_sections[i], i) ? 10 : 0,
                 ),
                 child: _sectionHeader(
+                  context,
                   textTheme,
                   _sections[i],
                   title,

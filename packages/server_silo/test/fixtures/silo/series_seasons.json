@@ -1,0 +1,72 @@
+{
+ "items": [
+  {
+   "content_id": "season-imdb-tt1641384-1",
+   "play_content_id": "episode-imdb-tt1641384-1-1",
+   "season_number": 1,
+   "title": "Season 1",
+   "overview": "Robin, Aqualad, Kid Flash, Superboy, Miss Martian, and Artemis form Young Justice -- and find out whether they have what it takes to be a proven hero.",
+   "air_date": "2010-11-26",
+   "episode_count": 26,
+   "poster_url": "/api/v2/artwork/tvdb/series/192061/seasons/1/poster/w500.418b9cae14f2e70af4e6204b1fb421b65ce632d894b79454a2d6fa5878a9d21e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "ZggSJQhpd3+ZqHdod4eImLaQJgqM",
+   "user_data": {
+    "watched_count": 0,
+    "unplayed_count": 26,
+    "in_progress_count": 0,
+    "played": false
+   }
+  },
+  {
+   "content_id": "season-imdb-tt1641384-2",
+   "play_content_id": "episode-imdb-tt1641384-2-1",
+   "season_number": 2,
+   "title": "Invasion",
+   "overview": "In Season 2, we pick up with the team five years later, as they fight off a secret alien invasion affecting the entire planet.",
+   "air_date": "2012-04-28",
+   "episode_count": 20,
+   "poster_url": "/api/v2/artwork/tvdb/series/192061/seasons/2/poster/w500.9be0ea98913e280d81fbafd36c619886e42bc0b99d77a7187b11aa9111f087a9.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "ihgKFQYWWX+GWGgYiISZFweKtUCZ",
+   "user_data": {
+    "watched_count": 0,
+    "unplayed_count": 20,
+    "in_progress_count": 0,
+    "played": false
+   }
+  },
+  {
+   "content_id": "season-imdb-tt1641384-3",
+   "play_content_id": "episode-imdb-tt1641384-3-1",
+   "season_number": 3,
+   "title": "Outsiders",
+   "overview": "In Season 3, the team faces its greatest challenge yet as it takes on meta-human trafficking and the terrifying threat it creates for a society caught in the crossfire of a global and galaxy-wide genetic arms race.",
+   "air_date": "2019-01-04",
+   "episode_count": 26,
+   "poster_url": "/api/v2/artwork/tvdb/series/192061/seasons/3/poster/w500.f05eb4a146d9c94e247b2fdd070f711197eee423e10cfc5f13572a394740a65d.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "mJYNDQRnh3B5qLc3lnt3h7d/L/xk",
+   "user_data": {
+    "watched_count": 0,
+    "unplayed_count": 26,
+    "in_progress_count": 0,
+    "played": false
+   }
+  },
+  {
+   "content_id": "season-imdb-tt1641384-4",
+   "play_content_id": "episode-imdb-tt1641384-4-1",
+   "season_number": 4,
+   "title": "Phantoms",
+   "overview": "The original team—Nightwing, Aquaman, Superboy, Miss Martian, Tigress, Zatanna and Rocket—are back, leading a new generation of young heroes on a quest for justice across the Earth, the Solar System, the Galaxy and beyond. Between Order and Chaos, through time and space, life and death battles will be fought, won and lost. Who will rise? Who will fall? And who will haunt them forever?",
+   "air_date": "2021-10-16",
+   "episode_count": 26,
+   "poster_url": "/api/v2/artwork/tvdb/series/192061/seasons/4/poster/w500.54affc8aec8088e3c99c33dd7dbbdbde75ec72efdf025e7f3d28a8c2142f722d.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "lwcOHQh3h594aIlnd4ZYeH+0e/cm",
+   "user_data": {
+    "watched_count": 0,
+    "unplayed_count": 26,
+    "in_progress_count": 0,
+    "played": false
+   }
+  }
+ ]
+}

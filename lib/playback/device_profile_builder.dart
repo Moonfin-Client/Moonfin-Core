@@ -212,6 +212,9 @@ class DeviceProfileBuilder {
     // the TS profile and encode H264, which renders. It also limits HLS copies
     // to what AVFoundation can decode.
     bool hevcRequiresFmp4Hls = false,
+    // Keeps hevc out of both HLS offers, for a device that only decodes HEVC
+    // from the original file.
+    bool hevcDirectPlayOnly = false,
     // Keeps DTS and MP2 out of both HLS transcode offers, since AVFoundation
     // decodes neither. The server copies a source track straight through
     // whenever its codec is on the offer, so leaving them there hands back a
@@ -406,10 +409,11 @@ class DeviceProfileBuilder {
     // them, and a single-codec HEVC list would be encoded unconditionally.
     // A trailing hevc still lets the server copy HEVC video when only the
     // audio needs work. The TS offer leaves it out on AVFoundation.
+    final hevcOverHls = effectiveSupportsHevc && !hevcDirectPlayOnly;
     final hlsVideoCodecs = <String>[
-      if (transcodeHevcAllowed && effectiveSupportsHevc) 'hevc',
+      if (transcodeHevcAllowed && hevcOverHls) 'hevc',
       'h264',
-      if (!transcodeHevcAllowed && effectiveSupportsHevc) 'hevc',
+      if (!transcodeHevcAllowed && hevcOverHls) 'hevc',
     ].join(',');
 
     final hasKnownHevcDoviHdr10PlusBug =

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/database/offline_database.dart';
 import 'package:moonfin/data/offline/offline_catalog.dart';
 import 'package:moonfin/data/offline/offline_items_api.dart';
+import 'package:moonfin/data/offline/offline_media_segments.dart';
 import 'package:moonfin/data/offline/offline_user_views_api.dart';
 import 'package:moonfin/data/offline/offline_views.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
@@ -435,5 +436,29 @@ void main() {
     expect(view['CollectionType'], 'movies');
 
     expect(() => api.getItem('nope'), throwsA(anything));
+  });
+
+  test('getMediaSegments returns the segments saved with a download', () async {
+    final intro = {
+      'Id': 's1',
+      'ItemId': 'e1',
+      'Type': 'Intro',
+      'StartTicks': 0,
+      'EndTicks': 300000000,
+    };
+    await insert(
+      id: 'e1',
+      type: 'Episode',
+      name: 'Pilot',
+      metadata: {
+        offlineMediaSegmentsKey: [intro],
+      },
+    );
+    await insert(id: 'm1', type: 'Movie', name: 'Film');
+    await catalog.warm();
+
+    expect(await api.getMediaSegments('e1'), [intro]);
+    expect(await api.getMediaSegments('m1'), isEmpty);
+    expect(await api.getMediaSegments('nope'), isEmpty);
   });
 }

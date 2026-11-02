@@ -197,21 +197,27 @@ Widget animeAudioPill(
   double scale, {
   bool filled = false,
 }) {
+  final short =
+      GetIt.instance<AnimeMarkerRepository>().labelStyle ==
+      AnimeAudioLabelStyle.short;
+
   return switch (audio) {
     AnimeAudioKind.subbed => _Pill(
-      label: l10n.animeMarkerSubbed,
+      label: short ? l10n.animeMarkerSubbedShort : l10n.animeMarkerSubbed,
       color: const Color(0xFF1F6FEB),
       scale: scale,
       filled: filled,
     ),
     AnimeAudioKind.dubbed => _Pill(
-      label: l10n.animeMarkerDubbed,
+      label: short ? l10n.animeMarkerDubbedShort : l10n.animeMarkerDubbed,
       color: const Color(0xFF238636),
       scale: scale,
       filled: filled,
     ),
     AnimeAudioKind.subbedAndDubbed => _Pill(
-      label: l10n.animeMarkerSubbedAndDubbed,
+      label: short
+          ? l10n.animeMarkerSubbedAndDubbedShort
+          : l10n.animeMarkerSubbedAndDubbed,
       color: const Color(0xFF8957E5),
       scale: scale,
       filled: filled,

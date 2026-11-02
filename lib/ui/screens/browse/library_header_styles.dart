@@ -125,7 +125,9 @@ class ModernLibraryHeader extends StatelessWidget {
     if (!event.isActionable || !event.logicalKey.isDownKey) {
       return KeyEventResult.ignored;
     }
-    if (model.allLetterFocusNode.context == null) return KeyEventResult.ignored;
+    if (model.allLetterFocusNode.context?.mounted != true) {
+      return KeyEventResult.ignored;
+    }
     model.allLetterFocusNode.requestFocus();
     return KeyEventResult.handled;
   }
