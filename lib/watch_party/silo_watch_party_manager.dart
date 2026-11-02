@@ -1150,7 +1150,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
 
   /// How long a start took to move, from a position sample past where it
   /// began: the sample's time less the media it has played since. Null until
-  /// it has moved, or for a sample that went backwards (a seek).
+  /// it has moved, for a sample that went backwards (a seek), or for one
+  /// more than five seconds after resume() (a stall, even if it moved).
   @visibleForTesting
   static int? startDelayMs({
     required int calledAtMs,
@@ -1158,6 +1159,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     required int positionMs,
     required int atMs,
   }) {
+    if (atMs - calledAtMs > 5000) return null;
     final played = positionMs - fromMs;
     // A sample a hair past the start can be the pipeline settling.
     if (played < 100 || played > 5000) return null;
