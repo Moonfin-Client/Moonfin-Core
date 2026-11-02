@@ -15,9 +15,9 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/ui/screens/detail/detail_layout_metrics.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_track_chips.dart';
-import 'package:moonfin/ui/screens/detail/modern/modern_detail_content.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
@@ -270,11 +270,34 @@ void main() {
     expect(find.byType(StageTrackChips), findsNothing);
   });
 
-  testWidgets('a playlist goes to Modern', (tester) async {
-    final vm = viewModel('Playlist');
+  testWidgets('a long overview opens up with Read More', (tester) async {
+    final vm = viewModel(
+      'Movie',
+      data: {
+        ...itemData('Movie'),
+        'Overview': List.filled(80, 'A long overview runs on.').join(' '),
+      },
+    );
     await pumpContent(tester, vm);
+    await tester.pump();
 
-    expect(find.byType(ModernDetailContent), findsOneWidget);
-    expect(find.byKey(const ValueKey('stage-poster')), findsNothing);
+    expect(find.text('Read More'), findsOneWidget);
+    await tester.tap(find.text('Read More'));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Show Less'), findsOneWidget);
+  });
+
+  testWidgets('a short overview has nothing to open', (tester) async {
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump();
+
+    expect(find.text('A useful detail overview'), findsOneWidget);
+    expect(find.text('Read More'), findsNothing);
+  });
+
+  test('a playlist is left to Modern', () {
+    expect(detailPageDraws('Playlist'), isFalse);
+    expect(detailPageDraws('Movie'), isTrue);
   });
 }

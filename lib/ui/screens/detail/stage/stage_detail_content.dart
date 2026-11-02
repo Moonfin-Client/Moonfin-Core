@@ -3,49 +3,23 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../data/models/aggregated_item.dart';
-import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
-import '../../../../preference/preference_constants.dart';
-import '../../../../preference/seerr_preferences.dart';
 import '../../../../preference/user_preferences.dart';
-import '../../../../util/overview_text.dart';
 import '../../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
-import '../../../widgets/horizontal_scroll_section.dart';
 import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
-import '../../../widgets/media_card.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/rating_display.dart';
-import '../../../widgets/seerr/seerr_image_urls.dart';
-import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
-import '../../../widgets/seerr/seerr_request_dialog.dart';
-import '../../../widgets/seerr/seerr_stats_card.dart';
-import '../../../widgets/seerr/seerr_streaming_row.dart';
 import '../detail_layout_metrics.dart';
+import '../detail_page.dart';
 import '../item_detail_screen.dart';
-import '../minimalist/widgets/minimalist_episodes_section.dart';
-import '../modern/modern_detail_content.dart';
-import 'stage_track_chips.dart';
-
-/// The item types Stage draws. Everything else, a person, an album or a
-/// playlist, goes to Modern, which already knows how to lay those out.
-const _stageTypes = {
-  'Movie',
-  'Series',
-  'Season',
-  'Episode',
-  'Video',
-  'MusicVideo',
-};
 
 /// The poster-led detail screen. On a TV or desktop the poster stands on the
 /// left with play and the other buttons under it, and the title, ratings,
@@ -64,10 +38,8 @@ class StageDetailContent extends StatefulWidget {
   final bool autoPlay;
   final bool actionsExpanded;
   final ValueChanged<bool> onActionsExpandedChanged;
-
-  /// Hides the toolbar once the page scrolls past the top, so it never sits
-  /// over the rows the viewer moved down to.
   final ValueChanged<bool>? onToggleNavbar;
+  final VoidCallback? onCollapseBiography;
 
   const StageDetailContent({
     super.key,
@@ -81,27 +53,15 @@ class StageDetailContent extends StatefulWidget {
     required this.actionsExpanded,
     required this.onActionsExpandedChanged,
     this.onToggleNavbar,
+    this.onCollapseBiography,
   });
 
   @override
   State<StageDetailContent> createState() => _StageDetailContentState();
 }
 
-class _StageDetailContentState extends State<StageDetailContent> {
-  final _actionsKey = GlobalKey<DetailActionButtonsState>();
-  final _scroll = ScrollController();
-  final _nodes = <String, FocusNode>{};
-  bool _navbarShown = true;
-
-  // Every button in the row sends Up here. Where it should go depends on
-  // which button it came from, which the row doesn't say, so the page keeps
-  // track of the last one focused.
-  final _upProxy = FocusNode(
-    debugLabel: 'stage-actions-up',
-    skipTraversal: true,
-  );
-  FocusNode? _lastActionFocus;
-
+class _StageDetailContentState extends State<StageDetailContent>
+    with DetailPage<StageDetailContent> {
   // The D-pad stops in page order. The beside column comes first, then the
   // full width rows under it. Rebuilt with the page, since which sections
   // exist depends on what loaded.
@@ -111,32 +71,14 @@ class _StageDetailContentState extends State<StageDetailContent> {
 
   ItemDetailViewModel get _vm => widget.viewModel;
 
-  FocusNode _node(String id) =>
-      _nodes.putIfAbsent(id, () => FocusNode(debugLabel: 'stage-$id'));
+  @override
+  ItemDetailViewModel get pageViewModel => widget.viewModel;
 
   @override
-  void initState() {
-    super.initState();
-    _scroll.addListener(_onScroll);
-    FocusManager.instance.addListener(_trackActionFocus);
-  }
+  UserPreferences get pagePrefs => widget.prefs;
 
   @override
-  void dispose() {
-    FocusManager.instance.removeListener(_trackActionFocus);
-    _scroll.dispose();
-    _upProxy.dispose();
-    for (final node in _nodes.values) {
-      node.dispose();
-    }
-    super.dispose();
-  }
-
-  void _trackActionFocus() {
-    final node = FocusManager.instance.primaryFocus;
-    if (node == null || node == _upProxy || !_focusIsInActions()) return;
-    _lastActionFocus = node;
-  }
+  ValueChanged<bool>? get pageNavbarToggle => widget.onToggleNavbar;
 
   /// Up from a circle goes to the button above it. Up from Play goes to the
   /// toolbar when it runs along the top, and stays put beside a sidebar,
@@ -144,47 +86,22 @@ class _StageDetailContentState extends State<StageDetailContent> {
   void _onUpProxyFocus(bool focused) {
     if (!focused) return;
     final play = widget.initialFocusNode;
-    final from = _lastActionFocus;
+    final from = lastActionFocus;
     if (from != null && from != play && from.context?.mounted == true) {
       (_actionNeighbour(from, down: false) ?? play)?.requestFocus();
       return;
     }
-    if (_navbarIsTop && NavigationLayout.focusNavbarNotifier.value != null) {
-      _toNavbar();
+    if (navbarIsTop && NavigationLayout.focusNavbarNotifier.value != null) {
+      toNavbar();
     } else {
       play?.requestFocus();
     }
-  }
-
-  bool get _navbarIsTop =>
-      widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
-
-  void _onScroll() {
-    final shown = _scroll.offset < 24;
-    if (shown == _navbarShown) return;
-    _navbarShown = shown;
-    widget.onToggleNavbar?.call(shown);
   }
 
   @override
   Widget build(BuildContext context) {
     final item = _vm.item;
     if (item == null) return const SizedBox.shrink();
-
-    if (!_stageTypes.contains(item.type)) {
-      return ModernDetailContent(
-        viewModel: _vm,
-        prefs: widget.prefs,
-        backdropUrl: widget.backdropUrl,
-        selectedMediaSourceId: widget.selectedMediaSourceId,
-        onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
-        initialFocusNode: widget.initialFocusNode,
-        autoPlay: widget.autoPlay,
-        actionsExpanded: widget.actionsExpanded,
-        onActionsExpandedChanged: widget.onActionsExpandedChanged,
-        onToggleNavbar: widget.onToggleNavbar,
-      );
-    }
 
     final l10n = AppLocalizations.of(context);
     final landscape = detailUsesLandscapeLayout(context);
@@ -193,9 +110,13 @@ class _StageDetailContentState extends State<StageDetailContent> {
 
     // Built before anything is wired, so every section knows which stop sits
     // above and below it.
+    final overview = overviewText(item);
     final beside = _besideSections(item, sections, l10n);
     final below = _belowSections(item, sections, l10n);
-    _beside = [for (final s in beside) ?s.node];
+    _beside = [
+      if (landscape && overview != null) pageNode('overview'),
+      for (final s in beside) ?s.node,
+    ];
     _below = [for (final s in below) ?s.node];
 
     final posterWidth = stagePosterWidth(
@@ -204,7 +125,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
     );
     final poster = _buildPoster(item, posterWidth);
     final actions = _buildActions(landscape, posterWidth);
-    final header = _buildHeader(item, landscape, sections);
+    final header = _buildHeader(item, landscape, sections, overview);
     final top = stageTopInset(context);
     final side = stageLeadingInset(
       context,
@@ -215,7 +136,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
     final Widget page;
     if (landscape) {
       page = SingleChildScrollView(
-        controller: _scroll,
+        controller: pageScroll,
         padding: EdgeInsets.fromLTRB(
           side,
           top,
@@ -256,7 +177,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
       );
     } else {
       page = SingleChildScrollView(
-        controller: _scroll,
+        controller: pageScroll,
         padding: EdgeInsets.fromLTRB(
           side,
           top,
@@ -290,10 +211,10 @@ class _StageDetailContentState extends State<StageDetailContent> {
     if (node == null || node.context?.mounted != true) return;
     node.requestFocus();
     // The episodes bring their whole section into view as focus arrives.
-    if (node == _nodes['episodes']) return;
+    if (node == pageNode('episodes')) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = node.context;
-      if (!mounted || ctx == null || !ctx.mounted || _offScreen(ctx) == 0) {
+      if (!mounted || ctx == null || !ctx.mounted || offScreen(ctx) == 0) {
         return;
       }
       Scrollable.ensureVisible(
@@ -306,45 +227,10 @@ class _StageDetailContentState extends State<StageDetailContent> {
     });
   }
 
-  /// Which way [target] runs out of the page: -1 above it, 1 below it, and
-  /// 0 when it's wholly on screen, in which case scrolling to it would only
-  /// fight whatever it scrolls itself.
-  int _offScreen(BuildContext target) {
-    if (!_scroll.hasClients) return 0;
-    final page = _scroll.position.context.storageContext.findRenderObject();
-    final box = target.findRenderObject();
-    if (page is! RenderBox || box is! RenderBox) return 0;
-    if (!page.attached || !box.attached) return 0;
-    // In the page's own units. The app draws at its own scale inside the
-    // window, so screen positions don't compare with the page's height.
-    final y = box.localToGlobal(Offset.zero, ancestor: page).dy;
-    if (y < 0) return -1;
-    if (y + box.size.height > page.size.height) return 1;
-    return 0;
-  }
-
-  /// Brings the whole of a section into view, scrolling only as far as it
-  /// takes, so the titles under a row aren't left below the screen.
-  void _reveal(BuildContext section) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !section.mounted) return;
-      final side = _offScreen(section);
-      if (side == 0) return;
-      Scrollable.ensureVisible(
-        section,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-        alignmentPolicy: side < 0
-            ? ScrollPositionAlignmentPolicy.keepVisibleAtStart
-            : ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-      );
-    });
-  }
-
   void _toActions() {
     widget.initialFocusNode?.requestFocus();
-    if (_scroll.hasClients) {
-      _scroll.animateTo(
+    if (pageScroll.hasClients) {
+      pageScroll.animateTo(
         0,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
@@ -352,16 +238,11 @@ class _StageDetailContentState extends State<StageDetailContent> {
     }
   }
 
-  void _toNavbar() {
-    if (_scroll.hasClients) _scroll.jumpTo(0);
-    NavigationLayout.focusNavbarNotifier.value?.call();
-  }
-
   /// The button in the nearest row below or above [from]. Going down it's the
   /// first one in that row, the way a row is read. Going up it's the one most
   /// nearly over [from].
   FocusNode? _actionNeighbour(FocusNode from, {required bool down}) {
-    final root = _actionsKey.currentContext;
+    final root = actionsKey.currentContext;
     if (root == null || from.context?.mounted != true) return null;
     final nodes = <FocusNode>{};
     void visit(Element element) {
@@ -403,22 +284,19 @@ class _StageDetailContentState extends State<StageDetailContent> {
     return row.first;
   }
 
-  bool _focusIsInActions() {
-    final context = FocusManager.instance.primaryFocus?.context;
-    if (context == null) return false;
-    var inside = false;
-    context.visitAncestorElements((element) {
-      inside = identical(element.widget.key, _actionsKey);
-      return !inside;
-    });
-    return inside;
-  }
+  /// The stops beside the poster that can take focus. The overview only has
+  /// one once its text runs long enough to open up.
+  List<FocusNode> get _besideStops => [
+    for (final node in _beside)
+      if (node.context?.mounted == true) node,
+  ];
 
   /// The stop under [node], or null at the bottom of the page.
   FocusNode? _stopBelow(FocusNode node) {
-    final b = _beside.indexOf(node);
+    final beside = _besideStops;
+    final b = beside.indexOf(node);
     if (b >= 0) {
-      return b + 1 < _beside.length ? _beside[b + 1] : _below.firstOrNull;
+      return b + 1 < beside.length ? beside[b + 1] : _below.firstOrNull;
     }
     final r = _below.indexOf(node);
     return r >= 0 && r + 1 < _below.length ? _below[r + 1] : null;
@@ -427,61 +305,25 @@ class _StageDetailContentState extends State<StageDetailContent> {
   /// Up from [node]. The top of the beside column sits level with the poster,
   /// so on a TV with the toolbar along the top it goes up to the toolbar
   /// rather than back to the buttons.
-  void _moveUp(FocusNode node) {
-    final b = _beside.indexOf(node);
-    if (b > 0) return _go(_beside[b - 1]);
-    if (b == 0) return _landscape && _navbarIsTop ? _toNavbar() : _toActions();
+  @override
+  void moveUp(FocusNode node) {
+    final beside = _besideStops;
+    final b = beside.indexOf(node);
+    if (b > 0) return _go(beside[b - 1]);
+    if (b == 0) return _landscape && navbarIsTop ? toNavbar() : _toActions();
     final r = _below.indexOf(node);
     if (r > 0) return _go(_below[r - 1]);
     if (r == 0) {
-      if (_beside.isNotEmpty) return _go(_beside.last);
+      if (beside.isNotEmpty) return _go(beside.last);
       _toActions();
     }
   }
 
-  void _moveDown(FocusNode node) => _go(_stopBelow(node));
-
-  KeyEventResult Function(int index, KeyEvent event) _rowKeys(
-    FocusNode node,
-    int length,
-  ) => (index, event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.arrowUp) {
-      _moveUp(node);
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowDown) {
-      _moveDown(node);
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowRight && index == length - 1) {
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  };
-
-  /// The gap between a row's title and its cards, with room for a focused
-  /// card to grow into when focus expansion is on, so it never covers the
-  /// title.
-  double _rowSpacing(double imageHeight) =>
-      12 +
-      MediaCard.focusHeadroom(
-        imageHeight,
-        expansion: widget.prefs.get(UserPreferences.cardFocusExpansion),
-      );
-
-  /// The card width the season, similar, collection and Seerr rows share.
-  double get _posterCardWidth => detailIsCompact(context)
-      ? 120.0
-      : 150.0 * detailDesktopScale(prefs: widget.prefs);
-
-  double get _posterRowSpacing => _rowSpacing(_posterCardWidth * 1.5);
+  @override
+  void moveDown(FocusNode node) => _go(_stopBelow(node));
 
   Widget _buildBackdrop(AggregatedItem item, bool landscape) {
-    final own = _ownBackdropUrl(item);
+    final own = ownBackdropUrl(item);
     final amount = widget.prefs
         .get(UserPreferences.detailsBackgroundBlurAmount)
         .toDouble()
@@ -525,29 +367,6 @@ class _StageDetailContentState extends State<StageDetailContent> {
         },
       ),
     );
-  }
-
-  /// The title's own backdrop, its show's for a season or an episode, or the
-  /// TMDB one for a title that is only in Seerr.
-  String? _ownBackdropUrl(AggregatedItem item) {
-    final api = _vm.imageApi;
-    if (item.serverId != 'seerr' && item.backdropImageTags.isNotEmpty) {
-      return api.getBackdropImageUrl(
-        item.id,
-        maxWidth: 1920,
-        tag: item.backdropImageTags.first,
-      );
-    }
-    final parentId = item.parentBackdropItemId;
-    if (parentId != null && item.parentBackdropImageTags.isNotEmpty) {
-      return api.getBackdropImageUrl(
-        parentId,
-        maxWidth: 1920,
-        tag: item.parentBackdropImageTags.first,
-      );
-    }
-    final path = item.rawData['BackdropPath'] as String?;
-    return path == null || path.isEmpty ? null : '$seerrBackdropBase$path';
   }
 
   /// An episode's still is wide, so it keeps its own shape instead of being
@@ -594,21 +413,21 @@ class _StageDetailContentState extends State<StageDetailContent> {
 
     // Down from the buttons skips the column beside them on a TV, since that
     // column is reached by going right.
-    final down = landscape
-        ? (_below.firstOrNull ?? _beside.firstOrNull)
-        : (_beside.firstOrNull ?? _below.firstOrNull);
+    FocusNode? down() => landscape
+        ? (_below.firstOrNull ?? _besideStops.firstOrNull)
+        : (_besideStops.firstOrNull ?? _below.firstOrNull);
     // The row treats Play and the circles as one line, but here the circles
     // sit under Play, so Down tries the button below before leaving the row.
-    final downProxy = _node('actions-down');
+    final downProxy = pageNode('actions-down');
 
     final buttons = DetailActionButtons(
-      key: _actionsKey,
+      key: actionsKey,
       viewModel: _vm,
       itemId: _vm.item?.id,
       selectedMediaSourceId: widget.selectedMediaSourceId,
       onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
       tvPlayFocusNode: widget.initialFocusNode,
-      upTarget: _upProxy,
+      upTarget: actionsUpProxy,
       downTarget: downProxy,
       onRequestFocus: (target) {
         if (target != downProxy) {
@@ -620,12 +439,12 @@ class _StageDetailContentState extends State<StageDetailContent> {
         if (below != null) {
           below.requestFocus();
         } else {
-          _go(down);
+          _go(down());
         }
         return KeyEventResult.handled;
       },
       onArrowRightAtEnd: landscape && _beside.isNotEmpty
-          ? () => _go(_beside.first)
+          ? () => _go(_besideStops.firstOrNull)
           : null,
       autoPlay: widget.autoPlay,
       modernStyle: true,
@@ -644,7 +463,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Focus(
-          focusNode: _upProxy,
+          focusNode: actionsUpProxy,
           onFocusChange: _onUpProxyFocus,
           child: const SizedBox.shrink(),
         ),
@@ -657,6 +476,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
     AggregatedItem item,
     bool landscape,
     DetailSectionVisibility sections,
+    String? overview,
   ) {
     final textTheme = Theme.of(context).textTheme;
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.82);
@@ -669,14 +489,10 @@ class _StageDetailContentState extends State<StageDetailContent> {
       extraRatings: _vm.ratings,
       prefs: widget.prefs,
     );
-    final overview = cleanOverview(item.overview?.trim());
-    final showOverview =
-        overview.isNotEmpty &&
-        !hidesMediaDescription(
-          itemType: item.type,
-          hideMediaDescription:
-              widget.prefs.effectiveHideDetailsMediaDescription,
-        );
+    final overviewStyle = textTheme.bodyMedium?.copyWith(
+      color: muted,
+      height: 1.5,
+    );
     final tagline = sections.shows(DetailSection.tagline) ? item.tagline : null;
     final downloads = seerrItemDownloads(_vm);
 
@@ -705,16 +521,21 @@ class _StageDetailContentState extends State<StageDetailContent> {
             ),
           ),
         ],
-        if (showOverview) ...[
+        if (overview != null) ...[
           const SizedBox(height: 12),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 860),
-            child: Text(
-              overview,
-              maxLines: landscape ? 4 : null,
-              overflow: landscape ? TextOverflow.ellipsis : null,
-              style: textTheme.bodyMedium?.copyWith(color: muted, height: 1.5),
-            ),
+            child: landscape
+                ? ExpandableBiography(
+                    text: overview,
+                    toggleFocusNode: pageNode('overview'),
+                    onArrowUp: () => moveUp(pageNode('overview')),
+                    onArrowDown: () => moveDown(pageNode('overview')),
+                    onArrowLeft: _toActions,
+                    onCollapse: widget.onCollapseBiography,
+                    style: overviewStyle,
+                  )
+                : Text(overview, style: overviewStyle),
           ),
         ],
         if (downloads != null) ...[
@@ -770,7 +591,7 @@ class _StageDetailContentState extends State<StageDetailContent> {
 
     if (!partOfShow) return mark;
 
-    final number = item.type == 'Episode' ? _episodeNumber(item) : null;
+    final number = item.type == 'Episode' ? episodeNumber(item) : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -790,109 +611,27 @@ class _StageDetailContentState extends State<StageDetailContent> {
     );
   }
 
-  static String? _episodeNumber(AggregatedItem item) {
-    final season = item.parentIndexNumber;
-    final episode = item.indexNumber;
-    if (season == null || episode == null) return null;
-    return 'S$season:E$episode';
-  }
-
   /// What sits beside the poster on a TV: the track pickers, the people and
   /// studios behind a film, and the seasons or episodes of a show.
-  List<_StageSection> _besideSections(
+  List<DetailPageSection> _besideSections(
     AggregatedItem item,
     DetailSectionVisibility sections,
     AppLocalizations l10n,
   ) {
-    final out = <_StageSection>[];
     final isShow = const {'Series', 'Season', 'Episode'}.contains(item.type);
-
-    final choices = _actionsKey.currentState?.trackChoices(l10n);
-    if (choices == null && !_vm.isSeerrOnly) {
-      // The button row holds the pickers' state, so the chips show up a frame
-      // after it does.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _actionsKey.currentState != null) setState(() {});
-      });
-    }
-    if (choices != null && choices.isNotEmpty) {
-      final node = _node('tracks');
-      out.add(
-        _StageSection(
-          node: node,
-          child: StageTrackChips(
-            choices: choices,
-            firstFocusNode: node,
-            onOpen: (kind) => _actionsKey.currentState?.openTrackPicker(kind),
-            onNavigateUp: () => _moveUp(node),
-            onNavigateDown: () => _moveDown(node),
-            onLeftEdge: _landscape ? _toActions : null,
-          ),
-        ),
-      );
-    }
-
-    final hasCrew =
-        sections.shows(DetailSection.crew) &&
-        (_vm.directors.isNotEmpty || _vm.writers.isNotEmpty);
-    final hasStudios =
-        sections.shows(DetailSection.studios) && item.studios.isNotEmpty;
-    if (!isShow && (hasCrew || hasStudios)) {
-      final node = _node('facts');
-      // Stand-ins the section hands back through onRequestFocus. The real
-      // neighbours aren't known until every section is built.
-      final up = _node('facts-up');
-      final down = _node('facts-down');
-      out.add(
-        _StageSection(
-          node: node,
-          child: DetailMetadataSection(
-            viewModel: _vm,
-            showCrew: hasCrew,
-            showStudios: hasStudios,
-            firstItemFocusNode: node,
-            upTarget: up,
-            downTarget: down,
-            onRequestFocus: (target) {
-              if (target == up) _moveUp(node);
-              if (target == down) _moveDown(node);
-              return KeyEventResult.handled;
-            },
-          ),
-        ),
-      );
-    }
+    final out = <DetailPageSection>[
+      ?tracksSection(l10n, onLeftEdge: _landscape ? _toActions : null),
+      if (!isShow) ?factsSection(item, sections),
+    ];
 
     if (isShow && _vm.isSeerrOnly) {
-      final seerr = _vm.seerr;
-      if (_vm.seasons.isNotEmpty && seerr != null) {
-        final node = _node('seasons');
+      final node = pageNode('seasons');
+      final row = seerrSeasonsRow(node, l10n);
+      if (row != null) {
         out.add(
-          _StageSection(
+          DetailPageSection(
             node: node,
-            child: ClipRect(
-              clipper: const _LeftEdgeClipper(),
-              child: HorizontalScrollSection(
-                title: l10n.seasons,
-                contentSpacing: _posterRowSpacing,
-                builder: (context, controller) => DetailSeasonsRow(
-                  seasons: _vm.seasons,
-                  imageApi: _vm.imageApi,
-                  prefs: widget.prefs,
-                  scrollController: controller,
-                  firstItemFocusNode: node,
-                  seerrSeasonStatus: seerrItemSeasonStatus(_vm),
-                  onSeasonTap: (number) => showSeerrRequestDialog(
-                    context: context,
-                    vm: seerr,
-                    is4k: false,
-                    qualityToggle: true,
-                    season: number > 0 ? number : null,
-                  ),
-                  onItemKeyEvent: _rowKeys(node, _vm.seasons.length),
-                ),
-              ),
-            ),
+            child: ClipRect(clipper: const _LeftEdgeClipper(), child: row),
           ),
         );
       }
@@ -906,12 +645,12 @@ class _StageDetailContentState extends State<StageDetailContent> {
   /// The full width rows under the poster: an episode's run of episodes, the
   /// cast, extras, the collections the title belongs to, more like it and
   /// Seerr's rows.
-  List<_StageSection> _belowSections(
+  List<DetailPageSection> _belowSections(
     AggregatedItem item,
     DetailSectionVisibility sections,
     AppLocalizations l10n,
   ) {
-    final out = <_StageSection>[];
+    final out = <DetailPageSection>[];
 
     // An episode's still is short, so its show's episodes run full width
     // under it rather than squeezing in beside it.
@@ -921,220 +660,46 @@ class _StageDetailContentState extends State<StageDetailContent> {
       out.add(_episodesSection(item, besidePoster: false));
     }
 
-    final cast = _castSection(item, sections, l10n);
+    final cast = castSection(item, sections, l10n);
     if (cast != null) out.add(cast);
 
-    if (sections.shows(DetailSection.extras) && _vm.features.isNotEmpty) {
-      final node = _node('extras');
-      final items = _vm.features;
-      out.add(
-        _StageSection(
-          node: node,
-          child: HorizontalScrollSection(
-            title: l10n.extras,
-            contentSpacing: _rowSpacing(
-              (detailIsCompact(context)
-                      ? 140.0
-                      : 170.0 * detailDesktopScale(prefs: widget.prefs)) /
-                  MediaCard.aspectRatioForType(items.first.type),
-            ),
-            builder: (context, controller) => DetailFeaturesRow(
-              items: items,
-              imageApi: _vm.imageApi,
-              prefs: widget.prefs,
-              scrollController: controller,
-              firstItemFocusNode: node,
-              onItemKeyEvent: _rowKeys(node, items.length),
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (sections.shows(DetailSection.collections)) {
-      for (final collection in _vm.parentCollections) {
-        if (collection.items.isEmpty) continue;
-        final node = _node('collection-${collection.id}');
-        out.add(
-          _StageSection(
-            node: node,
-            child: HorizontalScrollSection(
-              title: collection.name,
-              contentSpacing: _posterRowSpacing,
-              builder: (context, controller) => DetailSimilarRow(
-                items: collection.items,
-                imageApi: _vm.imageApi,
-                prefs: widget.prefs,
-                scrollController: controller,
-                firstItemFocusNode: node,
-                onItemKeyEvent: _rowKeys(node, collection.items.length),
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    if (sections.shows(DetailSection.moreLikeThis) && _vm.similar.isNotEmpty) {
-      final node = _node('similar');
-      final items = _vm.similar;
-      out.add(
-        _StageSection(
-          node: node,
-          child: HorizontalScrollSection(
-            title: l10n.moreLikeThis,
-            contentSpacing: _posterRowSpacing,
-            builder: (context, controller) => DetailSimilarRow(
-              items: items,
-              imageApi: _vm.imageApi,
-              prefs: widget.prefs,
-              scrollController: controller,
-              firstItemFocusNode: node,
-              onItemKeyEvent: _rowKeys(node, items.length),
-            ),
-          ),
-        ),
-      );
-    }
-
-    out.addAll(_seerrSections(sections, l10n));
+    out.addAll(libraryRows(sections, l10n));
+    out.addAll(seerrSections(sections, l10n));
     return out;
   }
 
   /// The season tabs over the episode rail. Beside the poster, Left off its
   /// first tab or episode goes back to the buttons.
-  _StageSection _episodesSection(
+  DetailPageSection _episodesSection(
     AggregatedItem item, {
     required bool besidePoster,
   }) {
-    final node = _node('episodes');
-    return _StageSection(
+    final node = pageNode('episodes');
+    return DetailPageSection(
       node: node,
       child: Builder(
         builder: (section) => Focus(
           canRequestFocus: false,
           onFocusChange: (has) {
-            if (has) _reveal(section);
+            if (has) reveal(section);
           },
           child: ClipRect(
             clipper: const _LeftEdgeClipper(),
-            child: MinimalistEpisodesSection(
-              key: ValueKey('stage-episodes-${item.id}'),
-              viewModel: _vm,
-              prefs: widget.prefs,
+            child: episodesRail(
+              item,
+              node,
               landscape: _landscape,
               // Held to a share of the screen's height rather than the
               // width a full screen rail would give the stills.
               maxHeight: _landscape
                   ? MediaQuery.sizeOf(context).height * 0.36
                   : null,
-              episodesFocusNode: node,
-              onVerticalNavigation: (isUp) {
-                isUp ? _moveUp(node) : _moveDown(node);
-                return true;
-              },
               onLeftEdge: _landscape && besidePoster ? _toActions : null,
             ),
           ),
         ),
       ),
     );
-  }
-
-  _StageSection? _castSection(
-    AggregatedItem item,
-    DetailSectionVisibility sections,
-    AppLocalizations l10n,
-  ) {
-    final people = _vm.actors;
-    if (!sections.shows(DetailSection.cast) || people.isEmpty) return null;
-    final node = _node('cast');
-    return _StageSection(
-      node: node,
-      child: HorizontalScrollSection(
-        title: l10n.detailSectionCast,
-        builder: (context, controller) => DetailCastRow(
-          people: people,
-          imageApi: _vm.imageApi,
-          serverId: item.serverId,
-          scrollController: controller,
-          firstItemFocusNode: node,
-          onItemKeyEvent: _rowKeys(node, people.length),
-        ),
-      ),
-    );
-  }
-
-  /// What Seerr knows that the library doesn't: the tags, the numbers behind
-  /// the title, where it streams and what it leads to.
-  List<_StageSection> _seerrSections(
-    DetailSectionVisibility sections,
-    AppLocalizations l10n,
-  ) {
-    final state = seerrItemTabState(_vm);
-    final pieces = SeerrDetailPieces.resolve(state, sections, l10n);
-    if (state == null || !pieces.hasAny) return const [];
-    final label = GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr);
-    final titleStyle = Theme.of(context).textTheme.titleMedium
-        ?.copyWith(fontWeight: FontWeight.w600);
-
-    _StageSection row(String id, String title, List<SeerrDiscoverItem> items) {
-      final node = _node(id);
-      return _StageSection(
-        node: node,
-        child: HorizontalScrollSection(
-          title: '$label · $title',
-          contentSpacing: _posterRowSpacing,
-          builder: (context, controller) => SeerrAppearancesRow(
-            items: items,
-            prefs: widget.prefs,
-            scrollController: controller,
-            firstFocusNode: node,
-            onItemKeyEvent: _rowKeys(node, items.length),
-            customCardWidth: _posterCardWidth,
-          ),
-        ),
-      );
-    }
-
-    final chipsNode = _node('seerr-chips');
-    return [
-      if (pieces.chips || pieces.stats || pieces.streaming)
-        _StageSection(
-          node: pieces.chips ? chipsNode : null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(label, style: titleStyle),
-              if (pieces.chips) ...[
-                const SizedBox(height: 12),
-                SeerrItemChips(
-                  state: state,
-                  firstFocusNode: chipsNode,
-                  onNavigateUp: () => _moveUp(chipsNode),
-                  onNavigateDown: () => _moveDown(chipsNode),
-                ),
-              ],
-              if (pieces.stats) ...[
-                const SizedBox(height: 14),
-                SeerrStatsCard(state: state),
-              ],
-              if (pieces.streaming) ...[
-                const SizedBox(height: 14),
-                SeerrStreamingRow(providers: state.streamingProviders),
-              ],
-            ],
-          ),
-        ),
-      if (pieces.recommendations)
-        row(
-          'seerr-recommendations',
-          l10n.recommendations,
-          state.recommendations,
-        ),
-      if (pieces.similar) row('seerr-similar', l10n.similar, state.similar),
-    ];
   }
 }
 
@@ -1150,13 +715,4 @@ class _LeftEdgeClipper extends CustomClipper<Rect> {
 
   @override
   bool shouldReclip(_LeftEdgeClipper oldClipper) => false;
-}
-
-/// One part of the page and the node D-pad focus enters it by, or none when
-/// nothing in it takes focus.
-class _StageSection {
-  final FocusNode? node;
-  final Widget child;
-
-  const _StageSection({required this.node, required this.child});
 }

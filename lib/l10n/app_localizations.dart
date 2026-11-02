@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -837,6 +837,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stage'**
   String get detailScreenStyleStage;
+
+  /// Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get detailScreenStylePremiere;
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -26052,6 +26058,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The poster up front, with play under it and the details beside it.'**
   String get setupDetailStageHint;
+
+  /// Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get setupStylePremiere;
+
+  /// What the Premiere detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title centered over a full screen backdrop, with everything else down the page.'**
+  String get setupDetailPremiereHint;
 
   /// Setup question asking which style the bottom navigation bar should use
   ///

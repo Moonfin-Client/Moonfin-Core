@@ -677,6 +677,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'nouveau',
       'minimalist',
       'stage',
+      'premiere',
     ]),
     details.leaf(
       'pref_show_details_backdrop',

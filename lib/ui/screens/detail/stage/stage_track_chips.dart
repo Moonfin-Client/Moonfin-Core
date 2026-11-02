@@ -68,15 +68,18 @@ class StageTrackChips extends StatelessWidget {
                     style: textTheme.bodySmall?.copyWith(color: muted),
                   ),
                   const SizedBox(width: 8),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 240),
-                    child: Text(
-                      choice.current,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: AppColorScheme.onBackground,
-                        fontWeight: FontWeight.w600,
+                  // Gives way on a screen too narrow for the whole name.
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 240),
+                      child: Text(
+                        choice.current,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColorScheme.onBackground,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

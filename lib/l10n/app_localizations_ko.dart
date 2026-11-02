@@ -466,6 +466,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
+  String get detailScreenStylePremiere => 'Premiere';
+
+  @override
   String get expandedTabs => '탭 자동 펼치기';
 
   @override
@@ -14400,6 +14403,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get setupDetailStageHint =>
       'The poster up front, with play under it and the details beside it.';
+
+  @override
+  String get setupStylePremiere => 'Premiere';
+
+  @override
+  String get setupDetailPremiereHint =>
+      'The title centered over a full screen backdrop, with everything else down the page.';
 
   @override
   String get setupNavbarStyleQuestion => '하단 바를 어떻게 표시할까요?';

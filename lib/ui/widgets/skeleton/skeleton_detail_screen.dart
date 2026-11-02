@@ -46,7 +46,68 @@ class DetailScreenSkeleton extends StatelessWidget {
         DetailScreenStyle.nouveau => _buildNouveau(context),
         DetailScreenStyle.minimalist => _buildMinimalist(context),
         DetailScreenStyle.stage => _buildStage(context),
+        DetailScreenStyle.premiere => _buildPremiere(context),
       },
+    );
+  }
+
+  /// The title block centered over the backdrop, low on a TV's first screen
+  /// or partway down a phone's.
+  Widget _buildPremiere(BuildContext context) {
+    final landscape = detailUsesLandscapeLayout(context);
+    final hero = premiereHeroHeight(
+      MediaQuery.sizeOf(context),
+      landscape: landscape,
+    );
+
+    final block = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SkeletonBox(
+          width: landscape ? 420 : 240,
+          height: landscape ? 56 : 40,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        const SizedBox(height: 14),
+        const SkeletonBox(width: 300, height: 16),
+        const SizedBox(height: 14),
+        if (landscape) ...[
+          for (var i = 0; i < 2; i++) ...[
+            SkeletonBox(width: i == 1 ? 420 : 620, height: 14),
+            const SizedBox(height: 8),
+          ],
+          const SizedBox(height: 12),
+        ],
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+            SkeletonBox(
+              width: landscape ? 150 : 200,
+              height: 50,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            if (landscape)
+              for (var i = 0; i < 4; i++)
+                SkeletonBox(
+                  width: 50,
+                  height: 50,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+          ],
+        ),
+      ],
+    );
+
+    if (landscape) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 54),
+        child: Align(alignment: Alignment.bottomCenter, child: block),
+      );
+    }
+    return Padding(
+      padding: EdgeInsets.only(top: hero * 0.42),
+      child: Align(alignment: Alignment.topCenter, child: block),
     );
   }
 

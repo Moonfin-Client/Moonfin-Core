@@ -54,6 +54,7 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'premiere/premiere_detail_content.dart';
 import 'stage/stage_detail_content.dart';
 import 'person_links_row.dart';
 import 'playlist_sort_filter_bar.dart';
@@ -896,22 +897,46 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
               setState(() => _actionsExpanded = val),
         ),
 
-        DetailScreenStyle.stage => StageDetailContent(
-          viewModel: _viewModel,
-          prefs: _prefs,
-          backdropUrl: _backdropUrl,
-          selectedMediaSourceId: _selectedMediaSourceId,
-          initialFocusNode: _ensureInitialFocusNode(),
-          onSelectedMediaSourceChanged: (id) {
-            setState(() => _selectedMediaSourceId = id);
-            _viewModel.load(mediaSourceId: id);
-          },
-          autoPlay: widget.autoPlay,
-          actionsExpanded: _actionsExpanded,
-          onActionsExpandedChanged: (val) =>
-              setState(() => _actionsExpanded = val),
-          onToggleNavbar: (show) => setState(() => _showNavbar = show),
-        ),
+        DetailScreenStyle.stage =>
+          detailPageDraws(_viewModel.item?.type)
+            ? StageDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                backdropUrl: _backdropUrl,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onToggleNavbar: (show) => setState(() => _showNavbar = show),
+                onCollapseBiography: () => setState(() {}),
+              )
+            : _buildModernContent(),
+
+        DetailScreenStyle.premiere =>
+          detailPageDraws(_viewModel.item?.type)
+            ? PremiereDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                backdropUrl: _backdropUrl,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onToggleNavbar: (show) => setState(() => _showNavbar = show),
+              )
+            : _buildModernContent(),
       },
     };
   }
@@ -4429,6 +4454,9 @@ class DetailMetadataRow extends StatelessWidget {
   /// Trailing badges from elsewhere, laid out with the technical chips.
   final List<Widget> extraBadges;
 
+  /// Centers both lines on any screen, for a title block that's centered.
+  final bool centered;
+
   const DetailMetadataRow({
     required this.item,
     this.selectedMediaSource,
@@ -4436,6 +4464,7 @@ class DetailMetadataRow extends StatelessWidget {
     this.seerrStatus,
     this.technicalOnly = false,
     this.extraBadges = const [],
+    this.centered = false,
   });
 
   @override
@@ -4538,16 +4567,16 @@ class DetailMetadataRow extends StatelessWidget {
 
     final badges = tech?.badges ?? const <String>[];
 
-    final compact = !_useDesktopDetailLayout(context);
+    final center = centered || !_useDesktopDetailLayout(context);
 
     return Column(
-      crossAxisAlignment: compact
+      crossAxisAlignment: center
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: compact ? WrapAlignment.center : WrapAlignment.start,
+          alignment: center ? WrapAlignment.center : WrapAlignment.start,
           spacing: 2,
           runSpacing: 4,
           children: separated,
@@ -4556,7 +4585,7 @@ class DetailMetadataRow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Wrap(
-              alignment: compact ? WrapAlignment.center : WrapAlignment.start,
+              alignment: center ? WrapAlignment.center : WrapAlignment.start,
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 6,
               runSpacing: 4,
@@ -4723,6 +4752,10 @@ class DetailActionButtons extends StatefulWidget {
   /// instead of growing to fit it, for a row too narrow for a circle to grow.
   final bool labelsUnderCircles;
 
+  /// Centers the modern row under a centered title instead of starting it at
+  /// the leading edge.
+  final bool centerRow;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4751,6 +4784,7 @@ class DetailActionButtons extends StatefulWidget {
     this.onCollectionsPressed,
     this.omitTrackButtons = false,
     this.labelsUnderCircles = false,
+    this.centerRow = false,
   });
 
   @override
@@ -7734,7 +7768,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
         );
       }).toList();
-      final rowAlignment = widget.modernStyle
+      final startsRow = widget.modernStyle && !widget.centerRow;
+      final rowAlignment = startsRow
           ? AlignmentDirectional.centerStart
           : Alignment.center;
       // A classic tile grows a line when its label wraps, so the tiles line
@@ -7757,7 +7792,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 crossAxisAlignment: widget.modernStyle
                     ? WrapCrossAlignment.center
                     : WrapCrossAlignment.start,
-                alignment: widget.modernStyle
+                alignment: startsRow
                     ? WrapAlignment.start
                     : WrapAlignment.center,
                 children: normalizedButtons,
@@ -7967,7 +8002,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           // Primary row keeps the More/Less button pinned at its end; the extra
           // buttons reveal in a second wrap below, so More/Less never moves.
           rowContent = Align(
-            alignment: AlignmentDirectional.centerStart,
+            alignment: widget.centerRow
+                ? Alignment.center
+                : AlignmentDirectional.centerStart,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -12774,7 +12811,9 @@ class _DetailActionButtonState extends State<_DetailActionButton>
   }) {
     final host = context.findAncestorWidgetOfExactType<DetailActionButtons>();
     final labelUnder = host?.labelsUnderCircles ?? false;
-    final isExpanded = showHighlight && !labelUnder;
+    // With the circles' labels under them, Play keeps its own in the pill.
+    final labeledPlay = widget.isPrimary && labelUnder;
+    final isExpanded = labeledPlay || (showHighlight && !labelUnder);
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -12833,9 +12872,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       return SizedBox(width: double.infinity, child: pillInner);
     }
 
-    // Only a compact layout keeps Play filled with the accent. Everywhere else
-    // it looks like the buttons beside it until it has focus.
-    final accentPrimary = widget.isPrimary && isMobile;
+    // Only a compact layout or a labeled Play keeps it filled with the
+    // accent. Everywhere else it looks like the buttons beside it until it
+    // has focus.
+    final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -12916,7 +12956,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     }
 
     final double minWidth = height;
-    final double maxWidth = isExpanded ? 200.0 * scale : height;
+    // A labeled Play keeps its label all the time, so it gets the room for
+    // one like "Resume from 1h 12m" without scrolling it.
+    final double maxWidth = isExpanded
+        ? (labeledPlay ? 280.0 : 200.0) * scale
+        : height;
     final double maxLabelWidth =
         (maxWidth -
                 (isExpanded ? 22.0 * scale : 0.0) -
@@ -12999,7 +13043,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           child: OverflowBox(
             maxWidth: 160 * scale,
             child: Text(
-              showHighlight ? widget.label : '',
+              showHighlight && !labeledPlay ? widget.label : '',
               maxLines: 1,
               softWrap: false,
               overflow: TextOverflow.ellipsis,

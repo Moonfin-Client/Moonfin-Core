@@ -368,14 +368,17 @@ enum VisualThemeId {
 /// section stacked down the page rather than behind tabs or cards.
 /// [minimalist] strips the screen back to artwork, one play button and the
 /// episodes, and is what Kids Mode always shows. [stage] leads with the poster,
-/// with play under it and the details beside it. Stored per server and user.
+/// with play under it and the details beside it. [premiere] centers the title
+/// over a backdrop that fills the screen, with every section down the page
+/// under it. Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
   spotlight,
   nouveau,
   minimalist,
-  stage;
+  stage,
+  premiere;
 }
 
 /// Selectable header layout for the library browse screen.

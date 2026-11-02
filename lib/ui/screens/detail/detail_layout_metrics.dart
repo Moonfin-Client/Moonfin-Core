@@ -209,6 +209,12 @@ double stageLeadingInset(
 double stageTopInset(BuildContext context) =>
     MediaQuery.paddingOf(context).top + TopToolbar.baseHeightFor(context) + 8;
 
+/// How tall the Premiere backdrop is. It fills the first screen of a TV or
+/// a desktop, and the top of a phone's.
+double premiereHeroHeight(Size size, {required bool landscape}) => landscape
+    ? size.height
+    : (size.height * 0.62).clamp(360.0, 640.0);
+
 /// The Minimalist episode rail.
 ///
 /// The rail owns the bottom of the screen, so its card is a share of the room
@@ -288,3 +294,15 @@ double minimalistEpisodeCardWidth(
 /// a modal, and Nouveau has no track list at all, which leaves the screen with
 /// nothing on it but buttons.
 bool detailFallsBackToModern(String? type) => type == 'Playlist';
+
+/// Whether Stage or Premiere draws this item type. Everything else, a person,
+/// an album or a playlist, goes to Modern, which already knows how to lay
+/// those out.
+bool detailPageDraws(String? type) => const {
+  'Movie',
+  'Series',
+  'Season',
+  'Episode',
+  'Video',
+  'MusicVideo',
+}.contains(type);

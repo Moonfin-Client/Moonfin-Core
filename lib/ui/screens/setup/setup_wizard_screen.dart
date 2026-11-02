@@ -564,6 +564,10 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         l10n.setupStyleStage,
         l10n.setupDetailStageHint,
       ),
+      DetailScreenStyle.premiere: (
+        l10n.setupStylePremiere,
+        l10n.setupDetailPremiereHint,
+      ),
     };
     final selected =
         _detailStyle ?? _prefs.get(UserPreferences.detailScreenStyle);

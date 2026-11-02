@@ -2835,6 +2835,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.nouveau => _nouveauDetail(context, items),
       DetailScreenStyle.minimalist => _minimalistDetail(context, items.first),
       DetailScreenStyle.stage => _stageDetail(context, items.first),
+      DetailScreenStyle.premiere => _premiereDetail(context, items.first),
     };
   },
   fallback: _fallbackDetail(style),
@@ -3854,6 +3855,104 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
+/// The title centered over a backdrop that fills the preview, with play and
+/// the circles under it, and on a TV a hint that the page runs on.
+Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
+  final landscape = !_phone;
+  final base = AppColorScheme.background;
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      _artwork(item.backdropUrl),
+      DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              base,
+              base.withValues(
+                alpha: 0.6 + 0.3 * _detailBackgroundAmount(context),
+              ),
+              base.withValues(alpha: 0),
+            ],
+            stops: const [0.05, 0.45, 0.8],
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          spacing: 6,
+          children: [
+            Text(
+              item.title.toUpperCase(),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: landscape ? 20 : 17,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2,
+                color: AppColorScheme.onSurface,
+              ),
+            ),
+            if (meta.isNotEmpty)
+              Text(
+                meta,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: landscape ? 11 : 10,
+                  color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                ),
+              ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+                Container(
+                  width: 54,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: AppColorScheme.accent,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                ),
+                for (final (icon, _) in _detailButtons(context, auto: 4))
+                  Container(
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 11,
+                      color: AppColorScheme.onSurface,
+                    ),
+                  ),
+              ],
+            ),
+            if (_tv)
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 14,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
 Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final item = items.first;
@@ -4342,6 +4441,35 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.premiere) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 5,
+            children: [
+              _bar(60, 9, _strong),
+              _bar(44, 5, _weak),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 4,
+                children: [
+                  _bar(26, 8, _strong),
+                  _bar(8, 8, _weak),
+                  _bar(8, 8, _weak),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.stage) {
     return Stack(
       fit: StackFit.expand,

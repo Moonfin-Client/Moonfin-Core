@@ -467,6 +467,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
+  String get detailScreenStylePremiere => 'Premiere';
+
+  @override
   String get expandedTabs => 'Utvidede faner';
 
   @override
@@ -14836,6 +14839,13 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get setupDetailStageHint =>
       'The poster up front, with play under it and the details beside it.';
+
+  @override
+  String get setupStylePremiere => 'Premiere';
+
+  @override
+  String get setupDetailPremiereHint =>
+      'The title centered over a full screen backdrop, with everything else down the page.';
 
   @override
   String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
