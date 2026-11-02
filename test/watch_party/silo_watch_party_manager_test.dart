@@ -92,6 +92,16 @@ void main() {
       ),
       600,
     );
+    // First moved more than five seconds after resume(): a stall.
+    expect(
+      SiloWatchPartyManager.startDelayMs(
+        calledAtMs: 1000,
+        fromMs: 60000,
+        positionMs: 60300,
+        atMs: 9000,
+      ),
+      isNull,
+    );
     // Not moved yet, or moved backwards by a seek.
     expect(
       SiloWatchPartyManager.startDelayMs(
