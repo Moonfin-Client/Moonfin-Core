@@ -2143,7 +2143,7 @@ final class NativeApplePlayerViewController: UIViewController {
         // seek, anything else commits and proceeds. Menu belongs to the
         // tap recognizer, which cancels the pan itself.
         if panScrubEngaged && type != .menu {
-            finishPanScrub()
+            finishPanScrub(commit: clickpadSeekingAllowed)
             if type == .select {
                 showOsd()
                 return true
@@ -2664,6 +2664,14 @@ final class NativeApplePlayerViewController: UIViewController {
     private func togglePlayPause() {
         // During a paused scrub session play means go to the scrubbed spot
         // and carry on from there, not resume where the video was paused.
+        #if os(tvOS)
+        if scrubTargetMs != nil && !clickpadSeekingAllowed {
+            // Let the play/pause press act on the current player state,
+            // without the abandoned preview resuming playback first.
+            wasPlayingBeforeScrub = false
+            abandonScrubSession()
+        }
+        #endif
         if scrubTargetMs != nil {
             wasPlayingBeforeScrub = true
             commitScrub()
