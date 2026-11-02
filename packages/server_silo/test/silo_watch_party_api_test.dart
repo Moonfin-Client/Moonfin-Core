@@ -277,4 +277,54 @@ void main() {
       '/rooms/join?token=WSNKCQ47AFFJYGXRUF39NQE3',
     );
   });
+
+  test('resumes from the earliest point anyone in the room stopped at', () {
+    final answer = {
+      'items': [
+        {
+          'content_id': 'ep1',
+          'members': [
+            {
+              'profile_id': 'p1',
+              'state': 'in_progress',
+              'position_seconds': 2530.4,
+            },
+            {
+              'profile_id': 'p2',
+              'state': 'in_progress',
+              'position_seconds': 1500.9,
+            },
+            {'profile_id': 'p3', 'state': 'unseen'},
+            {'profile_id': 'p4', 'state': 'watched', 'position_seconds': 0},
+            {
+              'profile_id': 'p5',
+              'state': 'in_progress',
+              'position_seconds': 12,
+            },
+          ],
+        },
+      ],
+    };
+    final point = SiloRoomResumePoint.fromMemberState(answer, 'ep1')!;
+    expect(point.seconds, 1500);
+    expect(point.profileId, 'p2');
+    expect(point.notStarted, 1);
+
+    // Nobody part way through, or barely started, is nothing to resume.
+    expect(
+      SiloRoomResumePoint.fromMemberState({
+        'items': [
+          {
+            'content_id': 'ep1',
+            'members': [
+              {'state': 'unseen'},
+              {'state': 'in_progress', 'position_seconds': 5},
+            ],
+          },
+        ],
+      }, 'ep1'),
+      isNull,
+    );
+    expect(SiloRoomResumePoint.fromMemberState(answer, 'other'), isNull);
+  });
 }

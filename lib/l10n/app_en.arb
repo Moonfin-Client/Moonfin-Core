@@ -11368,6 +11368,41 @@
   "@watchPartyStartForEveryone": {
     "description": "Host button that starts the staged item for the whole Watch Party"
   },
+  "watchPartyResumeAt": "Resume at {time}",
+  "@watchPartyResumeAt": {
+    "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached; time is a position like 42:10",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyStartFromBeginning": "Start from the beginning",
+  "@watchPartyStartFromBeginning": {
+    "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+  },
+  "watchPartyResumeWhere": "Where {name} left off, the earliest anyone here has reached.",
+  "@watchPartyResumeWhere": {
+    "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyResumeEarliest": "The earliest point anyone here has reached.",
+  "@watchPartyResumeEarliest": {
+    "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+  },
+  "watchPartyResumeNotStarted": "{count, plural, =1{1 person hasn't started it yet.} other{{count} people haven't started it yet.}}",
+  "@watchPartyResumeNotStarted": {
+    "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "watchPartyBackToLobby": "Back to the lobby",
   "@watchPartyBackToLobby": {
     "description": "Host button that stops Watch Party playback"

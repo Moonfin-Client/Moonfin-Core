@@ -97,6 +97,11 @@ class SiloWatchPartyManager extends ChangeNotifier {
   Timer? _driftTimer;
   double? _nudgedRate;
   bool _hostStopping = false;
+
+  /// A start the host asked to pick up part way. Silo starts every room at
+  /// the beginning, so the host seeks the room there once its player is in,
+  /// while the room still holds everyone paused waiting for them to load.
+  ({int seconds, String contentId})? _pendingResume;
   int _lastDriftSeekMs = 0;
   bool _applying = false;
   bool _interceptorInstalled = false;
@@ -354,9 +359,41 @@ class SiloWatchPartyManager extends ChangeNotifier {
     }
   }
 
-  Future<bool> startPlayback() => _hostAction((api, id) => api.start(id));
+  /// [atSeconds] picks the title up part way for everyone, where
+  /// [resumePoint] says the room got to.
+  Future<bool> startPlayback({int atSeconds = 0}) async {
+    final contentId = _room?.selectedContentId;
+    _pendingResume = atSeconds > 0 && contentId != null
+        ? (seconds: atSeconds, contentId: contentId)
+        : null;
+    final started = await _hostAction((api, id) => api.start(id));
+    if (!started) _pendingResume = null;
+    return started;
+  }
+
+  /// Where the room could resume the title the host has staged, or null.
+  Future<SiloRoomResumePoint?> resumePoint() async {
+    final room = _room;
+    final token = _roomToken;
+    final client = _client;
+    final contentId = room?.selectedContentId;
+    if (room == null || token == null || client == null || contentId == null) {
+      return null;
+    }
+    try {
+      return await client.watchPartyApi.resumePoint(
+        room.roomId,
+        token,
+        contentId,
+      );
+    } catch (e) {
+      _logger.w('Watch Party: reading where members are failed', error: e);
+      return null;
+    }
+  }
 
   Future<bool> stopPlayback() async {
+    _pendingResume = null;
     // A stop of the host's own doesn't move on to the next episode.
     _hostStopping = true;
     final done = await _hostAction((api, id) => api.stop(id));
@@ -1065,6 +1102,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     _item = null;
     _itemId = null;
     _openedRevision = null;
+    _pendingResume = null;
     _endedReason = reason;
     notifyListeners();
   }
@@ -1316,6 +1354,24 @@ class SiloWatchPartyManager extends ChangeNotifier {
         _send({'type': 'attach_session', 'session_id': session});
       }
       return;
+    }
+    final resume = _pendingResume;
+    if (resume != null && room.isHost) {
+      if (room.selectedContentId != resume.contentId) {
+        _pendingResume = null;
+      } else {
+        // Ahead of the ready report, so the room can't set off from the
+        // beginning before the seek lands.
+        if (_send({
+          'type': 'transport_request',
+          'action': 'seek',
+          'position_seconds': resume.seconds.toDouble(),
+          'is_paused': false,
+        })) {
+          _pendingResume = null;
+        }
+        return;
+      }
     }
     final command = _lastCommand;
     final buffering = _playbackManager.state.isBuffering;
