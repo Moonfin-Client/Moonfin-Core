@@ -14246,6 +14246,11 @@ class _ChapterListCardState extends State<_ChapterListCard>
   }
 }
 
+/// A group's share of the width, from the length of its names. The floor keeps
+/// a single name on one line.
+int detailGroupWeight(Iterable<String> names) =>
+    names.fold(0, (sum, name) => sum + name.length).clamp(20, 60);
+
 class _MetadataItem {
   final String name;
   final String? id;
@@ -14480,6 +14485,10 @@ class DetailMetadataSection extends StatefulWidget {
   final FocusNode? downTarget;
   final KeyEventResult Function(FocusNode? target)? onRequestFocus;
 
+  /// Gives each group a share of the width by how much it has to say, so a
+  /// long list of studios sits side by side rather than one to a line.
+  final bool weighByText;
+
   const DetailMetadataSection({
     required this.viewModel,
     this.showCrew = true,
@@ -14488,6 +14497,7 @@ class DetailMetadataSection extends StatefulWidget {
     this.upTarget,
     this.downTarget,
     this.onRequestFocus,
+    this.weighByText = false,
   });
 
   @override
@@ -14755,6 +14765,9 @@ class DetailMetadataSectionState extends State<DetailMetadataSection> {
                   final groupIndex = e.key;
                   final group = e.value;
                   return Expanded(
+                    flex: widget.weighByText
+                        ? detailGroupWeight(group.items.map((i) => i.name))
+                        : 1,
                     child: Row(
                       children: [
                         if (groupIndex > 0)

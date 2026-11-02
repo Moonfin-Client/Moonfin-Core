@@ -17,6 +17,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/screens/detail/premiere/premiere_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_track_chips.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
@@ -302,6 +303,20 @@ void main() {
           .renderObject<RenderParagraph>(find.text(endless))
           .didExceedMaxLines,
       isTrue,
+    );
+  });
+
+  test('a details column gets a share by how much its names say', () {
+    expect(detailGroupWeight(['James Cameron']), 20);
+    expect(detailGroupWeight(['Rich Moore', 'Phil Johnston']), 23);
+    expect(
+      detailGroupWeight([
+        'Dune Entertainment',
+        'Lightstorm Entertainment',
+        '20th Century Fox',
+        'Ingenious Film Partners',
+      ]),
+      60,
     );
   });
 

@@ -150,8 +150,9 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
   /// The people and studios behind the title.
   DetailPageSection? factsSection(
     AggregatedItem item,
-    DetailSectionVisibility sections,
-  ) {
+    DetailSectionVisibility sections, {
+    bool weighByText = false,
+  }) {
     final vm = pageViewModel;
     final hasCrew =
         sections.shows(DetailSection.crew) &&
@@ -170,6 +171,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
         viewModel: vm,
         showCrew: hasCrew,
         showStudios: hasStudios,
+        weighByText: weighByText,
         firstItemFocusNode: node,
         upTarget: up,
         downTarget: down,
