@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../preference/preference_constants.dart';
@@ -7,6 +8,7 @@ import '../../preference/user_preferences.dart';
 import '../../util/network_errors.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
+import '../repositories/seerr_repository.dart';
 import '../services/user_data_sync.dart';
 import '../utils/blocked_ratings.dart';
 
@@ -32,6 +34,7 @@ class FavoritesViewModel extends ChangeNotifier {
     FavoriteTypeFilter.musicArtist,
     FavoriteTypeFilter.musicAlbum,
     FavoriteTypeFilter.audio,
+    FavoriteTypeFilter.watchlist,
   ];
 
   FavoritesState _state = FavoritesState.loading;
@@ -86,6 +89,7 @@ class FavoritesViewModel extends ChangeNotifier {
   /// rewind the cursor and ask for rows it already has.
   int _gridFetchedCount = 0;
   final Map<FavoriteTypeFilter, int> _rowFetchedCounts = {};
+  int _watchlistPages = 0;
 
   bool get hasMoreGrid => _gridFetchedCount < _gridTotalCount;
 
@@ -177,6 +181,7 @@ class FavoritesViewModel extends ChangeNotifier {
     _rowItems = {};
     _rowTotalCounts.clear();
     _rowFetchedCounts.clear();
+    _watchlistPages = 0;
     _gridItems = const [];
     _gridTotalCount = 0;
     _gridFetchedCount = 0;
@@ -211,6 +216,7 @@ class FavoritesViewModel extends ChangeNotifier {
     FavoriteTypeFilter type, {
     int startIndex = 0,
   }) async {
+    if (type == FavoriteTypeFilter.watchlist) return _fetchWatchlist();
     try {
       final sortValue = _sortBy.apiValue;
       final sortOrder = _sortDirection == SortDirection.ascending
@@ -262,6 +268,71 @@ class FavoritesViewModel extends ChangeNotifier {
       return (withoutBlockedItems(items), totalCount);
     } catch (_) {
       return (const <AggregatedItem>[], 0);
+    }
+  }
+
+  /// The next page of the watchlist. Silo's first page leads with the
+  /// titles the library has; the rest come from the requests watchlist
+  /// (Seerr's, or Silo's titles the library lacks) as request cards.
+  Future<(List<AggregatedItem>, int)> _fetchWatchlist() async {
+    final type = FavoriteTypeFilter.watchlist;
+    final library = <AggregatedItem>[];
+    if (_client.serverType == ServerType.silo && _watchlistPages == 0) {
+      try {
+        // Every library title, 200 at a time.
+        const pageSize = 200;
+        for (var start = 0; ; start += pageSize) {
+          final response = await _client.itemsApi.getItems(
+            recursive: true,
+            filters: const ['IsInWatchlist'],
+            includeItemTypes: const ['Movie', 'Series'],
+            startIndex: start,
+            limit: pageSize,
+            fields: _browseFields,
+          );
+          final raws = (response['Items'] as List? ?? const [])
+              .cast<Map<String, dynamic>>();
+          library.addAll(
+            withoutBlockedItems([
+              for (final raw in raws)
+                AggregatedItem(
+                  id: raw['Id']?.toString() ?? '',
+                  serverId: _client.baseUrl,
+                  rawData: raw,
+                ),
+            ]),
+          );
+          if (raws.length < pageSize) break;
+        }
+      } catch (_) {}
+      _rowFetchedCounts[type] = library.length;
+    }
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return (library, library.length);
+      final page = await repo.getWatchlist(page: _watchlistPages + 1);
+      _watchlistPages = page.page;
+      final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
+      _rowFetchedCounts[type] = fetched;
+      final items = [
+        ...library,
+        for (final item in page.results)
+          AggregatedItem(
+            id: item.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': item.displayTitle,
+              'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+              'PosterPath': item.posterPath ?? '',
+              'BackdropPath': item.backdropPath ?? '',
+              'SeerrMediaType': item.mediaType,
+            },
+          ),
+      ];
+      return (items, page.page < page.totalPages ? fetched + 1 : fetched);
+    } catch (_) {
+      return (library, library.length);
     }
   }
 

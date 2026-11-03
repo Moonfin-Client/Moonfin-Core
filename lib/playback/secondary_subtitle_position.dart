@@ -16,6 +16,10 @@ double mpvPrimaryStackingAnchor(int alignment, {double margin = 0.04}) =>
 /// subtitle layout canvas.
 const double mpvSecondarySubtitleGap = 8 / 720;
 
+/// mpv's text size for a saved [fontSize], on the same 720-line canvas.
+double mpvSubtitleFontSize(double fontSize) =>
+    (fontSize / 24.0 * 55.0).clamp(24.0, 120.0);
+
 /// Returns the secondary subtitle's top edge as a fraction of the height. Place it
 /// below a top-aligned primary and above a middle- or bottom-aligned primary. The
 /// caller adds secondaryHeight to get the bottom edge required by mpv.

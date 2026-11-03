@@ -84,11 +84,12 @@ class _PlaybackCategoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              if (canToggleGameBackend || usesNativeGameBackend) ...[
+              if ((canToggleGameBackend && _gamesOnAnyServer) ||
+                  usesNativeGameBackend) ...[
                 _SectionHeader(l10n.games),
                 adaptiveListSection(
                   children: [
-                    if (canToggleGameBackend)
+                    if (canToggleGameBackend && _gamesOnAnyServer)
                       SwitchPreferenceTile(
                         preference: UserPreferences.useNativeEmulator,
                         title: l10n.useNativeEmulator,
@@ -107,7 +108,9 @@ class _PlaybackCategoryScreen extends StatelessWidget {
                           GamePlaybackOrientation.auto => l10n.auto,
                         },
                       ),
-                    if (supportsCoreDownloads && usesNativeGameBackend)
+                    if (supportsCoreDownloads &&
+                        usesNativeGameBackend &&
+                        _gamesOnAnyServer)
                       _TvSettingsListTile(
                         leading: const Icon(Icons.videogame_asset),
                         title: Text(l10n.emulatorCores),
@@ -155,3 +158,9 @@ class _PlaybackCategoryScreen extends StatelessWidget {
     );
   }
 }
+
+/// Retro games come from the Moonfin plugin's game libraries, so the emulator
+/// switch and cores aren't offered when no signed-in server could have it
+/// (all Silo, say). Downloaded games stay manageable either way.
+bool get _gamesOnAnyServer =>
+    anySignedInServerSupports((f) => f.supportsFullMoonfinPlugin);

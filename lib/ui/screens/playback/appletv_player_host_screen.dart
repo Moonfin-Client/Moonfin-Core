@@ -13,6 +13,8 @@ import 'package:server_core/server_core.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/chapter_markers.dart';
+import '../../../data/utils/server_trickplay.dart';
+import '../../../data/utils/trickplay_headers.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/services/media_segment_service.dart';
@@ -575,14 +577,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       );
       timestampsMs = const [];
     }
-    final token = client.accessToken;
     return {
       'urls': urls,
       if (timestampsMs.isNotEmpty) 'timestampsMs': timestampsMs,
-      'headers': {
-        if (token != null && token.isNotEmpty)
-          'Authorization': 'MediaBrowser Token="$token"',
-      },
+      'headers': trickplayImageHeaders(client, withUserAgent: false),
       'width': info.width,
       'height': info.height,
       'cols': info.tileWidth,
@@ -931,6 +929,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   List<Map<String, dynamic>> _currentChapters() => chaptersForItem(
     _manager?.queueService.currentItem,
     _manager?.currentOfflineMetadata,
+    mediaSourceId: _manager?.currentResolution?.mediaSourceId,
   );
 
   /// Hands the current item's chapter starts to the manager, which steps
@@ -1015,10 +1014,13 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }
 
     final raw = _rawDataForQueueItem(item);
+    final client = _clientForQueueItem(item);
+    if (raw != null && client != null) {
+      await mergeServerTrickplay(client, itemId, raw, mediaSourceId);
+    }
     var info = raw == null
         ? null
         : TrickplayInfo.fromItemData(raw, mediaSourceId: mediaSourceId);
-    final client = _clientForQueueItem(item);
     if (info == null && client?.trickplayApi != null) {
       try {
         final thumbnailSet = await client!.trickplayApi!.getThumbnailSet(

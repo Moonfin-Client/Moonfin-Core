@@ -764,7 +764,7 @@ class NouveauCollectionSectionState
     showContextMenu(
       context,
       item,
-      collectionRemoval: _isBoxSet
+      collectionRemoval: _vm.canRemoveFromCollection
           ? CollectionRemovalContext(
               collectionName: _vm.item?.name ?? '',
               remove: _vm.removeFromCollection,

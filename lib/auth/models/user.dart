@@ -38,6 +38,18 @@ class PrivateUser extends User {
   @override
   final bool canManageLiveTv;
 
+  /// On Silo, the account this user belongs to. A Silo login belongs to an
+  /// account, and the Moonfin user is one of its household profiles. The
+  /// stored tokens are keyed by it. Null on Jellyfin and Emby.
+  final String? siloAccountId;
+
+  bool get isSiloProfile => siloAccountId != null;
+
+  /// On Silo, whether the profile is locked with a PIN, so acting as it needs
+  /// the PIN entered in this login. As Silo said when the household was last
+  /// read. False on Jellyfin and Emby.
+  final bool siloHasPin;
+
   const PrivateUser({
     required this.id,
     required this.name,
@@ -51,6 +63,8 @@ class PrivateUser extends User {
     this.canManageSubtitles = false,
     this.canManageCollections = false,
     this.canManageLiveTv = false,
+    this.siloAccountId,
+    this.siloHasPin = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -64,6 +78,10 @@ class PrivateUser extends User {
         'canManageSubtitles': canManageSubtitles,
         'canManageCollections': canManageCollections,
         'canManageLiveTv': canManageLiveTv,
+        // Only written for Silo users, so Jellyfin and Emby entries are
+        // exactly what they were.
+        if (siloAccountId != null) 'siloAccountId': siloAccountId,
+        if (siloHasPin) 'siloHasPin': true,
       };
 
   factory PrivateUser.fromJson(
@@ -85,8 +103,13 @@ class PrivateUser extends User {
       canManageSubtitles: json['canManageSubtitles'] as bool? ?? false,
       canManageCollections: json['canManageCollections'] as bool? ?? false,
       canManageLiveTv: json['canManageLiveTv'] as bool? ?? false,
+      siloAccountId: _nonEmpty(json['siloAccountId']),
+      siloHasPin: json['siloHasPin'] == true,
     );
   }
+
+  static String? _nonEmpty(Object? value) =>
+      value is String && value.isNotEmpty ? value : null;
 
   PrivateUser copyWith({
     String? id,
@@ -101,6 +124,8 @@ class PrivateUser extends User {
     bool? canManageSubtitles,
     bool? canManageCollections,
     bool? canManageLiveTv,
+    String? siloAccountId,
+    bool? siloHasPin,
   }) {
     return PrivateUser(
       id: id ?? this.id,
@@ -115,6 +140,8 @@ class PrivateUser extends User {
       canManageSubtitles: canManageSubtitles ?? this.canManageSubtitles,
       canManageCollections: canManageCollections ?? this.canManageCollections,
       canManageLiveTv: canManageLiveTv ?? this.canManageLiveTv,
+      siloAccountId: siloAccountId ?? this.siloAccountId,
+      siloHasPin: siloHasPin ?? this.siloHasPin,
     );
   }
 }

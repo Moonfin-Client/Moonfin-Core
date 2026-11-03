@@ -1,0 +1,114 @@
+{
+ "Items": [
+  {
+   "Name": "Movies",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "40",
+   "Guid": "f137a2dd21bbc1b99aa5c0f6bf02a805",
+   "Etag": "11a2b2c5d7bd2ef0d9f350227ed69ead",
+   "DateCreated": "2023-12-29T04:42:27.0000000Z",
+   "DateModified": "2026-02-15T14:54:14.0000000Z",
+   "CanDelete": false,
+   "CanDownload": false,
+   "PresentationUniqueKey": "f137a2dd21bbc1b99aa5c0f6bf02a805",
+   "SortName": "Movies",
+   "ForcedSortName": "Movies",
+   "ExternalUrls": [],
+   "Path": "Movies",
+   "Taglines": [],
+   "FileName": "Movies",
+   "RemoteTrailers": [],
+   "ProviderIds": {},
+   "IsFolder": true,
+   "ParentId": "1",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "DisplayPreferencesId": "f137a2dd21bbc1b99aa5c0f6bf02a805",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "CollectionType": "movies",
+   "ImageTags": {
+    "Primary": "2d27102f28bbf738e6e5b4c018a63371_639274654040901288"
+   },
+   "BackdropImageTags": [],
+   "LockedFields": [],
+   "LockData": false
+  },
+  {
+   "Name": "TV shows",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "41",
+   "Guid": "6c2a057148b4d7c20a207c789aba6d07",
+   "Etag": "66f419418f28a7f1ef540ab5436c2b6c",
+   "DateCreated": "2023-12-29T04:42:27.0000000Z",
+   "DateModified": "2026-02-15T14:54:14.0000000Z",
+   "CanDelete": false,
+   "CanDownload": false,
+   "PresentationUniqueKey": "6c2a057148b4d7c20a207c789aba6d07",
+   "SortName": "TV shows",
+   "ForcedSortName": "TV shows",
+   "ExternalUrls": [],
+   "Path": "TV shows",
+   "Taglines": [],
+   "FileName": "TV shows",
+   "RemoteTrailers": [],
+   "ProviderIds": {},
+   "IsFolder": true,
+   "ParentId": "1",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "DisplayPreferencesId": "6c2a057148b4d7c20a207c789aba6d07",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "CollectionType": "tvshows",
+   "ImageTags": {
+    "Primary": "d3626bc8138fbfcac8737d3c19ae5c35_639067640764235487"
+   },
+   "BackdropImageTags": [],
+   "LockedFields": [],
+   "LockData": false
+  },
+  {
+   "Name": "Audio books",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "588727",
+   "Guid": "e2ef80d0b35b4c60b12f8c26d24f0f39",
+   "Etag": "a18677ccb75381b3d975e4abb3587bda",
+   "DateCreated": "2026-01-09T18:10:18.0000000Z",
+   "DateModified": "0001-01-01T00:00:00.0000000Z",
+   "CanDelete": false,
+   "CanDownload": false,
+   "PresentationUniqueKey": "e2ef80d0b35b4c60b12f8c26d24f0f39",
+   "SortName": "Audio books",
+   "ForcedSortName": "Audio books",
+   "ExternalUrls": [],
+   "Taglines": [],
+   "RemoteTrailers": [],
+   "ProviderIds": {},
+   "IsFolder": true,
+   "ParentId": "1",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "PlaybackPositionTicks": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "DisplayPreferencesId": "e2ef80d0b35b4c60b12f8c26d24f0f39",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "CollectionType": "audiobooks",
+   "ImageTags": {
+    "Primary": "007e62c2c4c2d2d2fdd2c07d95b0862c_639271198050856714"
+   },
+   "BackdropImageTags": [],
+   "LockedFields": [],
+   "LockData": false
+  }
+ ],
+ "TotalRecordCount": 3
+}

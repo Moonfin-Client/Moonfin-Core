@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../data/models/aggregated_library.dart';
 import '../ui/navigation/destinations.dart';
 
 /// Shared helpers for recognizing and navigating to retro-game (ROM) libraries so every
@@ -114,6 +115,24 @@ String libraryRoute(
 }
 
 const IconData gameLibraryIcon = Icons.sports_esports;
+
+/// The icon for a library's type, shared by Library Order and the nav buttons.
+IconData libraryIcon(AggregatedLibrary library) {
+  if (isGameLibrary(library.id, library.collectionType, library.name)) {
+    return gameLibraryIcon;
+  }
+  return switch (library.collectionType.toLowerCase()) {
+    'movies' => Icons.movie_rounded,
+    'tvshows' => Icons.tv_rounded,
+    'music' => Icons.music_note_rounded,
+    'books' || 'audiobooks' => Icons.menu_book_rounded,
+    'livetv' => Icons.live_tv_rounded,
+    'homevideos' || 'photos' => Icons.photo_library_rounded,
+    'boxsets' => Icons.collections_bookmark_rounded,
+    'playlists' => Icons.playlist_play_rounded,
+    _ => Icons.video_library_rounded,
+  };
+}
 
 /// A game's art, served by the Moonbase plugin. Null on a server without the games API.
 ///

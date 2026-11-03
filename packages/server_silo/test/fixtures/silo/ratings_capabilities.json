@@ -1,0 +1,15 @@
+{
+ "revision": "ceec5974e65c42cee26364f14f4e283c6306987bb40493431474cb573bb5cebe",
+ "state": "available",
+ "allowed": true,
+ "sources": [
+  {
+   "source": "imdb",
+   "name": "IMDb"
+  },
+  {
+   "source": "tmdb",
+   "name": "TMDB"
+  }
+ ]
+}

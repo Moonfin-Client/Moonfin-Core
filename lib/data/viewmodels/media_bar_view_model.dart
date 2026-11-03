@@ -51,7 +51,7 @@ class MediaBarViewModel extends ChangeNotifier {
 
   Future<void> ensureRatings(String itemId) async {
     if (itemId.isEmpty) return;
-    if (!_prefs.get(UserPreferences.enableAdditionalRatings)) return;
+    if (!_prefs.get(UserPreferences.mediaBarEnableAdditionalRatings)) return;
     if (_ratings.containsKey(itemId)) return;
     if (!_ratingsInFlight.add(itemId)) return;
     try {
@@ -239,7 +239,7 @@ class MediaBarViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadRatings(List<MediaBarSlideItem> items) async {
-    if (!_prefs.get(UserPreferences.enableAdditionalRatings)) return;
+    if (!_prefs.get(UserPreferences.mediaBarEnableAdditionalRatings)) return;
 
     await Future.wait(
       items.map((item) async {

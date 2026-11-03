@@ -1,0 +1,18 @@
+{
+ "items": [
+  {
+   "id": "1",
+   "name": "Movies",
+   "type": "movies",
+   "sort_order": 1,
+   "poster_url": "/api/v2/artwork/library-posters/1.png?exp=SCRUBBED&sig=SCRUBBED"
+  },
+  {
+   "id": "3",
+   "name": "TV Shows",
+   "type": "series",
+   "sort_order": 2,
+   "poster_url": "/api/v2/artwork/library-posters/3.png?exp=SCRUBBED&sig=SCRUBBED"
+  }
+ ]
+}

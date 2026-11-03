@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:server_core/server_core.dart';
 
-import '../image_source.dart';
-import '../paced_network_image.dart';
 import '../unread_badge.dart';
 import 'bottom_nav_metrics.dart';
+import '../user_avatar_image.dart';
 
 /// What a bar style needs to draw one cell, with no services behind it, so
 /// the setup wizard can draw the real bars from sample data.
@@ -147,20 +145,7 @@ class BottomNavAvatar extends StatelessWidget {
       ),
       child: ClipOval(
         clipBehavior: AppColorScheme.isPixel ? Clip.none : Clip.antiAlias,
-        child: url == null
-            ? fallback
-            : Image(
-                image: ResizeImage.resizeIfNeeded(
-                  ArtworkDecode.widthFor(
-                    size,
-                    MediaQuery.devicePixelRatioOf(context),
-                  ),
-                  null,
-                  PacedNetworkImage(url, headers: serverImageHeaders),
-                ),
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => fallback,
-              ),
+        child: UserAvatarImage(url: url, size: size, fallback: fallback),
       ),
     );
   }

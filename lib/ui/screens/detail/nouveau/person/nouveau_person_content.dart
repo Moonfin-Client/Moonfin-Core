@@ -11,6 +11,7 @@ import '../../../../../util/seerr_credits.dart';
 import '../shared/nouveau_segmented_selector.dart';
 import 'nouveau_filmography_section.dart';
 import 'nouveau_seerr_filmography_section.dart';
+import '../../../../../preference/seerr_preferences.dart';
 
 enum _PersonTab {
   movies,
@@ -214,8 +215,8 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
       _PersonTab.series => l10n.series,
       _PersonTab.guestAppearances => l10n.guestAppearances,
       _PersonTab.musicVideos => l10n.musicVideos,
-      _PersonTab.crew => l10n.crewContributionsSeerr,
-      _PersonTab.appearances => l10n.appearancesSeerr,
+      _PersonTab.crew => seerrBrand(l10n.crewContributionsSeerr),
+      _PersonTab.appearances => seerrBrand(l10n.appearancesSeerr),
       _PersonTab.all => l10n.appearances,
     };
   }

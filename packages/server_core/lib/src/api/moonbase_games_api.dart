@@ -293,12 +293,15 @@ class MoonbaseGamesApi implements GamesApi {
   }) {
     final params = <String, String>{
       'core': core,
-      // Arcade cores identify a set by its ZIP filename. Other systems retain
+      // Arcade cores identify a set by its ZIP filename, and the PlayStation
+      // core only opens a .pbp whose name ends in .pbp. Other systems retain
       // the legacy token-only route so their request behavior does not change.
       'rom': _romUrl(
         libraryId,
         gameId,
-        fileName: core == 'mame' || core == 'arcade' ? romFileName : null,
+        fileName: core == 'mame' || core == 'arcade' || core == 'psx'
+            ? romFileName
+            : null,
       ),
     };
     if (biosId != null && biosId.isNotEmpty) {

@@ -1,0 +1,109 @@
+{
+ "items": [
+  {
+   "content_id": "episode-imdb-tt1641384-1-1",
+   "season_number": 1,
+   "episode_number": 1,
+   "title": "Independence Day",
+   "overview": "Robin, Aqualad, and Kid Flash break into Cadmus and find that it is being run by Genomorphs.",
+   "air_date": "2010-11-26",
+   "runtime": 25,
+   "tmdb_id": "775046",
+   "tvdb_id": "3179501",
+   "still_is_episode_still": true,
+   "still_url": "/api/v2/artwork/tvdb/series/192061/seasons/1/episodes/1/still/w300.4eab405ffd184791c20c933b5723058f120ff17a3915d44774a4349bc78ab1bf.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "still_thumbhash": "EhgKHIbe/Kg4VXaWd4o/NNA0BQ==",
+   "files": [
+    {
+     "file_id": "89618",
+     "resolution": "1080p",
+     "codec_video": "hevc",
+     "hdr": false,
+     "audio_channels": 2,
+     "container": "mkv",
+     "file_size": 408765775
+    }
+   ],
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "EAC3",
+    "audio_channels": "Stereo",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "HDTV",
+    "multi_sub": true
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt1641384-1-2",
+   "season_number": 1,
+   "episode_number": 2,
+   "title": "Fireworks",
+   "overview": "The sidekicks find a clone of Superman known as Superboy. They free him from Cadmus' control, while battling Blockbuster.",
+   "air_date": "2010-11-26",
+   "runtime": 25,
+   "tmdb_id": "775042",
+   "tvdb_id": "3210051",
+   "still_is_episode_still": true,
+   "still_url": "/api/v2/artwork/tvdb/series/192061/seasons/1/episodes/2/still/w300.bf5fd03183a0524fb6cd86175edbad4ec48521e7c110e9bb94ff3c095b926ff3.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "still_thumbhash": "yPcJDIBXVwl1eHd2iHd4f2f6Zw==",
+   "files": [
+    {
+     "file_id": "89621",
+     "resolution": "1080p",
+     "codec_video": "hevc",
+     "hdr": false,
+     "audio_channels": 2,
+     "container": "mkv",
+     "file_size": 319734649
+    }
+   ],
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "EAC3",
+    "audio_channels": "Stereo",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "HDTV",
+    "multi_sub": true
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt1641384-1-3",
+   "season_number": 1,
+   "episode_number": 3,
+   "title": "Welcome to Happy Harbor",
+   "overview": "After Speedy declines to join the new team, Robin, Aqualad and Kid Flash fear Young Justice is just a big joke…while new member Miss Martian fears there's no room for her to be part of it. So when the four heroes and Superboy come up against Mister Twister, it looks like all their fears have just been realized…",
+   "air_date": "2011-01-21",
+   "runtime": 25,
+   "tmdb_id": "775039",
+   "tvdb_id": "3417531",
+   "still_is_episode_still": true,
+   "still_url": "/api/v2/artwork/tvdb/series/192061/seasons/1/episodes/3/still/w300.8d48d982b7aa9ec2bdc16c9f631f8b07105a7c4ec70e53463e04246a760d989f.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "still_thumbhash": "SggGDIKvnLuclHlohXn3iCoDyA==",
+   "files": [
+    {
+     "file_id": "89624",
+     "resolution": "1080p",
+     "codec_video": "hevc",
+     "hdr": false,
+     "audio_channels": 2,
+     "container": "mkv",
+     "file_size": 415283823
+    }
+   ],
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "EAC3",
+    "audio_channels": "Stereo",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "HDTV",
+    "multi_sub": true
+   }
+  }
+ ]
+}

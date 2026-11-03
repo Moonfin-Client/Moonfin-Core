@@ -1,11 +1,11 @@
 name: moonfin
 description: "Moonfin - Jellyfin & Emby media client for mobile, tablet, and desktop"
 publish_to: 'none'
-version: 2.7.0+30000154
+version: 3.0.0+30000156
 
 moonfin:
-  android_tv_version: 2.7.0
-  android_tv_build_number: 2000021
+  android_tv_version: 3.0.0
+  android_tv_build_number: 2000023
   beta: false
   beta_number: 1
 
@@ -132,6 +132,8 @@ dependencies:
     path: packages/server_emby
   server_plex:
     path: packages/server_plex
+  server_silo:
+    path: packages/server_silo
   playback_core:
     path: packages/playback_core
   playback_jellyfin:
@@ -140,6 +142,8 @@ dependencies:
     path: packages/playback_emby
   playback_plex:
     path: packages/playback_plex
+  playback_silo:
+    path: packages/playback_silo
   moonfin_design:
     path: packages/design
   jellyfin_preference:

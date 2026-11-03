@@ -24,6 +24,10 @@ const double kTvDesignWidth = 1150;
 /// The scale a 1920 wide panel is driven at on [kTvDesignWidth].
 const double kTvTargetScale = 1920 / kTvDesignWidth;
 
+/// A length measured in px on a 1920 wide panel, as a length on the design
+/// canvas.
+double tvPx(double px) => px / kTvTargetScale;
+
 /// How much to magnify the design canvas to fill a panel [realWidth] points
 /// across. One means the panel is already the design canvas.
 double tvUiScaleFor(double realWidth) =>

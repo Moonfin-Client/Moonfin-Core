@@ -810,6 +810,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -818,7 +823,7 @@ jobs:
         run: |
           mkdir -p /tmp/test-results
           status=0
-          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex"
+          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
 
           flutter pub get
           for pkg in $packages; do
@@ -836,6 +841,9 @@ jobs:
             (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
           done
 
+          # gradlew is gitignored, and only a Flutter build writes it.
+          (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+
           echo "$status" > /tmp/test-results/run-status
 
       - name: Summarize results
@@ -845,6 +853,7 @@ jobs:
           import glob
           import json
           import os
+          import xml.etree.ElementTree as ET
 
           passed = failed = 0
           failures = []
@@ -867,6 +876,18 @@ jobs:
                       else:
                           failed += 1
                           failures.append(f"{suite}: {names.get(event.get('testID'), '?')}")
+
+          # Gradle writes its results under the repo root build directory.
+          for path in sorted(glob.glob('build/*/test-results/*/TEST-*.xml')):
+              suite = 'kotlin-' + path.split('/')[1]
+              for case in ET.parse(path).getroot().iter('testcase'):
+                  if case.find('skipped') is not None:
+                      continue
+                  if case.find('failure') is None and case.find('error') is None:
+                      passed += 1
+                  else:
+                      failed += 1
+                      failures.append(f"{suite}: {case.get('classname', '?').rsplit('.', 1)[-1]}.{case.get('name', '?')}")
 
           analyzer = []
           try:
@@ -911,12 +932,126 @@ jobs:
           sys.exit(1 if bad else 0)
           EOF
 
+  # The XCTest targets for the native iOS and macOS code, which flutter test
+  # can't reach. tvOS has no test target of its own.
+  apple-tests:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Select Xcode 26.3
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+
+      # No libretro cores are fetched here, so the game host pod vendors none
+      # and the app links for the simulator.
+      - name: Run XCTests
+        run: |
+          mkdir -p "$RUNNER_TEMP/apple-tests"
+          status=0
+          flutter pub get
+
+          flutter build ios --debug --simulator --config-only
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devices = json.load(sys.stdin)['devices']
+          print(next(d['udid'] for runtime, entries in sorted(devices.items(), reverse=True)
+                     if 'iOS' in runtime for d in entries if d['name'].startswith('iPhone')))
+          ")
+          xcodebuild test -workspace ios/Runner.xcworkspace -scheme Runner -configuration Debug \
+            -destination "id=$DEVICE" -clonedSourcePackagesDirPath build/ios/SourcePackages \
+            -resultBundlePath "$RUNNER_TEMP/apple-tests/ios.xcresult" \
+            CODE_SIGNING_ALLOWED=NO || status=1
+
+          flutter build macos --debug --config-only
+          xcodebuild test -workspace macos/Runner.xcworkspace -scheme Runner -configuration Debug \
+            -destination platform=macOS -clonedSourcePackagesDirPath build/macos/SourcePackages \
+            -resultBundlePath "$RUNNER_TEMP/apple-tests/macos.xcresult" \
+            CODE_SIGNING_ALLOWED=NO || status=1
+
+          echo "$status" > "$RUNNER_TEMP/apple-tests/run-status"
+
+      - name: Summarize results
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob
+          import json
+          import os
+          import subprocess
+
+          root = os.environ['RUNNER_TEMP'] + '/apple-tests'
+          passed = failed = 0
+          failures = []
+
+          def walk(node, suite, platform):
+              global passed, failed
+              if node.get('nodeType') == 'Test Suite':
+                  suite = node.get('name', suite)
+              if node.get('nodeType') == 'Test Case':
+                  if node.get('result') == 'Passed':
+                      passed += 1
+                  elif node.get('result') == 'Failed':
+                      failed += 1
+                      failures.append(f"{platform}: {suite}.{node.get('name', '?')}")
+              for child in node.get('children', []):
+                  walk(child, suite, platform)
+
+          for path in sorted(glob.glob(root + '/*.xcresult')):
+              platform = os.path.basename(path)[:-9]
+              report = subprocess.run(
+                  ['xcrun', 'xcresulttool', 'get', 'test-results', 'tests', '--path', path],
+                  capture_output=True, text=True)
+              if report.returncode == 0:
+                  for node in json.loads(report.stdout).get('testNodes', []):
+                      walk(node, '?', platform)
+
+          try:
+              run_status = int(open(root + '/run-status').read().strip())
+          except (FileNotFoundError, ValueError):
+              run_status = 1
+
+          out = {
+              'passed': passed,
+              'failed': failed,
+              'failures': failures[:50],
+              'more_failures': max(0, len(failures) - 50),
+              'run_status': run_status,
+          }
+          with open(root + '/test-results.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k != 'failures'}))
+          EOF
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-test-results
+          path: ${{ runner.temp }}/apple-tests/test-results.json
+
+      - name: Gate on failures
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import json
+          import os
+          import sys
+          results = json.load(open(os.environ['RUNNER_TEMP'] + '/apple-tests/test-results.json'))
+          sys.exit(1 if results['failed'] or results['run_status'] else 0)
+          EOF
+
   # What the PR Comment workflow reads to build its comment. always() keeps this
   # running when a platform job fails, which is the case the comment most needs
   # to report.
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
-    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests]
+    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests, apple-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Write outcomes.json
@@ -933,7 +1068,8 @@ jobs:
             "windows_arm64": "${{ needs.windows-arm64.result }}",
             "linux": "${{ needs.linux.result }}",
             "web": "${{ needs.web.result }}",
-            "tests": "${{ needs.tests.result }}"
+            "tests": "${{ needs.tests.result }}",
+            "apple_tests": "${{ needs.apple-tests.result }}"
           }
           EOF
 

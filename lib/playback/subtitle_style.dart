@@ -190,10 +190,17 @@ class SubtitleStyle {
     ),
   );
 
-  factory SubtitleStyle.resolve(UserPreferences prefs, {required bool isHdr}) {
-    final useHdr = isHdr && prefs.get(UserPreferences.subtitlesHdrSeparate);
-    T pick<T>(Preference<T> base, Preference<T> hdr) =>
-        prefs.get(useHdr ? hdr : base);
+  factory SubtitleStyle.resolve(UserPreferences prefs, {required bool isHdr}) =>
+      SubtitleStyle.read(prefs.get, isHdr: isHdr);
+
+  /// Like [SubtitleStyle.resolve], with each value taken from [get], so the
+  /// settings preview can draw an option before it's saved.
+  factory SubtitleStyle.read(
+    T Function<T>(Preference<T> preference) get, {
+    required bool isHdr,
+  }) {
+    final useHdr = isHdr && get(UserPreferences.subtitlesHdrSeparate);
+    T pick<T>(Preference<T> base, Preference<T> hdr) => get(useHdr ? hdr : base);
 
     return SubtitleStyle(
       textColor: pick(

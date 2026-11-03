@@ -316,6 +316,12 @@ abstract class AppLocalizations {
   /// **'Sign In'**
   String get signIn;
 
+  /// Shown under the user list while a tapped user is being signed in
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in...'**
+  String get signingIn;
+
   /// Label indicating a section or category is empty
   ///
   /// In en, this message translates to:
@@ -447,6 +453,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Who\'s watching?'**
   String get whosWatching;
+
+  /// Status under a user on the Who's watching screen when this device already has their session
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in on this device'**
+  String get signedInOnThisDevice;
+
+  /// Status under a user or account that asks for a PIN before signing in
+  ///
+  /// In en, this message translates to:
+  /// **'PIN required'**
+  String get pinRequired;
+
+  /// Status under a user on the Who's watching screen who needs a password to sign in
+  ///
+  /// In en, this message translates to:
+  /// **'Password required'**
+  String get passwordRequired;
+
+  /// Phone button that signs in as the selected user on the Who's watching screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as {name}'**
+  String continueAsUser(String name);
+
+  /// Phone button in the Switch User sheet that switches to the selected account
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to {name}'**
+  String switchToUser(String name);
+
+  /// Line at the top of the Switch User screen naming the current account and its server
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {user} on {server}'**
+  String signedInAsOnServer(String user, String server);
+
+  /// Marks the account that is signed in now in the Switch User screen
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get accountActive;
 
   /// Button to add a new user on the server screen
   ///
@@ -583,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -783,6 +831,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Minimalist'**
   String get detailScreenStyleMinimalist;
+
+  /// Detail screen style option: the poster leads, with play under it and the details beside it
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get detailScreenStyleStage;
+
+  /// Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get detailScreenStylePremiere;
+
+  /// Detail screen style option: a drawer over the screen the title was picked on, instead of a full page
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get detailScreenStyleQuickLook;
+
+  /// Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get detailScreenStyleFrost;
+
+  /// Button at the foot of the Quick Look drawer that opens the title's full details page
+  ///
+  /// In en, this message translates to:
+  /// **'Open full page'**
+  String get quickLookOpenFullPage;
+
+  /// Hint on the Quick Look drawer telling a TV viewer that the Back button closes it
+  ///
+  /// In en, this message translates to:
+  /// **'Back to close'**
+  String get quickLookBackToClose;
+
+  /// How many of a season's episodes have been watched, on a season card in the Quick Look drawer
+  ///
+  /// In en, this message translates to:
+  /// **'{played} of {total}'**
+  String quickLookSeasonPlayed(int played, int total);
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -2206,10 +2296,10 @@ abstract class AppLocalizations {
   /// **'Comic'**
   String get bookFormatComic;
 
-  /// Placeholder when no books are found for an author
+  /// Title shown when a books library has no items
   ///
   /// In en, this message translates to:
-  /// **'No books found for this author.'**
+  /// **'No Books Found'**
   String get noBooksFound;
 
   /// Description shown when a books library has no items
@@ -5734,6 +5824,24 @@ abstract class AppLocalizations {
   /// **'Heavy'**
   String get seasonalDensityHeavy;
 
+  /// Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home
+  ///
+  /// In en, this message translates to:
+  /// **'Focus Follower'**
+  String get seasonalFollower;
+
+  /// Subtitle for the Focus Follower setting in the TV layout
+  ///
+  /// In en, this message translates to:
+  /// **'A holiday piece, like Halloween\'s planchette, follows what you select on Home'**
+  String get seasonalFollowerDescription;
+
+  /// Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer
+  ///
+  /// In en, this message translates to:
+  /// **'A holiday piece, like Halloween\'s planchette, replaces the mouse pointer on Home'**
+  String get seasonalFollowerPointerDescription;
+
   /// Name of the Home row that shows holiday movies
   ///
   /// In en, this message translates to:
@@ -8068,6 +8176,18 @@ abstract class AppLocalizations {
   /// **'Show Libraries in Toolbar'**
   String get showLibrariesInToolbar;
 
+  /// Setting that puts each library in the navigation bar as its own button instead of grouping them under the Libraries menu
+  ///
+  /// In en, this message translates to:
+  /// **'Show Libraries Individually'**
+  String get showLibrariesIndividually;
+
+  /// Subtitle for the Show Libraries Individually setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show each library as its own button in the navigation bar instead of in the Libraries menu'**
+  String get showLibrariesIndividuallySubtitle;
+
   /// Setting to keep every top navbar heading's text label visible at all times, tvOS-style
   ///
   /// In en, this message translates to:
@@ -9424,6 +9544,12 @@ abstract class AppLocalizations {
   /// **'Server plugin is not currently detected. Local settings still use their saved values or built-in defaults.'**
   String get pluginNotDetectedDescription;
 
+  /// Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonbase Address'**
+  String get moonbaseAddress;
+
   /// Status line on the Settings Sync screen when the server plugin answers
   ///
   /// In en, this message translates to:
@@ -9640,17 +9766,35 @@ abstract class AppLocalizations {
   /// **'Include missing items on Collection pages'**
   String get showMissingCollectionItemsDesc;
 
-  /// Setting title for showing Seerr availability badges on media details pages
+  /// Setting title for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
   /// **'Show Seerr Availability Badges'**
   String get showSeerrAvailabilityBadges;
 
-  /// Setting description for showing Seerr availability badges on media details pages
+  /// Setting description for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
-  /// **'Show season availability badges on media details pages'**
+  /// **'Show the Seerr status on posters and seasons across the app'**
   String get showSeerrAvailabilityBadgesDescription;
+
+  /// Setting title for how posters show their Seerr status
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Style'**
+  String get seerrBadgeStyle;
+
+  /// Setting description for the Seerr badge style choices
+  ///
+  /// In en, this message translates to:
+  /// **'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.'**
+  String get seerrBadgeStyleDescription;
+
+  /// Seerr badge style that shows a status dot in a poster corner
+  ///
+  /// In en, this message translates to:
+  /// **'Badge'**
+  String get seerrBadgeStyleBadge;
 
   /// Header for the Seerr notifications settings section
   ///
@@ -18871,7 +19015,7 @@ abstract class AppLocalizations {
   /// Participant count label shown in SyncPlay UI
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, one {# participant} other {# participants}}'**
+  /// **'{count, plural, one {{count} participant} other {{count} participants}}'**
   String syncPlayParticipantCount(int count);
 
   /// No description provided for @syncPlayIgnoreWait.
@@ -21064,6 +21208,18 @@ abstract class AppLocalizations {
   /// **'Skip the profile 8 conversion and strip Dolby Vision profile 7 streams to HDR10-compatible HEVC. Use this if converted streams look wrong.'**
   String get mapDolbyVisionP7Subtitle;
 
+  /// Setting title: drop the Dolby Vision layer from videos that carry both Dolby Vision and HDR10+
+  ///
+  /// In en, this message translates to:
+  /// **'Play Dolby Vision with HDR10+ as HDR10+'**
+  String get stripDolbyVisionHdr10PlusTitle;
+
+  /// Setting subtitle for dropping Dolby Vision from Dolby Vision plus HDR10+ videos
+  ///
+  /// In en, this message translates to:
+  /// **'Drop the Dolby Vision layer from videos that also have HDR10+. Turn this on if those videos play with sound but a black screen.'**
+  String get stripDolbyVisionHdr10PlusSubtitle;
+
   /// Setting title: apply colours/positioning from the subtitle track
   ///
   /// In en, this message translates to:
@@ -22293,6 +22449,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watch with group'**
   String get watchWithGroup;
+
+  /// The Watch Party host's subtitle choice for the whole group
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles for everyone'**
+  String get watchPartyGroupSubtitles;
+
+  /// Watch Party subtitle option that leaves subtitles to each member
+  ///
+  /// In en, this message translates to:
+  /// **'Each person\'s choice'**
+  String get watchPartyOwnSubtitles;
+
+  /// Watch Party status while nothing plays
+  ///
+  /// In en, this message translates to:
+  /// **'In the lobby'**
+  String get watchPartyLobby;
+
+  /// Label over the title a Watch Party host has staged
+  ///
+  /// In en, this message translates to:
+  /// **'Up next'**
+  String get watchPartyUpNextLabel;
+
+  /// Heading over a Watch Party host's room switches
+  ///
+  /// In en, this message translates to:
+  /// **'Room settings'**
+  String get watchPartyRoomSettings;
+
+  /// Join box on the Watch Party screen
+  ///
+  /// In en, this message translates to:
+  /// **'Room code or invite link'**
+  String get watchPartyCodeOrLink;
+
+  /// Host button that copies a Watch Party invite link
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invite link'**
+  String get watchPartyCopyInvite;
+
+  /// Snackbar after copying a Watch Party invite link
+  ///
+  /// In en, this message translates to:
+  /// **'Invite link copied'**
+  String get watchPartyInviteCopied;
+
+  /// Host switch that turns a Watch Party into a vote on movies
+  ///
+  /// In en, this message translates to:
+  /// **'Let everyone vote on movies'**
+  String get watchPartyLetEveryoneVote;
+
+  /// Under the host's vote list in a Watch Party
+  ///
+  /// In en, this message translates to:
+  /// **'Add movies for everyone to vote on, then play the one you want. TV episodes are still your pick.'**
+  String get watchPartyVoteHelp;
+
+  /// Under a guest's vote list in a Watch Party
+  ///
+  /// In en, this message translates to:
+  /// **'Vote for what you want to watch. The host plays one.'**
+  String get watchPartyGuestVoteHelp;
+
+  /// Hint in the host's movie search in a Watch Party vote
+  ///
+  /// In en, this message translates to:
+  /// **'Search movies'**
+  String get watchPartySearchMovies;
+
+  /// Shown when a Watch Party vote has no movies
+  ///
+  /// In en, this message translates to:
+  /// **'No movies to vote on yet.'**
+  String get watchPartyNoSuggestions;
+
+  /// Snackbar after the host adds a movie to the Watch Party vote
+  ///
+  /// In en, this message translates to:
+  /// **'Added to the Watch Party vote'**
+  String get watchPartySuggested;
+
+  /// How many votes a movie has in a Watch Party vote
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} vote} other {{count} votes}}'**
+  String watchPartyVoteCount(int count);
+
+  /// Title of Silo's Watch Party screen
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Party'**
+  String get watchParty;
+
+  /// Shown when the Silo server has no Watch Party rooms
+  ///
+  /// In en, this message translates to:
+  /// **'This server doesn\'t offer Watch Party.'**
+  String get watchPartyUnavailable;
+
+  /// Label for a Watch Party room's join code
+  ///
+  /// In en, this message translates to:
+  /// **'Room code'**
+  String get watchPartyRoomCode;
+
+  /// Button that opens a new Watch Party room
+  ///
+  /// In en, this message translates to:
+  /// **'Start a Watch Party'**
+  String get watchPartyStart;
+
+  /// How a Watch Party host picks what to watch
+  ///
+  /// In en, this message translates to:
+  /// **'Open a title and choose Watch with group to pick what everyone watches.'**
+  String get watchPartyPickTitle;
+
+  /// Shown to Watch Party guests before anything is picked
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the host to pick something.'**
+  String get watchPartyWaitingForHost;
+
+  /// Under a Watch Party room's code
+  ///
+  /// In en, this message translates to:
+  /// **'Others join with this code from their Watch Party screen.'**
+  String get watchPartyShareCode;
+
+  /// Watch Party connection status while the room socket reconnects
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting...'**
+  String get watchPartyReconnecting;
+
+  /// After a Watch Party member's name when they are not connected
+  ///
+  /// In en, this message translates to:
+  /// **'offline'**
+  String get watchPartyOffline;
+
+  /// Host button that starts the staged item for the whole Watch Party
+  ///
+  /// In en, this message translates to:
+  /// **'Start for everyone'**
+  String get watchPartyStartForEveryone;
+
+  /// Host button that stops Watch Party playback
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the lobby'**
+  String get watchPartyBackToLobby;
+
+  /// Host switch for guest transport control in a Watch Party
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can play and pause'**
+  String get watchPartyGuestsCanPause;
+
+  /// Host button that closes the Watch Party room for everyone
+  ///
+  /// In en, this message translates to:
+  /// **'End Watch Party'**
+  String get watchPartyEnd;
+
+  /// Shown when the Watch Party room was closed
+  ///
+  /// In en, this message translates to:
+  /// **'The Watch Party has ended.'**
+  String get watchPartyEnded;
+
+  /// Snackbar after the host picks an item for the Watch Party
+  ///
+  /// In en, this message translates to:
+  /// **'Picked for the Watch Party'**
+  String get watchPartyStaged;
+
+  /// The item a Watch Party host has staged
+  ///
+  /// In en, this message translates to:
+  /// **'Up next: {title}'**
+  String watchPartyUpNext(String title);
 
   /// No description provided for @disk.
   ///
@@ -25603,6 +25945,30 @@ abstract class AppLocalizations {
   /// **'Hide the movie or episode descriptive text.'**
   String get hideHomeMediaDescriptionSubtitle;
 
+  /// Setting title to hide the playback progress bar on home screen posters
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Watch Progress'**
+  String get hideHomeWatchProgress;
+
+  /// Description for setting to hide the playback progress bar on home screen posters
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the progress bar on posters you\'ve started watching.'**
+  String get hideHomeWatchProgressSubtitle;
+
+  /// Setting title to hide the unwatched episode count badge on home screen posters
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Unwatched Count'**
+  String get hideHomeUnwatchedCount;
+
+  /// Description for setting to hide the unwatched episode count badge on home screen posters
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the badge showing how many episodes are left to watch.'**
+  String get hideHomeUnwatchedCountSubtitle;
+
   /// Header for settings section containing Continue Watching and Next Up options
   ///
   /// In en, this message translates to:
@@ -25729,6 +26095,54 @@ abstract class AppLocalizations {
   /// **'Artwork, one play button and the episodes.'**
   String get setupDetailMinimalistHint;
 
+  /// Name of the poster-led detail layout, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get setupStyleStage;
+
+  /// What the Stage detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The poster up front, with play under it and the details beside it.'**
+  String get setupDetailStageHint;
+
+  /// Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get setupStylePremiere;
+
+  /// What the Premiere detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title centered over a full screen backdrop, with everything else down the page.'**
+  String get setupDetailPremiereHint;
+
+  /// Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get setupStyleQuickLook;
+
+  /// What the Quick Look detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A drawer over the screen you were on, with play and the basics, and the full page a press away.'**
+  String get setupDetailQuickLookHint;
+
+  /// Name of the detail layout that floats the title in a glass window, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get setupStyleFrost;
+
+  /// What the Frost detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title in a glass window over its blurred art, with tabs under the buttons.'**
+  String get setupDetailFrostHint;
+
   /// Setup question asking which style the bottom navigation bar should use
   ///
   /// In en, this message translates to:
@@ -25794,6 +26208,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'And plenty more'**
   String get setupTourBulletMore;
+
+  /// Progress label at the top of each setup wizard step
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String setupStepOf(int current, int total);
+
+  /// Tag beside the option that is chosen right now in a setup wizard list
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get setupCurrent;
+
+  /// Remote control hint at the bottom of the setup wizard on TVs
+  ///
+  /// In en, this message translates to:
+  /// **'Up and down to preview · OK to choose · Back twice to skip'**
+  String get setupTvHint;
+
+  /// What the Top Bar navigation position gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Tabs across the top of the screen.'**
+  String get setupNavbarTopHint;
+
+  /// What the Left Sidebar navigation position gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A slim rail of icons down the left side.'**
+  String get setupNavbarLeftHint;
+
+  /// What the Bottom Bar navigation position gives you on phones
+  ///
+  /// In en, this message translates to:
+  /// **'Tabs along the bottom edge, in easy reach of your thumb.'**
+  String get setupNavbarBottomHint;
+
+  /// What the Moonfin media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'Large artwork with the title, details and overview laid over it.'**
+  String get setupMediaBarMoonfinHint;
+
+  /// What the MakD media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'Large artwork led by a big title logo.'**
+  String get setupMediaBarMakdHint;
+
+  /// What the Bookshelf media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'Titles shelved as book spines, with the featured one face out.'**
+  String get setupMediaBarBookshelfHint;
+
+  /// What the Gallery media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'The featured title opened up, with the next few lined up beside it.'**
+  String get setupMediaBarGalleryHint;
+
+  /// What the Banner media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'A shorter banner above your rows, so more of them fit on screen.'**
+  String get setupMediaBarBannerHint;
+
+  /// What the Aya media bar style looks like
+  ///
+  /// In en, this message translates to:
+  /// **'Artwork first in a framed panel, with your rows right underneath.'**
+  String get setupMediaBarAyaHint;
+
+  /// What turning the media bar off does to the Home screen
+  ///
+  /// In en, this message translates to:
+  /// **'No featured area. Home opens straight onto your rows.'**
+  String get setupMediaBarOffHint;
 
   /// Starts the first-run setup wizard again from settings
   ///
@@ -26711,6 +27203,84 @@ abstract class AppLocalizations {
   /// **'Controls, seeking, player buttons, and trick play'**
   String get playerSettingsSubtitle;
 
+  /// Title of the dialog shown after signing in to a Silo server with a temporary password
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password'**
+  String get siloPasswordChangeTitle;
+
+  /// Explanation in the Silo change-password dialog. The temporary password was set by the server's admin.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has a temporary password. Choose a new one to finish signing in.'**
+  String get siloPasswordChangeMessage;
+
+  /// Field label in the Silo change-password dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get siloPasswordChangeNew;
+
+  /// Field label in the Silo change-password dialog: the new password typed a second time
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get siloPasswordChangeConfirm;
+
+  /// Button in the Silo change-password dialog that saves the new password and finishes signing in
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get siloPasswordChangeSubmit;
+
+  /// Error in the Silo change-password dialog when the new password is shorter than the server allows
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Use at least 1 character} other{Use at least {count} characters}}'**
+  String siloPasswordChangeTooShort(int count);
+
+  /// Error in the Silo change-password dialog when the new password is longer than the server allows
+  ///
+  /// In en, this message translates to:
+  /// **'That password is too long'**
+  String get siloPasswordChangeTooLong;
+
+  /// Error in the Silo change-password dialog when the two new password fields differ
+  ///
+  /// In en, this message translates to:
+  /// **'The passwords don\'t match'**
+  String get siloPasswordChangeMismatch;
+
+  /// Error in the Silo change-password dialog when the new password equals the temporary one used to sign in
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a password different from the temporary one'**
+  String get siloPasswordChangeSameAsTemporary;
+
+  /// Error in the Silo change-password dialog when the request failed (network or server error)
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change the password. Try again.'**
+  String get siloPasswordChangeFailed;
+
+  /// Sign-in error for a Silo account with a temporary password when the server has password changes switched off
+  ///
+  /// In en, this message translates to:
+  /// **'This account has a temporary password, and this server doesn\'t allow changing it here. Change it in Silo\'s web app, then sign in again.'**
+  String get siloPasswordChangeUnavailable;
+
+  /// Shown on the sign-in screen when the Silo password was changed but the session could not continue
+  ///
+  /// In en, this message translates to:
+  /// **'Your password was changed. Sign in with the new password.'**
+  String get siloPasswordChangedSignInAgain;
+
+  /// Subtitle of a Home row the media server curates itself (a Silo home section), on Home and in Home settings
+  ///
+  /// In en, this message translates to:
+  /// **'From your server'**
+  String get siloServerRowSubtitle;
+
   /// Label for sorting playlist items by release date
   ///
   /// In en, this message translates to:
@@ -26848,6 +27418,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Corner'**
   String get homeScreenBackdropCorner;
+
+  /// Home Screen Backdrop option that shows the focused item's backdrop across the top half of the screen, fading into the background toward the bottom
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get homeScreenBackdropTop;
 
   /// Setting to show or hide the backdrop image behind the item details screen
   ///
@@ -27423,6 +27999,222 @@ abstract class AppLocalizations {
   /// **'Recording started, but couldn\'t request a future showing.'**
   String get unableToRequestLaterShowing;
 
+  /// Silo login screen: the toggle for signing in by approving a code from another device (Silo's name for what Jellyfin calls Quick Connect)
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with a code'**
+  String get siloCodeSignIn;
+
+  /// Silo login screen, sign in with a code: how to approve the code shown below
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR code with your phone, or go to {address} on any signed-in device and enter this code:'**
+  String siloCodeSignInInstruction(String address);
+
+  /// Silo login screen, sign in with a code, when the server gave no page address
+  ///
+  /// In en, this message translates to:
+  /// **'Enter this code in Silo on a device where you\'re signed in:'**
+  String get siloCodeSignInInstructionNoLink;
+
+  /// Silo login screen, sign in with a code: someone has looked the code up and is about to approve it
+  ///
+  /// In en, this message translates to:
+  /// **'Code found. Approve the sign-in on your other device.'**
+  String get siloCodeSignInOpened;
+
+  /// Silo login screen, sign in with a code: the person approving refused the request
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in was declined.'**
+  String get siloCodeSignInDenied;
+
+  /// Silo login screen, sign in with a code: button that shows a new code after the last one ended
+  ///
+  /// In en, this message translates to:
+  /// **'Get a new code'**
+  String get siloCodeSignInNewCode;
+
+  /// Silo login screen: the server doesn't offer sign-in with a code
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in with a code is turned off on this server.'**
+  String get siloCodeSignInOff;
+
+  /// Silo login screen: a code was approved for an account that must first replace its temporary password, which needs a password sign-in
+  ///
+  /// In en, this message translates to:
+  /// **'This account has a temporary password. Sign in with the password once to replace it.'**
+  String get siloCodeSignInPasswordChangeRequired;
+
+  /// Title of the dialog where a signed-in Silo user types the code another device shows, to sign that device in (Silo's counterpart of authorizing a Quick Connect code)
+  ///
+  /// In en, this message translates to:
+  /// **'Approve a sign-in'**
+  String get siloApproveSignIn;
+
+  /// Hint in the Silo approve-a-sign-in dialog's code field
+  ///
+  /// In en, this message translates to:
+  /// **'Code shown on the other device'**
+  String get siloApproveSignInHint;
+
+  /// Button in the Silo approve-a-sign-in dialog that approves the typed code
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get siloApproveSignInApprove;
+
+  /// Shown after a Silo sign-in code was approved
+  ///
+  /// In en, this message translates to:
+  /// **'Approved. The other device is signing in.'**
+  String get siloApproveSignInDone;
+
+  /// Shown when Silo has no pending sign-in for the typed code (unknown, expired, already used or declined)
+  ///
+  /// In en, this message translates to:
+  /// **'No sign-in is waiting with that code. Check it, or get a new code on the other device.'**
+  String get siloApproveSignInNoRequest;
+
+  /// Title of the dialog shown when the address being added is Silo's Jellyfin-compatible service and Silo's own API answers on another port of the same host
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Silo directly?'**
+  String get siloNativeOfferTitle;
+
+  /// Body of the dialog offering to add a Silo server natively instead of through its Jellyfin-compatible service
+  ///
+  /// In en, this message translates to:
+  /// **'This address is the Jellyfin-compatible service of {serverName}. Moonfin can connect to Silo directly at {address}, with Silo\'s own features.'**
+  String siloNativeOfferMessage(String serverName, String address);
+
+  /// Button: add the Silo server through its native API
+  ///
+  /// In en, this message translates to:
+  /// **'Use Silo'**
+  String get siloNativeOfferUse;
+
+  /// Button: add the address as a Jellyfin server, as entered
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Jellyfin'**
+  String get siloNativeOfferKeep;
+
+  /// Shown when a Silo server no longer speaks the API this version of Moonfin uses (its API is newer)
+  ///
+  /// In en, this message translates to:
+  /// **'This Silo server needs a newer version of Moonfin. Update Moonfin to use it.'**
+  String get siloAppUpdateRequired;
+
+  /// Shown when a Silo server's API is older than the one this version of Moonfin uses
+  ///
+  /// In en, this message translates to:
+  /// **'This Silo server is too old for this version of Moonfin. Update Silo to use it.'**
+  String get siloServerUpdateRequired;
+
+  /// Shown when Silo refuses a request because of too many attempts (HTTP 429) without saying how long to wait
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Try again later.'**
+  String get siloTooManyAttempts;
+
+  /// Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Try again in {wait}.'**
+  String siloTooManyAttemptsWait(String wait);
+
+  /// Shown when Silo answers that it is temporarily unavailable (HTTP 503) without saying how long to wait
+  ///
+  /// In en, this message translates to:
+  /// **'The server is busy or still starting. Try again later.'**
+  String get siloServerBusy;
+
+  /// Shown when Silo answers that it is temporarily unavailable (HTTP 503); wait is siloWaitSeconds or siloWaitMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'The server is busy or still starting. Try again in {wait}.'**
+  String siloServerBusyWait(String wait);
+
+  /// How long to wait before trying again, in seconds; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 second} other{{count} seconds}}'**
+  String siloWaitSeconds(int count);
+
+  /// How long to wait before trying again, in minutes; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute} other{{count} minutes}}'**
+  String siloWaitMinutes(int count);
+
+  /// Player message: the Silo server has playback switched off for this account
+  ///
+  /// In en, this message translates to:
+  /// **'Playback isn\'t available on this Silo server.'**
+  String get siloPlaybackUnavailable;
+
+  /// Player message: the Silo server no longer speaks the playback protocol this version of Moonfin uses
+  ///
+  /// In en, this message translates to:
+  /// **'This Silo server needs a newer version of Moonfin to play.'**
+  String get siloPlaybackUpdateRequired;
+
+  /// Player message: an administrator ended this playback session on the Silo server
+  ///
+  /// In en, this message translates to:
+  /// **'Playback was ended on the Silo server.'**
+  String get siloPlaybackEndedOnServer;
+
+  /// Title of the dialog asking for a Silo household profile's PIN; name is the profile's name
+  ///
+  /// In en, this message translates to:
+  /// **'PIN for {name}'**
+  String siloPinTitle(String name);
+
+  /// Field label in the Silo profile PIN dialog
+  ///
+  /// In en, this message translates to:
+  /// **'PIN'**
+  String get siloPinHint;
+
+  /// Button in the Silo profile PIN dialog that checks the PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get siloPinUnlock;
+
+  /// Shown in the Silo profile PIN dialog when the PIN doesn't match
+  ///
+  /// In en, this message translates to:
+  /// **'That PIN isn\'t right.'**
+  String get siloPinWrong;
+
+  /// Shown when Silo has locked the profile after too many wrong PINs, without saying for how long
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong PINs. Try again later.'**
+  String get siloPinLocked;
+
+  /// Shown when Silo has locked the profile after too many wrong PINs; wait is siloWaitSeconds or siloWaitMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong PINs. Try again in {wait}.'**
+  String siloPinLockedWait(String wait);
+
+  /// Shown in the Silo profile PIN dialog when the check failed (no network, server error)
+  ///
+  /// In en, this message translates to:
+  /// **'The PIN couldn\'t be checked. Try again.'**
+  String get siloPinFailed;
+
+  /// Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of the Silo account'**
+  String get siloSignOutAccount;
+
   /// How many trailers the trailer picker lists, shown in its header
   ///
   /// In en, this message translates to:
@@ -27576,7 +28368,7 @@ abstract class AppLocalizations {
   /// Add Server dialog: what the Server Address option is for
   ///
   /// In en, this message translates to:
-  /// **'Jellyfin or Emby on your network or online'**
+  /// **'Jellyfin, Emby or Silo on your network or online'**
   String get addServerAddressChoice;
 
   /// Add Server dialog: what the Sign in with Plex option does
@@ -27594,7 +28386,7 @@ abstract class AppLocalizations {
   /// Add Server dialog: note under the address field
   ///
   /// In en, this message translates to:
-  /// **'Works with Jellyfin and Emby. A Plex address opens the Plex sign-in.'**
+  /// **'Works with Jellyfin, Emby and Silo. A Plex address opens the Plex sign-in.'**
   String get addServerDetectNote;
 
   /// Add Server dialog: shown under the field while the typed address is being tried
@@ -27836,6 +28628,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls stay visible'**
   String get bookReaderControlsStayVisible;
+
+  /// Label over the preview in Settings that redraws a screen of the app as settings change
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview'**
+  String get settingsLivePreview;
+
+  /// Under the Settings live preview, says the focused setting changes the named preview screen
+  ///
+  /// In en, this message translates to:
+  /// **'Shows on the {screen} preview'**
+  String settingsPreviewShowsOn(String screen);
+
+  /// Under the Settings live preview, says the focused setting has no visible effect in the preview
+  ///
+  /// In en, this message translates to:
+  /// **'Not shown in the preview'**
+  String get settingsPreviewNotShown;
+
+  /// Tag on the option that is saved while another option is being tried in the Settings live preview
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get settingsPreviewSaved;
+
+  /// Title of the search results row with library titles the server's natural-language search matched to a vague query
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search'**
+  String get smartSearch;
+
+  /// Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search on {seerr}'**
+  String smartSearchOnSeerr(String seerr);
 }
 
 class _AppLocalizationsDelegate

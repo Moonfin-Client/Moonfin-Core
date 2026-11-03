@@ -95,13 +95,21 @@ class _AddToCollectionDialogState extends State<AddToCollectionDialog> {
 
   Future<void> _loadCollections() async {
     try {
-      final data = await _client.itemsApi.getItems(
-        includeItemTypes: const ['BoxSet'],
-        recursive: true,
-        sortBy: 'SortName',
-        sortOrder: 'Ascending',
-      );
-      final items = (data['Items'] as List?) ?? [];
+      // A server that lets the user edit only some collections lists just
+      // those (Silo: the profile's own manual ones).
+      final api = _client.itemsApi;
+      final List<dynamic> items;
+      if (api is EditableCollectionsApi) {
+        items = await (api as EditableCollectionsApi).getEditableCollections();
+      } else {
+        final data = await api.getItems(
+          includeItemTypes: const ['BoxSet'],
+          recursive: true,
+          sortBy: 'SortName',
+          sortOrder: 'Ascending',
+        );
+        items = (data['Items'] as List?) ?? [];
+      }
       if (!mounted) return;
       setState(() {
         _collections = items.cast<Map<String, dynamic>>().map((raw) {

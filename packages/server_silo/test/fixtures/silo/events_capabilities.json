@@ -1,0 +1,23 @@
+{
+ "revision": "ae72efe39efcf4260ff0ca2af33684b33fd3e98a72fd1be05140e7d26aec70f7",
+ "state": "available",
+ "allowed": true,
+ "schema_version": 1,
+ "subscribe_frame": true,
+ "declared_channels": true,
+ "subscribe_grace_period_seconds": 5,
+ "max_requested_channels": 32,
+ "channels": [
+  "catalog",
+  "jobs",
+  "sessions",
+  "tasks",
+  "scans",
+  "history_import",
+  "user_state",
+  "user_settings",
+  "settings",
+  "notifications",
+  "download_preparations"
+ ]
+}

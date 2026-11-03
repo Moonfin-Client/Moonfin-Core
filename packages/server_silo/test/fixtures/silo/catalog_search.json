@@ -1,0 +1,356 @@
+{
+ "window_cursor": "eyJ2IjoxLCJwIjp7ImEiOnsic2VhcmNoIjp7InByb3ZpZGVyIjoicG9zdGdyZXMiLCJjb25maWciOiJwb3N0Z3Jlcy1yZWxldmFuY2UtdjEiLCJwb3N0Z3JlcyI6eyJtb2RlIjoiZnRzIn19LCJrZXlzIjpudWxsLCJjb25zdW1lZCI6MH0sIm8iOjB9fQ.lTm7wAPVLjA0HFZvHuHHLmMzbkUFlLQEKhvipfYI-IY",
+ "items": [
+  {
+   "content_id": "movie-imdb-tt1214962",
+   "play_content_id": "movie-imdb-tt1214962",
+   "type": "movie",
+   "title": "Seeking Justice",
+   "year": 2011,
+   "runtime": 105,
+   "genres": [
+    "Action",
+    "Drama",
+    "Thriller"
+   ],
+   "keywords": [
+    "assassin",
+    "fugitive",
+    "playing chess"
+   ],
+   "studios": [
+    "Endgame Entertainment",
+    "Maguire Entertainment",
+    "Aura Film Partnership",
+    "Fierce Entertainment",
+    "Material Pictures",
+    "Ram Bergman Productions"
+   ],
+   "content_rating": "R",
+   "status": "matched",
+   "rating_tmdb": 5.941,
+   "original_language": "en",
+   "overview": "After his wife is assaulted, a husband enlists the services of a vigilante group to help him settle the score.",
+   "release_date": "2011-09-02",
+   "poster_url": "/api/v2/artwork/tmdb/movies/74998/poster/w300.3f90f3331686d5bb81ae8c5c2e065e32605c98cd003b2be9b2dd94d249b90d56.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "VfcFHQi5eHioWHeJJHCUeQiGgWAI",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/74998/backdrop/w300.56d03cb0b3b02ed09619bf8080ece55d95a5b65fc088f3cb8d0a9cb6952e1019.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "H7cNFIS/VZZZqnZnl4gHtmVQWw==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/74998/logo/w500.6738be8d5112fee6590567b0aa79ec7f853dab4816faad1f65de26a77daf3b75.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "DTS",
+    "audio_channels": "5.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "2.35:1",
+    "release_type": "BluRay",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt0092455-1-8",
+   "play_content_id": "episode-imdb-tt0092455-1-8",
+   "type": "episode",
+   "title": "Justice",
+   "series_id": "series-imdb-tt0092455",
+   "series_title": "Star Trek: The Next Generation",
+   "season_number": 1,
+   "episode_number": 8,
+   "year": 1987,
+   "runtime": 45,
+   "genres": [
+    "Science Fiction",
+    "Drama",
+    "Adventure",
+    "Action",
+    "Mystery"
+   ],
+   "keywords": [
+    "android",
+    "spacecraft",
+    "space travel",
+    "exploration",
+    "space",
+    "alien",
+    "alien planet",
+    "trek",
+    "space opera",
+    "adventurer",
+    "imaginative",
+    "explore",
+    "factual",
+    "exciting",
+    "tng"
+   ],
+   "studios": [
+    "Paramount Television",
+    "Norway Corporation"
+   ],
+   "networks": [
+    "Syndication"
+   ],
+   "content_rating": "TV-PG",
+   "status": "matched",
+   "show_status": "ended",
+   "rating_tmdb": 6.5,
+   "original_language": "en",
+   "overview": "Stardate: 41255.6\r\n\r\nPicard is forced to choose between friendship and the Prime Directive when Wesley Crusher is sentenced to death for accidentally breaking the law on Rubicon III.",
+   "release_date": "1987-11-09",
+   "poster_is_episode_still": false,
+   "backdrop_is_episode_still": false,
+   "poster_url": "/api/v2/artwork/tvdb/series/71470/seasons/1/poster/w300.2b58c52c4529c5ccc372699e0c2cee33935911b074502d7f87880f278982b0dc.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "lBcOJQQNpHmXV6aYiHh3iSlwhgGX",
+   "backdrop_url": "/api/v2/artwork/tvdb/series/71470/backdrop/w300.8d5bab66532ff46795df99350e438532e58c3626d3159d839c510b52b2e6dc44.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "UgcKJIaJpphfZHVld2cJpXJAKA==",
+   "logo_url": "/api/v2/artwork/tvdb/series/71470/logo/w500.4e2d8bfb14c66b8ee8c1a620aae405013b520dc95e5cd58b945a59b8ed83dc73.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AAC",
+    "audio_channels": "7.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "4:3",
+    "release_type": "HDTV",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt0096684-4-4",
+   "play_content_id": "episode-imdb-tt0096684-4-4",
+   "type": "episode",
+   "title": "Justice",
+   "series_id": "series-imdb-tt0096684",
+   "series_title": "Quantum Leap",
+   "season_number": 4,
+   "episode_number": 4,
+   "year": 1989,
+   "runtime": 45,
+   "genres": [
+    "Science Fiction",
+    "Drama",
+    "Adventure",
+    "Action",
+    "Mystery"
+   ],
+   "keywords": [
+    "hologram",
+    "time travel",
+    "alternate timeline",
+    "changing the past or future",
+    "changing history"
+   ],
+   "studios": [
+    "Universal Television",
+    "Belisarius Productions"
+   ],
+   "networks": [
+    "NBC"
+   ],
+   "content_rating": "TV-14",
+   "status": "matched",
+   "show_status": "ended",
+   "rating_tmdb": 7.8,
+   "original_language": "en",
+   "overview": "May 11, 1965: Sam must don the robe of a Ku Klux Klansman in order to save the life of an ambitious young civil rights leader, who is trying to register black voters.",
+   "release_date": "1991-10-09",
+   "poster_is_episode_still": false,
+   "backdrop_is_episode_still": false,
+   "poster_url": "/api/v2/artwork/tvdb/series/72248/seasons/4/poster/w300.431e513f024e6954f478305f21b3fc6ee30b998d77bdab70bdc190856ae0aa59.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "4ogGDQj4IY2FSTZsqWfYZ8xlv272",
+   "backdrop_url": "/api/v2/artwork/tvdb/series/72248/backdrop/w300.cd3483e90380847d286cb5076195eaf18461b7e093756283577ab7771857eb83.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "ahcWFIT4RXdqhYeIdocHVdP7lg==",
+   "logo_url": "/api/v2/artwork/tvdb/series/72248/logo/w500.f1c21ae65ba7060be1793304b4f73ac6f3d6fc31a418aeb637b0a93134746094.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AC3",
+    "audio_channels": "Stereo",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "4:3",
+    "release_type": "BluRay",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt0279600-6-11",
+   "play_content_id": "episode-imdb-tt0279600-6-11",
+   "type": "episode",
+   "title": "Justice",
+   "series_id": "series-imdb-tt0279600",
+   "series_title": "Smallville",
+   "season_number": 6,
+   "episode_number": 11,
+   "year": 2001,
+   "runtime": 40,
+   "genres": [
+    "Science Fiction",
+    "Drama",
+    "Adventure",
+    "Romance"
+   ],
+   "keywords": [
+    "kansas, usa",
+    "superhero",
+    "based on comic",
+    "alien",
+    "super power",
+    "origin story"
+   ],
+   "studios": [
+    "DC",
+    "Warner Bros. Television",
+    "Tollin/Robbins Productions",
+    "Millar Gough Ink"
+   ],
+   "networks": [
+    "The WB",
+    "The CW"
+   ],
+   "content_rating": "TV-PG",
+   "status": "matched",
+   "show_status": "ended",
+   "rating_tmdb": 9.2,
+   "original_language": "en",
+   "overview": "When Lex's Level 33.1 project comes to fruition, Oliver Queen must bring together several of Clark's \"heroic\" super-powered allies together: Arthur Curry, Bart Allen, and Victor Stone.\r\n",
+   "release_date": "2007-01-18",
+   "poster_is_episode_still": false,
+   "backdrop_is_episode_still": false,
+   "poster_url": "/api/v2/artwork/tvdb/series/72218/seasons/6/poster/w300.903199d8cd3d6c8663593bbf1cad6514a7d72a51c79d4ebaeccdde94eab8469e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "UigKHQRYBGq2aVbLiKiYKHZlYIYG",
+   "backdrop_url": "/api/v2/artwork/tvdb/series/72218/backdrop/w300.7a205e1126ccd0cf9dccc6600b7d71f34ea9a4ac83ac3c309e8d2718b9e86ef1.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "kTgKHIqHN5lvmYllh3eHb3n5lw==",
+   "logo_url": "/api/v2/artwork/tvdb/series/72218/logo/w500.56fd283dc347416c50f3be2151ef6e94c086f01abd4570836fe5cb7cdb7af899.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AAC",
+    "audio_channels": "5.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "HDTV",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": true,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "episode-imdb-tt0877057-1-30",
+   "play_content_id": "episode-imdb-tt0877057-1-30",
+   "type": "episode",
+   "title": "Justice",
+   "series_id": "series-imdb-tt0877057",
+   "series_title": "Death Note",
+   "season_number": 1,
+   "episode_number": 30,
+   "year": 2006,
+   "runtime": 23,
+   "genres": [
+    "Horror",
+    "Fantasy",
+    "Crime",
+    "Suspense",
+    "Thriller",
+    "Anime"
+   ],
+   "keywords": [
+    "detective",
+    "journalism",
+    "secret identity",
+    "police",
+    "supernatural",
+    "sociopath",
+    "rivalry",
+    "murder",
+    "serial killer",
+    "grim reaper",
+    "psychological thriller",
+    "based on manga",
+    "justice",
+    "death",
+    "ethical dilemma",
+    "shounen",
+    "anime",
+    "shinigami",
+    "time skip",
+    "magic book",
+    "psychological",
+    "fantastic",
+    "prosocial psychopath",
+    "horror",
+    "arrogant",
+    "audacious",
+    "exhilarated"
+   ],
+   "studios": [
+    "Madhouse",
+    "Nippon Television Network Corporation",
+    "D.N. Dream Partners",
+    "VAP",
+    "Shueisha"
+   ],
+   "networks": [
+    "Nippon TV"
+   ],
+   "content_rating": "TV-MA",
+   "status": "matched",
+   "show_status": "ended",
+   "rating_tmdb": 7.652,
+   "original_language": "ja",
+   "overview": "Tensions heat up between Light and Near as Near collects more details on the Death Note. Information insults fly back and forth, and Light is forced to act, in fear that his identity as Kira and L will be exposed.",
+   "release_date": "2007-05-09",
+   "poster_is_episode_still": false,
+   "backdrop_is_episode_still": false,
+   "poster_url": "/api/v2/artwork/tvdb/series/79481/seasons/1/poster/w300.1ee8201897b3c8916c999d4825b5f3eaf697bb12a0cdf177ce86434eb9c57f34.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "ywcGBQA6CIp5c5mXqGGJiICnBapo",
+   "backdrop_url": "/api/v2/artwork/tvdb/series/79481/backdrop/w300.3ab35749721e96f3d23ad03dd839fcd2fc84f8419a372954954689dc44d892f6.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "DAgODIIHeYeDaYl4h4cLh5iAaA==",
+   "logo_url": "/api/v2/artwork/tvdb/series/79481/logo/w500.8d7162d9007f9112b34471a8f4485c4d92b57781494d1da0056bb100affaecee.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "720p",
+    "audio": "FLAC",
+    "audio_channels": "Stereo",
+    "video_codec": "AV1",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "HDTV",
+    "multi_audio": true,
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": true,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  }
+ ],
+ "page": {
+  "next_cursor": "eyJ2IjoxLCJwIjp7ImEiOnsic2VhcmNoIjp7InByb3ZpZGVyIjoicG9zdGdyZXMiLCJjb25maWciOiJwb3N0Z3Jlcy1yZWxldmFuY2UtdjEiLCJwb3N0Z3JlcyI6eyJjb25zdW1lZCI6NSwibW9kZSI6ImZ0cyIsInBoYXNlIjoiZnRzIiwia2V5cyI6W3sia2luZCI6Im51bWJlciIsInZhbHVlIjoiMSJ9LHsia2luZCI6Im51bWJlciIsInZhbHVlIjoiMSJ9LHsia2luZCI6Im51bWJlciIsInZhbHVlIjoiMCJ9LHsia2luZCI6Im51bWJlciIsInZhbHVlIjoiMCJ9LHsia2luZCI6Im51bWJlciIsInZhbHVlIjoiMSJ9LHsia2luZCI6Im51bWJlciIsInZhbHVlIjoiMCJ9LHsia2luZCI6InRleHQiLCJ2YWx1ZSI6Imp1c3RpY2UifSx7ImtpbmQiOiJ0ZXh0IiwidmFsdWUiOiJlcGlzb2RlLWltZGItdHQwODc3MDU3LTEtMzAifV19fSwia2V5cyI6bnVsbCwiY29uc3VtZWQiOjB9LCJvIjo1fX0.2Xxww8KfJnIUzdKXEzAFZLfa4M3B2HCEia2dc0oV4WM",
+  "has_more": true
+ },
+ "total": 118,
+ "total_exact": true,
+ "search_diagnostics": {
+  "provider": "postgres",
+  "mode": "keyword",
+  "semantic_used": false
+ }
+}

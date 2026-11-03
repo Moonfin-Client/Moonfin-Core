@@ -83,6 +83,7 @@ void main() {
     final client = _MockClient();
     when(() => client.baseUrl).thenReturn('http://plugin.test');
     when(() => client.accessToken).thenReturn('token');
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.deviceInfo).thenReturn(
       const DeviceInfo(
         id: 'dev1',
@@ -107,13 +108,16 @@ void main() {
 
   tearDown(() => GetIt.instance.reset());
 
-  Future<void> pumpScreen(WidgetTester tester) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    RatingSettings? settings,
+  }) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildTheme(ThemeRegistry.active),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const RatingsConfigScreen(),
+        home: RatingsConfigScreen(settings: settings),
       ),
     );
     await tester.pumpAndSettle();
@@ -166,6 +170,48 @@ void main() {
     expect(
       prefs.get(UserPreferences.showRatingBadges),
       UserPreferences.showRatingBadges.defaultValue,
+    );
+
+    await drainDebounce(tester);
+  });
+
+  testWidgets('a surface reset leaves the other surfaces alone', (
+    tester,
+  ) async {
+    await prefs.set(UserPreferences.enabledRatings, 'trakt');
+    await prefs.set(UserPreferences.showRatingLabels, false);
+    await prefs.set(UserPreferences.homeRowsEnabledRatings, 'letterboxd');
+    await prefs.set(UserPreferences.homeRowsShowRatingLabels, true);
+    await prefs.set(UserPreferences.homeRowsEnableEpisodeRatings, false);
+    await prefs.set(UserPreferences.mediaBarEnabledRatings, 'imdb');
+
+    await pumpScreen(tester, settings: UserPreferences.homeRowsRatings);
+    await tapReset(tester, confirm: true);
+
+    for (final pref in UserPreferences.homeRowsRatings.all) {
+      expect(prefs.get(pref), pref.defaultValue, reason: pref.key);
+    }
+    expect(prefs.get(UserPreferences.enabledRatings), 'trakt');
+    expect(prefs.get(UserPreferences.showRatingLabels), isFalse);
+    expect(prefs.get(UserPreferences.mediaBarEnabledRatings), 'imdb');
+
+    await drainDebounce(tester);
+  });
+
+  testWidgets('a surface screen edits only its own source list', (
+    tester,
+  ) async {
+    await prefs.set(UserPreferences.mediaBarEnabledRatings, 'imdb');
+
+    await pumpScreen(tester, settings: UserPreferences.mediaBarRatings);
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    await tester.tap(find.text(l10n.tmdb));
+    await tester.pumpAndSettle();
+
+    expect(prefs.get(UserPreferences.mediaBarEnabledRatings), 'imdb,tmdb');
+    expect(
+      prefs.get(UserPreferences.enabledRatings),
+      UserPreferences.enabledRatings.defaultValue,
     );
 
     await drainDebounce(tester);

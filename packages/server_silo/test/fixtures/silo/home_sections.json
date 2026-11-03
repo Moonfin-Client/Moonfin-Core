@@ -1,0 +1,979 @@
+{
+ "sections": [
+  {
+   "id": "146552064640566580",
+   "section_type": "continue_watching",
+   "title": "Continue Watching",
+   "featured": false,
+   "item_limit": 20,
+   "total_count": 6,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "episode-imdb-tt0472954-17-1",
+     "play_content_id": "episode-imdb-tt0472954-17-1",
+     "type": "episode",
+     "title": "The Gang F***s Up Abbott Elementary",
+     "series_id": "series-imdb-tt0472954",
+     "series_title": "It's Always Sunny in Philadelphia",
+     "season_number": 17,
+     "episode_number": 1,
+     "runtime": 23,
+     "genres": [
+      "Comedy"
+     ],
+     "keywords": [],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "overview": "Months after the Gang visited, Abbott's Principal Ava walks viewers through some of the unseen footage of the Gang's volunteerism and reveals their true intentions.",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/tvdb/series/75805/seasons/17/poster/w500.ce3cd4efd768d5ceeee19b7c729165258c7f627ca7e3df5f63eb5f42d292cad9.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "JWsGJQJod2uNqEj4WHDqV9pvqowI",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/75805/seasons/17/episodes/1/still/w500.3d760a5f6eb36a17a3df303fe8c3b31d9ff03f1a00f5409c717937a8679d0048.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "kigODIQccJpXuHiJd4YLapeAVg==",
+     "logo_url": "/api/v2/artwork/tvdb/series/75805/logo/original.9556b6e087fa2663a17f6d057fd0384a2ddef46dead12a6a8670bb4341463cfe.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "item_source": "next_up",
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "episode-imdb-tt14403178-2-5",
+     "play_content_id": "episode-imdb-tt14403178-2-5",
+     "type": "episode",
+     "title": "I Am Killing My Flesh Without It",
+     "series_id": "series-imdb-tt14403178",
+     "series_title": "BEEF",
+     "season_number": 2,
+     "episode_number": 5,
+     "runtime": 30,
+     "genres": [
+      "Drama",
+      "Comedy"
+     ],
+     "keywords": [],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "overview": "Lindsay and Josh's marital strife comes to a head when an unexpected crisis hits home.",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/tvdb/series/399838/seasons/2/poster/w500.44b4f641f9c3455c42c695cd4508378578e40cb4567e3bbc88d79d49dba98bca.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "SxgGFQQLlq5tdGhmlpX8WmiPh/WI",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/399838/seasons/2/episodes/5/still/w500.c9f2324fef2ef199c0825977be16bea4f519a422d8c5b11007f0465e4f842f05.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "VhgKBIL0bpiIiYd3h4cvcvpUhg==",
+     "logo_url": "/api/v2/artwork/tvdb/series/399838/logo/original.3006bc33df38d70f42e2d4536bb427e55a92977c2f45d59908bbf3fa6bf63433.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "item_source": "next_up",
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "episode-imdb-tt0121955-29-2",
+     "play_content_id": "episode-imdb-tt0121955-29-2",
+     "type": "episode",
+     "title": "Billionaire Weenietown",
+     "series_id": "series-imdb-tt0121955",
+     "series_title": "South Park",
+     "season_number": 29,
+     "episode_number": 2,
+     "runtime": 22,
+     "genres": [
+      "Comedy",
+      "Animation"
+     ],
+     "keywords": [],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "rating_imdb": 6.6,
+     "overview": "Butters is unhappy with the data centers that the billionaires are building in our backyards.",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/local/series/series-imdb-tt0121955/seasons/29/676eddfb/poster/w500.b0aad4f4fa29b4a0b0f3e61ba1beac07a8d82115207cf13ecd5847fa632a5bf6.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "LPgJHQSHeHZ4+HineYNnd2h0kBcI",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/75897/seasons/29/episodes/2/still/w500.f64466c64bf1a149b520f2b405d179a06065c7771bfca2b2d576c64b9ecd9f09.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "IMkNDIQHuHhyd4mDinZEj1b0DA==",
+     "logo_url": "/api/v2/artwork/local/series/series-imdb-tt0121955/514dc14a/logo/original.6508dc4235e99350ea1c1095725d9f0991bfa13e93cfc616b32570e5d8df7c27.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "item_source": "next_up",
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "146552064657343796",
+   "section_type": "hidden_gems",
+   "title": "Hidden Gems",
+   "featured": false,
+   "item_limit": 15,
+   "total_count": 14,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "series-imdb-tt0121955",
+     "play_content_id": "episode-imdb-tt0121955-27-6",
+     "type": "series",
+     "title": "South Park",
+     "year": 1997,
+     "runtime": 22,
+     "genres": [
+      "Comedy",
+      "Animation"
+     ],
+     "keywords": [
+      "colorado",
+      "elementary school",
+      "satire",
+      "parody",
+      "crude humor",
+      "adult humor",
+      "social satire",
+      "best friend",
+      "group of friends",
+      "adult animation",
+      "censorship",
+      "sitcom",
+      "smutty",
+      "offensive",
+      "amused",
+      "raunchy comedy",
+      "smutty comedy",
+      "crude comedy"
+     ],
+     "studios": [
+      "South Park Studios",
+      "Comedy Central",
+      "Braniff Productions",
+      "MTV Entertainment Studios",
+      "Parker-Stone Productions"
+     ],
+     "networks": [
+      "Comedy Central"
+     ],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "show_status": "returning",
+     "rating_imdb": 8.7,
+     "rating_tmdb": 8.3,
+     "original_language": "en",
+     "overview": "South Park is an animated series featuring four boys who live in the Colorado town of South Park, which is beset by frequent odd occurrences. The show grew out of a short film that Trey Parker and Matt Stone created called The Spirit of Christmas, and has become an award-winning show that is a unique blend of humor and satire.",
+     "poster_url": "/api/v2/artwork/local/series/series-imdb-tt0121955/f369a48e/poster/w500.66a83f5317066ba40def9d5373b647ce82bb8509ca21a79e59300034167885fc.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "6dcRJQyHiHZ394d3iHZnl2dghQSG",
+     "backdrop_url": "/api/v2/artwork/local/series/series-imdb-tt0121955/592d37a1/backdrop/w1920.d733b56326a8f7d101175adc0a9b7475d216c3730ed8cf1702291d0e21bc2258.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "WAgOHIhneHeDeIdwiH1YiIAWCA==",
+     "logo_url": "/api/v2/artwork/local/series/series-imdb-tt0121955/514dc14a/logo/original.6508dc4235e99350ea1c1095725d9f0991bfa13e93cfc616b32570e5d8df7c27.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.265",
+      "container": "MKV",
+      "aspect_ratio": "1.44:1",
+      "release_type": "HDTV",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "series-tvdb-388593",
+     "play_content_id": "146661283427583806",
+     "type": "series",
+     "title": "Horimiya",
+     "year": 2021,
+     "runtime": 24,
+     "genres": [
+      "Comedy",
+      "Animation",
+      "Anime",
+      "Romance"
+     ],
+     "keywords": [
+      "secret identity",
+      "love",
+      "romcom",
+      "romance",
+      "slice of life",
+      "based on manga",
+      "school life",
+      "shounen",
+      "anime",
+      "japanese high school",
+      "amused"
+     ],
+     "studios": [
+      "Tokyo MX",
+      "CloverWorks"
+     ],
+     "networks": [
+      "Tokyo MX",
+      "Gunma TV",
+      "BS11",
+      "Tochigi TV"
+     ],
+     "content_rating": "TV-14",
+     "status": "matched",
+     "show_status": "ended",
+     "rating_imdb": 8,
+     "rating_tmdb": 8.506,
+     "original_language": "ja",
+     "overview": "A secret life is the one thing they have in common. At school, Hori is a prim and perfect social butterfly, but the truth is she's a brash homebody. Meanwhile, under a gloomy facade, Miyamura hides a gentle heart, along with piercings and tattoos. In a chance meeting, they both reveal a side they've never shown. Could this blossom into something new?",
+     "poster_url": "/api/v2/artwork/local/series/series-tvdb-388593/ad92bfd5/poster/w500.851ce97adf2d2df48fbff2341da14c727eb1460c1ee1b1dd759cc45a186c4f06.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "aigKDQKqmI9puGiWd5o4p8Zgtb9F",
+     "backdrop_url": "/api/v2/artwork/local/series/series-tvdb-388593/1e00908b/backdrop/w1920.01041eafbbffdc6ab738d6eba4f77729cd22dafdbbb697c613af3b403372a3ba.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "nCgODIKWpteAmXiHeHh4n3D4Rg==",
+     "logo_url": "/api/v2/artwork/local/series/series-tvdb-388593/dbb2c178/logo/original.12da5cdb5aa059d341e3c9033724d654854a1c883a208e4dca698f9dd9f1b0ad.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AAC",
+      "audio_channels": "Stereo",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "release_type": "HDTV",
+      "multi_audio": true,
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "series-imdb-tt13196080",
+     "play_content_id": "episode-imdb-tt13196080-1-1",
+     "type": "series",
+     "title": "Tokyo Revengers",
+     "year": 2021,
+     "genres": [
+      "Science Fiction",
+      "Drama",
+      "Crime",
+      "Action",
+      "Anime"
+     ],
+     "keywords": [
+      "time travel",
+      "delinquent",
+      "revenge",
+      "romance",
+      "school",
+      "bromance",
+      "based on manga",
+      "shounen",
+      "anime",
+      "furyo"
+     ],
+     "studios": [
+      "LIDENFILMS",
+      "Pony Canyon",
+      "Kodansha",
+      "Sammy",
+      "AT-X",
+      "MBS",
+      "Ultra Super Pictures",
+      "STUDIO MAUSU",
+      "HI Production"
+     ],
+     "networks": [
+      "MBS",
+      "TBS"
+     ],
+     "content_rating": "TV-14",
+     "status": "matched",
+     "show_status": "returning",
+     "rating_tmdb": 8.4,
+     "original_language": "ja",
+     "overview": "Takemichi Hanagaki is a freelancer that's reached the absolute pits of despair in his life. He finds out that the only girlfriend he ever had, in middle school, Hinata Tachibana, had been killed by the ruthless Tokyo Manji Gang. The day after hearing about her death, he's standing on the station platform and ends up being pushed over onto the tracks by a herd of people. He closes his eyes thinking he's about to die, but when he opens his eyes back up, he somehow had gone back in time 12 years. Now that he's back living the best days of his life, Takemichi decides to get revenge on his life.",
+     "poster_url": "/api/v2/artwork/tvdb/series/393478/poster/w500.30e4f5b99961a78af0f2569b157b1d938c16c9c69529f12187fb5f1788bce629.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "KxgKDQTm6JeH92i3d3t3qElxjwXX",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/393478/backdrop/w1920.dc0976241593ced9a7cd2b889411f8e0d4167d579ee270a10f0c42617e2831ab.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "4QgOHIT5JZiIZYh1eIf2upb1iA==",
+     "logo_url": "/api/v2/artwork/tmdb/series/105009/logo/original.1493299fbd6e325e3e83c74ce108b2f4dd77517697bbb7bad6b6365132fd41c5.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AAC",
+      "audio_channels": "Stereo",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_audio": true,
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "146552064657409332",
+   "section_type": "trending_on_server",
+   "title": "Trending on Server",
+   "featured": false,
+   "item_limit": 15,
+   "total_count": 9,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "series-imdb-tt0472954",
+     "play_content_id": "episode-imdb-tt0472954-17-1",
+     "type": "series",
+     "title": "It's Always Sunny in Philadelphia",
+     "year": 2005,
+     "genres": [
+      "Comedy"
+     ],
+     "keywords": [],
+     "studios": [
+      "3 Arts Entertainment",
+      "Bluebush Productions",
+      "FX Productions",
+      "RCG Productions"
+     ],
+     "networks": [
+      "FX",
+      "FXX"
+     ],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "show_status": "returning",
+     "rating_tmdb": 8.246,
+     "overview": "Four egocentric friends who run a neighborhood Irish pub in Philadelphia try to find their way through the adult world of work and relationships. Unfortunately, their warped views and precarious judgments often lead them to trouble, creating a myriad of uncomfortable situations that usually only get worse before they get better.",
+     "poster_url": "/api/v2/artwork/tvdb/series/75805/poster/w500.5d17df44b6c7d426e1c3234fd2c2359019bba090321c5f38becad6600ca0690f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "DQgGBQBouH+LOJY4VnJ3VwZkFoA0",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/75805/backdrop/w1920.331a214a7ea6fd0709235fffbbcfd0fbc1ea7db492e3ff76cfa81b16d9b419cf.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "jjgOHIRYeXePhneIeHeJj4r5iA==",
+     "logo_url": "/api/v2/artwork/tvdb/series/75805/logo/original.9556b6e087fa2663a17f6d057fd0384a2ddef46dead12a6a8670bb4341463cfe.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AC3",
+      "audio_channels": "Stereo",
+      "video_codec": "H.265",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "release_type": "HDTV",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "series-imdb-tt3530232",
+     "play_content_id": "episode-imdb-tt3530232-4-29",
+     "type": "series",
+     "title": "Last Week Tonight with John Oliver",
+     "year": 2014,
+     "genres": [
+      "News",
+      "Comedy",
+      "Talk Show"
+     ],
+     "keywords": [],
+     "studios": [
+      "Sixteen String Jack Productions",
+      "Avalon Television",
+      "Partially Important Productions",
+      "Borchard Entertainment",
+      "Peyance Productions"
+     ],
+     "networks": [
+      "HBO"
+     ],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "show_status": "returning",
+     "rating_tmdb": 7.76,
+     "overview": "Last Week Tonight with John Oliver is an American late-night talk and news satire television program.  \r\nLWT draws its comedy and satire from recent news stories, political figures, media organizations, pop culture, and often aspects of the show itself.",
+     "poster_url": "/api/v2/artwork/tvdb/series/278518/poster/w500.89a61541e622d57bd86fdd6b9c15e740dcc71e2858c797ae85a7b45ed076c7af.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "4fcZBQB3iH+IV4dod4iXZ0dzYEMH",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/278518/backdrop/w1920.0d510e1b571f79a927fa26cefbe5460045611d3c70796dd4470399bfa382c056.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "KwgOBILGOId/hniHhInrn5vgSA==",
+     "logo_url": "/api/v2/artwork/tvdb/series/278518/logo/original.8e930bf0e1e84fd72bce908757083c554d5820cf246e3d0ab56c955f91b59cb8.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AAC",
+      "audio_channels": "Stereo",
+      "video_codec": "H.265",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "series-imdb-tt21072112",
+     "play_content_id": "episode-imdb-tt21072112-1-1",
+     "type": "series",
+     "title": "Bodkin",
+     "year": 2024,
+     "genres": [
+      "Drama",
+      "Comedy",
+      "Thriller"
+     ],
+     "keywords": [],
+     "studios": [
+      "Higher Ground",
+      "wiip",
+      "Netflix",
+      "Wild Atlantic Pictures"
+     ],
+     "networks": [
+      "Netflix"
+     ],
+     "content_rating": "12+",
+     "status": "matched",
+     "show_status": "ended",
+     "rating_tmdb": 6.5,
+     "overview": "A ragtag crew of podcasters sets out to investigate mysterious disappearances from decades earlier in a charming Irish town with dark, dreadful secrets.",
+     "poster_url": "/api/v2/artwork/tvdb/series/421635/poster/w500.3c439fda61a42315b4a4138fc200a33bcf44cca91af51aa7a6a717972c21ba6a.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "GwkOHQKod4+Ip2eoh3h3Z7iPiPiH",
+     "backdrop_url": "/api/v2/artwork/tvdb/series/421635/backdrop/w1920.3ae4fe889b5572ce0537bf6102a31a80d5210551755f23477eb96423c6066a66.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "mwkGJIKC0Ghsl4g3x4t3jzj2Nw==",
+     "logo_url": "/api/v2/artwork/tvdb/series/421635/logo/original.20908377e86314772c25eefdd67caecda65efa5883e385d7ee90eae9abeab727.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "146552064657474868",
+   "section_type": "seasonal_themed",
+   "title": "Seasonal Picks",
+   "featured": false,
+   "item_limit": 15,
+   "total_count": 15,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "movie-imdb-tt36893729",
+     "play_content_id": "movie-imdb-tt36893729",
+     "type": "movie",
+     "title": "Ice Cream Man",
+     "year": 2026,
+     "runtime": 87,
+     "genres": [
+      "Comedy",
+      "Horror",
+      "Thriller"
+     ],
+     "keywords": [
+      "gore",
+      "murder",
+      "serial killer",
+      "summer",
+      "massacre",
+      "ice cream",
+      "ice cream man",
+      "aftercreditsstinger",
+      "killer child",
+      "town",
+      "independent film",
+      "absurd",
+      "ai generated"
+     ],
+     "studios": [
+      "The Horror Section",
+      "Media Capital Technologies",
+      "Head Gear Films",
+      "Mass Appeal",
+      "Metrol Technology",
+      "dentsu",
+      "Sixth Dimension"
+     ],
+     "content_rating": "NR",
+     "status": "matched",
+     "rating_imdb": 3.8,
+     "rating_tmdb": 4.833,
+     "original_language": "en",
+     "overview": "An idyllic summer town descends into madness when an ice cream man serves kids sweet delights with horrifying results.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt36893729/f4965d2f/poster/w500.4ffddfc22889d85316621cb982a4863d125227c915c26a8b5bb4fcace5bebd14.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "IMcFJQpwk7m0lTeciF9nbHMpP3fy",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt36893729/2fad79a0/backdrop/w1920.ca5ed9350993e4d485cfdfacb0e22e997b22e650a596d44387675042898d3f6f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "UtcFBIKId4imdnd/V5RCZjB3Bg==",
+     "logo_url": "/api/v2/artwork/tmdb/movies/1477712/logo/original.798876a8ca34fc7e88c98b18e7faca5eca0e29ecfd66d10724fdf9bb4a3bba6f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "Stereo",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "2.39:1",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "movie-imdb-tt32393988",
+     "play_content_id": "movie-imdb-tt32393988",
+     "type": "movie",
+     "title": "Insidious: Out of the Further",
+     "year": 2026,
+     "runtime": 106,
+     "genres": [
+      "Horror",
+      "Thriller"
+     ],
+     "keywords": [
+      "supernatural",
+      "trauma",
+      "cult",
+      "sequel",
+      "evil spirit",
+      "demon",
+      "dentist",
+      "aggressive",
+      "other dimension",
+      "mother daughter relationship",
+      "insidious",
+      "supernatural horror",
+      "horror",
+      "amused",
+      "standalone"
+     ],
+     "studios": [
+      "Screen Gems",
+      "Stage 6 Films",
+      "Atomic Monster",
+      "TSG Entertainment",
+      "Oren Peli Productions",
+      "Blumhouse Atomic Monster"
+     ],
+     "content_rating": "PG-13",
+     "status": "matched",
+     "rating_imdb": 6.2,
+     "rating_tmdb": 7.713,
+     "original_language": "en",
+     "overview": "Gemma, a young mother raising her daughter in the house she grew up in, discovers she can travel into The Further, the purgatorial realm of lost souls at the heart of the Insidious universe. When something evil comes after her, Gemma discovers an ability that changes everything: she doesn't just enter The Further, she can bring what lives there back to the real world. Once the demons realize her power, our world becomes their playground.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/e53cd380/poster/w500.cd0616393b20ba6a44402cc0d3f3c7893144f0e0ed249e2a1b67a7f6412b5451.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "i8cFFQIvY6l6VrmZZoeIaGBiBxWC",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/9daa0d05/backdrop/w1920.9e56b68a1d6e31dea0a7b07dbc71f8e904b29d9edf195850810faa5d54fee8da.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "R8cFHIRITJnPdnqXd3alQGcLdA==",
+     "logo_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/8bc7ec52/logo/original.aa92cbf5440a2f0d6a6cf15ee9ea88236aa2d6a7a3189b7dbf459dc621b26ea6.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "movie-imdb-tt37281055",
+     "play_content_id": "movie-imdb-tt37281055",
+     "type": "movie",
+     "title": "Buddy",
+     "year": 2026,
+     "runtime": 96,
+     "genres": [
+      "Horror",
+      "Comedy",
+      "Fantasy"
+     ],
+     "keywords": [
+      "supernatural",
+      "dark comedy",
+      "gore",
+      "slasher",
+      "madness",
+      "unicorn",
+      "tv host",
+      "suburban",
+      "supernatural horror",
+      "independent film",
+      "missing children",
+      "kids show"
+     ],
+     "studios": [
+      "BoulderLight Pictures",
+      "Low Spark Films",
+      "SIPUR",
+      "Substance"
+     ],
+     "content_rating": "R",
+     "status": "matched",
+     "rating_imdb": 7.1,
+     "rating_tmdb": 7.833,
+     "original_language": "en",
+     "overview": "A magical, singing orange unicorn holds his cast hostage in a surreal TV-show dimension, as he becomes more and more demented.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt37281055/14955dc4/poster/w500.79f91ddfa2dd003ca3f6f99ec491753abdee7ac04f891abe23781281afcdce93.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "lzgONRCIZ3+IKHdId4JneAh1hVBn",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt37281055/fde6040d/backdrop/w1920.f2796acf62f0a0257e26ef55b72d06366b2a405a90da233552e11484abd6a38f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "TQgKDIJQhoh8doiId4gFk3VQJw==",
+     "logo_url": "/api/v2/artwork/local/movies/movie-imdb-tt37281055/b834615d/logo/original.4f0051693f2e91ea7e624727e117cdaee833189f3d4f312d5bb9d93b609949ba.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "1.85:1",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "146552199311672628",
+   "section_type": "recently_added",
+   "title": "Recently Added in Movies",
+   "featured": false,
+   "item_limit": 20,
+   "total_count": 20,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "movie-imdb-tt36893729",
+     "play_content_id": "movie-imdb-tt36893729",
+     "type": "movie",
+     "title": "Ice Cream Man",
+     "year": 2026,
+     "runtime": 87,
+     "genres": [
+      "Comedy",
+      "Horror",
+      "Thriller"
+     ],
+     "keywords": [],
+     "studios": [
+      "The Horror Section",
+      "Media Capital Technologies",
+      "Head Gear Films",
+      "Mass Appeal",
+      "Metrol Technology",
+      "dentsu",
+      "Sixth Dimension"
+     ],
+     "content_rating": "NR",
+     "status": "matched",
+     "rating_imdb": 3.8,
+     "rating_tmdb": 4.833,
+     "overview": "An idyllic summer town descends into madness when an ice cream man serves kids sweet delights with horrifying results.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt36893729/f4965d2f/poster/w500.4ffddfc22889d85316621cb982a4863d125227c915c26a8b5bb4fcace5bebd14.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "IMcFJQpwk7m0lTeciF9nbHMpP3fy",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt36893729/2fad79a0/backdrop/w1920.ca5ed9350993e4d485cfdfacb0e22e997b22e650a596d44387675042898d3f6f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "UtcFBIKId4imdnd/V5RCZjB3Bg==",
+     "logo_url": "/api/v2/artwork/tmdb/movies/1477712/logo/original.798876a8ca34fc7e88c98b18e7faca5eca0e29ecfd66d10724fdf9bb4a3bba6f.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "Stereo",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "2.39:1",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "movie-imdb-tt32588798",
+     "play_content_id": "movie-imdb-tt32588798",
+     "type": "movie",
+     "title": "Practical Magic 2",
+     "year": 2026,
+     "runtime": 130,
+     "genres": [
+      "Romance",
+      "Fantasy",
+      "Comedy"
+     ],
+     "keywords": [],
+     "studios": [
+      "Di Novi Pictures",
+      "Warner Bros. Pictures",
+      "Blossom Films",
+      "Fortis Films",
+      "Domain Entertainment",
+      "Alcon Entertainment"
+     ],
+     "content_rating": "PG-13",
+     "status": "matched",
+     "rating_imdb": 6.4,
+     "rating_tmdb": 6.4,
+     "overview": "The Owens sisters must confront the dark curse that threatens to unravel their family once and for all.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt32588798/e467c3c5/poster/w500.11e5bed0f698f6d6f8c3a824d48a496579a6f0be3a563cb78839c8d23f8cd389.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "DTkKHQSQd2OXWHpniYaHZ4B0BFcn",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt32588798/51071e9f/backdrop/w1920.15c7d1870e7c0b419719fc91b741dd0351e7b247c82982625d7c04f61c5a89ff.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "0SgGDISCNl2AYriGdmhwrQJlKQ==",
+     "logo_url": "/api/v2/artwork/local/movies/movie-imdb-tt32588798/f2b67240/logo/original.12722f83552865b023f4a68d86b5739b9054176be71630cb159e7d6b77049276.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "movie-imdb-tt32393988",
+     "play_content_id": "movie-imdb-tt32393988",
+     "type": "movie",
+     "title": "Insidious: Out of the Further",
+     "year": 2026,
+     "runtime": 106,
+     "genres": [
+      "Horror",
+      "Thriller"
+     ],
+     "keywords": [],
+     "studios": [
+      "Screen Gems",
+      "Stage 6 Films",
+      "Atomic Monster",
+      "TSG Entertainment",
+      "Oren Peli Productions",
+      "Blumhouse Atomic Monster"
+     ],
+     "content_rating": "PG-13",
+     "status": "matched",
+     "rating_imdb": 6.2,
+     "rating_tmdb": 7.713,
+     "overview": "Gemma, a young mother raising her daughter in the house she grew up in, discovers she can travel into The Further, the purgatorial realm of lost souls at the heart of the Insidious universe. When something evil comes after her, Gemma discovers an ability that changes everything: she doesn't just enter The Further, she can bring what lives there back to the real world. Once the demons realize her power, our world becomes their playground.",
+     "poster_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/e53cd380/poster/w500.cd0616393b20ba6a44402cc0d3f3c7893144f0e0ed249e2a1b67a7f6412b5451.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "i8cFFQIvY6l6VrmZZoeIaGBiBxWC",
+     "backdrop_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/9daa0d05/backdrop/w1920.9e56b68a1d6e31dea0a7b07dbc71f8e904b29d9edf195850810faa5d54fee8da.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "R8cFHIRITJnPdnqXd3alQGcLdA==",
+     "logo_url": "/api/v2/artwork/local/movies/movie-imdb-tt32393988/8bc7ec52/logo/original.aa92cbf5440a2f0d6a6cf15ee9ea88236aa2d6a7a3189b7dbf459dc621b26ea6.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "146660001899874110",
+   "section_type": "recently_added",
+   "title": "Recently Added in TV Shows",
+   "featured": false,
+   "item_limit": 20,
+   "total_count": 21,
+   "is_custom": false,
+   "customized": false,
+   "items": [
+    {
+     "content_id": "episode-imdb-tt13438882-7-2",
+     "play_content_id": "episode-imdb-tt13438882-7-2",
+     "type": "episode",
+     "title": "Lennon Parham, Cedric the Entertainer & Kevin Smith",
+     "series_id": "series-imdb-tt13438882",
+     "series_title": "Celebrity Wheel of Fortune",
+     "season_number": 7,
+     "episode_number": 2,
+     "runtime": 43,
+     "genres": [
+      "Game Show"
+     ],
+     "keywords": [],
+     "content_rating": "TV-PG",
+     "status": "matched",
+     "overview": "Celebrity contestants Lennon Parham, Cedric the Entertainer and Kevin Smith.",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/tvdb/series/391685/poster/w500.e4ac419f7b3508ef6ddb5704fb39c91c444bcd93d7901f3ae617e3fe9cc63976.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "kRcKJQaIlnyHB3pYmHV5iEvPdqBK",
+     "backdrop_url": "/api/v2/artwork/local/series/series-imdb-tt13438882/seasons/7/episodes/2/b928948c/still/w500.8b68e5fea87034fbc591bd1f26761a9b612da8a4bb9897881e19ade0cb580bc6.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "iygGDIILl1hxi4mXd4wNM/cZlA==",
+     "logo_url": "/api/v2/artwork/tmdb/series/114656/logo/original.ae5ce965d7e25020f3c27fb3fb3cb7fe31e46a6d1660894bbb50dbad29f65bbe.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "episode-imdb-tt2342499-13-1",
+     "play_content_id": "episode-imdb-tt2342499-13-1",
+     "type": "episode",
+     "title": "What A Thai To Be Alive",
+     "series_id": "series-imdb-tt2342499",
+     "series_title": "Below Deck",
+     "season_number": 13,
+     "episode_number": 1,
+     "runtime": 43,
+     "genres": [
+      "Reality"
+     ],
+     "keywords": [],
+     "content_rating": "TV-14",
+     "status": "matched",
+     "overview": "Capt. Kerry welcomes a fresh crew aboard Azul V for a new season, but new power dynamics on the interior and exterior teams put their chemistry to the test right away. With engine trouble threatening to delay departure before the season even begins, can the crew pull it together or will the first charter send them off course?",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/local/series/series-imdb-tt2342499/seasons/13/a137b337/poster/w500.48dd5cdfe5b33a16a2b6782bfbd4e66f1840e42e6ffa08e0b2795adfe8bc7737.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "kTgOJQZ4d3mHCIeYeHdYR4RGUIkF",
+     "backdrop_url": "/api/v2/artwork/local/series/series-imdb-tt2342499/seasons/13/episodes/1/7b4392d1/still/w500.0f7e3f209e621ce9f16a58ce09c425f37f330ed8d71fdacbea2bf187cc834d80.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "kTgOLQhoh3iHB4iHh3hoaHdmgHgH",
+     "logo_url": "/api/v2/artwork/tvdb/series/270205/logo/original.f7252f87e43aa4ee140df8d441c28108e471a078ec2191666f3cb121c3421ac6.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "AAC",
+      "audio_channels": "Stereo",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "badges": [
+      "season_premiere"
+     ],
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    },
+    {
+     "content_id": "episode-imdb-tt0472954-18-10",
+     "play_content_id": "episode-imdb-tt0472954-18-10",
+     "type": "episode",
+     "title": "The Guys Have a Sleepover",
+     "series_id": "series-imdb-tt0472954",
+     "series_title": "It's Always Sunny in Philadelphia",
+     "season_number": 18,
+     "episode_number": 10,
+     "runtime": 22,
+     "genres": [
+      "Comedy"
+     ],
+     "keywords": [],
+     "content_rating": "TV-MA",
+     "status": "matched",
+     "overview": "Blinded from LASIK surgery, Dee pleads for the guys to spend the night to keep her safe from neighborhood crime, but they listen to the wolves inside themselves and opt for a dudes-only sleepover of their own.",
+     "poster_is_episode_still": false,
+     "backdrop_is_episode_still": true,
+     "poster_url": "/api/v2/artwork/tvdb/series/75805/seasons/18/poster/w500.c38db790e094c963c089ced80f52b6701e4f483af89a7431ef383330d15a6100.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "poster_thumbhash": "EDkGDQI3aY+IN1hHaHWotwidiMCp",
+     "backdrop_url": "/api/v2/artwork/local/series/series-imdb-tt0472954/seasons/18/episodes/10/1d8f04cb/still/w500.502cfdbb88b8148f8bdf3d4ef50ed3d136e34d1f70df1d7dd3b8ca66becb2db7.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "backdrop_thumbhash": "jigCDYKYxXmORWmLWfSzamG/V/la",
+     "logo_url": "/api/v2/artwork/tvdb/series/75805/logo/original.9556b6e087fa2663a17f6d057fd0384a2ddef46dead12a6a8670bb4341463cfe.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "overlay_summary": {
+      "resolution": "1080p",
+      "audio": "EAC3",
+      "audio_channels": "5.1",
+      "video_codec": "H.264",
+      "container": "MKV",
+      "aspect_ratio": "16:9",
+      "multi_sub": true
+     },
+     "user_state": {
+      "played": false,
+      "is_favorite": false,
+      "in_watchlist": false
+     }
+    }
+   ]
+  }
+ ]
+}

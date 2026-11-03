@@ -4,6 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/signed_in_server_features.dart';
+import '../services/moonbase_endpoint.dart';
+
 /// A studio for the details screen: its name and, when the plugin has a cached
 /// logo, an authenticated URL to that logo image.
 typedef StudioCompany = ({String name, String? imageUrl});
@@ -67,6 +70,10 @@ class TmdbRepository {
 
   TmdbRepository(this._client);
 
+  /// The plugin's image URLs carry the token in the query, which only the
+  /// Jellyfin and Emby plugins take. Silo's plugin routes need its headers.
+  bool get _hasPlugin => serverHasMoonfinPlugin(_client);
+
   /// Fetches the item's studios (TMDB production companies) from the Moonfin
   /// plugin, which caches the logos server-side. Returns null when the plugin
   /// call fails; the details screen then shows name-only placeholders.
@@ -103,7 +110,11 @@ class TmdbRepository {
         final id = (entry['id'] as num?)?.toInt();
         final name = entry['name']?.toString() ?? '';
         if (id == null || name.isEmpty) continue;
-        final imageUrl = entry['hasLogo'] == true ? _studioImageUrl(id) : null;
+        // Moonbase on Silo links the logo on TMDB, since an image URL can't
+        // carry Silo's headers.
+        final imageUrl = entry['hasLogo'] == true
+            ? _studioImageUrl(id) ?? entry['logoUrl'] as String?
+            : null;
         companies.add((name: name, imageUrl: imageUrl));
       }
 
@@ -121,7 +132,7 @@ class TmdbRepository {
 
   String? _studioImageUrl(int companyId) {
     final token = _client.accessToken;
-    if (token == null) return null;
+    if (token == null || !_hasPlugin) return null;
     return '${_client.baseUrl}/Moonfin/Tmdb/StudioImage/$companyId?${_client.serverType.tokenQueryParam}=$token';
   }
 
@@ -130,7 +141,7 @@ class TmdbRepository {
   /// [tmdbId].
   String? thumbUrl({required String type, String? tmdbId, String? imdbId}) {
     final token = _client.accessToken;
-    if (token == null) return null;
+    if (token == null || !_hasPlugin) return null;
     final MapEntry<String, String> id;
     if (tmdbId != null && tmdbId.isNotEmpty) {
       id = MapEntry('tmdbId', tmdbId);
@@ -157,20 +168,18 @@ class TmdbRepository {
     String? tmdbId,
     String? imdbId,
   }) async {
-    final token = _client.accessToken;
-    if (token == null) return null;
     final hasTmdb = tmdbId != null && tmdbId.isNotEmpty;
     if (!hasTmdb && (imdbId == null || imdbId.isEmpty)) return null;
     try {
+      final ep = await moonbaseEndpoint(_client, _dio);
+      if (ep == null) return null;
       final response = await _dio.get(
-        '${_client.baseUrl}/Moonfin/Tmdb/Details',
+        '${ep.base}/Moonfin/Tmdb/Details',
         queryParameters: {
           'type': type,
           if (hasTmdb) 'tmdbId': tmdbId else 'imdbId': imdbId,
         },
-        options: Options(headers: {
-          'Authorization': 'MediaBrowser Token="$token"',
-        }),
+        options: Options(headers: ep.headers),
       );
       final data = response.data;
       return data is Map<String, dynamic> ? data : null;
@@ -345,15 +354,13 @@ class TmdbRepository {
     String path,
     Map<String, dynamic> query,
   ) async {
-    final token = _client.accessToken;
-    if (token == null) return null;
+    final ep = await moonbaseEndpoint(_client, _dio);
+    if (ep == null) return null;
 
     final response = await _dio.get(
-      '${_client.baseUrl}$path',
+      '${ep.base}$path',
       queryParameters: query,
-      options: Options(headers: {
-        'Authorization': 'MediaBrowser Token="$token"',
-      }),
+      options: Options(headers: ep.headers),
     );
 
     final data = response.data;

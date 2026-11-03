@@ -2,10 +2,12 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/session_repository.dart';
+import '../../auth/services/silo_token_storage.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_discover_sliders.dart';
 import '../services/seerr/seerr_http_client.dart';
 import '../services/seerr/seerr_models.dart';
+import '../services/seerr/silo_seerr_http_client.dart';
 
 class SeerrRepository {
   final PreferenceStore _store;
@@ -141,6 +143,25 @@ class SeerrRepository {
   }
 
   Future<void> _initMoonfinMode() async {
+    // Silo has requests of its own, and its session is the requests session.
+    final silo = siloClientOf(_client);
+    if (silo != null) {
+      _httpClient?.close();
+      _httpClient = SiloSeerrHttpClient(silo);
+      _cachedPublicSettings = null;
+      _discoverSliders = null;
+      _isMoonfinMode = true;
+      try {
+        final status = await _httpClient!.getMoonfinStatus();
+        _isAvailable = status.authenticated;
+        _serverReportsEnabled = status.enabled;
+      } catch (_) {
+        _isAvailable = false;
+        _serverReportsEnabled = false;
+      }
+      return;
+    }
+
     final baseUrl = _client.baseUrl;
     final token = _client.accessToken;
     if (baseUrl.isEmpty || token == null || token.isEmpty) {

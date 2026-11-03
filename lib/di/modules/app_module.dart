@@ -67,6 +67,7 @@ import '../../ui/navigation/destinations.dart';
 import '../../ui/screensaver/screensaver_controller.dart';
 import '../../ui/screens/home/home_view_model.dart';
 import '../../ui/screens/setup/setup_wizard_gate.dart';
+import '../../watch_party/silo_watch_party_manager.dart';
 
 final _getIt = GetIt.instance;
 
@@ -98,6 +99,10 @@ void resetUserScopedSingletons() {
   unregister<UpcomingEpisodeService>();
   // Watched state is per user, so the next account must not inherit it.
   userDataSync.reset();
+  // A Watch Party room belongs to the session that joined it.
+  if (_getIt.isRegistered<SiloWatchPartyManager>()) {
+    _getIt<SiloWatchPartyManager>().onSessionChanged();
+  }
 
   _registerUserScopedSingletons();
 }

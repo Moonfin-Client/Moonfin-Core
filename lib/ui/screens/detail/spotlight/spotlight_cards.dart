@@ -37,6 +37,7 @@ import 'spotlight_images.dart';
 import 'widgets/spotlight_file_details_section.dart';
 import 'widgets/spotlight_modal_grids.dart';
 import 'widgets/spotlight_section_modal.dart';
+import '../../../../preference/seerr_preferences.dart';
 
 /// The item-level actions a Spotlight summary card's modal content can invoke.
 /// Every implementation closes the modal before navigating or starting
@@ -729,12 +730,12 @@ class _SpotlightCardsBuilder {
         if (similar.isNotEmpty) _mediaSection(librarySectionTitle, similar),
         if (seerrRecommendations.isNotEmpty)
           _seerrSection(
-            l10n.spotlightRecommendationsSeerr,
+            seerrBrand(l10n.spotlightRecommendationsSeerr),
             seerrRecommendations,
           ),
         if (seerrSimilar.isNotEmpty)
           _seerrSection(
-            similar.isEmpty ? l10n.similar : l10n.spotlightSimilarSeerr,
+            similar.isEmpty ? l10n.similar : seerrBrand(l10n.spotlightSimilarSeerr),
             seerrSimilar,
           ),
       ],
@@ -1080,13 +1081,13 @@ class _SpotlightCardsBuilder {
 
     return SpotlightCardSpec(
       id: 'appearances',
-      title: l10n.appearancesSeerr,
+      title: seerrBrand(l10n.appearancesSeerr),
       subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.star_outline,
       sections: [
         _seerrSection(
-          l10n.appearancesSeerr,
+          seerrBrand(l10n.appearancesSeerr),
           items,
           showCredit: true,
         ),
@@ -1105,13 +1106,13 @@ class _SpotlightCardsBuilder {
 
     return SpotlightCardSpec(
       id: 'crew',
-      title: l10n.crewContributionsSeerr,
+      title: seerrBrand(l10n.crewContributionsSeerr),
       subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.movie_creation_outlined,
       sections: [
         _seerrSection(
-          l10n.crewContributionsSeerr,
+          seerrBrand(l10n.crewContributionsSeerr),
           items,
           showCredit: true,
         ),

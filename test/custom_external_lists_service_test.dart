@@ -43,6 +43,8 @@ class _SignedIn extends Fake implements MediaServerClient {
   @override
   String? get userId => 'adult';
   @override
+  ServerType get serverType => ServerType.jellyfin;
+  @override
   DeviceInfo get deviceInfo => const DeviceInfo(id: 'phone', name: 'Phone', appName: 'Moonfin', appVersion: 'test');
 }
 

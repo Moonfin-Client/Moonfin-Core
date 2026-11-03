@@ -542,8 +542,10 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
                     : null,
               ),
             ),
-          const Spacer(),
-          if (showBrowseAll) browseAll,
+          if (showBrowseAll) ...[
+            const Spacer(),
+            browseAll,
+          ],
         ],
       ),
     );

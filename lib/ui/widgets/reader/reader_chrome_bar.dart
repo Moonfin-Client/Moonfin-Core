@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../data/models/reader_settings.dart';
 import '../../../util/platform_detection.dart';
+import '../focus/focusable_wrapper.dart';
 
 class _ChromePalette {
   final Color icon;
@@ -71,21 +72,30 @@ class _ChromeIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final button = GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onPressed,
-      child: SizedBox(
-        width: _kChromeButtonSize,
-        height: _kChromeButtonSize,
-        child: Center(
-          child: Icon(
-            icon,
-            size: 24,
-            color: onPressed == null ? color.withValues(alpha: 0.35) : color,
-          ),
+    final glyph = SizedBox(
+      width: _kChromeButtonSize,
+      height: _kChromeButtonSize,
+      child: Center(
+        child: Icon(
+          icon,
+          size: 24,
+          color: onPressed == null ? color.withValues(alpha: 0.35) : color,
         ),
       ),
     );
+    // On TV the remote reaches the button through focus, and OK presses it.
+    final button = PlatformDetection.isTV
+        ? FocusableWrapper(
+            onSelect: onPressed,
+            borderRadius: _kChromeButtonSize / 2,
+            disableScale: true,
+            child: glyph,
+          )
+        : GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onPressed,
+            child: glyph,
+          );
     if (tooltip == null) return button;
     return Tooltip(message: tooltip!, child: button);
   }
@@ -373,14 +383,23 @@ class ReaderBottomBar extends StatelessWidget {
                 overlayColor: accent.withValues(alpha: 0.18),
                 trackHeight: 3,
               ),
-              child: Slider(
-                value: value.clamp(min, max),
-                min: min,
-                max: max,
-                divisions: (divisions != null && divisions! > 0)
-                    ? divisions
-                    : null,
-                onChanged: onChanged,
+              // A focused slider takes all four arrows unless navigation is
+              // directional, and would never let a TV remote go.
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  navigationMode: PlatformDetection.isTV
+                      ? NavigationMode.directional
+                      : null,
+                ),
+                child: Slider(
+                  value: value.clamp(min, max),
+                  min: min,
+                  max: max,
+                  divisions: (divisions != null && divisions! > 0)
+                      ? divisions
+                      : null,
+                  onChanged: onChanged,
+                ),
               ),
             ),
           ),

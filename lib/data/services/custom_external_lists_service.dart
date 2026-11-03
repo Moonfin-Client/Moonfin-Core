@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/home_section_config.dart';
 import '../../util/platform_detection.dart';
+import '../../util/signed_in_server_features.dart';
 
 class ImdbExternalListItem {
   final String imdbId;
@@ -192,7 +193,8 @@ class CustomExternalListsService {
 
     final baseUrl = client.baseUrl;
     final token = client.accessToken;
-    if (token == null) {
+    // Custom rows are served by the Moonfin plugin, which Silo never has.
+    if (token == null || !serverHasMoonfinPlugin(client)) {
       return loadCustomRowFromCache(config, language: language);
     }
 

@@ -1,0 +1,1040 @@
+{
+ "Name": "xXx",
+ "OriginalTitle": "xXx",
+ "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+ "Id": "633614",
+ "Etag": "afd1ee5feff78691cb36377ba7bb4362",
+ "DateCreated": "2024-01-18T14:05:52.0000000Z",
+ "DateModified": "2024-08-21T12:30:42.0000000Z",
+ "CanDelete": true,
+ "CanDownload": true,
+ "PresentationUniqueKey": "p-tmdb-Movie-7451-f137a2dd21bbc1b99aa5c0f6bf02a805",
+ "SupportsSync": true,
+ "Container": "mkv",
+ "SortName": "xXx",
+ "ForcedSortName": "xXx",
+ "PremiereDate": "2002-08-09T05:00:00.0000000Z",
+ "ExternalUrls": [
+  {
+   "Name": "IMDb",
+   "Url": "https://www.imdb.com/title/tt0295701"
+  },
+  {
+   "Name": "TheMovieDb",
+   "Url": "https://www.themoviedb.org/movie/7451"
+  },
+  {
+   "Name": "Trakt",
+   "Url": "https://trakt.tv/search/tmdb/7451?id_type=movie"
+  }
+ ],
+ "MediaSources": [
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 3405900000,
+     "Name": "Chapter 2",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 7494570000,
+     "Name": "Chapter 3",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 14394380000,
+     "Name": "Chapter 4",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 19478210000,
+     "Name": "Chapter 5",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 25388700000,
+     "Name": "Chapter 6",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 30256890000,
+     "Name": "Chapter 7",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 34304270000,
+     "Name": "Chapter 8",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    },
+    {
+     "StartPositionTicks": 38738700000,
+     "Name": "Chapter 9",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 8
+    },
+    {
+     "StartPositionTicks": 43214000000,
+     "Name": "Chapter 10",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 9
+    },
+    {
+     "StartPositionTicks": 48595630000,
+     "Name": "Chapter 11",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 10
+    },
+    {
+     "StartPositionTicks": 51962740000,
+     "Name": "Chapter 12",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 11
+    },
+    {
+     "StartPositionTicks": 55646010000,
+     "Name": "Chapter 13",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 12
+    },
+    {
+     "StartPositionTicks": 59412690000,
+     "Name": "Chapter 14",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 13
+    },
+    {
+     "StartPositionTicks": 63570590000,
+     "Name": "Chapter 15",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 14
+    },
+    {
+     "StartPositionTicks": 65808240000,
+     "Name": "Chapter 16",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 15
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_633614",
+   "Path": "xXx (2002) Bluray-1080p [h265].mkv",
+   "Type": "Default",
+   "Container": "mkv",
+   "Size": 6845470385,
+   "Name": "xXx (2002) Bluray-1080p [h265]",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 74454380000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "dts",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English DTS 5.1 (Default)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "5.1",
+     "BitRate": 1536000,
+     "Channels": 6,
+     "SampleRate": 48000,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Profile": "DTS",
+     "Type": "Audio",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "hevc",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "BitRate": 7355344,
+     "BitDepth": 8,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 808,
+     "Width": 1920,
+     "AverageFrameRate": 23.976025,
+     "RealFrameRate": 23.976025,
+     "Profile": "Main",
+     "Type": "Video",
+     "AspectRatio": "240:101",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (Forced SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": true,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "xXx (2002) Bluray-1080p [h265].en.forced.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "DisplayTitle": "(SRT)",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 3,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "xXx (2002) Bluray-1080p [h265].srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 7355344,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 0,
+   "ItemId": "633614",
+   "MimeType": "video/x-matroska"
+  }
+ ],
+ "CriticRating": 48,
+ "ProductionLocations": [
+  "United States of America",
+  "Czech Republic"
+ ],
+ "Path": "xXx (2002) Bluray-1080p [h265].mkv",
+ "OfficialRating": "PG-13",
+ "Overview": "Xander Cage is your standard adrenaline junkie with no fear and a lousy attitude. When the US Government \"recruits\" him to go on a mission, he's not exactly thrilled. His mission: to gather information on an organization that may just be planning the destruction of the world, led by the nihilistic Yorgi.",
+ "Taglines": [
+  "A new breed of secret agent."
+ ],
+ "Genres": [
+  "Action",
+  "Adventure",
+  "Thriller",
+  "Crime"
+ ],
+ "CommunityRating": 5.9,
+ "RunTimeTicks": 74454380000,
+ "Size": 6845470385,
+ "FileName": "xXx (2002) Bluray-1080p [h265].mkv",
+ "Bitrate": 7355344,
+ "ProductionYear": 2002,
+ "RemoteTrailers": [
+  {
+   "Url": "https://www.youtube.com/watch?v=NgPdDDzVhkA"
+  }
+ ],
+ "ProviderIds": {
+  "Imdb": "tt0295701",
+  "Tmdb": "7451"
+ },
+ "IsFolder": false,
+ "ParentId": "288298",
+ "Type": "Movie",
+ "People": [
+  {
+   "Name": "Vin Diesel",
+   "Id": "294321",
+   "Role": "Xander Cage",
+   "Type": "Actor",
+   "PrimaryImageTag": "36a1021ce5dfa5fd5131a1885b564437_638613551349401407"
+  },
+  {
+   "Name": "Asia Argento",
+   "Id": "349577",
+   "Role": "Yelena",
+   "Type": "Actor",
+   "PrimaryImageTag": "b76489ae563e99b5de95f1bf76657f33_639176580064867521"
+  },
+  {
+   "Name": "Marton Csokas",
+   "Id": "294751",
+   "Role": "Yorgi",
+   "Type": "Actor",
+   "PrimaryImageTag": "401cf32b902764d549621165afbe38eb_638646225374494820"
+  },
+  {
+   "Name": "Samuel L. Jackson",
+   "Id": "294352",
+   "Role": "Agent Augustus Gibbons",
+   "Type": "Actor",
+   "PrimaryImageTag": "5ef7ee03a5205dcbac0abb96cf324b92_638612598935867813"
+  },
+  {
+   "Name": "Michael Roof",
+   "Id": "326312",
+   "Role": "Agent Toby Lee Shavers",
+   "Type": "Actor",
+   "PrimaryImageTag": "2f977d23425e3e1899babfd58b748d3b_639107880485907264"
+  },
+  {
+   "Name": "Richy Müller",
+   "Id": "349578",
+   "Role": "Milan Sova",
+   "Type": "Actor",
+   "PrimaryImageTag": "1f3b0ce96a4dc943daca2256d786a0e4_639176587405616765"
+  },
+  {
+   "Name": "Werner Daehn",
+   "Id": "349579",
+   "Role": "Kirill",
+   "Type": "Actor",
+   "PrimaryImageTag": "40641cd9930674f1a4297b3b833afbe2_639275194465558563"
+  },
+  {
+   "Name": "Petr Jákl",
+   "Id": "332917",
+   "Role": "Kolya",
+   "Type": "Actor",
+   "PrimaryImageTag": "88ce93813be1ec79a77177ae0b4386e4_638693113396428186"
+  },
+  {
+   "Name": "Jan Filipenský",
+   "Id": "296554",
+   "Role": "Viktor",
+   "Type": "Actor",
+   "PrimaryImageTag": "3b251b46464692e9102d705e64adc743_638693113396878191"
+  },
+  {
+   "Name": "Tom Everett",
+   "Id": "297457",
+   "Role": "Senator Dick Hotchkiss",
+   "Type": "Actor",
+   "PrimaryImageTag": "dae048436436a21a76caf42eb5ea9b8c_638975583266993874"
+  },
+  {
+   "Name": "Danny Trejo",
+   "Id": "305677",
+   "Role": "El Jefe",
+   "Type": "Actor",
+   "PrimaryImageTag": "53737177535fe0d641c115541786788f_638646227772724533"
+  },
+  {
+   "Name": "Thomas Ian Griffith",
+   "Id": "349580",
+   "Role": "Agent Jim McGrath",
+   "Type": "Actor",
+   "PrimaryImageTag": "139f21b85c4383833e939f2dab6cb85d_639240847984678783"
+  },
+  {
+   "Name": "Eve",
+   "Id": "349581",
+   "Role": "J.J.",
+   "Type": "Actor",
+   "PrimaryImageTag": "0ab214d4d04bce07666109f733e8e468_638725774889820721"
+  },
+  {
+   "Name": "Leila Arcieri",
+   "Id": "349582",
+   "Role": "Jordan King",
+   "Type": "Actor",
+   "PrimaryImageTag": "1645638c6863edb4117af6743afa6d82_638608460317376467"
+  },
+  {
+   "Name": "William Hope",
+   "Id": "310793",
+   "Role": "Agent Roger Donnan",
+   "Type": "Actor",
+   "PrimaryImageTag": "3e254680863e14236139545e106318d5_638695535323242073"
+  },
+  {
+   "Name": "Ted Maynard",
+   "Id": "344747",
+   "Role": "James Tannick",
+   "Type": "Actor",
+   "PrimaryImageTag": "27f8ca9d0715cd9a54c8c0794d0a9ffa_638608458708688911"
+  },
+  {
+   "Name": "Joe Bucaro III",
+   "Id": "296432",
+   "Role": "Virg",
+   "Type": "Actor",
+   "PrimaryImageTag": "9a44a6a3dd9fe739591896b4c04ea5af_638742317924648477"
+  },
+  {
+   "Name": "Chris Gann",
+   "Id": "292499",
+   "Role": "T.J.",
+   "Type": "Actor",
+   "PrimaryImageTag": "5845fecda50b10d898f8c5993b1d59a0_638717201794989108"
+  },
+  {
+   "Name": "Martin Hub",
+   "Id": "307534",
+   "Role": "Ivan Podrov",
+   "Type": "Actor",
+   "PrimaryImageTag": "7f438d0d27c01cb8c88d219c3343901e_639188765098247373"
+  },
+  {
+   "Name": "Radek Tomečka",
+   "Id": "349584",
+   "Role": "Ivan Pedgrag",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Mary-Pat Green",
+   "Id": "295515",
+   "Role": "Waitress",
+   "Type": "Actor",
+   "PrimaryImageTag": "79b07945c951cf4a5f9f6e8004fd70a5_638993792799884495"
+  },
+  {
+   "Name": "Tanner Gill",
+   "Id": "349585",
+   "Role": "Trucker",
+   "Type": "Actor",
+   "PrimaryImageTag": "e3210d40f98d89c4413d9dd14923f03d_638608460317556028"
+  },
+  {
+   "Name": "Scott Waugh",
+   "Id": "323838",
+   "Role": "Stockbroker",
+   "Type": "Actor",
+   "PrimaryImageTag": "b0a8876bd4500a6dbd5b8a635c42b238_638612690756681812"
+  },
+  {
+   "Name": "Václav Chalupa",
+   "Id": "319391",
+   "Role": "Nervous Hacker",
+   "Type": "Actor",
+   "PrimaryImageTag": "425cd51f2e90df35ea6cdb903fdcb9c5_638608451391666725"
+  },
+  {
+   "Name": "Martina Smuková",
+   "Id": "349586",
+   "Role": "Female Czech Cop",
+   "Type": "Actor",
+   "PrimaryImageTag": "c60241bd56b539ee6932c95c217b19ab_638608460317619338"
+  },
+  {
+   "Name": "TeeJay Boyce",
+   "Id": "349587",
+   "Role": "Bimbo Intern",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Tony Hawk",
+   "Id": "295890",
+   "Role": "Caddy Driver",
+   "Type": "Actor",
+   "PrimaryImageTag": "032893d7447ad02582febda15e39ae4a_638731968832444476"
+  },
+  {
+   "Name": "Mat Hoffman",
+   "Id": "298533",
+   "Role": "Extreme Guy",
+   "Type": "Actor",
+   "PrimaryImageTag": "2511cdcf53a38f25c03c390d792a8b7d_638878829816473679"
+  },
+  {
+   "Name": "Brian Deegan",
+   "Id": "317931",
+   "Role": "Extreme Guy",
+   "Type": "Actor",
+   "PrimaryImageTag": "7b6682893637a67f0ea962bf23230e56_638753586575668141"
+  },
+  {
+   "Name": "Mike Vallely",
+   "Id": "318015",
+   "Role": "Skater",
+   "Type": "Actor",
+   "PrimaryImageTag": "f4f92422ebc1b5b6417aa1d26b4b1552_639246827258911117"
+  },
+  {
+   "Name": "Mike Escamilla",
+   "Id": "318016",
+   "Role": "Ramp Truck Passenger",
+   "Type": "Actor",
+   "PrimaryImageTag": "5baf6daf6a550db1368a49da9f319eee_638827809837997984"
+  },
+  {
+   "Name": "Rob Wells",
+   "Id": "349588",
+   "Role": "Hillside Video Shooter",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Rick Thorne",
+   "Id": "318019",
+   "Role": "Caddy Passenger",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Carey Hart",
+   "Id": "293937",
+   "Role": "Caddy Passenger",
+   "Type": "Actor",
+   "PrimaryImageTag": "f5c9b327a343db8a2cfbe81e7b1bdafd_638753586575638141"
+  },
+  {
+   "Name": "W. Colin McKay",
+   "Id": "349589",
+   "Role": "Van Driver",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Jason Ellis",
+   "Id": "318017",
+   "Role": "Van Video Shooter",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Marek Vašut",
+   "Id": "304656",
+   "Role": "Czech General",
+   "Type": "Actor",
+   "PrimaryImageTag": "735b2fd314e58df8ca7489a8cfaa6782_638644719337246842"
+  },
+  {
+   "Name": "Luboš Pospíšil",
+   "Id": "349590",
+   "Role": "Czech Major",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Ivo Niederle",
+   "Id": "349591",
+   "Role": "Head Chemist",
+   "Type": "Actor",
+   "PrimaryImageTag": "1862a56d12fb931eecb837895de57375_638608460317954380"
+  },
+  {
+   "Name": "Vítězslav Bouchner",
+   "Id": "349592",
+   "Role": "Head Technician",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Esteban Cueto",
+   "Id": "313407",
+   "Role": "Gold Tooth Narco",
+   "Type": "Actor",
+   "PrimaryImageTag": "9ca92c9d0c68d3a3585c94043145d92b_639242303253675604"
+  },
+  {
+   "Name": "Martin Bárta",
+   "Id": "349593",
+   "Role": "Male Opera Singer (Don Giovanni)",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Martina Bauerová",
+   "Id": "349594",
+   "Role": "Female Opera Singer (Zerlina)",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Rich Wilkes",
+   "Id": "342220",
+   "Role": "Tall Guy",
+   "Type": "Actor",
+   "PrimaryImageTag": "730c808317427bc552f52550252fbbca_638608457998548157"
+  },
+  {
+   "Name": "F. Valentino Morales",
+   "Id": "322515",
+   "Role": "Short Order Cook/NSA Agent",
+   "Type": "Actor",
+   "PrimaryImageTag": "daf8c384952a78833e64c5d7cd99803c_638608452135099717"
+  },
+  {
+   "Name": "Leonard L. Thomas",
+   "Id": "300361",
+   "Role": "NSA Agent",
+   "Type": "Actor",
+   "PrimaryImageTag": "4b66e07f6f79c4b95d33c88c3e8c67dc_638608446780314694"
+  },
+  {
+   "Name": "Ivan Rueda",
+   "Id": "349595",
+   "Role": "Child Field Worker",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Joshua Montero",
+   "Id": "349596",
+   "Role": "Child Field Worker",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Armando Cantina",
+   "Id": "349597",
+   "Role": "Field Worker",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Roman Matrka",
+   "Id": "349598",
+   "Role": "Czech Agent",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Alena Cihalikova",
+   "Id": "349599",
+   "Role": "Xander's Bedroom Dancer",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Till Lindemann",
+   "Id": "349600",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "ec3d8393118409b6bc239b42322c1422_638608460318365814"
+  },
+  {
+   "Name": "Richard Kruspe",
+   "Id": "349601",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "0ff3bc5c1eace0c34f2237636fcbbd84_638608460318401068"
+  },
+  {
+   "Name": "Christian Lorenz",
+   "Id": "349602",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "f455d53914b382d7d95e532b58d50797_638608460318436443"
+  },
+  {
+   "Name": "Paul Landers",
+   "Id": "349603",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "1e8e7a2b20cb2a2559893a794f5de289_638608460318471936"
+  },
+  {
+   "Name": "Oliver Riedel",
+   "Id": "349604",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "59fe72ba808ecbbf64e0906a923083c2_638608460318507411"
+  },
+  {
+   "Name": "Christoph Schneider",
+   "Id": "349605",
+   "Role": "Self [Rammstein]",
+   "Type": "Actor",
+   "PrimaryImageTag": "3fe13b2f3d46a5a4ec108898d2ac8887_638608460318542822"
+  },
+  {
+   "Name": "Paul Hartnoll",
+   "Id": "349606",
+   "Role": "Self [Orbital]",
+   "Type": "Actor",
+   "PrimaryImageTag": "fd28d21ff418a9aa23b70edec8ba0406_638608460318578963"
+  },
+  {
+   "Name": "Phil Hartnoll",
+   "Id": "349607",
+   "Role": "Self [Orbital]",
+   "Type": "Actor",
+   "PrimaryImageTag": "62c41bda317d5967f2da72ba51d094cb_0"
+  },
+  {
+   "Name": "Michal Müller",
+   "Id": "349608",
+   "Role": "Zither Player",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Rob Cohen",
+   "Id": "328417",
+   "Role": "Columbian Horseman (uncredited)",
+   "Type": "Actor",
+   "PrimaryImageTag": "015393b4b31410193f8b79dc78b7a662_638776008802708209"
+  },
+  {
+   "Name": "Olga Lounová",
+   "Id": "349609",
+   "Role": "Waitress (uncredited)",
+   "Type": "Actor",
+   "PrimaryImageTag": "a5025274db80c9f026013eba9a7315b6_638608460318699321"
+  },
+  {
+   "Name": "Frank Mercuri",
+   "Id": "349610",
+   "Role": "Copter Skid Gunner (uncredited)",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Christopher Eric Ruiz",
+   "Id": "349611",
+   "Role": "F.A.R.C. Soldier (uncredited)",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Rob Roy",
+   "Id": "349612",
+   "Role": "Navy SEAL (uncredited)",
+   "Type": "Actor",
+   "PrimaryImageTag": "2afb2ae38c86e96f28db2f52c87c5906_638608460318807053"
+  },
+  {
+   "Name": "David Asman",
+   "Id": "343849",
+   "Role": "Agent Polk",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Rob Cohen",
+   "Id": "328417",
+   "Type": "Director",
+   "PrimaryImageTag": "015393b4b31410193f8b79dc78b7a662_638776008802708209"
+  }
+ ],
+ "Studios": [
+  {
+   "Name": "Columbia Pictures",
+   "Id": 292753
+  },
+  {
+   "Name": "Original Film",
+   "Id": 296274
+  },
+  {
+   "Name": "Revolution Studios",
+   "Id": 293603
+  },
+  {
+   "Name": "Neal H. Moritz Productions",
+   "Id": 349613
+  }
+ ],
+ "GenreItems": [
+  {
+   "Name": "Action",
+   "Id": 312
+  },
+  {
+   "Name": "Adventure",
+   "Id": 359
+  },
+  {
+   "Name": "Thriller",
+   "Id": 291957
+  },
+  {
+   "Name": "Crime",
+   "Id": 291956
+  }
+ ],
+ "TagItems": [],
+ "LocalTrailerCount": 0,
+ "UserData": {
+  "PlaybackPositionTicks": 0,
+  "PlayCount": 0,
+  "IsFavorite": false,
+  "Played": false
+ },
+ "DisplayPreferencesId": "dbf7709c41faaa746463d67978eb863d",
+ "PrimaryImageAspectRatio": 0.7012622720897616,
+ "MediaStreams": [
+  {
+   "Codec": "dts",
+   "Language": "eng",
+   "TimeBase": "1/1000",
+   "DisplayTitle": "English DTS 5.1 (Default)",
+   "DisplayLanguage": "English",
+   "IsInterlaced": false,
+   "ChannelLayout": "5.1",
+   "BitRate": 1536000,
+   "Channels": 6,
+   "SampleRate": 48000,
+   "IsDefault": true,
+   "IsForced": false,
+   "IsHearingImpaired": false,
+   "Profile": "DTS",
+   "Type": "Audio",
+   "Index": 0,
+   "IsExternal": false,
+   "IsTextSubtitleStream": false,
+   "SupportsExternalStream": false,
+   "Protocol": "File",
+   "ExtendedVideoType": "None",
+   "ExtendedVideoSubType": "None",
+   "ExtendedVideoSubTypeDescription": "None",
+   "AttachmentSize": 0
+  },
+  {
+   "Codec": "hevc",
+   "Language": "eng",
+   "TimeBase": "1/1000",
+   "VideoRange": "SDR",
+   "DisplayTitle": "1080p HEVC",
+   "DisplayLanguage": "English",
+   "IsInterlaced": false,
+   "BitRate": 7355344,
+   "BitDepth": 8,
+   "RefFrames": 1,
+   "IsDefault": true,
+   "IsForced": false,
+   "IsHearingImpaired": false,
+   "Height": 808,
+   "Width": 1920,
+   "AverageFrameRate": 23.976025,
+   "RealFrameRate": 23.976025,
+   "Profile": "Main",
+   "Type": "Video",
+   "AspectRatio": "240:101",
+   "Index": 1,
+   "IsExternal": false,
+   "IsTextSubtitleStream": false,
+   "SupportsExternalStream": false,
+   "Protocol": "File",
+   "PixelFormat": "yuv420p",
+   "Level": 120,
+   "IsAnamorphic": false,
+   "ExtendedVideoType": "None",
+   "ExtendedVideoSubType": "None",
+   "ExtendedVideoSubTypeDescription": "None",
+   "AttachmentSize": 0
+  },
+  {
+   "Codec": "srt",
+   "Language": "en",
+   "DisplayTitle": "English (Forced SRT)",
+   "DisplayLanguage": "English",
+   "IsInterlaced": false,
+   "IsDefault": false,
+   "IsForced": true,
+   "IsHearingImpaired": false,
+   "Type": "Subtitle",
+   "Index": 2,
+   "IsExternal": true,
+   "IsTextSubtitleStream": true,
+   "SupportsExternalStream": true,
+   "Path": "xXx (2002) Bluray-1080p [h265].en.forced.srt",
+   "Protocol": "File",
+   "ExtendedVideoType": "None",
+   "ExtendedVideoSubType": "None",
+   "ExtendedVideoSubTypeDescription": "None",
+   "AttachmentSize": 0
+  },
+  {
+   "Codec": "srt",
+   "DisplayTitle": "(SRT)",
+   "IsInterlaced": false,
+   "IsDefault": false,
+   "IsForced": false,
+   "IsHearingImpaired": false,
+   "Type": "Subtitle",
+   "Index": 3,
+   "IsExternal": true,
+   "IsTextSubtitleStream": true,
+   "SupportsExternalStream": true,
+   "Path": "xXx (2002) Bluray-1080p [h265].srt",
+   "Protocol": "File",
+   "ExtendedVideoType": "None",
+   "ExtendedVideoSubType": "None",
+   "ExtendedVideoSubTypeDescription": "None",
+   "AttachmentSize": 0
+  }
+ ],
+ "PartCount": 1,
+ "ImageTags": {
+  "Primary": "d5a08f3673ff5f948304c9c1726bd5a8_638654299116326844",
+  "Logo": "0c34bc1a76f7ec0ca859f72a815452db_639176580065843662",
+  "Thumb": "8bb0526233e6e8b4d6e478ce090c0fc2_639181985730276681"
+ },
+ "BackdropImageTags": [
+  "ad227ea1dbbed42961427ce2d3f77e9d_638701809372879276"
+ ],
+ "Chapters": [
+  {
+   "StartPositionTicks": 0,
+   "Name": "Chapter 1",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 0
+  },
+  {
+   "StartPositionTicks": 3405900000,
+   "Name": "Chapter 2",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 1
+  },
+  {
+   "StartPositionTicks": 7494570000,
+   "Name": "Chapter 3",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 2
+  },
+  {
+   "StartPositionTicks": 14394380000,
+   "Name": "Chapter 4",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 3
+  },
+  {
+   "StartPositionTicks": 19478210000,
+   "Name": "Chapter 5",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 4
+  },
+  {
+   "StartPositionTicks": 25388700000,
+   "Name": "Chapter 6",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 5
+  },
+  {
+   "StartPositionTicks": 30256890000,
+   "Name": "Chapter 7",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 6
+  },
+  {
+   "StartPositionTicks": 34304270000,
+   "Name": "Chapter 8",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 7
+  },
+  {
+   "StartPositionTicks": 38738700000,
+   "Name": "Chapter 9",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 8
+  },
+  {
+   "StartPositionTicks": 43214000000,
+   "Name": "Chapter 10",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 9
+  },
+  {
+   "StartPositionTicks": 48595630000,
+   "Name": "Chapter 11",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 10
+  },
+  {
+   "StartPositionTicks": 51962740000,
+   "Name": "Chapter 12",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 11
+  },
+  {
+   "StartPositionTicks": 55646010000,
+   "Name": "Chapter 13",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 12
+  },
+  {
+   "StartPositionTicks": 59412690000,
+   "Name": "Chapter 14",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 13
+  },
+  {
+   "StartPositionTicks": 63570590000,
+   "Name": "Chapter 15",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 14
+  },
+  {
+   "StartPositionTicks": 65808240000,
+   "Name": "Chapter 16",
+   "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+   "MarkerType": "Chapter",
+   "ChapterIndex": 15
+  }
+ ],
+ "MediaType": "Video",
+ "MimeType": "video/x-matroska",
+ "LockedFields": [],
+ "LockData": false,
+ "Width": 1920,
+ "Height": 808
+}

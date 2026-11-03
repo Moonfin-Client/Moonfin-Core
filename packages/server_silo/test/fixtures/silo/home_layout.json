@@ -1,0 +1,59 @@
+{
+ "sections": [
+  {
+   "id": "146552064640566580",
+   "section_type": "continue_watching",
+   "title": "Continue Watching",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false
+  },
+  {
+   "id": "146552064657343796",
+   "section_type": "hidden_gems",
+   "title": "Hidden Gems",
+   "featured": false,
+   "item_limit": 15,
+   "is_custom": false,
+   "customized": false
+  },
+  {
+   "id": "146552064657409332",
+   "section_type": "trending_on_server",
+   "title": "Trending on Server",
+   "featured": false,
+   "item_limit": 15,
+   "is_custom": false,
+   "customized": false
+  },
+  {
+   "id": "146552064657474868",
+   "section_type": "seasonal_themed",
+   "title": "Seasonal Picks",
+   "featured": false,
+   "item_limit": 15,
+   "is_custom": false,
+   "customized": false
+  },
+  {
+   "id": "146552199311672628",
+   "section_type": "recently_added",
+   "title": "Recently Added in Movies",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false
+  },
+  {
+   "id": "146660001899874110",
+   "section_type": "recently_added",
+   "title": "Recently Added in TV Shows",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false
+  }
+ ],
+ "included_sections": []
+}

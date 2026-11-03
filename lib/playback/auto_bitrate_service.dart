@@ -59,6 +59,10 @@ class AutoBitrateService {
     // The signed in server, since the newest client the factory made can be
     // another saved server's.
     final client = _clientFactory.clientForServerOrActive(null);
+    // Silo has no bandwidth test route, and its playback start takes the
+    // client's bandwidth as input and applies the server's own policy, so
+    // there is nothing to measure against.
+    if (client.serverType == ServerType.silo) return Future.value(null);
 
     final key = client.baseUrl;
     final cached = _cache[key];
@@ -141,19 +145,9 @@ class AutoBitrateService {
         responseType: ResponseType.stream,
         receiveTimeout: _requestTimeout,
         connectTimeout: _requestTimeout,
-        headers: plex
-            ? {'X-Plex-Token': ?client.accessToken}
-            : {
-                // Newer Jellyfin rejects a bare X-Emby-Token, so send the
-                // same Authorization header the server clients use.
-                'Authorization': buildServerAuthorizationHeader(
-                  scheme: client.serverType == ServerType.emby
-                      ? 'Emby'
-                      : 'MediaBrowser',
-                  deviceInfo: client.deviceInfo,
-                  accessToken: client.accessToken,
-                ),
-              },
+        // Newer Jellyfin rejects a bare X-Emby-Token, so send the same
+        // Authorization header the server clients use.
+        headers: serverAuthHeaders(client),
       ),
     );
 

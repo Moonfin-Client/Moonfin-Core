@@ -1,0 +1,299 @@
+{
+ "window_cursor": "eyJ2IjoxLCJwIjp7Im8iOjAsInMiOiIyMDI2LTEwLTEzVDE1OjI1OjE5LjI0NzgyODk5Ni0wNTowMCJ9fQ.arSIJ-nUPcsS7ZXjtgcN8-6lBtEccFg26EkIQa3izZc",
+ "items": [
+  {
+   "content_id": "movie-imdb-tt2518788",
+   "play_content_id": "movie-imdb-tt2518788",
+   "type": "movie",
+   "title": "1",
+   "year": 2013,
+   "runtime": 112,
+   "genres": [
+    "Documentary"
+   ],
+   "keywords": [
+    "speed",
+    "racing",
+    "race car driver",
+    "sports documentary",
+    "formula one (f1)"
+   ],
+   "studios": [
+    "Exclusive Media",
+    "Flat-Out Films",
+    "Spitfire Pictures",
+    "UFA",
+    "StudioCanal",
+    "Diamond Docs"
+   ],
+   "content_rating": "PG-13",
+   "status": "matched",
+   "rating_tmdb": 6.6,
+   "original_language": "en",
+   "overview": "Set in the golden era of Grand Prix Racing '1' tells the story of a generation of charismatic drivers who raced on the edge, risking their lives during Formula 1's deadliest period, and the men who stood up and changed the sport forever.",
+   "release_date": "2013-09-30",
+   "added_at": "2026-10-08T00:25:21.592Z",
+   "poster_url": "/api/v2/artwork/tmdb/movies/217316/poster/w300.8b477798988289a3916dd4761e542c48ad4bb96b6f8f5885a67e1a503df56efe.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "1XgKDQRKim95eKU3h7iJh2+P/eX4",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/217316/backdrop/w300.94ab3e09fb3eb978bbbdf8a5ee6cf993a26e14fe7b6eba49a7e3c4ee50446da6.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "nNgRJIKZiHeAeHh5d3aIcGj1Fg==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/217316/logo/w500.0ac90b153db7b6930ad37282ea42580c955186baab63895b190b2fd4eb7d944a.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "DTS",
+    "audio_channels": "5.1",
+    "video_codec": "H.264",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "BluRay",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt8774798",
+   "play_content_id": "movie-imdb-tt8774798",
+   "type": "movie",
+   "title": "100% Wolf",
+   "year": 2020,
+   "runtime": 96,
+   "genres": [
+    "Animation",
+    "Family",
+    "Fantasy",
+    "Adventure"
+   ],
+   "keywords": [
+    "poodle",
+    "teen angst",
+    "werewolf",
+    "based on children's book",
+    "dog",
+    "acceptance",
+    "3d animation"
+   ],
+   "studios": [
+    "Flying Bark Productions",
+    "Screen Australia",
+    "ScreenWest",
+    "ReDefine",
+    "Studio 100",
+    "Siamese",
+    "Create NSW",
+    "Lotterywest",
+    "Studio 100 Film"
+   ],
+   "content_rating": "PG",
+   "status": "matched",
+   "rating_tmdb": 6.1,
+   "original_language": "en",
+   "overview": "Freddy Lupin, heir to a proud family line of werewolves, is in for a shock when on his 14th birthday his first 'warfing' goes awry, turning him into a ferocious poodle.  The pack elders give Freddy until the next moonrise to prove he has the heart of a wolf, or risk being cast out forever.  With the help of an unlikely ally in a streetwise stray named Batty, Freddy must prove he's 100% Wolf.",
+   "release_date": "2020-06-26",
+   "added_at": "2026-10-08T00:25:21.590Z",
+   "poster_url": "/api/v2/artwork/tmdb/movies/520946/poster/w300.0f326fb9c1a0deddd138bcde31c00cd80350a302c3baff3f7b4e187b1c8b5714.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "GcYNDQInh4qGCKh4mHZneGl5b3j2",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/520946/backdrop/w300.dd93023aa300ae6efcef684ad09763508b3adf30b01e18354dc6164de31207cc.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "GcYNHIIIpXmLg3mDinYJebqH9Q==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/520946/logo/w500.57c6e8cfca98d5fd56958894521366cbc3f7192c3ec6b7e0a1fe1956108dbef4.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AC3",
+    "audio_channels": "5.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "1.85:1",
+    "release_type": "BluRay",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt0115433",
+   "play_content_id": "movie-imdb-tt0115433",
+   "type": "movie",
+   "title": "101 Dalmatians",
+   "year": 1996,
+   "runtime": 103,
+   "genres": [
+    "Family",
+    "Comedy"
+   ],
+   "keywords": [
+    "london, england",
+    "fur",
+    "fashion designer",
+    "puppy",
+    "fur coat",
+    "based on children's book",
+    "dog",
+    "dalmatian",
+    "female villain",
+    "pets",
+    "live action remake",
+    "playful"
+   ],
+   "studios": [
+    "Great Oaks Entertainment",
+    "Walt Disney Pictures",
+    "Wizzer Productions"
+   ],
+   "content_rating": "G",
+   "status": "matched",
+   "rating_tmdb": 5.947,
+   "original_language": "en",
+   "overview": "An evil, high-fashion designer plots to steal Dalmatian puppies in order to make an extravagant fur coat, but instead creates an extravagant mess.",
+   "release_date": "1996-11-27",
+   "added_at": "2026-10-08T00:25:21.590Z",
+   "poster_url": "/api/v2/artwork/tmdb/movies/11674/poster/w300.b8ba9ff30549b8c2d1876dfa41be3937aaf435a1fcb264b58fc8b3359f2bbac8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "YwcONRCnSHiGh2gIWIeaVyeAcwJI",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/11674/backdrop/w300.f256f047c4762f31b3d4d745b6d14bf36929c454259b849ffcef721635ec87d8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "KRgODIL6Vad/dpZ5mXkEgkUBaQ==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/11674/logo/w500.52c69661287cdd96638f2d241e641c533b935ea70377d8e96f849934e9f69711.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AC3",
+    "audio_channels": "5.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "16:9",
+    "release_type": "WEBRip",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt0324941",
+   "play_content_id": "movie-imdb-tt0324941",
+   "type": "movie",
+   "title": "101 Dalmatians II: Patch's London Adventure",
+   "year": 2003,
+   "runtime": 74,
+   "genres": [
+    "Family",
+    "Animation",
+    "Adventure",
+    "Comedy"
+   ],
+   "keywords": [
+    "london, england",
+    "cartoon",
+    "sequel",
+    "puppy",
+    "dog",
+    "dalmatian",
+    "aftercreditsstinger"
+   ],
+   "studios": [
+    "Disney Television Animation",
+    "DisneyToon Studios"
+   ],
+   "content_rating": "G",
+   "status": "matched",
+   "rating_tmdb": 6.026,
+   "original_language": "en",
+   "overview": "Being one of 101 takes its toll on Patch, who doesn't feel unique. When he's accidentally left behind on moving day, he meets his idol, Thunderbolt, who enlists him on a publicity campaign.",
+   "release_date": "2003-03-02",
+   "added_at": "2026-10-08T00:25:21.590Z",
+   "poster_url": "/api/v2/artwork/tmdb/movies/13654/poster/w300.d4e08f049be5f9204a880c38f4c31b9b73dc34bf95bd7462e3ef7f05ca57d57b.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "4igGNQZ1aJiVF7o2mGbEBpiFgCsH",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/13654/backdrop/w300.2f529efc89ec600e747254824b61e93e85094cee7c5a2b85c023640ec3c96e76.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "XVUJJIhgaIeIhoeydmrAZwF/Bg==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/13654/logo/w500.9f6c4df0de756cbfa8871d74d4c6a55aece8b5f8237bcd8a480694fe572b3eb0.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AAC",
+    "audio_channels": "5.1",
+    "video_codec": "H.265",
+    "container": "MKV",
+    "aspect_ratio": "1.69:1",
+    "release_type": "WEBRip",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt0499603",
+   "play_content_id": "movie-imdb-tt0499603",
+   "type": "movie",
+   "title": "10 Items or Less",
+   "year": 2006,
+   "runtime": 81,
+   "genres": [
+    "Comedy",
+    "Drama"
+   ],
+   "keywords": [
+    "casual meeting",
+    "job interview",
+    "identity crisis",
+    "underclass",
+    "consumerism",
+    "movie star",
+    "aftercreditsstinger",
+    "duringcreditsstinger",
+    "ordinary life",
+    "chance encounter",
+    "unexpected connection",
+    "personal restart",
+    "class contrast",
+    "shared confidences",
+    "breaking routines",
+    "mutual support"
+   ],
+   "studios": [
+    "Reveal Entertainment",
+    "Revelations Entertainment",
+    "Mockingbird Pictures"
+   ],
+   "content_rating": "R",
+   "status": "matched",
+   "rating_tmdb": 6.2,
+   "original_language": "en",
+   "overview": "An actor who is considering the role of a supermarket manager arrives at a grocery store on the outskirts of Los Angeles to do some field research. He subsequently becomes stranded, without a car or cell phone, and accepts a ride home with Scarlet, a cashier who is about to interview for a new job. The actor rediscovers the essence of his craft while helping Scarlet gain the confidence she needs to change her life.",
+   "release_date": "2006-09-11",
+   "added_at": "2026-10-08T00:25:21.595Z",
+   "poster_url": "/api/v2/artwork/tmdb/movies/2357/poster/w300.2ca2621bb4e1505a26091a6695f3ff9c6489023e084ef6e4896934e8b3e467c3.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "2CgOFQanpn94iXiYiHiIeJyvvvjK",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/2357/backdrop/w300.ef2dc18de4f0f813e52fdf9b9da7b4f063a43587e78b2f6aac7db6d91294d3c6.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "HEkKHIby8lWel5aKl5vMf/j9dw==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/2357/logo/w500.516f5b084e7a32c4289eb975f0066544f14ea78a6f483c5ca0f0941482ed2af4.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "overlay_summary": {
+    "resolution": "1080p",
+    "audio": "AAC",
+    "audio_channels": "Stereo",
+    "video_codec": "H.265",
+    "container": "MP4",
+    "aspect_ratio": "1.85:1",
+    "release_type": "WEBRip",
+    "multi_sub": true
+   },
+   "user_state": {
+    "played": false,
+    "is_favorite": false,
+    "in_watchlist": false
+   }
+  }
+ ],
+ "page": {
+  "next_cursor": "eyJ2IjoxLCJwIjp7ImEiOnsia2V5cyI6W3sia2luZCI6InRleHQiLCJ2YWx1ZSI6IjEwIGl0ZW1zIG9yIGxlc3MifSx7ImtpbmQiOiJ0ZXh0IiwidmFsdWUiOiJtb3ZpZS1pbWRiLXR0MDQ5OTYwMyJ9XSwiY29uc3VtZWQiOjV9LCJvIjo1LCJzIjoiMjAyNi0xMC0xM1QxNToyNToxOS4yNDc4Mjg5OTYtMDU6MDAifX0.uXAa0uoZGPGU_FuSWqrfnGXr019o8O5-lNNrufeTMwk",
+  "has_more": true
+ },
+ "total": 4611,
+ "total_exact": true
+}

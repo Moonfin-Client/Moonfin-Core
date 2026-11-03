@@ -1,0 +1,34 @@
+{
+ "items": [
+  {
+   "id": "eaddd2dc-4b4e-47e8-b0e2-8729dff5dc63",
+   "name": "Profile 1",
+   "avatar": "",
+   "avatar_source": "none",
+   "has_pin": false,
+   "is_child": false,
+   "is_primary": true,
+   "max_content_rating": "",
+   "max_advisory_age": null,
+   "require_advisory_age": false,
+   "quality_preference": "",
+   "language": "",
+   "preferred_metadata_language": "",
+   "subtitle_language": "",
+   "subtitle_mode": "auto",
+   "auto_skip_intro": false,
+   "auto_skip_credits": false,
+   "auto_skip_recap": false,
+   "auto_play_next_preview": false,
+   "show_forced_subtitles": true,
+   "library_restrictions_enabled": false,
+   "allowed_library_ids": [],
+   "max_playback_quality": "",
+   "created_at": "2026-10-09T03:30:00.000Z",
+   "updated_at": "2026-10-09T03:30:00.000Z"
+  }
+ ],
+ "avatar_upload_enabled": true,
+ "max_advisory_age_supported": true,
+ "require_advisory_age_supported": true
+}

@@ -45,12 +45,13 @@ class _QualityDecodingScreen extends StatelessWidget {
                   MaxVideoResolution.res2160p => '2160p (4K)',
                 },
               ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.liveTvDirectPlayEnabled,
-                title: l10n.settingsLiveTvDirect,
-                subtitle: l10n.settingsLiveTvDirectSubtitle,
-                icon: Icons.live_tv,
-              ),
+              if (liveTvOnAnySignedInServer())
+                SwitchPreferenceTile(
+                  preference: UserPreferences.liveTvDirectPlayEnabled,
+                  title: l10n.settingsLiveTvDirect,
+                  subtitle: l10n.settingsLiveTvDirectSubtitle,
+                  icon: Icons.live_tv,
+                ),
             ],
           ),
 
@@ -180,6 +181,14 @@ class _QualityDecodingScreen extends StatelessWidget {
                   subtitle: l10n.mapDolbyVisionP7Subtitle,
                   icon: Icons.hdr_strong,
                 ),
+                if (KnownDefects.hevcDoviHdr10PlusBug)
+                  SwitchPreferenceTile(
+                    preference:
+                        UserPreferences.media3StripDolbyVisionWithHdr10Plus,
+                    title: l10n.stripDolbyVisionHdr10PlusTitle,
+                    subtitle: l10n.stripDolbyVisionHdr10PlusSubtitle,
+                    icon: Icons.hdr_strong,
+                  ),
               ],
             ),
           ],

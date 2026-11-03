@@ -19,6 +19,28 @@ import 'platform_detection.dart';
 /// system's single-file ROMs.
 bool isArcadeFamilyCore(String core) => core == 'arcade' || core == 'mame';
 
+/// Whether [name] is a file the PlayStation core opens, going by the
+/// extensions pcsx_rearmed lists.
+bool isPlayStationDiscFile(String name) {
+  final dot = name.lastIndexOf('.');
+  return dot >= 0 &&
+      _playStationDiscExtensions.contains(name.substring(dot).toLowerCase());
+}
+
+const Set<String> _playStationDiscExtensions = {
+  '.bin',
+  '.cue',
+  '.img',
+  '.mdf',
+  '.pbp',
+  '.toc',
+  '.cbn',
+  '.m3u',
+  '.chd',
+  '.iso',
+  '.exe',
+};
+
 /// Preference key holding the list of downloaded core ids on Android and
 /// desktop.
 const String installedCoresPreferenceKey = 'installed_libretro_cores';

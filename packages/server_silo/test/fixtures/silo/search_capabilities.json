@@ -1,0 +1,12 @@
+{
+ "revision": "5e9ea736a98277c5ce271b04c7150abf1e54c279f59b5a3b2c84ae7afff5c2c5",
+ "state": "available",
+ "allowed": true,
+ "people_media_scope": true,
+ "facet_value_search": true,
+ "person_prefetch": true,
+ "video_with_episodes_scope": true,
+ "extended_query_rules": true,
+ "letter_index": true,
+ "provider": "postgres"
+}

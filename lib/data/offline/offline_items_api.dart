@@ -8,6 +8,7 @@ import '../../util/accent_folding.dart';
 import '../services/storage_path_service.dart';
 import 'offline_catalog.dart';
 import 'offline_errors.dart';
+import 'offline_media_segments.dart';
 import 'offline_views.dart';
 
 /// Serves the standard Jellyfin items envelopes from the local downloads
@@ -1101,7 +1102,7 @@ class OfflineItemsApi implements ItemsApi {
 
   @override
   Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async =>
-      const [];
+      storedMediaSegments(_catalog.byId(itemId)?.metadata);
 
   @override
   Future<List<Map<String, dynamic>>> searchRemoteSubtitles(

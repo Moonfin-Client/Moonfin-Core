@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/seasonal/seasonal_follower.dart';
@@ -312,6 +314,78 @@ void main() {
       planchette.step(0.03, null, size);
     }
     expect(planchette.opacity, 0);
+  });
+
+  testWidgets('takes the mouse pointer\'s place in the desktop layout', (tester) async {
+    Widget pointer(String effect) => MaterialApp(
+      home: SeasonalPointer(
+        effect: effect,
+        enabled: true,
+        child: const SizedBox.expand(),
+      ),
+    );
+    MouseCursor? cursor() =>
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1);
+    final mouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+      pointer: 1,
+    );
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: const Offset(400, 300));
+
+    // Snow has nothing to follow, so the system pointer stays.
+    await tester.pumpWidget(pointer('snow'));
+    await mouse.moveTo(const Offset(410, 300));
+    await tester.pump();
+    expect(cursor(), SystemMouseCursors.basic);
+
+    // It shows under a pointer that hasn't moved since Home appeared.
+    await tester.pumpWidget(pointer('halloween'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    expect(cursor(), SystemMouseCursors.none);
+    final dynamic painter = tester
+        .widget<CustomPaint>(find.byWidgetPredicate((w) => w is CustomPaint && w.painter != null))
+        .painter;
+    final planchette = (painter.followers as List<SeasonalFollower>).single;
+    expect(planchette.opacity, 1);
+
+    await mouse.moveTo(const Offset(300, 200));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    // The tip, 46% of the drawing up from its center, sits on the pointer.
+    final tip = planchette.position! +
+        Offset(math.sin(planchette.angle), -math.cos(planchette.angle)) *
+            (FollowerStyle.planchette.extent * 0.46);
+    expect(tip.dx, closeTo(300, 0.01));
+    expect(tip.dy, closeTo(200, 0.01));
+
+    await mouse.moveTo(const Offset(-10, -10));
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    expect(planchette.opacity, 0);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('Easter brings only its egg to the pointer', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: SeasonalPointer(
+          effect: 'easter',
+          enabled: true,
+          child: SizedBox.expand(),
+        ),
+      ),
+    );
+    final dynamic painter = tester
+        .widget<CustomPaint>(find.byWidgetPredicate((w) => w is CustomPaint && w.painter != null))
+        .painter;
+    expect(
+      [for (final follower in painter.followers as List<SeasonalFollower>) follower.style],
+      [FollowerStyle.easterEgg],
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   test('each holiday effect brings its own followers', () {

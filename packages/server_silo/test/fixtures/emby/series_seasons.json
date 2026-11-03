@@ -1,0 +1,177 @@
+{
+ "Items": [
+  {
+   "Name": "Season 1",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659232",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Path": "Season 1",
+   "Overview": "Robin, Aqualad, Kid Flash, Superboy, Miss Martian, and Artemis form Young Justice -- and find out whether they have what it takes to be a proven hero.",
+   "Taglines": [],
+   "Genres": [],
+   "IndexNumber": 1,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Tvdb": "359461"
+   },
+   "IsFolder": true,
+   "Type": "Season",
+   "People": [],
+   "Studios": [],
+   "GenreItems": [],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "UnplayedItemCount": 26,
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "PrimaryImageAspectRatio": 0.68,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "ImageTags": {
+    "Primary": "493634f9c1c69c604bfdd44d37a4903f_638752462601665027"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077"
+  },
+  {
+   "Name": "Invasion",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659233",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Path": "Season 2",
+   "Overview": "In Season 2, we pick up with the team five years later, as they fight off a secret alien invasion affecting the entire planet.",
+   "Taglines": [],
+   "Genres": [],
+   "IndexNumber": 2,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Tvdb": "488710"
+   },
+   "IsFolder": true,
+   "Type": "Season",
+   "People": [],
+   "Studios": [],
+   "GenreItems": [],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "UnplayedItemCount": 20,
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "PrimaryImageAspectRatio": 0.68,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "ImageTags": {
+    "Primary": "65e04a41deeab76ce21ff408cbac9823_638752462602345037"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077"
+  },
+  {
+   "Name": "Outsiders",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659235",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Path": "Season 3",
+   "Overview": "In Season 3, the team faces its greatest challenge yet as it takes on meta-human trafficking and the terrifying threat it creates for a society caught in the crossfire of a global and galaxy-wide genetic arms race.",
+   "Taglines": [],
+   "Genres": [],
+   "IndexNumber": 3,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Tvdb": "741188"
+   },
+   "IsFolder": true,
+   "Type": "Season",
+   "People": [],
+   "Studios": [],
+   "GenreItems": [],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "UnplayedItemCount": 26,
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "PrimaryImageAspectRatio": 0.68,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "ImageTags": {
+    "Primary": "aa6a94e05e49d597ecb10b98edd81e86_638752462602785043"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077"
+  },
+  {
+   "Name": "Phantoms",
+   "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+   "Id": "659234",
+   "DateCreated": "2024-09-03T08:08:14.0000000Z",
+   "Path": "Season 4",
+   "Overview": "The original team—Nightwing, Aquaman, Superboy, Miss Martian, Tigress, Zatanna and Rocket—are back, leading a new generation of young heroes on a quest for justice across the Earth, the Solar System, the Galaxy and beyond. Between Order and Chaos, through time and space, life and death battles will be fought, won and lost. Who will rise? Who will fall? And who will haunt them forever?",
+   "Taglines": [],
+   "Genres": [],
+   "IndexNumber": 4,
+   "RemoteTrailers": [],
+   "ProviderIds": {
+    "Tvdb": "1866986"
+   },
+   "IsFolder": true,
+   "Type": "Season",
+   "People": [],
+   "Studios": [],
+   "GenreItems": [],
+   "ParentLogoItemId": "648654",
+   "ParentBackdropItemId": "648654",
+   "ParentBackdropImageTags": [
+    "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+   ],
+   "UserData": {
+    "UnplayedItemCount": 26,
+    "PlaybackPositionTicks": 0,
+    "PlayCount": 0,
+    "IsFavorite": false,
+    "Played": false
+   },
+   "SeriesName": "Young Justice",
+   "SeriesId": "648654",
+   "PrimaryImageAspectRatio": 0.68,
+   "SeriesPrimaryImageTag": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+   "ImageTags": {
+    "Primary": "fd477a7907d01428775c892a07df7343_638752462604905074"
+   },
+   "BackdropImageTags": [],
+   "ParentLogoImageTag": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+   "ParentThumbItemId": "648654",
+   "ParentThumbImageTag": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077"
+  }
+ ],
+ "TotalRecordCount": 4
+}

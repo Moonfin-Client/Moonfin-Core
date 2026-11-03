@@ -1,6 +1,7 @@
 import 'offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -11,6 +12,7 @@ import '../../l10n/current_app_localizations.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
+import '../../util/tv_ui_scale.dart';
 import 'rating_display.dart';
 import 'simple_info_row.dart';
 
@@ -136,7 +138,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
   }
 
   Future<void> _loadRatings() async {
-    if (!_prefs.get(UserPreferences.enableAdditionalRatings)) return;
+    if (!_prefs.get(UserPreferences.homeRowsEnableAdditionalRatings)) return;
 
     final clientFactory = GetIt.instance<MediaServerClientFactory>();
     final resolveClient =
@@ -146,7 +148,9 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
     final result = await GetIt.instance<MdbListRepository>().getRatingsForItem(
       widget.item,
       resolveClient: resolveClient,
-      episodeRatingsEnabled: _prefs.canFetchEpisodeRatings,
+      episodeRatingsEnabled: _prefs.canFetchEpisodeRatingsFor(
+        UserPreferences.homeRowsRatings,
+      ),
     );
     if (mounted && result != null && result.isNotEmpty) {
       setState(() => _ratings = result);
@@ -481,39 +485,43 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
-    final theme = Theme.of(context);
-    final isMobile = PlatformDetection.useMobileUi;
+    final scale = _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+    // Boxes follow the desktop scale like the area's own height does. Text
+    // already grows with it through the text scaler.
+    double box(double px) => tvPx(px) * scale;
 
     final showRatings =
         _ratings.isNotEmpty ||
         item.communityRating != null ||
         item.criticRating != null;
 
-    final title = item.type == 'Episode'
-        ? [
-            item.seriesName,
-            item.name,
-          ].where((s) => s != null && s.isNotEmpty).join(' - ')
+    // An episode is titled by its series, and the info line leads with the
+    // episode itself.
+    final seriesName = item.seriesName?.trim() ?? '';
+    final title = item.type == 'Episode' && seriesName.isNotEmpty
+        ? seriesName
         : item.displayTitle;
 
-    final overviewStyle =
-        (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
-            ?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-              shadows: _textShadows,
-            );
-    final titleStyle =
-        (isMobile ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall)
-            ?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              shadows: _textShadows,
-            );
-    final infoRowHeight = isMobile ? 22.0 : 24.0;
-    final spacing = isMobile ? 6.0 : 4.0;
-    final overviewTopSpacing = showRatings ? (isMobile ? 12.0 : 8.0) : spacing;
-    final titleToMetaSpacing = isMobile ? 4.0 : 2.0;
-    final logoHeight = isMobile ? 40.0 : 50.0;
+    final titleStyle = TextStyle(
+      color: AppColorScheme.onSurface,
+      fontSize: tvPx(48),
+      fontWeight: FontWeight.w700,
+      height: 1.2,
+      shadows: _textShadows,
+    );
+    final overviewStyle = TextStyle(
+      color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+      fontSize: tvPx(24),
+      fontWeight: FontWeight.w400,
+      height: 36 / 24,
+      shadows: _textShadows,
+    );
+    final titleText = Text(
+      title,
+      style: titleStyle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
 
     final clientFactory = GetIt.instance<MediaServerClientFactory>();
     final imageApi =
@@ -541,65 +549,69 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
           // A text title sits at the bottom of the logo's room, right above
           // the info line, so nothing moves between items with and without logos.
           SizedBox(
-            height: logoHeight,
+            height: box(96),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: hasLogo
-                  ? Image(
-                      image: offlineAwareImageProvider(
-                        imageApi.getLogoImageUrl(
-                          logoItemId,
-                          maxWidth: isMobile ? 300 : 400,
-                          tag: logoTag,
+                  ? ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: box(640)),
+                      child: Image(
+                        image: offlineAwareImageProvider(
+                          imageApi.getLogoImageUrl(
+                            logoItemId,
+                            maxWidth: 640,
+                            tag: logoTag,
+                          ),
                         ),
-                      ),
-                      fit: BoxFit.contain,
-                      height: logoHeight,
-                      alignment: Alignment.centerLeft,
-                      errorBuilder: (_, _, _) => Text(
-                        title,
-                        style: titleStyle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        fit: BoxFit.contain,
+                        height: box(96),
+                        alignment: Alignment.bottomLeft,
+                        errorBuilder: (_, _, _) => titleText,
                       ),
                     )
-                  : Text(
-                      title,
-                      style: titleStyle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  : titleText,
             ),
           ),
-          SizedBox(height: titleToMetaSpacing),
+          SizedBox(height: box(12)),
           SizedBox(
-            height: infoRowHeight,
-            child: ClipRect(
-              child: SimpleInfoRow(
-                item: item,
-                showRating: !showRatings,
-                metadataSummary: _metadataSummary,
-              ),
+            height: box(36),
+            child: SimpleInfoRow(
+              item: item,
+              metadataSummary: _metadataSummary,
             ),
           ),
-          SizedBox(height: spacing),
-          if (showRatings)
-            RatingsRow(
-              ratings: _ratings,
-              communityRating: item.communityRating,
-              criticRating: item.criticRating,
-              enableAdditionalRatings: _prefs.get(
-                UserPreferences.enableAdditionalRatings,
-              ),
-              enabledRatings: _prefs.get(UserPreferences.enabledRatings),
-              showLabels: _prefs.get(UserPreferences.showRatingLabels),
-              showBadges: _prefs.get(UserPreferences.showRatingBadges),
-            ),
-          if (!_prefs.get(UserPreferences.hideHomeMediaDescription)) ...[
-            SizedBox(height: overviewTopSpacing),
-            Expanded(
+          if (showRatings) ...[
+            SizedBox(height: box(12)),
+            SizedBox(
+              height: box(40),
               child: Align(
-                alignment: Alignment.topLeft,
+                alignment: Alignment.centerLeft,
+                child: RatingsRow(
+                  ratings: _ratings,
+                  communityRating: item.communityRating,
+                  criticRating: item.criticRating,
+                  enableAdditionalRatings: _prefs.get(
+                    UserPreferences.homeRowsEnableAdditionalRatings,
+                  ),
+                  enabledRatings: _prefs.get(
+                    UserPreferences.homeRowsEnabledRatings,
+                  ),
+                  showLabels: _prefs.get(
+                    UserPreferences.homeRowsShowRatingLabels,
+                  ),
+                  showBadges: _prefs.get(
+                    UserPreferences.homeRowsShowRatingBadges,
+                  ),
+                  inlineChips: true,
+                ),
+              ),
+            ),
+          ],
+          if (!_prefs.get(UserPreferences.hideHomeMediaDescription)) ...[
+            SizedBox(height: box(16)),
+            Flexible(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: box(1200)),
                 child: Text(
                   cleanOverview(item.overview),
                   style: overviewStyle,

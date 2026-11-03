@@ -58,6 +58,7 @@ private let rowHeight: CGFloat = 208
 private let rowInset: CGFloat = 20
 private let logoHeight: CGFloat = 100
 private let seasonHeight: CGFloat = 60
+private let seasonTrackPadding: CGFloat = 8
 
 /// The player's episode browser: a panel over the right of the picture with
 /// season tabs along the top and the open season's episodes underneath,
@@ -86,6 +87,7 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
     private var seasonsView: UICollectionView!
     private var episodesView: UICollectionView!
     private var seasonsHeight: NSLayoutConstraint!
+    private var seasonsWidth: NSLayoutConstraint!
     private var logoWidth: NSLayoutConstraint!
     private var logoUrl = ""
 
@@ -122,11 +124,14 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
 
         let seasonsLayout = UICollectionViewFlowLayout()
         seasonsLayout.scrollDirection = .horizontal
-        seasonsLayout.minimumLineSpacing = 16
-        seasonsLayout.sectionInset = UIEdgeInsets(top: 0, left: rowInset, bottom: 0, right: rowInset)
+        seasonsLayout.minimumLineSpacing = 0
+        seasonsLayout.sectionInset = UIEdgeInsets(
+            top: seasonTrackPadding, left: seasonTrackPadding,
+            bottom: seasonTrackPadding, right: seasonTrackPadding)
         seasonsView = UICollectionView(frame: .zero, collectionViewLayout: seasonsLayout)
         seasonsView.translatesAutoresizingMaskIntoConstraints = false
-        seasonsView.backgroundColor = .clear
+        seasonsView.backgroundColor = UIColor(white: 1, alpha: 0.08)
+        seasonsView.layer.cornerRadius = seasonHeight / 2 + seasonTrackPadding
         seasonsView.showsHorizontalScrollIndicator = false
         seasonsView.dataSource = self
         seasonsView.delegate = self
@@ -159,6 +164,8 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
         panel.addSubview(messageLabel)
 
         seasonsHeight = seasonsView.heightAnchor.constraint(equalToConstant: 0)
+        seasonsWidth = seasonsView.widthAnchor.constraint(equalToConstant: 0)
+        seasonsWidth.priority = .defaultHigh
         logoWidth = logoView.widthAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([
             panel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60),
@@ -175,10 +182,12 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
             titleLabel.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -panelPadding),
             titleLabel.centerYAnchor.constraint(equalTo: logoView.centerYAnchor),
 
-            seasonsView.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: panelPadding),
-            seasonsView.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -panelPadding),
+            seasonsView.leadingAnchor.constraint(equalTo: logoView.leadingAnchor),
+            seasonsView.trailingAnchor.constraint(
+                lessThanOrEqualTo: panel.trailingAnchor, constant: -(panelPadding + rowInset)),
             seasonsView.topAnchor.constraint(equalTo: logoView.bottomAnchor, constant: 24),
             seasonsHeight,
+            seasonsWidth,
 
             episodesView.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: panelPadding),
             episodesView.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -panelPadding),
@@ -221,7 +230,12 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
 
         let showsSeasons = content.seasons.count > 1
         seasonsView.isHidden = !showsSeasons
-        seasonsHeight.constant = showsSeasons ? seasonHeight + 16 : 0
+        seasonsHeight.constant = showsSeasons ? seasonHeight + seasonTrackPadding * 2 : 0
+        // Hugs the seasons when they fit, otherwise they scroll inside it.
+        seasonsWidth.constant =
+            content.seasons.indices.reduce(seasonTrackPadding * 2) { sum, index in
+                sum + seasonSize(at: index).width
+            }
         if previous.map({ $0.seasons.map(\.id) == content.seasons.map(\.id) }) == true {
             refreshVisibleCells(in: seasonsView)
         } else {
@@ -329,7 +343,7 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
     private func configure(_ cell: UICollectionViewCell, in collectionView: UICollectionView, at indexPath: IndexPath) {
         if let seasonCell = cell as? EpisodeSeasonCell, content.seasons.indices.contains(indexPath.item) {
             let season = content.seasons[indexPath.item]
-            seasonCell.configure(name: season.name, isOpen: season.id == openSeasonId, accent: theme.accent)
+            seasonCell.configure(name: season.name, isOpen: season.id == openSeasonId)
         } else if let episodeCell = cell as? EpisodeRowCell,
             content.episodes.indices.contains(indexPath.item)
         {
@@ -344,7 +358,11 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
         guard collectionView === seasonsView else {
             return (collectionViewLayout as? UICollectionViewFlowLayout)?.itemSize ?? .zero
         }
-        let name = content.seasons[indexPath.item].name as NSString
+        return seasonSize(at: indexPath.item)
+    }
+
+    private func seasonSize(at index: Int) -> CGSize {
+        let name = content.seasons[index].name as NSString
         let width = name.size(withAttributes: [.font: EpisodeSeasonCell.font]).width
         return CGSize(width: ceil(width) + 60, height: seasonHeight)
     }
@@ -424,17 +442,16 @@ final class EpisodeBrowserViewController: UIViewController, RemotePlayerNavigabl
 
 private final class EpisodeSeasonCell: UICollectionViewCell {
     static let font = UIFont.systemFont(ofSize: 28, weight: .semibold)
+    private static let closedFont = UIFont.systemFont(ofSize: 28, weight: .medium)
 
     private let label = UILabel()
     private var isOpen = false
-    private var accent: UIColor = .white
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.layer.cornerRadius = seasonHeight / 2
-        contentView.layer.borderWidth = 3
+        contentView.layer.borderWidth = 1
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = Self.font
         label.textAlignment = .center
         contentView.addSubview(label)
         NSLayoutConstraint.activate([
@@ -448,20 +465,23 @@ private final class EpisodeSeasonCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(name: String, isOpen: Bool, accent: UIColor) {
+    func configure(name: String, isOpen: Bool) {
         label.text = name
         self.isOpen = isOpen
-        self.accent = accent
         applyStyle()
     }
 
+    /// The open season gets the frosted pill the Flutter tabs draw on Apple
+    /// devices.
     private func applyStyle() {
         let focused = isFocused
         contentView.backgroundColor =
-            focused ? .white : isOpen ? accent.withAlphaComponent(0.35) : UIColor(white: 1, alpha: 0.1)
-        contentView.layer.borderColor = (isOpen && !focused ? accent : UIColor.clear).cgColor
-        label.textColor = focused ? .black : .white
-        transform = focused ? CGAffineTransform(scaleX: 1.08, y: 1.08) : .identity
+            focused ? .white : isOpen ? UIColor(white: 1, alpha: 0.22) : .clear
+        contentView.layer.borderColor =
+            (isOpen && !focused ? UIColor(white: 1, alpha: 0.25) : UIColor.clear).cgColor
+        label.font = isOpen || focused ? Self.font : Self.closedFont
+        label.textColor = focused ? .black : isOpen ? .white : UIColor(white: 1, alpha: 0.75)
+        transform = focused ? CGAffineTransform(scaleX: 1.06, y: 1.06) : .identity
     }
 
     override func didUpdateFocus(

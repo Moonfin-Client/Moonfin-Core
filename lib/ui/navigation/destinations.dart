@@ -197,12 +197,14 @@ class Destinations {
   /// always the item's own season: a special inlined by
   /// DisplaySpecialsWithinSeasons is listed under a regular season while still
   /// living in Specials. Carrying it keeps the episode list and the play queue
-  /// on the season that was on screen.
+  /// on the season that was on screen. [full] opens the full page where Quick
+  /// Look would open its drawer.
   static String item(
     String itemId, {
     String? serverId,
     bool autoPlay = false,
     String? seasonContext,
+    bool full = false,
   }) {
     final base = '/item/$itemId';
     final params = <String>[
@@ -210,6 +212,7 @@ class Destinations {
       if (autoPlay) 'autoPlay=true',
       if (seasonContext != null && seasonContext.isNotEmpty)
         'seasonContext=${Uri.encodeQueryComponent(seasonContext)}',
+      if (full) 'full=true',
     ];
     return params.isEmpty ? base : '$base?${params.join('&')}';
   }
@@ -369,8 +372,12 @@ class Destinations {
   static String nextUpFor(String itemId) => '/player/next-up/$itemId';
   static String stillWatchingFor(String itemId) =>
       '/player/still-watching/$itemId';
+  /// Search from the request screens, landing on the Requests tab.
+  static const searchRequests = '/search?tab=requests';
   static String searchWith(String query) =>
       '/search?query=${Uri.encodeComponent(query)}';
+  static String searchRequestsWith(String query) =>
+      '$searchRequests&query=${Uri.encodeComponent(query)}';
   static String searchInLibrary(String libraryId, {String? query}) {
     final params = <String, String>{'libraryId': libraryId};
     if (query != null && query.trim().isNotEmpty) {

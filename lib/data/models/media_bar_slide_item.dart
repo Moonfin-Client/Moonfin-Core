@@ -47,4 +47,26 @@ class MediaBarSlideItem {
   /// Whether this title came from an outside list rather than the server, so it
   /// opens in Seerr and has nothing to play.
   bool get isExternal => serverId == externalServerId;
+
+  /// The same title with its description dropped, for previews of the
+  /// settings that hide it.
+  MediaBarSlideItem withoutOverview() => MediaBarSlideItem(
+    itemId: itemId,
+    serverId: serverId,
+    title: title,
+    backdropUrl: backdropUrl,
+    bannerUrl: bannerUrl,
+    logoUrl: logoUrl,
+    posterUrl: posterUrl,
+    officialRating: officialRating,
+    year: year,
+    genres: genres,
+    runtime: runtime,
+    communityRating: communityRating,
+    criticRating: criticRating,
+    tmdbId: tmdbId,
+    imdbId: imdbId,
+    itemType: itemType,
+    remoteTrailers: remoteTrailers,
+  );
 }

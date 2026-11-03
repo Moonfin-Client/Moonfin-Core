@@ -21,6 +21,8 @@ Future<T?> showStyledPlayerDialog<T>(
   double maxWidth = 440,
   bool useRootNavigator = true,
   bool barrierDismissible = true,
+  ImageProvider? titleImage,
+  bool sidePanel = false,
 }) {
   return showFocusRestoringDialog<T>(
     context: context,
@@ -44,12 +46,29 @@ Future<T?> showStyledPlayerDialog<T>(
               effectiveBottomInset -
               24;
 
-          final inner = playerDialogPanel(
-            constraints: BoxConstraints(
-              minWidth: 340,
-              maxWidth: maxWidth,
-              maxHeight: maxDialogHeight,
+          final titleText = Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+          );
+
+          final inner = playerDialogPanel(
+            constraints: sidePanel
+                ? BoxConstraints.tightFor(
+                    width: math.min(
+                      math.max(mediaQuery.size.width * 0.55, 340.0),
+                      maxWidth,
+                    ),
+                    height: maxDialogHeight,
+                  )
+                : BoxConstraints(
+                    minWidth: 340,
+                    maxWidth: maxWidth,
+                    maxHeight: maxDialogHeight,
+                  ),
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -58,14 +77,15 @@ Future<T?> showStyledPlayerDialog<T>(
                   padding: EdgeInsets.fromLTRB(24, 0, 24, subtitle != null ? 4 : 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: titleImage == null
+                        ? titleText
+                        : Image(
+                            image: titleImage,
+                            height: 44,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            errorBuilder: (_, _, _) => titleText,
+                          ),
                   ),
                 ),
                 if (subtitle != null)
@@ -101,10 +121,16 @@ Future<T?> showStyledPlayerDialog<T>(
           );
 
           return Dialog(
-            alignment: shiftUp ? const Alignment(0, -0.85) : Alignment.center,
+            alignment: sidePanel
+                ? Alignment.centerRight
+                : shiftUp
+                ? const Alignment(0, -0.85)
+                : Alignment.center,
             insetAnimationDuration: const Duration(milliseconds: 200),
             insetAnimationCurve: Curves.easeOutCubic,
-            insetPadding: shiftUp
+            insetPadding: sidePanel
+                ? const EdgeInsets.all(12)
+                : shiftUp
                 ? const EdgeInsets.fromLTRB(40, 20, 40, 360)
                 : const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
             backgroundColor: Colors.transparent,

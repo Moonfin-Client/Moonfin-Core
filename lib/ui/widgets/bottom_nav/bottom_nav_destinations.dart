@@ -9,7 +9,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../navigation/destinations.dart';
 import '../../navigation/home_refresh_bus.dart';
 import '../../screens/downloads/downloads_panel.dart';
-import '../../screens/syncplay/syncplay_screen.dart';
+import '../../screens/watch_party/watch_together_route.dart';
 import '../adaptive/sf_symbol.dart';
 import '../remote_control_dialog.dart';
 import '../seerr_icons.dart';
@@ -27,18 +27,22 @@ String bottomNavTabLabel(AppLocalizations l10n, BottomNavTab tab) =>
       BottomNavTab.liveTv => l10n.liveTv,
       BottomNavTab.discover => GetIt.instance.isRegistered<SeerrPreferences>()
           ? GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)
-          : l10n.seerr,
+          : seerrBrand(l10n.seerr),
     };
 
+/// [silo]: the active server is Silo, which calls approving another
+/// device's code "Approve a sign-in".
 String bottomNavHubActionLabel(
   AppLocalizations l10n,
-  BottomNavHubAction action,
-) =>
+  BottomNavHubAction action, {
+  bool silo = false,
+}) =>
     switch (action) {
       BottomNavHubAction.saved => l10n.savedMedia,
       BottomNavHubAction.shuffle => l10n.shuffle,
       BottomNavHubAction.syncPlay => l10n.syncPlay,
-      BottomNavHubAction.quickConnect => l10n.quickConnect,
+      BottomNavHubAction.quickConnect =>
+        silo ? l10n.siloApproveSignIn : l10n.quickConnect,
       BottomNavHubAction.remoteControl => l10n.remoteControl,
     };
 
@@ -173,7 +177,7 @@ void runBottomNavHubAction(BuildContext context, BottomNavHubAction action) {
       showShuffleOverlay(context);
     case BottomNavHubAction.syncPlay:
       Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => const SyncPlayScreen()),
+        MaterialPageRoute<void>(builder: (_) => watchTogetherScreen()),
       );
     case BottomNavHubAction.quickConnect:
       showQuickConnectCodeDialog(context);

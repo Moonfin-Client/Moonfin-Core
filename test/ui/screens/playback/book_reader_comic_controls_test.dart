@@ -13,6 +13,7 @@ import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/ui/screens/playback/book_reader_screen.dart';
+import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin/ui/widgets/reader/reader_chrome_bar.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
@@ -142,7 +143,36 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
   }
 
-  String? focused() => FocusManager.instance.primaryFocus?.debugLabel;
+  /// The focused control's label, a pill's text or a button's tooltip.
+  String? focusedControl() {
+    final context = FocusManager.instance.primaryFocus?.context;
+    if (context == null) return null;
+    String? label;
+    void findText(Element element) {
+      final widget = element.widget;
+      if (widget is Text) label ??= widget.data;
+      if (label == null) element.visitChildElements(findText);
+    }
+
+    (context as Element).visitChildElements(findText);
+    return label ?? context.findAncestorWidgetOfExactType<Tooltip>()?.message;
+  }
+
+  bool focusIsIn<T extends Widget>() =>
+      FocusManager.instance.primaryFocus?.context
+          ?.findAncestorWidgetOfExactType<T>() !=
+      null;
+
+  Future<void> press(
+    WidgetTester tester,
+    LogicalKeyboardKey key, {
+    int times = 1,
+  }) async {
+    for (var i = 0; i < times; i++) {
+      await tester.sendKeyEvent(key);
+      await tester.pump();
+    }
+  }
 
   /// Lets a page turn's slide finish and the page label catch up.
   Future<void> settlePage(WidgetTester tester) async {
@@ -206,8 +236,8 @@ void main() {
   group('TV remote', () {
     setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
 
-    testWidgets('the D-pad turns pages and volume keys are left for the '
-        'system', (tester) async {
+    testWidgets('while the bars are hidden the D-pad turns pages, and volume '
+        'keys are left for the system', (tester) async {
       await openComic(tester);
       await waitForHide(tester);
       expect(barsOpacity(tester), 0);
@@ -227,42 +257,114 @@ void main() {
       await tester.pump();
       expect(barsOpacity(tester), 0);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.select);
-      await tester.pump();
+      await press(tester, LogicalKeyboardKey.select);
       expect(barsOpacity(tester), 1);
+      expect(focusedControl(), 'Single');
+      expect(
+        await tester.sendKeyEvent(LogicalKeyboardKey.audioVolumeDown),
+        isFalse,
+      );
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      // With the bars up the D-pad moves through them instead.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await settlePage(tester);
-      expect(find.text('1/3'), findsOneWidget);
+      expect(focusedControl(), 'Two-page');
+      expect(find.text('2/3'), findsOneWidget);
     });
 
-    testWidgets('Down steps into the controls bar, the arrows walk it in '
-        'order, and its eye button turns the fading off', (tester) async {
+    testWidgets('the remote walks the controls bar in order, and its eye '
+        'button turns the fading off', (tester) async {
       await openComic(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusedControl(), 'Single');
+      await press(tester, LogicalKeyboardKey.arrowLeft);
+      expect(focusedControl(), 'Single');
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.pump();
-      expect(focused(), 'comic control 0');
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
-      await tester.pump();
-      expect(focused(), 'comic control 0');
+      final walked = <String?>[];
       for (var i = 0; i < 8; i++) {
-        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-        await tester.pump();
+        await press(tester, LogicalKeyboardKey.arrowRight);
+        walked.add(focusedControl());
       }
-      expect(focused(), 'comic control 6');
+      expect(walked.toSet().toList(), [
+        'Two-page',
+        'Vertical',
+        'Left to right',
+        'Thumbnails',
+        'Invert colors',
+        'Controls hide automatically',
+      ]);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.select);
-      await tester.pump();
+      await press(tester, LogicalKeyboardKey.select);
       expect(find.byTooltip('Controls stay visible'), findsOneWidget);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
-      await tester.pump();
-      expect(focused(), 'comic reader');
 
       await waitForHide(tester);
       expect(barsOpacity(tester), 1);
+    });
+
+    testWidgets('Back hides the bars even with fading off, and only leaves '
+        'once they are hidden', (tester) async {
+      await openComic(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      await press(tester, LogicalKeyboardKey.arrowRight, times: 6);
+      expect(focusedControl(), 'Controls hide automatically');
+      await press(tester, LogicalKeyboardKey.select);
+      expect(find.byTooltip('Controls stay visible'), findsOneWidget);
+
+      expect(InlineBackInterceptor.handleBack(), isTrue);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(barsOpacity(tester), 0);
+      expect(InlineBackInterceptor.handleBack(), isFalse);
+
+      // Focus left the hidden bars, so the D-pad turns the page again.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await settlePage(tester);
+      expect(find.text('2/3'), findsOneWidget);
+    });
+
+    testWidgets('Up reaches the top bar, and the page slider lets the remote '
+        'go', (tester) async {
+      await openComic(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(focusedControl(), 'Back');
+
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusedControl(), 'Single');
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIsIn<Slider>(), isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await settlePage(tester);
+      expect(find.text('2/3'), findsOneWidget);
+      expect(focusIsIn<Slider>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(focusIsIn<Slider>(), isFalse);
+      expect(focusedControl(), isNotNull);
+    });
+
+    testWidgets('the remote picks a page from the thumbnails', (
+      tester,
+    ) async {
+      await openComic(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      await press(tester, LogicalKeyboardKey.arrowRight, times: 4);
+      expect(focusedControl(), 'Thumbnails');
+      await press(tester, LogicalKeyboardKey.select);
+
+      await press(tester, LogicalKeyboardKey.arrowLeft, times: 4);
+      expect(focusedControl(), 'Single');
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIsIn<ListView>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowLeft, times: 3);
+      await press(tester, LogicalKeyboardKey.arrowRight);
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await settlePage(tester);
+      expect(find.text('2/3'), findsOneWidget);
+
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIsIn<Slider>(), isTrue);
     });
   });
 }

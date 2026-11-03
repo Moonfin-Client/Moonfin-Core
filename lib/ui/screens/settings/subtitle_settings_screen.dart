@@ -12,6 +12,7 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
 import 'subtitle_customization_screen.dart';
@@ -147,36 +148,43 @@ class SubtitleSettingsScreen extends StatelessWidget {
                   ),
                   adaptiveListSection(
                     children: [
-                      TvFocusHighlight(
-                        builder: (context, focused) {
-                          var pushed = false;
-                          final iconColor = focused
-                              ? AppColors.black.withValues(alpha: 0.54)
-                              : (Theme.of(context).iconTheme.color ??
-                                    AppColorScheme.onSurface);
-                          return ListTile(
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            leading: buildSettingsLeadingIconShell(
-                              context,
-                              icon: const Icon(Icons.style),
-                              focused: focused,
-                              iconColor: iconColor,
-                            ),
-                            title: Text(l10n.subtitleCustomization),
-                            subtitle: Text(
-                              l10n.subtitleCustomizationDescription,
-                            ),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              if (pushed) return;
-                              pushed = true;
-                              context.pushSettingsScreen(
-                                const SubtitleCustomizationScreen(),
-                              );
-                            },
-                          );
-                        },
+                      SettingsPreviewReporter(
+                        describe: () => SettingsPreviewEntry(
+                          prefKey: UserPreferences.subtitlesTextColor.key,
+                          title: l10n.subtitleCustomization,
+                          description: l10n.subtitleCustomizationDescription,
+                        ),
+                        child: TvFocusHighlight(
+                          builder: (context, focused) {
+                            var pushed = false;
+                            final iconColor = focused
+                                ? AppColors.black.withValues(alpha: 0.54)
+                                : (Theme.of(context).iconTheme.color ??
+                                      AppColorScheme.onSurface);
+                            return ListTile(
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              leading: buildSettingsLeadingIconShell(
+                                context,
+                                icon: const Icon(Icons.style),
+                                focused: focused,
+                                iconColor: iconColor,
+                              ),
+                              title: Text(l10n.subtitleCustomization),
+                              subtitle: Text(
+                                l10n.subtitleCustomizationDescription,
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () {
+                                if (pushed) return;
+                                pushed = true;
+                                context.pushSettingsScreen(
+                                  const SubtitleCustomizationScreen(),
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
                       if (PlatformDetection.isAndroid) ...[
                         SwitchPreferenceTile(

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 
@@ -41,7 +42,8 @@ const _minimalistTypes = {
 };
 
 /// The smallest detail screen: artwork, the title, one play button and the
-/// episodes. No cast, no chapters, no collection, no recommendations.
+/// episodes. No cast, no chapters, no recommendations. Extras and collections
+/// each sit behind a button.
 ///
 /// Kids Mode always shows this one. Outside Kids Mode it's an ordinary style,
 /// for anyone who wants the screen to get out of the way.
@@ -368,13 +370,17 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     final item = _vm.item;
     final hasEpisodes = item != null && _hasEpisodes(item);
     // Kids Mode keeps to its own fixed set of buttons.
+    final kidsMode = widget.prefs.get(UserPreferences.kidsModeEnabled);
+    final sections = DetailSectionVisibility.of(widget.prefs);
     final showExtras =
         !hasEpisodes &&
-        !widget.prefs.get(UserPreferences.kidsModeEnabled) &&
-        DetailSectionVisibility.of(
-          widget.prefs,
-        ).shows(DetailSection.extras) &&
+        !kidsMode &&
+        sections.shows(DetailSection.extras) &&
         _vm.features.isNotEmpty;
+    final showCollections =
+        !kidsMode &&
+        sections.shows(DetailSection.collections) &&
+        _vm.parentCollections.isNotEmpty;
 
     return DetailActionButtons(
       key: const ValueKey('minimalist-actions'),
@@ -392,6 +398,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       actionsExpanded: widget.actionsExpanded,
       onActionsExpandedChanged: widget.onActionsExpandedChanged,
       onExtrasPressed: showExtras ? _openExtrasModal : null,
+      onCollectionsPressed: showCollections ? _openCollectionsModal : null,
     );
   }
 
@@ -439,6 +446,60 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       );
     }
 
+    await _openSectionModal(buildContent);
+  }
+
+  Future<void> _openCollectionsModal() {
+    final l10n = AppLocalizations.of(context);
+    final showMissing = widget.prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+
+    SpotlightModalSection section(ParentCollection collection) {
+      final items = [
+        collection.boxSetItem,
+        ...(showMissing ? collection.itemsWithMissing : collection.items),
+      ];
+      return SpotlightModalSection(
+        id: 'collection_${collection.id}',
+        title: collection.name,
+        count: items.length,
+        builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+          items: items,
+          imageApi: _vm.imageApi,
+          prefs: widget.prefs,
+          firstFocusNode: firstFocusNode,
+          onItemTap: (entry) =>
+              Navigator.of(context).pop(() => _openCollectionItem(entry)),
+        ),
+      );
+    }
+
+    return _openSectionModal(
+      () => (
+        title: l10n.detailSectionCollections,
+        icon: Icons.collections_bookmark_outlined,
+        sections: [
+          for (final collection in _vm.parentCollections) section(collection),
+        ],
+      ),
+    );
+  }
+
+  // Titles the library lacks come from Seerr and open its request page.
+  void _openCollectionItem(AggregatedItem entry) => context.push(
+    entry.serverId == 'seerr'
+        ? Destinations.seerrMedia(
+            entry.id,
+            mediaType: entry.seerrMediaType,
+            title: entry.name,
+          )
+        : Destinations.item(entry.id, serverId: entry.serverId),
+  );
+
+  Future<void> _openSectionModal(
+    SpotlightModalContent Function() buildContent,
+  ) async {
     final initialContent = buildContent();
     if (initialContent.sections.isEmpty) return;
 

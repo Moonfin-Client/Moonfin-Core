@@ -47,6 +47,15 @@ class _SeasonalEffectsScreen extends StatelessWidget {
                       l10n.seasonalDensityHeavy,
                 },
               ),
+              if (PlatformDetection.isTV || PlatformDetection.isDesktop)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.seasonalFollower,
+                  title: l10n.seasonalFollower,
+                  subtitle: PlatformDetection.isTV
+                      ? l10n.seasonalFollowerDescription
+                      : l10n.seasonalFollowerPointerDescription,
+                  icon: Icons.ads_click,
+                ),
             ],
           ),
         ],

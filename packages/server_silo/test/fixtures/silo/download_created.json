@@ -1,0 +1,24 @@
+{
+ "items": [
+  {
+   "id": "dl_01HSCRUBBED",
+   "content_id": "movie-imdb-tt0295701",
+   "media_file_id": "4567",
+   "device_id": "device-1",
+   "file_size": 2048,
+   "bytes_sent": 0,
+   "kind": "queued",
+   "status": "ready",
+   "quality": "original",
+   "effective_quality": "original",
+   "delivery_format": "original",
+   "target_bitrate_kbps": 0,
+   "revision": 1,
+   "created_at": "2026-10-18T20:00:00.000Z"
+  }
+ ],
+ "skipped": [],
+ "page": {
+  "has_more": false
+ }
+}

@@ -44,6 +44,8 @@ import '../../playback/html_video_backend_profile.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
 import '../../playback/mpv_client_certificate.dart';
+import '../../playback/mpv_player_registry.dart';
+import '../../playback/silo_plugin_for.dart';
 import 'bounded_network_image.dart';
 import 'fullscreen_backdrop_switcher.dart';
 import 'navigation_layout.dart';
@@ -1557,7 +1559,7 @@ class _MediaBarState extends State<MediaBar>
     final existing = _trailerPlayer;
     if (existing != null) return existing;
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: const PlayerConfiguration(libass: false),
     );
     _trailerPlayer = player;
@@ -1617,7 +1619,9 @@ class _MediaBarState extends State<MediaBar>
     _trailerPlayer = null;
     _trailerController = null;
     await player?.stop();
-    player?.dispose();
+    if (player != null) {
+      unawaited(MpvPlayerRegistry.instance.dispose(player));
+    }
   }
 
   void _clearSponsorBlockTracking() {
@@ -1846,6 +1850,7 @@ class _MediaBarState extends State<MediaBar>
       ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
       ServerType.plex => PlexMediaStreamResolver(client),
+      ServerType.silo => siloPluginFor(client).createStreamResolver(),
     };
   }
 
@@ -2164,16 +2169,16 @@ class _MediaBarState extends State<MediaBar>
                                   currentItem.itemId,
                                 ),
                                 enableAdditionalRatings: widget.prefs.get(
-                                  UserPreferences.enableAdditionalRatings,
+                                  UserPreferences.mediaBarEnableAdditionalRatings,
                                 ),
                                 enabledRatings: widget.prefs.get(
-                                  UserPreferences.enabledRatings,
+                                  UserPreferences.mediaBarEnabledRatings,
                                 ),
                                 showLabels: widget.prefs.get(
-                                  UserPreferences.showRatingLabels,
+                                  UserPreferences.mediaBarShowRatingLabels,
                                 ),
                                 showBadges: widget.prefs.get(
-                                  UserPreferences.showRatingBadges,
+                                  UserPreferences.mediaBarShowRatingBadges,
                                 ),
                                 compact: _isTrailerPlaying,
                                 overlayColor: overlayColor,
@@ -2441,16 +2446,16 @@ class _MediaBarState extends State<MediaBar>
                                   item: currentItem,
                                   ratings: currentRatings,
                                   enableAdditionalRatings: widget.prefs.get(
-                                    UserPreferences.enableAdditionalRatings,
+                                    UserPreferences.mediaBarEnableAdditionalRatings,
                                   ),
                                   enabledRatings: widget.prefs.get(
-                                    UserPreferences.enabledRatings,
+                                    UserPreferences.mediaBarEnabledRatings,
                                   ),
                                   showLabels: widget.prefs.get(
-                                    UserPreferences.showRatingLabels,
+                                    UserPreferences.mediaBarShowRatingLabels,
                                   ),
                                   showBadges: widget.prefs.get(
-                                    UserPreferences.showRatingBadges,
+                                    UserPreferences.mediaBarShowRatingBadges,
                                   ),
                                   isMobile: isMobile,
                                   onPlay: () =>
@@ -2601,10 +2606,14 @@ class _MediaBarState extends State<MediaBar>
             communityRating: activeItem.communityRating,
             criticRating: activeItem.criticRating,
             enableAdditionalRatings: widget.prefs.get(
-              UserPreferences.enableAdditionalRatings,
+              UserPreferences.mediaBarEnableAdditionalRatings,
             ),
-            enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
-            showLabels: widget.prefs.get(UserPreferences.showRatingLabels),
+            enabledRatings: widget.prefs.get(
+              UserPreferences.mediaBarEnabledRatings,
+            ),
+            showLabels: widget.prefs.get(
+              UserPreferences.mediaBarShowRatingLabels,
+            ),
             showBadges: false,
           )
         : null;

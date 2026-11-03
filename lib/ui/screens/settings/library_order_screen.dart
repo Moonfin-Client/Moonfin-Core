@@ -420,7 +420,7 @@ class _LibraryOrderTileState extends State<_LibraryOrderTile> {
         child: Material(
           type: MaterialType.transparency,
           child: ListTile(
-            leading: Icon(_libraryIcon(widget.library)),
+            leading: Icon(libraryIcon(widget.library)),
             title: Text(widget.library.name),
             subtitle: widget.hiddenLabel != null
                 ? Text(widget.hiddenLabel!)
@@ -431,21 +431,4 @@ class _LibraryOrderTileState extends State<_LibraryOrderTile> {
       ),
     );
   }
-}
-
-IconData _libraryIcon(AggregatedLibrary library) {
-  if (isGameLibrary(library.id, library.collectionType, library.name)) {
-    return gameLibraryIcon;
-  }
-  return switch (library.collectionType.toLowerCase()) {
-    'movies' => Icons.movie_rounded,
-    'tvshows' => Icons.tv_rounded,
-    'music' => Icons.music_note_rounded,
-    'books' || 'audiobooks' => Icons.menu_book_rounded,
-    'livetv' => Icons.live_tv_rounded,
-    'homevideos' || 'photos' => Icons.photo_library_rounded,
-    'boxsets' => Icons.collections_bookmark_rounded,
-    'playlists' => Icons.playlist_play_rounded,
-    _ => Icons.video_library_rounded,
-  };
 }

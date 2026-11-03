@@ -200,6 +200,11 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
             child: AnimatedContainer(
               duration: _kExpandDuration,
               curve: Curves.easeOut,
+              // A growing label can push a button at the end of a crowded
+              // navbar off screen, so it scrolls into view again once grown.
+              onEnd: () {
+                if (_focusNode.hasFocus) _ensureVisible();
+              },
               height: isMobile ? btnSize : null,
               constraints: BoxConstraints(
                 minWidth: btnSize,

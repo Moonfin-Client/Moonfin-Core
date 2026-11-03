@@ -448,8 +448,9 @@ class HomeViewModel extends ChangeNotifier {
       final sinceYouWatchedNum = _prefs.get(UserPreferences.sinceYouWatchedNumRows).value;
       final showRewatch = _prefs.get(UserPreferences.displayRewatchRow);
       final showStudiosRows = _prefs.get(UserPreferences.displayStudiosRows);
-      final showSeasonal = GetIt.instance<PluginSyncService>().pluginAvailable &&
-          _prefs.get(UserPreferences.seasonalRowEnabled);
+      final showSeasonal = _prefs.get(UserPreferences.seasonalRowEnabled) &&
+          (GetIt.instance<PluginSyncService>().pluginAvailable ||
+              _client.itemsApi is ServerHomeSectionsApi);
 
       final offline = _isOffline;
       final visibleConfigsRaw = configs
@@ -1017,6 +1018,16 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> refreshResumeAndNextUp() async {
     // A full load already covers these rows, so don't compete with it.
     if (_isLoading) return;
+
+    // A row that came back empty was dropped, so there's no row to refresh in
+    // place. Loading it as a new section brings it back once it has items.
+    if (const ['resume', 'nextUp', 'resumeAudio'].any(
+      (id) => _emptySectionIds.contains(id) && !_rows.any((r) => r.id == id),
+    )) {
+      await load(preserveExisting: true, newSectionsOnly: true);
+      // That load refreshes the merged row too.
+      if (_prefs.effectiveMergeContinueWatchingNextUp) return;
+    }
 
     if (_prefs.effectiveMergeContinueWatchingNextUp) {
       await _loadResumeAndNextUpInBackground();
@@ -3006,7 +3017,7 @@ class HomeViewModel extends ChangeNotifier {
     Map<SeerrShortcut, String> backdrops = const {},
   }) => _seerrRow(
     'seerr_shortcuts',
-    l10n.seerrShortcutsRow,
+    seerrBrand(l10n.seerrShortcutsRow),
     [
       for (final shortcut in SeerrShortcut.values)
         AggregatedItem(
@@ -3346,6 +3357,10 @@ class HomeViewModel extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     try {
+      final api = _client.itemsApi;
+      if (api is ServerHomeSectionsApi) {
+        return await _loadServerSeasonalRow(api as ServerHomeSectionsApi);
+      }
       if (forceRefresh) _seasonalMemo = null;
       final sync = GetIt.instance<PluginSyncService>();
       var body = _seasonalMemo;
@@ -3388,6 +3403,32 @@ class HomeViewModel extends ChangeNotifier {
       debugPrint('[SeasonalRow] Failed to load the seasonal row: $e');
       return const [];
     }
+  }
+
+  /// A server that curates its own seasonal row (Silo's Seasonal Picks)
+  /// picks the holiday and titles itself, so Moonbase isn't asked.
+  Future<List<HomeRow>> _loadServerSeasonalRow(ServerHomeSectionsApi api) async {
+    final section = (await api.getServerHomeSections())
+        .firstWhereOrNull((s) => s.kind == 'seasonal_themed');
+    if (section == null) return const [];
+    final response = await api.getServerHomeSectionItems(section.id);
+    // A new order on each load, so the same picks don't always lead.
+    final items = [
+      ...withoutBlockedItems([
+        for (final raw in (response['Items'] as List? ?? const []))
+          if (raw is Map<String, dynamic> && raw['Id'] != null)
+            AggregatedItem(id: raw['Id'].toString(), serverId: _serverId, rawData: raw),
+      ]),
+    ]..shuffle();
+    if (items.isEmpty) return const [];
+    return [
+      HomeRow(
+        id: 'seasonal',
+        title: section.title,
+        rowType: HomeRowType.pluginDynamic,
+        items: items,
+      ),
+    ];
   }
 
   /// The parts of a seasonal answer Home can show, or null when the viewer hid

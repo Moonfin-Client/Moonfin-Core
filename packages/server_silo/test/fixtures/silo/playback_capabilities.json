@@ -1,0 +1,42 @@
+{
+ "revision": "05b9cefb1501c3b1551c719e2bc9b095825794b4d223c4bffcbdbcbd7c9a8ce8",
+ "state": "available",
+ "allowed": true,
+ "installation_id": "c621caf1-c95a-4626-a74f-bee7cf6b1402",
+ "protocol_versions": [
+  3
+ ],
+ "features": [
+  "playback_plan_v3",
+  "server_remote_stream_bitrate_policy_v1",
+  "server_local_stream_bitrate_policy_v1",
+  "neutral_playback_v3_contract_v1",
+  "embedded_subtitles_v1",
+  "layout_aware_passthrough",
+  "playback_route_diagnostics",
+  "device_quirks_v1",
+  "seek_reanchor_v1",
+  "output_change_v1",
+  "output_display_evidence_v1",
+  "direct_stream_resume_v1",
+  "header_authenticated_media_v1",
+  "authorized_media_origins_v1",
+  "software_video_decode_v1",
+  "plan_invalidated_v1",
+  "plan_source_duration_v1",
+  "subrip_sidecar_v1",
+  "marker_thumbnails_v1",
+  "sequenced_progress_v1",
+  "fixed_media_file_v1",
+  "marker_segments_v1",
+  "trickplay_v1",
+  "watch_party_source_fallback_v1",
+  "watch_party_coordinator_v1"
+ ],
+ "deliveries": [
+  "original_http",
+  "server_remux_progressive",
+  "server_remux_hls",
+  "server_transcode_hls"
+ ]
+}

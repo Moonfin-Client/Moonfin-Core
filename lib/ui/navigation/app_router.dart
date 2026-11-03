@@ -8,7 +8,6 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
-import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../di/injection.dart';
@@ -20,6 +19,7 @@ import '../../util/game_cores.dart';
 import '../../util/platform_detection.dart';
 import '../screens/admin/admin_nav.dart';
 import '../screens/admin/admin_routes.dart';
+import '../../util/signed_in_server_features.dart';
 import '../screens/auth/emby_connect_screen.dart';
 import '../screens/auth/plex_sign_in_screen.dart';
 import '../screens/auth/login_screen.dart';
@@ -100,7 +100,8 @@ const _authRoutes = {
 /// through to Home costs nothing next to stranding them outside it.
 bool _shouldRunSetupWizard() {
   try {
-    final client = GetIt.instance<MediaServerClientFactory>().getActiveClient();
+    final client = SetupWizardGate.activeClient();
+    if (client == null) return false;
     return GetIt.instance<SetupWizardGate>().shouldRun(client);
   } catch (_) {
     return false;
@@ -156,6 +157,41 @@ CustomTransitionPage<T> _opaqueFullScreenPage<T>({
   );
 }
 
+/// A title's page. Quick Look opens it as a drawer over the screen it was
+/// picked on, unless the full page was asked for, and anything else gets the
+/// page go_router builds for a plain route.
+Page<void> _detailPage(
+  GoRouterState state,
+  Widget Function({bool quickLook}) screen,
+) {
+  final quickLook =
+      GetIt.instance<UserPreferences>().effectiveDetailScreenStyle ==
+          DetailScreenStyle.quickLook &&
+      state.uri.queryParameters['full'] != 'true';
+  if (!quickLook) {
+    return MaterialPage<void>(
+      key: state.pageKey,
+      name: state.name ?? state.path,
+      arguments: <String, String>{
+        ...state.pathParameters,
+        ...state.uri.queryParameters,
+      },
+      restorationId: state.pageKey.value,
+      child: screen(),
+    );
+  }
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    name: state.name ?? state.path,
+    opaque: false,
+    transitionDuration: const Duration(milliseconds: 260),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        child,
+    child: screen(quickLook: true),
+  );
+}
+
 final appRouter = GoRouter(
   initialLocation: Destinations.startup,
   observers: [
@@ -186,7 +222,12 @@ final appRouter = GoRouter(
 
     if (path.startsWith('/admin')) {
       final user = getIt<UserRepository>().currentUser;
-      if (user == null || !user.isAdministrator || !_adminAvailable()) {
+      // Silo is administered from its own web app, so a deep link to
+      // Moonfin's admin screens (Jellyfin/Emby admin APIs) would only fail.
+      if (user == null ||
+          !user.isAdministrator ||
+          !_adminAvailable() ||
+          !activeServerSupports((f) => f.supportsAdmin)) {
         return Destinations.home;
       }
     }
@@ -296,6 +337,7 @@ final appRouter = GoRouter(
             : null,
         initialQuery: state.uri.queryParameters['query'],
         scopedLibraryId: state.uri.queryParameters['libraryId'],
+        preferRequests: state.uri.queryParameters['tab'] == 'requests',
       ),
     ),
 
@@ -433,7 +475,7 @@ final appRouter = GoRouter(
     // Item details
     GoRoute(
       path: Destinations.itemDetail,
-      builder: (context, state) {
+      pageBuilder: (_, state) => _detailPage(state, ({quickLook = false}) {
         final itemId = state.pathParameters['itemId']!;
         final serverId = state.uri.queryParameters['serverId'];
         final autoPlay = state.uri.queryParameters['autoPlay'] == 'true';
@@ -446,8 +488,9 @@ final appRouter = GoRouter(
           serverId: serverId,
           autoPlay: autoPlay,
           contextSeasonId: contextSeasonId,
+          quickLook: quickLook,
         );
-      },
+      }),
       routes: [
         GoRoute(
           path: 'list',
@@ -702,7 +745,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: Destinations.seerrMediaDetail,
-      builder: (context, state) {
+      pageBuilder: (_, state) => _detailPage(state, ({quickLook = false}) {
         final rawId = state.pathParameters['itemId']!;
         final kind = state.uri.queryParameters['mediaType'] == 'tv'
             ? TmdbItemKind.tv
@@ -712,8 +755,9 @@ final appRouter = GoRouter(
           key: ValueKey(ref.itemId),
           itemId: ref.itemId,
           seerrTitle: state.uri.queryParameters['title'],
+          quickLook: quickLook,
         );
-      },
+      }),
     ),
     GoRoute(
       path: Destinations.seerrCollectionDetail,

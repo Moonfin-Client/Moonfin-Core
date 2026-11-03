@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
+import '../../util/platform_detection.dart';
 import '../models/aggregated_item.dart';
 import 'theme_audio_player.dart';
 
@@ -144,7 +145,13 @@ class ThemeMusicService implements AudioOwnable {
 
       final song = songs[Random().nextInt(songs.length)];
       final songId = song['Id']?.toString() ?? '';
-      final url = _buildAudioUrl(songId);
+      final ownerId = songsResult?['OwnerId']?.toString() ?? themeItemId;
+      final url = await _audioUrl(ownerId, songId);
+      if (url == null ||
+          generation != _playGeneration ||
+          _activeDetailScreens.isEmpty) {
+        return;
+      }
 
       _targetVolume = _prefs.get(UserPreferences.themeMusicVolume) / 100.0;
 
@@ -199,6 +206,46 @@ class ThemeMusicService implements AudioOwnable {
       await player.dispose();
     } catch (_) {}
   }
+
+  /// The song's stream: a link the server makes for this play when it hands
+  /// out theme music that way (Silo's grants), else Jellyfin's and Emby's
+  /// audio stream with the account's token.
+  Future<String?> _audioUrl(String ownerId, String songId) async {
+    final Object items = _client.itemsApi;
+    if (items is ThemeSongStreamApi) {
+      return items.themeSongStreamUrl(
+        ownerId,
+        songId,
+        accepts: PlatformDetection.useApplePreviewPlayer
+            ? _appleThemeFormats
+            : _mpvThemeFormats,
+      );
+    }
+    return _buildAudioUrl(songId);
+  }
+
+  /// What libmpv (media_kit) plays: every usual theme format.
+  static const List<ThemeAudioFormat> _mpvThemeFormats = [
+    (container: 'mp3', codec: null),
+    (container: 'mp4', codec: null),
+    (container: 'm4a', codec: null),
+    (container: 'aac', codec: null),
+    (container: 'flac', codec: null),
+    (container: 'ogg', codec: null),
+    (container: 'opus', codec: null),
+    (container: 'wav', codec: null),
+  ];
+
+  /// What AVPlayer plays. Silo converts anything else to AAC in MP4.
+  static const List<ThemeAudioFormat> _appleThemeFormats = [
+    (container: 'mp3', codec: 'mp3'),
+    (container: 'mp4', codec: 'aac'),
+    (container: 'mp4', codec: 'alac'),
+    (container: 'm4a', codec: 'aac'),
+    (container: 'm4a', codec: 'alac'),
+    (container: 'aac', codec: 'aac'),
+    (container: 'wav', codec: 'pcm'),
+  ];
 
   String _buildAudioUrl(String songId) {
     final token = _client.accessToken ?? '';

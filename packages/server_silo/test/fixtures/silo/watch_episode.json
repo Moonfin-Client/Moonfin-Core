@@ -1,0 +1,301 @@
+{
+ "content_id": "episode-imdb-tt1641384-1-1",
+ "type": "episode",
+ "title": "Independence Day",
+ "year": 2010,
+ "overview": "Robin, Aqualad, and Kid Flash break into Cadmus and find that it is being run by Genomorphs.",
+ "versions": [
+  {
+   "file_id": "89618",
+   "file_name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+   "file_path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+   "resolution": "1080p",
+   "codec_video": "hevc",
+   "codec_audio": "eac3",
+   "hdr": false,
+   "container": "mkv",
+   "file_size": 408765775,
+   "duration_seconds": 1357,
+   "bitrate": 2409,
+   "added_at": "2026-10-08T18:52:27.925Z",
+   "effective_audio_track_index": 0,
+   "effective_audio_language": "en",
+   "video_tracks": [
+    {
+     "title": "H.265 / HEVC (High Efficiency Video Coding)",
+     "codec": "hevc",
+     "dv_config_present": false,
+     "dv_bl_compat_id_present": false,
+     "dv_enhancement_layer": "none",
+     "profile": "Main 10",
+     "level": 120,
+     "width": 1920,
+     "height": 1080,
+     "aspect_ratio": "16:9",
+     "interlaced": false,
+     "frame_rate": "23.810",
+     "video_range_type": "SDR",
+     "color_range": "tv",
+     "bit_depth": 10,
+     "pixel_format": "yuv420p10le"
+    }
+   ],
+   "audio_tracks": [
+    {
+     "title": "ATSC A/52B (AC-3, E-AC-3)",
+     "language": "en",
+     "codec": "eac3",
+     "layout": "stereo",
+     "channels": 2,
+     "bitrate": 640,
+     "sample_rate": 48000,
+     "default": false
+    }
+   ],
+   "subtitle_tracks": [
+    {
+     "index": 2,
+     "language": "en",
+     "codec": "srt",
+     "title": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt",
+     "forced": false,
+     "default": false,
+     "hearing_impaired": false,
+     "external": true,
+     "file_name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt"
+    }
+   ],
+   "chapters": [
+    {
+     "index": 0,
+     "title": "Chapter 1",
+     "start_seconds": 0,
+     "end_seconds": 247.998,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/0-dc53fae9b64f86e4ae5f784b641b7e86ca865ab69eb837ab754f4e641eda4287/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "AAgCBIAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+     "index": 1,
+     "title": "Chapter 2",
+     "start_seconds": 247.998,
+     "end_seconds": 270.52,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/1-240c8ef117d1829a3b2795c3110ac21b914a63db41732886ab3c4d00e4c610f0/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "ZigKDIK2R3j5ZYd3hXdb9kNAOw=="
+    },
+    {
+     "index": 2,
+     "title": "Chapter 3",
+     "start_seconds": 270.52,
+     "end_seconds": 747.83,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/2-46adad942749ec424a0c825c84ffd6e1bbba1798238da61ad87e51a0871cee2c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "nBgGHIZupZYCqmp5VlJ3gGJECQ=="
+    },
+    {
+     "index": 3,
+     "title": "Chapter 4",
+     "start_seconds": 747.83,
+     "end_seconds": 1110.818,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/3-ab817e40025e969107f1ddaed2aa02fb63c2ec04ffc84367e2c3b26448d5eebe/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "RRgCDIJ2r1ZfuIlzarVukfA4Kg=="
+    },
+    {
+     "index": 4,
+     "title": "Chapter 5",
+     "start_seconds": 1110.818,
+     "end_seconds": 1325.199,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/4-6939f911c74c4c3f05ef74d4bb6e7ceb5bdbc678ee01394523a3de196ed47b5c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "qMcRDIIGFyiIeXh5hncHhngK6Q=="
+    },
+    {
+     "index": 5,
+     "title": "Chapter 6",
+     "start_seconds": 1325.199,
+     "end_seconds": 1357,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/89618/5-566f67858d1dff8656648d23154712dd1c306f676abb86de4aec9d3e79ad4b92/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "hwYGFIAGiJiFiHiEeoj7inzwVg=="
+    }
+   ],
+   "intro": {
+    "start_seconds": 247.998,
+    "end_seconds": 268.329
+   },
+   "marker_segments": [
+    {
+     "kind": "intro",
+     "start_seconds": 247.998,
+     "end_seconds": 268.329
+    }
+   ],
+   "trickplay_available": false
+  }
+ ],
+ "playback_variants": [
+  {
+   "variant_id": "default",
+   "part_count": 1,
+   "total_duration_seconds": 1357,
+   "default_file_id": "89618",
+   "parts": [
+    {
+     "part_index": 1,
+     "default_file_id": "89618",
+     "total_duration_seconds": 1357,
+     "versions": [
+      {
+       "file_id": "89618",
+       "file_name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+       "file_path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+       "resolution": "1080p",
+       "codec_video": "hevc",
+       "codec_audio": "eac3",
+       "hdr": false,
+       "container": "mkv",
+       "file_size": 408765775,
+       "duration_seconds": 1357,
+       "bitrate": 2409,
+       "added_at": "2026-10-08T18:52:27.925Z",
+       "effective_audio_track_index": 0,
+       "effective_audio_language": "en",
+       "video_tracks": [
+        {
+         "title": "H.265 / HEVC (High Efficiency Video Coding)",
+         "codec": "hevc",
+         "dv_config_present": false,
+         "dv_bl_compat_id_present": false,
+         "dv_enhancement_layer": "none",
+         "profile": "Main 10",
+         "level": 120,
+         "width": 1920,
+         "height": 1080,
+         "aspect_ratio": "16:9",
+         "interlaced": false,
+         "frame_rate": "23.810",
+         "video_range_type": "SDR",
+         "color_range": "tv",
+         "bit_depth": 10,
+         "pixel_format": "yuv420p10le"
+        }
+       ],
+       "audio_tracks": [
+        {
+         "title": "ATSC A/52B (AC-3, E-AC-3)",
+         "language": "en",
+         "codec": "eac3",
+         "layout": "stereo",
+         "channels": 2,
+         "bitrate": 640,
+         "sample_rate": 48000,
+         "default": false
+        }
+       ],
+       "subtitle_tracks": [
+        {
+         "index": 2,
+         "language": "en",
+         "codec": "srt",
+         "title": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt",
+         "forced": false,
+         "default": false,
+         "hearing_impaired": false,
+         "external": true,
+         "file_name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt"
+        }
+       ],
+       "chapters": [
+        {
+         "index": 0,
+         "title": "Chapter 1",
+         "start_seconds": 0,
+         "end_seconds": 247.998,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/0-dc53fae9b64f86e4ae5f784b641b7e86ca865ab69eb837ab754f4e641eda4287/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "AAgCBIAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+         "index": 1,
+         "title": "Chapter 2",
+         "start_seconds": 247.998,
+         "end_seconds": 270.52,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/1-240c8ef117d1829a3b2795c3110ac21b914a63db41732886ab3c4d00e4c610f0/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "ZigKDIK2R3j5ZYd3hXdb9kNAOw=="
+        },
+        {
+         "index": 2,
+         "title": "Chapter 3",
+         "start_seconds": 270.52,
+         "end_seconds": 747.83,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/2-46adad942749ec424a0c825c84ffd6e1bbba1798238da61ad87e51a0871cee2c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "nBgGHIZupZYCqmp5VlJ3gGJECQ=="
+        },
+        {
+         "index": 3,
+         "title": "Chapter 4",
+         "start_seconds": 747.83,
+         "end_seconds": 1110.818,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/3-ab817e40025e969107f1ddaed2aa02fb63c2ec04ffc84367e2c3b26448d5eebe/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "RRgCDIJ2r1ZfuIlzarVukfA4Kg=="
+        },
+        {
+         "index": 4,
+         "title": "Chapter 5",
+         "start_seconds": 1110.818,
+         "end_seconds": 1325.199,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/4-6939f911c74c4c3f05ef74d4bb6e7ceb5bdbc678ee01394523a3de196ed47b5c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "qMcRDIIGFyiIeXh5hncHhngK6Q=="
+        },
+        {
+         "index": 5,
+         "title": "Chapter 6",
+         "start_seconds": 1325.199,
+         "end_seconds": 1357,
+         "source": "embedded",
+         "thumbnail_url": "/api/v2/artwork/chapter-images/89618/5-566f67858d1dff8656648d23154712dd1c306f676abb86de4aec9d3e79ad4b92/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+         "thumbnail_thumbhash": "hwYGFIAGiJiFiHiEeoj7inzwVg=="
+        }
+       ],
+       "intro": {
+        "start_seconds": 247.998,
+        "end_seconds": 268.329
+       },
+       "marker_segments": [
+        {
+         "kind": "intro",
+         "start_seconds": 247.998,
+         "end_seconds": 268.329
+        }
+       ],
+       "trickplay_available": false
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "subtitles": [
+  {
+   "source": "external",
+   "language": "en",
+   "codec": "srt",
+   "forced": false,
+   "hearing_impaired": false
+  }
+ ],
+ "intro": {
+  "start_seconds": 247.998,
+  "end_seconds": 268.329
+ },
+ "series_id": "series-imdb-tt1641384",
+ "series_title": "Young Justice",
+ "season_number": 1,
+ "episode_number": 1
+}

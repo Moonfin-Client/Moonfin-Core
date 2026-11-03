@@ -18,6 +18,7 @@ class _ItemsApi extends Mock implements ItemsApi {}
 class _PluginSyncService extends Mock implements PluginSyncService {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(_Client()));
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late _Client client;
@@ -92,8 +93,11 @@ void main() {
 
   test('the playlist keeps the server order until another sort is picked',
       () async {
-    when(() => GetIt.instance<PluginSyncService>().pluginAvailable)
-        .thenReturn(false);
+    when(
+      () => GetIt.instance<PluginSyncService>().collectionOrderSupported(
+        any(),
+      ),
+    ).thenReturn(false);
     when(
       () => itemsApi.getItems(
         parentId: 'boxset-1',

@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   # Glass renderer. Pinned exact because a bump changes the look and wants
   # checking on device first.
-  liquid_glass_widgets: 1.4.2
+  liquid_glass_widgets: 1.6.0
 
 dev_dependencies:
   flutter_test:

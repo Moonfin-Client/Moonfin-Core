@@ -20,6 +20,7 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'mpv_client_certificate.dart';
 import 'mpv_letterbox_crop.dart';
+import 'mpv_player_registry.dart';
 import 'mpv_frame_sample.dart';
 import 'mpv_frame_sampler.dart';
 import 'pending_subtitle_choice.dart';
@@ -657,7 +658,7 @@ class MediaKitPlayerBackend extends PlayerBackend
               : (PlatformDetection.isLinux ? 'auto-safe' : null))
         : 'no';
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
         libass: _useLibass,
         libassAndroidFont: PlatformDetection.isAndroid
@@ -859,6 +860,22 @@ class MediaKitPlayerBackend extends PlayerBackend
     );
   }
 
+  /// The [Media] to open for [url]: with the stream's headers from
+  /// [payload] (`headers`, the resolution's request headers), which mpv then
+  /// sends on every request for this file, HLS playlists and segments
+  /// included. media_kit sets them when the file loads and clears them when
+  /// it unloads, so they never reach another file.
+  @visibleForTesting
+  static Media mediaForPayload(String url, Map<dynamic, dynamic> payload) {
+    final raw = payload['headers'];
+    final headers = <String, String>{
+      if (raw is Map)
+        for (final e in raw.entries)
+          if (e.key != null && e.value != null) '${e.key}': '${e.value}',
+    };
+    return headers.isEmpty ? Media(url) : Media(url, httpHeaders: headers);
+  }
+
   @override
   Future<void> play(
     dynamic mediaItem, {
@@ -892,7 +909,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     );
     final subtitleGeneration = _subtitleSelectionGeneration;
     final secondaryGeneration = _secondarySubtitleGeneration;
-    final media = Media(url);
+    final media = mediaForPayload(url, payload);
     _currentUrl = media.uri;
     _isStale = true;
     _embeddedCaptionTracks = const [];
@@ -3577,8 +3594,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   Future<void> _writeSubtitleFontSize(NativePlayer native) async {
     final fontSize = _lastFontSize;
     if (fontSize == null) return;
-    final mpvSize =
-        (fontSize / 24.0 * 55.0).clamp(24.0, 120.0) * _textSubtitleScale;
+    final mpvSize = mpvSubtitleFontSize(fontSize) * _textSubtitleScale;
     await _nativeSetProperty(
       native,
       'sub-font-size',
@@ -3734,7 +3750,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _tracksChangedController.close();
     _playingGateChangedController.close();
     _subtitleLoadingStream.close();
-    _player.dispose();
+    unawaited(MpvPlayerRegistry.instance.dispose(_player));
   }
 }
 

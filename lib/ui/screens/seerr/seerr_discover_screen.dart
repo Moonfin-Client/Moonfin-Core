@@ -64,6 +64,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   final _loadingHoldFocusNode =
       FocusNode(debugLabel: 'seerrDiscoverLoadingHold', skipTraversal: true);
   final _requestsEntryFocusNode = FocusNode(debugLabel: 'seerrRequestsEntry');
+  final _searchEntryFocusNode = FocusNode(debugLabel: 'seerrSearchEntry');
   int _badgeCount = 0;
   bool _initialFocusResolved = false;
   bool _isFirstRowFocused = false;
@@ -196,6 +197,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _initialFocusNode.dispose();
     _loadingHoldFocusNode.dispose();
     _requestsEntryFocusNode.dispose();
+    _searchEntryFocusNode.dispose();
     _modernExpansion.dispose();
     _modernRatings.dispose();
     super.dispose();
@@ -388,12 +390,29 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
               Positioned(
                 top: requestsEntryTop,
                 right: 24,
-                child: _RequestsEntryButton(
-                  focusNode: _requestsEntryFocusNode,
-                  badgeCount: _badgeCount,
-                  onTap: _openRequests,
-                  onDown: () => _initialFocusNode.requestFocus(),
-                  onUp: _focusNavbarFromEntry,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // The app's own search, which lists library titles and
+                    // ones to request side by side.
+                    _RequestsEntryButton(
+                      focusNode: _searchEntryFocusNode,
+                      icon: Icons.search,
+                      label: AppLocalizations.of(context).search,
+                      onTap: () =>
+                          context.navigateTopLevel(Destinations.searchRequests),
+                      onDown: () => _initialFocusNode.requestFocus(),
+                      onUp: _focusNavbarFromEntry,
+                    ),
+                    const SizedBox(width: 10),
+                    _RequestsEntryButton(
+                      focusNode: _requestsEntryFocusNode,
+                      badgeCount: _badgeCount,
+                      onTap: _openRequests,
+                      onDown: () => _initialFocusNode.requestFocus(),
+                      onUp: _focusNavbarFromEntry,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -823,7 +842,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         : sizes.focusedWidth;
     final rowPadding = 5.0 * desktopScale;
     final rowHeight = sizes.imageHeight +
-        modernMetadataBudget(_prefs) * desktopScale +
+        modernMetadataBudget(_prefs, UserPreferences.detailsRatings) *
+            desktopScale +
         2 * rowPadding;
     final scrollController = _getRowScroll(rowIndex);
 
@@ -925,6 +945,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                           valueListenable: _modernRatings,
                           builder: (context, ratings, _) => ModernCardDetails(
                             prefs: _prefs,
+                            ratingSettings: UserPreferences.detailsRatings,
                             cardWidth: width,
                             detailsWidth: modernDetailsWidth(
                               controller: scrollController,
@@ -1728,12 +1749,18 @@ class _RequestsEntryButton extends StatefulWidget {
   final VoidCallback onDown;
   final VoidCallback onUp;
 
+  /// The requests list's icon and title unless given.
+  final IconData icon;
+  final String? label;
+
   const _RequestsEntryButton({
     required this.focusNode,
-    required this.badgeCount,
+    this.badgeCount = 0,
     required this.onTap,
     required this.onDown,
     required this.onUp,
+    this.icon = Icons.move_to_inbox_outlined,
+    this.label,
   });
 
   @override
@@ -1807,7 +1834,7 @@ class _RequestsEntryButtonState extends State<_RequestsEntryButton>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.move_to_inbox_outlined,
+                          widget.icon,
                           color: AppColorScheme.onSurface.withValues(
                             alpha: 0.7,
                           ),
@@ -1815,7 +1842,7 @@ class _RequestsEntryButtonState extends State<_RequestsEntryButton>
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          l10n.seerrRequestsTitle,
+                          widget.label ?? l10n.seerrRequestsTitle,
                           style: TextStyle(
                             color: AppColorScheme.onSurface,
                             fontSize: 13.5,

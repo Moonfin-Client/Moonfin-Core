@@ -85,6 +85,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     private var methodChannel: MethodChannel? = null
+    private var discoveryMulticastLock: android.net.wifi.WifiManager.MulticastLock? = null
     private var castChannel: MethodChannel? = null
     private var castEventsChannel: EventChannel? = null
     private var castEventsSink: EventChannel.EventSink? = null
@@ -417,6 +418,24 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
                     // a launch answer from a resume or retry one.
                     val trigger = call.argument<String>("trigger") ?: "pull"
                     result.success(DisplayCapabilities.query(this, trigger))
+                }
+                // Server discovery's mDNS browse (Silo's _silo._tcp): Wi-Fi
+                // drops multicast packets unless a lock is held.
+                "acquireMulticastLock" -> {
+                    val lock = discoveryMulticastLock
+                        ?: (applicationContext.getSystemService(Context.WIFI_SERVICE)
+                            as android.net.wifi.WifiManager)
+                            .createMulticastLock("moonfin_server_discovery")
+                            .also {
+                                it.setReferenceCounted(false)
+                                discoveryMulticastLock = it
+                            }
+                    lock.acquire()
+                    result.success(null)
+                }
+                "releaseMulticastLock" -> {
+                    discoveryMulticastLock?.let { if (it.isHeld) it.release() }
+                    result.success(null)
                 }
                 "buildFingerprint" -> result.success(Build.FINGERPRINT)
                 "uptimeMillis" -> result.success(SystemClock.uptimeMillis())
@@ -1115,6 +1134,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     override fun onDestroy() {
+        discoveryMulticastLock?.let { if (it.isHeld) it.release() }
         val shouldTerminateProcess = isFinishing && !isChangingConfigurations
         // Process-wide InputManager registration: without this the listener
         // keeps this Activity alive across every recreation.

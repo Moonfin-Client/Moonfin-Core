@@ -99,7 +99,7 @@ class EmbyAdminItemsApi implements AdminItemsApi {
   ) => searchRemote('Person', query);
 
   @override
-  Future<void> applyRemoteSearchResult(
+  Future<String?> applyRemoteSearchResult(
     String itemId,
     Map<String, dynamic> result, {
     bool replaceAllImages = true,
@@ -109,6 +109,7 @@ class EmbyAdminItemsApi implements AdminItemsApi {
       queryParameters: {'ReplaceAllImages': replaceAllImages},
       data: result,
     );
+    return null;
   }
 
   @override

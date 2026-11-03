@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
+import '../services/moonbase_endpoint.dart';
 import '../services/plugin_sync_service.dart';
 import 'tmdb_repository.dart';
 
@@ -121,14 +122,11 @@ class MdbListRepository {
     }
 
     try {
-      final baseUrl = _client.baseUrl;
-      final token = _client.accessToken;
-      if (token == null) {
-        return completeWith(null);
-      }
+      final ep = await moonbaseEndpoint(_client, _dio);
+      if (ep == null) return completeWith(null);
 
       final response = await _dio.get(
-        '$baseUrl/Moonfin/MdbList/Ratings',
+        '${ep.base}/Moonfin/MdbList/Ratings',
         // The profile makes the plugin filter with the same profile settings sync
         // applies here, rather than the global one.
         queryParameters: {
@@ -136,9 +134,7 @@ class MdbListRepository {
           'tmdbId': tmdbId,
           'profile': GetIt.instance<PluginSyncService>().currentDeviceProfile,
         },
-        options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
-        ),
+        options: Options(headers: ep.headers),
       );
 
       final data = response.data;

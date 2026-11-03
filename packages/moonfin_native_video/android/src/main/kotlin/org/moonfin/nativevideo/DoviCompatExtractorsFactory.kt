@@ -77,6 +77,30 @@ enum class DoviCompatMode(val wireValue: String) {
     }
 }
 
+/** The Dolby Vision profile a codecs string names, when it's 7 or 8. */
+internal fun dolbyVisionProfile(codecs: String?): Int? = when {
+    codecs == null -> null
+    codecs.startsWith("dvhe.07") || codecs.startsWith("dvh1.07") -> 7
+    codecs.startsWith("dvhe.08") || codecs.startsWith("dvh1.08") -> 8
+    else -> null
+}
+
+/**
+ * How a track gets rewritten, or null to leave it alone. A strip request
+ * covers both profiles, otherwise only profile 7 follows its own mode.
+ */
+internal fun doviInterceptMode(
+    profile: Int?,
+    profile7Mode: DoviCompatMode,
+    stripDolbyVision: Boolean,
+): DoviCompatMode? = when {
+    profile == null -> null
+    stripDolbyVision -> DoviCompatMode.STRIP
+    profile != 7 -> null
+    profile7Mode == DoviCompatMode.CONVERT || profile7Mode == DoviCompatMode.STRIP -> profile7Mode
+    else -> null
+}
+
 /**
  * Makes Dolby Vision profile 7 direct play on devices that only decode
  * profile 8 or plain HEVC.
@@ -96,12 +120,14 @@ enum class DoviCompatMode(val wireValue: String) {
  * Everything hangs off the public Forwarding* extractor API: each created
  * extractor gets its output wrapped so video tracks pass through
  * [DoviCompatTrackOutput], which stays a pure pass-through until a format
- * with a profile 7 codec string shows up.
+ * with a profile 7 codec string shows up, or a profile 8 one while
+ * [stripDolbyVision] asks for the Dolby Vision layer to go.
  */
 @UnstableApi
 class DoviCompatExtractorsFactory(
     delegate: ExtractorsFactory,
     private val mode: () -> DoviCompatMode,
+    private val stripDolbyVision: () -> Boolean,
     private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractorsFactory(delegate) {
@@ -143,7 +169,7 @@ class DoviCompatExtractorsFactory(
 
     private fun wrap(extractors: Array<Extractor>): Array<Extractor> =
         Array(extractors.size) { index ->
-            DoviCompatExtractor(extractors[index], mode, convertNal62, onReport)
+            DoviCompatExtractor(extractors[index], mode, stripDolbyVision, convertNal62, onReport)
         }
 }
 
@@ -151,6 +177,7 @@ class DoviCompatExtractorsFactory(
 private class DoviCompatExtractor(
     private val delegate: Extractor,
     private val mode: () -> DoviCompatMode,
+    private val stripDolbyVision: () -> Boolean,
     private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractor(delegate) {
@@ -158,7 +185,8 @@ private class DoviCompatExtractor(
     private var output: DoviCompatExtractorOutput? = null
 
     override fun init(output: ExtractorOutput) {
-        val wrapped = DoviCompatExtractorOutput(output, mode, convertNal62, onReport)
+        val wrapped =
+            DoviCompatExtractorOutput(output, mode, stripDolbyVision, convertNal62, onReport)
         this.output = wrapped
         (delegate as? MoonfinMatroskaExtractor)?.doviBlockAdditionalListener =
             wrapped::onDoviBlockAdditional
@@ -175,6 +203,7 @@ private class DoviCompatExtractor(
 private class DoviCompatExtractorOutput(
     delegate: ExtractorOutput,
     private val mode: () -> DoviCompatMode,
+    private val stripDolbyVision: () -> Boolean,
     private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractorOutput(delegate) {
@@ -187,7 +216,7 @@ private class DoviCompatExtractorOutput(
             return inner
         }
         return videoTracks.getOrPut(id) {
-            DoviCompatTrackOutput(inner, mode, convertNal62, onReport)
+            DoviCompatTrackOutput(inner, mode, stripDolbyVision, convertNal62, onReport)
         }
     }
 
@@ -227,6 +256,7 @@ private class DoviCompatExtractorOutput(
 private class DoviCompatTrackOutput(
     delegate: TrackOutput,
     private val mode: () -> DoviCompatMode,
+    private val stripDolbyVision: () -> Boolean,
     private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingTrackOutput(delegate) {
@@ -318,20 +348,18 @@ private class DoviCompatTrackOutput(
     private val forwardArray = ParsableByteArray()
 
     override fun format(format: Format) {
-        val codecs = format.codecs
+        val profile = dolbyVisionProfile(format.codecs)
         val requestedMode = mode()
-        val isP7 = codecs != null &&
-            (codecs.startsWith("dvhe.07") || codecs.startsWith("dvh1.07"))
-        val shouldIntercept = !disarmed && isP7 &&
-            (requestedMode == DoviCompatMode.CONVERT || requestedMode == DoviCompatMode.STRIP)
+        val interceptMode =
+            if (disarmed) null else doviInterceptMode(profile, requestedMode, stripDolbyVision())
 
-        if (!shouldIntercept) {
+        if (interceptMode == null) {
             active = false
             super.format(format)
             // A profile 7 track that goes out untouched is worth saying out
             // loud, since the reason is the whole answer to why it did not
             // convert.
-            if (isP7 && !disarmed && !reportedUntouched) {
+            if (profile == 7 && !disarmed && !reportedUntouched) {
                 reportedUntouched = true
                 requested = requestedMode
                 sourceFormat = format
@@ -348,7 +376,7 @@ private class DoviCompatTrackOutput(
         }
 
         active = true
-        requested = requestedMode
+        requested = interceptMode
         sourceFormat = format
         // The first sample decides the format, so it is held back here. Later
         // format calls just re-emit the decision already made.

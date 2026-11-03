@@ -9,6 +9,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/server_message.dart';
+import 'moonbase_endpoint.dart';
 import 'storage_path_service.dart';
 
 /// Holds the admin messages for the server the user is signed in to, and which
@@ -130,21 +131,12 @@ class ServerMessagesService extends ChangeNotifier {
 
   // Network
   Future<List<ServerMessage>?> _fetch(MediaServerClient client) async {
-    final token = client.accessToken;
-    if (token == null || token.isEmpty) return null;
-
     try {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep == null) return null;
       final response = await _dio.get(
-        '${client.baseUrl}/Moonfin/Messages',
-        options: Options(
-          headers: {
-            'Authorization': buildServerAuthorizationHeader(
-              scheme: 'MediaBrowser',
-              deviceInfo: client.deviceInfo,
-              accessToken: token,
-            ),
-          },
-        ),
+        '${ep.base}/Moonfin/Messages',
+        options: Options(headers: ep.headers),
       );
 
       return _parse(response.data);

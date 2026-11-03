@@ -106,6 +106,20 @@ class Media3PlayerBackend extends PlayerBackend
         : Media3DoviCompatMode.strip;
   }
 
+  /// Whether the native side drops the Dolby Vision layer from this source so
+  /// its HDR10+ stream plays on its own.
+  @visibleForTesting
+  static bool stripsDolbyVision(UserPreferences prefs, String? videoRangeType) {
+    if (!prefs.get(UserPreferences.media3StripDolbyVisionWithHdr10Plus)) {
+      return false;
+    }
+    final range = videoRangeType?.toUpperCase().replaceAll(
+      RegExp(r'[^A-Z0-9]+'),
+      '',
+    );
+    return range == 'DOVIWITHHDR10PLUS' || range == 'DOVIWITHELHDR10PLUS';
+  }
+
   final UserPreferences _prefs;
   late final Media3LetterboxCropper _letterboxCropper;
   String? _currentUrl;
@@ -647,25 +661,29 @@ class Media3PlayerBackend extends PlayerBackend
     );
   }
 
-  /// Records what the Dolby Vision profile 7 chain did with a track. A P7
-  /// stream that plays wrong is otherwise indistinguishable from a bad file,
-  /// so the report carries the decision, where the RPU came from, and the
-  /// running counts behind it.
+  /// Records what the Dolby Vision chain did with a track. A rewritten stream
+  /// that plays wrong otherwise looks just like a bad file, so the report
+  /// carries the decision, where the RPU came from, and the running counts
+  /// behind it.
   void _onDoviCompat(Map<String, dynamic> map) {
     final reason = map['reason']?.toString() ?? 'decided';
     final applied = map['mode']?.toString() ?? 'none';
     final requested = map['requestedMode']?.toString() ?? 'none';
     final detail = map['detail']?.toString();
+    final codecs = map['codecs']?.toString() ?? '';
+    final profile = codecs.startsWith('dvhe.08') || codecs.startsWith('dvh1.08')
+        ? 'P8'
+        : 'P7';
 
     final headline = switch (reason) {
-      'untouched' => 'DoVi P7 left untouched',
-      'progress' => 'DoVi P7 still handled as $applied',
-      'converterFailed' => 'DoVi P7 conversion stopped working',
-      'disarmed' => 'DoVi P7 rewriting stood down',
+      'untouched' => 'DoVi $profile left untouched',
+      'progress' => 'DoVi $profile still handled as $applied',
+      'converterFailed' => 'DoVi $profile conversion stopped working',
+      'disarmed' => 'DoVi $profile rewriting stood down',
       _ =>
         applied == requested
-            ? 'DoVi P7 handled as $applied'
-            : 'DoVi P7 asked for $requested, settled on $applied',
+            ? 'DoVi $profile handled as $applied'
+            : 'DoVi $profile asked for $requested, settled on $applied',
     };
 
     final counts =
@@ -690,12 +708,12 @@ class Media3PlayerBackend extends PlayerBackend
     );
 
     // A stand-down before the first sample decided anything sends the raw
-    // profile 7 stream to a decoder that can't play it, which reads as a
+    // Dolby Vision stream to a decoder that can't show it, which reads as a
     // silent black screen. Raising it as a recoverable video error routes
     // playback into the transcode fallback instead.
     if (reason == 'disarmed' && applied == 'none') {
       _diag(
-        'Media3: raising a recoverable video error for the untouched P7 '
+        'Media3: raising a recoverable video error for the untouched $profile '
         'stream so playback can fall back',
         level: LogLevel.warning,
       );
@@ -704,7 +722,7 @@ class Media3PlayerBackend extends PlayerBackend
         'recoverable': true,
         'kind': 'unsupported_video',
         'message':
-            'DoVi P7 rewriting stood down before playback could start'
+            'DoVi $profile rewriting stood down before playback could start'
             '${detail == null ? '' : ': $detail'}',
       });
     }
@@ -1162,6 +1180,7 @@ class Media3PlayerBackend extends PlayerBackend
       'startPositionMs': startPosition.inMilliseconds,
       'container': container,
       'videoRangeType': videoRangeType,
+      'stripDolbyVision': stripsDolbyVision(_prefs, videoRangeType),
       'mediaType': mediaType,
       'videoFrameRate': (payload['videoFrameRate'] as num?)?.toDouble(),
       'videoStartDelayMs': _prefs.get(UserPreferences.videoStartDelay),
@@ -1400,6 +1419,7 @@ class Media3PlayerBackend extends PlayerBackend
             hasDoviCompat: true,
           ),
       directPlayVideoContainers: media3DirectPlayVideoContainers,
+      hlsCopyPlaysAsPlainHevc: true,
     );
   }
 

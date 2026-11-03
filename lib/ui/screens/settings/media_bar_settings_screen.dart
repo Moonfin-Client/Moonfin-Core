@@ -17,7 +17,10 @@ import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/multi_select_dialog.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_panel.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'home_sections_screen.dart';
+import 'ratings_config_screen.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 
@@ -251,6 +254,9 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
     final trailersHeldBack =
         GetIt.instance<UserPreferences>().resolveDevicePerformanceTier() ==
         DevicePerformanceTier.reduced;
+    final mode = UserPreferences.normalizeMediaBarMode(
+      _prefs.get(UserPreferences.mediaBarMode),
+    );
     return withCleanSettingsTypography(
       context,
       Scaffold(
@@ -333,6 +339,57 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                 ),
               ],
             ),
+
+            if (UserPreferences.mediaBarModeDrawsRatings(mode)) ...[
+              SettingsSectionHeader(l10n.ratings),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.mediaBarEnableAdditionalRatings,
+                    title: l10n.additionalRatings,
+                    subtitle: l10n.showMdbListAndTmdbRatings,
+                    icon: Icons.star,
+                    onChanged: _pushSync,
+                  ),
+                  SettingsPreviewReporter(
+                    describe: () => SettingsPreviewEntry(
+                      prefKey: UserPreferences.mediaBarRatings.sources.key,
+                      title: l10n.ratingSources,
+                      description: l10n.ratingSourcesDescription,
+                    ),
+                    child: _MediaBarActionTile(
+                      icon: const Icon(Icons.reorder),
+                      title: Text(l10n.ratingSources),
+                      subtitle: Text(l10n.ratingSourcesDescription),
+                      onTap: () => context.pushSettingsScreen(
+                        RatingsConfigScreen(
+                          settings: UserPreferences.mediaBarRatings,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Banner draws its ratings bare and Gallery without badges,
+                  // so those switches would do nothing there.
+                  if (mode != UserPreferences.mediaBarModeBanner)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.mediaBarShowRatingLabels,
+                      title: l10n.ratingLabels,
+                      subtitle: l10n.showLabelsNextToIcons,
+                      icon: Icons.label,
+                      onChanged: _pushSync,
+                    ),
+                  if (mode != UserPreferences.mediaBarModeBanner &&
+                      mode != UserPreferences.mediaBarModeGallery)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.mediaBarShowRatingBadges,
+                      title: l10n.ratingBadges,
+                      subtitle: l10n.showDecorativeBadges,
+                      icon: Icons.style,
+                      onChanged: _pushSync,
+                    ),
+                ],
+              ),
+            ],
 
             SettingsSectionHeader(l10n.mediaSources),
             adaptiveListSection(

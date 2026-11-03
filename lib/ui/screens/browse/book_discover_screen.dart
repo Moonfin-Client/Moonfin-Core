@@ -443,10 +443,9 @@ class _BookDiscoverScreenState extends BookCategoryState<BookDiscoverScreen> {
     final columns = columnsFor(width);
     final cell = cellWidth(width, columns);
     final aspect = feed.isAudiobook ? 1.0 : 2 / 3;
-    final headroom = MediaCard.focusHeadroom(
-      cell / aspect,
-      expansion: expansion,
-    );
+    final headroom =
+        MediaCard.focusHeadroom(cell / aspect, expansion: expansion) +
+        MediaCard.focusRingOutset;
     final stop = addStop(
       RowFocusEntry.node(
         node('result:0'),

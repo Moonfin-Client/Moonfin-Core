@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../auth/repositories/session_repository.dart';
 import '../../../data/services/connectivity_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -48,6 +49,24 @@ class SetupWizardGate {
   /// Set while an explicit re-run from settings is in flight, so the router
   /// leaves it alone even though the server is already marked as set up.
   bool _rerunning = false;
+
+  /// The signed-in session's client. The factory's own active client is just
+  /// the last one it created, which with several servers can be one nobody is
+  /// signed in to, whose settings never arrive.
+  static MediaServerClient? activeClient() {
+    if (!GetIt.instance.isRegistered<MediaServerClientFactory>()) return null;
+    final factory = GetIt.instance<MediaServerClientFactory>();
+    final serverId = GetIt.instance.isRegistered<SessionRepository>()
+        ? GetIt.instance<SessionRepository>().activeServerId
+        : null;
+    final client = serverId == null ? null : factory.clients[serverId];
+    if (client != null) return client;
+    try {
+      return factory.getActiveClient();
+    } on StateError {
+      return null;
+    }
+  }
 
   /// The id the client factory filed this client under, which is also the id
   /// the sync service keys its per-server state by.
@@ -149,7 +168,10 @@ class SetupWizardGate {
 
     final deadline = DateTime.now().add(timeout);
     while (DateTime.now().isBefore(deadline)) {
-      if (sync.isSyncInitializedForServer(client, serverId: serverId)) {
+      // This user's settings, not the server's flag: on a device where
+      // another profile of the server already synced, the flag is set before
+      // this profile's settings arrive.
+      if (sync.hasReadSignInSettings(client, serverId: serverId)) {
         return true;
       }
       await Future<void>.delayed(const Duration(milliseconds: 120));

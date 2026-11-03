@@ -1,0 +1,14 @@
+{
+ "device_code": "dc_SCRUBBED",
+ "user_code": "4821-7730",
+ "match_code": "amber falcon",
+ "verification_uri": "https://silo.example/activate",
+ "verification_uri_complete": "https://silo.example/activate?code=48217730",
+ "expires_at": "2026-10-18T20:15:00.000Z",
+ "expires_in": 900,
+ "interval": 3,
+ "device_name": "Test TV",
+ "device_platform": "macos",
+ "client_purpose": "device_login",
+ "temporary": false
+}

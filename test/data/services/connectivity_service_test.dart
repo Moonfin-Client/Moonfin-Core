@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_emby/server_emby.dart';
+import 'package:server_silo/server_silo.dart';
 
 class _MockConnectivity extends Mock implements Connectivity {}
 
@@ -24,6 +27,8 @@ void main() {
   // A ping body labelled json. Empty means no body, as in every other case.
   var pingBody = '';
 
+  var paths = <String>[];
+
   setUp(() async {
     // The test binding answers every request with a 400, and the probe has to
     // reach the server on the loopback for these to mean anything.
@@ -33,9 +38,11 @@ void main() {
     probes = 0;
     answer = HttpStatus.ok;
     pingBody = '';
+    paths = [];
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
       probes++;
+      paths.add(request.uri.path);
       request.response.statusCode = failuresLeft > 0
           ? HttpStatus.serviceUnavailable
           : answer;
@@ -47,11 +54,14 @@ void main() {
       await request.response.close();
     });
 
+    // The probe asks the client's own ping. Emby's is the one that meets a
+    // 401 from a remote server and a plain text body.
+    final baseUrl = 'http://${server.address.address}:${server.port}';
     final client = _MockMediaServerClient();
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
-    when(
-      () => client.baseUrl,
-    ).thenReturn('http://${server.address.address}:${server.port}');
+    when(() => client.baseUrl).thenReturn(baseUrl);
+    when(() => client.systemApi)
+        .thenReturn(EmbySystemApi(Dio(BaseOptions(baseUrl: baseUrl))));
     GetIt.instance.registerSingleton<MediaServerClient>(client);
 
     connectivity = _MockConnectivity();
@@ -157,6 +167,33 @@ void main() {
       expect(service.canReachServer, isFalse, reason: '$status');
       service.dispose();
     }
+  });
+
+  test('asks the server type its own route', () async {
+    final service = serviceOnline(online: true);
+    addTearDown(service.dispose);
+
+    await service.recheckNow();
+    expect(paths, ['/System/Ping']);
+
+    // Silo has no /System/Ping, so its public identity read stands in.
+    final silo = SiloMediaServerClient(
+      baseUrl: 'http://${server.address.address}:${server.port}',
+      deviceInfo: const DeviceInfo(
+        id: 'device',
+        name: 'Test Mac',
+        appName: 'Moonfin',
+        appVersion: '1.0.0',
+      ),
+    );
+    GetIt.instance
+      ..unregister<MediaServerClient>()
+      ..registerSingleton<MediaServerClient>(silo);
+    paths.clear();
+
+    await service.recheckNow();
+    expect(paths, ['/api/v2/system/identity']);
+    expect(service.canReachServer, isTrue);
   });
 
   test('leaves the server alone while the device itself is offline', () async {

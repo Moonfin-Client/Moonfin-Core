@@ -1,0 +1,249 @@
+{
+ "MediaSources": [
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 3405900000,
+     "Name": "Chapter 2",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 7494570000,
+     "Name": "Chapter 3",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 14394380000,
+     "Name": "Chapter 4",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 19478210000,
+     "Name": "Chapter 5",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 25388700000,
+     "Name": "Chapter 6",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 30256890000,
+     "Name": "Chapter 7",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 34304270000,
+     "Name": "Chapter 8",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    },
+    {
+     "StartPositionTicks": 38738700000,
+     "Name": "Chapter 9",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 8
+    },
+    {
+     "StartPositionTicks": 43214000000,
+     "Name": "Chapter 10",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 9
+    },
+    {
+     "StartPositionTicks": 48595630000,
+     "Name": "Chapter 11",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 10
+    },
+    {
+     "StartPositionTicks": 51962740000,
+     "Name": "Chapter 12",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 11
+    },
+    {
+     "StartPositionTicks": 55646010000,
+     "Name": "Chapter 13",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 12
+    },
+    {
+     "StartPositionTicks": 59412690000,
+     "Name": "Chapter 14",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 13
+    },
+    {
+     "StartPositionTicks": 63570590000,
+     "Name": "Chapter 15",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 14
+    },
+    {
+     "StartPositionTicks": 65808240000,
+     "Name": "Chapter 16",
+     "ImageTag": "d10681a8517b631bfab3c030408f8d8e_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 15
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_633614",
+   "Path": "xXx (2002) Bluray-1080p [h265].mkv",
+   "Type": "Default",
+   "Container": "mkv",
+   "Size": 6845470385,
+   "Name": "xXx (2002) Bluray-1080p [h265]",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 74454380000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "dts",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English DTS 5.1 (Default)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "5.1",
+     "BitRate": 1536000,
+     "Channels": 6,
+     "SampleRate": 48000,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Profile": "DTS",
+     "Type": "Audio",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "hevc",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "BitRate": 7355344,
+     "BitDepth": 8,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 808,
+     "Width": 1920,
+     "AverageFrameRate": 23.976025,
+     "RealFrameRate": 23.976025,
+     "Profile": "Main",
+     "Type": "Video",
+     "AspectRatio": "240:101",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (Forced SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": true,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "xXx (2002) Bluray-1080p [h265].en.forced.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "DisplayTitle": "(SRT)",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 3,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "xXx (2002) Bluray-1080p [h265].srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 7355344,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 0,
+   "ItemId": "633614",
+   "MimeType": "video/x-matroska"
+  }
+ ],
+ "PlaySessionId": "7addf97dea91477ca1686c0d1b6d3788"
+}

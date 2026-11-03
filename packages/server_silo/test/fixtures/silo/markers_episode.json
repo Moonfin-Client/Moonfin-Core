@@ -1,0 +1,21 @@
+{
+ "file_id": "89618",
+ "intro": {
+  "start_seconds": 247.998,
+  "end_seconds": 268.329,
+  "source": "scanner",
+  "confidence": 0.9,
+  "algorithm": "chromaprint:v4",
+  "detected_at": "2026-10-10T16:28:30.386Z"
+ },
+ "credits": {},
+ "recap": {},
+ "preview": {},
+ "marker_segments": [
+  {
+   "kind": "intro",
+   "start_seconds": 247.998,
+   "end_seconds": 268.329
+  }
+ ]
+}

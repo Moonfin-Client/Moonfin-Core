@@ -1,0 +1,399 @@
+{
+ "Name": "Young Justice",
+ "OriginalTitle": "Young Justice",
+ "ServerId": "e5f826c26d6848db93ce4cec242dd3c1",
+ "Id": "648654",
+ "Etag": "386f382f4a7e633e2ec592f4482d98bc",
+ "DateCreated": "2024-09-03T08:08:09.0000000Z",
+ "DateModified": "2025-02-15T19:57:40.0000000Z",
+ "CanDelete": true,
+ "CanDownload": false,
+ "PresentationUniqueKey": "192061-en-6c2a057148b4d7c20a207c789aba6d07",
+ "SupportsSync": true,
+ "SortName": "Young Justice",
+ "ForcedSortName": "Young Justice",
+ "PremiereDate": "2010-11-26T06:00:00.0000000Z",
+ "ExternalUrls": [
+  {
+   "Name": "IMDb",
+   "Url": "https://www.imdb.com/title/tt1641384"
+  },
+  {
+   "Name": "TheMovieDb",
+   "Url": "https://www.themoviedb.org/tv/33217"
+  },
+  {
+   "Name": "TheTVDB",
+   "Url": "https://thetvdb.com/?tab=series&id=192061"
+  },
+  {
+   "Name": "Zap2It",
+   "Url": "https://tvlistings.zap2it.com/overview.html?programSeriesId=EP01354808"
+  },
+  {
+   "Name": "Trakt",
+   "Url": "https://trakt.tv/search/tmdb/33217?id_type=show"
+  }
+ ],
+ "Path": "Young Justice (2010) [tt1641384]",
+ "OfficialRating": "TV-PG",
+ "Overview": "Teenage superheroes strive to prove themselves as members of the Justice League.",
+ "Taglines": [
+  "Don't call them sidekicks."
+ ],
+ "Genres": [
+  "Science Fiction",
+  "Drama",
+  "Crime",
+  "Children",
+  "Animation",
+  "Adventure",
+  "Action",
+  "Romance"
+ ],
+ "CommunityRating": 8.6,
+ "RunTimeTicks": 15000000000,
+ "FileName": "Young Justice (2010) [tt1641384]",
+ "ProductionYear": 2010,
+ "RemoteTrailers": [],
+ "ProviderIds": {
+  "Imdb": "tt1641384",
+  "Tmdb": "33217",
+  "Tvdb": "192061",
+  "facebook": "YoungJusticeDC",
+  "official website": "https://www.hbomax.com/series/urn:hbo:series:GX3ZDNQA_j8LCSgEAAAXR",
+  "Zap2It": "EP01354808"
+ },
+ "IsFolder": true,
+ "ParentId": "379964",
+ "Type": "Series",
+ "People": [
+  {
+   "Name": "Jesse McCartney",
+   "Id": "350513",
+   "Role": "Dick Grayson / Robin / Nightwing",
+   "Type": "Actor",
+   "PrimaryImageTag": "fa673719d0b841ad4bcd85cb92b45a7c_638646226580449766"
+  },
+  {
+   "Name": "Khary Payton",
+   "Id": "299131",
+   "Role": "Kaldur'ahm / Aqualad / Aquaman",
+   "Type": "Actor",
+   "PrimaryImageTag": "6b33e89b77270f858302ed2bf6bd7bc0_638638353897354468"
+  },
+  {
+   "Name": "Jason Spisak",
+   "Id": "295877",
+   "Role": "Wally West / Kid Flash",
+   "Type": "Actor",
+   "PrimaryImageTag": "47458c3ec93edd23b0d94e225d416963_638630366317956134"
+  },
+  {
+   "Name": "Nolan North",
+   "Id": "305024",
+   "Role": "Conner Kent / Superboy",
+   "Type": "Actor",
+   "PrimaryImageTag": "e8a63c7dc0182bdf27f291d5d26c3dd8_638668101872774844"
+  },
+  {
+   "Name": "Crispin Freeman",
+   "Id": "300585",
+   "Role": "Will Harper / Red Arrow",
+   "Type": "Actor",
+   "PrimaryImageTag": "7542c7dfdefff6d26147304676278a5a_638752462600999114"
+  },
+  {
+   "Name": "Danica McKellar",
+   "Id": "299130",
+   "Role": "M'gann M'orzz / Megan Morse / Miss Martian",
+   "Type": "Actor",
+   "PrimaryImageTag": "077848c46b37844093ede334bcc8eb1e_638717386622974618"
+  },
+  {
+   "Name": "Stephanie Lemelin",
+   "Id": "304431",
+   "Role": "Artemis Crock / Artemis / Tigress",
+   "Type": "Actor",
+   "PrimaryImageTag": "173c4dde9a30f260b2d22ee8f9183386_638752462601229118"
+  },
+  {
+   "Name": "Phil LaMarr",
+   "Id": "294173",
+   "Role": "Arthur Curry / Aquaman",
+   "Type": "Actor",
+   "PrimaryImageTag": "7de7bc00de6b538982621bf0eb2f41a2_638616918057640771"
+  },
+  {
+   "Name": "Bruce Greenwood",
+   "Id": "310564",
+   "Role": "Bruce Wayne / Batman",
+   "Type": "Actor",
+   "PrimaryImageTag": "7131f0aa3049a0bb414ee915aeda14d0_639067641132153905"
+  },
+  {
+   "Name": "George Eads",
+   "Id": "468033",
+   "Role": "Barry Allen / The Flash",
+   "Type": "Actor",
+   "PrimaryImageTag": "ac09ce706c42b98bb52ef2a560539c11_638752462603549156"
+  },
+  {
+   "Name": "James Arnold Taylor",
+   "Id": "303404",
+   "Role": "Barry Allen / The Flash",
+   "Type": "Actor",
+   "PrimaryImageTag": "96460353f1547dc1e51ef7202eaf4978_638736125468720353"
+  },
+  {
+   "Name": "Kevin Michael Richardson",
+   "Id": "295876",
+   "Role": "J'onn J'onzz / John Jones / Martian Manhunter",
+   "Type": "Actor",
+   "PrimaryImageTag": "030a2fba46032d9ef646698e986c348f_638626406325233633"
+  },
+  {
+   "Name": "Maggie Q",
+   "Id": "298213",
+   "Role": "Diana Prince / Wonder Woman",
+   "Type": "Actor",
+   "PrimaryImageTag": "f07ba6f2fe4b4e289261a651dc74da2d_639067640967290207"
+  },
+  {
+   "Name": "Rob Lowe",
+   "Id": "308344",
+   "Role": "Captain Marvel / Shazam",
+   "Type": "Actor",
+   "PrimaryImageTag": "42d0b8c7f25c6df2ae903cb0ec14357f_638643782622100421"
+  },
+  {
+   "Name": "Robert Ochoa",
+   "Id": "468034",
+   "Role": "Billy Batson",
+   "Type": "Actor",
+   "PrimaryImageTag": "a1fb5dd2ac0d9f7ae862c8a49d2570ff_638609340987260540"
+  },
+  {
+   "Name": "Vanessa Marshall",
+   "Id": "312297",
+   "Role": "Dinah Lance / Black Canary",
+   "Type": "Actor",
+   "PrimaryImageTag": "0283effb4466d8a7f2fb16948fc050c5_638680208383748496"
+  },
+  {
+   "Name": "Miguel Ferrer",
+   "Id": "299368",
+   "Role": "Vandal Savage",
+   "Type": "Actor",
+   "PrimaryImageTag": "a37486a6302c8836aa044d1d17b3969b_638644720154817545"
+  },
+  {
+   "Name": "David Kaye",
+   "Id": "517788",
+   "Role": "Vandal Savage",
+   "Type": "Actor",
+   "PrimaryImageTag": "148ebc82793d20699a81ec481e720dd9_639096511539702540"
+  },
+  {
+   "Name": "Kelly Hu",
+   "Id": "304968",
+   "Role": "Jade Nguyen / Cheshire",
+   "Type": "Actor",
+   "PrimaryImageTag": "ffc14c8b91034a0e5f104c66a0cf9ccf_638633152004972819"
+  },
+  {
+   "Name": "Yuri Lowenthal",
+   "Id": "303817",
+   "Role": "La'gaan / Lagoon Boy",
+   "Type": "Actor",
+   "PrimaryImageTag": "e41a89be1c4973713da24444ead0acae_638617618475521739"
+  },
+  {
+   "Name": "Masasa Moyo",
+   "Id": "364708",
+   "Role": "Karen Beecher / Bumblebee",
+   "Type": "Actor",
+   "PrimaryImageTag": "1246a7d183a483f0c55b46ae89ff98d3_638690422273185525"
+  },
+  {
+   "Name": "Alyson Stoner",
+   "Id": "301252",
+   "Role": "Barbara Gordon / Batgirl / Oracle",
+   "Type": "Actor",
+   "PrimaryImageTag": "de7b792bf4f665db9b7fb8dbea400df9_638836426376657493"
+  },
+  {
+   "Name": "Kali Troy",
+   "Id": "468035",
+   "Role": "Raquel Ervin / Rocket",
+   "Type": "Actor"
+  },
+  {
+   "Name": "Denise Boutte",
+   "Id": "468036",
+   "Role": "Raquel Ervin / Rocket",
+   "Type": "Actor",
+   "PrimaryImageTag": "c6f4b55c03b79df7682183363fba650b_638609340987640632"
+  },
+  {
+   "Name": "Lacey Chabert",
+   "Id": "320542",
+   "Role": "Zatanna Zatara",
+   "Type": "Actor",
+   "PrimaryImageTag": "580916b095ee4a6951c4074c6a510458_638609212080994829"
+  },
+  {
+   "Name": "Logan Grove",
+   "Id": "372970",
+   "Role": "Garfield Logan / Beast Boy",
+   "Type": "Actor",
+   "PrimaryImageTag": "df0a00a3c6b7ef46910e595ead176a41_638608471582799475"
+  },
+  {
+   "Name": "Greg Cipes",
+   "Id": "299121",
+   "Role": "Garfield Logan / Beast Boy",
+   "Type": "Actor",
+   "PrimaryImageTag": "774f7a46e0413e8209aaf5e0ea37281f_638617618475761742"
+  },
+  {
+   "Name": "Eric Lopez",
+   "Id": "351570",
+   "Role": "Jaime Reyes / Blue Beetle",
+   "Type": "Actor",
+   "PrimaryImageTag": "aaf6ddb8e291c227b54b455e3fc4f5e9_638941381673513120"
+  },
+  {
+   "Name": "Mae Whitman",
+   "Id": "294727",
+   "Role": "Cassie Sandsmark / Wonder Girl",
+   "Type": "Actor",
+   "PrimaryImageTag": "c71c43921569f0aea5c24e1b04f570fd_638632237716258836"
+  },
+  {
+   "Name": "Cameron Bowen",
+   "Id": "329158",
+   "Role": "Tim Drake / Robin",
+   "Type": "Actor",
+   "PrimaryImageTag": "17d812b44656d70f24ea03800549f813_638644631227300931"
+  },
+  {
+   "Name": "Jason Marsden",
+   "Id": "312014",
+   "Role": "Bart Allen / Impulse / Kid Flash",
+   "Type": "Actor",
+   "PrimaryImageTag": "e1d07667ce30099922b6eb7f6a3fc908_638735505442061448"
+  },
+  {
+   "Name": "Troy Baker",
+   "Id": "319620",
+   "Role": "Brion Markov / Geo-Force",
+   "Type": "Actor",
+   "PrimaryImageTag": "09bd69a5d764b9734dba19f47c5a3116_638633152004912818"
+  },
+  {
+   "Name": "Tara Strong",
+   "Id": "297358",
+   "Role": "Tara Markov / Terra",
+   "Type": "Actor",
+   "PrimaryImageTag": "043fa248fab3dc68ebb816dd5b018f8a_638614388329261652"
+  },
+  {
+   "Name": "Zehra Fazal",
+   "Id": "351569",
+   "Role": "Violet Harper / Gabrielle Daou / Halo",
+   "Type": "Actor",
+   "PrimaryImageTag": "1a23d5c92a03f4ae0c8573f7861b3449_638662925187570857"
+  },
+  {
+   "Name": "Zeno Robinson",
+   "Id": "295673",
+   "Role": "Victor Stone / Cyborg",
+   "Type": "Actor",
+   "PrimaryImageTag": "eddf50487cd26fd85d2fc320ea2bc4b0_638743251125626335"
+  }
+ ],
+ "Studios": [
+  {
+   "Name": "Cartoon Network",
+   "Id": 460130
+  },
+  {
+   "Name": "DC Entertainment",
+   "Id": 292772
+  },
+  {
+   "Name": "Warner Bros. Animation",
+   "Id": 292769
+  },
+  {
+   "Name": "DC Universe",
+   "Id": 466771
+  },
+  {
+   "Name": "HBO Max",
+   "Id": 349361
+  }
+ ],
+ "GenreItems": [
+  {
+   "Name": "Science Fiction",
+   "Id": 537
+  },
+  {
+   "Name": "Drama",
+   "Id": 232
+  },
+  {
+   "Name": "Crime",
+   "Id": 291956
+  },
+  {
+   "Name": "Children",
+   "Id": 460129
+  },
+  {
+   "Name": "Animation",
+   "Id": 361
+  },
+  {
+   "Name": "Adventure",
+   "Id": 359
+  },
+  {
+   "Name": "Action",
+   "Id": 312
+  },
+  {
+   "Name": "Romance",
+   "Id": 291999
+  }
+ ],
+ "TagItems": [],
+ "LocalTrailerCount": 0,
+ "UserData": {
+  "UnplayedItemCount": 98,
+  "PlaybackPositionTicks": 0,
+  "PlayCount": 0,
+  "IsFavorite": false,
+  "Played": false
+ },
+ "ChildCount": 4,
+ "DisplayPreferencesId": "f63033ff6886ecc7083a696cbeced1b0",
+ "Status": "Ended",
+ "AirDays": [],
+ "PrimaryImageAspectRatio": 0.7012622720897616,
+ "DisplayOrder": "Aired",
+ "ImageTags": {
+  "Primary": "3849796f2518461d6af92a034fc9ef81_638610786806096396",
+  "Logo": "02ab88f263bf4186d919e8d61199e5a0_638682664658877913",
+  "Thumb": "f6f4888c93ecfde1828a3f4908d8ecad_638610596215852077",
+  "Banner": "d462ea4c8ec596fcdd9360eeff8de045_639270186477436643"
+ },
+ "BackdropImageTags": [
+  "9d191fc2e1d6e77b7f43b5af11fb4652_638682664660197932"
+ ],
+ "EndDate": "2022-06-09T05:00:00.0000000Z",
+ "LockedFields": [],
+ "LockData": false
+}

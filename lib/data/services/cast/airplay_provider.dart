@@ -7,27 +7,47 @@ import 'package:server_core/server_core.dart';
 
 import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
+import '../../../playback/silo_playback_environment.dart';
+import '../../../playback/silo_plugin_for.dart';
 import '../../models/aggregated_item.dart';
 import '../media_server_client_factory.dart';
 import 'cast_provider.dart';
+import 'cast_session_reporter.dart';
 import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 import 'native_airplay_channel.dart';
 import 'native_cast_channel.dart';
 import 'receiver_device_profiles.dart';
 
-class AirPlayProvider implements CastProvider, CastTransportControls {
+class AirPlayProvider
+    implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeCastChannel _native;
   final NativeAirPlayChannel _nativeAirPlay;
   final MediaServerClientFactory _clientFactory;
 
-  const AirPlayProvider(this._native, this._nativeAirPlay, this._clientFactory);
+  AirPlayProvider(this._native, this._nativeAirPlay, this._clientFactory);
+
+  /// The last cast's Silo session, for the cast service to report.
+  CastServerPlayback? _serverPlayback;
+
+  @override
+  CastServerPlayback? takeServerPlayback() {
+    final playback = _serverPlayback;
+    _serverPlayback = null;
+    return playback;
+  }
 
   MediaStreamResolver _resolverForClient(MediaServerClient client) {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
       ServerType.plex => PlexMediaStreamResolver(client),
+      // The Apple TV loads the stream itself.
+      ServerType.silo => siloPluginFor(
+        client,
+        environment: () =>
+            siloReceiverEnvironment('airplay', manufacturer: 'Apple'),
+      ).createStreamResolver(),
     };
   }
 
@@ -93,7 +113,11 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
 
     var streamUrl = resolution.streamUrl;
     final token = client.accessToken;
-    if (token != null &&
+    // Silo's resolver puts the token in the URLs that take one, and only on
+    // its own origin. Appending it here would repeat it, or hand it to a
+    // proxy node.
+    if (!castNeedsSessionReports(client) &&
+        token != null &&
         token.isNotEmpty &&
         !streamUrl.toLowerCase().contains('api_key=') &&
         !streamUrl.toLowerCase().contains('apikey=')) {
@@ -113,6 +137,13 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
     );
 
     await _native.showAirPlayRoutePicker();
+    _serverPlayback = castNeedsSessionReports(client)
+        ? CastServerPlayback(
+            service: siloPluginFor(client).createPlaySessionService(),
+            item: item,
+            resolution: resolution,
+          )
+        : null;
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
+import 'package:server_silo/server_silo.dart' show SiloMediaServerClient;
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
@@ -162,8 +163,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   LikedStatusFilter get likedFilter => _likedFilter;
 
   /// Whether the My Rating sort can actually be served, which needs the
-  /// Moonfin plugin on the server.
+  /// Moonfin plugin on the server, or Silo, which keeps ratings itself.
   bool get supportsMyRatingSort =>
+      _client is SiloMediaServerClient ||
       GetIt.instance.isRegistered<PluginSyncService>() &&
       GetIt.instance<PluginSyncService>().pluginAvailable;
 
@@ -661,6 +663,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     bool stillWanted() => !_disposed && _pageWalkGeneration == generation;
 
     try {
+      // A server with a letter index says where the letter starts, so
+      // everything up to it loads in one request instead of a walk of
+      // pages (Silo). The walk below still finishes the job.
+      final position = await _letterPosition(letter);
+      if (!stillWanted()) return false;
+      if (position != null && position >= _fetchedCount && hasMore) {
+        while (_loadingMore) {
+          await Future.delayed(const Duration(milliseconds: 30));
+          if (!stillWanted()) return false;
+        }
+        await loadMore(
+          pageSizeOverride: position - _fetchedCount + _pageSize,
+          notify: false,
+        );
+      }
       while (!hasPrefix() && hasMore) {
         if (!stillWanted()) return false;
         // A scroll triggered page may be in flight, and calling loadMore now
@@ -679,6 +696,23 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       if (!_disposed) notifyListeners();
     }
     return hasPrefix();
+  }
+
+  /// Where [letter]'s titles start in this list, from a server that keeps
+  /// a letter index ([LetterPositionApi]), or null for any other server or
+  /// when it can't say.
+  Future<int?> _letterPosition(String letter) async {
+    final api = _client.itemsApi;
+    final parentId = _effectiveParentId;
+    if (api is! LetterPositionApi || parentId == null) return null;
+    try {
+      return await (api as LetterPositionApi).letterPosition(
+        letter,
+        parentId: parentId,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> loadMore({int? pageSizeOverride, bool notify = true}) async {
@@ -1670,7 +1704,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   /// Emby's items query takes no 4K flag and its series status holds only
   /// continuing and ended, so those two options stay out of the picker rather
-  /// than sitting there doing nothing.
+  /// than sitting there doing nothing. Silo filters 4K by resolution.
   bool get supportsUhdFilter => _client.serverType != ServerType.emby;
 
   /// Plex keeps no series status, likes, 3D, extras or disc source to filter

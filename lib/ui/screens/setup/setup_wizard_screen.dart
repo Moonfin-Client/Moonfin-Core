@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
-import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -18,6 +18,7 @@ import '../../navigation/destinations.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'setup_wizard_gate.dart';
 import 'setup_wizard_previews.dart';
@@ -40,6 +41,16 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
   final _scopeNode = FocusScopeNode(debugLabel: 'setupWizard');
   final _skipNode = FocusNode(debugLabel: 'setupWizardSkip');
+  final _nextNode = FocusNode(debugLabel: 'setupWizardNext');
+
+  // Keyed by step and row rather than by "the selected row", because a node
+  // tied to the selection gets handed to another widget the moment a press
+  // moves it, and focus drops on that press.
+  final Map<String, FocusNode> _optionNodes = {};
+
+  // The row the preview is showing, which follows focus rather than the
+  // answer so the remote can look at every option before choosing one.
+  final Map<SetupStep, int> _focused = {};
 
   List<SetupStep> _allSteps = const [];
 
@@ -55,7 +66,6 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   int _index = 0;
   bool _ready = false;
   bool _leaving = false;
-  bool _advancing = true;
 
   // Held rather than written as they are chosen. Each write kicks off a full
   // profile push that the plugin then echoes back, so the answers across the
@@ -72,13 +82,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   bool _playbackExpanded = false;
   bool _pickerOpen = false;
 
-  MediaServerClient? get _client {
-    try {
-      return GetIt.instance<MediaServerClientFactory>().getActiveClient();
-    } catch (_) {
-      return null;
-    }
-  }
+  MediaServerClient? get _client => SetupWizardGate.activeClient();
 
   @override
   void initState() {
@@ -90,6 +94,10 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   void dispose() {
     _scopeNode.dispose();
     _skipNode.dispose();
+    _nextNode.dispose();
+    for (final node in _optionNodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -124,6 +132,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       _allSteps = steps;
       _ready = true;
     });
+    _focusSelection();
   }
 
   /// Stand down without marking anything done, so a later launch can try again.
@@ -220,17 +229,32 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     // Costs nothing once artwork is in, and gives a slow server another
     // chance to fill the previews before the next step shows them.
     unawaited(SetupPreviewData.ensureLoaded());
-    setState(() {
-      _advancing = true;
-      _index++;
-    });
+    setState(() => _index++);
+    _focusSelection();
   }
 
   void _goBack() {
     if (_index == 0) return;
-    setState(() {
-      _advancing = false;
-      _index--;
+    setState(() => _index--);
+    _focusSelection();
+  }
+
+  FocusNode _optionNode(SetupStep step, int index) => _optionNodes.putIfAbsent(
+    '${step.name}:$index',
+    () => FocusNode(debugLabel: 'setupOption ${step.name} $index'),
+  );
+
+  /// Puts the incoming step's chosen row under the remote. autofocus can't,
+  /// because focus is still on the button that opened the step.
+  void _focusSelection() {
+    if (PlatformDetection.useMobileUi) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_ready) return;
+      final step = _steps[_index];
+      final options = _optionsFor(step, AppLocalizations.of(context));
+      final selected = math.max(0, options.indexWhere((o) => o.selected));
+      _focused[step] = selected;
+      _optionNode(step, selected).requestFocus();
     });
   }
 
@@ -239,6 +263,12 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
+    // Android follows this key with a system back once it comes up, which
+    // would otherwise reach the PopScope below as a second press and skip.
+    if (PlatformDetection.isAndroid &&
+        event.logicalKey == LogicalKeyboardKey.goBack) {
+      DialogBackSuppressor.markDismissed();
+    }
     if (_skipNode.hasFocus) {
       unawaited(_skip());
       return KeyEventResult.handled;
@@ -247,10 +277,30 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     return KeyEventResult.handled;
   }
 
-  double get _maxWidth {
-    if (PlatformDetection.useLeanbackUi) return 1680;
-    if (PlatformDetection.useMobileUi) return 460;
-    return 1480;
+  /// Keeps the option list one straight line for the remote: its ends lead to
+  /// Skip and Next, and Right always means "done here".
+  KeyEventResult _onOptionKey(
+    KeyEvent event,
+    SetupStep step,
+    int index,
+    int count,
+  ) {
+    if (!event.isActionable) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    final towardNext =
+        key == LogicalKeyboardKey.arrowRight ||
+        (key == LogicalKeyboardKey.arrowDown &&
+            index == count - 1 &&
+            step != SetupStep.tour);
+    if (towardNext) {
+      _nextNode.requestFocus();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp && index == 0) {
+      _skipNode.requestFocus();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   @override
@@ -281,12 +331,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
               skipTraversal: true,
               child: FocusTraversalGroup(
                 policy: OrderedTraversalPolicy(),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: _maxWidth),
-                    child: _buildSurface(context),
-                  ),
-                ),
+                child: _buildBody(context),
               ),
             ),
           ),
@@ -295,129 +340,31 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     );
   }
 
-  Widget _buildSurface(BuildContext context) {
-    final isMobile = PlatformDetection.useMobileUi;
-    final radius = AppRadius.circular(isMobile ? 22 : 28);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? AppSpacing.spaceSm : AppSpacing.spaceXl,
-        vertical: isMobile ? AppSpacing.spaceSm : AppSpacing.spaceXl,
-      ),
-      child: ClipRRect(
-        borderRadius: radius,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColorScheme.background.withValues(alpha: 0.97),
-                AppColorScheme.surface.withValues(alpha: 0.96),
-              ],
-            ),
-            borderRadius: radius,
-            border: Border.fromBorderSide(
-              ThemeRegistry.active.borders.chipBorder.copyWith(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.22),
-              ),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColorScheme.scrim.withValues(alpha: 0.35),
-                blurRadius: isMobile ? 24 : 40,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          padding: EdgeInsets.all(
-            isMobile ? AppSpacing.spaceLg : AppSpacing.space2xl,
-          ),
-          child: _ready
-              ? _buildStep(context)
-              : const Center(child: CircularProgressIndicator()),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStep(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
+    if (!_ready) return const Center(child: CircularProgressIndicator());
     final l10n = AppLocalizations.of(context);
     final step = _steps[_index];
+    final options = _optionsFor(step, l10n);
+    final selected = math.max(0, options.indexWhere((o) => o.selected));
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTopBar(context, l10n),
-        SizedBox(
-          height: PlatformDetection.useMobileUi
-              ? AppSpacing.spaceMd
-              : AppSpacing.spaceXl,
+    if (PlatformDetection.useMobileUi) {
+      return _buildPhone(l10n, step, options, selected);
+    }
+    final focused = (_focused[step] ?? selected).clamp(0, options.length - 1);
+    // Laid out at a fixed canvas and scaled to fill the screen, so every screen
+    // size gets the same proportions. Desktop gets a roomier canvas since it's
+    // read up close. The box is expanded because FittedBox only scales up when
+    // its size is forced, and a TV lays the app out larger than the canvas.
+    final canvas = PlatformDetection.useLeanbackUi
+        ? const Size(960, 540)
+        : const Size(1280, 720);
+    return SizedBox.expand(
+      child: FittedBox(
+        child: SizedBox.fromSize(
+          size: canvas,
+          child: _buildStage(l10n, step, options, focused),
         ),
-        Text(
-          _questionFor(step, l10n),
-          style: TextStyle(
-            color: AppColorScheme.onSurface,
-            fontSize: PlatformDetection.useMobileUi
-                ? AppTypography.fontSizeLg
-                : AppTypography.fontSize2xl,
-            fontWeight: FontWeight.w600,
-            height: 1.2,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.spaceSm),
-        Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 260),
-            switchInCurve: Curves.easeOutCubic,
-            transitionBuilder: (child, animation) {
-              final offset = Tween<Offset>(
-                begin: Offset(_advancing ? 0.06 : -0.06, 0),
-                end: Offset.zero,
-              ).animate(animation);
-              return FadeTransition(
-                opacity: animation,
-                child: SlideTransition(position: offset, child: child),
-              );
-            },
-            child: KeyedSubtree(
-              key: ValueKey(step),
-              child: Center(child: _buildStepBody(context, step, l10n)),
-            ),
-          ),
-        ),
-        _buildActions(context, l10n),
-      ],
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        Row(
-          spacing: AppSpacing.spaceSm,
-          children: [
-            for (var i = 0; i < _steps.length; i++)
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: i == _index
-                      ? AppColorScheme.onSurface
-                      : AppColorScheme.onSurface.withValues(alpha: 0.24),
-                ),
-              ),
-          ],
-        ),
-        const Spacer(),
-        _SetupTextButton(
-          label: l10n.setupSkip,
-          focusNode: _skipNode,
-          order: 90,
-          onPressed: () => unawaited(_skip()),
-        ),
-      ],
+      ),
     );
   }
 
@@ -430,200 +377,529 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     SetupStep.tour => l10n.setupTourQuestion,
   };
 
-  Widget _buildStepBody(
-    BuildContext context,
-    SetupStep step,
-    AppLocalizations l10n,
-  ) => switch (step) {
-    SetupStep.navbar => _buildNavbarStep(l10n),
-    SetupStep.navbarStyle => _buildNavbarStyleStep(l10n),
-    SetupStep.mediaBar => _buildMediaBarStep(l10n),
-    SetupStep.homeRows => _buildHomeRowsStep(l10n),
-    SetupStep.detailStyle => _buildDetailStyleStep(l10n),
-    SetupStep.tour => _SetupTourStep(
-      prefs: _prefs,
-      playback: _buildPlaybackSection(l10n),
-    ),
-  };
+  /// Where each answer lives in Settings, ending with the setting's own name,
+  /// so the user knows where to go to change it later.
+  List<String> _settingsPathFor(SetupStep step, AppLocalizations l10n) =>
+      switch (step) {
+        SetupStep.navbar => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.navigationBar,
+          l10n.navigationStyle,
+        ],
+        SetupStep.navbarStyle => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.navigationBar,
+          l10n.bottomNavbarStyle,
+        ],
+        SetupStep.mediaBar => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.homeScreen,
+          l10n.mediaBar,
+          l10n.mediaBarMode,
+        ],
+        SetupStep.homeRows => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.homeScreen,
+          l10n.rowsType,
+        ],
+        SetupStep.detailStyle => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.detailsPage,
+          l10n.detailScreenStyle,
+        ],
+        SetupStep.tour => [
+          l10n.settings,
+          l10n.appearance,
+          l10n.settingsAppearanceTheme,
+        ],
+      };
 
-  Widget _buildNavbarStep(AppLocalizations l10n) {
+  List<String> _languagesPath(AppLocalizations l10n) => [
+    l10n.settings,
+    l10n.playback,
+    '${l10n.audio}, ${l10n.subtitles}',
+  ];
+
+  List<_SetupOption> _optionsFor(SetupStep step, AppLocalizations l10n) =>
+      switch (step) {
+        SetupStep.navbar => _navbarOptions(l10n),
+        SetupStep.navbarStyle => _navbarStyleOptions(l10n),
+        SetupStep.mediaBar => _mediaBarOptions(l10n),
+        SetupStep.homeRows => _homeRowsOptions(l10n),
+        SetupStep.detailStyle => _detailStyleOptions(l10n),
+        SetupStep.tour => _themeOptions(l10n),
+      };
+
+  List<_SetupOption> _navbarOptions(AppLocalizations l10n) {
     // The bottom bar is only offered where the app can actually draw one, so
     // this list is two entries on a TV or desktop and three on a phone.
-    final positions = NavigationLayout.availableNavbarPositions;
-    final labels = {
-      NavbarPosition.top: l10n.topBar,
-      NavbarPosition.left: l10n.leftSidebar,
-      NavbarPosition.bottom: l10n.bottomBar,
-    };
     final selected = _effectiveNavbar;
-
-    return _OptionLayout(
-      columns: positions.length,
-      children: [
-        for (var i = 0; i < positions.length; i++)
-          _OptionCard(
-            order: i,
-            label: labels[positions[i]] ?? positions[i].name,
-            selected: selected == positions[i],
-            autofocus: selected == positions[i],
-            preview: SetupPreview(child: navbarPreview(positions[i])),
-            onPressed: () => setState(() => _navbar = positions[i]),
-          ),
-      ],
-    );
+    return [
+      for (final position in NavigationLayout.availableNavbarPositions)
+        _SetupOption(
+          label: switch (position) {
+            NavbarPosition.top => l10n.topBar,
+            NavbarPosition.left => l10n.leftSidebar,
+            NavbarPosition.bottom => l10n.bottomBar,
+          },
+          hint: switch (position) {
+            NavbarPosition.top => l10n.setupNavbarTopHint,
+            NavbarPosition.left => l10n.setupNavbarLeftHint,
+            NavbarPosition.bottom => l10n.setupNavbarBottomHint,
+          },
+          selected: selected == position,
+          preview: () => navbarPreview(position),
+          onSelect: () => setState(() => _navbar = position),
+        ),
+    ];
   }
 
-  Widget _buildNavbarStyleStep(AppLocalizations l10n) {
-    const styles = BottomNavbarStyle.values;
+  List<_SetupOption> _navbarStyleOptions(AppLocalizations l10n) {
     final selected =
         _navbarStyle ?? _prefs.get(UserPreferences.bottomNavbarStyle);
-
-    return _OptionLayout(
-      columns: styles.length,
-      children: [
-        for (var i = 0; i < styles.length; i++)
-          _OptionCard(
-            order: i,
-            label: bottomNavbarStyleLabel(l10n, styles[i]),
-            hint: bottomNavbarStyleHint(l10n, styles[i]),
-            selected: selected == styles[i],
-            autofocus: selected == styles[i],
-            preview: SetupPreview(child: bottomNavbarStylePreview(styles[i])),
-            onPressed: () => setState(() => _navbarStyle = styles[i]),
-          ),
-      ],
-    );
+    return [
+      for (final style in BottomNavbarStyle.values)
+        _SetupOption(
+          label: bottomNavbarStyleLabel(l10n, style),
+          hint: bottomNavbarStyleHint(l10n, style),
+          selected: selected == style,
+          preview: () => bottomNavbarStylePreview(style),
+          onSelect: () => setState(() => _navbarStyle = style),
+        ),
+    ];
   }
 
-  Widget _buildMediaBarStep(AppLocalizations l10n) {
-    const modes = [
-      UserPreferences.mediaBarModeMoonfin,
-      UserPreferences.mediaBarModeMakd,
-      UserPreferences.mediaBarModeBookshelf,
-      UserPreferences.mediaBarModeGallery,
-      UserPreferences.mediaBarModeBanner,
-      UserPreferences.mediaBarModeAya,
-      UserPreferences.mediaBarModeOff,
-    ];
-    final labels = {
-      UserPreferences.mediaBarModeMoonfin: l10n.mediaBarModeMoonfin,
-      UserPreferences.mediaBarModeMakd: l10n.mediaBarModeMakd,
-      UserPreferences.mediaBarModeBookshelf: l10n.mediaBarModeBookshelf,
-      UserPreferences.mediaBarModeGallery: l10n.mediaBarModeGallery,
-      UserPreferences.mediaBarModeBanner: l10n.mediaBarModeBanner,
-      UserPreferences.mediaBarModeAya: l10n.mediaBarModeAya,
-      UserPreferences.mediaBarModeOff: l10n.mediaBarModeOff,
+  List<_SetupOption> _mediaBarOptions(AppLocalizations l10n) {
+    final modes = {
+      UserPreferences.mediaBarModeMoonfin: (
+        l10n.mediaBarModeMoonfin,
+        l10n.setupMediaBarMoonfinHint,
+      ),
+      UserPreferences.mediaBarModeMakd: (
+        l10n.mediaBarModeMakd,
+        l10n.setupMediaBarMakdHint,
+      ),
+      UserPreferences.mediaBarModeBookshelf: (
+        l10n.mediaBarModeBookshelf,
+        l10n.setupMediaBarBookshelfHint,
+      ),
+      UserPreferences.mediaBarModeGallery: (
+        l10n.mediaBarModeGallery,
+        l10n.setupMediaBarGalleryHint,
+      ),
+      UserPreferences.mediaBarModeBanner: (
+        l10n.mediaBarModeBanner,
+        l10n.setupMediaBarBannerHint,
+      ),
+      UserPreferences.mediaBarModeAya: (
+        l10n.mediaBarModeAya,
+        l10n.setupMediaBarAyaHint,
+      ),
+      UserPreferences.mediaBarModeOff: (
+        l10n.mediaBarModeOff,
+        l10n.setupMediaBarOffHint,
+      ),
     };
     final selected = _mediaBar ?? _prefs.get(UserPreferences.mediaBarMode);
-
-    return _OptionLayout(
-      columns: 4,
-      children: [
-        for (var i = 0; i < modes.length; i++)
-          _OptionCard(
-            order: i,
-            label: labels[modes[i]] ?? modes[i],
-            selected: selected == modes[i],
-            autofocus: selected == modes[i],
-            preview: SetupPreview(child: mediaBarPreview(modes[i])),
-            onPressed: () => setState(() => _mediaBar = modes[i]),
-          ),
-      ],
-    );
+    return [
+      for (final MapEntry(key: mode, value: (label, hint)) in modes.entries)
+        _SetupOption(
+          label: label,
+          hint: hint,
+          selected: selected == mode,
+          preview: () => mediaBarPreview(mode),
+          onSelect: () => setState(() => _mediaBar = mode),
+        ),
+    ];
   }
 
-  Widget _buildHomeRowsStep(AppLocalizations l10n) {
+  List<_SetupOption> _homeRowsOptions(AppLocalizations l10n) {
     final selected = _homeRows ?? _prefs.get(UserPreferences.homeRowsStyle);
-    return _OptionLayout(
-      columns: 2,
-      children: [
-        _OptionCard(
-          order: 0,
-          label: l10n.setupStyleClassic,
-          hint: l10n.setupRowsClassicHint,
-          selected: selected == HomeRowsStyle.v1,
-          autofocus: selected == HomeRowsStyle.v1,
-          preview: SetupPreview(child: homeRowsPreview(modern: false)),
-          onPressed: () => setState(() => _homeRows = HomeRowsStyle.v1),
-        ),
-        _OptionCard(
-          order: 1,
-          label: l10n.setupStyleModern,
-          hint: l10n.setupRowsModernHint,
-          selected: selected == HomeRowsStyle.v2,
-          autofocus: selected == HomeRowsStyle.v2,
-          preview: SetupPreview(child: homeRowsPreview(modern: true)),
-          onPressed: () => setState(() => _homeRows = HomeRowsStyle.v2),
-        ),
-      ],
-    );
+    return [
+      _SetupOption(
+        label: l10n.setupStyleClassic,
+        hint: l10n.setupRowsClassicHint,
+        selected: selected == HomeRowsStyle.v1,
+        preview: () => homeRowsPreview(modern: false),
+        onSelect: () => setState(() => _homeRows = HomeRowsStyle.v1),
+      ),
+      _SetupOption(
+        label: l10n.setupStyleModern,
+        hint: l10n.setupRowsModernHint,
+        selected: selected == HomeRowsStyle.v2,
+        preview: () => homeRowsPreview(modern: true),
+        onSelect: () => setState(() => _homeRows = HomeRowsStyle.v2),
+      ),
+    ];
   }
 
-  Widget _buildDetailStyleStep(AppLocalizations l10n) {
+  List<_SetupOption> _detailStyleOptions(AppLocalizations l10n) {
+    final styles = {
+      DetailScreenStyle.classic: (
+        l10n.setupStyleClassic,
+        l10n.setupDetailClassicHint,
+      ),
+      DetailScreenStyle.modern: (
+        l10n.setupStyleModern,
+        l10n.setupDetailModernHint,
+      ),
+      DetailScreenStyle.spotlight: (
+        l10n.setupStyleSpotlight,
+        l10n.setupDetailSpotlightHint,
+      ),
+      DetailScreenStyle.nouveau: (
+        l10n.setupStyleNouveau,
+        l10n.setupDetailNouveauHint,
+      ),
+      DetailScreenStyle.minimalist: (
+        l10n.setupStyleMinimalist,
+        l10n.setupDetailMinimalistHint,
+      ),
+      DetailScreenStyle.stage: (
+        l10n.setupStyleStage,
+        l10n.setupDetailStageHint,
+      ),
+      DetailScreenStyle.premiere: (
+        l10n.setupStylePremiere,
+        l10n.setupDetailPremiereHint,
+      ),
+      DetailScreenStyle.quickLook: (
+        l10n.setupStyleQuickLook,
+        l10n.setupDetailQuickLookHint,
+      ),
+      DetailScreenStyle.frost: (
+        l10n.setupStyleFrost,
+        l10n.setupDetailFrostHint,
+      ),
+    };
     final selected =
         _detailStyle ?? _prefs.get(UserPreferences.detailScreenStyle);
-    return _OptionLayout(
-      columns: 5,
+    return [
+      for (final MapEntry(key: style, value: (label, hint)) in styles.entries)
+        _SetupOption(
+          label: label,
+          hint: hint,
+          selected: selected == style,
+          preview: () => detailStylePreview(style),
+          onSelect: () => setState(() => _detailStyle = style),
+        ),
+    ];
+  }
+
+  /// The closing step: pick a look, with the optional playback languages
+  /// under it. The preview is Home in whatever look is applied right now.
+  List<_SetupOption> _themeOptions(AppLocalizations l10n) {
+    final active = _prefs.get(UserPreferences.visualTheme);
+    final mediaBar =
+        _mediaBar ??
+        _prefs.get(UserPreferences.mediaBarMode) ??
+        UserPreferences.mediaBarModeMoonfin;
+    final more = [
+      l10n.setupTourBulletRequests,
+      l10n.setupTourBulletSyncPlay,
+      l10n.liveTv,
+      l10n.setupTourBulletThemes,
+      if (!PlatformDetection.useLeanbackUi) l10n.setupTourBulletDownloads,
+      l10n.setupTourBulletMore,
+    ].join(' · ');
+    return [
+      for (final theme in VisualThemeId.values)
+        _SetupOption(
+          label: switch (theme) {
+            VisualThemeId.moonfin => l10n.themeMoonfin,
+            VisualThemeId.neonPulse => l10n.themeNeonPulse,
+            VisualThemeId.glass => l10n.themeGlass,
+            VisualThemeId.eightbitHero => l10n.theme8BitHero,
+          },
+          hint: '${l10n.setupTourMoreHeader}: $more',
+          selected: active == theme,
+          preview: () => mediaBarPreview(mediaBar),
+          swatch: ThemeRegistry.resolveById(
+            AppThemeController.builtInThemeIdFor(theme),
+          ),
+          // Written straight away rather than held back with the rest,
+          // because the point is that the wizard restyles around you.
+          onSelect: () => unawaited(_applyTheme(theme)),
+        ),
+    ];
+  }
+
+  Future<void> _applyTheme(VisualThemeId theme) async {
+    await _prefs.set(UserPreferences.visualTheme, theme);
+    if (mounted) setState(() {});
+  }
+
+  /// TV and desktop: the question and a straight list of options on the left,
+  /// and a large preview of whichever option has focus on the right.
+  Widget _buildStage(
+    AppLocalizations l10n,
+    SetupStep step,
+    List<_SetupOption> options,
+    int focused,
+  ) {
+    final onSurface = AppColorScheme.onSurface;
+    final path = _settingsPathFor(step, l10n);
+    final isLast = _index >= _steps.length - 1;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(48, 32, 48, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              for (var i = 0; i < _steps.length; i++) ...[
+                if (i > 0) const SizedBox(width: 4),
+                _ProgressSegment(width: 36, height: 3, state: i - _index),
+              ],
+              const SizedBox(width: AppSpacing.spaceMd),
+              _StepCount(text: l10n.setupStepOf(_index + 1, _steps.length)),
+              const SizedBox(width: AppSpacing.spaceMd),
+              _SettingChip(label: path.last),
+              const Spacer(),
+              _SetupTextButton(
+                label: l10n.setupSkip,
+                focusNode: _skipNode,
+                order: 90,
+                onPressed: () => unawaited(_skip()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 26),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          _questionFor(step, l10n),
+                          style: TextStyle(
+                            color: onSurface,
+                            fontSize: AppTypography.fontSize2xl,
+                            fontWeight: FontWeight.w600,
+                            height: 1.15,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        for (var i = 0; i < options.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 3),
+                          _OptionRow(
+                            // A fresh row per step, or the row in the same
+                            // spot keeps showing the last step's focus.
+                            key: ValueKey('${step.name}:$i'),
+                            order: i,
+                            option: options[i],
+                            focusNode: _optionNode(step, i),
+                            currentLabel: l10n.setupCurrent,
+                            onFocused: () => setState(() => _focused[step] = i),
+                            onKey: (event) =>
+                                _onOptionKey(event, step, i, options.length),
+                          ),
+                        ],
+                        if (step == SetupStep.tour) ...[
+                          const SizedBox(height: AppSpacing.spaceMd),
+                          _buildPlaybackSection(l10n),
+                          const SizedBox(height: AppSpacing.spaceSm),
+                          _SettingsPath(segments: _languagesPath(l10n)),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 44),
+                Expanded(
+                  child: _StagePreview(option: options[focused], path: path),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              SizedBox(
+                width: 120,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: _index > 0
+                      ? _SetupTextButton(
+                          label: l10n.back,
+                          order: 91,
+                          onPressed: _goBack,
+                        )
+                      : null,
+                ),
+              ),
+              Expanded(
+                child: PlatformDetection.useLeanbackUi
+                    ? Text(
+                        l10n.setupTvHint,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: onSurface.withValues(alpha: 0.5),
+                          fontSize: AppTypography.fontSizeXs,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              SizedBox(
+                width: 120,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: _SetupPrimaryButton(
+                    label: isLast ? l10n.done : l10n.next,
+                    order: 93,
+                    focusNode: _nextNode,
+                    onPressed: _advance,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Phones: the question on top, a phone-sized preview to swipe through, the
+  /// options as chips under it, and the actions in reach of a thumb.
+  Widget _buildPhone(
+    AppLocalizations l10n,
+    SetupStep step,
+    List<_SetupOption> options,
+    int selected,
+  ) {
+    final onSurface = AppColorScheme.onSurface;
+    final path = _settingsPathFor(step, l10n);
+    final isLast = _index >= _steps.length - 1;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _OptionCard(
-          order: 0,
-          label: l10n.setupStyleClassic,
-          hint: l10n.setupDetailClassicHint,
-          selected: selected == DetailScreenStyle.classic,
-          autofocus: selected == DetailScreenStyle.classic,
-          preview: SetupPreview(
-            child: detailStylePreview(DetailScreenStyle.classic),
+        Padding(
+          padding: const EdgeInsets.only(left: 20, right: AppSpacing.spaceMd),
+          child: SizedBox(
+            height: 44,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    spacing: 6,
+                    children: [
+                      for (var i = 0; i < _steps.length; i++)
+                        Expanded(
+                          child: _ProgressSegment(height: 4, state: i - _index),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.spaceLg),
+                _SetupTextButton(
+                  label: l10n.setupSkip,
+                  focusNode: _skipNode,
+                  order: 90,
+                  onPressed: () => unawaited(_skip()),
+                ),
+              ],
+            ),
           ),
-          onPressed: () =>
-              setState(() => _detailStyle = DetailScreenStyle.classic),
         ),
-        _OptionCard(
-          order: 1,
-          label: l10n.setupStyleModern,
-          hint: l10n.setupDetailModernHint,
-          selected: selected == DetailScreenStyle.modern,
-          autofocus: selected == DetailScreenStyle.modern,
-          preview: SetupPreview(
-            child: detailStylePreview(DetailScreenStyle.modern),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _StepCount(
+                    text: l10n.setupStepOf(_index + 1, _steps.length),
+                  ),
+                  const SizedBox(width: AppSpacing.spaceSm),
+                  Flexible(child: _SettingChip(label: path.last)),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.spaceSm),
+              Text(
+                _questionFor(step, l10n),
+                style: TextStyle(
+                  color: onSurface,
+                  fontSize: AppTypography.fontSizeXl,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.spaceSm),
+              _SettingsPath(segments: path),
+            ],
           ),
-          onPressed: () =>
-              setState(() => _detailStyle = DetailScreenStyle.modern),
         ),
-        _OptionCard(
-          order: 2,
-          label: l10n.setupStyleSpotlight,
-          hint: l10n.setupDetailSpotlightHint,
-          selected: selected == DetailScreenStyle.spotlight,
-          autofocus: selected == DetailScreenStyle.spotlight,
-          preview: SetupPreview(
-            child: detailStylePreview(DetailScreenStyle.spotlight),
-          ),
-          onPressed: () =>
-              setState(() => _detailStyle = DetailScreenStyle.spotlight),
+        const SizedBox(height: 14),
+        Expanded(
+          child: _PreviewCarousel(options: options, selected: selected),
         ),
-        _OptionCard(
-          order: 3,
-          label: l10n.setupStyleNouveau,
-          hint: l10n.setupDetailNouveauHint,
-          selected: selected == DetailScreenStyle.nouveau,
-          autofocus: selected == DetailScreenStyle.nouveau,
-          preview: SetupPreview(
-            child: detailStylePreview(DetailScreenStyle.nouveau),
+        const SizedBox(height: 14),
+        _ChipStrip(key: ValueKey(step), options: options, selected: selected),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+          child: SizedBox(
+            height: 36,
+            child: Text(
+              options[selected].hint,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: onSurface.withValues(alpha: 0.65),
+                fontSize: AppTypography.fontSizeXs,
+                height: 1.35,
+              ),
+            ),
           ),
-          onPressed: () =>
-              setState(() => _detailStyle = DetailScreenStyle.nouveau),
         ),
-        _OptionCard(
-          order: 4,
-          label: l10n.setupStyleMinimalist,
-          hint: l10n.setupDetailMinimalistHint,
-          selected: selected == DetailScreenStyle.minimalist,
-          autofocus: selected == DetailScreenStyle.minimalist,
-          preview: SetupPreview(
-            child: detailStylePreview(DetailScreenStyle.minimalist),
+        if (step == SetupStep.tour)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.spaceXs,
+              children: [
+                _buildPlaybackSection(l10n),
+                _SettingsPath(segments: _languagesPath(l10n)),
+              ],
+            ),
           ),
-          onPressed: () =>
-              setState(() => _detailStyle = DetailScreenStyle.minimalist),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, AppSpacing.spaceMd),
+          child: Row(
+            spacing: AppSpacing.spaceMd,
+            children: [
+              if (_index > 0)
+                SizedBox(
+                  width: 96,
+                  child: _PhoneButton(
+                    label: l10n.back,
+                    order: 91,
+                    onPressed: _goBack,
+                  ),
+                ),
+              Expanded(
+                child: _PhoneButton(
+                  label: isLast ? l10n.done : l10n.next,
+                  order: 93,
+                  filled: true,
+                  onPressed: _advance,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -769,89 +1045,532 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     if (!mounted || result == null || result == current) return;
     setState(() => onPicked(result));
   }
+}
 
-  Widget _buildActions(BuildContext context, AppLocalizations l10n) {
-    final isLast = _index >= _steps.length - 1;
-    return Row(
-      children: [
-        if (_index > 0)
-          _SetupTextButton(label: l10n.back, order: 91, onPressed: _goBack),
-        const Spacer(),
-        _SetupPrimaryButton(
-          label: isLast ? l10n.done : l10n.next,
-          order: 93,
-          onPressed: _advance,
+/// A preview is a picture of a screen, so the remote and the pointer must never
+/// land inside it.
+Widget _inertPreview(_SetupOption option) => ExcludeSemantics(
+  child: ExcludeFocus(
+    child: IgnorePointer(child: SetupPreview(child: option.preview())),
+  ),
+);
+
+class _SetupOption {
+  const _SetupOption({
+    required this.label,
+    required this.hint,
+    required this.selected,
+    required this.preview,
+    required this.onSelect,
+    this.swatch,
+  });
+
+  final String label;
+  final String hint;
+  final bool selected;
+  final Widget Function() preview;
+  final VoidCallback onSelect;
+  final ThemeSpec? swatch;
+}
+
+/// One step's mark in the progress bar. [state] is the step's distance from
+/// the current one: behind is done, zero is here, ahead is still to come.
+class _ProgressSegment extends StatelessWidget {
+  const _ProgressSegment({
+    required this.height,
+    required this.state,
+    this.width,
+  });
+
+  final double? width;
+  final double height;
+  final int state;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.circular(height / 2),
+        color: state < 0
+            ? onSurface
+            : state == 0
+            ? AppColorScheme.accent
+            : onSurface.withValues(alpha: 0.18),
+      ),
+    );
+  }
+}
+
+class _StepCount extends StatelessWidget {
+  const _StepCount({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+        fontSize: AppTypography.fontSizeXs,
+      ),
+    );
+  }
+}
+
+class _SettingChip extends StatelessWidget {
+  const _SettingChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: onSurface.withValues(alpha: 0.08),
+        borderRadius: AppRadius.circular(11),
+        border: Border.all(color: onSurface.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: onSurface,
+          fontSize: AppTypography.fontSizeXs,
+          fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+}
+
+/// The way to an answer in Settings, last segment being the setting itself.
+class _SettingsPath extends StatelessWidget {
+  const _SettingsPath({required this.segments});
+
+  final List<String> segments;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    final style = TextStyle(
+      color: onSurface.withValues(alpha: 0.6),
+      fontSize: AppTypography.fontSizeXs,
+    );
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: AppSpacing.spaceXs,
+      runSpacing: AppSpacing.space2xs,
+      children: [
+        Icon(
+          Icons.settings_rounded,
+          size: 13,
+          color: onSurface.withValues(alpha: 0.55),
+        ),
+        for (var i = 0; i < segments.length; i++) ...[
+          if (i > 0)
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 13,
+              color: onSurface.withValues(alpha: 0.4),
+            ),
+          Text(
+            segments[i],
+            style: i == segments.length - 1
+                ? style.copyWith(color: onSurface, fontWeight: FontWeight.w600)
+                : style,
+          ),
+        ],
       ],
     );
   }
 }
 
-/// Lays the option cards out at the width the space allows, keeping them the
-/// dominant thing on screen rather than thumbnails under a heading.
-class _OptionLayout extends StatelessWidget {
-  const _OptionLayout({required this.columns, required this.children});
+class _StagePreview extends StatelessWidget {
+  const _StagePreview({required this.option, required this.path});
 
-  final int columns;
-  final List<Widget> children;
+  final _SetupOption option;
+  final List<String> path;
 
   @override
   Widget build(BuildContext context) {
-    // Phones get one sideways strip instead of a stack of rows. The cards are
-    // sized so the next one peeks in from the edge, which is what tells the
-    // user there is more to scroll, and the action row below never gets
-    // pushed off the screen.
-    if (PlatformDetection.useMobileUi) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          // Breathing room inside the strip, so a card's selection border and
-          // its focus growth stay visible instead of clipping against the
-          // scroll viewport at the top and at either end.
-          const inset = AppSpacing.spaceMd;
-          const labelAllowance = 84.0;
-          final byWidth = (constraints.maxWidth - inset * 2) * 0.42;
-          final byHeight =
-              (constraints.maxHeight - inset * 2 - labelAllowance) *
-              setupPreviewAspect();
-          final width = (byWidth < byHeight ? byWidth : byHeight).clamp(
-            120.0,
-            220.0,
-          );
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(inset),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var i = 0; i < children.length; i++) ...[
-                  if (i > 0) const SizedBox(width: AppSpacing.spaceMd),
-                  SizedBox(width: width, child: children[i]),
+    final onSurface = AppColorScheme.onSurface;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // The preview gives up height to the caption, never the other way
+        // around, so a long translation can't push anything off screen.
+        Flexible(
+          child: AspectRatio(
+            aspectRatio: setupPreviewAspect(),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(12),
+                border: Border.all(color: onSurface.withValues(alpha: 0.2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColorScheme.scrim.withValues(alpha: 0.5),
+                    blurRadius: 40,
+                    offset: const Offset(0, 12),
+                  ),
                 ],
-              ],
+              ),
+              child: ClipRRect(
+                borderRadius: AppRadius.circular(11),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 160),
+                  child: KeyedSubtree(
+                    key: ValueKey(option.label),
+                    child: _inertPreview(option),
+                  ),
+                ),
+              ),
             ),
-          );
-        },
-      );
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final gaps = AppSpacing.spaceMd * (columns - 1);
-        final width = ((constraints.maxWidth - gaps) / columns).clamp(
-          120.0,
-          420.0,
-        );
-        return SingleChildScrollView(
-          child: Wrap(
-            spacing: AppSpacing.spaceMd,
-            runSpacing: AppSpacing.spaceMd,
-            alignment: WrapAlignment.center,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.spaceMd),
+        Text(
+          option.label,
+          style: TextStyle(
+            color: onSurface,
+            fontSize: AppTypography.fontSizeLg,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.spaceXs),
+        Text(
+          option.hint,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: onSurface.withValues(alpha: 0.62),
+            fontSize: AppTypography.fontSizeSm,
+            height: 1.25,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.spaceSm),
+        _SettingsPath(segments: path),
+      ],
+    );
+  }
+}
+
+/// One row in the TV and desktop option list. Focus fills it, the radio and
+/// the "Current" tag mark the answer, so the two never look alike.
+class _OptionRow extends StatelessWidget {
+  const _OptionRow({
+    super.key,
+    required this.order,
+    required this.option,
+    required this.focusNode,
+    required this.currentLabel,
+    required this.onFocused,
+    required this.onKey,
+  });
+
+  final int order;
+  final _SetupOption option;
+  final FocusNode focusNode;
+  final String currentLabel;
+  final VoidCallback onFocused;
+  final KeyEventResult Function(KeyEvent event) onKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    final background = AppColorScheme.background;
+    final swatch = option.swatch;
+
+    return _Focusable(
+      order: order,
+      focusNode: focusNode,
+      focusOnHover: true,
+      onFocused: onFocused,
+      onKey: onKey,
+      onPressed: option.onSelect,
+      builder: (focused) {
+        final ink = focused ? background : onSurface;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          height: 30,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceMd),
+          decoration: BoxDecoration(
+            color: focused ? onSurface : Colors.transparent,
+            borderRadius: AppRadius.circular(7),
+          ),
+          child: Row(
+            spacing: 9,
             children: [
-              for (final child in children)
-                SizedBox(width: width, child: child),
+              Container(
+                width: 12,
+                height: 12,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 1.5,
+                    color: option.selected
+                        ? AppColorScheme.accent
+                        : ink.withValues(alpha: focused ? 0.5 : 0.4),
+                  ),
+                ),
+                child: option.selected
+                    ? Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColorScheme.accent,
+                        ),
+                      )
+                    : null,
+              ),
+              Expanded(
+                child: Text(
+                  option.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: focused ? ink : ink.withValues(alpha: 0.82),
+                    fontSize: AppTypography.fontSizeSm,
+                    fontWeight: focused ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              if (option.selected)
+                Text(
+                  currentLabel,
+                  style: TextStyle(
+                    color: ink.withValues(alpha: focused ? 0.6 : 0.55),
+                    fontSize: AppTypography.fontSize2xs,
+                  ),
+                ),
+              if (swatch != null)
+                Container(
+                  width: 15,
+                  height: 15,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: swatch.colors.surface,
+                    border: Border.all(color: ink.withValues(alpha: 0.2)),
+                  ),
+                  child: Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: swatch.colors.accent,
+                    ),
+                  ),
+                ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+/// The phone preview: the chosen option front and center at phone size, its
+/// neighbors peeking in from the sides. Swiping or tapping a neighbor picks
+/// it.
+class _PreviewCarousel extends StatelessWidget {
+  const _PreviewCarousel({required this.options, required this.selected});
+
+  final List<_SetupOption> options;
+  final int selected;
+
+  static const _gap = 14.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final height = constraints.maxHeight;
+        // An open languages panel can squeeze the preview away entirely.
+        if (height < 80) return const SizedBox.shrink();
+        final width = height * setupPreviewAspect();
+        final left = (constraints.maxWidth - width) / 2;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragEnd: (details) {
+            final velocity = details.primaryVelocity ?? 0;
+            if (velocity < -150 && selected < options.length - 1) {
+              options[selected + 1].onSelect();
+            } else if (velocity > 150 && selected > 0) {
+              options[selected - 1].onSelect();
+            }
+          },
+          child: Stack(
+            children: [
+              // The chosen card goes last so it paints over its neighbors.
+              for (final i in [selected - 1, selected + 1, selected])
+                if (i >= 0 && i < options.length)
+                  AnimatedPositioned(
+                    key: ValueKey(i),
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    left: left + (i - selected) * (width + _gap),
+                    top: 0,
+                    width: width,
+                    height: height,
+                    child: GestureDetector(
+                      onTap: i == selected ? null : options[i].onSelect,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 220),
+                        opacity: i == selected ? 1 : 0.4,
+                        child: AnimatedScale(
+                          duration: const Duration(milliseconds: 220),
+                          scale: i == selected ? 1 : 0.9,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: AppRadius.circular(18),
+                              border: Border.all(
+                                color: i == selected
+                                    ? onSurface
+                                    : onSurface.withValues(alpha: 0.14),
+                                width: i == selected ? 2 : 1,
+                              ),
+                              boxShadow: i == selected
+                                  ? [
+                                      BoxShadow(
+                                        color: onSurface.withValues(
+                                          alpha: 0.18,
+                                        ),
+                                        blurRadius: 28,
+                                        spreadRadius: 2,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: AppRadius.circular(16),
+                              child: _inertPreview(options[i]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// The options by name under the phone preview. The chosen chip scrolls to
+/// the middle so it never sits off screen.
+class _ChipStrip extends StatefulWidget {
+  const _ChipStrip({super.key, required this.options, required this.selected});
+
+  final List<_SetupOption> options;
+  final int selected;
+
+  @override
+  State<_ChipStrip> createState() => _ChipStripState();
+}
+
+class _ChipStripState extends State<_ChipStrip> {
+  final _keys = <int, GlobalKey>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _reveal(Duration.zero);
+  }
+
+  @override
+  void didUpdateWidget(_ChipStrip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selected != widget.selected) {
+      _reveal(const Duration(milliseconds: 220));
+    }
+  }
+
+  void _reveal(Duration duration) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final chip = _keys[widget.selected]?.currentContext;
+      if (chip == null) return;
+      Scrollable.ensureVisible(chip, alignment: 0.5, duration: duration);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = AppColorScheme.onSurface;
+    return SizedBox(
+      height: 44,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          spacing: AppSpacing.spaceSm,
+          children: [
+            for (var i = 0; i < widget.options.length; i++)
+              _Focusable(
+                key: _keys.putIfAbsent(i, GlobalKey.new),
+                order: i,
+                onPressed: widget.options[i].onSelect,
+                builder: (focused) {
+                  final selected = i == widget.selected;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
+                    height: 44,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.spaceLg,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? onSurface
+                          : onSurface.withValues(alpha: 0.06),
+                      borderRadius: AppRadius.circular(22),
+                      border: Border.all(
+                        color: selected || focused
+                            ? onSurface
+                            : onSurface.withValues(alpha: 0.16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 6,
+                      children: [
+                        if (selected)
+                          Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: AppColorScheme.background,
+                          ),
+                        Text(
+                          widget.options[i].label,
+                          style: TextStyle(
+                            color: selected
+                                ? AppColorScheme.background
+                                : onSurface.withValues(alpha: 0.8),
+                            fontSize: AppTypography.fontSizeSm,
+                            fontWeight: selected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -862,18 +1581,26 @@ class _OptionLayout extends StatelessWidget {
 /// same wherever they are, and so focus looks like focus does everywhere else.
 class _Focusable extends StatefulWidget {
   const _Focusable({
+    super.key,
     required this.order,
     required this.onPressed,
     required this.builder,
     this.focusNode,
-    this.autofocus = false,
+    this.focusOnHover = false,
+    this.onFocused,
+    this.onKey,
   });
 
   final int order;
   final VoidCallback onPressed;
   final Widget Function(bool focused) builder;
   final FocusNode? focusNode;
-  final bool autofocus;
+
+  /// Lets a pointer move focus by hovering, so the preview follows a mouse the
+  /// way it follows the arrow keys. Needs [focusNode].
+  final bool focusOnHover;
+  final VoidCallback? onFocused;
+  final KeyEventResult Function(KeyEvent event)? onKey;
 
   @override
   State<_Focusable> createState() => _FocusableState();
@@ -884,123 +1611,31 @@ class _FocusableState extends State<_Focusable> {
 
   @override
   Widget build(BuildContext context) {
+    final node = widget.focusNode;
     return FocusTraversalOrder(
       order: NumericFocusOrder(widget.order.toDouble()),
       child: Focus(
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
-        onFocusChange: (value) => setState(() => _focused = value),
+        focusNode: node,
+        onFocusChange: (value) {
+          setState(() => _focused = value);
+          if (value) widget.onFocused?.call();
+        },
         onKeyEvent: (node, event) {
+          final handled = widget.onKey?.call(event);
+          if (handled == KeyEventResult.handled) return KeyEventResult.handled;
           if (!isActivateKey(event)) return KeyEventResult.ignored;
           widget.onPressed();
           return KeyEventResult.handled;
         },
-        child: GestureDetector(
-          onTap: widget.onPressed,
-          child: widget.builder(_focused),
+        child: MouseRegion(
+          onEnter: widget.focusOnHover && node != null
+              ? (_) => node.requestFocus()
+              : null,
+          child: GestureDetector(
+            onTap: widget.onPressed,
+            child: widget.builder(_focused),
+          ),
         ),
-      ),
-    );
-  }
-}
-
-/// One pickable layout, shown rather than described.
-class _OptionCard extends StatelessWidget {
-  const _OptionCard({
-    required this.order,
-    required this.label,
-    required this.preview,
-    required this.selected,
-    required this.onPressed,
-    this.hint,
-    this.autofocus = false,
-  });
-
-  final int order;
-  final String label;
-  final String? hint;
-  final Widget preview;
-  final bool selected;
-  final bool autofocus;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = AppColorScheme.onSurface;
-
-    return _Focusable(
-      order: order,
-      autofocus: autofocus,
-      onPressed: onPressed,
-      builder: (focused) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.spaceSm,
-        children: [
-          AnimatedScale(
-            scale: focused ? 1.035 : 1,
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              decoration: BoxDecoration(
-                borderRadius: AppRadius.circular(10),
-                border: Border.all(
-                  color: focused
-                      ? accent
-                      : accent.withValues(alpha: selected ? 0.34 : 0.14),
-                  width: focused ? 2 : 1,
-                ),
-                boxShadow: focused
-                    ? [
-                        BoxShadow(
-                          color: accent.withValues(alpha: 0.34),
-                          blurRadius: 22,
-                          spreadRadius: 1,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: ClipRRect(
-                borderRadius: AppRadius.circular(10),
-                child: preview,
-              ),
-            ),
-          ),
-          Row(
-            spacing: AppSpacing.spaceXs,
-            children: [
-              if (selected)
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: accent,
-                  ),
-                ),
-              Flexible(
-                child: Text(
-                  label,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: selected ? accent : accent.withValues(alpha: 0.7),
-                    fontSize: AppTypography.fontSizeSm,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (hint != null)
-            Text(
-              hint!,
-              style: TextStyle(
-                color: accent.withValues(alpha: 0.55),
-                fontSize: AppTypography.fontSizeXs,
-                height: 1.3,
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -1285,16 +1920,19 @@ class _SetupPrimaryButton extends StatelessWidget {
     required this.label,
     required this.order,
     required this.onPressed,
+    this.focusNode,
   });
 
   final String label;
   final int order;
   final VoidCallback onPressed;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     return _Focusable(
       order: order,
+      focusNode: focusNode,
       onPressed: onPressed,
       builder: (focused) => AnimatedContainer(
         duration: const Duration(milliseconds: 160),
@@ -1332,239 +1970,49 @@ class _SetupPrimaryButton extends StatelessWidget {
   }
 }
 
-/// The closing screen: pick a look, the optional playback languages, then a
-/// list of what else lives in Settings. Only the theme writes anything here;
-/// the languages go out with the rest of the answers.
-class _SetupTourStep extends StatefulWidget {
-  const _SetupTourStep({required this.prefs, required this.playback});
-
-  final UserPreferences prefs;
-
-  final Widget playback;
-
-  @override
-  State<_SetupTourStep> createState() => _SetupTourStepState();
-}
-
-class _SetupTourStepState extends State<_SetupTourStep> {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final active = widget.prefs.get(UserPreferences.visualTheme);
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.spaceLg,
-        children: [
-          Text(
-            l10n.setupPickALook,
-            style: TextStyle(
-              color: AppColorScheme.onSurface.withValues(alpha: 0.62),
-              fontSize: AppTypography.fontSizeSm,
-            ),
-          ),
-          Wrap(
-            spacing: AppSpacing.spaceMd,
-            runSpacing: AppSpacing.spaceMd,
-            children: [
-              for (var i = 0; i < VisualThemeId.values.length; i++)
-                _ThemeSwatch(
-                  order: i,
-                  theme: VisualThemeId.values[i],
-                  selected: active == VisualThemeId.values[i],
-                  autofocus: active == VisualThemeId.values[i],
-                  // Written straight away rather than held back with the
-                  // rest, because the point is that the wizard restyles
-                  // around you as you move across the row.
-                  onPressed: () async {
-                    await widget.prefs.set(
-                      UserPreferences.visualTheme,
-                      VisualThemeId.values[i],
-                    );
-                    if (mounted) setState(() {});
-                  },
-                ),
-            ],
-          ),
-          widget.playback,
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.spaceMd),
-            decoration: BoxDecoration(
-              color: AppColorScheme.onSurface.withValues(alpha: 0.04),
-              borderRadius: AppRadius.circular(12),
-              border: Border.all(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.14),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.spaceXs,
-              children: [
-                Row(
-                  spacing: AppSpacing.spaceSm,
-                  children: [
-                    Icon(
-                      Icons.settings_rounded,
-                      size: 18,
-                      color: AppColorScheme.onSurface,
-                    ),
-                    Text(
-                      l10n.setupTourMoreHeader,
-                      style: TextStyle(
-                        color: AppColorScheme.onSurface,
-                        fontSize: AppTypography.fontSizeSm,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                for (final entry in [
-                  l10n.setupTourBulletRequests,
-                  l10n.setupTourBulletSyncPlay,
-                  l10n.liveTv,
-                  l10n.setupTourBulletThemes,
-                  if (!PlatformDetection.useLeanbackUi)
-                    l10n.setupTourBulletDownloads,
-                  l10n.setupTourBulletMore,
-                ])
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.spaceSm,
-                    children: [
-                      Text(
-                        '\u2022',
-                        style: TextStyle(
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.65,
-                          ),
-                          fontSize: AppTypography.fontSizeXs,
-                          height: 1.4,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          entry,
-                          style: TextStyle(
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.65,
-                            ),
-                            fontSize: AppTypography.fontSizeXs,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ThemeSwatch extends StatelessWidget {
-  const _ThemeSwatch({
+/// Back and Next on a phone, tall enough for a thumb, with Next filling the
+/// rest of the row.
+class _PhoneButton extends StatelessWidget {
+  const _PhoneButton({
+    required this.label,
     required this.order,
-    required this.theme,
-    required this.selected,
-    required this.autofocus,
     required this.onPressed,
+    this.filled = false,
   });
 
+  final String label;
   final int order;
-  final VisualThemeId theme;
-  final bool selected;
-  final bool autofocus;
   final VoidCallback onPressed;
+  final bool filled;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final label = switch (theme) {
-      VisualThemeId.moonfin => l10n.themeMoonfin,
-      VisualThemeId.neonPulse => l10n.themeNeonPulse,
-      VisualThemeId.glass => l10n.themeGlass,
-      VisualThemeId.eightbitHero => l10n.theme8BitHero,
-    };
-    final spec = ThemeRegistry.resolveById(
-      AppThemeController.builtInThemeIdFor(theme),
-    );
-
+    final onSurface = AppColorScheme.onSurface;
     return _Focusable(
       order: order,
-      autofocus: autofocus,
       onPressed: onPressed,
-      builder: (focused) => Column(
-        spacing: AppSpacing.spaceXs,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: 72,
-            height: 44,
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [spec.colors.surface, spec.colors.background],
-              ),
-              borderRadius: AppRadius.circular(8),
-              border: Border.all(
-                color: focused
-                    ? AppColorScheme.onSurface
-                    : AppColorScheme.onSurface.withValues(
-                        alpha: selected ? 0.4 : 0.16,
-                      ),
-                width: focused ? 2 : 1,
-              ),
-              boxShadow: focused
-                  ? [
-                      BoxShadow(
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.3),
-                        blurRadius: 18,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 4,
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: spec.colors.accent,
-                    ),
-                  ),
-                  Container(
-                    width: 22,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: spec.colors.onSurface.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      builder: (focused) => AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        height: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: filled ? AppColorScheme.accent : null,
+          borderRadius: AppRadius.circular(12),
+          border: Border.all(
+            color: filled
+                ? (focused ? onSurface : Colors.transparent)
+                : onSurface.withValues(alpha: focused ? 0.7 : 0.28),
+            width: filled ? 2 : 1,
           ),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColorScheme.onSurface.withValues(
-                alpha: selected ? 1 : 0.62,
-              ),
-              fontSize: AppTypography.fontSizeXs,
-            ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: filled ? AppColorScheme.onAccent : onSurface,
+            fontSize: AppTypography.fontSizeMd,
+            fontWeight: filled ? FontWeight.w600 : FontWeight.w400,
           ),
-        ],
+        ),
       ),
     );
   }

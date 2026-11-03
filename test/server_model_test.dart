@@ -49,4 +49,18 @@ void main() {
     expect(cleared.displayAddress, isNull);
     expect(cleared.address, 'https://xn--bcher-kva.de');
   });
+
+  test('a Silo server round-trips its type', () {
+    final server = Server(
+      id: 'silo-1',
+      name: 'Silo',
+      address: 'https://silo.example',
+      version: '4b2e921c',
+      serverType: ServerType.silo,
+      dateAdded: DateTime.utc(2026, 10, 13),
+    );
+
+    final restored = Server.fromJson(server.id, server.toJson());
+    expect(restored.serverType, ServerType.silo);
+  });
 }

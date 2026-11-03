@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart';
 
 import '../auth/repositories/server_repository.dart';
 import '../auth/store/authentication_preferences.dart';
+import '../auth/services/silo_token_storage.dart';
 import '../auth/store/authentication_store.dart';
 import '../auth/store/credential_store.dart';
 import '../data/services/media_server_client_factory.dart';
@@ -130,7 +131,9 @@ class HeadlessSessionBootstrap {
       serverType: server.serverType,
       baseUrl: server.address,
     );
-    client.accessToken = accessToken;
+    SiloTokenStorage(
+      GetIt.instance<AuthenticationStore>(),
+    ).putLogin(client: client, user: user, accessToken: accessToken);
     client.userId = userId;
     return client;
   }

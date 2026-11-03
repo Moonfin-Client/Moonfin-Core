@@ -1,0 +1,9 @@
+{
+ "revision": "42ceefb2e17cc998a422496d77d1d22148d1ea8897120f68e70384f33868c026",
+ "state": "available",
+ "allowed": true,
+ "delivery": "routed",
+ "transcode": true,
+ "cluster_routing": true,
+ "grant_lifetime_seconds": 300
+}
