@@ -1,0 +1,222 @@
+{
+ "items": [
+  {
+   "file_id": "4598",
+   "file_name": "xXx (2002) Bluray-1080p [h265].mkv",
+   "file_path": "xXx (2002) Bluray-1080p [h265].mkv",
+   "resolution": "1080p",
+   "codec_video": "hevc",
+   "codec_audio": "dts",
+   "hdr": false,
+   "container": "mkv",
+   "file_size": 6845470385,
+   "duration": 7445,
+   "bitrate": 7355,
+   "added_at": "2026-10-08T00:26:31.397Z",
+   "effective_audio_track_index": 0,
+   "effective_audio_language": "en",
+   "video_tracks": [
+    {
+     "title": "H.265 / HEVC (High Efficiency Video Coding)",
+     "codec": "hevc",
+     "dv_config_present": false,
+     "dv_bl_compat_id_present": false,
+     "dv_enhancement_layer": "none",
+     "profile": "Main",
+     "level": 120,
+     "width": 1920,
+     "height": 808,
+     "aspect_ratio": "240:101",
+     "interlaced": false,
+     "frame_rate": "23.976",
+     "video_range_type": "SDR",
+     "color_range": "tv",
+     "bit_depth": 8,
+     "pixel_format": "yuv420p"
+    }
+   ],
+   "audio_tracks": [
+    {
+     "title": "DCA (DTS Coherent Acoustics)",
+     "language": "en",
+     "codec": "dts",
+     "profile": "DTS",
+     "layout": "5.1(side)",
+     "channels": 6,
+     "bitrate": 1536,
+     "sample_rate": 48000,
+     "default": true
+    }
+   ],
+   "subtitle_tracks": [
+    {
+     "index": 2,
+     "language": "en",
+     "codec": "srt",
+     "title": "xXx (2002) Bluray-1080p [h265].en.forced.srt",
+     "forced": true,
+     "default": false,
+     "hearing_impaired": false,
+     "external": true,
+     "file_name": "xXx (2002) Bluray-1080p [h265].en.forced.srt"
+    },
+    {
+     "index": 3,
+     "codec": "srt",
+     "title": "xXx (2002) Bluray-1080p [h265].srt",
+     "forced": false,
+     "default": false,
+     "hearing_impaired": false,
+     "external": true,
+     "file_name": "xXx (2002) Bluray-1080p [h265].srt"
+    }
+   ],
+   "chapters": [
+    {
+     "index": 0,
+     "title": "01",
+     "start_seconds": 0,
+     "end_seconds": 340.59,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/0-99a31b1c6fe0cac8cecb3668051837a41272724515bdab1a6f7f908d01bd7f5c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "qRgKC4IHpYeLhTeItIAlBlg="
+    },
+    {
+     "index": 1,
+     "title": "02",
+     "start_seconds": 340.59,
+     "end_seconds": 749.457,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/1-4231975e3c516695b3d816d03bfe8095fc35c50d1e96c06fa4fa746bfd0938cb/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "kPgFE4IGe1d+tqZVVV8WkGg="
+    },
+    {
+     "index": 2,
+     "title": "03",
+     "start_seconds": 749.457,
+     "end_seconds": 1439.438,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/2-d17c6f3a45e89a99872dad1475a42df0bbb4cafd79c0e10bd45baf8d2e5bc181/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "VTkKE4LQjatXZ5RogIhooIk="
+    },
+    {
+     "index": 3,
+     "title": "04",
+     "start_seconds": 1439.438,
+     "end_seconds": 1947.821,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/3-7a3595e3ef2de74f6ea8b5c3183eafce91ad2013a355a5b3c392acbe4a43244d/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "RAgGC4IFyXZfpWiXBm2HsHU="
+    },
+    {
+     "index": 4,
+     "title": "05",
+     "start_seconds": 1947.821,
+     "end_seconds": 2538.87,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/4-60dc6e27f8a368172a6e38e371a6836e5e15402dc65a57dfc18eb09de279e5a6/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "RwgGC4DsiIlZMNK89I7JS0A="
+    },
+    {
+     "index": 5,
+     "title": "06",
+     "start_seconds": 2538.87,
+     "end_seconds": 3025.689,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/5-d2212d695a64fdd234395f9dee1bba08d89a49b59b9c86df018ade643940fb9c/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "zQgKC4Bjeg6LZ4iIWL8FqWg="
+    },
+    {
+     "index": 6,
+     "title": "07",
+     "start_seconds": 3025.689,
+     "end_seconds": 3430.427,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/6-1f74a543a0824ef325d4c55e7a37da097d2f0d8dd2fde104188c50e055ef1713/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "JIUFE4LfapeZd1eGv4i3QIY="
+    },
+    {
+     "index": 7,
+     "title": "08",
+     "start_seconds": 3430.427,
+     "end_seconds": 3873.87,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/7-4b0a3ad5c58fb3bf5ee89a31f6868c5196c2e032e00140b1f09409560fe20756/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "S0kGC4KT60dzmAyYoXIgB1g="
+    },
+    {
+     "index": 8,
+     "title": "09",
+     "start_seconds": 3873.87,
+     "end_seconds": 4321.4,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/8-a815ca8f05c11f5ee5a5aec07512f640d2fbf869eaac0647b18b5a1d2f8e6428/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "lBgOC4Cpo2N/eceIb4r3ucU="
+    },
+    {
+     "index": 9,
+     "title": "10",
+     "start_seconds": 4321.4,
+     "end_seconds": 4859.563,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/9-ce9b58c11d778e0fb4a7e554a0fa27b295285b3ec5ab01a0c97ec9c1a1dc9888/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "SfgFA4BWb3ZDdJp3gFdGwHg="
+    },
+    {
+     "index": 10,
+     "title": "11",
+     "start_seconds": 4859.563,
+     "end_seconds": 5196.274,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/10-73a09c525226fb1ceb708ce44cc162682e88a80756508588e45bcf4b21b5b54e/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "jwgGC4DcRB++h3dnuVD5ZjM="
+    },
+    {
+     "index": 11,
+     "title": "12",
+     "start_seconds": 5196.274,
+     "end_seconds": 5564.601,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/11-6756e41056270c7f3f0059a7bb323b343719d5da5101f750e42873c1508bda0e/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "TPgJC4BnWHRweThZELUacK4="
+    },
+    {
+     "index": 12,
+     "title": "13",
+     "start_seconds": 5564.601,
+     "end_seconds": 5941.269,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/12-ceea4d55c03705cd61ef30bde02f0c70779578906d4afb71600df513b59802c2/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "mBgOC4ChaYZPiHdWjfTmtp8="
+    },
+    {
+     "index": 13,
+     "title": "14",
+     "start_seconds": 5941.269,
+     "end_seconds": 6357.059,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/13-33c669d9c03bd7a705711d71a5b8522ca483d0af91d729209649fdcbbb5bca99/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "SwgGC4AHxmZweid4qXB6nvc="
+    },
+    {
+     "index": 14,
+     "title": "15",
+     "start_seconds": 6357.059,
+     "end_seconds": 6580.824,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/14-2e83cd4922127f848f9679296e43159171e54bd75d52af1d5b8003edcfa9bedc/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "BwgGA4CHgNwpWnt3UEsn9YQ="
+    },
+    {
+     "index": 15,
+     "title": "16",
+     "start_seconds": 6580.824,
+     "end_seconds": 7445,
+     "source": "embedded",
+     "thumbnail_url": "/api/v2/artwork/chapter-images/4598/15-547d110c14d0a47ade29c5e2edff2454b0309fc7e0933fd923bd4ade3c8fb7d0/w300.webp?exp=SCRUBBED&sig=SCRUBBED",
+     "thumbnail_thumbhash": "ztgNI4QFpLZpeHmXB3mWb5g="
+    }
+   ]
+  }
+ ]
+}

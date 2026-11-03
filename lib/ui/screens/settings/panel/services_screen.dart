@@ -59,24 +59,29 @@ class _ServicesScreenState extends State<_ServicesScreen> {
     final seerrLabel = GetIt.instance<SeerrPreferences>().labelOrDefault(
       l10n.seerr,
     );
+    final seerrShown = seerrOnAnySignedInServer();
     return ListView(
       children: [
         adaptiveListSection(
           children: [
-            _TvSettingsListTile(
-              autofocus: true,
-              leading: Image.asset(
-                'assets/icons/seerr.png',
-                width: 24,
-                height: 24,
+            // Seerr goes through the Moonfin plugin. Not offered when no
+            // signed-in server could have it (all Silo, say).
+            if (seerrShown)
+              _TvSettingsListTile(
+                autofocus: true,
+                leading: Image.asset(
+                  'assets/icons/seerr.png',
+                  width: 24,
+                  height: 24,
+                ),
+                title: Text(seerrLabel),
+                subtitle: Text(l10n.mediaRequestIntegration),
+                onTap: () =>
+                    context.pushSettingsScreen(const SeerrConfigScreen()),
               ),
-              title: Text(seerrLabel),
-              subtitle: Text(l10n.mediaRequestIntegration),
-              onTap: () =>
-                  context.pushSettingsScreen(const SeerrConfigScreen()),
-            ),
             if (achievements.available)
               _TvSettingsListTile(
+                autofocus: !seerrShown,
                 leading: const Icon(
                   Icons.military_tech,
                   color: Color(0xFFFFC107),

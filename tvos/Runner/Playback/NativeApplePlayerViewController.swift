@@ -4150,10 +4150,12 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
         list.translatesAutoresizingMaskIntoConstraints = false
         list.axis = .vertical
 
-        // Scrolling is driven from the presses and the pan below, so the scroll
-        // view's own pan stays out of it.
+        // On tvOS scrolling is driven from the presses and the pan below, so the
+        // scroll view's own pan stays out of it. On iOS a finger drags the list.
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        #if os(tvOS)
         scrollView.isScrollEnabled = false
+        #endif
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.contentInsetAdjustmentBehavior = .never
@@ -4176,7 +4178,8 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
             panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             panel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             panel.widthAnchor.constraint(equalToConstant: Self.panelWidth),
-            panel.heightAnchor.constraint(lessThanOrEqualToConstant: 1000),
+            // A phone's canvas is shorter than the 1080 a TV gets.
+            panel.heightAnchor.constraint(lessThanOrEqualTo: view.heightAnchor, constant: -80),
 
             inner.topAnchor.constraint(equalTo: panel.topAnchor, constant: Self.border),
             inner.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -Self.border),

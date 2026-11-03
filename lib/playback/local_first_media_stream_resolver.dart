@@ -12,7 +12,11 @@ import 'offline_stream_resolver.dart';
 /// `PlaybackManager._playCurrentItem` -> `resolver.resolve(item)` per queue
 /// item, wrapping here gives local-first behavior everywhere, including mixed
 /// queues where only some episodes are downloaded.
-class LocalFirstMediaStreamResolver extends MediaStreamResolver {
+///
+/// A replan (see [StreamReplanner]) always goes to the wrapped server
+/// resolver: it moves a server session, which a local file never has.
+class LocalFirstMediaStreamResolver extends MediaStreamResolver
+    implements StreamReplanner {
   final MediaStreamResolver _inner;
   final OfflineStreamResolver _offline;
   final Future<void> Function(String itemId)? _restoreSubtitles;
@@ -74,6 +78,27 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
       enableDirectStream: enableDirectStream,
       enableTranscoding: enableTranscoding,
     );
+  }
+
+  @override
+  bool canReplan(StreamResolutionResult current) {
+    final inner = _inner;
+    return !current.isLocalMedia &&
+        inner is StreamReplanner &&
+        (inner as StreamReplanner).canReplan(current);
+  }
+
+  @override
+  Future<StreamResolutionResult> replan(
+    dynamic mediaItem,
+    StreamResolutionResult current,
+    ReplanRequest request,
+  ) {
+    final inner = _inner;
+    if (inner is! StreamReplanner) {
+      throw StateError('${inner.runtimeType} cannot replan');
+    }
+    return (inner as StreamReplanner).replan(mediaItem, current, request);
   }
 
   Future<StreamResolutionResult?> _tryResolveLocal(

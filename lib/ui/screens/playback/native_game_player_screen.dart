@@ -1061,6 +1061,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         romFile,
         cacheDir,
         preserveArchive: isArcadeFamilyCore(widget.core),
+        discSet: widget.core == 'psx',
       );
       if (contentPath == null) {
         _releaseGameplayArtworkBlock();
@@ -1269,6 +1270,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     File file,
     Directory cacheDir, {
     bool preserveArchive = false,
+    bool discSet = false,
   }) async {
     if (preserveArchive) return file.path;
 
@@ -1287,35 +1289,56 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     final input = InputFileStream(file.path);
     try {
       final archive = ZipDecoder().decodeStream(input);
-      ArchiveFile? best;
-      for (final entry in archive) {
-        if (!entry.isFile) continue;
-        if (best == null || entry.size > best.size) best = entry;
+      final files = archive.where((entry) => entry.isFile).toList();
+      if (files.isEmpty) return null;
+      ArchiveFile largest(List<ArchiveFile> entries) =>
+          entries.reduce((a, b) => b.size > a.size ? b : a);
+      var content = largest(files);
+      // A PlayStation disc is a .cue plus the tracks it names, so every file
+      // comes out and the core is handed the .cue.
+      if (discSet) {
+        final discs = files
+            .where((entry) => isPlayStationDiscFile(entry.name))
+            .toList();
+        if (discs.isEmpty) {
+          _setFatalError(
+            "This archive doesn't hold a PlayStation disc image. Use a .chd, .pbp, or .cue with its .bin files.",
+          );
+          return null;
+        }
+        content =
+            discs
+                .where((entry) => entry.name.toLowerCase().endsWith('.cue'))
+                .firstOrNull ??
+            largest(discs);
       }
-      if (best == null) return null;
-      // The archive came from the server, so its entry names are as untrusted
-      // as the download file names. Split on either separator before taking the
-      // last segment: the zip format specifies forward slashes, but nothing
-      // enforces it, and a hostile archive can use backslashes precisely to
-      // slip past a '/'-only split on Windows. Whatever survives still has to
-      // pass the same single-segment rejection.
-      final String entryName;
-      try {
-        entryName = sanitizeDownloadFileName(
-          best.name.split(RegExp(r'[/\\]')).last,
-        );
-      } on FormatException {
-        _setFatalError(
-          'The downloaded archive contains an unusable file name.',
-        );
-        return null;
+      String? contentPath;
+      for (final entry in discSet ? files : [content]) {
+        // The archive came from the server, so its entry names are as untrusted
+        // as the download file names. Split on either separator before taking
+        // the last segment: the zip format specifies forward slashes, but
+        // nothing enforces it, and a hostile archive can use backslashes
+        // precisely to slip past a '/'-only split on Windows. Whatever survives
+        // still has to pass the same single-segment rejection.
+        final String entryName;
+        try {
+          entryName = sanitizeDownloadFileName(
+            entry.name.split(RegExp(r'[/\\]')).last,
+          );
+        } on FormatException {
+          _setFatalError(
+            'The downloaded archive contains an unusable file name.',
+          );
+          return null;
+        }
+        final outPath = p.join(cacheDir.path, entryName);
+        final output = OutputFileStream(outPath);
+        entry.writeContent(output);
+        await output.close();
+        if (identical(entry, content)) contentPath = outPath;
       }
-      final outPath = p.join(cacheDir.path, entryName);
-      final output = OutputFileStream(outPath);
-      best.writeContent(output);
-      await output.close();
-      await marker.writeAsString(outPath);
-      return outPath;
+      await marker.writeAsString(contentPath!);
+      return contentPath;
     } finally {
       await input.close();
     }

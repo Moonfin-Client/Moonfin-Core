@@ -6,6 +6,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/services/rating_icon_provider.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/tv_ui_scale.dart';
 
 final _textShadows = [
   Shadow(blurRadius: 4, color: AppColors.black.withValues(alpha: 0.54)),
@@ -38,6 +39,17 @@ class RatingsRow extends StatelessWidget {
   /// Keeps the ratings on one line, scaled down to fit, instead of wrapping.
   final bool singleLine;
 
+  /// The classic home info area's one line chips, with any label inline after
+  /// the value. Implies [singleLine].
+  final bool inlineChips;
+
+  /// Frost's strip: a column per source, its name small over its score, with
+  /// a hairline between them.
+  final bool columns;
+
+  /// Grows the strip's text, for a TV where it's read from across the room.
+  final double columnTextScale;
+
   const RatingsRow({
     super.key,
     required this.ratings,
@@ -49,16 +61,23 @@ class RatingsRow extends StatelessWidget {
     this.showLabels = true,
     this.showBadges = true,
     this.singleLine = false,
+    this.inlineChips = false,
+    this.columns = false,
+    this.columnTextScale = 1,
   });
 
   /// Null when there is nothing to draw, so the caller skips its spacing too.
   ///
   /// Drops scores outside their scale, since the server returns a zero for an
-  /// unrated item, and draws nothing at all in Kids Mode.
+  /// unrated item, and draws nothing at all in Kids Mode. A screen with no room
+  /// for the sources' names passes [labels] false.
   static Widget? forDetailScreen({
     required AggregatedItem item,
     required Map<String, double> extraRatings,
     required UserPreferences prefs,
+    bool labels = true,
+    bool columns = false,
+    double columnTextScale = 1,
   }) {
     if (!prefs.effectiveShowDetailRatings) return null;
 
@@ -81,8 +100,10 @@ class RatingsRow extends StatelessWidget {
         UserPreferences.enableAdditionalRatings,
       ),
       enabledRatings: prefs.get(UserPreferences.enabledRatings),
-      showLabels: prefs.get(UserPreferences.showRatingLabels),
+      showLabels: labels && prefs.get(UserPreferences.showRatingLabels),
       showBadges: prefs.get(UserPreferences.showRatingBadges),
+      columns: columns,
+      columnTextScale: columnTextScale,
     );
   }
 
@@ -169,6 +190,8 @@ class RatingsRow extends StatelessWidget {
 
     if (filtered.isEmpty) return const SizedBox.shrink();
 
+    if (columns) return _columns(filtered.take(7), columnTextScale);
+
     final children = [
       for (final item in filtered)
         _SingleRating(
@@ -179,16 +202,17 @@ class RatingsRow extends StatelessWidget {
               : null,
           showLabel: showLabels,
           showBadge: showBadges,
+          inline: inlineChips,
         ),
     ];
 
-    if (singleLine) {
+    if (singleLine || inlineChips) {
       return FittedBox(
         fit: BoxFit.scaleDown,
         alignment: AlignmentDirectional.centerStart,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          spacing: 6,
+          spacing: inlineChips ? tvPx(10) : 6,
           children: children,
         ),
       );
@@ -203,6 +227,81 @@ class RatingsRow extends StatelessWidget {
   }
 }
 
+/// One column per source. With no width to share, as in a row that
+/// scrolls, each column is as wide as its text.
+Widget _columns(Iterable<MapEntry<String, double>> ratings, double scale) =>
+    LayoutBuilder(
+      builder: (context, constraints) {
+        final share = constraints.hasBoundedWidth;
+        final muted = AppColorScheme.onBackground.withValues(alpha: 0.6);
+        return IntrinsicHeight(
+          child: Row(
+            mainAxisSize: share ? MainAxisSize.max : MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (index, entry) in ratings.indexed)
+                _ratingCell(
+                  share,
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: index == 0
+                          ? null
+                          : Border(
+                              left: BorderSide(
+                                color: AppColorScheme.onBackground.withValues(
+                                  alpha: 0.14,
+                                ),
+                              ),
+                            ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: share ? 4 : 14),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            RatingIconProvider.sourceDisplayName(entry.key)
+                                .toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: muted,
+                              fontSize: 10 * scale,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            entry.key == 'personal'
+                                ? RatingsRow._formatPersonal(entry.value)
+                                : RatingIconProvider.formatRating(
+                                    entry.key,
+                                    entry.value,
+                                  ),
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: AppColorScheme.onBackground.withValues(
+                                alpha: 0.92,
+                              ),
+                              fontSize: 22 * scale,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+
+Widget _ratingCell(bool share, Widget child) =>
+    share ? Expanded(child: child) : child;
+
 class _SingleRating extends StatelessWidget {
   final String source;
   final double value;
@@ -212,6 +311,7 @@ class _SingleRating extends StatelessWidget {
   final String? valueText;
   final bool showLabel;
   final bool showBadge;
+  final bool inline;
 
   const _SingleRating({
     required this.source,
@@ -219,10 +319,77 @@ class _SingleRating extends StatelessWidget {
     this.valueText,
     this.showLabel = true,
     this.showBadge = true,
+    this.inline = false,
   });
+
+  Widget _buildInline() {
+    final valueText =
+        this.valueText ?? RatingIconProvider.formatRating(source, value);
+    final shadows = showBadge ? null : _textShadows;
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: tvPx(8),
+      children: [
+        if (source == 'stars' || source == 'personal')
+          Text(
+            '\u2605',
+            style: TextStyle(
+              color: source == 'personal'
+                  ? AppColorScheme.accent
+                  : const Color(0xFFFFC107),
+              fontSize: tvPx(28),
+              height: 1,
+              shadows: shadows,
+            ),
+          )
+        else
+          _RatingIcon(source: source, value: value, height: tvPx(28)),
+        Text(
+          valueText,
+          style: TextStyle(
+            color: AppColorScheme.onSurface,
+            fontSize: tvPx(24),
+            fontWeight: FontWeight.w700,
+            height: 1,
+            shadows: shadows,
+          ),
+        ),
+        if (showLabel)
+          Text(
+            RatingIconProvider.sourceDisplayName(source),
+            style: TextStyle(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+              fontSize: tvPx(18),
+              fontWeight: FontWeight.w500,
+              height: 1,
+              shadows: shadows,
+            ),
+          ),
+      ],
+    );
+    if (!showBadge) return content;
+
+    final chipBorder = ThemeRegistry.active.borders.chipBorder;
+    return Container(
+      height: tvPx(40),
+      padding: EdgeInsets.symmetric(horizontal: tvPx(12)),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColorScheme.scrim.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(tvPx(8)),
+        border: chipBorder.color.a > 0.5
+            ? Border.fromBorderSide(
+                chipBorder.copyWith(color: AppColorScheme.accent),
+              )
+            : null,
+      ),
+      child: content,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (inline) return _buildInline();
     final media = MediaQuery.of(context);
     final isLargeLayout = media.size.width >= 1000 ||
         (media.orientation == Orientation.landscape && media.size.width >= 700);

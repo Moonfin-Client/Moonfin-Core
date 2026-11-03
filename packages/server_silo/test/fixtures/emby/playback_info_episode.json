@@ -1,0 +1,171 @@
+{
+ "MediaSources": [
+  {
+   "Chapters": [
+    {
+     "StartPositionTicks": 0,
+     "Name": "Chapter 1",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 0
+    },
+    {
+     "StartPositionTicks": 2479980000,
+     "Name": "Chapter 2",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 1
+    },
+    {
+     "StartPositionTicks": 2483830845,
+     "Name": "Intro Start",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "IntroStart",
+     "ChapterIndex": 2
+    },
+    {
+     "StartPositionTicks": 2702736317,
+     "Name": "Intro End",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "IntroEnd",
+     "ChapterIndex": 3
+    },
+    {
+     "StartPositionTicks": 2705200000,
+     "Name": "Chapter 3",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 4
+    },
+    {
+     "StartPositionTicks": 7478300000,
+     "Name": "Chapter 4",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 5
+    },
+    {
+     "StartPositionTicks": 11108180000,
+     "Name": "Chapter 5",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 6
+    },
+    {
+     "StartPositionTicks": 13251990000,
+     "Name": "Chapter 6",
+     "ImageTag": "a4b22de36935a80bf47a7eccc66df97d_0",
+     "MarkerType": "Chapter",
+     "ChapterIndex": 7
+    }
+   ],
+   "Protocol": "File",
+   "Id": "mediasource_659237",
+   "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].mkv",
+   "Type": "Default",
+   "Container": "mkv",
+   "Size": 408765775,
+   "Name": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265]",
+   "IsRemote": false,
+   "HasMixedProtocols": false,
+   "RunTimeTicks": 13570240000,
+   "SupportsTranscoding": true,
+   "SupportsDirectStream": true,
+   "SupportsDirectPlay": true,
+   "IsInfiniteStream": false,
+   "RequiresOpening": false,
+   "RequiresClosing": false,
+   "RequiresLooping": false,
+   "SupportsProbing": true,
+   "MediaStreams": [
+    {
+     "Codec": "hevc",
+     "TimeBase": "1/1000",
+     "VideoRange": "SDR",
+     "DisplayTitle": "1080p HEVC",
+     "IsInterlaced": false,
+     "BitRate": 2409777,
+     "BitDepth": 10,
+     "RefFrames": 1,
+     "IsDefault": true,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Height": 1080,
+     "Width": 1920,
+     "AverageFrameRate": 23.809525,
+     "RealFrameRate": 23.809525,
+     "Profile": "Main 10",
+     "Type": "Video",
+     "AspectRatio": "16:9",
+     "Index": 0,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "PixelFormat": "yuv420p10le",
+     "Level": 120,
+     "IsAnamorphic": false,
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "eac3",
+     "Language": "eng",
+     "TimeBase": "1/1000",
+     "DisplayTitle": "English EAC3 stereo",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "ChannelLayout": "stereo",
+     "BitRate": 640000,
+     "Channels": 2,
+     "SampleRate": 48000,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Audio",
+     "Index": 1,
+     "IsExternal": false,
+     "IsTextSubtitleStream": false,
+     "SupportsExternalStream": false,
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    },
+    {
+     "Codec": "srt",
+     "Language": "en",
+     "DisplayTitle": "English (SRT)",
+     "DisplayLanguage": "English",
+     "IsInterlaced": false,
+     "IsDefault": false,
+     "IsForced": false,
+     "IsHearingImpaired": false,
+     "Type": "Subtitle",
+     "Index": 2,
+     "IsExternal": true,
+     "IsTextSubtitleStream": true,
+     "SupportsExternalStream": true,
+     "Path": "Young Justice (2010) - S01E01 - Independence Day [HDTV-1080p][x265].eng.srt",
+     "Protocol": "File",
+     "ExtendedVideoType": "None",
+     "ExtendedVideoSubType": "None",
+     "ExtendedVideoSubTypeDescription": "None",
+     "AttachmentSize": 0
+    }
+   ],
+   "Formats": [],
+   "Bitrate": 2409777,
+   "RequiredHttpHeaders": {},
+   "AddApiKeyToDirectStreamUrl": false,
+   "ReadAtNativeFramerate": false,
+   "DefaultAudioStreamIndex": 1,
+   "ItemId": "659237",
+   "MimeType": "video/x-matroska"
+  }
+ ],
+ "PlaySessionId": "60d555d0eb524fbfa2f4191165636524"
+}

@@ -32,6 +32,13 @@ class SeerrStatsCard extends StatelessWidget {
   static int factCount(SeerrMediaDetailState state, AppLocalizations l10n) =>
       _facts(state, l10n).length;
 
+  /// The same facts as label and value pairs, for a style that lays them out
+  /// itself.
+  static List<(String, String)> rows(
+    SeerrMediaDetailState state,
+    AppLocalizations l10n,
+  ) => [for (final row in _facts(state, l10n)) (row.label, row.value)];
+
   static List<_StatRow> _facts(
     SeerrMediaDetailState s,
     AppLocalizations l10n,

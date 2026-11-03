@@ -58,6 +58,12 @@ class _DetailsScreenSettingsScreenState
                         l10n.detailScreenStyleNouveau,
                       DetailScreenStyle.minimalist =>
                         l10n.detailScreenStyleMinimalist,
+                      DetailScreenStyle.stage => l10n.detailScreenStyleStage,
+                      DetailScreenStyle.premiere =>
+                        l10n.detailScreenStylePremiere,
+                      DetailScreenStyle.quickLook =>
+                        l10n.detailScreenStyleQuickLook,
+                      DetailScreenStyle.frost => l10n.detailScreenStyleFrost,
                     },
                   ),
                   EnumPreferenceTile<PersonalRatingStyle>(
@@ -117,6 +123,7 @@ class _DetailsScreenSettingsScreenState
                       onChangeEnd: _pushPersonalizationSync,
                     ),
                   _TvSettingsListTile(
+                    previewKey: detailButtonLayout.orderPreference.key,
                     leading: const Icon(Icons.smart_button_outlined),
                     title: Text(l10n.detailButtons),
                     subtitle: Text(l10n.detailButtonsDescription),
@@ -150,6 +157,7 @@ class _DetailsScreenSettingsScreenState
               adaptiveListSection(
                 children: [
                   _TvSettingsListTile(
+                    previewKey: detailMetadataLayout.orderPreference.key,
                     leading: const Icon(Icons.view_headline_outlined),
                     title: Text(l10n.detailMetadata),
                     subtitle: Text(l10n.detailMetadataDescription),
@@ -217,7 +225,7 @@ class _DetailsScreenSettingsScreenState
                   EnumPreferenceTile<RecommendationSystemSource>(
                     preference: UserPreferences.recommendationSystemSource,
                     title: l10n.recommendationSystem,
-                    description: l10n.recommendationSystemSubtitle,
+                    description: seerrBrand(l10n.recommendationSystemSubtitle),
                     icon: Icons.auto_awesome,
                     labelOf: (v) => switch (v) {
                       RecommendationSystemSource.local =>
@@ -233,43 +241,11 @@ class _DetailsScreenSettingsScreenState
               ),
               _SectionHeader(l10n.ratings),
               adaptiveListSection(
-                children: [
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.enableAdditionalRatings,
-                    title: l10n.additionalRatings,
-                    subtitle: l10n.showMdbListAndTmdbRatings,
-                    icon: Icons.star,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  _TvSettingsListTile(
-                    leading: const Icon(Icons.reorder),
-                    title: Text(l10n.ratingSources),
-                    subtitle: Text(l10n.ratingSourcesDescription),
-                    onTap: () =>
-                        context.pushSettingsScreen(const RatingsConfigScreen()),
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.enableEpisodeRatings,
-                    title: l10n.episodeRatings,
-                    subtitle: l10n.showRatingsOnEpisodes,
-                    icon: Icons.stars,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.showRatingLabels,
-                    title: l10n.ratingLabels,
-                    subtitle: l10n.showLabelsNextToIcons,
-                    icon: Icons.label,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.showRatingBadges,
-                    title: l10n.ratingBadges,
-                    subtitle: l10n.showDecorativeBadges,
-                    icon: Icons.style,
-                    onChanged: _pushPersonalizationSync,
-                  ),
-                ],
+                children: _ratingsSettingsTiles(
+                  context,
+                  l10n,
+                  UserPreferences.detailsRatings,
+                ),
               ),
               _SectionHeader(l10n.themeMusic),
               adaptiveListSection(
@@ -315,3 +291,47 @@ class _DetailsScreenSettingsScreenState
     );
   }
 }
+
+List<Widget> _ratingsSettingsTiles(
+  BuildContext context,
+  AppLocalizations l10n,
+  RatingSettings settings,
+) => [
+  SwitchPreferenceTile(
+    preference: settings.additionalRatings,
+    title: l10n.additionalRatings,
+    subtitle: l10n.showMdbListAndTmdbRatings,
+    icon: Icons.star,
+    onChanged: _pushPersonalizationSync,
+  ),
+  _TvSettingsListTile(
+    previewKey: settings.sources.key,
+    leading: const Icon(Icons.reorder),
+    title: Text(l10n.ratingSources),
+    subtitle: Text(l10n.ratingSourcesDescription),
+    onTap: () =>
+        context.pushSettingsScreen(RatingsConfigScreen(settings: settings)),
+  ),
+  if (settings.episodeRatings case final episodeRatings?)
+    SwitchPreferenceTile(
+      preference: episodeRatings,
+      title: l10n.episodeRatings,
+      subtitle: l10n.showRatingsOnEpisodes,
+      icon: Icons.stars,
+      onChanged: _pushPersonalizationSync,
+    ),
+  SwitchPreferenceTile(
+    preference: settings.labels,
+    title: l10n.ratingLabels,
+    subtitle: l10n.showLabelsNextToIcons,
+    icon: Icons.label,
+    onChanged: _pushPersonalizationSync,
+  ),
+  SwitchPreferenceTile(
+    preference: settings.badges,
+    title: l10n.ratingBadges,
+    subtitle: l10n.showDecorativeBadges,
+    icon: Icons.style,
+    onChanged: _pushPersonalizationSync,
+  ),
+];

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -68,6 +69,149 @@ class SeasonalEffectsHost extends StatelessWidget {
       valueListenable: getIt<ScreensaverController>().visible,
       builder: (context, visible, _) =>
           visible ? const SizedBox.shrink() : layer(),
+    );
+  }
+}
+
+/// Puts the effect's follower in place of the mouse pointer over [child], for Home in the
+/// desktop layout. It sits above the nav bars, which cover Home's own seasonal layer, and
+/// leaves the pointer alone for an effect without a follower.
+class SeasonalPointer extends StatelessWidget {
+  const SeasonalPointer({
+    super.key,
+    required this.effect,
+    required this.enabled,
+    required this.child,
+  });
+
+  /// The stored seasonal surprise value.
+  final String effect;
+  final bool enabled;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolved = SeasonalEffect.values.asNameMap()[
+        UserPreferences.normalizeSeasonalSurprise(effect)];
+    final styles = [
+      if (resolved != null)
+        for (final style in FollowerStyle.forEffect(resolved))
+          if (!style.onlyOnCards) style,
+    ];
+    final active =
+        enabled &&
+        styles.isNotEmpty &&
+        !(MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+    final getIt = GetIt.instance;
+    final layer = _SeasonalPointerLayer(key: ValueKey(resolved), styles: styles);
+    // Always a Stack, so turning it on or off keeps Home's state under it.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        child,
+        if (active)
+          Positioned.fill(
+            child: getIt.isRegistered<ScreensaverController>()
+                ? ValueListenableBuilder<bool>(
+                    valueListenable: getIt<ScreensaverController>().visible,
+                    builder: (context, visible, _) =>
+                        visible ? const SizedBox.shrink() : layer,
+                  )
+                : layer,
+          ),
+      ],
+    );
+  }
+}
+
+class _SeasonalPointerLayer extends StatefulWidget {
+  const _SeasonalPointerLayer({super.key, required this.styles});
+
+  final List<FollowerStyle> styles;
+
+  @override
+  State<_SeasonalPointerLayer> createState() => _SeasonalPointerLayerState();
+}
+
+class _SeasonalPointerLayerState extends State<_SeasonalPointerLayer>
+    with SingleTickerProviderStateMixin {
+  late final _followers = [
+    for (final style in widget.styles) SeasonalFollower(style),
+  ];
+  final _frame = _FrameSignal();
+  late final Ticker _ticker;
+  Duration _lastTick = Duration.zero;
+  double _pixelRatio = 0;
+  Offset? _pointer;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker(_onTick)..start();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+    if (pixelRatio != _pixelRatio) {
+      for (final follower in _followers) {
+        follower.rasterize(pixelRatio);
+      }
+      _pixelRatio = pixelRatio;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    for (final follower in _followers) {
+      follower.dispose();
+    }
+    _frame.dispose();
+    super.dispose();
+  }
+
+  void _onTick(Duration elapsed) {
+    final dt = (elapsed - _lastTick).inMicroseconds /
+        Duration.microsecondsPerSecond;
+    _lastTick = elapsed;
+    // Once the follower has faded out there's nothing left to repaint.
+    final showing = _pointer != null || _followers.any((f) => f.opacity > 0);
+    for (final follower in _followers) {
+      follower.stepPointer(dt, _pointer);
+    }
+    if (showing) _frame.tick();
+  }
+
+  void _track(PointerEvent event) {
+    if (event.kind == PointerDeviceKind.mouse) _pointer = event.localPosition;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      opaque: false,
+      cursor: SystemMouseCursors.none,
+      // Enter also fires when Home appears under a pointer that hasn't moved.
+      onEnter: _track,
+      onHover: _track,
+      onExit: (_) => _pointer = null,
+      // Hover stops while a button is held, so a drag is followed from here.
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerMove: _track,
+        child: IgnorePointer(
+          child: ExcludeSemantics(
+            child: RepaintBoundary(
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: _FollowerPainter(_followers, _frame),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -340,6 +484,23 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
 
 class _FrameSignal extends ChangeNotifier {
   void tick() => notifyListeners();
+}
+
+class _FollowerPainter extends CustomPainter {
+  _FollowerPainter(this.followers, Listenable repaint) : super(repaint: repaint);
+
+  final List<SeasonalFollower> followers;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final follower in followers) {
+      follower.paint(canvas);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FollowerPainter oldDelegate) =>
+      oldDelegate.followers != followers;
 }
 
 class _SeasonalPainter extends CustomPainter {

@@ -116,7 +116,7 @@ class RowDataSource {
   }
 
   // Cap image tags to one per type (server returns all by default)
-  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
+  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner,Logo';
   static const _imageTypeLimit = 1;
 
   // ParentIds that returned 401/403 (no library access) this session. They are
@@ -1761,6 +1761,39 @@ class RowDataSource {
           enableResumable: false,
         );
       case HomeRowType.recentlyReleased:
+        // A library's row grows the way its Latest row does: asked again for
+        // a longer list, since the query has no start index.
+        if (!row.id.startsWith('recently_released_')) {
+          return (row.items, row.totalCount);
+        }
+        final parentId = row.id.substring('recently_released_'.length);
+        final collectionType = await _collectionTypeOf(parentId);
+        final includeItemTypes = recentlyReleasedItemTypesFor(
+          collectionType,
+          seriesType: () =>
+              prefs?.get(UserPreferences.recentlyReleasedSeriesType) ??
+              UserPreferences.recentlyReleasedSeriesType.defaultValue,
+        );
+        final wanted = currentOffset + _defaultLimit;
+        final response = await _getRecentlyReleasedItemsWithFallback(
+          parentId: parentId,
+          limit: latestMediaFetchLimitForCollection(
+            collectionType,
+            defaultLimit: wanted,
+            maxLimit: _maxItems,
+          ),
+          includeItemTypes: includeItemTypes,
+          recursive: includeItemTypes != null,
+        );
+        final items = normalizeLatestMediaItems(
+          _parseItems(response, serverId),
+          collectionType: collectionType,
+          limit: wanted,
+        );
+        final totalCount = items.length <= row.items.length
+            ? items.length
+            : _maxItems;
+        return (items, totalCount);
       case HomeRowType.libraryTiles:
       case HomeRowType.libraryTilesSmall:
       case HomeRowType.liveTv:
@@ -1790,6 +1823,20 @@ class RowDataSource {
         response['TotalRecordCount'] as int? ??
         (row.items.length + newItems.length);
     return ([...row.items, ...newItems], totalCount);
+  }
+
+  /// The collection type of library [libraryId] from the libraries list,
+  /// or null when it isn't there or the list can't be read.
+  Future<String?> _collectionTypeOf(String libraryId) async {
+    try {
+      final views = await _client.userViewsApi.getUserViews();
+      for (final view in (views['Items'] as List? ?? const [])) {
+        if (view is Map && view['Id']?.toString() == libraryId) {
+          return view['CollectionType']?.toString();
+        }
+      }
+    } catch (_) {}
+    return null;
   }
 
   Future<Map<String, dynamic>> _getItemsWithFallback({
@@ -2299,6 +2346,28 @@ class RowDataSource {
             rowType: HomeRowType.pluginDynamic,
           );
         }
+
+      // A row the server curates itself (Silo's home sections). The server
+      // sends the whole row at once.
+      case HomeSectionPluginSource.server:
+        final api = _client.itemsApi;
+        if (api is! ServerHomeSectionsApi) {
+          return HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+          );
+        }
+        final response = await (api as ServerHomeSectionsApi)
+            .getServerHomeSectionItems(section);
+        final items = _parseItems(response, serverId);
+        return HomeRow(
+          id: rowId,
+          title: title,
+          rowType: HomeRowType.pluginDynamic,
+          items: items,
+          totalCount: items.length,
+        );
 
       // Seerr sliders load through the Seerr repository on Home, since they
       // come from Seerr rather than from the media server.

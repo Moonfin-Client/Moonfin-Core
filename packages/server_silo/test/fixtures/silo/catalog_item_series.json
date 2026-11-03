@@ -1,0 +1,503 @@
+{
+ "themes": {
+  "owner_id": "series-imdb-tt1641384",
+  "items": []
+ },
+ "content_id": "series-imdb-tt1641384",
+ "play_content_id": "episode-imdb-tt1641384-1-1",
+ "type": "series",
+ "title": "Young Justice",
+ "year": 2010,
+ "genres": [
+  "Science Fiction",
+  "Drama",
+  "Crime",
+  "Children",
+  "Animation",
+  "Adventure",
+  "Action",
+  "Romance"
+ ],
+ "keywords": [],
+ "studios": [
+  "Warner Bros. Animation",
+  "DC Entertainment",
+  "DC"
+ ],
+ "networks": [
+  "Cartoon Network",
+  "DC Universe",
+  "HBO Max"
+ ],
+ "content_rating": "TV-PG",
+ "status": "",
+ "show_status": "ended",
+ "rating_tmdb": 8.4,
+ "overview": "Teenage superheroes strive to prove themselves as members of the Justice League.",
+ "last_air_date": "2022-06-09",
+ "poster_url": "/api/v2/artwork/tvdb/series/192061/poster/w500.649bc8718e7fa8565ff577683d36cb5dd119fbcb8f0bee2b764e4cf297f2d9ed.webp?exp=SCRUBBED&sig=SCRUBBED",
+ "poster_thumbhash": "ZBgSJQhZd3+ZuHdod4eImLaQJQqM",
+ "backdrop_url": "/api/v2/artwork/tvdb/series/192061/backdrop/w1920.32da695e99dbbd49c003d6acd4dacf662ab93c258d7189e6ed86cc0938434b10.webp?exp=SCRUBBED&sig=SCRUBBED",
+ "backdrop_thumbhash": "ywcKFIQGeXiNhniPhIm3gpAsCA==",
+ "logo_url": "/api/v2/artwork/tvdb/series/192061/logo/w500.c908c883e832388f9f82dc1450b747ad40b1ae11e17f6da3930a88f1a3ade4c7.webp?exp=SCRUBBED&sig=SCRUBBED",
+ "user_state": {
+  "played": false,
+  "is_favorite": false,
+  "in_watchlist": false
+ },
+ "play_season_number": 1,
+ "original_title": "Young Justice",
+ "tagline": "Don't call them sidekicks.",
+ "imdb_id": "tt1641384",
+ "tmdb_id": "33217",
+ "tvdb_id": "192061",
+ "backdrop_urls": [
+  "/api/v2/artwork/tvdb/series/192061/backdrop/w1920.32da695e99dbbd49c003d6acd4dacf662ab93c258d7189e6ed86cc0938434b10.webp?exp=SCRUBBED&sig=SCRUBBED"
+ ],
+ "cast": [
+  {
+   "name": "Jesse McCartney",
+   "character": "Dick Grayson / Robin / Nightwing",
+   "order": 1,
+   "person_id": "146552244626670900",
+   "tmdb_id": "49915",
+   "tvdb_id": "334684",
+   "imdb_id": "nm0565366",
+   "photo_url": "/api/v2/artwork/tmdb/people/49915/profile/original.efebf21039a2a845fbd020c57cc0259a6682ffc2d1435f8ebb7deef2c59f4385.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2xgSHQSXp3+baHiGd4uXmDZ5cIAX"
+  },
+  {
+   "name": "Khary Payton",
+   "character": "Kaldur'ahm / Aqualad / Aquaman",
+   "order": 2,
+   "person_id": "146552286921966900",
+   "tmdb_id": "65640",
+   "tvdb_id": "295568",
+   "imdb_id": "nm1146051",
+   "photo_url": "/api/v2/artwork/tmdb/people/65640/profile/original.b2248cc64048522cd72eb9bcf04f9da5ad6ba78ef3c9328821dab7ebff2bab1d.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "1wcKFQQCWLF2u3g3ppSZZwiekuAo"
+  },
+  {
+   "name": "Jason Spisak",
+   "character": "Wally West / Kid Flash",
+   "order": 3,
+   "person_id": "146552279087662388",
+   "tmdb_id": "216973",
+   "tvdb_id": "290957",
+   "imdb_id": "nm1032853",
+   "photo_url": "/api/v2/artwork/tmdb/people/216973/profile/original.5f35ed11149b6a8b733ff40b9bbd36f0bf6c2d897e60d1203622b37d639b43ad.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "kSgKHQQKZniIKIhmh4hpZyiKgKAI"
+  },
+  {
+   "name": "Nolan North",
+   "character": "Conner Kent / Superboy",
+   "order": 4,
+   "person_id": "146552281771754804",
+   "tmdb_id": "19508",
+   "tvdb_id": "292655",
+   "imdb_id": "nm0636046",
+   "photo_url": "/api/v2/artwork/tmdb/people/19508/profile/original.8a9c6857520c97361e028acac8da384297d234d6d45f0959125104a6634bd994.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "CQgKDQICfXiHF7lliIZ4iAd7YZAn"
+  },
+  {
+   "name": "Crispin Freeman",
+   "character": "Will Harper / Red Arrow",
+   "order": 5,
+   "person_id": "146552763227063604",
+   "tmdb_id": "75039",
+   "tvdb_id": "303108",
+   "imdb_id": "nm0293342",
+   "photo_url": "/api/v2/artwork/tmdb/people/75039/profile/original.b7c16c861fcf3f28c786c29c773fecfcc19257a3f030db9934ca011a7df77d5a.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "GmkGDQQYhnCcN8mIeI22qEl5YIgJ"
+  },
+  {
+   "name": "Greg Cipes",
+   "character": "Garfield Logan / Beast Boy (voice)",
+   "order": 6,
+   "person_id": "146552354131428660",
+   "tmdb_id": "60227",
+   "tvdb_id": "280998",
+   "imdb_id": "nm0996651",
+   "photo_url": "/api/v2/artwork/tmdb/people/60227/profile/original.ea2fb1be60e5ade446b91476ddac54056d692ab5dc1fb1796d1bb048ef48d763.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2igKFQIWzI91SFhomGZ6Z3aOcOAY"
+  },
+  {
+   "name": "Danica McKellar",
+   "character": "M'gann M'orzz / Megan Morse / Miss Martian",
+   "order": 7,
+   "person_id": "146552354132084020",
+   "tmdb_id": "65220",
+   "tvdb_id": "248123",
+   "imdb_id": "nm0005211",
+   "photo_url": "/api/v2/artwork/tmdb/people/65220/profile/original.88b75fd00358c16f8b9548b4e89964e53f1f103f3d2d20f82ffafed8f9f79ec1.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2QcKJQhn1593aLdWiGt3iGaJcMgI"
+  },
+  {
+   "name": "Stephanie Lemelin",
+   "character": "Artemis Crock / Artemis / Tigress",
+   "order": 8,
+   "person_id": "146552534671246644",
+   "tmdb_id": "222139",
+   "tvdb_id": "301558",
+   "imdb_id": "nm1107254",
+   "photo_url": "/api/v2/artwork/tmdb/people/222139/profile/original.689fc47f97f5c763d976c394f0dbdb071d630f08defe890b30a8ff2b53878159.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "XygKJQKM54+FRaanaIV5l4qflPc5"
+  },
+  {
+   "name": "Phil LaMarr",
+   "character": "Arthur Curry / Aquaman",
+   "order": 9,
+   "person_id": "146552284556641588",
+   "tmdb_id": "31549",
+   "tvdb_id": "276640",
+   "imdb_id": "nm0482851",
+   "photo_url": "/api/v2/artwork/tmdb/people/31549/profile/original.ae72aaa590cbe6c5140fb875581978dfd2245a110153f65a37b8b8a734c5b9c0.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "3wcKHQSJy5h/uDSZpXqYdweNc7A4"
+  },
+  {
+   "name": "Bruce Greenwood",
+   "character": "Bruce Wayne / Batman",
+   "order": 10,
+   "person_id": "146552281922356532",
+   "tmdb_id": "21089",
+   "tvdb_id": "273767",
+   "imdb_id": "nm0339304",
+   "photo_url": "/api/v2/artwork/tmdb/people/21089/profile/original.cadd225b858db45f96f1ecf72b8468ebf4fcd8357336e4d30d2a5ea97608793a.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "qCgKFQZsxoufikW415x2pwWJYZAY"
+  },
+  {
+   "name": "Rob Lowe",
+   "character": "Captain Marvel / Shazam",
+   "order": 16,
+   "person_id": "146552229610931508",
+   "tmdb_id": "2879",
+   "tvdb_id": "280411",
+   "imdb_id": "nm0000507",
+   "photo_url": "/api/v2/artwork/tmdb/people/2879/profile/original.5f8948829a19aec9f8dae6daf4de3b38e2a9e38d0df313494cc1ce4de383c8d7.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "DggKHQQ1r4uHCah0mJhplwWHVGBY"
+  },
+  {
+   "name": "Vanessa Marshall",
+   "character": "Dinah Lance / Black Canary",
+   "order": 18,
+   "person_id": "146552279087400244",
+   "tmdb_id": "81663",
+   "tvdb_id": "340514",
+   "imdb_id": "nm0551223",
+   "photo_url": "/api/v2/artwork/tmdb/people/81663/profile/original.46a4e76183e79c81c90b9bbfad761c9598d26650d00e681bfce6ab9191f04530.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "4kgOFQRbt2+c2KiGd3ukiAhxcwEX"
+  },
+  {
+   "name": "Miguel Ferrer",
+   "character": "Vandal Savage",
+   "order": 19,
+   "person_id": "146552291099559220",
+   "tmdb_id": "15860",
+   "tvdb_id": "262633",
+   "imdb_id": "nm0001208",
+   "photo_url": "/api/v2/artwork/tmdb/people/15860/profile/original.2db421a6baf4b12cd1e9f62e3696384cdf4eb0470cca55ca3d0b8e9fc52906e4.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "KhgKJQi3l4KH+ndZh4eneAiJhoBn"
+  },
+  {
+   "name": "Kelly Hu",
+   "character": "Jade Nguyen / Cheshire",
+   "order": 21,
+   "person_id": "146552282090128692",
+   "tmdb_id": "11024",
+   "tvdb_id": "277559",
+   "imdb_id": "nm0005026",
+   "photo_url": "/api/v2/artwork/tmdb/people/11024/profile/original.b1962ecb92dd3d42dac2fcfbc7b6cab31708135300ed52968aeaf1f56befd0e0.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "mkgKFQY+tZ+bqclpl4qImCMIBsmB"
+  },
+  {
+   "name": "Yuri Lowenthal",
+   "character": "La'gaan / Lagoon Boy",
+   "order": 22,
+   "person_id": "146552281922618676",
+   "tmdb_id": "127387",
+   "tvdb_id": "385285",
+   "imdb_id": "nm0523180",
+   "photo_url": "/api/v2/artwork/tmdb/people/127387/profile/original.2c29eeb36446f74159af4063f5ec4779ac7fbf69c7432a5a74a43ce2cda4f93d.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "nxgWFQSXmHx4CIiXmHdpmAd7kbAY"
+  },
+  {
+   "name": "Masasa Moyo",
+   "character": "Karen Beecher / Bumblebee",
+   "order": 23,
+   "person_id": "146552762170230068",
+   "tmdb_id": "34520",
+   "tvdb_id": "452913",
+   "imdb_id": "nm0556089",
+   "photo_url": "/api/v2/artwork/tmdb/people/34520/profile/original.ec6ad71913fec77037c1ee49f79741893f658e8b8f6db79239133ddc35372bc8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "4IkKFQSQpGhZh5l4pol5iFCENQBa"
+  },
+  {
+   "name": "Alyson Stoner",
+   "character": "Barbara Gordon / Batgirl / Oracle",
+   "order": 25,
+   "person_id": "146552329016001844",
+   "tmdb_id": "58965",
+   "tvdb_id": "320231",
+   "imdb_id": "nm1351987",
+   "photo_url": "/api/v2/artwork/tmdb/people/58965/profile/original.1053d717932926c0dea66081bbe8bac57bf2d8fa87bbf46e721a0ffe2a8cdc11.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2zgKFQQNuYCbqchaiInIqA+3mAJo"
+  },
+  {
+   "name": "Denise Boutte",
+   "character": "Raquel Ervin / Rocket",
+   "order": 27,
+   "person_id": "146573659937477306",
+   "tmdb_id": "43946",
+   "tvdb_id": "499759",
+   "imdb_id": "nm1594832",
+   "photo_url": "/api/v2/artwork/tmdb/people/43946/profile/original.dbfe4c537d3ef752eed6ee4250cb20aaa2dc1df7f89051c392727ae572d23331.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "lBgOFQRweaJ5qamWeImXeBSAVgBo"
+  },
+  {
+   "name": "Lacey Chabert",
+   "character": "Zatanna Zatara",
+   "order": 28,
+   "person_id": "146552275077186868",
+   "tmdb_id": "22082",
+   "tvdb_id": "303636",
+   "imdb_id": "nm0000327",
+   "photo_url": "/api/v2/artwork/tmdb/people/22082/profile/original.2c5bad541db449ddf2e58ef355d5fa91bf75afb085e9f03669fbb0e6801a1e35.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "nCgKHQRa5X6Phmh3hoqXmAh3gnAn"
+  },
+  {
+   "name": "Eric Lopez",
+   "character": "Jaime Reyes / Blue Beetle",
+   "order": 31,
+   "person_id": "146552325224547636",
+   "tmdb_id": "184082",
+   "tvdb_id": "382813",
+   "imdb_id": "nm4590758",
+   "photo_url": "/api/v2/artwork/tmdb/people/184082/profile/original.67b0d067424d696a8e0804f45f014c5001eb66b747fb3b70dcc08cbe190eb830.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "5CgKFQSwy65uKXT5qqrY5yTARAJK"
+  },
+  {
+   "name": "Jason Marsden",
+   "character": "Bart Allen / Impulse / Kid Flash",
+   "order": 34,
+   "person_id": "146552220299642164",
+   "tmdb_id": "61983",
+   "tvdb_id": "266539",
+   "imdb_id": "nm0005189",
+   "photo_url": "/api/v2/artwork/tmdb/people/61983/profile/original.98061820ad5c33d45470b16de8f50ef29acc5b1bb599e4e37c8ac020152b4adc.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "IAgOBQBoxmieGIeniW+qmAAAAAAA"
+  }
+ ],
+ "crew": [
+  {
+   "name": "Jorge Luis Gonzalez",
+   "job": "Producer",
+   "person_id": "146573659937673914",
+   "tmdb_id": "2149495",
+   "imdb_id": "nm3163972"
+  },
+  {
+   "name": "Cali D. Abenido",
+   "job": "Producer",
+   "person_id": "146573659937739450",
+   "tmdb_id": "3348235",
+   "imdb_id": "nm8238395"
+  },
+  {
+   "name": "Jamie Thomason",
+   "job": "Producer",
+   "person_id": "146552206176372020",
+   "tmdb_id": "937490",
+   "imdb_id": "nm0859708"
+  },
+  {
+   "name": "Sam Register",
+   "job": "Producer",
+   "person_id": "146552243520750900",
+   "tmdb_id": "141043",
+   "tvdb_id": "8167946",
+   "imdb_id": "nm1882146",
+   "photo_url": "/api/v2/artwork/tmdb/people/141043/profile/original.746921882d0d216b8dbdf0f1e93e6b4bdbcbf3fd5d8d590b91d0ec1cbd8a20f0.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "ZBgOHQR4tY9+ZzeIh3p5ZwiKhKBI"
+  },
+  {
+   "name": "Sarah Noonan",
+   "job": "Producer",
+   "person_id": "146552269543130420",
+   "tmdb_id": "3638974",
+   "imdb_id": "nm0634745"
+  },
+  {
+   "name": "Agnes Kim",
+   "job": "Producer",
+   "person_id": "146552269543195956",
+   "tmdb_id": "3151382",
+   "imdb_id": "nm6802750"
+  },
+  {
+   "name": "Yadira Davis",
+   "job": "Producer",
+   "person_id": "146552279088579892",
+   "tmdb_id": "3542373",
+   "imdb_id": "nm5984444"
+  },
+  {
+   "name": "Liz Carroll",
+   "job": "Producer",
+   "person_id": "146552279088907572",
+   "tmdb_id": "3371025",
+   "imdb_id": "nm1208325"
+  },
+  {
+   "name": "Athena Wingate",
+   "job": "Producer",
+   "person_id": "146552279089300788",
+   "tmdb_id": "3369852",
+   "imdb_id": "nm1208332"
+  },
+  {
+   "name": "Ed Adams",
+   "job": "Producer",
+   "person_id": "146552279089366324",
+   "tmdb_id": "2960337",
+   "imdb_id": "nm4360877"
+  },
+  {
+   "name": "Maral Simonian",
+   "job": "Producer",
+   "person_id": "146552279089431860",
+   "tmdb_id": "3371021",
+   "imdb_id": "nm3190550"
+  },
+  {
+   "name": "Bobbie Page",
+   "job": "Producer",
+   "person_id": "146552279089497396",
+   "tmdb_id": "129722",
+   "tvdb_id": "351441",
+   "imdb_id": "nm0656117",
+   "photo_url": "/api/v2/artwork/tvdb/people/351441/profile/original.b55627fbc7577cf233cfa988ff012dc2d6e3716afa19a871560952508b13fd4b.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "EkkOFQQHl4d4R6hnl4h4hyWQYgEo"
+  },
+  {
+   "name": "Brian E.S. Jones",
+   "job": "Producer",
+   "person_id": "146552281235080500",
+   "tmdb_id": "2103986",
+   "imdb_id": "nm3156283"
+  },
+  {
+   "name": "Liz Marshall",
+   "job": "Producer",
+   "person_id": "146552281437783348",
+   "tmdb_id": "2103984",
+   "tvdb_id": "363256",
+   "imdb_id": "nm4204709"
+  },
+  {
+   "name": "Kip Brown",
+   "job": "Producer",
+   "person_id": "146552282090587444",
+   "tmdb_id": "3210442",
+   "imdb_id": "nm0114036",
+   "photo_url": "https://image.tmdb.org/t/p/w185/aQgWRGD2pvtPPbznALuBBVDfgZD.jpg"
+  },
+  {
+   "name": "Brandon Vietti",
+   "job": "Producer",
+   "person_id": "146552284791653684",
+   "tmdb_id": "124279",
+   "imdb_id": "nm1541845",
+   "photo_url": "/api/v2/artwork/tmdb/people/124279/profile/original.7f8a1ba25d90e4dc39d6c7bb7fd6f69f7b8c4916b9972e4797fd69d921d275ac.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "3SgSHQYHd4h4Z3hod4h4Zwh6k6A3"
+  },
+  {
+   "name": "Vanessa Branch",
+   "job": "Producer",
+   "person_id": "146552287276909876",
+   "tmdb_id": "3200906",
+   "imdb_id": "nm8985376"
+  },
+  {
+   "name": "Jay Bastian",
+   "job": "Producer",
+   "person_id": "146552295831455028",
+   "tmdb_id": "81618",
+   "imdb_id": "nm0060446"
+  },
+  {
+   "name": "Greg Weisman",
+   "job": "Producer",
+   "person_id": "146552325224678708",
+   "tmdb_id": "106827",
+   "tvdb_id": "296562",
+   "imdb_id": "nm0918852",
+   "photo_url": "/api/v2/artwork/tmdb/people/106827/profile/original.a0a8cd22e0432f778abe7dd47e6d0022b7b7336a9c0957070d0ba0c186dab68e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2kgKNQw4eYCHWJdol5aIiGZ/aviH"
+  },
+  {
+   "name": "John Roback",
+   "job": "Producer",
+   "person_id": "146552749654820148",
+   "tmdb_id": "3348217",
+   "imdb_id": "nm4648042"
+  },
+  {
+   "name": "Cole Crawford Rothacker",
+   "job": "Producer",
+   "person_id": "146573659937542842",
+   "tmdb_id": "3348238",
+   "imdb_id": "nm4533743"
+  },
+  {
+   "name": "Andrea Bajandas",
+   "job": "Producer",
+   "person_id": "146573659937608378",
+   "tmdb_id": "3348236",
+   "imdb_id": "nm6814451"
+  },
+  {
+   "name": "Greg Weisman",
+   "job": "Creator",
+   "person_id": "146552325224678708",
+   "tmdb_id": "106827",
+   "tvdb_id": "296562",
+   "imdb_id": "nm0918852",
+   "photo_url": "/api/v2/artwork/tmdb/people/106827/profile/original.a0a8cd22e0432f778abe7dd47e6d0022b7b7336a9c0957070d0ba0c186dab68e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "2kgKNQw4eYCHWJdol5aIiGZ/aviH"
+  },
+  {
+   "name": "Brandon Vietti",
+   "job": "Creator",
+   "person_id": "146552284791653684",
+   "tmdb_id": "124279",
+   "imdb_id": "nm1541845",
+   "photo_url": "/api/v2/artwork/tmdb/people/124279/profile/original.7f8a1ba25d90e4dc39d6c7bb7fd6f69f7b8c4916b9972e4797fd69d921d275ac.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "photo_thumbhash": "3SgSHQYHd4h4Z3hod4h4Zwh6k6A3"
+  }
+ ],
+ "countries": [
+  "US"
+ ],
+ "first_air_date": "2010-11-26",
+ "air_time": "03:00",
+ "season_count": 4,
+ "user_data": {
+  "watched_count": 0,
+  "unplayed_count": 98,
+  "in_progress_count": 0,
+  "played": false
+ },
+ "versions": [],
+ "ratings": [
+  {
+   "source": "tmdb",
+   "name": "TMDB",
+   "score": 84,
+   "display": "8.4"
+  }
+ ],
+ "folder_paths": [
+  "Young Justice (2010) [tt1641384]"
+ ],
+ "subtitles": []
+}

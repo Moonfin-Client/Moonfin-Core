@@ -33,8 +33,19 @@ void main() {
     });
     expect(prefs.resolveHomeBackdropStyle(), UserPreferences.homeBackdropCorner);
 
+    await prefs.set(UserPreferences.homeBackdropStyle, 'top');
+    expect(prefs.resolveHomeBackdropStyle(), UserPreferences.homeBackdropTop);
+
     await prefs.set(UserPreferences.homeBackdropEnabled, false);
     expect(prefs.resolveHomeBackdropStyle(), UserPreferences.homeBackdropOff);
+  });
+
+  test('a style this app doesnt know fills the screen', () async {
+    final prefs = await prefsWith({
+      'pref_show_home_backdrop': true,
+      'pref_home_backdrop_style': 'something new',
+    });
+    expect(prefs.resolveHomeBackdropStyle(), UserPreferences.homeBackdropFullScreen);
   });
 
   test('the stored style is brought in line with the switch', () async {

@@ -8,7 +8,8 @@ import 'seasonal_simulation.dart';
 
 enum FollowerLanding { card, below, right }
 
-/// What follows focus on TV Home for an effect. [extent] is the drawing's size, and
+/// What follows focus on TV Home for an effect, or takes the mouse pointer's place in
+/// the desktop layout. [extent] is the drawing's size, and
 /// [anchor] is the point in it, as a fraction of [extent], that sits on its spot and that
 /// it turns about.
 enum FollowerStyle {
@@ -60,6 +61,9 @@ class SeasonalFollower {
   /// Room around the drawing for its soft shadow.
   static const _shadowPad = 4.0;
 
+  static const _pointerTilt = -0.45;
+  static const _pointerRainbowWidth = 32.0;
+
   static const _prideColors = <Color>[
     Color(0xFFE40303),
     Color(0xFFFF8C00),
@@ -77,6 +81,7 @@ class SeasonalFollower {
   double width = 0;
 
   Offset _velocity = Offset.zero;
+  Offset? _lastPointer;
   double _turnVelocity = 0;
   double _sway = 0;
   double _swayVelocity = 0;
@@ -173,6 +178,46 @@ class SeasonalFollower {
       _fly(landing, appearing, elapsed);
     } else {
       _swing(elapsed);
+    }
+  }
+
+  /// Takes the mouse pointer's place in the desktop layout. It sits right on
+  /// [pointer] with no glide, since a pointer that lags is hard to aim, and
+  /// fades out once the pointer leaves.
+  void stepPointer(double dt, Offset? pointer) {
+    final elapsed = dt.clamp(0.0, 0.05);
+    _phase = (_phase + elapsed) % (math.pi * 20);
+    if (pointer == null) {
+      opacity = (opacity - elapsed * 6).clamp(0.0, 1.0);
+      _lastPointer = null;
+      return;
+    }
+    final appearing = opacity == 0;
+    opacity = 1;
+    final last = _lastPointer;
+    if (appearing || last == null) {
+      _velocity = Offset.zero;
+    } else if (elapsed > 0) {
+      _velocity += ((pointer - last) / elapsed - _velocity) *
+          math.min(1.0, elapsed * 12);
+    }
+    _lastPointer = pointer;
+
+    if (style.points) {
+      // Tilted like a desktop arrow. The tip sits about 4% in from the top of
+      // the drawing, so that's the point that lands on the hotspot.
+      angle = _pointerTilt;
+      position =
+          pointer +
+          Offset(-math.sin(angle), math.cos(angle)) * (style.extent * 0.46);
+    } else {
+      position = pointer;
+      width = _pointerRainbowWidth;
+      if (style == FollowerStyle.sleigh) {
+        _fly(FollowerLanding.below, appearing, elapsed);
+      } else {
+        _swing(elapsed);
+      }
     }
   }
 

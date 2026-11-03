@@ -1,0 +1,43 @@
+{
+ "items": [
+  {
+   "media_item_id": "episode-imdb-tt21072112-1-1",
+   "position_seconds": 582.083306,
+   "duration_seconds": 2832.25,
+   "completed": false,
+   "updated_at": "2026-10-09T01:54:33.000Z"
+  },
+  {
+   "media_item_id": "episode-imdb-tt0852863-5-3",
+   "position_seconds": 867.909,
+   "duration_seconds": 1381.92,
+   "completed": false,
+   "updated_at": "2025-12-20T03:06:09.000Z"
+  },
+  {
+   "media_item_id": "episode-imdb-tt34881067-2-8",
+   "position_seconds": 174.415,
+   "duration_seconds": 2490.816,
+   "completed": false,
+   "updated_at": "2025-12-15T02:55:22.000Z"
+  },
+  {
+   "media_item_id": "episode-imdb-tt34881067-2-7",
+   "position_seconds": 726.873,
+   "duration_seconds": 2490.944,
+   "completed": false,
+   "updated_at": "2025-12-15T02:37:43.000Z"
+  },
+  {
+   "media_item_id": "episode-imdb-tt4226226-11-8",
+   "position_seconds": 904.397,
+   "duration_seconds": 5041.706,
+   "completed": false,
+   "updated_at": "2024-12-18T14:35:33.000Z"
+  }
+ ],
+ "page": {
+  "next_cursor": "eyJ2IjoxLCJwIjp7InUiOiIyMDI0LTEyLTE4VDE0OjM1OjMzWiIsIm0iOiJlcGlzb2RlLWltZGItdHQ0MjI2MjI2LTExLTgifX0.w03eqbuhZaZyfeKSpbZQxnR3excsxseS4aQNrGxQPJQ",
+  "has_more": true
+ }
+}

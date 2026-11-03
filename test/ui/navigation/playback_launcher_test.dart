@@ -208,6 +208,38 @@ void main() {
     router.dispose();
   });
 
+  testWidgets('a start the server refuses closes the player, no crash', (
+    tester,
+  ) async {
+    final manager = PlaybackManager();
+    Future<bool>? launchFuture;
+
+    final router = _router(
+      onLaunch: (context) {
+        launchFuture = launchPlayerWhilePreparing(
+          context,
+          manager: manager,
+          destination: Destinations.videoPlayer,
+          startPlayback: (_) async => throw const PlaybackRefusedException(
+            "This file can't be read.",
+            reason: 'source_unreadable',
+          ),
+        );
+      },
+    );
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+
+    await tester.tap(find.byKey(const ValueKey('launch')));
+    await tester.pumpAndSettle();
+
+    // Answered, not thrown: the player has shown the server's words.
+    expect(await launchFuture, isFalse);
+    expect(find.text('home'), findsOneWidget);
+
+    manager.dispose();
+    router.dispose();
+  });
+
   testWidgets('backing out of a start that never settles frees the slot', (
     tester,
   ) async {

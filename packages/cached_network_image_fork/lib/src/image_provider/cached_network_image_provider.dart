@@ -37,6 +37,24 @@ class CachedNetworkImageProvider
   /// The default cache manager used for image caching.
   static BaseCacheManager defaultCacheManager = DefaultCacheManager();
 
+  /// Moonfin: the cache key for a [url] given no [cacheKey], or null to key
+  /// by the URL itself. A server whose image URLs carry a signature that
+  /// rotates (Silo's `?exp=…&sig=…`) keys them by their path instead, so the
+  /// same picture is found in the memory and disk caches whatever its
+  /// signature.
+  static String? Function(String url)? cacheKeyFor;
+
+  /// Moonfin: turns a placeholder [url] into the URL to download, or returns
+  /// null (not a future) for an ordinary URL, which loads as it is. A server
+  /// that can only name an image after loading its item (Silo) hands out a
+  /// placeholder URL and resolves it here. A null result from the future
+  /// fails the load like a missing image, without a request.
+  static Future<String?>? Function(String url)? urlResolver;
+
+  /// The key this provider caches under.
+  String? get _diskKey => cacheKey ?? cacheKeyFor?.call(url);
+  String get _effectiveKey => _diskKey ?? url;
+
   /// Web url of the image to load
   final String url;
 
@@ -108,17 +126,19 @@ class CachedNetworkImageProvider
     DecoderBufferCallback decode,
   ) {
     assert(key == this);
-    return ImageLoader().loadBufferAsync(
-      url,
-      cacheKey,
-      chunkEvents,
-      decode,
-      cacheManager ?? defaultCacheManager,
-      maxHeight,
-      maxWidth,
-      headers,
-      imageRenderMethodForWeb,
-      () => PaintingBinding.instance.imageCache.evict(key),
+    return _resolved(
+      (loadUrl, loadKey) => ImageLoader().loadBufferAsync(
+        loadUrl,
+        loadKey,
+        chunkEvents,
+        decode,
+        cacheManager ?? defaultCacheManager,
+        maxHeight,
+        maxWidth,
+        headers,
+        imageRenderMethodForWeb,
+        () => PaintingBinding.instance.imageCache.evict(key),
+      ),
     );
   }
 
@@ -158,24 +178,49 @@ class CachedNetworkImageProvider
     ImageDecoderCallback decode,
   ) {
     assert(key == this);
-    return ImageLoader().loadImageAsync(
-      url,
-      cacheKey,
-      chunkEvents,
-      decode,
-      cacheManager ?? defaultCacheManager,
-      maxHeight,
-      maxWidth,
-      headers,
-      imageRenderMethodForWeb,
-      () => PaintingBinding.instance.imageCache.evict(key),
+    return _resolved(
+      (loadUrl, loadKey) => ImageLoader().loadImageAsync(
+        loadUrl,
+        loadKey,
+        chunkEvents,
+        decode,
+        cacheManager ?? defaultCacheManager,
+        maxHeight,
+        maxWidth,
+        headers,
+        imageRenderMethodForWeb,
+        () => PaintingBinding.instance.imageCache.evict(key),
+      ),
     );
+  }
+
+  /// Runs [load] on the URL to download and its disk-cache key: [url] as it
+  /// is, or what [urlResolver] turns it into.
+  Stream<ui.Codec> _resolved(
+    Stream<ui.Codec> Function(String url, String? cacheKey) load,
+  ) {
+    final pending = urlResolver?.call(url);
+    if (pending == null) return load(url, _diskKey);
+    return _afterResolving(pending, load);
+  }
+
+  Stream<ui.Codec> _afterResolving(
+    Future<String?> pending,
+    Stream<ui.Codec> Function(String url, String? cacheKey) load,
+  ) async* {
+    final resolved = await pending;
+    if (resolved == null) {
+      // Nothing to download: fail like a missing image, without a request.
+      throw StateError('No image behind $url');
+    }
+    // Keyed by the real image, so a picture already on disk is reused.
+    yield* load(resolved, cacheKey ?? cacheKeyFor?.call(resolved));
   }
 
   @override
   bool operator ==(Object other) {
     if (other is CachedNetworkImageProvider) {
-      return ((cacheKey ?? url) == (other.cacheKey ?? other.url)) &&
+      return _effectiveKey == other._effectiveKey &&
           scale == other.scale &&
           maxHeight == other.maxHeight &&
           maxWidth == other.maxWidth;
@@ -184,7 +229,7 @@ class CachedNetworkImageProvider
   }
 
   @override
-  int get hashCode => Object.hash(cacheKey ?? url, scale, maxHeight, maxWidth);
+  int get hashCode => Object.hash(_effectiveKey, scale, maxHeight, maxWidth);
 
   @override
   String toString() => 'CachedNetworkImageProvider("$url", scale: $scale)';

@@ -368,6 +368,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                         l10n.homeScreenBackdropFullScreen,
                     UserPreferences.homeBackdropCorner:
                         l10n.homeScreenBackdropCorner,
+                    UserPreferences.homeBackdropTop: l10n.homeScreenBackdropTop,
                   },
                   onChanged: _onHomeBackdropStyleChanged,
                 ),
@@ -376,6 +377,20 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 title: l10n.hideHomeMediaDescription,
                 subtitle: l10n.hideHomeMediaDescriptionSubtitle,
                 icon: Icons.description_outlined,
+                onChanged: _pushPersonalizationSync,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.hideHomeWatchProgress,
+                title: l10n.hideHomeWatchProgress,
+                subtitle: l10n.hideHomeWatchProgressSubtitle,
+                icon: Icons.linear_scale,
+                onChanged: _pushPersonalizationSync,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.hideHomeUnwatchedCount,
+                title: l10n.hideHomeUnwatchedCount,
+                subtitle: l10n.hideHomeUnwatchedCountSubtitle,
+                icon: Icons.filter_9_plus_outlined,
                 onChanged: _pushPersonalizationSync,
               ),
               StringPickerPreferenceTile(
@@ -411,6 +426,15 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             ],
           ),
 
+          _SectionHeader(l10n.ratings),
+          adaptiveListSection(
+            children: _ratingsSettingsTiles(
+              context,
+              l10n,
+              UserPreferences.homeRowsRatings,
+            ),
+          ),
+
           // Every source here needs the Moonbase plugin. Seerr's rows and the
           // Radarr and Sonarr calendars also need Seerr.
           if (pluginAvailable) ...[
@@ -441,7 +465,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 _TvSettingsListTile(
                   leading: const Icon(Icons.celebration_outlined),
                   title: Text(l10n.seasonalRow),
-                  subtitle: Text(l10n.seasonalRowDescription),
+                  subtitle: Text(seerrBrand(l10n.seasonalRowDescription)),
                   onTap: () =>
                       context.pushSettingsScreen(const _SeasonalRowScreen()),
                 ),

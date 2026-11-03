@@ -1,0 +1,166 @@
+{
+  "protocol_version": 3,
+  "server_features": [
+    "playback_plan_v3",
+    "server_remote_stream_bitrate_policy_v1",
+    "server_local_stream_bitrate_policy_v1",
+    "neutral_playback_v3_contract_v1",
+    "embedded_subtitles_v1",
+    "layout_aware_passthrough",
+    "playback_route_diagnostics",
+    "device_quirks_v1",
+    "seek_reanchor_v1",
+    "output_change_v1",
+    "output_display_evidence_v1",
+    "direct_stream_resume_v1",
+    "header_authenticated_media_v1",
+    "authorized_media_origins_v1",
+    "software_video_decode_v1",
+    "plan_invalidated_v1",
+    "plan_source_duration_v1",
+    "subrip_sidecar_v1"
+  ],
+  "outcome": "playable",
+  "session_id": "5d1b6a0e-7f3c-4a7e-9a51-2f0c9e8b7a11",
+  "playback_plan": {
+    "protocol_version": 3,
+    "plan_id": "plan:3f9a1c2e4b5d6e7f8091a2b3c4d5e6f7",
+    "plan_attempt_key": "v3:7c1d2e3f4a5b6c7d",
+    "session_id": "5d1b6a0e-7f3c-4a7e-9a51-2f0c9e8b7a11",
+    "expires_at": "2026-10-18T00:00:00Z",
+    "delivery": "server_remux_progressive",
+    "stream": {
+      "url": "/api/v2/stream/5d1b6a0e-7f3c-4a7e-9a51-2f0c9e8b7a11?seek=593.4&st=c2lnbmVk",
+      "protocol": "http_progressive",
+      "container": "mp4",
+      "mime_type": "video/mp4",
+      "headers": {},
+      "header_refresh": "none"
+    },
+    "timeline": {
+      "source_start_seconds": 600,
+      "stream_origin_seconds": 593.4,
+      "player_start_seconds": 6.6,
+      "timeline_offset_seconds": 593.4,
+      "can_seek_anywhere": false,
+      "seek_window_start_seconds": 593.4,
+      "seek_restoration": "source_position"
+    },
+    "selected_tracks": {
+      "audio": {
+        "id": "file:4598:audio:0",
+        "index": 0
+      }
+    },
+    "effective_recipe": {
+      "video_codec": "hevc",
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 808,
+      "frame_rate": 23.976,
+      "bitrate_kbps": 7355,
+      "dynamic_range": "sdr",
+      "audio_channels": 2,
+      "audio_layout": "stereo"
+    },
+    "claims": {
+      "video": {
+        "hdr10": false,
+        "hdr10_plus": false,
+        "hlg": false,
+        "dolby_vision": false
+      },
+      "audio": {
+        "codec": "aac",
+        "passthrough": false,
+        "atmos_preserved": false,
+        "reason": "client_decode_supported"
+      },
+      "subtitles": {
+        "ass_styling_preserved": false,
+        "bitmap_overlay": false,
+        "bitmap_sidecar": false
+      }
+    },
+    "subtitle": {
+      "mode": "off",
+      "inventory": [
+        {
+          "track_id": "file:4598:subtitle:0",
+          "combined_index": 0,
+          "source": "external",
+          "codec": "srt",
+          "language": "en",
+          "label": "xXx (2002) Bluray-1080p [h265].en.forced.srt",
+          "forced": true,
+          "default": false,
+          "hearing_impaired": false,
+          "delivery": "sidecar",
+          "url": "/api/v2/stream/5d1b6a0e-7f3c-4a7e-9a51-2f0c9e8b7a11/subtitles/0.vtt?file_id=4598&external_subtitle_key=1f0e",
+          "sync_key": "external-1f0e"
+        },
+        {
+          "track_id": "file:4598:subtitle:1",
+          "combined_index": 1,
+          "source": "external",
+          "codec": "srt",
+          "label": "xXx (2002) Bluray-1080p [h265].srt",
+          "forced": false,
+          "default": false,
+          "hearing_impaired": false,
+          "delivery": "sidecar",
+          "url": "/api/v2/stream/5d1b6a0e-7f3c-4a7e-9a51-2f0c9e8b7a11/subtitles/1.vtt?file_id=4598&external_subtitle_key=9a2c",
+          "sync_key": "external-9a2c"
+        }
+      ]
+    },
+    "transformations": [],
+    "applied_quirks": [],
+    "runtime_corrections": [],
+    "available_qualities": [
+      {
+        "label": "original",
+        "display_name": "Original",
+        "height": 808,
+        "bitrate_kbps": 7355,
+        "preserves_source": true
+      },
+      {
+        "label": "720p-high",
+        "display_name": "720p High",
+        "height": 720,
+        "bitrate_kbps": 4000,
+        "preserves_source": false
+      }
+    ],
+    "degradation_warnings": [
+      {
+        "code": "audio_converted",
+        "message": "DTS audio was converted to AAC."
+      }
+    ],
+    "decision_reason": "audio_adaptation",
+    "requested_media_file_id": "4598",
+    "effective_media_file_id": "4598",
+    "source": {
+      "media_file_id": "4598",
+      "duration_seconds": 7445,
+      "container": "mkv",
+      "video_codec": "hevc",
+      "video_profile": "main",
+      "video_level": 120,
+      "bit_depth": 8,
+      "width": 1920,
+      "height": 808,
+      "frame_rate": 23.976,
+      "bitrate_kbps": 7355,
+      "dynamic_range": "sdr",
+      "hdr10_plus": false,
+      "dv_enhancement_layer": "none",
+      "audio_codec": "dts",
+      "audio_channels": 6,
+      "audio_layout": "5.1(side)"
+    },
+    "subtitle_fidelity_policy": "allow_simplified_rendering"
+  }
+}

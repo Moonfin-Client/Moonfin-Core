@@ -26,6 +26,7 @@ import '../../widgets/navigation_layout.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/rating_display.dart';
+import '../../widgets/seerr/seerr_image_urls.dart';
 import '../../widgets/sliding_pill_tabs.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../detail/playlist_sort_filter_bar.dart';
@@ -339,6 +340,14 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     int? maxWidth,
     int? maxHeight,
   }) {
+    if (item.serverId == 'seerr') {
+      final poster = item.rawData['PosterPath'] as String? ?? '';
+      final backdrop = item.rawData['BackdropPath'] as String? ?? '';
+      if (_vm.imageType != ImageType.poster && backdrop.isNotEmpty) {
+        return '$seerrBackdropSmallBase$backdrop';
+      }
+      return poster.isEmpty ? null : '$seerrPosterLargeBase$poster';
+    }
     final api = _vm.imageApi;
     if (_vm.imageType == ImageType.banner) {
       // Same order library browse uses. The portrait primary comes last
@@ -618,9 +627,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }) {
     final item = items[index];
     final itemAspectRatio = _itemAspectRatio(item);
+    // A Watchlist request card's id is a TMDB id, not one of the server's.
+    final serverItemId = item.serverId == 'seerr' ? null : item.id;
     return MediaCard(
-      animeMarkerItemId: item.id,
-      recordingItemId: item.id,
+      animeMarkerItemId: serverItemId,
+      recordingItemId: serverItemId,
       title: item.name,
       subtitle: _cardSubtitle(item),
       imageUrl: _imageUrl(
@@ -653,18 +664,27 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               event: event,
             )
           : null,
-      onLongPress: () => showContextMenu(
-        context,
-        item,
-        onChanged: () => setState(() {}),
-      ),
+      // Watchlist titles aren't library items, so they have no menu.
+      onLongPress: item.serverId == 'seerr'
+          ? null
+          : () => showContextMenu(
+              context,
+              item,
+              onChanged: () => setState(() {}),
+            ),
       onTap: () => context.push(
-        Destinations.itemOrPhoto(
-          item.id,
-          serverId: item.serverId,
-          type: item.type,
-          channelId: item.channelId,
-        ),
+        item.serverId == 'seerr'
+            ? Destinations.seerrMedia(
+                item.id,
+                mediaType: item.rawData['SeerrMediaType'] as String?,
+                title: item.name,
+              )
+            : Destinations.itemOrPhoto(
+                item.id,
+                serverId: item.serverId,
+                type: item.type,
+                channelId: item.channelId,
+              ),
       ),
     );
   }

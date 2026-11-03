@@ -1,0 +1,136 @@
+{
+ "items": [
+  {
+   "content_id": "movie-imdb-tt4218696",
+   "type": "movie",
+   "title": "The Wall",
+   "year": 2017,
+   "genres": [
+    "War",
+    "Thriller",
+    "Drama",
+    "Action"
+   ],
+   "keywords": [],
+   "content_rating": "R",
+   "status": "",
+   "overview": "An American sniper and his spotter engage in a deadly cat-and-mouse game with an Iraqi sniper.",
+   "poster_url": "/api/v2/artwork/tmdb/movies/405775/poster/w500.6499aa3465e9d8e2aaa10fe33eef8586803a99efbbd2dbf843ba63eaaed060bd.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "nRgGFQLHqoGLmnJHY3gGN4uhz2j6",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/405775/backdrop/w300.8244fa0f890d53d325d5d0135de431599b97ca09f64b065211548433c0b3d98f.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "KCkOFISBdnePY3WWeWfPdvVLaA==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/405775/logo/w500.6cb785cac72273a82795c13fa4ea423a2b57fac4573db52cb16692053ca252b8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "user_state": {
+    "played": false,
+    "is_favorite": true,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt1361336",
+   "type": "movie",
+   "title": "Tom & Jerry",
+   "year": 2021,
+   "genres": [
+    "Comedy",
+    "Family",
+    "Animation"
+   ],
+   "keywords": [],
+   "content_rating": "PG",
+   "status": "",
+   "overview": "Tom the cat and Jerry the mouse get kicked out of their home and relocate to a fancy New York hotel, where a scrappy employee named Kayla will lose her job if she can’t evict Jerry before a high-class wedding at the hotel. Her solution? Hiring Tom to get rid of the pesky mouse.",
+   "poster_url": "/api/v2/artwork/tmdb/movies/587807/poster/w500.9913ef4c9a8b3d85476f715f7476cec9739c248900d62d2c7b257765562f9b2e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "XWkOFQpWaH93OIioeHyWh3iflPV4",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/587807/backdrop/w300.d9c52c483c2b3835cfbd82c158be29a4c1993aaa086472e7427fc459fe7fc686.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "HjkODIJFaZh/doh0d3nziMhPdg==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/587807/logo/w500.03ac4f0a8b3a71af4ca16ddea878a5a412a71b028bc5aea7b838250c7bcdf7b0.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "user_state": {
+    "played": false,
+    "is_favorite": true,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "series-imdb-tt0796264",
+   "type": "series",
+   "title": "Eureka",
+   "year": 2006,
+   "genres": [
+    "Science Fiction",
+    "Drama",
+    "Comedy",
+    "Adventure",
+    "Romance"
+   ],
+   "keywords": [],
+   "content_rating": "TV-PG",
+   "status": "",
+   "overview": "The sleepy Pacific Northwest town of Eureka is hiding a mysterious secret. The government has been relocating the world’s geniuses and their families to this rustic town for years where innovation and chaos have lived hand in hand. U.S. Marshal Jack Carter (Colin Ferguson) stumbles upon this odd town after wrecking his car and becoming stranded there. When the denizens of the town unleash an unknown scientific creation, Carter jumps in to try to restore order and consequently learns of one of the country’s best kept secrets.",
+   "poster_url": "/api/v2/artwork/tvdb/series/79334/poster/w500.21bee0b686aa28264eb42438ffb5212cda471860a01839ca3a8bdb06e8b6e94d.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "nfcJHQQot3+It4g4eHlWV4V1QJkI",
+   "backdrop_url": "/api/v2/artwork/tvdb/series/79334/backdrop/w300.7e01983cacc0f40462cce63a4d4a952cd3a9ad0373ff5ab7fb36e153f475a970.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "YLcJHIiJVqhvhniEiHjnYIQLVg==",
+   "logo_url": "/api/v2/artwork/tvdb/series/79334/logo/w500.455bd84dd89a335fc8f741f7087d7eabfd07c3b2b7b332b5acc59311238b20c8.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "user_state": {
+    "played": false,
+    "is_favorite": true,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt1727824",
+   "type": "movie",
+   "title": "Bohemian Rhapsody",
+   "year": 2018,
+   "genres": [
+    "Music",
+    "Drama"
+   ],
+   "keywords": [],
+   "content_rating": "PG-13",
+   "status": "",
+   "overview": "Singer Freddie Mercury, guitarist Brian May, drummer Roger Taylor and bass guitarist John Deacon take the music world by storm when they form the rock 'n' roll band Queen in 1970. Hit songs become instant classics. When Mercury's increasingly wild lifestyle starts to spiral out of control, Queen soon faces its greatest challenge yet – finding a way to keep the band together amid the success and excess.",
+   "poster_url": "/api/v2/artwork/tmdb/movies/424694/poster/w500.e0d39640aaa35a3c50d0d5ec3a1a8cac3e06f18a17f4654455e36bbd591b5496.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "IZkKXQiaaGl2CIi3mGaGeHaApfhX",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/424694/backdrop/w300.64592b59762c126e651e1c0b67a553dabc70175b90dda12f0aec9ad5eb583314.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "YGsOLISrR3Z/iHh1hoixD/V94w==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/424694/logo/w500.c89fe3cb1bc238f6549d30385d24108a030a518e2fabc44b336c927789c2014e.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "user_state": {
+    "played": false,
+    "is_favorite": true,
+    "in_watchlist": false
+   }
+  },
+  {
+   "content_id": "movie-imdb-tt3776826",
+   "type": "movie",
+   "title": "Operation Avalanche",
+   "year": 2016,
+   "genres": [
+    "Thriller",
+    "Mystery",
+    "Comedy",
+    "Drama"
+   ],
+   "keywords": [],
+   "content_rating": "R",
+   "status": "",
+   "overview": "In 1967, four undercover CIA agents were sent to NASA posing as a documentary film crew. What they discovered led to one of the biggest conspiracies in American history.",
+   "poster_url": "/api/v2/artwork/tmdb/movies/376453/poster/w500.54c61bed630bfe43c6986d96beb74296b8a593ea91ebb8fa5a960a015e312f13.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "poster_thumbhash": "VggKDQBkyoB4uLnWaIPWh2iAdwZX",
+   "backdrop_url": "/api/v2/artwork/tmdb/movies/376453/backdrop/w300.4cb66dfc1417df7e809f880e8bebe4cfe6288f52fa3664acc4675634aa8e31d5.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "backdrop_thumbhash": "YBgKDIL+dEZiV3eYR2lFgERQWQ==",
+   "logo_url": "/api/v2/artwork/tmdb/movies/376453/logo/w500.31287a67fa71b4a7e24301eb1433a8d5a95f223e8d2fec51c1a3f3e9ac104b4a.webp?exp=SCRUBBED&sig=SCRUBBED",
+   "user_state": {
+    "played": false,
+    "is_favorite": true,
+    "in_watchlist": false
+   }
+  }
+ ],
+ "page": {
+  "next_cursor": "eyJ2IjoxLCJwIjp7ImEiOiIyMDI2LTEwLTExVDIyOjIwOjQzLjEzMjg5OVoiLCJtIjoibW92aWUtaW1kYi10dDM3NzY4MjYifX0.oYQEtk-h3MVv7kFpPimqwaDcj4ROJeB22XHj4Sta3Ss",
+  "has_more": true
+ }
+}

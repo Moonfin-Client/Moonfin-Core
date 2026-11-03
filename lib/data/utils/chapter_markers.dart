@@ -7,13 +7,18 @@ import '../models/aggregated_item.dart';
 ///
 /// An offline item keeps its copy on the manager, since there's no route left
 /// to ask the server for one.
+///
+/// [mediaSourceId] names the version that plays: a server that sends each
+/// version's own chapters on its media source (Silo) gets that
+/// version's, others the item's.
 List<Map<String, dynamic>> chaptersForItem(
   dynamic item,
-  Map<String, dynamic>? offlineMetadata,
-) {
+  Map<String, dynamic>? offlineMetadata, {
+  String? mediaSourceId,
+}) {
   List<Map<String, dynamic>>? raw;
   if (item is AggregatedItem) {
-    raw = item.chapters;
+    raw = itemChaptersForSource(item, mediaSourceId);
   } else if (item is String) {
     raw = (offlineMetadata?['Chapters'] as List?)?.cast<Map<String, dynamic>>();
   }
@@ -28,6 +33,27 @@ List<Map<String, dynamic>> chaptersForItem(
     });
   }
   return chapters;
+}
+
+/// The raw `Chapters` of the version [mediaSourceId] of [item] when its
+/// media source carries its own, else the item's.
+List<Map<String, dynamic>> itemChaptersForSource(
+  AggregatedItem item,
+  String? mediaSourceId,
+) {
+  if (mediaSourceId != null && mediaSourceId.isNotEmpty) {
+    for (final source in item.mediaSources) {
+      if ('${source['Id']}' != mediaSourceId) continue;
+      final chapters = source['Chapters'];
+      if (chapters is List) {
+        return chapters
+            .whereType<Map>()
+            .map((c) => c.cast<String, dynamic>())
+            .toList(growable: false);
+      }
+    }
+  }
+  return item.chapters;
 }
 
 /// Chapters the server holds for an item that arrived without them, which is

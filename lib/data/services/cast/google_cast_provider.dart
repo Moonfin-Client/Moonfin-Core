@@ -8,9 +8,12 @@ import 'package:server_core/server_core.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../../playback/silo_playback_environment.dart';
+import '../../../playback/silo_plugin_for.dart';
 import '../../models/aggregated_item.dart';
 import '../media_server_client_factory.dart';
 import 'cast_provider.dart';
+import 'cast_session_reporter.dart';
 import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 import 'native_cast_channel.dart';
@@ -23,13 +26,24 @@ import 'receiver_device_profiles.dart';
 bool isExplicitSubtitlePick(int? subtitleStreamIndex) =>
     subtitleStreamIndex != null && subtitleStreamIndex >= 0;
 
-class GoogleCastProvider implements CastProvider, CastTransportControls {
+class GoogleCastProvider
+    implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeCastChannel _native;
   final MediaServerClientFactory _clientFactory;
 
   static final Logger _logger = Logger();
 
-  const GoogleCastProvider(this._native, this._clientFactory);
+  GoogleCastProvider(this._native, this._clientFactory);
+
+  /// The last cast's Silo session, for the cast service to report.
+  CastServerPlayback? _serverPlayback;
+
+  @override
+  CastServerPlayback? takeServerPlayback() {
+    final playback = _serverPlayback;
+    _serverPlayback = null;
+    return playback;
+  }
 
   // The receiver pulls the stream itself, so the ceiling that matters is the
   // one the user set for their own network, the same value the local players
@@ -46,6 +60,12 @@ class GoogleCastProvider implements CastProvider, CastTransportControls {
       ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
       ServerType.plex => PlexMediaStreamResolver(client),
+      // The receiver loads the stream itself.
+      ServerType.silo => siloPluginFor(
+        client,
+        environment: () =>
+            siloReceiverEnvironment('chromecast', manufacturer: 'Google'),
+      ).createStreamResolver(),
     };
   }
 
@@ -162,10 +182,15 @@ class GoogleCastProvider implements CastProvider, CastTransportControls {
       subtitleStreamIndex: subtitleStreamIndex,
     );
     final streamUrl = resolution.streamUrl;
+    // Every queued item is resolved up front, and on Silo each resolve opens
+    // a session that ends after 45 s without reports, so only the item itself
+    // is cast there.
     final effectiveQueueItems =
-        (queueItems == null || queueItems.isEmpty)
-            ? <AggregatedItem>[item]
-            : queueItems;
+        (queueItems == null ||
+            queueItems.isEmpty ||
+            castNeedsSessionReports(client))
+        ? <AggregatedItem>[item]
+        : queueItems;
     final queuePayload = <Map<String, dynamic>>[];
     for (final entry in effectiveQueueItems) {
       final entryResolution =
@@ -202,6 +227,13 @@ class GoogleCastProvider implements CastProvider, CastTransportControls {
       castDiag('native cast load failed', error: e);
       rethrow;
     }
+    _serverPlayback = castNeedsSessionReports(client)
+        ? CastServerPlayback(
+            service: siloPluginFor(client).createPlaySessionService(),
+            item: item,
+            resolution: resolution,
+          )
+        : null;
   }
 
   @override

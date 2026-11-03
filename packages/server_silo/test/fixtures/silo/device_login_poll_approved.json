@@ -1,0 +1,25 @@
+{
+ "status": "approved",
+ "poll_after": 3,
+ "opened": true,
+ "profile_id": "",
+ "profile_token": "",
+ "temporary": false,
+ "tokens": {
+  "access_token": "SCRUBBED",
+  "refresh_token": "SCRUBBED",
+  "expires_in": 3600,
+  "user": {
+   "id": "9",
+   "username": "user",
+   "email": "user@example.invalid",
+   "role": "admin",
+   "permissions": [
+    "marker_edit",
+    "metadata_curation"
+   ],
+   "download_allowed": true,
+   "password_change_required": false
+  }
+ }
+}

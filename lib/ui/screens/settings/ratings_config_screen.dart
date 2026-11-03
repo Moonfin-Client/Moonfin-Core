@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -16,6 +15,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/scroll_utils.dart';
@@ -46,7 +46,10 @@ class _RatingItem {
 }
 
 class RatingsConfigScreen extends StatefulWidget {
-  const RatingsConfigScreen({super.key});
+  const RatingsConfigScreen({super.key, this.settings});
+
+  /// Which surface's settings this edits and resets. Null is the global set.
+  final RatingSettings? settings;
 
   @override
   State<RatingsConfigScreen> createState() => _RatingsConfigScreenState();
@@ -68,6 +71,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   };
 
   final _prefs = GetIt.instance<UserPreferences>();
+  late final _settings = widget.settings ?? UserPreferences.detailsRatings;
   String _lastEnabledRatingsCsv = '';
   late List<_RatingItem> _items;
   final _focusNodes = <FocusNode>[];
@@ -92,13 +96,13 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
 
   void _onPrefsChanged() {
     if (!mounted) return;
-    final currentCsv = _prefs.get(UserPreferences.enabledRatings);
+    final currentCsv = _prefs.get(_settings.sources);
     if (currentCsv == _lastEnabledRatingsCsv) return;
     setState(_loadFromPrefs);
   }
 
   void _loadFromPrefs() {
-    final csv = _prefs.get(UserPreferences.enabledRatings);
+    final csv = _prefs.get(_settings.sources);
     _lastEnabledRatingsCsv = csv;
     final enabled = csv.split(',').where((s) => s.isNotEmpty).toList();
 
@@ -135,7 +139,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     // Keep local ordering/focus stable for in-screen edits; external updates
     // still refresh via _onPrefsChanged when the stored CSV differs.
     _lastEnabledRatingsCsv = csv;
-    _prefs.set(UserPreferences.enabledRatings, csv);
+    _prefs.set(_settings.sources, csv);
 
     final syncService = GetIt.instance<PluginSyncService>();
     if (syncService.pluginAvailable) {
@@ -143,16 +147,6 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
       syncService.pushSettings(client);
     }
   }
-
-  /// Every ratings setting, including the ones the parent screen shows, so the
-  /// reset covers the whole integration rather than just the source list.
-  static final _ratingsPreferences = <Preference<dynamic>>[
-    UserPreferences.enabledRatings,
-    UserPreferences.enableAdditionalRatings,
-    UserPreferences.enableEpisodeRatings,
-    UserPreferences.showRatingLabels,
-    UserPreferences.showRatingBadges,
-  ];
 
   Future<void> _resetToDefaults() async {
     final l10n = AppLocalizations.of(context);
@@ -183,7 +177,10 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     if (confirmed != true || !mounted) return;
 
     await _prefs.batchNotifications(() async {
-      for (final pref in _ratingsPreferences) {
+      // Every ratings setting of this surface, including the ones the parent
+      // screen shows, so the reset covers the whole set rather than just the
+      // source list.
+      for (final pref in _settings.all) {
         await _prefs.removePreference(pref);
       }
     });
@@ -233,9 +230,16 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
               ),
             ],
           ),
-          body: PlatformDetection.isTV
-              ? _buildTvList(l10n)
-              : _buildReorderableList(l10n),
+          body: SettingsPreviewReporter(
+            describe: () => SettingsPreviewEntry(
+              prefKey: _settings.sources.key,
+              title: l10n.ratingSources,
+              description: l10n.ratingSourcesDescription,
+            ),
+            child: PlatformDetection.isTV
+                ? _buildTvList(l10n)
+                : _buildReorderableList(l10n),
+          ),
         ),
       ),
     );

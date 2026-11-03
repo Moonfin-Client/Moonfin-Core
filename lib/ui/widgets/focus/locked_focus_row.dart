@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -9,6 +10,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../../../util/focus/scroll_utils.dart';
 import 'hub_focus_memory.dart';
+import 'row_glide.dart';
 
 const _kSelectLongPressDuration = Duration(milliseconds: 500);
 
@@ -58,6 +60,10 @@ class LockedFocusRow<T> extends StatefulWidget {
   final bool autofocus;
   final Clip clipBehavior;
 
+  /// When set, the row scrolls by following this glide rather than animating
+  /// to each card, and the caller sizes its cards from it.
+  final RowGlide? glide;
+
   const LockedFocusRow({
     super.key,
     required this.items,
@@ -81,13 +87,15 @@ class LockedFocusRow<T> extends StatefulWidget {
     this.autofocus = false,
     this.clipBehavior = Clip.hardEdge,
     this.itemKey,
+    this.glide,
   });
 
   @override
   State<LockedFocusRow<T>> createState() => LockedFocusRowState<T>();
 }
 
-class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
+class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
+    with SingleTickerProviderStateMixin {
   late FocusNode _focusNode;
   bool _ownsFocusNode = false;
   late ScrollController _scrollController;
@@ -108,6 +116,8 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   Timer? _selectHoldTimer;
   bool _selectLongPressFired = false;
   bool _selectDownSeen = false;
+  Ticker? _glideTicker;
+  Duration _glideLastTick = Duration.zero;
 
   @override
   void initState() {
@@ -118,6 +128,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     _scrollController = widget.controller ?? ScrollController();
     _ownsScrollController = widget.controller == null;
     _focusedIndex = HubFocusMemory.getForHub(widget.hubKey, widget.items.length);
+    widget.glide?.jumpTo(_focusedIndex);
     _syncItemKeys();
     _focusNode.addListener(_onRowFocusChange);
   }
@@ -136,8 +147,15 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       _focusNode.addListener(_onRowFocusChange);
     }
     if (widget.items.length != oldWidget.items.length) {
-      _focusedIndex =
+      final clamped =
           _focusedIndex.clamp(0, widget.items.isEmpty ? 0 : widget.items.length - 1);
+      if (clamped != _focusedIndex) widget.glide?.jumpTo(clamped);
+      _focusedIndex = clamped;
+    }
+    if (widget.glide != oldWidget.glide) {
+      widget.glide
+        ?..jumpTo(_focusedIndex)
+        ..active = _hasRowFocus;
     }
     // Identities can move on a same-length refresh, so the keys follow the
     // list rather than its length.
@@ -159,6 +177,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   @override
   void dispose() {
     _selectHoldTimer?.cancel();
+    _glideTicker?.dispose();
     _focusNode.removeListener(_onRowFocusChange);
     if (_ownsFocusNode) _focusNode.dispose();
     if (_ownsScrollController) _scrollController.dispose();
@@ -204,6 +223,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (widget.items.isEmpty) return;
     if (!_focusNode.canRequestFocus) return;
     final clamped = index.clamp(0, widget.items.length - 1);
+    widget.glide?.jumpTo(clamped);
     _setFocusedIndex(clamped);
     _focusNode.requestFocus();
     _scrollToIndex(clamped);
@@ -220,6 +240,14 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (has != _hasRowFocus) {
       _hasRowFocusNotifier.value = has;
       widget.onFocusChange?.call(has);
+    }
+    if (widget.glide != null) {
+      // A hold that left the row ends somewhere else, so its key up never
+      // comes back here.
+      widget.glide!
+        ..active = has
+        ..held = false;
+      _runGlide();
     }
     if (has) {
       _scrollToIndex(_focusedIndex);
@@ -241,6 +269,11 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   }
 
   void _scrollToIndex(int index) {
+    if (widget.glide != null) {
+      widget.glide!.moveTo(index);
+      _runGlide();
+      return;
+    }
     if (!_scrollController.hasClients) return;
     final drift = _layoutDrift();
     scrollListToIndex(
@@ -276,6 +309,44 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     }
     return 0;
   }
+
+  void _runGlide() {
+    final glide = widget.glide;
+    if (glide == null) return;
+    final ticker = _glideTicker ??= createTicker(_onGlideTick);
+    if (ticker.isActive) return;
+    if (_scrollController.hasClients) {
+      glide.catchUp(_scrollController.offset - _glideScrollOffset(glide));
+    }
+    _glideLastTick = Duration.zero;
+    ticker.start();
+  }
+
+  void _onGlideTick(Duration elapsed) {
+    final glide = widget.glide;
+    if (glide == null) {
+      _glideTicker?.stop();
+      return;
+    }
+    final dt = (elapsed - _glideLastTick).inMicroseconds /
+        Duration.microsecondsPerSecond;
+    _glideLastTick = elapsed;
+    final moving = glide.tick(dt.clamp(0.0, 0.05));
+    if (_scrollController.hasClients) {
+      final position = _scrollController.position;
+      final offset = _glideScrollOffset(glide).clamp(
+        position.minScrollExtent,
+        position.maxScrollExtent,
+      );
+      if (offset != position.pixels) _scrollController.jumpTo(offset);
+    }
+    if (!moving) _glideTicker?.stop();
+  }
+
+  double _glideScrollOffset(RowGlide glide) => glide.scrollOffset(
+        leading: widget.leadingPadding + _layoutDrift(),
+        stride: widget.itemExtent + widget.itemSpacing,
+      );
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (widget.items.isEmpty) return KeyEventResult.ignored;
@@ -329,6 +400,11 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       if (back != KeyEventResult.ignored) return back;
     }
 
+    if (event is KeyUpEvent &&
+        (event.logicalKey.isLeftKey || event.logicalKey.isRightKey)) {
+      widget.glide?.held = false;
+      _runGlide();
+    }
     if (!event.isActionable) return KeyEventResult.ignored;
     final key = event.logicalKey;
     if (key.isLeftKey || key.isRightKey) {
@@ -336,6 +412,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       final movesToNextIndex = key.isRightKey != isRtl;
       if (movesToNextIndex) {
         if (_focusedIndex < widget.items.length - 1) {
+          widget.glide?.held = event is KeyRepeatEvent;
           _setFocusedIndex(_focusedIndex + 1);
           _scrollToIndex(_focusedIndex);
           return KeyEventResult.handled;
@@ -348,6 +425,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
         return KeyEventResult.handled;
       } else {
         if (_focusedIndex > 0) {
+          widget.glide?.held = event is KeyRepeatEvent;
           _setFocusedIndex(_focusedIndex - 1);
           _scrollToIndex(_focusedIndex);
           return KeyEventResult.handled;

@@ -11,6 +11,7 @@ class _SettingsSearchEntry {
     required this.icon,
     required this.onOpen,
     required String matchText,
+    this.path = const [],
   }) : titleLower = title.toLowerCase(),
        haystack = matchText.toLowerCase();
 
@@ -19,6 +20,9 @@ class _SettingsSearchEntry {
   final String subtitle;
   final IconData icon;
   final VoidCallback onOpen;
+
+  /// The screen it opens, as a path from its category.
+  final List<String> path;
   final String titleLower;
   final String haystack;
 }
@@ -51,6 +55,7 @@ class _SearchSection {
         icon: icon,
         onOpen: open,
         matchText: [...path, ...keywords].join(' '),
+        path: path,
       );
 
   /// [header] is the section header the setting sits under, worth passing
@@ -70,6 +75,7 @@ class _SearchSection {
     icon: icon,
     onOpen: open,
     matchText: [title, ?subtitle, ...keywords, ...path].join(' '),
+    path: path,
   );
 }
 
@@ -118,6 +124,15 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
+  final liveTvOnAnyServer = liveTvOnAnySignedInServer();
+  final musicOnAnyServer = musicOnAnySignedInServer();
+  final playlistsOnAnyServer = playlistsOnAnySignedInServer();
+  final moonfinPluginOnAnyServer = moonfinPluginOnAnySignedInServer();
+  final seerrOnAnyServer = seerrOnAnySignedInServer();
+  // Retro games come from the Moonfin plugin's game libraries.
+  final gamesOnAnyServer = anySignedInServerSupports(
+    (f) => f.supportsFullMoonfinPlugin,
+  );
   final friendsAvailable =
       GetIt.instance<AchievementsService>().socialAvailable;
 
@@ -405,7 +420,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   );
   final downloads = _SearchSection(
     slug: 'storage',
-    path: [l10n.storageAndDownloads],
+    path: [l10n.storage],
     icon: Icons.download_for_offline,
     open: () => push(const DownloadSettingsScreen()),
   );
@@ -417,7 +432,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   );
   final seerr = _SearchSection(
     slug: 'seerr',
-    path: [l10n.integrations, l10n.seerr],
+    path: [l10n.integrations, seerrBrand(l10n.seerr)],
     icon: Icons.movie_filter,
     open: () => push(const SeerrConfigScreen()),
   );
@@ -661,6 +676,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'spotlight',
       'nouveau',
       'minimalist',
+      'stage',
+      'premiere',
+      'quick look',
+      'frost',
     ]),
     details.leaf(
       'pref_show_details_backdrop',
@@ -847,12 +866,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.showFavoritesButton,
       subtitle: l10n.settingsShowFavoritesButtonInNavigation,
     ),
-    navigation.leaf(
-      'pref_show_live_tv_button',
-      l10n.showLiveTvButton,
-      subtitle: l10n.settingsShowLiveTvButtonInNavigation,
-      keywords: ['guide', 'channels'],
-    ),
+    if (liveTvOnAnyServer)
+      navigation.leaf(
+        'pref_show_live_tv_button',
+        l10n.showLiveTvButton,
+        subtitle: l10n.settingsShowLiveTvButtonInNavigation,
+        keywords: ['guide', 'channels'],
+      ),
     navigation.leaf(
       'pref_show_libraries_in_toolbar',
       l10n.showLibrariesInToolbar,
@@ -877,8 +897,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     if (seerrAvailable)
       navigation.leaf(
         'pref_show_seerr_button',
-        l10n.showSeerrButton,
-        subtitle: l10n.settingsShowSeerrButtonInNavigation,
+        seerrBrand(l10n.showSeerrButton),
+        subtitle: seerrBrand(l10n.settingsShowSeerrButtonInNavigation),
         keywords: ['requests'],
       ),
     if (friendsAvailable)
@@ -956,6 +976,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['spoiler', 'description', 'overview'],
     ),
     home.leaf(
+      'pref_hide_home_watch_progress',
+      l10n.hideHomeWatchProgress,
+      subtitle: l10n.hideHomeWatchProgressSubtitle,
+      keywords: ['resume', 'played'],
+    ),
+    home.leaf(
+      'pref_hide_home_unwatched_count',
+      l10n.hideHomeUnwatchedCount,
+      subtitle: l10n.hideHomeUnwatchedCountSubtitle,
+      keywords: ['unplayed'],
+    ),
+    home.leaf(
       'mediaPreviewMode',
       l10n.mediaPreview,
       subtitle: l10n.mediaPreviewDescription,
@@ -978,6 +1010,37 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'gap',
     ]),
     home.leaf('poster_size', l10n.cardSize, keywords: ['poster size']),
+    home.leaf(
+      'homeRowsEnableAdditionalRatings',
+      l10n.additionalRatings,
+      subtitle: l10n.showMdbListAndTmdbRatings,
+      keywords: ['imdb', 'rotten tomatoes'],
+      header: l10n.ratings,
+    ),
+    home.leaf(
+      'homeRowsEnabledRatings',
+      l10n.ratingSources,
+      subtitle: l10n.ratingSourcesDescription,
+      header: l10n.ratings,
+    ),
+    home.leaf(
+      'homeRowsEnableEpisodeRatings',
+      l10n.episodeRatings,
+      subtitle: l10n.showRatingsOnEpisodes,
+      header: l10n.ratings,
+    ),
+    home.leaf(
+      'homeRowsShowRatingLabels',
+      l10n.ratingLabels,
+      subtitle: l10n.showLabelsNextToIcons,
+      header: l10n.ratings,
+    ),
+    home.leaf(
+      'homeRowsShowRatingBadges',
+      l10n.ratingBadges,
+      subtitle: l10n.showDecorativeBadges,
+      header: l10n.ratings,
+    ),
     if (PlatformDetection.isAppleTV)
       home.leaf(
         'pref_top_shelf_content',
@@ -1026,12 +1089,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.mergeRecentRowsByTypeDescription,
       keywords: ['combine', 'homepage', 'rows', 'recent', 'released'],
     ),
-    rowToggles.leaf(
-      'pref_display_audio_rows',
-      l10n.displayAudioRows,
-      subtitle: l10n.displayAudioRowsSubtitle,
-      keywords: ['music'],
-    ),
+    if (musicOnAnyServer)
+      rowToggles.leaf(
+        'pref_display_audio_rows',
+        l10n.displayAudioRows,
+        subtitle: l10n.displayAudioRowsSubtitle,
+        keywords: ['music'],
+      ),
     rowToggles.leaf(
       'pref_display_collections_rows',
       l10n.displayCollectionsRows,
@@ -1047,11 +1111,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.displayGenresRows,
       subtitle: l10n.displayGenresRowsSubtitle,
     ),
-    rowToggles.leaf(
-      'pref_display_playlists_rows',
-      l10n.displayPlaylistsRows,
-      subtitle: l10n.displayPlaylistsRowsSubtitle,
-    ),
+    if (playlistsOnAnyServer)
+      rowToggles.leaf(
+        'pref_display_playlists_rows',
+        l10n.displayPlaylistsRows,
+        subtitle: l10n.displayPlaylistsRowsSubtitle,
+      ),
     rowToggles.leaf(
       'pref_display_rewatch_row',
       'Display Rewatch Row',
@@ -1067,7 +1132,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     rowImages.screen(keywords: ['poster', 'thumbnail', 'banner']),
     if (pluginAvailable) ...[
       seasonalRow.screen(keywords: ['holiday', 'christmas', 'halloween', 'seasonal']),
-      seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: l10n.seasonalRowDescription),
+      seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
       seasonalRow.leaf('seasonal_row_hidden_holidays', l10n.seasonalRowHolidays),
     ],
@@ -1170,7 +1235,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
           header: 'Sonarr',
         ),
         seerrLists.screen(keywords: ['discovery rows', 'watchlist', 'trending']),
-        seerrLists.leaf('seerr_rows_sort_by', l10n.seerrRowsSorting),
+        seerrLists.leaf('seerr_rows_sort_by', seerrBrand(l10n.seerrRowsSorting)),
         seerrLists.leaf('seerr_rows_sort_order', l10n.sortOrder),
       ],
       customRows.screen(keywords: ['letterboxd', 'mdblist', 'tmdb', 'custom']),
@@ -1268,6 +1333,31 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['peek', 'first row'],
       ),
     mediaBar.leaf('mediaBarItemCount', l10n.itemCount),
+    mediaBar.leaf(
+      'mediaBarEnableAdditionalRatings',
+      l10n.additionalRatings,
+      subtitle: l10n.showMdbListAndTmdbRatings,
+      keywords: ['imdb', 'rotten tomatoes'],
+      header: l10n.ratings,
+    ),
+    mediaBar.leaf(
+      'mediaBarEnabledRatings',
+      l10n.ratingSources,
+      subtitle: l10n.ratingSourcesDescription,
+      header: l10n.ratings,
+    ),
+    mediaBar.leaf(
+      'mediaBarShowRatingLabels',
+      l10n.ratingLabels,
+      subtitle: l10n.showLabelsNextToIcons,
+      header: l10n.ratings,
+    ),
+    mediaBar.leaf(
+      'mediaBarShowRatingBadges',
+      l10n.ratingBadges,
+      subtitle: l10n.showDecorativeBadges,
+      header: l10n.ratings,
+    ),
     mediaBar.leaf('mediaBarLibraryIds', l10n.sourceLibraries),
     mediaBar.leaf('mediaBarCollectionIds', l10n.sourceCollections),
     mediaBar.leaf('mediaBarExcludedGenres', l10n.excludedGenres),
@@ -1324,6 +1414,15 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.seasonalDensity,
       keywords: ['particles', 'amount', 'light', 'heavy'],
     ),
+    if (PlatformDetection.isTV || PlatformDetection.isDesktop)
+      seasonal.leaf(
+        'seasonalFollower',
+        l10n.seasonalFollower,
+        subtitle: PlatformDetection.isTV
+            ? l10n.seasonalFollowerDescription
+            : l10n.seasonalFollowerPointerDescription,
+        keywords: ['planchette', 'cursor', 'pointer', 'mouse'],
+      ),
     loadingAnimation.screen(keywords: ['spinner', 'runner', 'moon', 'logo', 'loading']),
     loadingAnimation.leaf(
       'loadingAnimationImage',
@@ -1521,12 +1620,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       '1080p',
       'transcode',
     ]),
-    quality.leaf(
-      'pref_live_direct',
-      l10n.settingsLiveTvDirect,
-      subtitle: l10n.settingsLiveTvDirectSubtitle,
-      keywords: ['live tv'],
-    ),
+    if (liveTvOnAnyServer)
+      quality.leaf(
+        'pref_live_direct',
+        l10n.settingsLiveTvDirect,
+        subtitle: l10n.settingsLiveTvDirectSubtitle,
+        keywords: ['live tv'],
+      ),
     if (!PlatformDetection.isWeb && !PlatformDetection.isAppleTV)
       quality.leaf(
         'hardware_decoding',
@@ -1907,7 +2007,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       ),
     ],
 
-    if (canToggleGameBackend)
+    if (canToggleGameBackend && gamesOnAnyServer)
       playback.leaf(
         'pref_use_native_emulator',
         l10n.useNativeEmulator,
@@ -1921,7 +2021,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.gameOrientationSubtitle,
         keywords: ['rotate', 'landscape', 'portrait', 'games'],
       ),
-    if (supportsCoreDownloads && usesNativeGameBackend)
+    if (supportsCoreDownloads && usesNativeGameBackend && gamesOnAnyServer)
       emulatorCores.screen(keywords: ['retroarch', 'games', 'systems']),
     if (usesNativeGameBackend)
       downloadedGames.screen(keywords: ['roms', 'storage']),
@@ -1969,10 +2069,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['mpv config'],
       ),
 
-    services.screen(keywords: ['seerr', 'achievements', 'services']),
-    settingsSync.screen(
-      keywords: ['moonbase', 'plugin', 'server sync', 'status', 'profile'],
-    ),
+    if (_integrationsOffered)
+      services.screen(keywords: ['seerr', 'achievements', 'services']),
+    if (moonfinPluginOnAnyServer)
+      settingsSync.screen(
+        keywords: ['moonbase', 'plugin', 'server sync', 'status', 'profile'],
+      ),
     ratingSources.screen(keywords: [
       'rotten tomatoes',
       'imdb',
@@ -1981,14 +2083,17 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'letterboxd',
       'reorder',
     ]),
-    seerr.screen(keywords: [
-      'requests',
-      'jellyseerr',
-      'overseerr',
-      'discover',
-      'nsfw',
-      'notifications',
-    ]),
+    if (seerrOnAnyServer)
+      seerr.screen(keywords: [
+        'requests',
+        'jellyseerr',
+        'overseerr',
+        'discover',
+        'nsfw',
+        'notifications',
+        'badges',
+        'banner',
+      ]),
 
     about.screen(keywords: ['version', 'update', 'discord', 'license']),
     if (PlatformDetection.useDesktopUi)

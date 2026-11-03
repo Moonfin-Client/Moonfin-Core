@@ -5,14 +5,12 @@ class _PanelEntry {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final FocusNode? focusNode;
 
   const _PanelEntry({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.focusNode,
   });
 }
 
@@ -24,8 +22,6 @@ class _PanelEntryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _TvSettingsListTile(
-      focusNode: entry.focusNode,
-      autofocus: entry.focusNode != null,
       leading: Icon(entry.icon),
       title: Text(entry.title),
       subtitle: Text(entry.subtitle),
@@ -44,6 +40,10 @@ class _TvSettingsListTile extends StatefulWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
 
+  /// The preference the tile picks or opens an editor for, so the live
+  /// preview can show it.
+  final String? previewKey;
+
   const _TvSettingsListTile({
     super.key,
     this.focusNode,
@@ -53,6 +53,7 @@ class _TvSettingsListTile extends StatefulWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.previewKey,
   });
 
   @override
@@ -91,6 +92,20 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
     final resolvedTrailing =
         widget.trailing ??
         (widget.onTap != null ? const Icon(Icons.chevron_right) : null);
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.previewKey,
+        title: _plainText(widget.title) ?? '',
+        description: _plainText(widget.subtitle),
+      ),
+      child: _buildTile(resolvedTrailing),
+    );
+  }
+
+  static String? _plainText(Widget? widget) =>
+      widget is Text ? (widget.data ?? widget.textSpan?.toPlainText()) : null;
+
+  Widget _buildTile(Widget? resolvedTrailing) {
     return Focus(
       canRequestFocus: false,
       skipTraversal: true,
@@ -159,12 +174,8 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String text;
-  const _SectionHeader(this.text);
-
-  @override
-  Widget build(BuildContext context) => SettingsSectionHeader(text);
+class _SectionHeader extends SettingsSectionHeader {
+  const _SectionHeader(super.text);
 }
 
 void _pushPersonalizationSync() {

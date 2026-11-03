@@ -1,0 +1,29 @@
+{
+  "protocol_version": 3,
+  "server_features": [
+    "playback_plan_v3",
+    "server_remote_stream_bitrate_policy_v1",
+    "server_local_stream_bitrate_policy_v1",
+    "neutral_playback_v3_contract_v1",
+    "embedded_subtitles_v1",
+    "layout_aware_passthrough",
+    "playback_route_diagnostics",
+    "device_quirks_v1",
+    "seek_reanchor_v1",
+    "output_change_v1",
+    "output_display_evidence_v1",
+    "direct_stream_resume_v1",
+    "header_authenticated_media_v1",
+    "authorized_media_origins_v1",
+    "software_video_decode_v1",
+    "plan_invalidated_v1",
+    "plan_source_duration_v1",
+    "subrip_sidecar_v1"
+  ],
+  "outcome": "adaptation_unavailable",
+  "terminal": {
+    "reason": "source_unreadable",
+    "message": "This file can't be read. Replace it and scan the library again.",
+    "retryable": false
+  }
+}

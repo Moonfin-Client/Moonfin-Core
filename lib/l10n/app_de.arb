@@ -10707,5 +10707,25 @@
     "savedMediaNoDownloads": "Noch nichts gespeichert",
     "@savedMediaNoDownloads": {
         "description": "Empty state title when no downloads are on the device"
+    },
+    "animeMarkerDubbed": "Synchronisiert",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbed": "Untertitelt",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerSubbedAndDubbed": "Untertitelt/Synchronisiert",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Ausstehend",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "timesUpMessage": "Dieses Konto ist derzeit nicht verfügbar.",
+    "@timesUpMessage": {
+        "description": "Explanation on the Time's up screen"
     }
 }

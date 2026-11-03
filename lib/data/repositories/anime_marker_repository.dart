@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/signed_in_server_features.dart';
+
 /// The kind of an episode, for the purpose of drawing a badge on its card.
 enum AnimeEpisodeKind { mangaCanon, animeCanon, mixed, filler }
 
@@ -199,7 +201,12 @@ class AnimeMarkerRepository {
     try {
       final baseUrl = _client.baseUrl;
       final token = _client.accessToken;
-      if (token == null || baseUrl.isEmpty) return completeWith(null);
+      // Anime markers come from the Moonfin plugin, which Silo never has.
+      if (token == null ||
+          baseUrl.isEmpty ||
+          !serverHasMoonfinPlugin(_client)) {
+        return completeWith(null);
+      }
 
       final response = await _dio.get(
         '$baseUrl/Moonfin/AnimeMarkers/Series',
@@ -358,7 +365,11 @@ class AnimeMarkerRepository {
     try {
       final token = _client.accessToken;
       final baseUrl = _client.baseUrl;
-      if (token == null || baseUrl.isEmpty) return;
+      if (token == null ||
+          baseUrl.isEmpty ||
+          !serverHasMoonfinPlugin(_client)) {
+        return;
+      }
 
       final response = await _dio.get(
         '$baseUrl/Moonfin/AnimeMarkers/Items',

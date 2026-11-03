@@ -108,6 +108,9 @@ void main() {
     // The seasons card reads Seerr's per-season status, and the app always has
     // these preferences registered.
     final seerrPrefs = _SeerrPrefs();
+    when(() => seerrPrefs.brand(any())).thenAnswer(
+      (i) => i.positionalArguments.first as String,
+    );
     when(() => seerrPrefs.showRequestStatus).thenReturn(false);
     GetIt.instance.registerSingleton<SeerrPreferences>(seerrPrefs);
 

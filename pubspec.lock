@@ -1050,10 +1050,10 @@ packages:
     dependency: transitive
     description:
       name: liquid_glass_widgets
-      sha256: c4bcf1fb615e339c6558cf3d7c6bbb95b0e187b906ff52c21c520557f0784637
+      sha256: "47c38caa98528ae8b51fb7f6ede523602fcf1393d664f78dc8081a0b27ac404a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.2"
+    version: "1.6.0"
   logger:
     dependency: "direct main"
     description:
@@ -1441,6 +1441,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  playback_silo:
+    dependency: "direct main"
+    description:
+      path: "packages/playback_silo"
+      relative: true
+    source: path
+    version: "0.1.0"
   plugin_platform_interface:
     dependency: "direct dev"
     description:
@@ -1689,6 +1696,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/server_plex"
+      relative: true
+    source: path
+    version: "0.1.0"
+  server_silo:
+    dependency: "direct main"
+    description:
+      path: "packages/server_silo"
       relative: true
     source: path
     version: "0.1.0"

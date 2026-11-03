@@ -90,7 +90,7 @@ class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
                       focusNode: _firstFocusNode,
                       preference: UserPreferences.seasonalRowEnabled,
                       title: l10n.seasonalRow,
-                      subtitle: l10n.seasonalRowDescription,
+                      subtitle: seerrBrand(l10n.seasonalRowDescription),
                       icon: Icons.celebration_outlined,
                       onChangedValue: _syncSectionState,
                     ),
@@ -1215,8 +1215,8 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     EnumPreferenceTile<ExternalRowSortBy>(
                       focusNode: _firstFocusNode,
                       preference: UserPreferences.seerrRowsSortBy,
-                      title: l10n.seerrRowsSorting,
-                      description: l10n.seerrRowsSortingDescription,
+                      title: seerrBrand(l10n.seerrRowsSorting),
+                      description: seerrBrand(l10n.seerrRowsSortingDescription),
                       icon: Icons.sort,
                       labelOf: (v) => externalRowSortLabel(v, l10n),
                       onChanged: () {
@@ -1228,7 +1228,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.seerrRowsSortOrder,
                       title: l10n.sortOrder,
-                      description: l10n.seerrRowsSortOrderDescription,
+                      description: seerrBrand(l10n.seerrRowsSortOrderDescription),
                       icon: Icons.swap_vert,
                       enabled: prefs.get(UserPreferences.seerrRowsSortBy) != ExternalRowSortBy.none &&
                           prefs.get(UserPreferences.seerrRowsSortBy) != ExternalRowSortBy.shuffle,
@@ -1260,7 +1260,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                   }).toList(),
                 ),
                 if (_sliders case final sliders? when sliders.isNotEmpty) ...[
-                  _SectionHeader(l10n.seerrDiscoverSliders),
+                  _SectionHeader(seerrBrand(l10n.seerrDiscoverSliders)),
                   adaptiveListSection(
                     children: [
                       for (final entry in sliders.map(_sliderSection))

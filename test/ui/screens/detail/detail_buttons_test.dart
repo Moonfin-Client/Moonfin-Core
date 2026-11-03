@@ -1,11 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/auth/models/user.dart';
+import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/data/services/incomplete_recordings_service.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/util/download_utils.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _IncompleteRecordings extends Mock
+    implements IncompleteRecordingsService {}
 
 /// Seeds the arrangement through the layout itself, so the test follows
 /// whichever per-device preference this platform reads.
@@ -99,6 +107,31 @@ void main() {
 
     test('watchWithGroup is hidden from offered buttons when SyncPlay is not enabled', () {
       expect(DetailButton.watchWithGroup.isOffered, isFalse);
+    });
+
+    test('Keep as Complete is only offered to someone who can manage Live TV', () {
+      final incomplete = _IncompleteRecordings();
+      when(() => incomplete.supported).thenReturn(true);
+      final users = UserRepository();
+      GetIt.instance
+        ..registerSingleton<IncompleteRecordingsService>(incomplete)
+        ..registerSingleton<UserRepository>(users);
+      addTearDown(GetIt.instance.reset);
+
+      PrivateUser user({required bool canManageLiveTv}) => PrivateUser(
+        id: 'u1',
+        name: 'viewer',
+        serverId: 's1',
+        accessToken: 'token',
+        lastUsed: DateTime(2026),
+        canManageLiveTv: canManageLiveTv,
+      );
+
+      users.setCurrentUser(user(canManageLiveTv: false));
+      expect(DetailButton.keepAsComplete.isOffered, isFalse);
+
+      users.setCurrentUser(user(canManageLiveTv: true));
+      expect(DetailButton.keepAsComplete.isOffered, isTrue);
     });
   });
 

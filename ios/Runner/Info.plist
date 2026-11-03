@@ -106,7 +106,7 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Moonfin uses your local network to discover Jellyfin and Emby servers.</string>
+	<string>Moonfin uses your local network to discover Jellyfin, Emby and Silo servers.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Moonfin needs microphone access for voice search.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -123,6 +123,7 @@
 	<array>
 		<string>_jellyfin._tcp</string>
 		<string>_emby._tcp</string>
+		<string>_silo._tcp</string>
 		<string>_googlecast._tcp</string>
 		<string>_CC1AD845._googlecast._tcp</string>
 	</array>

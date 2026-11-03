@@ -7,9 +7,12 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/focus/input_mode_tracker.dart';
 import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
+import 'focus/row_glide.dart';
 import 'rating_display.dart';
+import 'selector_builder.dart';
 
 /// A Modern poster is the same height as a classic portrait card at the same
 /// card size.
@@ -18,10 +21,9 @@ double modernImageHeight(PosterSize posterSize, double platformScale) =>
 
 /// Room under a Modern poster for the title, the metadata line, the ratings
 /// and three lines of overview. Phones only show the title and one line.
-double modernMetadataBudget(UserPreferences prefs) {
+double modernMetadataBudget(UserPreferences prefs, RatingSettings ratings) {
   if (PlatformDetection.useMobileUi) return 50.0;
-  final ratingsPadding =
-      prefs.get(UserPreferences.enableAdditionalRatings) ? 8.0 : 0.0;
+  final ratingsPadding = prefs.get(ratings.additionalRatings) ? 8.0 : 0.0;
   return 175.0 + ratingsPadding;
 }
 
@@ -125,6 +127,67 @@ class ModernCardExpansion {
   }
 }
 
+/// A gliding card fades its poster off the backdrop while it grows, and fades
+/// its details in once there's room for them.
+double modernPosterOpacity(double open) => 1 - _smoothstep(0.1, 0.55, open);
+
+const double modernDetailsStart = 0.72;
+
+double modernDetailsOpacity(double open) =>
+    _smoothstep(modernDetailsStart, 1, open);
+
+double _smoothstep(double from, double to, double x) {
+  final t = ((x - from) / (to - from)).clamp(0.0, 1.0);
+  return t * t * (3 - 2 * t);
+}
+
+/// Rebuilds a Modern card as the row's glide or a mouse hover grows it, and
+/// hands [builder] how far it has grown. A hover only counts while the mouse
+/// is in use, so cards that glide under a parked pointer don't grow.
+class ModernGlideBuilder extends StatelessWidget {
+  const ModernGlideBuilder({
+    super.key,
+    required this.glide,
+    required this.expansion,
+    required this.cardKey,
+    required this.index,
+    required this.prefs,
+    required this.builder,
+  });
+
+  final RowGlide glide;
+  final ModernCardExpansion expansion;
+  final String cardKey;
+  final int index;
+  final UserPreferences prefs;
+  final Widget Function(BuildContext context, double open, bool hovered)
+      builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final pointerLive = InputModeTracker.pointerIsLive(context);
+    return SelectorBuilder<bool>(
+      listenable: expansion.hoveredKey,
+      select: () => expansion.hoveredKey.value == cardKey,
+      builder: (context, hovered) {
+        final hoverOpen = hovered && pointerLive;
+        return TweenAnimationBuilder<double>(
+          tween: Tween(end: hoverOpen ? 1.0 : 0.0),
+          duration:
+              prefs.get(UserPreferences.modernCardTransitionSpeed).duration,
+          curve: Curves.easeInOutCubic,
+          builder: (context, hover, _) => SelectorBuilder<double>(
+            listenable: glide,
+            select: () => glide.openness(index),
+            builder: (context, open) =>
+                builder(context, math.max(open, hover), hoverOpen),
+          ),
+        );
+      },
+    );
+  }
+}
+
 /// Builds a grown card's details knowing whether the pointer is on it. The
 /// card's selector only rebuilds when it grows or shrinks, so this picks up
 /// hover on a card focus already grew, and follows the row's scroll while
@@ -168,28 +231,49 @@ class ModernExpandingCard extends StatelessWidget {
     required this.card,
     required this.prefs,
     this.details,
+    this.open,
   });
 
   final Widget card;
   final UserPreferences prefs;
   final Widget? details;
 
+  /// How far a gliding card has grown. The glide already sizes the card, so
+  /// when this is set the details fade in instead of the size animating.
+  final double? open;
+
   @override
   Widget build(BuildContext context) {
     final details = this.details;
+    final open = this.open;
+    final detailsOpacity = open == null ? 1.0 : modernDetailsOpacity(open);
+    final column = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        card,
+        if (details != null) ...[
+          const SizedBox(height: 4),
+          if (open == null)
+            details
+          else
+            Opacity(
+              opacity: detailsOpacity,
+              child: Transform.translate(
+                offset: Offset(0, 6 * (1 - detailsOpacity)),
+                child: details,
+              ),
+            ),
+        ],
+      ],
+    );
+    if (open != null) return column;
     return AnimatedSize(
       duration: prefs.get(UserPreferences.modernCardTransitionSpeed).duration,
       curve: Curves.easeInOutCubic,
       alignment: Alignment.topLeft,
       clipBehavior: Clip.none,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          card,
-          if (details != null) ...[const SizedBox(height: 4), details],
-        ],
-      ),
+      child: column,
     );
   }
 }
@@ -201,6 +285,7 @@ class ModernCardDetails extends StatelessWidget {
   const ModernCardDetails({
     super.key,
     required this.prefs,
+    required this.ratingSettings,
     required this.cardWidth,
     required this.detailsWidth,
     this.overview,
@@ -211,6 +296,9 @@ class ModernCardDetails extends StatelessWidget {
   });
 
   final UserPreferences prefs;
+
+  /// Home rows read their own ratings settings, other Modern rows the global set.
+  final RatingSettings ratingSettings;
   final double cardWidth;
   final double detailsWidth;
   final String? overview;
@@ -250,11 +338,10 @@ class ModernCardDetails extends StatelessWidget {
             communityRating: communityRating,
             criticRating: criticRating,
             personalRating: personalRating,
-            enableAdditionalRatings:
-                prefs.get(UserPreferences.enableAdditionalRatings),
-            enabledRatings: prefs.get(UserPreferences.enabledRatings),
-            showLabels: prefs.get(UserPreferences.showRatingLabels),
-            showBadges: prefs.get(UserPreferences.showRatingBadges),
+            enableAdditionalRatings: prefs.get(ratingSettings.additionalRatings),
+            enabledRatings: prefs.get(ratingSettings.sources),
+            showLabels: prefs.get(ratingSettings.labels),
+            showBadges: prefs.get(ratingSettings.badges),
             singleLine: !PlatformDetection.useMobileUi,
           ),
         if (overview.isNotEmpty &&

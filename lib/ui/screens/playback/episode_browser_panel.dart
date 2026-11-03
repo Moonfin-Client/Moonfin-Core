@@ -29,11 +29,15 @@ class EpisodeBrowserPanel extends StatefulWidget {
     required this.controller,
     required this.imageApi,
     required this.onSelect,
+    this.fillHeight = false,
   });
 
   final EpisodeBrowserController controller;
   final ImageApi imageApi;
   final ValueChanged<AggregatedItem> onSelect;
+
+  /// Fills the height it's given instead of most of the screen.
+  final bool fillHeight;
 
   @override
   State<EpisodeBrowserPanel> createState() => _EpisodeBrowserPanelState();
@@ -118,7 +122,9 @@ class _EpisodeBrowserPanelState extends State<EpisodeBrowserPanel> {
     final episodes = _browser.episodes;
 
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.7,
+      height: widget.fillHeight
+          ? double.infinity
+          : MediaQuery.sizeOf(context).height * 0.7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

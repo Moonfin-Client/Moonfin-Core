@@ -13,8 +13,10 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../../util/signed_in_server_features.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../../preference/seerr_preferences.dart';
 
 class HomeRowsImageTypeScreen extends StatefulWidget {
   const HomeRowsImageTypeScreen({super.key});
@@ -25,6 +27,17 @@ class HomeRowsImageTypeScreen extends StatefulWidget {
 }
 
 class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
+  /// Music sections, left out when no signed-in server has music.
+  static const _musicTypes = {
+    HomeSectionType.audioArtists,
+    HomeSectionType.audioAlbums,
+    HomeSectionType.audioPlaylists,
+    HomeSectionType.favoriteArtists,
+    HomeSectionType.favoriteMusicVideos,
+    HomeSectionType.favoriteAlbums,
+    HomeSectionType.favoriteSongs,
+  };
+
   final _prefs = GetIt.instance<UserPreferences>();
   final _syncService = GetIt.instance<PluginSyncService>();
   bool _pickerOpen = false;
@@ -90,7 +103,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.studios => l10n.studios,
         HomeSectionType.liveTv => l10n.liveTV,
         HomeSectionType.onNow => l10n.onNow,
-        HomeSectionType.seerrShortcuts => l10n.seerrShortcutsRow,
+        HomeSectionType.seerrShortcuts => seerrBrand(l10n.seerrShortcutsRow),
         HomeSectionType.seerrRecentRequests => l10n.recentRequests,
         HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
         HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
@@ -155,6 +168,9 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final liveTvOnAnyServer = liveTvOnAnySignedInServer();
+    final musicOnAnyServer = musicOnAnySignedInServer();
+    final playlistsOnAnyServer = playlistsOnAnySignedInServer();
     final enabledSections =
         _prefs.homeSectionsConfig
             .where(
@@ -163,7 +179,12 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
                   c.type != HomeSectionType.none &&
                   c.type != HomeSectionType.mediaBar &&
                   c.type != HomeSectionType.resumeAudio &&
-                  c.type != HomeSectionType.libraryButtons,
+                  c.type != HomeSectionType.libraryButtons &&
+                  (liveTvOnAnyServer ||
+                      (c.type != HomeSectionType.liveTv &&
+                          c.type != HomeSectionType.activeRecordings)) &&
+                  (musicOnAnyServer || !_musicTypes.contains(c.type)) &&
+                  (playlistsOnAnyServer || c.type != HomeSectionType.playlists),
             )
             .toList()
           ..sort((a, b) => a.order.compareTo(b.order));

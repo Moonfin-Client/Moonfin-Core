@@ -823,7 +823,7 @@ jobs:
         run: |
           mkdir -p /tmp/test-results
           status=0
-          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex"
+          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
 
           flutter pub get
           for pkg in $packages; do
@@ -841,7 +841,8 @@ jobs:
             (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
           done
 
-          (cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+          # gradlew is gitignored, and only a Flutter build writes it.
+          (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
 
           echo "$status" > /tmp/test-results/run-status
 

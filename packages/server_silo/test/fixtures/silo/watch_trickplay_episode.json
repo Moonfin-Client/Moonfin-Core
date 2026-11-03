@@ -1,0 +1,20 @@
+{
+ "file_id": "89618",
+ "interval_ms": 10000,
+ "thumbnail_width": 300,
+ "thumbnail_height": 168,
+ "tile_columns": 10,
+ "tile_rows": 8,
+ "thumbnail_count": 136,
+ "sheets": [
+  {
+   "index": 0,
+   "url": "/api/v2/artwork/trickplay/89618/5220963635084109598/0.5220963635084109598.jpg?exp=SCRUBBED&sig=SCRUBBED"
+  },
+  {
+   "index": 1,
+   "url": "/api/v2/artwork/trickplay/89618/5220963635084109598/1.5220963635084109598.jpg?exp=SCRUBBED&sig=SCRUBBED"
+  }
+ ],
+ "expires_at": "2026-10-16T04:00:00.000Z"
+}

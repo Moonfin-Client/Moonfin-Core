@@ -45,12 +45,13 @@ class _QualityDecodingScreen extends StatelessWidget {
                   MaxVideoResolution.res2160p => '2160p (4K)',
                 },
               ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.liveTvDirectPlayEnabled,
-                title: l10n.settingsLiveTvDirect,
-                subtitle: l10n.settingsLiveTvDirectSubtitle,
-                icon: Icons.live_tv,
-              ),
+              if (liveTvOnAnySignedInServer())
+                SwitchPreferenceTile(
+                  preference: UserPreferences.liveTvDirectPlayEnabled,
+                  title: l10n.settingsLiveTvDirect,
+                  subtitle: l10n.settingsLiveTvDirectSubtitle,
+                  icon: Icons.live_tv,
+                ),
             ],
           ),
 

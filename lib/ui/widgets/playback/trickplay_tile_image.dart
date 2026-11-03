@@ -1,6 +1,47 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../adaptive/sf_symbol.dart';
+
+/// The preview and its precaches build their sheet providers here so they
+/// share one image cache entry.
+ImageProvider trickplaySheetProvider(
+  String url,
+  Map<String, String> headers, {
+  required int sheetWidth,
+  required int sheetHeight,
+}) {
+  final decode = trickplaySheetDecodeSize(
+    sheetWidth,
+    sheetHeight,
+    PaintingBinding.instance.imageCache.maximumSizeBytes,
+  );
+  return ResizeImage.resizeIfNeeded(
+    decode?.width,
+    decode?.height,
+    CachedNetworkImageProvider(url, headers: headers.isEmpty ? null : headers),
+  );
+}
+
+/// The size to decode a sheet at, or null for its full size. A sheet gets at
+/// most a third of the image cache so the one on screen, the next one and the
+/// rest of the artwork fit together. libjpeg-turbo decodes whole eighths
+/// directly, which is also faster than a full decode.
+({int width, int height})? trickplaySheetDecodeSize(
+  int sheetWidth,
+  int sheetHeight,
+  int cacheBytes,
+) {
+  var eighths = 8;
+  // Rounded up like libjpeg-turbo's own output, so no resize pass follows.
+  int scaled(int pixels) => (pixels * eighths + 7) ~/ 8;
+  while (eighths > 1 &&
+      scaled(sheetWidth) * scaled(sheetHeight) * 4 > cacheBytes ~/ 3) {
+    eighths--;
+  }
+  if (eighths == 8) return null;
+  return (width: scaled(sheetWidth), height: scaled(sheetHeight));
+}
 
 /// Paints a single thumbnail out of a trickplay sprite sheet.
 ///

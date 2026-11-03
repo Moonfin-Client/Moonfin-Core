@@ -620,7 +620,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
         ? Map<String, dynamic>.from(_item['ProviderIds'])
         : null;
 
-    final applied = await IdentifyDialog.show(
+    final identified = await IdentifyDialog.show(
       context,
       itemId: widget.itemId,
       // An empty type means unknown, so let the dialog resolve it from the item
@@ -632,7 +632,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
       providerIds: providerIds,
     );
 
-    if (applied == true && mounted) {
+    if (identified != null && mounted) {
       await _load();
     }
   }

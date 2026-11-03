@@ -116,16 +116,20 @@ class _AccountScreen extends StatelessWidget {
               ],
             ),
           ],
-          adaptiveListSection(
-            children: [
-              _TvSettingsListTile(
-                leading: const Icon(Icons.sync),
-                title: Text(l10n.settingsSync),
-                subtitle: Text(l10n.settingsSyncSubtitle),
-                onTap: () => context.pushSettingsScreen(const _PluginScreen()),
-              ),
-            ],
-          ),
+          // Settings sync is the Moonfin plugin's. Not offered when no
+          // signed-in server could have it (all Silo, say).
+          if (moonfinPluginOnAnySignedInServer())
+            adaptiveListSection(
+              children: [
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.sync),
+                  title: Text(l10n.settingsSync),
+                  subtitle: Text(l10n.settingsSyncSubtitle),
+                  onTap: () =>
+                      context.pushSettingsScreen(const _PluginScreen()),
+                ),
+              ],
+            ),
         ],
       ),
     );

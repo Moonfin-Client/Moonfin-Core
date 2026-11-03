@@ -157,8 +157,7 @@ class SpotlightMediaGridSection extends StatelessWidget {
         : Color(prefs.get(UserPreferences.focusColor).colorValue);
     final titleColor = isNeon ? AppColorScheme.accent : null;
     final watchedBehavior = prefs.get(UserPreferences.watchedIndicatorBehavior);
-    final showAvailabilityBadges =
-        prefs.get(UserPreferences.showSeerrAvailabilityBadges);
+    final seerrStyle = seerrBadgeStyle(prefs);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -197,9 +196,17 @@ class SpotlightMediaGridSection extends StatelessWidget {
                         isSeason && entry.indexNumber != null
                             ? (seerrSeasonStatus?[entry.indexNumber])
                             : null;
+                    final hasSeasonStatus = SeerrMediaStatus.hasDot(
+                      seasonSeerrStatus,
+                    );
                     final hasSeasonSeerrDot =
-                        showAvailabilityBadges &&
-                        SeerrMediaStatus.hasDot(seasonSeerrStatus);
+                        hasSeasonStatus && seerrStyle == SeerrBadgeStyle.badge;
+                    final banner = seerrStyle == SeerrBadgeStyle.banner;
+                    final itemBanner =
+                        banner &&
+                        isSeerrItem &&
+                        SeerrMediaStatus.hasDot(entry.seerrStatus);
+                    final seasonBanner = banner && hasSeasonStatus;
 
                     return MediaCard(
                       key: ValueKey(cellKeys[i]),
@@ -219,14 +226,16 @@ class SpotlightMediaGridSection extends StatelessWidget {
                       watchedBehavior: isSeerrItem
                           ? WatchedIndicatorBehavior.never
                           : watchedBehavior,
-                      seerrStatus: isSeerrItem ? entry.seerrStatus : null,
+                      seerrStatus: isSeerrItem
+                          ? entry.seerrStatus
+                          : (seasonBanner ? seasonSeerrStatus : null),
                       overlayOccupiesTopLeft: isSeerrItem || hasSeasonSeerrDot,
                       imageOverlays: [
                         if (isSeerrItem)
-                          const Positioned(
-                            top: 6,
+                          Positioned(
+                            top: itemBanner ? kSeerrStatusBannerHeight + 6 : 6,
                             left: 6,
-                            child: SeerrBadge(size: 18),
+                            child: const SeerrBadge(size: 18),
                           ),
                         if (hasSeasonSeerrDot)
                           Positioned(

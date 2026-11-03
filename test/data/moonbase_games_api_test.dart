@@ -34,6 +34,20 @@ void main() {
     });
   }
 
+  test('PlayStation player URL ends in the file name so a .pbp loads', () {
+    final player = Uri.parse(
+      createApi().playerUrl(
+        libraryId: 'Retro Games',
+        gameId: 'opaque-token',
+        core: 'psx',
+        romFileName: 'Crash Bandicoot (USA).pbp',
+      ),
+    );
+
+    final rom = Uri.parse(player.queryParameters['rom']!);
+    expect(rom.pathSegments.last, 'Crash Bandicoot (USA).pbp');
+  });
+
   test('non-arcade player URL retains the legacy token-only route', () {
     final player = Uri.parse(
       createApi().playerUrl(

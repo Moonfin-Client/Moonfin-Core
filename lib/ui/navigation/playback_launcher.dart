@@ -150,6 +150,15 @@ Future<bool> launchPlayerWhilePreparing(
   } on _PlaybackLaunchCanceledException {
     manager.cancelPlaybackPreparation();
     return false;
+  } on PlaybackRefusedException {
+    // The server said no and the player showed why (its bringup failed with
+    // the server's message), so close it like any start that didn't play.
+    // It isn't a crash.
+    if (context.mounted) {
+      _closePlayerRoute(context, session);
+    }
+    manager.cancelPlaybackPreparation();
+    return false;
   } catch (_) {
     if (context.mounted) {
       _closePlayerRoute(context, session);

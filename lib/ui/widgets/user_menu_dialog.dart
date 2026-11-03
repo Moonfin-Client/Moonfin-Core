@@ -13,28 +13,48 @@ import '../../auth/models/user.dart';
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
+import '../../auth/services/silo_household.dart';
 import '../../auth/store/authentication_store.dart';
+import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/services/pin_guard.dart';
 import '../../data/services/server_pin_service.dart';
 import '../../util/platform_detection.dart';
+import '../../util/signed_in_server_features.dart';
+import '../../util/silo_failure_message.dart';
 import '../navigation/destinations.dart';
 import 'adaptive/adaptive_dialog.dart';
+import '../screens/auth/silo_profile_unlock.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'navigation_layout.dart';
 import 'overlay_sheet.dart';
 import 'pin_entry_dialog.dart';
 import 'remote_control_dialog.dart';
 import 'settings/settings_panel.dart';
-import 'image_source.dart';
+import 'profile_carousel.dart';
 
 enum _AccountDialogAction { quickConnect }
 
 void showUserMenu(BuildContext context) {
-  showFocusRestoringDialog<_AccountDialogAction>(
-    context: context,
-    builder: (_) => const _AccountDialog(),
-  ).then((action) {
+  final shown = PlatformDetection.useMobileUi
+      ? showFocusRestoringModalBottomSheet<_AccountDialogAction>(
+          context: context,
+          useRootNavigator: true,
+          isScrollControlled: true,
+          showDragHandle: true,
+          backgroundColor: AppColorScheme.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          builder: (_) => const _AccountDialog(),
+        )
+      : showFocusRestoringDialog<_AccountDialogAction>(
+          context: context,
+          barrierColor: Colors.transparent,
+          useSafeArea: false,
+          builder: (_) => const _AccountDialog(),
+        );
+  shown.then((action) {
     if (action != _AccountDialogAction.quickConnect) return;
     if (!context.mounted) return;
     showQuickConnectCodeDialog(context);
@@ -65,6 +85,8 @@ class _AccountDialogState extends State<_AccountDialog> {
   final _accounts = <_StoredAccount>[];
 
   bool _busy = false;
+  final _carouselFocus = FocusNode();
+  int _selected = 0;
 
   String? get _activeServerId => _sessionRepo.activeServerId;
   String? get _activeUserId => _sessionRepo.activeUserId;
@@ -91,7 +113,20 @@ class _AccountDialogState extends State<_AccountDialog> {
       _accounts
         ..clear()
         ..addAll(loaded);
+      final active = _accounts.indexWhere(_isActive);
+      _selected = active < 0 ? 0 : active;
     });
+    if (_accounts.isNotEmpty && !PlatformDetection.useMobileUi) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _carouselFocus.requestFocus();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _carouselFocus.dispose();
+    super.dispose();
   }
 
   bool _isActive(_StoredAccount account) {
@@ -102,6 +137,15 @@ class _AccountDialogState extends State<_AccountDialog> {
   String? _avatarUrl(_StoredAccount account) {
     final apiKey = account.user.accessToken;
     if (apiKey.isEmpty) return null;
+
+    if (!account.server.serverType.hasJellyfinUserImagePath) {
+      if (!GetIt.instance.isRegistered<MediaServerClientFactory>()) return null;
+      return siloProfileImageUrl(
+        GetIt.instance<MediaServerClientFactory>(),
+        serverId: account.server.id,
+        userId: account.user.id,
+      );
+    }
 
     final base =
         '${account.server.address}/Users/${account.user.id}/Images/Primary?quality=90&maxHeight=180&${account.server.serverType.tokenQueryParam}=$apiKey';
@@ -158,6 +202,17 @@ class _AccountDialogState extends State<_AccountDialog> {
       if (!verified) return;
     }
 
+    // A Silo profile locked with a PIN asks for it first.
+    if (account.user.siloHasPin) {
+      if (!mounted) return;
+      final unlocked = await unlockSiloProfileIfNeeded(
+        context,
+        server: account.server,
+        user: account.user,
+      );
+      if (!unlocked || !mounted) return;
+    }
+
     final ok = await _sessionRepo.switchCurrentSession(
       serverId: account.server.id,
       userId: account.user.id,
@@ -181,6 +236,18 @@ class _AccountDialogState extends State<_AccountDialog> {
     if (_busy) return;
     setState(() => _busy = true);
     await _sessionRepo.destroyCurrentSession();
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    context.go(Destinations.serverSelect);
+  }
+
+  /// Signs every stored profile of the active Silo account out and ends
+  /// its login. "Sign out" leaves the account's other profiles.
+  Future<void> _signOutSiloAccount() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    await _sessionRepo.signOutSiloAccount();
 
     if (!mounted) return;
     Navigator.of(context).pop();
@@ -220,220 +287,246 @@ class _AccountDialogState extends State<_AccountDialog> {
     router.go(Destinations.serverSelect);
   }
 
-  Widget _buildPairedActionButtons({
-    required Widget first,
-    required Widget second,
-  }) {
-    if (PlatformDetection.isMobile) {
-      return IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: first),
-            SizedBox(width: 10),
-            Expanded(child: second),
-          ],
-        ),
-      );
-    }
+  _StoredAccount? get _activeAccount => _accounts.where(_isActive).firstOrNull;
 
-    return Row(
+  ProfileEntry _entryFor(_StoredAccount account) => ProfileEntry(
+    id: account.user.id,
+    name: account.user.name,
+    avatarUrl: _avatarUrl(account),
+    badge: _isActive(account)
+        ? ProfileBadge.active
+        : account.user.siloHasPin
+        ? ProfileBadge.pin
+        : ProfileBadge.none,
+  );
+
+  Widget _buildAccountSubtitle(_StoredAccount account) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(child: first),
-        const SizedBox(width: 10),
-        Expanded(child: second),
+        ProfileStatusLine(
+          '${account.server.name} · ${account.server.serverType.productName}',
+        ),
+        if (_isActive(account)) ...[
+          const SizedBox(height: 4),
+          ProfileStatusLine(
+            l10n.accountActive,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ] else if (account.user.siloHasPin) ...[
+          const SizedBox(height: 4),
+          ProfileStatusLine(l10n.pinRequired, icon: Icons.lock_outline),
+        ],
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  List<Widget> _buildActions({required bool compact}) {
     final l10n = AppLocalizations.of(context);
     final focusColor = Theme.of(context).colorScheme.primary;
-    final activeIndex = _accounts.indexWhere(_isActive);
-    final initialAccountFocusIndex = activeIndex >= 0 ? activeIndex : 0;
+    final activeIsSilo =
+        GetIt.instance.isRegistered<MediaServerClient>() &&
+        GetIt.instance<MediaServerClient>().serverType == ServerType.silo;
+    // The bottom navbar hub has these already.
+    final showAppActions =
+        !PlatformDetection.isTV && !NavigationLayout.usesBottomNavbar;
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 520,
-          maxWidth: 800,
-          maxHeight: 760,
+    Widget action(
+      String label,
+      VoidCallback onPressed, {
+      IconData? icon,
+      bool danger = false,
+    }) => _ActionButton(
+      label: label,
+      icon: icon,
+      danger: danger,
+      compact: compact,
+      onPressed: _busy ? null : onPressed,
+      focusColor: danger ? _danger : focusColor,
+    );
+
+    return [
+      // Phones add a user from the + at the end of the avatar row.
+      if (!compact) action(l10n.addUser, _addUser, icon: Icons.person),
+      if (!PlatformDetection.isWeb)
+        action(l10n.selectServer, _changeServer, icon: Icons.home),
+      action(l10n.signOut, _signOutCurrent),
+      if (_sessionRepo.activeUserHasSiloSiblings)
+        action(l10n.siloSignOutAccount, _signOutSiloAccount),
+      if (_accounts.length > 1)
+        action(l10n.signOutAllUsers, _signOutAll, danger: true),
+      if (showAppActions) ...[
+        action(l10n.settings, () async {
+          Navigator.of(context).pop();
+          if (!context.mounted) return;
+          await SettingsPanel.open(context, const SettingsSidePanel());
+        }),
+        action(
+          activeIsSilo ? l10n.siloApproveSignIn : l10n.quickConnect,
+          () => Navigator.of(context).pop(_AccountDialogAction.quickConnect),
         ),
-        decoration: BoxDecoration(
-          color: AppColorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: AppRadius.circular(20),
-          border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: SingleChildScrollView(
+        if (activeServerSupports((f) => f.supportsRemoteControl))
+          action(l10n.remoteControl, () {
+            Navigator.of(context).pop();
+            showRemoteControlDialog(context);
+          }),
+      ],
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      PlatformDetection.useMobileUi ? _buildSheet(context) : _buildWide(context);
+
+  Widget _buildWide(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final onSurface = AppColorScheme.onSurface;
+    final active = _activeAccount;
+    return Material(
+      color: const Color(0xE605070E),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(48, 28, 48, 32),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.switchUser,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: AppColorScheme.onSurface,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+              Row(
+                children: [
+                  Text(
+                    l10n.switchUser,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: onSurface,
                     ),
-                    if (!PlatformDetection.isTV)
-                      _CircleActionButton(
-                        icon: Icons.close,
-                        onPressed: _busy ? null : () => Navigator.of(context).pop(),
-                        focusColor: focusColor,
-                      ),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: active == null
+                        ? const SizedBox.shrink()
+                        : Text(
+                            l10n.signedInAsOnServer(
+                              active.user.name,
+                              active.server.name,
+                            ),
+                            textAlign: TextAlign.end,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: onSurface.withValues(alpha: 0.65),
+                            ),
+                          ),
+                  ),
+                  if (!PlatformDetection.isTV) ...[
+                    const SizedBox(width: 16),
+                    _CircleActionButton(
+                      icon: Icons.close,
+                      onPressed: _busy ? null : () => Navigator.of(context).pop(),
+                      focusColor: Theme.of(context).colorScheme.primary,
+                    ),
                   ],
-                ),
+                ],
               ),
-              Container(
-                height: 1,
-                color: AppColorScheme.onSurface.withValues(alpha: 0.08),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: SizedBox(
-                  height: 228,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final cards = <Widget>[
-                        for (var index = 0; index < _accounts.length; index++) ...[
-                          if (index > 0) const SizedBox(width: 20),
-                          _AccountCard(
-                            username: _accounts[index].user.name,
-                            serverName: _accounts[index].server.name,
-                            avatarUrl: _avatarUrl(_accounts[index]),
-                            active: _isActive(_accounts[index]),
-                            autofocus: index == initialAccountFocusIndex,
-                            onTap: _busy ? null : () => _switchAccount(_accounts[index]),
-                            focusColor: focusColor,
-                          ),
-                        ],
-                        if (_accounts.isNotEmpty) const SizedBox(width: 20),
-                        _AddUserCard(
-                          label: l10n.addUser,
-                          autofocus: _accounts.isEmpty,
-                          onTap: _busy ? null : _addUser,
-                          focusColor: focusColor,
-                        ),
-                      ];
-
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: cards,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: PlatformDetection.isWeb
-                    ? SizedBox(
-                        width: double.infinity,
-                        child: _ActionButton(
-                          label: l10n.signOut,
-                          onPressed: _busy ? null : _signOutCurrent,
-                          focusColor: focusColor,
-                        ),
-                      )
-                    : _buildPairedActionButtons(
-                        first: _ActionButton(
-                          label: l10n.selectServer,
-                          onPressed: _busy ? null : _changeServer,
-                          focusColor: focusColor,
-                        ),
-                        second: _ActionButton(
-                          label: l10n.signOut,
-                          onPressed: _busy ? null : _signOutCurrent,
-                          focusColor: focusColor,
-                        ),
-                      ),
-              ),
-              if (_accounts.length > 1) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: _ActionButton(
-                      label: l10n.signOutAllUsers,
-                      onPressed: _busy ? null : _signOutAll,
-                      focusColor: _danger,
-                    ),
-                  ),
-                ),
-              ],
-              // The bottom navbar hub has these already.
-              if (!PlatformDetection.isTV &&
-                  !NavigationLayout.usesBottomNavbar) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: _ActionButton(
-                      label: l10n.settings,
-                      onPressed: _busy
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: ProfileCarousel(
+                      entries: [for (final a in _accounts) _entryFor(a)],
+                      selected: _selected,
+                      focusNode: _carouselFocus,
+                      onSelected: (index) => setState(() => _selected = index),
+                      onActivate: (index) => _switchAccount(_accounts[index]),
+                      subtitle: _accounts.isEmpty
                           ? null
-                          : () async {
-                              Navigator.of(context).pop();
-                              if (!context.mounted) return;
-                              await SettingsPanel.open(
-                                context,
-                                const SettingsSidePanel(),
-                              );
-                            },
-                      focusColor: focusColor,
+                          : _buildAccountSubtitle(_accounts[_selected]),
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: _buildPairedActionButtons(
-                    first: _ActionButton(
-                      label: l10n.quickConnect,
-                      onPressed: _busy
-                          ? null
-                          : () => Navigator.of(
-                              context,
-                            ).pop(_AccountDialogAction.quickConnect),
-                      focusColor: focusColor,
-                    ),
-                    second: _ActionButton(
-                      label: l10n.remoteControl,
-                      onPressed: _busy
-                          ? null
-                          : () {
-                              Navigator.of(context).pop();
-                              showRemoteControlDialog(context);
-                            },
-                      focusColor: focusColor,
-                    ),
-                  ),
-                ),
-              ],
+              ),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                runSpacing: 12,
+                children: _buildActions(compact: false),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final selected = _accounts.isEmpty ? null : _accounts[_selected];
+    final entries = [for (final a in _accounts) _entryFor(a)];
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.switchUser,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppColorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                _CircleActionButton(
+                  icon: Icons.close,
+                  onPressed: _busy ? null : () => Navigator.of(context).pop(),
+                  focusColor: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (selected != null) ...[
+              ProfileHero(
+                entry: entries[_selected],
+                subtitle: _buildAccountSubtitle(selected),
+                onPrevious: _selected > 0
+                    ? () => setState(() => _selected--)
+                    : null,
+                onNext: _selected < _accounts.length - 1
+                    ? () => setState(() => _selected++)
+                    : null,
+              ),
+              const SizedBox(height: 24),
+            ],
+            ProfileStrip(
+              entries: entries,
+              selected: _selected,
+              onSelected: (index) => setState(() => _selected = index),
+              onAdd: _busy ? null : _addUser,
+              addLabel: l10n.addUser,
+            ),
+            if (selected != null) ...[
+              const SizedBox(height: 20),
+              ProfilePrimaryButton(
+                label: _isActive(selected)
+                    ? l10n.continueAsUser(selected.user.name)
+                    : l10n.switchToUser(selected.user.name),
+                onPressed: _busy ? null : () => _switchAccount(selected),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: _buildActions(compact: true),
+            ),
+          ],
         ),
       ),
     );
@@ -442,13 +535,15 @@ class _AccountDialogState extends State<_AccountDialog> {
 
 Future<void> showQuickConnectCodeDialog(BuildContext context) async {
   final l10n = AppLocalizations.of(context);
-  final code = await _promptQuickConnectCode(context);
+  final client = GetIt.instance<MediaServerClient>();
+  // Silo calls it approving a sign-in, with the code another device shows.
+  final silo = client.serverType == ServerType.silo;
+  final code = await _promptQuickConnectCode(context, silo: silo);
   if (code == null || code.isEmpty || !context.mounted) return;
 
   final messenger = ScaffoldMessenger.of(context);
 
   try {
-    final client = GetIt.instance<MediaServerClient>();
     final userId = GetIt.instance<UserRepository>().currentUser?.id;
     final authorized = await client.authApi.authorizeQuickConnect(
       code,
@@ -459,11 +554,12 @@ Future<void> showQuickConnectCodeDialog(BuildContext context) async {
 
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
-          authorized
-              ? l10n.quickConnectAuthorized
-              : l10n.quickConnectInvalidOrExpired,
-        ),
+        content: Text(switch ((authorized, silo)) {
+          (true, false) => l10n.quickConnectAuthorized,
+          (false, false) => l10n.quickConnectInvalidOrExpired,
+          (true, true) => l10n.siloApproveSignInDone,
+          (false, true) => l10n.siloApproveSignInNoRequest,
+        }),
       ),
     );
   } on UnsupportedError {
@@ -481,6 +577,8 @@ Future<void> showQuickConnectCodeDialog(BuildContext context) async {
 }
 
 String _quickConnectErrorMessage(DioException e, AppLocalizations l10n) {
+  final siloFailure = SiloFailure.of(e);
+  if (siloFailure != null) return siloFailure.message(l10n);
   final status = e.response?.statusCode;
   final data = e.response?.data;
   final serverMessage = data is String
@@ -508,23 +606,56 @@ String _quickConnectErrorMessage(DioException e, AppLocalizations l10n) {
   return l10n.quickConnectAuthorizeFailed;
 }
 
-Future<String?> _promptQuickConnectCode(BuildContext context) async {
-  final l10n = AppLocalizations.of(context);
-  final controller = TextEditingController();
+Future<String?> _promptQuickConnectCode(
+  BuildContext context, {
+  bool silo = false,
+}) => showFocusRestoringDialog<String>(
+  context: context,
+  useRootNavigator: true,
+  builder: (_) => _QuickConnectCodeDialog(silo: silo),
+);
 
-  String normalizedCode() => controller.text.replaceAll(RegExp(r'\D'), '');
+/// Asks for the code another device shows. Owns its text controller, so the
+/// controller lives as long as the field: the dialog's closing animation
+/// still rebuilds the field after the code was returned, and a controller
+/// disposed by the caller at that point fails the build (a red error screen
+/// on approve and on a wrong code).
+class _QuickConnectCodeDialog extends StatefulWidget {
+  const _QuickConnectCodeDialog({required this.silo});
 
-  final code = await showFocusRestoringDialog<String>(
-    context: context,
-    useRootNavigator: true,
-    builder: (ctx) => AlertDialog.adaptive(
+  final bool silo;
+
+  @override
+  State<_QuickConnectCodeDialog> createState() =>
+      _QuickConnectCodeDialogState();
+}
+
+class _QuickConnectCodeDialogState extends State<_QuickConnectCodeDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final value = _controller.text.replaceAll(RegExp(r'\D'), '');
+    if (value.isNotEmpty) Navigator.pop(context, value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final silo = widget.silo;
+    return AlertDialog.adaptive(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       title: Text(
-        l10n.quickConnect,
+        silo ? l10n.siloApproveSignIn : l10n.quickConnect,
         style: TextStyle(color: AppColorScheme.onSurface),
       ),
       content: TextField(
-        controller: controller,
+        controller: _controller,
         autofocus: true,
         keyboardType: TextInputType.number,
         inputFormatters: [
@@ -533,34 +664,29 @@ Future<String?> _promptQuickConnectCode(BuildContext context) async {
         ],
         style: TextStyle(color: AppColorScheme.onSurface),
         decoration: InputDecoration(
-          hintText: l10n.quickConnectEnterCode,
+          hintText: silo
+              ? l10n.siloApproveSignInHint
+              : l10n.quickConnectEnterCode,
           hintStyle: TextStyle(
             color: AppColorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
-        onSubmitted: (_) {
-          final value = normalizedCode();
-          if (value.isNotEmpty) Navigator.pop(ctx, value);
-        },
+        onSubmitted: (_) => _submit(),
       ),
       actions: [
         adaptiveDialogAction(
-          onPressed: () => Navigator.pop(ctx),
+          onPressed: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),
         FilledButton(
-          onPressed: () {
-            final value = normalizedCode();
-            if (value.isNotEmpty) Navigator.pop(ctx, value);
-          },
-          child: Text(l10n.quickConnectAuthorize),
+          onPressed: _submit,
+          child: Text(
+            silo ? l10n.siloApproveSignInApprove : l10n.quickConnectAuthorize,
+          ),
         ),
       ],
-    ),
-  );
-
-  controller.dispose();
-  return code;
+    );
+  }
 }
 
 class _CircleActionButton extends StatefulWidget {
@@ -663,11 +789,17 @@ class _CircleActionButtonState extends State<_CircleActionButton> {
 
 class _ActionButton extends StatefulWidget {
   final String label;
+  final IconData? icon;
+  final bool danger;
+  final bool compact;
   final VoidCallback? onPressed;
   final Color focusColor;
 
   const _ActionButton({
     required this.label,
+    this.icon,
+    this.danger = false,
+    this.compact = false,
     required this.onPressed,
     required this.focusColor,
   });
@@ -677,6 +809,8 @@ class _ActionButton extends StatefulWidget {
 }
 
 class _ActionButtonState extends State<_ActionButton> {
+  static const _dangerText = Color(0xFFF87171);
+
   final _focusNode = FocusNode();
   bool _focused = false;
 
@@ -699,6 +833,10 @@ class _ActionButtonState extends State<_ActionButton> {
     final enabled = widget.onPressed != null;
     final focusBorder = ThemeRegistry.active.borders.focusBorder;
     final baseBorder = ThemeRegistry.active.borders.chipBorder;
+    final restColor = widget.danger ? _dangerText : AppColorScheme.onSurface;
+    final color = !enabled
+        ? AppColorScheme.onSurface.withValues(alpha: 0.45)
+        : (_focused ? widget.focusColor : restColor);
     return Focus(
       focusNode: _focusNode,
       onKeyEvent: (_, event) {
@@ -728,21 +866,23 @@ class _ActionButtonState extends State<_ActionButton> {
                 },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
-            constraints: const BoxConstraints(minHeight: 52),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            height: widget.compact ? 40 : 44,
+            padding: EdgeInsets.symmetric(horizontal: widget.compact ? 16 : 20),
             decoration: BoxDecoration(
               color: enabled
                   ? (_focused
                         ? widget.focusColor.withValues(alpha: 0.16)
-                        : AppColorScheme.onSurface.withValues(alpha: 0.08))
-                  : AppColorScheme.onSurface.withValues(alpha: 0.05),
-              borderRadius: AppRadius.circular(8),
+                        : AppColorScheme.onSurface.withValues(alpha: 0.06))
+                  : AppColorScheme.onSurface.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(999),
               border: Border.fromBorderSide(
                 enabled
                     ? (_focused
                           ? focusBorder.copyWith(color: widget.focusColor)
                           : baseBorder.copyWith(
-                              color: AppColorScheme.onSurface.withValues(alpha: 0.12),
+                              color: restColor.withValues(
+                                alpha: widget.danger ? 0.45 : 0.2,
+                              ),
                             ))
                     : baseBorder.copyWith(
                         color: AppColorScheme.onSurface.withValues(alpha: 0.08),
@@ -758,311 +898,26 @@ class _ActionButtonState extends State<_ActionButton> {
                     ]
                   : null,
             ),
-            child: Center(
-              child: Text(
-                widget.label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: enabled
-                      ? (_focused ? widget.focusColor : AppColorScheme.onSurface)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.45),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AccountCard extends StatefulWidget {
-  final String username;
-  final String serverName;
-  final String? avatarUrl;
-  final bool active;
-  final bool autofocus;
-  final VoidCallback? onTap;
-  final Color focusColor;
-
-  const _AccountCard({
-    required this.username,
-    required this.serverName,
-    required this.avatarUrl,
-    required this.active,
-    required this.autofocus,
-    required this.onTap,
-    required this.focusColor,
-  });
-
-  @override
-  State<_AccountCard> createState() => _AccountCardState();
-}
-
-class _AccountCardState extends State<_AccountCard> {
-  final _focusNode = FocusNode();
-  bool _focused = false;
-  bool _avatarFailed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(() {
-      if (mounted) setState(() => _focused = _focusNode.hasFocus);
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant _AccountCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.avatarUrl != widget.avatarUrl) {
-      _avatarFailed = false;
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = _focused
-        ? widget.focusColor
-        : AppColorScheme.onSurface.withValues(alpha: 0.15);
-
-    return Focus(
-      focusNode: _focusNode,
-      autofocus: widget.autofocus,
-      onKeyEvent: (_, event) {
-        if (event is KeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.select ||
-                event.logicalKey == LogicalKeyboardKey.enter)) {
-          widget.onTap?.call();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      // Focus follows the pointer so hover lights this up the same way
-      // the remote does, and arrow keys carry on from where the mouse is.
-      child: MouseRegion(
-        cursor: widget.onTap != null
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
-        onEnter: (_) {
-          if (widget.onTap != null) _focusNode.requestFocus();
-        },
-        child: GestureDetector(
-          onTap: widget.onTap == null
-              ? null
-              : () {
-                  _focusNode.requestFocus();
-                  widget.onTap!();
-                },
-          child: AnimatedScale(
-            duration: const Duration(milliseconds: 120),
-            scale: _focused ? 1.06 : 1,
-            child: SizedBox(
-              width: 140,
-              child: Column(
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: borderColor, width: 3),
-                      color: AppColorScheme.surfaceVariant,
-                    ),
-                    child: ClipOval(
-                      child: _avatarFailed || widget.avatarUrl == null
-                          ? Icon(
-                              Icons.person,
-                              color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                              size: 68,
-                            )
-                          : Image.network(
-                              widget.avatarUrl!,
-                              headers: serverImageHeaders,
-                              fit: BoxFit.cover,
-                              cacheWidth: ArtworkDecode.widthFor(
-                                130,
-                                MediaQuery.devicePixelRatioOf(context),
-                              ),
-                              errorBuilder: (_, _, _) {
-                                if (!_avatarFailed) {
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((_) {
-                                        if (mounted) {
-                                          setState(() => _avatarFailed = true);
-                                        }
-                                      });
-                                }
-                                return Icon(
-                                  Icons.person,
-                                  color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                                  size: 68,
-                                );
-                              },
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.username,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: AppColorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.serverName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.45),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (widget.active)
-                    Text(
-                      'ACTIVE',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                        color: AppColorScheme.accent,
-                      ),
-                    ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.icon != null) ...[
+                  Icon(widget.icon, size: 18, color: color),
+                  const SizedBox(width: 8),
                 ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AddUserCard extends StatefulWidget {
-  final String label;
-  final bool autofocus;
-  final VoidCallback? onTap;
-  final Color focusColor;
-
-  const _AddUserCard({
-    required this.label,
-    required this.autofocus,
-    required this.onTap,
-    required this.focusColor,
-  });
-
-  @override
-  State<_AddUserCard> createState() => _AddUserCardState();
-}
-
-class _AddUserCardState extends State<_AddUserCard> {
-  final _focusNode = FocusNode();
-  bool _focused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(() {
-      if (mounted) setState(() => _focused = _focusNode.hasFocus);
-    });
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = _focused
-        ? widget.focusColor
-      : AppColorScheme.onSurface.withValues(alpha: 0.25);
-    final bg = _focused
-        ? widget.focusColor.withValues(alpha: 0.14)
-      : AppColorScheme.onSurface.withValues(alpha: 0.06);
-
-    return Focus(
-      focusNode: _focusNode,
-      autofocus: widget.autofocus,
-      onKeyEvent: (_, event) {
-        if (event is KeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.select ||
-                event.logicalKey == LogicalKeyboardKey.enter)) {
-          widget.onTap?.call();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      // Focus follows the pointer so hover lights this up the same way
-      // the remote does, and arrow keys carry on from where the mouse is.
-      child: MouseRegion(
-        cursor: widget.onTap != null
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
-        onEnter: (_) {
-          if (widget.onTap != null) _focusNode.requestFocus();
-        },
-        child: GestureDetector(
-          onTap: widget.onTap == null
-              ? null
-              : () {
-                  _focusNode.requestFocus();
-                  widget.onTap!();
-                },
-          child: AnimatedScale(
-            duration: const Duration(milliseconds: 120),
-            scale: _focused ? 1.06 : 1,
-            child: SizedBox(
-              width: 140,
-              child: Column(
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: bg,
-                      border: Border.all(color: borderColor, width: 3),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      size: 48,
-                      color: _focused
-                          ? widget.focusColor
-                          : AppColorScheme.onSurface.withValues(alpha: 0.54),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
+                Flexible(
+                  child: Text(
                     widget.label,
-                    textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: widget.compact ? 14 : 15,
                       fontWeight: FontWeight.w500,
-                      color: AppColorScheme.onSurface,
+                      color: color,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

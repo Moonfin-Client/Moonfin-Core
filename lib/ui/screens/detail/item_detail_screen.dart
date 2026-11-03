@@ -54,6 +54,10 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'frost/frost_detail_content.dart';
+import 'premiere/premiere_detail_content.dart';
+import 'quick_look/quick_look_detail_content.dart';
+import 'stage/stage_detail_content.dart';
 import 'person_links_row.dart';
 import 'playlist_sort_filter_bar.dart';
 import '../../widgets/skeleton/skeleton_detail_screen.dart';
@@ -121,7 +125,10 @@ import '../../widgets/overlay_sheet.dart';
 import '../../../playback/external_player_policy.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../playback/known_defects.dart';
+import '../../../playback/server_shuffle_queue.dart';
 import '../../../syncplay/syncplay_manager.dart';
+import '../../../watch_party/silo_watch_party_manager.dart';
+import '../watch_party/silo_watch_party_screen.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/detail_trailer.dart';
 import '../../../util/download_utils.dart';
@@ -135,6 +142,7 @@ import '../../../util/subtitle_track_logic.dart';
 import '../../../util/audio_track_logic.dart';
 import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/signed_in_server_features.dart';
 import 'detail_layout_metrics.dart';
 import 'play_item_on_screen.dart';
 
@@ -286,6 +294,10 @@ class ItemDetailScreen extends StatefulWidget {
   /// see [ItemDetailViewModel.contextSeasonId].
   final String? contextSeasonId;
 
+  /// Opens as Quick Look's drawer over the screen underneath, which keeps its
+  /// own backdrop and theme music.
+  final bool quickLook;
+
   const ItemDetailScreen({
     super.key,
     required this.itemId,
@@ -293,6 +305,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.autoPlay = false,
     this.seerrTitle,
     this.contextSeasonId,
+    this.quickLook = false,
   });
 
   @override
@@ -314,6 +327,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   String? _selectedMediaSourceId;
   bool _showNavbar = true;
   bool _actionsExpanded = false;
+  bool _fullPageOpened = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropItemId;
@@ -395,7 +409,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final nouveauHandled =
         nouveauState?.restoreBackdropAfterResume() ?? false;
 
-    if (!nouveauHandled) {
+    if (!nouveauHandled && !widget.quickLook) {
       final item = _viewModel.item;
       if (item != null) {
         _backgroundService.setBackground(item, context: BlurContext.details);
@@ -456,7 +470,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
-    if (_backgroundService.currentUrl == _backdropUrl.value) {
+    if (!widget.quickLook &&
+        _backgroundService.currentUrl == _backdropUrl.value) {
       _backgroundService.clearBackgrounds();
     }
     _backdropUrl.dispose();
@@ -490,6 +505,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     }
     setState(() {});
     final item = _viewModel.item;
+    if (item != null &&
+        widget.quickLook &&
+        !_fullPageOpened &&
+        _viewModel.state == ItemDetailState.ready &&
+        !detailPageDraws(item.type)) {
+      // Quick Look draws what Stage and Premiere do. Anything else gets its
+      // full page instead of a drawer.
+      _fullPageOpened = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openFullPage();
+      });
+      return;
+    }
     if (item != null) {
       bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
       if (item.type == 'Playlist' &&
@@ -505,8 +533,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
             ? _viewModel.tracks.first
             : item;
-        _backgroundService.setBackground(target, context: BlurContext.details);
-        _backdropUrl.value = _backgroundService.currentUrl;
+        if (!widget.quickLook) {
+          _backgroundService.setBackground(
+            target,
+            context: BlurContext.details,
+          );
+          _backdropUrl.value = _backgroundService.currentUrl;
+        }
 
         if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
           _onBackdropItemFocused(_viewModel.tracks.first);
@@ -518,11 +551,30 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _selectedMediaSourceId = null;
         }
       }
-      if (!_themeMusicStarted) {
+      if (!_themeMusicStarted && !widget.quickLook) {
         _themeMusicStarted = true;
         _themeMusicService.playForItem(item);
       }
     }
+  }
+
+  /// Swaps Quick Look's drawer for the full page at the same address.
+  void _openFullPage() {
+    final uri = GoRouterState.of(context).uri;
+    context.pushReplacement(
+      uri
+          .replace(queryParameters: {...uri.queryParameters, 'full': 'true'})
+          .toString(),
+    );
+  }
+
+  /// Quick Look's full page is Modern.
+  DetailScreenStyle get _style {
+    if (widget.quickLook) return DetailScreenStyle.quickLook;
+    final style = _prefs.effectiveDetailScreenStyle;
+    return style == DetailScreenStyle.quickLook
+        ? DetailScreenStyle.modern
+        : style;
   }
 
   void _onBackdropItemFocused(AggregatedItem focusedItem) {
@@ -602,7 +654,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   void _resumeThemeMusicIfEligible() {
     final item = _viewModel.item;
-    if (item == null) return;
+    if (item == null || widget.quickLook) return;
     // There is no theme song on a server that has never heard of this title.
     if (_viewModel.isSeerrOnly) return;
 
@@ -633,6 +685,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     // gating on it leaves those pages with no way back at all.
     final showBackButton =
         _viewModel.state != ItemDetailState.ready || _showNavbar;
+
+    if (widget.quickLook) {
+      return RequestInitialFocus(
+        targetNode: node,
+        child: QuickLookFrame(child: _buildBody(context)),
+      );
+    }
 
     Widget body = NavigationLayout(
       showBackButton: showBackButton,
@@ -780,7 +839,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
-        style: _prefs.effectiveDetailScreenStyle,
+        style: _style,
         prefs: _prefs,
       ),
       // Nothing about the title, deliberately. No artwork, no name, and no
@@ -824,7 +883,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           ],
         ),
       ),
-      ItemDetailState.ready => switch (_prefs.effectiveDetailScreenStyle) {
+      ItemDetailState.ready => switch (_style) {
         DetailScreenStyle.classic => _DetailContent(
           viewModel: _viewModel,
           prefs: _prefs,
@@ -890,6 +949,84 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           onActionsExpandedChanged: (val) =>
               setState(() => _actionsExpanded = val),
         ),
+
+        DetailScreenStyle.stage =>
+          detailPageDraws(_viewModel.item?.type)
+            ? StageDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                backdropUrl: _backdropUrl,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onToggleNavbar: (show) => setState(() => _showNavbar = show),
+                onCollapseBiography: () => setState(() {}),
+              )
+            : _buildModernContent(),
+
+        DetailScreenStyle.premiere =>
+          detailPageDraws(_viewModel.item?.type)
+            ? PremiereDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                backdropUrl: _backdropUrl,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onToggleNavbar: (show) => setState(() => _showNavbar = show),
+              )
+            : _buildModernContent(),
+
+        DetailScreenStyle.quickLook =>
+          detailPageDraws(_viewModel.item?.type)
+            ? QuickLookDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+                onOpenFullPage: _openFullPage,
+              )
+            : const SizedBox.shrink(),
+
+        DetailScreenStyle.frost =>
+          detailPageDraws(_viewModel.item?.type)
+            ? FrostDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+              )
+            : _buildModernContent(),
       },
     };
   }
@@ -909,6 +1046,21 @@ Widget classicDetailContentForTesting({
   onSelectedMediaSourceChanged: (_) {},
   initialFocusNode: initialFocusNode,
 );
+
+/// Silo's requests have no people, so there the person's name is searched
+/// instead.
+void _openRequestsForPerson(BuildContext context, AggregatedItem item) {
+  final client =
+      GetIt.instance<MediaServerClientFactory>().getClientIfExists(
+        item.serverId,
+      ) ??
+      GetIt.instance<MediaServerClient>();
+  context.push(
+    client.serverType == ServerType.silo
+        ? Destinations.searchRequestsWith(item.name)
+        : Destinations.seerrPerson(item.tmdbId!),
+  );
+}
 
 class _DetailContent extends StatefulWidget {
   final ItemDetailViewModel viewModel;
@@ -2861,7 +3013,7 @@ class _DetailContentState extends State<_DetailContent> {
         _SectionSpec(
           focusNode: seerrCrewCreditsFocusNode,
           build: (links) => HorizontalScrollSection(
-            title: l10n.crewContributionsSeerr,
+            title: seerrBrand(l10n.crewContributionsSeerr),
             builder: (_, ctrl) => SeerrCrewCreditsRow(
               items: seerrCrewCredits,
               prefs: prefs,
@@ -2882,7 +3034,7 @@ class _DetailContentState extends State<_DetailContent> {
         _SectionSpec(
           focusNode: seerrAppearancesFocusNode,
           build: (links) => HorizontalScrollSection(
-            title: l10n.appearancesSeerr,
+            title: seerrBrand(l10n.appearancesSeerr),
             builder: (_, ctrl) => SeerrAppearancesRow(
               items: seerrAppearances,
               prefs: prefs,
@@ -2997,7 +3149,7 @@ class _DetailContentState extends State<_DetailContent> {
                 iconBuilder: (size, color) =>
                     SeerrIcon(size: size, color: color),
                 onPressed: () {
-                  context.push(Destinations.seerrPerson(item.tmdbId!));
+                  _openRequestsForPerson(context, item);
                 },
                 isActive: false,
                 focusNode: seerrFocusNode,
@@ -3617,10 +3769,12 @@ class _DetailContentState extends State<_DetailContent> {
           if (!mounted) return;
           setState(() {});
         },
-        collectionRemoval: CollectionRemovalContext(
-          collectionName: viewModel.item?.name ?? '',
-          remove: viewModel.removeFromCollection,
-        ),
+        collectionRemoval: viewModel.canRemoveFromCollection
+            ? CollectionRemovalContext(
+                collectionName: viewModel.item?.name ?? '',
+                remove: viewModel.removeFromCollection,
+              )
+            : null,
       ),
     );
   }
@@ -4206,11 +4360,19 @@ class DetailPosterImage extends StatelessWidget {
   final AggregatedItem item;
   final ImageApi imageApi;
 
-  const DetailPosterImage({required this.item, required this.imageApi});
+  /// Classic's own poster size when left out.
+  final Size? size;
+
+  const DetailPosterImage({
+    super.key,
+    required this.item,
+    required this.imageApi,
+    this.size,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final posterSize = classicDetailPosterSize(context);
+    final posterSize = size ?? classicDetailPosterSize(context);
     final w = posterSize.width;
     final h = posterSize.height;
     final dpr = MediaQuery.devicePixelRatioOf(context);
@@ -4382,6 +4544,9 @@ class DetailMetadataRow extends StatelessWidget {
   /// Trailing badges from elsewhere, laid out with the technical chips.
   final List<Widget> extraBadges;
 
+  /// Centers both lines on any screen, for a title block that's centered.
+  final bool centered;
+
   const DetailMetadataRow({
     required this.item,
     this.selectedMediaSource,
@@ -4389,6 +4554,7 @@ class DetailMetadataRow extends StatelessWidget {
     this.seerrStatus,
     this.technicalOnly = false,
     this.extraBadges = const [],
+    this.centered = false,
   });
 
   @override
@@ -4491,16 +4657,16 @@ class DetailMetadataRow extends StatelessWidget {
 
     final badges = tech?.badges ?? const <String>[];
 
-    final compact = !_useDesktopDetailLayout(context);
+    final center = centered || !_useDesktopDetailLayout(context);
 
     return Column(
-      crossAxisAlignment: compact
+      crossAxisAlignment: center
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: compact ? WrapAlignment.center : WrapAlignment.start,
+          alignment: center ? WrapAlignment.center : WrapAlignment.start,
           spacing: 2,
           runSpacing: 4,
           children: separated,
@@ -4509,7 +4675,7 @@ class DetailMetadataRow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Wrap(
-              alignment: compact ? WrapAlignment.center : WrapAlignment.start,
+              alignment: center ? WrapAlignment.center : WrapAlignment.start,
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 6,
               runSpacing: 4,
@@ -4664,6 +4830,26 @@ class DetailActionButtons extends StatefulWidget {
   /// button is included in the actions row.
   final VoidCallback? onExtrasPressed;
 
+  /// Adds a Collections button to the row when set.
+  final VoidCallback? onCollectionsPressed;
+
+  /// Leaves the audio, subtitle and version buttons out of the row, for a
+  /// style that offers them on their own through
+  /// [DetailActionButtonsState.trackChoices].
+  final bool omitTrackButtons;
+
+  /// A focused circle keeps its resting size and shows its label under it
+  /// instead of growing to fit it, for a row too narrow for a circle to grow.
+  final bool labelsUnderCircles;
+
+  /// Centers the modern row under a centered title instead of starting it at
+  /// the leading edge.
+  final bool centerRow;
+
+  /// Frost's toolbar: Play is a white pill and the rest are bare icons that
+  /// take a lighter platter when focused, with the label floating above.
+  final bool frosted;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4689,6 +4875,11 @@ class DetailActionButtons extends StatefulWidget {
     this.onActionsExpandedChanged,
     this.playlistTracksOverride,
     this.onExtrasPressed,
+    this.onCollectionsPressed,
+    this.omitTrackButtons = false,
+    this.labelsUnderCircles = false,
+    this.centerRow = false,
+    this.frosted = false,
   });
 
   @override
@@ -6138,6 +6329,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     _focusTarget(widget.downTarget, alignment: 0.42);
   }
 
+  /// A full width Play sits over the other buttons rather than beside them,
+  /// so Right from it leaves the row when the host has somewhere to send it.
+  bool get _rightFromPlayLeavesRow =>
+      widget.fullWidthPrimary && widget.onArrowRightAtEnd != null;
+
   /// The width both button kinds are laid out at when focused, and the one the
   /// circles are actually capped to.
   static const _modernFocusedFloor = 200.0;
@@ -6799,7 +6995,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             iconBuilder: (size, color) => SeerrIcon(size: size, color: color),
             focusNode: _primaryFocusNode(2),
             onPressed: () {
-              context.push(Destinations.seerrPerson(item.tmdbId!));
+              _openRequestsForPerson(context, item);
             },
             onArrowUp:
                 NavigationLayout.focusNavbarNotifier.value != null ||
@@ -6846,15 +7042,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
-    // The arrangement is the user's own, and it can't speak for what this
-    // device allows, which is what isOffered is for. Kids Mode hands the
-    // screen to someone else entirely, so it offers its own fixed set rather
-    // than whatever the parent switched off for themselves.
-    final hidden = prefs.get(UserPreferences.kidsModeEnabled)
-        ? const <String>{}
-        : detailButtonLayout.hidden(prefs);
-    bool shows(DetailButton button) =>
-        button.isOffered && (!button.canHide || !hidden.contains(button.id));
+    final shows = _buttonVisibility();
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final isPhoto = item.type == 'Photo';
@@ -7043,7 +7231,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 )
               : null,
         ),
-      if (isPlayableVideo &&
+      if (!widget.omitTrackButtons &&
+          isPlayableVideo &&
           audioStreams.length > 1 &&
           shows(DetailButton.audio))
         DetailButton.audio: _DetailActionButton(
@@ -7051,7 +7240,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.audiotrack,
           onPressed: () => _showAudioSelector(context, audioStreams),
         ),
-      if (isPlayableVideo &&
+      if (!widget.omitTrackButtons &&
+          isPlayableVideo &&
           (subtitleStreams.isNotEmpty || _canDownloadRemoteSubtitles(item)) &&
           shows(DetailButton.subtitles))
         DetailButton.subtitles: _DetailActionButton(
@@ -7059,7 +7249,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.subtitles,
           onPressed: () => _openSubtitleSelector(context, item),
         ),
-      if (isPlayableMedia &&
+      if (!widget.omitTrackButtons &&
+          isPlayableMedia &&
           item.mediaSources.length > 1 &&
           shows(DetailButton.version))
         DetailButton.version: _DetailActionButton(
@@ -7099,12 +7290,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (!isBook &&
           !isPhoto &&
-          _isInSyncPlayGroup() &&
+          (_isInSyncPlayGroup() || _canPickForWatchParty()) &&
           shows(DetailButton.watchWithGroup))
         DetailButton.watchWithGroup: _DetailActionButton(
           label: l10n.watchWithGroup,
           icon: Icons.groups_rounded,
-          onPressed: () => _watchWithGroup(context, item),
+          onPressed: () => _isInSyncPlayGroup()
+              ? _watchWithGroup(context, item)
+              : _pickForWatchParty(context, item),
           isActive: true,
           activeColor: AppColorScheme.accent,
         ),
@@ -7154,7 +7347,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           isActive: _displayRatingLikes(item) != null,
           activeColor: Colors.amber,
         ),
-      if (!isBook && shows(DetailButton.playlist))
+      if (!isBook &&
+          shows(DetailButton.playlist) &&
+          itemServerSupports(item.serverId, (f) => f.supportsPlaylists))
         DetailButton.playlist: _DetailActionButton(
           label: l10n.addToPlaylist,
           icon: Icons.playlist_add,
@@ -7235,8 +7430,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: () =>
               showSeerrManageRequestsSheet(context: context, vm: seerr),
         ),
-      if (canManageLiveTv() &&
-          incompleteRecordingFor(item.id) != null &&
+      if (incompleteRecordingFor(item.id) != null &&
           shows(DetailButton.keepAsComplete))
         DetailButton.keepAsComplete: _DetailActionButton(
           label: l10n.keepAsComplete,
@@ -7333,10 +7527,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             onPressed: widget.onExtrasPressed!,
           )
         : null;
+    final collectionsButton = widget.onCollectionsPressed != null
+        ? _DetailActionButton(
+            label: l10n.detailSectionCollections,
+            icon: Icons.collections_bookmark_outlined,
+            onPressed: widget.onCollectionsPressed!,
+          )
+        : null;
 
     var allButtons = <Widget>[
       ?primaryAction,
       ?extrasButton,
+      ?collectionsButton,
       for (final button in _orderedButtons(prefs)) ...[
         ?byButton[button],
         ?cancelByButton[button],
@@ -7645,6 +7847,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
           onArrowRight: () {
+            if (index == 0 && _rightFromPlayLeavesRow) {
+              widget.onArrowRightAtEnd!();
+              return;
+            }
             final step = isRtl ? -1 : 1;
             if (!_focusAdjacent(
               (i) => _primaryNodeAt(i, allButtons.length),
@@ -7657,7 +7863,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
         );
       }).toList();
-      final rowAlignment = widget.modernStyle
+      final startsRow = widget.modernStyle && !widget.centerRow;
+      final rowAlignment = startsRow
           ? AlignmentDirectional.centerStart
           : Alignment.center;
       // A classic tile grows a line when its label wraps, so the tiles line
@@ -7680,7 +7887,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 crossAxisAlignment: widget.modernStyle
                     ? WrapCrossAlignment.center
                     : WrapCrossAlignment.start,
-                alignment: widget.modernStyle
+                alignment: startsRow
                     ? WrapAlignment.start
                     : WrapAlignment.center,
                 children: normalizedButtons,
@@ -7720,6 +7927,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
           },
           onArrowRight: () {
+            if (index == 0 && _rightFromPlayLeavesRow) {
+              widget.onArrowRightAtEnd!();
+              return;
+            }
             // Skip any unmounted slot (e.g. hidden delete-download) and fall
             // through to the More button so it is always reachable.
             final step = isRtl ? -1 : 1;
@@ -7886,7 +8097,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           // Primary row keeps the More/Less button pinned at its end; the extra
           // buttons reveal in a second wrap below, so More/Less never moves.
           rowContent = Align(
-            alignment: AlignmentDirectional.centerStart,
+            alignment: widget.centerRow
+                ? Alignment.center
+                : AlignmentDirectional.centerStart,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -7966,7 +8179,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     // Under the row rather than in it, so a bar never takes a focus slot. The
     // row is left exactly as it was when nothing is downloading, since a Column
     // around it would re-align it.
-    final downloads = seerrItemDownloads(viewModel);
+    // Frost shows them in its own status line.
+    final downloads = widget.frosted ? null : seerrItemDownloads(viewModel);
     final withDownloads = downloads == null
         ? rowContent
         : Column(
@@ -8023,6 +8237,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         adminPanel: adminServerSupported(),
       );
 
+  void _afterIdentify(String? identified, AggregatedItem item) {
+    if (identified == null || !mounted) return;
+    if (identified == item.id) {
+      viewModel.load();
+    } else {
+      // The match gave the item a new id, and the old one is gone.
+      context.pushReplacement(
+        Destinations.item(identified, serverId: item.serverId),
+      );
+    }
+  }
+
   void _showAdminDialog(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
     final actions = _adminActionsFor(item);
@@ -8052,11 +8278,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                         itemType: item.type,
                         itemName: item.name,
                         itemYear: item.productionYear,
-                      ).then((applied) {
-                        if (applied == true) {
-                          viewModel.load();
-                        }
-                      });
+                      ).then((identified) => _afterIdentify(identified, item));
                       return KeyEventResult.handled;
                     }
                     return KeyEventResult.ignored;
@@ -8067,16 +8289,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                       return InkWell(
                         onTap: () async {
                           Navigator.of(dialogCtx).pop();
-                          final applied = await IdentifyDialog.show(
+                          final identified = await IdentifyDialog.show(
                             context,
                             itemId: item.id,
                             itemType: item.type,
                             itemName: item.name,
                             itemYear: item.productionYear,
                           );
-                          if (applied == true) {
-                            viewModel.load();
-                          }
+                          _afterIdentify(identified, item);
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -8399,6 +8619,96 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       queue,
       mediaSourceId: mediaSourceId ?? widget.selectedMediaSourceId,
     );
+  }
+
+  /// On Silo the host picks what a Watch Party watches; anyone else can open
+  /// a party by picking.
+  bool _canPickForWatchParty() {
+    try {
+      final party = GetIt.instance<SiloWatchPartyManager>();
+      if (party.activeSiloClient == null) return false;
+      return party.room?.isHost ?? true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _pickForWatchParty(
+    BuildContext context,
+    AggregatedItem item,
+  ) async {
+    final party = GetIt.instance<SiloWatchPartyManager>();
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final suggested = party.room?.isVoting == true && item.type == 'Movie';
+    // A room plays files, so a series or season stands for its next episode.
+    final episode = await _watchPartyEpisodeFor(item);
+    if (!mounted) return;
+    if (episode == null) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.noEpisodesLoaded)));
+      return;
+    }
+    final picked = await party.pick(episode);
+    if (!mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          !picked
+              ? party.error ?? ''
+              : suggested
+              ? l10n.watchPartySuggested
+              : l10n.watchPartyStaged,
+        ),
+      ),
+    );
+    if (picked) {
+      unawaited(
+        navigator.push(
+          MaterialPageRoute<void>(builder: (_) => const SiloWatchPartyScreen()),
+        ),
+      );
+    }
+  }
+
+  /// Next Up for a series, else its first unwatched episode (specials left
+  /// out); a season's first unwatched episode. Other items are themselves.
+  Future<AggregatedItem?> _watchPartyEpisodeFor(AggregatedItem item) async {
+    Future<List<AggregatedItem>?> load(
+      String seriesId, {
+      String? seasonId,
+    }) async {
+      try {
+        final data = await _clientForItem(
+          item,
+        ).itemsApi.getEpisodes(seriesId, seasonId: seasonId);
+        return _mapRawItemsForServer(data['Items'], item.serverId);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    final List<AggregatedItem>? episodes;
+    switch (item.type) {
+      case 'Series':
+        if (viewModel.nextUp != null) return viewModel.nextUp;
+        // Episodes with no season number aren't specials.
+        episodes = (await load(
+          item.id,
+        ))?.where((e) => e.parentIndexNumber != 0).toList();
+      case 'Season':
+        // The page's own list may not have loaded yet.
+        final seriesId = item.seriesId;
+        episodes = viewModel.episodes.isNotEmpty || seriesId == null
+            ? viewModel.episodes
+            : await load(seriesId, seasonId: item.id);
+      default:
+        return item;
+    }
+    if (episodes == null) return null;
+    final playable = episodes.where(isEligibleNextEpisodeCandidate);
+    return playable.where((e) => !e.isPlayed).firstOrNull ??
+        playable.firstOrNull;
   }
 
   void _watchWithGroup(BuildContext context, AggregatedItem item) {
@@ -9934,6 +10244,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
   }
 
+  /// The first items of the server's own shuffle of [item], or null when
+  /// its server doesn't shuffle it (or starting one failed).
+  Future<List<AggregatedItem>?> _serverShuffleQueue(AggregatedItem item) async {
+    try {
+      return await ServerShuffleQueue.instance.start(
+        _clientForItem(item),
+        item,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _shuffleInternal(
     BuildContext context,
     AggregatedItem item,
@@ -9946,13 +10269,21 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       // the start is still wanted. Without one the context is all there is.
       bool launchGone() =>
           session == null ? !context.mounted : !session.isActive;
-      final queue = await _shuffleQueueForItem(item);
-      final playableQueue = queue
-          .where((e) => isEligibleNextEpisodeCandidate(e) || e.id == item.id)
-          .toList();
-      if (playableQueue.isEmpty || launchGone()) return null;
-
-      final shuffled = List<AggregatedItem>.from(playableQueue)..shuffle();
+      // A server that shuffles itself (Silo) hands out the order. Otherwise
+      // every item is loaded and shuffled here.
+      final serverShuffled = await _serverShuffleQueue(item);
+      if (launchGone()) return null;
+      final List<AggregatedItem> shuffled;
+      if (serverShuffled != null && serverShuffled.isNotEmpty) {
+        shuffled = List<AggregatedItem>.from(serverShuffled);
+      } else {
+        final queue = await _shuffleQueueForItem(item);
+        final playableQueue = queue
+            .where((e) => isEligibleNextEpisodeCandidate(e) || e.id == item.id)
+            .toList();
+        if (playableQueue.isEmpty || launchGone()) return null;
+        shuffled = List<AggregatedItem>.from(playableQueue)..shuffle();
+      }
       shuffled[0] = await _ensureHydrated(shuffled.first);
       if (launchGone()) return null;
       final isAudio = shuffled.every((queuedItem) {
@@ -10635,6 +10966,114 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       widget.onSelectedMediaSourceChanged(id);
     }
   }
+
+  /// The arrangement is the user's own, and it can't speak for what this
+  /// device allows, which is what isOffered is for. Kids Mode hands the
+  /// screen to someone else entirely, so it offers its own fixed set rather
+  /// than whatever the parent switched off for themselves.
+  bool Function(DetailButton) _buttonVisibility() {
+    final prefs = GetIt.instance<UserPreferences>();
+    final hidden = prefs.get(UserPreferences.kidsModeEnabled)
+        ? const <String>{}
+        : detailButtonLayout.hidden(prefs);
+    return (button) =>
+        button.isOffered && (!button.canHide || !hidden.contains(button.id));
+  }
+
+  /// The audio, subtitle and version pickers with what each is set to, for a
+  /// style that draws them away from the button row. A picker with nothing to
+  /// choose between is left out, the same as its button would be.
+  List<DetailTrackChoice> trackChoices(AppLocalizations l10n) {
+    final item = viewModel.item;
+    if (item == null || viewModel.isSeerrOnly) return const [];
+    const videoTypes = {'Movie', 'Episode', 'Video', 'MusicVideo'};
+    if (!videoTypes.contains(item.type)) return const [];
+
+    final source = selectedMediaSourceForItem(
+      item,
+      widget.selectedMediaSourceId,
+    );
+    final streams = _streamsForTrackSelectors(item, source);
+    final audio = streams.where((s) => s['Type'] == 'Audio').toList();
+    final subtitles = streams.where((s) => s['Type'] == 'Subtitle').toList();
+    final shows = _buttonVisibility();
+    String nameOf(Map<String, dynamic> stream) =>
+        stream['DisplayTitle'] as String? ??
+        stream['Language'] as String? ??
+        l10n.unknown;
+    Map<String, dynamic>? byIndex(List<Map<String, dynamic>> list, int? i) {
+      for (final s in list) {
+        if (s['Index'] == i) return s;
+      }
+      return null;
+    }
+
+    final choices = <DetailTrackChoice>[];
+    if (audio.length > 1 && shows(DetailButton.audio)) {
+      final current =
+          byIndex(audio, _effectiveAudioStreamIndex(audio)) ?? audio.first;
+      choices.add(DetailTrackChoice(DetailButton.audio, nameOf(current)));
+    }
+    if ((subtitles.isNotEmpty || _canDownloadRemoteSubtitles(item)) &&
+        shows(DetailButton.subtitles)) {
+      final current = byIndex(
+        subtitles,
+        _effectiveSubtitleStreamIndex(subtitles, audio),
+      );
+      choices.add(
+        DetailTrackChoice(
+          DetailButton.subtitles,
+          current == null ? l10n.none : nameOf(current),
+        ),
+      );
+    }
+    if (item.mediaSources.length > 1 && shows(DetailButton.version)) {
+      final current = source ?? item.mediaSources.first;
+      choices.add(
+        DetailTrackChoice(
+          DetailButton.version,
+          current['Name'] as String? ?? l10n.versionNumber(1),
+        ),
+      );
+    }
+    return choices;
+  }
+
+  /// Opens the picker a [trackChoices] entry stands for.
+  void openTrackPicker(DetailButton kind) {
+    final item = viewModel.item;
+    if (item == null) return;
+    switch (kind) {
+      case DetailButton.audio:
+        final source = selectedMediaSourceForItem(
+          item,
+          widget.selectedMediaSourceId,
+        );
+        _showAudioSelector(
+          context,
+          _streamsForTrackSelectors(
+            item,
+            source,
+          ).where((s) => s['Type'] == 'Audio').toList(),
+        );
+      case DetailButton.subtitles:
+        _openSubtitleSelector(context, item);
+      case DetailButton.version:
+        _showVersionSelector(context, item.mediaSources);
+      default:
+        break;
+    }
+  }
+}
+
+/// One picker from [DetailActionButtonsState.trackChoices]: which it is, and
+/// the track or version it's set to.
+@immutable
+class DetailTrackChoice {
+  final DetailButton kind;
+  final String current;
+
+  const DetailTrackChoice(this.kind, this.current);
 }
 
 Map<String, dynamic>? selectedMediaSourceForItem(
@@ -11720,9 +12159,13 @@ class _DownloadButtonState extends State<_DownloadButton> {
       );
       return;
     }
+    final qualities = await GetIt.instance<DownloadService>()
+        .offeredQualities();
+    if (!context.mounted) return;
     final quality = await _pickQuality(
       context,
       item,
+      qualities: qualities,
       title: l10n.autoDownloadQualityTitle,
       note: l10n.autoDownloadTranscodedForegroundNote,
     );
@@ -11897,7 +12340,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
     int? audioStreamIndex,
   }) async {
     final isMulti = _isBatchType(item.type);
-    if (!service.canDownloadTranscoded ||
+    final qualities = await service.offeredQualities();
+    if (!context.mounted) return;
+    if (qualities.length < 2 ||
         (!isMulti && !_supportsTranscoding(item.type))) {
       _startDownload(
         context,
@@ -11915,6 +12360,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final quality = await _pickQuality(
       context,
       item,
+      qualities: qualities,
       title: isMulti
           ? AppLocalizations.of(context).downloadAllQuality
           : AppLocalizations.of(context).downloadQuality,
@@ -11938,13 +12384,15 @@ class _DownloadButtonState extends State<_DownloadButton> {
       type == 'MusicVideo' ||
       type == 'Video';
 
-  /// Lets the user pick a quality for [widget.item]; size estimates cover
-  /// [items] for batches. Null when the sheet is dismissed.
+  /// Lets the user pick a quality for [widget.item] among the server's
+  /// [qualities]. Size estimates cover [items] for batches. Null when the
+  /// sheet is dismissed.
   /// [note] is shown once under the title, for callers where the choice has
   /// a consequence worth stating.
   static Future<DownloadQuality?> _pickQuality(
     BuildContext context,
     AggregatedItem item, {
+    required List<DownloadQuality> qualities,
     required String title,
     List<AggregatedItem> items = const [],
     String? note,
@@ -11967,7 +12415,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
             return maxWidth;
           })()
         : item.sourceVideoWidth;
-    final availableQualities = DownloadQuality.values.where((q) {
+    final availableQualities = qualities.where((q) {
       if (q.maxWidth == null) return true;
       if (sourceWidth == null) return true;
       return q.maxWidth! <= sourceWidth;
@@ -12388,6 +12836,196 @@ class _StarFillIcon extends StatelessWidget {
   }
 }
 
+class _FrostedButtonFace extends StatefulWidget {
+  final String label;
+  final IconData? icon;
+  final Widget Function(double size, Color color)? iconBuilder;
+  final bool isPrimary;
+  final bool isActive;
+  final Color? activeColor;
+  final bool focused;
+
+  /// A phone has no focus to show the label for, and less room.
+  final bool compact;
+
+  /// Play takes its own row, with the circles under it.
+  final bool fill;
+
+  const _FrostedButtonFace({
+    required this.label,
+    required this.icon,
+    required this.iconBuilder,
+    required this.isPrimary,
+    required this.isActive,
+    required this.activeColor,
+    required this.focused,
+    required this.compact,
+    required this.fill,
+  });
+
+  @override
+  State<_FrostedButtonFace> createState() => _FrostedButtonFaceState();
+}
+
+class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
+  // The label is drawn in the overlay, since the glass under the toolbar
+  // clips anything that reaches past it.
+  final _tip = OverlayPortalController();
+  final _link = LayerLink();
+
+  @override
+  void initState() {
+    super.initState();
+    _tip.show();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const duration = Duration(milliseconds: 180);
+    final focused = widget.focused;
+    final compact = widget.compact;
+    final size = compact ? 46.0 : 60.0;
+
+    if (widget.isPrimary) {
+      // Filled the way Modern fills its labeled Play, in the accent until it
+      // has focus.
+      final ink = focused
+          ? AppColorScheme.onButtonFocused
+          : AppColorScheme.onAccent;
+      return AnimatedScale(
+        scale: focused ? 1.06 : 1,
+        duration: duration,
+        child: AnimatedContainer(
+          duration: duration,
+          height: compact ? 48 : size,
+          width: widget.fill ? double.infinity : null,
+          constraints: BoxConstraints(minWidth: compact ? 140 : 200),
+          padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 28),
+          decoration: BoxDecoration(
+            color: focused
+                ? AppColorScheme.buttonFocused
+                : AppColorScheme.accent,
+            borderRadius: AppRadius.circular(size / 2),
+            boxShadow: [
+              if (focused)
+                BoxShadow(
+                  color: AppColorScheme.buttonFocused.withValues(alpha: 0.3),
+                  spreadRadius: 4,
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdaptiveIcon(
+                widget.icon ?? Icons.play_arrow,
+                color: ink,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              // Capped rather than flexible, so the toolbar can measure it.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: ink,
+                    fontSize: compact ? 17 : 19,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final Color color;
+    if (widget.isActive && widget.icon == Icons.favorite) {
+      color = const Color(0xFFFF375F);
+    } else if (widget.isActive) {
+      color = widget.activeColor ?? AppColorScheme.accent;
+    } else {
+      color = AppColorScheme.onButtonNormal;
+    }
+    final face = AnimatedScale(
+      scale: focused ? 1.12 : 1,
+      duration: duration,
+      child: AnimatedContainer(
+        duration: duration,
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColorScheme.buttonFocused.withValues(
+            alpha: focused ? 0.32 : 0,
+          ),
+        ),
+        child: Center(
+          child: widget.iconBuilder != null
+              ? widget.iconBuilder!(30, color)
+              : AdaptiveIcon(
+                  widget.icon!,
+                  color: color,
+                  size: compact ? 22 : 25,
+                ),
+        ),
+      ),
+    );
+    if (compact) return face;
+
+    return OverlayPortal(
+      controller: _tip,
+      overlayChildBuilder: (context) => Align(
+        alignment: Alignment.topLeft,
+        child: CompositedTransformFollower(
+          link: _link,
+          showWhenUnlinked: false,
+          targetAnchor: Alignment.topCenter,
+          followerAnchor: Alignment.bottomCenter,
+          offset: const Offset(0, -16),
+          child: IgnorePointer(
+            child: AnimatedOpacity(
+              opacity: focused ? 1 : 0,
+              duration: duration,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColorScheme.surface.withValues(alpha: 0.95),
+                  borderRadius: AppRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x59000000),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: CompositedTransformTarget(link: _link, child: face),
+    );
+  }
+}
+
 class _DetailActionButton extends StatefulWidget {
   final String label;
   final IconData? icon;
@@ -12457,7 +13095,24 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color iconColor,
     required Color labelColor,
   }) {
-    final isExpanded = showHighlight;
+    final host = context.findAncestorWidgetOfExactType<DetailActionButtons>();
+    if (host?.frosted ?? false) {
+      return _FrostedButtonFace(
+        label: widget.label,
+        icon: widget.icon,
+        iconBuilder: widget.iconBuilder,
+        isPrimary: widget.isPrimary,
+        isActive: widget.isActive,
+        activeColor: widget.activeColor,
+        focused: showHighlight,
+        compact: isMobile,
+        fill: host!.fullWidthPrimary,
+      );
+    }
+    final labelUnder = host?.labelsUnderCircles ?? false;
+    // With the circles' labels under them, Play keeps its own in the pill.
+    final labeledPlay = widget.isPrimary && labelUnder;
+    final isExpanded = labeledPlay || (showHighlight && !labelUnder);
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -12465,12 +13120,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
 
     // Portrait spans the primary Play full width (circular secondary actions
     // wrap beneath); landscape keeps it content-width, inline with them.
-    final fullWidth =
-        widget.isPrimary &&
-        (context
-                .findAncestorWidgetOfExactType<DetailActionButtons>()
-                ?.fullWidthPrimary ??
-            false);
+    final fullWidth = widget.isPrimary && (host?.fullWidthPrimary ?? false);
 
     if (fullWidth) {
       final fg = showHighlight
@@ -12521,9 +13171,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       return SizedBox(width: double.infinity, child: pillInner);
     }
 
-    // Only a compact layout keeps Play filled with the accent. Everywhere else
-    // it looks like the buttons beside it until it has focus.
-    final accentPrimary = widget.isPrimary && isMobile;
+    // Only a compact layout or a labeled Play keeps it filled with the
+    // accent. Everywhere else it looks like the buttons beside it until it
+    // has focus.
+    final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -12604,7 +13255,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     }
 
     final double minWidth = height;
-    final double maxWidth = isExpanded ? 200.0 * scale : height;
+    // A labeled Play keeps its label all the time, so it gets the room for
+    // one like "Resume from 1h 12m" without scrolling it.
+    final double maxWidth = isExpanded
+        ? (labeledPlay ? 280.0 : 200.0) * scale
+        : height;
     final double maxLabelWidth =
         (maxWidth -
                 (isExpanded ? 22.0 * scale : 0.0) -
@@ -12613,7 +13268,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                 6.0 * scale)
             .clamp(0.0, maxWidth);
 
-    return AnimatedContainer(
+    final circle = AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
       height: height,
@@ -12670,6 +13325,37 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           ),
         ),
       ),
+    );
+    if (!labelUnder) return circle;
+
+    // The label's space is kept even with nothing in it, so the row doesn't
+    // shift as focus moves along it. A long label stays centered under its
+    // circle.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        circle,
+        SizedBox(height: 6 * scale),
+        SizedBox(
+          width: height,
+          height: 16 * scale,
+          child: OverflowBox(
+            maxWidth: 160 * scale,
+            child: Text(
+              showHighlight && !labeledPlay ? widget.label : '',
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColorScheme.onBackground,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -13859,6 +14545,11 @@ class _ChapterListCardState extends State<_ChapterListCard>
   }
 }
 
+/// A group's share of the width, from the length of its names. The floor keeps
+/// a single name on one line.
+int detailGroupWeight(Iterable<String> names) =>
+    names.fold(0, (sum, name) => sum + name.length).clamp(20, 60);
+
 class _MetadataItem {
   final String name;
   final String? id;
@@ -14093,6 +14784,10 @@ class DetailMetadataSection extends StatefulWidget {
   final FocusNode? downTarget;
   final KeyEventResult Function(FocusNode? target)? onRequestFocus;
 
+  /// Gives each group a share of the width by how much it has to say, so a
+  /// long list of studios sits side by side rather than one to a line.
+  final bool weighByText;
+
   const DetailMetadataSection({
     required this.viewModel,
     this.showCrew = true,
@@ -14101,6 +14796,7 @@ class DetailMetadataSection extends StatefulWidget {
     this.upTarget,
     this.downTarget,
     this.onRequestFocus,
+    this.weighByText = false,
   });
 
   @override
@@ -14368,6 +15064,9 @@ class DetailMetadataSectionState extends State<DetailMetadataSection> {
                   final groupIndex = e.key;
                   final group = e.value;
                   return Expanded(
+                    flex: widget.weighByText
+                        ? detailGroupWeight(group.items.map((i) => i.name))
+                        : 1,
                     child: Row(
                       children: [
                         if (groupIndex > 0)
@@ -14618,11 +15317,12 @@ class DetailSeasonsRow extends StatelessWidget {
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
         itemBuilder: (context, index) {
           final season = seasons[index];
-          final showAvailabilityBadges =
-              prefs.get(UserPreferences.showSeerrAvailabilityBadges);
           final seerrStatus = seerrSeasonStatus?[season.indexNumber];
-          final hasSeerrDot =
-              showAvailabilityBadges && SeerrMediaStatus.hasDot(seerrStatus);
+          final seerrStyle = SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle(prefs)
+              : null;
+          final hasSeerrDot = seerrStyle == SeerrBadgeStyle.badge;
+          final hasSeerrBanner = seerrStyle == SeerrBadgeStyle.banner;
           return MediaCard(
             title: season.name,
             subtitle: _progressText(season),
@@ -14633,6 +15333,9 @@ class DetailSeasonsRow extends StatelessWidget {
             imageUrl: _seasonImageUrl(season, isMobile: isMobile),
             width: cardWidth,
             aspectRatio: 2 / 3,
+            // The card draws a banner itself, while its own dot would take the
+            // watched corner, so the dot goes top left here.
+            seerrStatus: hasSeerrBanner ? seerrStatus : null,
             overlayOccupiesTopLeft: hasSeerrDot,
             imageOverlays: [
               if (hasSeerrDot)
@@ -14641,10 +15344,12 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
-              // Top left, dropped below the Seerr dot when there is one so the two stack
-              // rather than overlap.
+              // Top left, dropped below the Seerr dot or banner when there is one so
+              // the two stack rather than overlap.
               Positioned(
-                top: hasSeerrDot ? 30 : 6,
+                top: hasSeerrDot
+                    ? 30
+                    : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
                 child: AnimeSeasonAudioBadge(
                   seriesId: season.seriesId,
@@ -16312,12 +17017,17 @@ class SeerrAppearancesRow extends StatelessWidget {
   final FocusNode? firstFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
 
+  /// Sizes the posters to match a row beside it rather than the Home poster
+  /// size.
+  final double? customCardWidth;
+
   const SeerrAppearancesRow({
     required this.items,
     required this.prefs,
     this.scrollController,
     this.firstFocusNode,
     this.onItemKeyEvent,
+    this.customCardWidth,
   });
 
   @override
@@ -16332,9 +17042,12 @@ class SeerrAppearancesRow extends StatelessWidget {
         : desktopScale;
     final metadataScale = desktopScale;
     final posterSize = prefs.get(UserPreferences.posterSize).upToExtraLarge;
-    final cardHeight = posterSize.portraitHeight.toDouble() * platformScale;
+    final custom = customCardWidth;
+    final cardHeight = custom != null
+        ? custom * 1.5
+        : posterSize.portraitHeight.toDouble() * platformScale;
 
-    final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
+    final cardWidth = custom ?? (isMobile ? 120.0 : cardHeight * (2 / 3));
     final rowHeight =
         _kDetailRowTopInset +
         (isMobile ? 240.0 : cardHeight + (56 * metadataScale));

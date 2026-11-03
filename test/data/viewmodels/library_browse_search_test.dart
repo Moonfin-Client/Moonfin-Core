@@ -95,6 +95,90 @@ class _FakeItemsApi implements ItemsApi {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// A server with a letter index (Silo): 300 A titles, 300 B titles, then
+/// 400 M titles, served by offset.
+class _IndexedItemsApi extends _FakeItemsApi implements LetterPositionApi {
+  _IndexedItemsApi() : super(const []);
+
+  static final List<Map<String, dynamic>> library = [
+    for (var i = 0; i < 300; i++) _movie('A ${'$i'.padLeft(3, '0')}'),
+    for (var i = 0; i < 300; i++) _movie('B ${'$i'.padLeft(3, '0')}'),
+    for (var i = 0; i < 400; i++) _movie('M ${'$i'.padLeft(3, '0')}'),
+  ];
+
+  final List<({int start, int? limit})> requests = [];
+  final List<String> positionsAsked = [];
+
+  @override
+  Future<Map<String, dynamic>> getItems({
+    bool? serverWide,
+    String? parentId,
+    List<String>? ids,
+    List<String>? includeItemTypes,
+    List<String>? excludeItemTypes,
+    String? sortBy,
+    String? sortOrder,
+    int? startIndex,
+    int? limit,
+    bool? recursive,
+    String? searchTerm,
+    String? fields,
+    List<String>? personIds,
+    List<String>? artistIds,
+    List<String>? filters,
+    List<String>? seriesStatus,
+    String? nameStartsWith,
+    String? nameLessThan,
+    List<String>? genreIds,
+    List<String>? genres,
+    bool? isFavorite,
+    bool? collapseBoxSetItems,
+    bool? enableTotalRecordCount,
+    String? enableImageTypes,
+    int? imageTypeLimit,
+    List<String>? tags,
+    List<String>? studios,
+    DateTime? minPremiereDate,
+    String? maxOfficialRating,
+    bool? hasParentalRating,
+    String? anyProviderIdEquals,
+    List<String>? officialRatings,
+    List<int>? years,
+    List<String>? videoTypes,
+    List<String>? audioLanguages,
+    List<String>? subtitleLanguages,
+    bool? hasSubtitles,
+    bool? hasTrailer,
+    bool? hasSpecialFeature,
+    bool? hasThemeSong,
+    bool? hasThemeVideo,
+    bool? isHd,
+    bool? is4K,
+    bool? is3D,
+  }) async {
+    final start = startIndex ?? 0;
+    requests.add((start: start, limit: limit));
+    final end = limit == null
+        ? library.length
+        : (start + limit).clamp(start, library.length);
+    return <String, dynamic>{
+      'TotalRecordCount': library.length,
+      'Items': library.sublist(start.clamp(0, library.length), end),
+    };
+  }
+
+  @override
+  Future<int?> letterPosition(String letter, {required String parentId}) async {
+    positionsAsked.add('$parentId:$letter');
+    return switch (letter) {
+      'A' => 0,
+      'B' => 300,
+      'M' => 600,
+      _ => null,
+    };
+  }
+}
+
 class _FakeClient implements MediaServerClient {
   _FakeClient(this.itemsApi);
 
@@ -116,7 +200,7 @@ class _FakeMdbListRepository implements MdbListRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-Future<LibraryBrowseViewModel> _viewModel(_FakeItemsApi api) async {
+Future<LibraryBrowseViewModel> _viewModel(ItemsApi api) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
   final store = PreferenceStore();
   await store.init();
@@ -320,6 +404,38 @@ void main() {
       await vm.load();
 
       expect(await vm.ensureItemsLoadedForPrefix('#'), isTrue);
+    });
+
+    test('a server with a letter index loads up to the letter at once',
+        () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+      final loaded = vm.items.length;
+      api.requests.clear();
+
+      expect(await vm.ensureItemsLoadedForPrefix('M'), isTrue);
+
+      expect(api.positionsAsked, ['movies:M']);
+      expect(api.requests, hasLength(1),
+          reason: 'one request reaches the letter, no walk');
+      expect(api.requests.single.start, loaded);
+      expect(
+        api.requests.single.start + api.requests.single.limit!,
+        greaterThan(600),
+      );
+    });
+
+    test('without a position it walks as before', () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      // No titles under Q: no position, so the walk runs to the end.
+      expect(await vm.ensureItemsLoadedForPrefix('Q'), isFalse);
+      expect(vm.items, hasLength(1000));
     });
 
     test('ALL and the empty string need no loading', () async {

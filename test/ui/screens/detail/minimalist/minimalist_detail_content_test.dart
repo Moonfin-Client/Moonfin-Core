@@ -331,6 +331,50 @@ void main() {
     expect(find.byIcon(Icons.video_library_outlined), findsNothing);
   });
 
+  void stubCollection() {
+    when(() => itemsApi.getAncestors('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'boxset-1', 'Type': 'BoxSet', 'Name': 'The Saga'},
+      ],
+    );
+    final members = {
+      'Items': [
+        {'Id': 'item-1', 'Type': 'Movie', 'Name': 'Movie title'},
+        {'Id': 'sequel-1', 'Type': 'Movie', 'Name': 'The Sequel'},
+      ],
+    };
+    when(
+      () => itemsApi.getItems(
+        parentId: 'boxset-1',
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer((_) async => members);
+  }
+
+  testWidgets('a movie in a collection shows the Collections button which '
+      'opens it', (tester) async {
+    stubCollection();
+    await pumpContent(tester, viewModel('Movie'));
+
+    expect(find.byIcon(Icons.collections_bookmark_outlined), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.collections_bookmark_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('The Saga'), findsWidgets);
+    expect(find.text('The Sequel'), findsOneWidget);
+  });
+
+  testWidgets('Kids Mode leaves the Collections button out', (tester) async {
+    stubCollection();
+    await prefs.set(UserPreferences.kidsModeEnabled, true);
+    await pumpContent(tester, viewModel('Movie'));
+
+    expect(find.byIcon(Icons.collections_bookmark_outlined), findsNothing);
+  });
+
   testWidgets('what it leaves out, it leaves out for good', (tester) async {
     // The whole point of the style. A movie carrying people, chapters and
     // studios still renders none of them, so this fails the day someone adds
