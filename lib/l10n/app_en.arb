@@ -5197,6 +5197,18 @@
       "date": {"type": "String"}
     }
   },
+  "calendarReleaseCinema": "Cinema",
+  "@calendarReleaseCinema": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+  },
+  "calendarReleaseDigital": "Digital",
+  "@calendarReleaseDigital": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+  },
+  "calendarReleasePhysical": "Physical",
+  "@calendarReleasePhysical": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+  },
   "upcomingCalendars": "Upcoming Calendars",
   "@upcomingCalendars": {
     "description": "Settings screen for the Radarr and Sonarr calendar home rows"

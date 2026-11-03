@@ -3509,6 +3509,9 @@ class HomeViewModel extends ChangeNotifier {
     final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
     final hideDownloaded = _prefs.get(UserPreferences.radarrCalendarHideDownloaded);
     final l10n = currentAppLocalizations();
+    // Digital and physical both end up on the server. The format only matters
+    // when a cinema date can sit next to them in the row.
+    final showFormat = showCinema && (showDigital || showPhysical);
 
     // From today on. A release from yesterday isn't upcoming any more.
     bool upcoming(DateTime date) => calendarDaysBetween(now, date) >= 0;
@@ -3528,28 +3531,29 @@ class HomeViewModel extends ChangeNotifier {
       final digitalRelease = digitalReleaseStr != null ? DateTime.tryParse(digitalReleaseStr) : null;
       final physicalRelease = physicalReleaseStr != null ? DateTime.tryParse(physicalReleaseStr) : null;
 
-      final enabledReleases = <DateTime>[];
+      final enabledReleases = <DateTime, String>{};
       if (showCinema && inCinemas != null && upcoming(inCinemas)) {
-        enabledReleases.add(inCinemas);
+        enabledReleases[inCinemas] = l10n.calendarReleaseCinema;
       }
       if (showDigital && digitalRelease != null && upcoming(digitalRelease)) {
-        enabledReleases.add(digitalRelease);
+        enabledReleases[digitalRelease] = l10n.calendarReleaseDigital;
       }
       if (showPhysical && physicalRelease != null && upcoming(physicalRelease)) {
-        enabledReleases.add(physicalRelease);
+        enabledReleases[physicalRelease] = l10n.calendarReleasePhysical;
       }
 
       if (enabledReleases.isEmpty) continue;
 
-      final sortedDates = enabledReleases..sort();
+      final sortedDates = enabledReleases.keys.toList()..sort();
       final targetReleaseDate = sortedDates.first;
 
       String? subtitleText;
       if (showDate) {
-        subtitleText = l10n.calendarReleaseIn(
+        final release = l10n.calendarReleaseIn(
           calendarDaysBetween(now, targetReleaseDate),
           _formatDateHuman(targetReleaseDate),
         );
+        subtitleText = showFormat ? '${enabledReleases[targetReleaseDate]} · $release' : release;
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);

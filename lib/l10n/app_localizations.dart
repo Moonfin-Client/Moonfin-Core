@@ -6808,6 +6808,24 @@ abstract class AppLocalizations {
   /// **'{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})'**
   String calendarReleaseIn(int days, String date);
 
+  /// Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Cinema'**
+  String get calendarReleaseCinema;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Digital'**
+  String get calendarReleaseDigital;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Physical'**
+  String get calendarReleasePhysical;
+
   /// Settings screen for the Radarr and Sonarr calendar home rows
   ///
   /// In en, this message translates to:

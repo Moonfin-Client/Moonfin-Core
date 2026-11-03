@@ -3882,6 +3882,15 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get calendarReleaseCinema => 'Cinema';
+
+  @override
+  String get calendarReleaseDigital => 'Digital';
+
+  @override
+  String get calendarReleasePhysical => 'Physical';
+
+  @override
   String get upcomingCalendars => 'Upcoming Calendars';
 
   @override
