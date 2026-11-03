@@ -449,6 +449,7 @@ class SiloMediaStreamResolver
         profileId: client.profileId,
         profileToken: client.profileToken,
       ),
+      expiresAt: client.session.tokens?.expiresAt,
     );
   }
 

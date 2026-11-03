@@ -6,6 +6,7 @@ class StreamCredentials {
   const StreamCredentials({
     required this.streamUrl,
     this.requestHeaders = const {},
+    this.expiresAt,
   });
 
   /// The credentials [resolution] was opened with.
@@ -17,6 +18,10 @@ class StreamCredentials {
 
   final String streamUrl;
   final Map<String, String> requestHeaders;
+
+  /// When the server stops accepting them, if the resolver knows. Not part of
+  /// equality, since it doesn't change what the requests send.
+  final DateTime? expiresAt;
 
   @override
   bool operator ==(Object other) {

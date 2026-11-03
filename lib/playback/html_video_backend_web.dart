@@ -419,14 +419,20 @@ class HtmlVideoBackend extends PlayerBackend
     }
   }
 
-  /// A fatal hls.js failure. One that lost the connection (a refused or
-  /// unreachable request) is reported for the manager to reconnect; the rest
-  /// stay as they were, unreported.
+  /// A fatal hls.js failure a reconnect can fix is reported for the manager
+  /// to reconnect: no response at all, a refused token, or a gateway or
+  /// overload status that clears up on its own. The rest aren't reported.
   void _onHlsFatalError(String type, String details, int status) {
     if (_disposed || type != 'networkError') return;
+    final kind = switch (status) {
+      401 || 403 => 'source_refused',
+      0 || 408 || 429 || 502 || 503 || 504 => 'network',
+      _ => null,
+    };
+    if (kind == null) return;
     _errorStream.add(<String, dynamic>{
       'event': 'playerError',
-      'kind': status == 401 || status == 403 ? 'source_refused' : 'network',
+      'kind': kind,
       'recoverable': true,
       'message': 'HLS $details${status > 0 ? ' (HTTP $status)' : ''}',
     });

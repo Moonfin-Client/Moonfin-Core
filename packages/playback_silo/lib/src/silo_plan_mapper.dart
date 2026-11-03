@@ -104,8 +104,9 @@ String siloAuthorizeUrl(
 /// neither and comes back unchanged.
 StreamCredentials siloRenewedCredentials(
   StreamResolutionResult current,
-  SiloStreamAuth auth,
-) {
+  SiloStreamAuth auth, {
+  DateTime? expiresAt,
+}) {
   final headers = Map<String, String>.of(current.requestHeaders);
   if (headers.containsKey('Authorization')) {
     headers
@@ -116,6 +117,7 @@ StreamCredentials siloRenewedCredentials(
   return StreamCredentials(
     streamUrl: _withToken(current.streamUrl, auth.accessToken),
     requestHeaders: headers,
+    expiresAt: expiresAt,
   );
 }
 

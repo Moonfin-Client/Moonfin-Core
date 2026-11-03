@@ -5251,13 +5251,15 @@ class Media3VideoView(
                     null
                 }
 
-            // The connection failed, not the stream. A refusal is usually a
-            // token that expired while the stream played; the manager reopens
-            // the stream either way, with current credentials.
+            // A refusal is usually a token that expired while the stream
+            // played, and a gateway or overload status clears up on its own,
+            // so the manager reopens the stream for those. Any other status
+            // won't change on a retry, so playback fails on it.
             PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS ->
                 when (httpStatusOf(error)) {
                     401, 403 -> "source_refused"
-                    else -> "network"
+                    408, 429, 502, 503, 504 -> "network"
+                    else -> null
                 }
 
             PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,

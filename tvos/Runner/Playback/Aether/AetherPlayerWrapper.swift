@@ -298,9 +298,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] phase in self?.applyPhase(phase) }
             .store(in: &cancellables)
 
-        // AE#792: the server refused the session's credentials (an expired
-        // token). The engine holds the session a few seconds for new ones, so
-        // Dart is told to renew them rather than wait for the failure.
+        // The server refused the session's credentials (an expired token).
+        // The engine holds the session a few seconds for new ones, so Dart is
+        // told to renew them rather than wait for the failure.
         engine.sourceAuthorizationRefused
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
@@ -980,7 +980,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     /// Gives the open stream new request headers, renewed credentials, from
-    /// its next request on (AE#792). A route whose requests AVFoundation
+    /// its next request on. A route whose requests AVFoundation
     /// makes fixed them at load, so that one reloads at the playhead to carry
     /// them, the way a background return does.
     func updateRequestHeaders(_ headers: [String: String]) {
@@ -1218,7 +1218,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         return ("unsupported_container", message)
     }
 
-    /// Engine error kinds where the connection failed, not the stream.
     /// Engine error kinds where the server refused the session's
     /// credentials. Once the stream has played that is a token that lapsed,
     /// and renewed ones open the same stream again.
@@ -1226,6 +1225,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         PlaybackErrorKind.sourceRefused.rawValue,
     ]
 
+    /// Engine error kinds where the connection failed, not the stream.
     private nonisolated static let transportErrorKinds: Set<String> = [
         PlaybackErrorKind.vodSourceFailed.rawValue,
         PlaybackErrorKind.sourceRateLimited.rawValue,

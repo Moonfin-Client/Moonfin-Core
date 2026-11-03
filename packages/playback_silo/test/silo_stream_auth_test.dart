@@ -263,6 +263,7 @@ void main() {
       final current = await refresher.currentCredentials(result);
       expect(current!.requestHeaders['Authorization'], 'Bearer access-7');
       expect(current.streamUrl, endsWith('&token=access-7'));
+      expect(current.expiresAt, siloTestNow.add(const Duration(minutes: 50)));
       expect(server.to('/api/v2/auth/refresh'), isEmpty);
 
       // A refusal renews it even with time left.
