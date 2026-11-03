@@ -529,8 +529,10 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     final screen = category.screen();
     _listNavKey.currentState?.pushAndRemoveUntil(
       PageRouteBuilder<void>(
-        pageBuilder: (_, _, _) =>
-            SettingsPreviewPath(path: [category.title], child: screen),
+        pageBuilder: (_, _, _) => SettingsPreviewPath(
+          path: [category.title],
+          child: SettingsCategoryRoot(child: screen),
+        ),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
@@ -733,7 +735,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                 return MaterialPageRoute<void>(
                   builder: (_) => SettingsPreviewPath(
                     path: [category.title],
-                    child: category.screen(),
+                    child: SettingsCategoryRoot(child: category.screen()),
                   ),
                 );
               },
