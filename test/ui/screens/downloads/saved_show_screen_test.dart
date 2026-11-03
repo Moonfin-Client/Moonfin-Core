@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -160,6 +161,42 @@ void main() {
     expect(find.text('S1 E1 • original'), findsOneWidget);
     expect(find.text('Breaking Bad • S1 E1'), findsNothing);
   });
+
+  // The episode row that holds focus, read off its title.
+  String? focusedEpisode() {
+    final row = FocusManager.instance.primaryFocus?.context
+        ?.findAncestorWidgetOfExactType<SavedMediaRow>();
+    return row?.title;
+  }
+
+  testWidgets('on TV up and down reach the first episode', (tester) async {
+    PlatformDetection.setTvMode(true);
+    await pumpShow(tester, [
+      _episode('e1', season: 1, episode: 1, name: 'Pilot'),
+      _episode('e2', season: 1, episode: 2, name: 'Second'),
+      _episode('e3', season: 2, episode: 1, name: 'Seven Thirty-Seven'),
+    ]);
+    // Initial focus retries on a short timer until the row attaches.
+    await tester.pump(const Duration(seconds: 1));
+    expect(focusedEpisode(), 'Pilot');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(focusedEpisode(), 'Second');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(focusedEpisode(), 'Pilot');
+
+    // Up to the season tabs, then Down back to episode 1.
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(focusedEpisode(), isNull);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(focusedEpisode(), 'Pilot');
+  });
+
   // Opens the show the way the Downloads list does.
   Future<void> openFromList(
     WidgetTester tester,
@@ -207,10 +244,7 @@ void main() {
       _episode('e1', season: 1, episode: 1, name: 'Pilot'),
     ]);
 
-    expect(
-      FocusManager.instance.primaryFocus?.debugLabel,
-      'SavedShowInitialFocus',
-    );
+    expect(focusedEpisode(), 'Pilot');
   });
 
   testWidgets('off TV no control in the show starts out focused', (
