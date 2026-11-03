@@ -371,7 +371,9 @@ enum VisualThemeId {
 /// with play under it and the details beside it. [premiere] centers the title
 /// over a backdrop that fills the screen, with every section down the page
 /// under it. [quickLook] opens a drawer over the screen the title was picked
-/// on, with Modern a press away for the full page. Stored per server and user.
+/// on, with Modern a press away for the full page. [frost] floats the title in
+/// a glass window over a blurred copy of its art, with tabs under its buttons.
+/// Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
@@ -380,7 +382,8 @@ enum DetailScreenStyle {
   minimalist,
   stage,
   premiere,
-  quickLook;
+  quickLook,
+  frost;
 }
 
 /// Selectable header layout for the library browse screen.

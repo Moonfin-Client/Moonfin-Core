@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -849,6 +849,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick Look'**
   String get detailScreenStyleQuickLook;
+
+  /// Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get detailScreenStyleFrost;
 
   /// Button at the foot of the Quick Look drawer that opens the title's full details page
   ///
@@ -26106,6 +26112,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A drawer over the screen you were on, with play and the basics, and the full page a press away.'**
   String get setupDetailQuickLookHint;
+
+  /// Name of the detail layout that floats the title in a glass window, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get setupStyleFrost;
+
+  /// What the Frost detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title in a glass window over its blurred art, with tabs under the buttons.'**
+  String get setupDetailFrostHint;
 
   /// Setup question asking which style the bottom navigation bar should use
   ///

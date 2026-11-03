@@ -11,7 +11,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/platform_detection.dart';
-import '../../../../util/playback_time_label.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/focus/focusable_button.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
@@ -513,41 +512,25 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
     );
   }
 
-  /// How far into the title the viewer is and how long is left, or for a
-  /// show, the same for the episode it would resume.
   List<Widget> _progress(
     AggregatedItem item,
     AppLocalizations l10n,
     bool landscape,
   ) {
-    final show = item.type == 'Series';
-    final target = show ? _vm.nextUp : item;
-    final runtime = target?.runtime;
-    final position = target?.playbackPosition;
-    if (target == null ||
-        target.isPlayed ||
-        runtime == null ||
-        position == null ||
-        position <= Duration.zero ||
-        position >= runtime) {
-      return const [];
-    }
+    final line = resumeLine(item, l10n);
+    if (line == null) return const [];
 
-    final number = show ? episodeNumber(target) : null;
     final bar = ClipRRect(
       borderRadius: AppRadius.circular(2),
       child: LinearProgressIndicator(
-        value: position.inMilliseconds / runtime.inMilliseconds,
+        value: line.fraction,
         minHeight: 4,
         color: AppColorScheme.accent,
         backgroundColor: AppColorScheme.onBackground.withValues(alpha: 0.15),
       ),
     );
     final label = Text(
-      [
-        ?number,
-        l10n.timeRemaining(formatRuntimeShort(runtime - position)),
-      ].join(' · '),
+      line.label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(

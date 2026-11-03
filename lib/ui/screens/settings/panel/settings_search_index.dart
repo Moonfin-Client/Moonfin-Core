@@ -679,6 +679,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'stage',
       'premiere',
       'quick look',
+      'frost',
     ]),
     details.leaf(
       'pref_show_details_backdrop',

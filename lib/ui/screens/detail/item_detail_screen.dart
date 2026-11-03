@@ -54,6 +54,7 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'frost/frost_detail_content.dart';
 import 'premiere/premiere_detail_content.dart';
 import 'quick_look/quick_look_detail_content.dart';
 import 'stage/stage_detail_content.dart';
@@ -1008,6 +1009,24 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 onOpenFullPage: _openFullPage,
               )
             : const SizedBox.shrink(),
+
+        DetailScreenStyle.frost =>
+          detailPageDraws(_viewModel.item?.type)
+            ? FrostDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+              )
+            : _buildModernContent(),
       },
     };
   }
@@ -4827,6 +4846,10 @@ class DetailActionButtons extends StatefulWidget {
   /// the leading edge.
   final bool centerRow;
 
+  /// Frost's toolbar: Play is a white pill and the rest are bare icons that
+  /// take a lighter platter when focused, with the label floating above.
+  final bool frosted;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4856,6 +4879,7 @@ class DetailActionButtons extends StatefulWidget {
     this.omitTrackButtons = false,
     this.labelsUnderCircles = false,
     this.centerRow = false,
+    this.frosted = false,
   });
 
   @override
@@ -8155,7 +8179,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     // Under the row rather than in it, so a bar never takes a focus slot. The
     // row is left exactly as it was when nothing is downloading, since a Column
     // around it would re-align it.
-    final downloads = seerrItemDownloads(viewModel);
+    // Frost shows them in its own status line.
+    final downloads = widget.frosted ? null : seerrItemDownloads(viewModel);
     final withDownloads = downloads == null
         ? rowContent
         : Column(
@@ -12811,6 +12836,187 @@ class _StarFillIcon extends StatelessWidget {
   }
 }
 
+class _FrostedButtonFace extends StatefulWidget {
+  final String label;
+  final IconData? icon;
+  final Widget Function(double size, Color color)? iconBuilder;
+  final bool isPrimary;
+  final bool isActive;
+  final Color? activeColor;
+  final bool focused;
+
+  /// A phone has no focus to show the label for, and less room.
+  final bool compact;
+
+  /// Play takes its own row, with the circles under it.
+  final bool fill;
+
+  const _FrostedButtonFace({
+    required this.label,
+    required this.icon,
+    required this.iconBuilder,
+    required this.isPrimary,
+    required this.isActive,
+    required this.activeColor,
+    required this.focused,
+    required this.compact,
+    required this.fill,
+  });
+
+  @override
+  State<_FrostedButtonFace> createState() => _FrostedButtonFaceState();
+}
+
+class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
+  // The label is drawn in the overlay, since the glass under the toolbar
+  // clips anything that reaches past it.
+  final _tip = OverlayPortalController();
+  final _link = LayerLink();
+
+  @override
+  void initState() {
+    super.initState();
+    _tip.show();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const duration = Duration(milliseconds: 180);
+    final focused = widget.focused;
+    final compact = widget.compact;
+    final size = compact ? 46.0 : 60.0;
+
+    if (widget.isPrimary) {
+      return AnimatedScale(
+        scale: focused ? 1.06 : 1,
+        duration: duration,
+        child: AnimatedContainer(
+          duration: duration,
+          height: compact ? 48 : size,
+          width: widget.fill ? double.infinity : null,
+          constraints: BoxConstraints(minWidth: compact ? 140 : 200),
+          padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 28),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: focused ? 1 : 0.86),
+            borderRadius: AppRadius.circular(size / 2),
+            boxShadow: [
+              if (focused)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  spreadRadius: 4,
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdaptiveIcon(
+                widget.icon ?? Icons.play_arrow,
+                color: Colors.black,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              // Capped rather than flexible, so the toolbar can measure it.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: compact ? 17 : 19,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final Color color;
+    if (widget.isActive && widget.icon == Icons.favorite) {
+      color = const Color(0xFFFF375F);
+    } else if (widget.isActive) {
+      color = widget.activeColor ?? const Color(0xFF30D158);
+    } else {
+      color = Colors.white;
+    }
+    final face = AnimatedScale(
+      scale: focused ? 1.12 : 1,
+      duration: duration,
+      child: AnimatedContainer(
+        duration: duration,
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: focused ? 0.32 : 0),
+        ),
+        child: Center(
+          child: widget.iconBuilder != null
+              ? widget.iconBuilder!(30, color)
+              : AdaptiveIcon(
+                  widget.icon!,
+                  color: color,
+                  size: compact ? 22 : 25,
+                ),
+        ),
+      ),
+    );
+    if (compact) return face;
+
+    return OverlayPortal(
+      controller: _tip,
+      overlayChildBuilder: (context) => Align(
+        alignment: Alignment.topLeft,
+        child: CompositedTransformFollower(
+          link: _link,
+          showWhenUnlinked: false,
+          targetAnchor: Alignment.topCenter,
+          followerAnchor: Alignment.bottomCenter,
+          offset: const Offset(0, -16),
+          child: IgnorePointer(
+            child: AnimatedOpacity(
+              opacity: focused ? 1 : 0,
+              duration: duration,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xF22C2C30),
+                  borderRadius: AppRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x59000000),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  widget.label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: CompositedTransformTarget(link: _link, child: face),
+    );
+  }
+}
+
 class _DetailActionButton extends StatefulWidget {
   final String label;
   final IconData? icon;
@@ -12881,6 +13087,19 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color labelColor,
   }) {
     final host = context.findAncestorWidgetOfExactType<DetailActionButtons>();
+    if (host?.frosted ?? false) {
+      return _FrostedButtonFace(
+        label: widget.label,
+        icon: widget.icon,
+        iconBuilder: widget.iconBuilder,
+        isPrimary: widget.isPrimary,
+        isActive: widget.isActive,
+        activeColor: widget.activeColor,
+        focused: showHighlight,
+        compact: isMobile,
+        fill: host!.fullWidthPrimary,
+      );
+    }
     final labelUnder = host?.labelsUnderCircles ?? false;
     // With the circles' labels under them, Play keeps its own in the pill.
     final labeledPlay = widget.isPrimary && labelUnder;

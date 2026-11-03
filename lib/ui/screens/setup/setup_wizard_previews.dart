@@ -2837,6 +2837,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.stage => _stageDetail(context, items.first),
       DetailScreenStyle.premiere => _premiereDetail(context, items.first),
       DetailScreenStyle.quickLook => _quickLookDetail(context, items),
+      DetailScreenStyle.frost => _frostDetail(context, items.first),
     };
   },
   fallback: _fallbackDetail(style),
@@ -3954,6 +3955,122 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
+/// The art blurred behind a glass window that holds it sharp, with the
+/// toolbar over its foot and the tab bar under it.
+Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  const glass = Color(0x592C2C32);
+  final window = ClipRRect(
+    borderRadius: AppRadius.circular(16),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        _artwork(item.backdropUrl),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [Color(0xF00C0C0E), Color(0x000C0C0E)],
+              stops: [0, 0.7],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 3,
+            children: [
+              Text(
+                item.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+              if (meta.isNotEmpty)
+                Text(
+                  meta,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: _artwork(item.backdropUrl),
+      ),
+      ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
+      Padding(padding: const EdgeInsets.fromLTRB(10, 6, 10, 26), child: window),
+      Positioned(
+        left: 0,
+        right: 0,
+        bottom: 17,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: glass,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: [
+                Container(
+                  width: 34,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+                for (final (icon, _) in _detailButtons(context, auto: 4))
+                  Icon(icon, size: 10, color: AppColorScheme.onSurface),
+              ],
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        bottom: 4,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: glass,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 6,
+              children: [for (var i = 0; i < 5; i++) _bar(12, 5, _weak)],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 /// The drawer down the right over a dimmed row of titles, or the sheet up
 /// from the foot of a phone.
 Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
@@ -4581,6 +4698,46 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.frost) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        ColoredBox(color: AppColors.black.withValues(alpha: 0.45)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 26),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColorScheme.surface.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 5,
+                children: [_bar(56, 8, _strong), _bar(40, 5, _weak)],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 17,
+          child: Center(child: _bar(60, 12, _weak)),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 4,
+          child: Center(child: _bar(80, 8, _weak)),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.quickLook) {
     return Stack(
       fit: StackFit.expand,

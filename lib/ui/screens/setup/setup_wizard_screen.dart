@@ -572,6 +572,10 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         l10n.setupStyleQuickLook,
         l10n.setupDetailQuickLookHint,
       ),
+      DetailScreenStyle.frost: (
+        l10n.setupStyleFrost,
+        l10n.setupDetailFrostHint,
+      ),
     };
     final selected =
         _detailStyle ?? _prefs.get(UserPreferences.detailScreenStyle);

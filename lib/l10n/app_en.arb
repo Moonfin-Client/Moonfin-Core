@@ -336,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -558,6 +558,10 @@
   "detailScreenStyleQuickLook": "Quick Look",
   "@detailScreenStyleQuickLook": {
     "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+  },
+  "detailScreenStyleFrost": "Frost",
+  "@detailScreenStyleFrost": {
+    "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
   },
   "quickLookOpenFullPage": "Open full page",
   "@quickLookOpenFullPage": {
@@ -13467,6 +13471,14 @@
   "setupDetailQuickLookHint": "A drawer over the screen you were on, with play and the basics, and the full page a press away.",
   "@setupDetailQuickLookHint": {
     "description": "What the Quick Look detail screen style gives you"
+  },
+  "setupStyleFrost": "Frost",
+  "@setupStyleFrost": {
+    "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+  },
+  "setupDetailFrostHint": "The title in a glass window over its blurred art, with tabs under the buttons.",
+  "@setupDetailFrostHint": {
+    "description": "What the Frost detail screen style gives you"
   },
   "setupNavbarStyleQuestion": "How should the bottom bar look?",
   "@setupNavbarStyleQuestion": {

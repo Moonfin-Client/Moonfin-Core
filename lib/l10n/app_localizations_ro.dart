@@ -488,6 +488,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get detailScreenStyleQuickLook => 'Quick Look';
 
   @override
+  String get detailScreenStyleFrost => 'Frost';
+
+  @override
   String get quickLookOpenFullPage => 'Open full page';
 
   @override
@@ -15018,6 +15021,13 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get setupDetailQuickLookHint =>
       'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+
+  @override
+  String get setupStyleFrost => 'Frost';
+
+  @override
+  String get setupDetailFrostHint =>
+      'The title in a glass window over its blurred art, with tabs under the buttons.';
 
   @override
   String get setupNavbarStyleQuestion => 'Cum ar trebui să arate bara de jos?';
