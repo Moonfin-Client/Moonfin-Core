@@ -427,6 +427,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('tmdbTopRatedMoviesEnabled', UserPreferences.tmdbTopRatedMoviesEnabled, SyncCodec.boolean),
   SyncedField('tmdbTopRatedTvEnabled', UserPreferences.tmdbTopRatedTvEnabled, SyncCodec.boolean),
   SyncedField('tmdbTrendingAllWeeklyEnabled', UserPreferences.tmdbTrendingAllWeeklyEnabled, SyncCodec.boolean),
+  SyncedField('mdblistWatchingNowEnabled', UserPreferences.mdblistWatchingNowEnabled, SyncCodec.boolean),
   SyncedField('tmdbTrendingMovieDailyEnabled', UserPreferences.tmdbTrendingMovieDailyEnabled, SyncCodec.boolean),
   SyncedField('tmdbTrendingMovieWeeklyEnabled', UserPreferences.tmdbTrendingMovieWeeklyEnabled, SyncCodec.boolean),
   SyncedField('tmdbTrendingTvDailyEnabled', UserPreferences.tmdbTrendingTvDailyEnabled, SyncCodec.boolean),

@@ -144,6 +144,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.sinceYouWatched5 => 'Since You Watched Row 5',
         HomeSectionType.rewatch => 'Rewatch',
         HomeSectionType.seasonal => l10n.seasonalRow,
+        HomeSectionType.mdblistWatchingNow => l10n.mdblistWatchingNow,
         HomeSectionType.none => l10n.none,
       };
 

@@ -758,6 +758,7 @@ class UserPreferences extends ChangeNotifier {
     'tmdb_trending_tv_daily_enabled',
     'tmdb_trending_tv_weekly_enabled',
     'tmdb_trending_all_weekly_enabled',
+    'mdblistWatchingNowEnabled',
     'enable_radarr_calendar',
     'enable_sonarr_calendar',
     'radarr_calendar_show_cinema',
@@ -3426,6 +3427,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final tmdbTrendingTvWeeklyEnabled = Preference(
     key: 'tmdb_trending_tv_weekly_enabled',
+    defaultValue: false,
+  );
+
+  static final mdblistWatchingNowEnabled = Preference<bool>(
+    key: 'mdblistWatchingNowEnabled',
     defaultValue: false,
   );
 

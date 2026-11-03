@@ -9658,6 +9658,36 @@ abstract class AppLocalizations {
   /// **'Additional Ratings'**
   String get additionalRatings;
 
+  /// Title of the Watching on MDBList home row
+  ///
+  /// In en, this message translates to:
+  /// **'Watching on MDBList'**
+  String get mdblistWatchingNow;
+
+  /// Description for the Watching on MDBList setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show what MDBList users are currently watching'**
+  String get mdblistWatchingNowDescription;
+
+  /// Badge on Watching on MDBList card showing current watchers count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} watching'**
+  String watchingNowWatchersCount(int count);
+
+  /// Subtitle for Watching on MDBList home row showing live site statistics
+  ///
+  /// In en, this message translates to:
+  /// **'{users} watching now · {movies} movies · {shows} shows'**
+  String watchingNowLiveSummary(String users, String movies, String shows);
+
+  /// Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics
+  ///
+  /// In en, this message translates to:
+  /// **'{users} watched today · {movies} movies · {shows} shows'**
+  String watchingNowLiveSummaryToday(String users, String movies, String shows);
+
   /// Description for additional ratings
   ///
   /// In en, this message translates to:

@@ -29,6 +29,8 @@ import '../../../l10n/current_app_localizations.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import 'package:intl/intl.dart';
+import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
@@ -966,6 +968,8 @@ class HomeViewModel extends ChangeNotifier {
         return row.id == 'tmdb_trending_tv_weekly';
       case HomeSectionType.tmdbTrendingAllWeekly:
         return row.id == 'tmdb_trending_all_weekly';
+      case HomeSectionType.mdblistWatchingNow:
+        return row.id == 'mdblist_watching_now';
       case HomeSectionType.radarrCalendar:
         return row.id == 'radarr_calendar';
       case HomeSectionType.sonarrCalendar:
@@ -1098,7 +1102,11 @@ class HomeViewModel extends ChangeNotifier {
       _rows.removeAt(index);
     } else {
       _emptySectionIds.remove(rowId);
-      _rows[index] = _rows[index].copyWith(items: items, isLoading: false);
+      _rows[index] = _rows[index].copyWith(
+        items: items,
+        subtitle: fresh.subtitle,
+        isLoading: false,
+      );
     }
     notifyListeners();
   }
@@ -1377,6 +1385,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'tmdbTrendingTvWeekly'};
       case HomeSectionType.tmdbTrendingAllWeekly:
         return const {'tmdbTrendingAllWeekly'};
+      case HomeSectionType.mdblistWatchingNow:
+        return const {'mdblistWatchingNowEnabled'};
       case HomeSectionType.radarrCalendar:
         return const {'radarrCalendar'};
       case HomeSectionType.sonarrCalendar:
@@ -1795,6 +1805,8 @@ class HomeViewModel extends ChangeNotifier {
         return _loadTmdbChartRow(HomeSectionType.tmdbTrendingTvWeekly, 'Trending TV (Weekly)', 'tmdb_trending_tv_weekly');
       case HomeSectionType.tmdbTrendingAllWeekly:
         return _loadTmdbChartRow(HomeSectionType.tmdbTrendingAllWeekly, 'Trending All (Weekly)', 'tmdb_trending_all_weekly');
+      case HomeSectionType.mdblistWatchingNow:
+        return _loadMdblistWatchingNowRow(l10n);
       case HomeSectionType.recentlyReleased:
         return _loadRecentlyReleasedRow();
       case HomeSectionType.seasonal:
@@ -2296,6 +2308,13 @@ class HomeViewModel extends ChangeNotifier {
         return HomeRow(
           id: 'tmdb_trending_all_weekly',
           title: 'Trending All (Weekly)',
+          rowType: HomeRowType.pluginDynamic,
+          isLoading: true,
+        );
+      case HomeSectionType.mdblistWatchingNow:
+        return HomeRow(
+          id: 'mdblist_watching_now',
+          title: l10n.mdblistWatchingNow,
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );
@@ -3352,6 +3371,99 @@ class HomeViewModel extends ChangeNotifier {
       debugPrint('[TmdbChartRow] Failed to load TMDB chart row $sectionType: $e');
       return const [];
     }
+  }
+
+  Future<List<HomeRow>> _loadMdblistWatchingNowRow(AppLocalizations l10n) async {
+    try {
+      if (!GetIt.instance.isRegistered<MdbListRepository>()) return const [];
+      final repo = GetIt.instance<MdbListRepository>();
+      final data = await repo.getWatchingNow();
+      if (data == null || data.items.isEmpty) return const [];
+
+      final aggregatedItems = <AggregatedItem>[];
+      for (var i = 0; i < data.items.length; i++) {
+        final item = data.items[i];
+        final itemId = item.imdbId.isNotEmpty
+            ? item.imdbId
+            : (item.tmdbId != null ? item.tmdbId.toString() : item.publicId);
+        aggregatedItems.add(
+          AggregatedItem(
+            id: itemId,
+            serverId: 'seerr',
+            rawData: {
+              'Name': item.title,
+              'Type': item.mediaType == 'show' ? 'Series' : 'Movie',
+              'ProductionYear': item.year,
+              'Rank': i + 1,
+              'Watchers': item.watchers,
+              'LogoUrl': item.logo ?? '',
+              'BackdropPath': item.backdrop ?? '',
+              'PosterPath': item.backdrop ?? '',
+              'ProviderIds': {
+                if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
+                if (item.tmdbId != null) 'Tmdb': item.tmdbId.toString(),
+              },
+              'TmdbId': item.tmdbId != null ? item.tmdbId.toString() : '',
+              'ImdbId': item.imdbId,
+              'MediaType': item.mediaType,
+              'IsWatchingNow': true,
+            },
+          ),
+        );
+      }
+
+      final formatter = NumberFormat.decimalPattern();
+      final usersStr = formatter.format(data.users);
+      final moviesStr = formatter.format(data.movies);
+      final showsStr = formatter.format(data.shows);
+      final subtitle = data.mode == 'today'
+          ? l10n.watchingNowLiveSummaryToday(usersStr, moviesStr, showsStr)
+          : l10n.watchingNowLiveSummary(usersStr, moviesStr, showsStr);
+
+      _ensureWatchingNowTimer();
+
+      return [
+        HomeRow(
+          id: 'mdblist_watching_now',
+          title: l10n.mdblistWatchingNow,
+          subtitle: subtitle,
+          rowType: HomeRowType.pluginDynamic,
+          items: aggregatedItems,
+        ),
+      ];
+    } catch (e) {
+      debugPrint('[HomeViewModel] Failed to load mdblistWatchingNow: $e');
+      return const [];
+    }
+  }
+
+  Timer? _watchingNowTimer;
+
+  void _ensureWatchingNowTimer() {
+    if (_watchingNowTimer != null && _watchingNowTimer!.isActive) return;
+    _watchingNowTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      final l10n = currentAppLocalizations();
+      _refreshRowInPlace(
+        'mdblist_watching_now',
+        () async {
+          final rows = await _loadMdblistWatchingNowRow(l10n);
+          return rows.isNotEmpty
+              ? rows.first
+              : HomeRow(
+                  id: 'mdblist_watching_now',
+                  title: l10n.mdblistWatchingNow,
+                  rowType: HomeRowType.pluginDynamic,
+                );
+        },
+        (items) => items,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _watchingNowTimer?.cancel();
+    super.dispose();
   }
 
   Future<List<HomeRow>> _loadSeasonalRow(
