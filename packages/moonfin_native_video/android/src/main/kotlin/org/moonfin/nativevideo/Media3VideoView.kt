@@ -1446,6 +1446,7 @@ class Media3VideoView(
                     "event" to "error",
                     "message" to (error.localizedMessage ?: "Unknown Media3 playback error"),
                     "errorCodeName" to error.errorCodeName,
+                    "httpStatus" to httpStatusOf(error),
                     // The top level message is often empty, so a report needs
                     // the cause chain and the frame the failure came from.
                     "cause" to describeCauseChain(error),

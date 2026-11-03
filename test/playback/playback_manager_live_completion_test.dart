@@ -129,7 +129,7 @@ class _TestBackend extends Fake implements PlayerBackend {
     'event': 'error',
     'errorCodeName': 'ERROR_CODE_IO_BAD_HTTP_STATUS',
     'message': 'Source error',
-    'cause': 'yb1: Source error <- h12: Response code: $status',
+    'httpStatus': status,
   });
 
   void emitLiveSourceReset() => _errors.add(<String, dynamic>{

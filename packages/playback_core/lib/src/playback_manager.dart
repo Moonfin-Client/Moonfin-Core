@@ -1900,12 +1900,7 @@ class PlaybackManager implements AudioOwnable {
       case 'ERROR_CODE_IO_FILE_NOT_FOUND':
         return true;
       case 'ERROR_CODE_IO_BAD_HTTP_STATUS':
-        final status = int.tryParse(
-          RegExp(r'Response code: (\d{3})')
-                  .firstMatch('${event['cause'] ?? ''} ${event['message'] ?? ''}')
-                  ?.group(1) ??
-              '',
-        );
+        final status = event['httpStatus'] as int?;
         return status != null &&
             status >= 400 &&
             status < 500 &&
