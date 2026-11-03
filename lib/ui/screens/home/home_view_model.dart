@@ -604,6 +604,9 @@ class HomeViewModel extends ChangeNotifier {
             hydratedFromCache: hydratedFromCache,
             hasVisibleRow: hasVisibleRow,
           )) {
+            if (cfg.type == HomeSectionType.mdblistWatchingNow) {
+              _ensureWatchingNowTimer();
+            }
             return;
           }
           sectionRows = const <HomeRow>[];
@@ -3381,7 +3384,10 @@ class HomeViewModel extends ChangeNotifier {
       if (data == null) {
         throw Exception('Failed to fetch MDBList watching now feed');
       }
-      if (data.items.isEmpty) return const [];
+      if (data.items.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
 
       final identifiedItems = data.items
           .where((item) =>
@@ -3389,7 +3395,10 @@ class HomeViewModel extends ChangeNotifier {
               item.tmdbId != null ||
               item.publicId.isNotEmpty)
           .toList();
-      if (identifiedItems.isEmpty) return const [];
+      if (identifiedItems.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
 
       final aggregatedItems = <AggregatedItem>[];
       for (var i = 0; i < identifiedItems.length; i++) {
@@ -3454,6 +3463,10 @@ class HomeViewModel extends ChangeNotifier {
     if (_watchingNowTimer != null && _watchingNowTimer!.isActive) return;
     _watchingNowTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       final l10n = currentAppLocalizations();
+      if (!_rows.any((row) => row.id == 'mdblist_watching_now')) {
+        unawaited(load(preserveExisting: true, newSectionsOnly: true));
+        return;
+      }
       _refreshRowInPlace(
         'mdblist_watching_now',
         () async {
