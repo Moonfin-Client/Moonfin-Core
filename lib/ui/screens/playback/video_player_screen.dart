@@ -3080,10 +3080,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _isPausedScrubActive = true;
         // If an earlier still-resolving commit already paused playback for
         // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-        // already correctly true - re-reading _state.isPlaying now would see
+        // already correctly true. Re-reading the player's state now would see
         // "paused" and wrongly conclude nothing needs resuming later.
+        // isPlaying reads false while the seek from a Left or Right press with
+        // the controls hidden is still buffering, so this checks isPaused.
         if (!_wasPlayingBeforeScrubPause) {
-          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          _wasPlayingBeforeScrubPause = !_state.isPaused;
           if (_wasPlayingBeforeScrubPause) {
             _manager.pause();
           }
