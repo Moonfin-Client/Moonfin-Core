@@ -778,6 +778,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
         height: 56,
         child: Row(
           children: [
+            // A TV leaves with its remote's Back, but desktop needs a way out.
+            if (!_tv) ...[
+              BackButton(
+                color: AppColorScheme.onSurface,
+                onPressed: _closeSettingsPanel,
+              ),
+              const SizedBox(width: 8),
+            ],
             Text(
               l10n.settings,
               style: TextStyle(
