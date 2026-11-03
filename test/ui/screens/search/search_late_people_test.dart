@@ -154,6 +154,7 @@ void main() {
     when(() => client.imageApi).thenReturn(_MockImageApi());
     when(() => client.gamesApi).thenReturn(null);
     when(() => client.baseUrl).thenReturn('http://jf');
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
 
     final getIt = GetIt.instance;
     getIt.registerSingleton<PreferenceStore>(store);

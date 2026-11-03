@@ -67,6 +67,54 @@ void main() {
       expect(results.seerr.single.posterPath, '/abc.jpg');
     });
 
+    test('maps a Plex answer through the Plex mappers', () {
+      final results = SmartSearchResults.fromJson({
+        'Ready': true,
+        'Items': [
+          {
+            'ratingKey': '512',
+            'key': '/library/metadata/512',
+            'type': 'movie',
+            'title': 'Cast Away',
+            'year': 2000,
+            'thumb': '/library/metadata/512/thumb/1700000000',
+            'art': '/library/metadata/512/art/1700000000',
+            'summary': 'A man is stranded on an island.',
+            'Genre': [
+              {'tag': 'Drama'},
+            ],
+          },
+          {
+            'type': 'person',
+            'id': 12345,
+            'tag': 'Tom Hanks',
+            'thumb': 'https://metadata-static.plex.tv/people/hanks.jpg',
+          },
+          {'type': 'person', 'id': 678, 'tag': 'Helen Hunt'},
+        ],
+        'Seerr': <Object>[],
+      }, serverId: 'http://plex', plex: true);
+
+      final [movie, hanks, hunt] = results.items;
+      expect(movie.id, '512');
+      expect(movie.type, 'Movie');
+      expect(movie.name, 'Cast Away');
+      expect(movie.serverId, 'http://plex');
+      expect(movie.productionYear, 2000);
+      expect(movie.genres, ['Drama']);
+      expect(movie.primaryImageTag, '/library/metadata/512/thumb/1700000000');
+      expect(movie.backdropImageTags, ['/library/metadata/512/art/1700000000']);
+      expect(hanks.id, 'person-12345');
+      expect(hanks.type, 'Person');
+      expect(hanks.name, 'Tom Hanks');
+      expect(
+        hanks.primaryImageTag,
+        'https://metadata-static.plex.tv/people/hanks.jpg',
+      );
+      expect(hunt.id, 'person-678');
+      expect(hunt.primaryImageTag, isNull);
+    });
+
     test('a server still building its index gives nothing', () {
       final results = SmartSearchResults.fromJson({
         'Ready': false,
@@ -106,6 +154,7 @@ void main() {
       when(() => client.itemsApi).thenReturn(itemsApi);
       when(() => client.gamesApi).thenReturn(null);
       when(() => client.baseUrl).thenReturn('http://jf');
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
       when(() => pluginSync.smartSearchEnabled).thenReturn(true);
       when(
         () => itemsApi.getItems(

@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart'
+    show plexItemToJellyfin, plexPersonToJellyfin;
 
 import '../../l10n/current_app_localizations.dart';
 import '../../util/accent_folding.dart';
@@ -51,20 +53,32 @@ class SmartSearchResults {
 
   bool get isEmpty => items.isEmpty && seerr.isEmpty;
 
-  /// A server still building its first index answers with Ready false.
+  /// A server still building its first index answers with Ready false. On
+  /// [plex] the items are Plex metadata and people are Role tags, so they go
+  /// through the Plex client's own mappers and act like any other Plex item.
   factory SmartSearchResults.fromJson(
     Map<String, dynamic> json, {
     required String serverId,
+    bool plex = false,
     bool includeSeerr = true,
   }) {
     if (json['Ready'] != true) return empty;
+    final items = [
+      for (final raw in (json['Items'] as List? ?? const []).whereType<Map>())
+        if (!plex)
+          raw.cast<String, dynamic>()
+        else if (raw['type'] == 'person')
+          plexPersonToJellyfin(raw)
+        else
+          plexItemToJellyfin(raw.cast<String, dynamic>()),
+    ];
     return SmartSearchResults(
       items: withoutBlockedItems([
-        for (final raw in (json['Items'] as List? ?? const []).whereType<Map>())
+        for (final data in items)
           AggregatedItem(
-            id: raw['Id']?.toString() ?? '',
+            id: data['Id']?.toString() ?? '',
             serverId: serverId,
-            rawData: raw.cast<String, dynamic>(),
+            rawData: data,
           ),
       ]),
       seerr: includeSeerr
@@ -465,6 +479,7 @@ class SearchViewModel extends ChangeNotifier {
       return SmartSearchResults.fromJson(
         data,
         serverId: _client.baseUrl,
+        plex: _client.serverType == ServerType.plex,
         includeSeerr: _seerrRepository?.isAvailable ?? false,
       );
     } catch (_) {
