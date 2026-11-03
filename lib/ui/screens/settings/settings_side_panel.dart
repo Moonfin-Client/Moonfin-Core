@@ -718,28 +718,26 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   ) {
     Widget body = Stack(
       children: [
-        Offstage(
-          offstage: searching,
-          child: TickerMode(
-            enabled: !searching,
-            child: Navigator(
-              key: _listNavKey,
-              onGenerateRoute: (_) {
-                final category = _categories[_categoryIndex];
-                _shownCategory = category.title;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted && _preview.focused == null) {
-                    _describeCategory(category);
-                  }
-                });
-                return MaterialPageRoute<void>(
-                  builder: (_) => SettingsPreviewPath(
-                    path: [category.title],
-                    child: SettingsCategoryRoot(child: category.screen()),
-                  ),
-                );
-              },
-            ),
+        Visibility(
+          visible: !searching,
+          maintainState: true,
+          child: Navigator(
+            key: _listNavKey,
+            onGenerateRoute: (_) {
+              final category = _categories[_categoryIndex];
+              _shownCategory = category.title;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && _preview.focused == null) {
+                  _describeCategory(category);
+                }
+              });
+              return MaterialPageRoute<void>(
+                builder: (_) => SettingsPreviewPath(
+                  path: [category.title],
+                  child: SettingsCategoryRoot(child: category.screen()),
+                ),
+              );
+            },
           ),
         ),
         if (searching)
