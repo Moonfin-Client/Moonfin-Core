@@ -2075,15 +2075,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final duration = _state.duration;
     if (duration <= Duration.zero) return;
 
-    _precacheTrickplayIndexes(
-      TrickplayPrefetchPlanner.planImageIndexes(
+    // With the controls hidden nothing else asks for the current sheet, so
+    // it goes in with the next one or the first scrub waits for it.
+    _precacheTrickplayIndexes([
+      info.resolveTile(position).imageIndex,
+      ...TrickplayPrefetchPlanner.planImageIndexes(
         info: info,
         position: position,
         totalDuration: duration,
         directionForward: true,
         sheetsAhead: 1,
       ),
-    );
+    ]);
   }
 
   // Every sheet, nearest first. Held back until the first scrub or hover so
