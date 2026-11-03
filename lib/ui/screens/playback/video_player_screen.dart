@@ -2077,8 +2077,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     // With the controls hidden nothing else asks for the current sheet, so
     // it goes in with the next one or the first scrub waits for it.
+    final current = position >= duration
+        ? Duration(milliseconds: duration.inMilliseconds - 1)
+        : position;
     _precacheTrickplayIndexes([
-      info.resolveTile(position).imageIndex,
+      info.resolveTile(current).imageIndex,
       ...TrickplayPrefetchPlanner.planImageIndexes(
         info: info,
         position: position,
