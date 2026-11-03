@@ -13,10 +13,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get animeMarkerFiller => 'Filler';
+  String get animeMarkerFiller => '原创剧情';
 
   @override
-  String get animeMarkerMixed => 'Mixed';
+  String get animeMarkerMixed => '混合剧情';
 
   @override
   String get animeMarkerAnimeCanon => 'Anime Canon';
@@ -142,6 +142,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get whosWatching => '谁在观看？';
 
   @override
+  String get signedInOnThisDevice => 'Signed in on this device';
+
+  @override
+  String get pinRequired => 'PIN required';
+
+  @override
+  String get passwordRequired => 'Password required';
+
+  @override
+  String continueAsUser(String name) {
+    return 'Continue as $name';
+  }
+
+  @override
+  String switchToUser(String name) {
+    return 'Switch to $name';
+  }
+
+  @override
+  String signedInAsOnServer(String user, String server) {
+    return 'Signed in as $user on $server';
+  }
+
+  @override
+  String get accountActive => 'Active';
+
+  @override
   String get addUser => '添加用户';
 
   @override
@@ -213,7 +240,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailScreenStyle => '详情界面样式';
 
   @override
-  String get detailScreenStyleSubtitle => 'Moonfin 是经典布局；Modern 是自适应影院风布局。';
+  String get detailScreenStyleSubtitle =>
+      'Moonfin 是经典布局；Modern 是自适应影院风布局。Spotlight 是一种以主视觉区优先、带有弹出式内容卡片的布局。Nouveau 是一种全屏布局，各个版块沿页面自上而下堆叠。Minimalist 是有封面图、一个播放按钮和各集列表。';
 
   @override
   String get detailScreenStyleMoonfin => 'Moonfin';
@@ -435,13 +463,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalist';
 
   @override
+  String get detailScreenStyleStage => 'Stage';
+
+  @override
+  String get detailScreenStylePremiere => 'Premiere';
+
+  @override
+  String get detailScreenStyleQuickLook => 'Quick Look';
+
+  @override
+  String get detailScreenStyleFrost => 'Frost';
+
+  @override
+  String get quickLookOpenFullPage => 'Open full page';
+
+  @override
+  String get quickLookBackToClose => 'Back to close';
+
+  @override
+  String quickLookSeasonPlayed(int played, int total) {
+    return '$played of $total';
+  }
+
+  @override
   String get expandedTabs => '自动展开标签页';
 
   @override
   String get expandedTabsSubtitle => '浏览时自动加载标签内容；关闭后需手动展开/收起标签。';
 
   @override
-  String get showTechnicalDetails => '显示媒体技术参数？';
+  String get showTechnicalDetails => '显示媒体详情';
 
   @override
   String get showTechnicalDetailsSubtitle => '在顶部概览栏显示编码、分辨率及音视频流信息';
@@ -451,7 +502,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      '可选用「Moonfin本地资料库推荐算法」，或线上 TMDb 相似度匹配算法。注意：线上推荐功能需要对接 Seerr 服务。';
+      '使用 Moonfin Recommends 本地媒体库算法、Jellyfin Recommends 服务器引擎，或在线 TMDb 的相似度指标。注意：在线推荐需要集成 Seerr。';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin 智能推荐';
@@ -463,7 +514,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb 相似影片推荐';
 
   @override
-  String get recommendationsApplyParentalRatingCap => '是否启用家长分级上限限制？';
+  String get recommendationsApplyParentalRatingCap => '启用推荐分级限制';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -1191,7 +1242,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bookFormatComic => '漫画';
 
   @override
-  String get noBooksFound => '未找到该作者的图书。';
+  String get noBooksFound => '未找到该作者的图书';
 
   @override
   String get noBooksFoundDescription => '此媒体库中暂无书籍、有声书或漫画。';
@@ -1620,7 +1671,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadSubtitlesLabel => '下载字幕...';
 
   @override
-  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 插件进行搜索';
+  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 搜索';
 
   @override
   String get downloadSubtitles => '下载字幕';
@@ -3193,7 +3244,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loadingAnimationSpeedUltra => '极速';
 
   @override
-  String get showLoadingAnimationText => '显示文字？';
+  String get showLoadingAnimationText => '显示文字';
 
   @override
   String get loadingAnimationPreview => '预览';
@@ -3330,7 +3381,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loopThemeMusicSubtitle => '单曲循环，而非仅播放一次';
 
   @override
-  String get detailsBackgroundBlur => '详情页背景模糊';
+  String get detailsBackgroundBlur => '背景虚化';
 
   @override
   String get detailsBackgroundOpacity => '详情页背景不透明度';
@@ -3730,6 +3781,84 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
+
+  @override
+  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+
+  @override
+  String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
+
+  @override
+  String get mergedCalendarRow => 'Upcoming Releases';
+
+  @override
+  String get arrCalendarsRowSubtitle => 'Radarr and Sonarr Calendars';
+
+  @override
+  String get radarrCalendarRowSubtitle => 'Radarr Calendar';
+
+  @override
+  String get sonarrCalendarRowSubtitle => 'Sonarr Calendar';
+
+  @override
+  String calendarReleaseIn(int days, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'In $days days',
+      one: 'Tomorrow',
+      zero: 'Today',
+    );
+    return '$_temp0 ($date)';
+  }
+
+  @override
+  String get calendarReleaseCinema => 'Cinema';
+
+  @override
+  String get calendarReleaseDigital => 'Digital';
+
+  @override
+  String get calendarReleasePhysical => 'Physical';
+
+  @override
+  String get upcomingCalendars => 'Upcoming Calendars';
+
+  @override
+  String get upcomingCalendarsDescription =>
+      'Toggle Upcoming Calendars from Radarr/Sonarr.';
+
+  @override
+  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+
+  @override
+  String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
+
+  @override
+  String get radarrCalendarShowDigital => 'Show Upcoming Digital Releases';
+
+  @override
+  String get radarrCalendarShowPhysical => 'Show Upcoming Physical Releases';
+
+  @override
+  String get calendarShowReleaseDate => 'Show Release Date on Home Screen';
+
+  @override
+  String get radarrCalendarHideDownloaded =>
+      'Hide Movies Already on the Server';
+
+  @override
+  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
+
+  @override
+  String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
+
+  @override
+  String get sonarrCalendarHideDownloaded =>
+      'Hide Episodes Already on the Server';
+
+  @override
+  String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
   String get moveUp => '上移';
@@ -5321,7 +5450,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Show season availability badges on media details pages';
+      'Show the Seerr status on posters and seasons across the app';
+
+  @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
 
   @override
   String get seerrNotificationsSection => '通知';
@@ -14387,6 +14526,34 @@ class AppLocalizationsZh extends AppLocalizations {
       'Artwork, one play button and the episodes.';
 
   @override
+  String get setupStyleStage => 'Stage';
+
+  @override
+  String get setupDetailStageHint =>
+      'The poster up front, with play under it and the details beside it.';
+
+  @override
+  String get setupStylePremiere => 'Premiere';
+
+  @override
+  String get setupDetailPremiereHint =>
+      'The title centered over a full screen backdrop, with everything else down the page.';
+
+  @override
+  String get setupStyleQuickLook => 'Quick Look';
+
+  @override
+  String get setupDetailQuickLookHint =>
+      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+
+  @override
+  String get setupStyleFrost => 'Frost';
+
+  @override
+  String get setupDetailFrostHint =>
+      'The title in a glass window over its blurred art, with tabs under the buttons.';
+
+  @override
   String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
 
   @override
@@ -16063,6 +16230,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bookReaderControlsStayVisible => 'Controls stay visible';
+
+  @override
+  String get settingsLivePreview => 'Live preview';
+
+  @override
+  String settingsPreviewShowsOn(String screen) {
+    return 'Shows on the $screen preview';
+  }
+
+  @override
+  String get settingsPreviewNotShown => 'Not shown in the preview';
+
+  @override
+  String get settingsPreviewSaved => 'Saved';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -22869,8 +23058,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 位參與者',
-      one: '$count 位參與者',
+      other: '# 位參與者',
+      one: '# 位參與者',
     );
     return '$_temp0';
   }

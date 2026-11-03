@@ -1347,8 +1347,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // unplayed episode's seasonId so the cyan border always renders correctly.
     final nextUpSeasonId = _vm.nextUp?.seasonId ??
         _vm.seriesEpisodes.firstWhereOrNull((e) => !e.isPlayed)?.seasonId;
-    final showAvailabilityBadges =
-        widget.prefs.get(UserPreferences.showSeerrAvailabilityBadges);
     final seerrSeasonStatus = seerrItemSeasonStatus(_vm);
     // Set only for a series with no season to open, where the card offers to
     // request that season instead.
@@ -1384,9 +1382,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       );
 
       return SeasonCard(
-        seerrStatus: showAvailabilityBadges
-            ? seerrSeasonStatus[season.indexNumber]
-            : null,
+        seerrStatus: seerrSeasonStatus[season.indexNumber],
         badge: AnimeSeasonAudioBadge(
           seriesId: season.seriesId,
           seasonId: season.id,

@@ -454,6 +454,48 @@ abstract class AppLocalizations {
   /// **'Who\'s watching?'**
   String get whosWatching;
 
+  /// Status under a user on the Who's watching screen when this device already has their session
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in on this device'**
+  String get signedInOnThisDevice;
+
+  /// Status under a user or account that asks for a PIN before signing in
+  ///
+  /// In en, this message translates to:
+  /// **'PIN required'**
+  String get pinRequired;
+
+  /// Status under a user on the Who's watching screen who needs a password to sign in
+  ///
+  /// In en, this message translates to:
+  /// **'Password required'**
+  String get passwordRequired;
+
+  /// Phone button that signs in as the selected user on the Who's watching screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as {name}'**
+  String continueAsUser(String name);
+
+  /// Phone button in the Switch User sheet that switches to the selected account
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to {name}'**
+  String switchToUser(String name);
+
+  /// Line at the top of the Switch User screen naming the current account and its server
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {user} on {server}'**
+  String signedInAsOnServer(String user, String server);
+
+  /// Marks the account that is signed in now in the Switch User screen
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get accountActive;
+
   /// Button to add a new user on the server screen
   ///
   /// In en, this message translates to:
@@ -589,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -789,6 +831,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Minimalist'**
   String get detailScreenStyleMinimalist;
+
+  /// Detail screen style option: the poster leads, with play under it and the details beside it
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get detailScreenStyleStage;
+
+  /// Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get detailScreenStylePremiere;
+
+  /// Detail screen style option: a drawer over the screen the title was picked on, instead of a full page
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get detailScreenStyleQuickLook;
+
+  /// Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get detailScreenStyleFrost;
+
+  /// Button at the foot of the Quick Look drawer that opens the title's full details page
+  ///
+  /// In en, this message translates to:
+  /// **'Open full page'**
+  String get quickLookOpenFullPage;
+
+  /// Hint on the Quick Look drawer telling a TV viewer that the Back button closes it
+  ///
+  /// In en, this message translates to:
+  /// **'Back to close'**
+  String get quickLookBackToClose;
+
+  /// How many of a season's episodes have been watched, on a season card in the Quick Look drawer
+  ///
+  /// In en, this message translates to:
+  /// **'{played} of {total}'**
+  String quickLookSeasonPlayed(int played, int total);
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -6688,6 +6772,138 @@ abstract class AppLocalizations {
   /// **'Tomorrow'**
   String get upcomingEpisodeTomorrow;
 
+  /// Home row title for upcoming movies from the Radarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Movies (Radarr)'**
+  String get radarrCalendarRow;
+
+  /// Home row title for upcoming episodes from the Sonarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming TV Shows (Sonarr)'**
+  String get sonarrCalendarRow;
+
+  /// Home row title when the Radarr and Sonarr calendars are merged
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Releases'**
+  String get mergedCalendarRow;
+
+  /// Subtitle under the home row that merges the Radarr and Sonarr calendars
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr and Sonarr Calendars'**
+  String get arrCalendarsRowSubtitle;
+
+  /// Subtitle under the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr Calendar'**
+  String get radarrCalendarRowSubtitle;
+
+  /// Subtitle under the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Sonarr Calendar'**
+  String get sonarrCalendarRowSubtitle;
+
+  /// Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})'**
+  String calendarReleaseIn(int days, String date);
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Cinema'**
+  String get calendarReleaseCinema;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Digital'**
+  String get calendarReleaseDigital;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Physical'**
+  String get calendarReleasePhysical;
+
+  /// Settings screen for the Radarr and Sonarr calendar home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Calendars'**
+  String get upcomingCalendars;
+
+  /// Subtitle of the Upcoming Calendars settings entry
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Upcoming Calendars from Radarr/Sonarr.'**
+  String get upcomingCalendarsDescription;
+
+  /// Turns on the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Radarr\'s Upcoming Calendar'**
+  String get enableRadarrCalendar;
+
+  /// Includes cinema release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Cinema Releases'**
+  String get radarrCalendarShowCinema;
+
+  /// Includes digital release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Digital Releases'**
+  String get radarrCalendarShowDigital;
+
+  /// Includes physical release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Physical Releases'**
+  String get radarrCalendarShowPhysical;
+
+  /// Shows the release date under each item of a calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Release Date on Home Screen'**
+  String get calendarShowReleaseDate;
+
+  /// Leaves out movies Radarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Movies Already on the Server'**
+  String get radarrCalendarHideDownloaded;
+
+  /// Turns on the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Sonarr\'s Upcoming Calendar'**
+  String get enableSonarrCalendar;
+
+  /// Shows the season and episode number in the Sonarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Display Episode Information'**
+  String get sonarrCalendarShowEpisodeInfo;
+
+  /// Leaves out episodes Sonarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Episodes Already on the Server'**
+  String get sonarrCalendarHideDownloaded;
+
+  /// Shows the Radarr and Sonarr calendars as a single home row
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sonarr and Radarr Calendars'**
+  String get mergeRadarrSonarrCalendars;
+
   /// Moves a button one place earlier in its row
   ///
   /// In en, this message translates to:
@@ -9688,17 +9904,35 @@ abstract class AppLocalizations {
   /// **'Include missing items on Collection pages'**
   String get showMissingCollectionItemsDesc;
 
-  /// Setting title for showing Seerr availability badges on media details pages
+  /// Setting title for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
   /// **'Show Seerr Availability Badges'**
   String get showSeerrAvailabilityBadges;
 
-  /// Setting description for showing Seerr availability badges on media details pages
+  /// Setting description for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
-  /// **'Show season availability badges on media details pages'**
+  /// **'Show the Seerr status on posters and seasons across the app'**
   String get showSeerrAvailabilityBadgesDescription;
+
+  /// Setting title for how posters show their Seerr status
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Style'**
+  String get seerrBadgeStyle;
+
+  /// Setting description for the Seerr badge style choices
+  ///
+  /// In en, this message translates to:
+  /// **'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.'**
+  String get seerrBadgeStyleDescription;
+
+  /// Seerr badge style that shows a status dot in a poster corner
+  ///
+  /// In en, this message translates to:
+  /// **'Badge'**
+  String get seerrBadgeStyleBadge;
 
   /// Header for the Seerr notifications settings section
   ///
@@ -25999,6 +26233,54 @@ abstract class AppLocalizations {
   /// **'Artwork, one play button and the episodes.'**
   String get setupDetailMinimalistHint;
 
+  /// Name of the poster-led detail layout, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Stage'**
+  String get setupStyleStage;
+
+  /// What the Stage detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The poster up front, with play under it and the details beside it.'**
+  String get setupDetailStageHint;
+
+  /// Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere'**
+  String get setupStylePremiere;
+
+  /// What the Premiere detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title centered over a full screen backdrop, with everything else down the page.'**
+  String get setupDetailPremiereHint;
+
+  /// Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Look'**
+  String get setupStyleQuickLook;
+
+  /// What the Quick Look detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A drawer over the screen you were on, with play and the basics, and the full page a press away.'**
+  String get setupDetailQuickLookHint;
+
+  /// Name of the detail layout that floats the title in a glass window, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get setupStyleFrost;
+
+  /// What the Frost detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title in a glass window over its blurred art, with tabs under the buttons.'**
+  String get setupDetailFrostHint;
+
   /// Setup question asking which style the bottom navigation bar should use
   ///
   /// In en, this message translates to:
@@ -28598,6 +28880,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls stay visible'**
   String get bookReaderControlsStayVisible;
+
+  /// Label over the preview in Settings that redraws a screen of the app as settings change
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview'**
+  String get settingsLivePreview;
+
+  /// Under the Settings live preview, says the focused setting changes the named preview screen
+  ///
+  /// In en, this message translates to:
+  /// **'Shows on the {screen} preview'**
+  String settingsPreviewShowsOn(String screen);
+
+  /// Under the Settings live preview, says the focused setting has no visible effect in the preview
+  ///
+  /// In en, this message translates to:
+  /// **'Not shown in the preview'**
+  String get settingsPreviewNotShown;
+
+  /// Tag on the option that is saved while another option is being tried in the Settings live preview
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get settingsPreviewSaved;
+
+  /// Title of the search results row with library titles the server's natural-language search matched to a vague query
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search'**
+  String get smartSearch;
+
+  /// Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search on {seerr}'**
+  String smartSearchOnSeerr(String seerr);
 }
 
 class _AppLocalizationsDelegate

@@ -4,9 +4,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_modal_grids.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_section_modal.dart';
@@ -434,6 +436,49 @@ void main() {
         ),
       );
 
+      expect(find.byType(SeerrStatusDot), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'SpotlightMediaGridSection runs a banner across season cards in the banner style',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.seerrBadgeStyle, SeerrBadgeStyle.banner);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      addTearDown(GetIt.instance.reset);
+
+      final season = AggregatedItem(
+        id: 's1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 's1',
+          'Type': 'Season',
+          'Name': 'Season 1',
+          'IndexNumber': 1,
+        },
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SpotlightMediaGridSection(
+              items: [season],
+              imageApi: _ImageApi(),
+              prefs: prefs,
+              seerrSeasonStatus: const {1: SeerrMediaStatus.available},
+              onItemTap: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(SeerrStatusBanner), findsOneWidget);
       expect(find.byType(SeerrStatusDot), findsNothing);
     },
   );

@@ -1,0 +1,68 @@
+app-id: io.moonfin.moonfin
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+
+command: moonfin
+
+finish-args:
+  - --share=network
+  - --socket=fallback-x11
+  - --share=ipc
+  - --socket=wayland
+  - --device=all
+  - --socket=pulseaudio
+  # MPRIS media controls
+  - --own-name=org.mpris.MediaPlayer2.moonfin
+  # Saved logins (flutter_secure_storage via libsecret)
+  - --talk-name=org.freedesktop.secrets
+  # Keep the screen awake during playback (wakelock_plus)
+  - --talk-name=org.freedesktop.ScreenSaver
+  # Desktop notifications (flutter_local_notifications)
+  - --talk-name=org.freedesktop.Notifications
+  # Online/offline detection (connectivity_plus)
+  - --system-talk-name=org.freedesktop.NetworkManager
+  - --filesystem=xdg-documents/Moonfin:ro
+
+modules:
+  - name: moonfin
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin /app/moonfin /app/share/applications /app/share/metainfo /app/share/icons/hicolor/512x512/apps
+      - cp -r . /app/moonfin/
+      - |
+        cat > /app/bin/moonfin << 'EOFRUN'
+        #!/bin/sh
+        # The tarball's moonfin script finds its libraries next to itself, so call it by its real path rather than a symlink.
+        exec /app/moonfin/moonfin "$@"
+        EOFRUN
+      - chmod +x /app/bin/moonfin
+      - cp io.moonfin.moonfin.png /app/share/icons/hicolor/512x512/apps/
+      - cp io.moonfin.moonfin.desktop /app/share/applications/
+      - cp io.moonfin.moonfin.metainfo.xml /app/share/metainfo/
+    sources:
+      - type: archive
+        url: https://github.com/Moonfin-Client/Moonfin-Core/releases/download/3.0.0/Moonfin_Linux_v3.0.0.tar.gz
+        sha256: 36aad348e2ccbae834ddb2c8160158424605a4ebfcc1f55a8ab3474ddc9cc5f3
+        only-arches:
+          - x86_64
+        x-checker-data:
+          type: git
+          tag-pattern: '^([0-9.]+)$'
+      - type: archive
+        url: https://github.com/Moonfin-Client/Moonfin-Core/releases/download/3.0.0/Moonfin_LinuxARM64_v3.0.0.tar.gz
+        sha256: cc069268f4db25c417caf5047e8b4d33a7c67c117c8168e670c7613cdba4ed19
+        only-arches:
+          - aarch64
+        x-checker-data:
+          type: git
+          tag-pattern: '^([0-9.]+)$'
+      - type: file
+        url: https://raw.githubusercontent.com/jmawet/moonfin-core/e140de10be1aebca11ac1b28e0ce06a7f19a65f7/assets/flathub/io.moonfin.moonfin.desktop
+      - type: file
+        url: https://raw.githubusercontent.com/jmawet/moonfin-core/e140de10be1aebca11ac1b28e0ce06a7f19a65f7/assets/flathub/io.moonfin.moonfin.metainfo.xml
+      - type: file
+        url: https://raw.githubusercontent.com/Moonfin-Client/Moonfin-Core/22e306a2b318ebda48307b55ab1a3e08fabda995/assets/icons/moonfin.png
+        sha256: 7ce97a2c5083b67220a4725329fa2ddc01c5dd9634362c94a6c5f9b853d78991
+        dest-filename: io.moonfin.moonfin.png
+

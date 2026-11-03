@@ -345,6 +345,7 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
         }
 
         return _TvSettingsListTile(
+          previewKey: UserPreferences.navbarColor.key,
           leading: const Icon(Icons.palette),
           title: Text(l10n.navbarColor),
           subtitle: Text(_labelFor(normalized, l10n)),
@@ -369,6 +370,8 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
 
   Future<void> _showPicker(BuildContext context, String current) async {
     final l10n = AppLocalizations.of(context);
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final prefKey = UserPreferences.navbarColor.key;
     final selectedIndex = _keys.indexWhere((e) => e == current);
     final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
     final result = await showFocusRestoringDialog<String>(
@@ -394,25 +397,30 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
               final key = entry.value;
               final selected = key == current;
               final swatch = _swatchColor(key);
-              return TvFocusHighlight(
-                builder: (_, _) => ListTile(
-                  autofocus: i == autofocusIndex,
-                  leading: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: swatch,
-                      shape: BoxShape.circle,
-                      border: Border.fromBorderSide(
-                        ThemeRegistry.active.borders.chipBorder.copyWith(
-                          color: _swatchBorder(swatch),
+              return settingsPreviewOption(
+                onTry: preview == null
+                    ? null
+                    : () => preview.tryValue(prefKey, key),
+                child: TvFocusHighlight(
+                  builder: (_, _) => ListTile(
+                    autofocus: i == autofocusIndex,
+                    leading: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: swatch,
+                        shape: BoxShape.circle,
+                        border: Border.fromBorderSide(
+                          ThemeRegistry.active.borders.chipBorder.copyWith(
+                            color: _swatchBorder(swatch),
+                          ),
                         ),
                       ),
                     ),
+                    title: Text(_labelFor(key, l10n)),
+                    trailing: selected ? const Icon(Icons.check) : null,
+                    onTap: () => Navigator.pop(ctx, key),
                   ),
-                  title: Text(_labelFor(key, l10n)),
-                  trailing: selected ? const Icon(Icons.check) : null,
-                  onTap: () => Navigator.pop(ctx, key),
                 ),
               );
             }).toList(),
@@ -420,6 +428,7 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
         );
       },
     );
+    preview?.clearTry(prefKey);
 
     if (!mounted || result == null || result == _binding.value) return;
     _binding.value = result;

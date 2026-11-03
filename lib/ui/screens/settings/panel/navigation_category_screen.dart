@@ -17,6 +17,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
     super.initState();
     _syncService = GetIt.instance<PluginSyncService>();
     _syncService.addListener(_onSyncChanged);
+    unawaited(SetupPreviewData.loadLibraries());
   }
 
   @override
@@ -50,7 +51,6 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
     final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
     final availableNavbarPositions = NavigationLayout.availableNavbarPositions;
     final prefs = GetIt.instance<UserPreferences>();
-    final liveTvOnAnyServer = liveTvOnAnySignedInServer();
     final currentNavbarPosition = prefs.get(UserPreferences.navbarPosition);
     if (!NavigationLayout.allowBottomNavbar &&
         currentNavbarPosition == NavbarPosition.bottom &&
@@ -163,9 +163,10 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
             },
           ),
           // The switches write through their own bindings, so this watches
-          // the preferences to show the shuffle picker and follow the pins.
+          // the preferences to show the shuffle picker and follow the pins,
+          // and the libraries to offer Live TV once it turns out to be set up.
           ListenableBuilder(
-            listenable: prefs,
+            listenable: Listenable.merge([prefs, SetupPreviewData.libraries]),
             builder: (context, _) {
               // Tabs on the bottom bar are set from the tab pins, so this only
               // lists what the bottom navbar hub holds.
@@ -203,7 +204,8 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       icon: Icons.favorite,
                       onChanged: _pushPersonalizationSync,
                     ),
-                  if (liveTvOnAnyServer && !onBar.contains(BottomNavTab.liveTv))
+                  if (SetupPreviewData.hasLiveTv &&
+                      !onBar.contains(BottomNavTab.liveTv))
                     SwitchPreferenceTile(
                       key: const ValueKey(BottomNavTab.liveTv),
                       preference: UserPreferences.showLiveTvButton,
@@ -232,13 +234,14 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       icon: Icons.video_library,
                       onChanged: _pushPersonalizationSync,
                     ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.showSyncPlayButton,
-                    title: l10n.settingsSyncplayButton,
-                    subtitle: l10n.settingsSyncplayButtonSubtitle,
-                    icon: Icons.groups,
-                    onChanged: _pushPersonalizationSync,
-                  ),
+                  if (prefs.get(UserPreferences.syncPlayEnabled))
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.showSyncPlayButton,
+                      title: l10n.settingsSyncplayButton,
+                      subtitle: l10n.settingsSyncplayButtonSubtitle,
+                      icon: Icons.groups,
+                      onChanged: _pushPersonalizationSync,
+                    ),
                   if (seerrEnabledOnAccount &&
                       _syncService.seerrAvailable &&
                       !onBar.contains(BottomNavTab.discover))
@@ -254,8 +257,9 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       ),
                       onChanged: _pushPersonalizationSync,
                     ),
-                  if (PlatformDetection.supportsOfflineDownloads &&
-                      !PlatformDetection.isWeb)
+                  // Saved downloads keep the button even after downloading is turned off
+                  if (DownloadsNavSlot.isAvailable() ||
+                      DownloadsNavSlot.hasSavedMedia())
                     SwitchPreferenceTile(
                       preference: UserPreferences.showDownloadsButton,
                       title: l10n.showDownloadsButton,

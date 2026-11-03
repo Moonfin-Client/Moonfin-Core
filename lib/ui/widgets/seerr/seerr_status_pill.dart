@@ -31,6 +31,18 @@ String seerrStatusLabel(SeerrQualityStatus q, AppLocalizations l10n) {
   return l10n.notRequestedStatus;
 }
 
+/// The label for a bare status number, such as a recommended title carries.
+String seerrMediaStatusLabel(int? status, AppLocalizations l10n) =>
+    switch (status) {
+      SeerrMediaStatus.available => l10n.seerrAvailableStatus,
+      SeerrMediaStatus.partiallyAvailable => l10n.partiallyAvailable,
+      SeerrMediaStatus.processing => l10n.seerrRequestedStatus,
+      SeerrMediaStatus.pending => l10n.pendingStatus,
+      SeerrMediaStatus.blocklisted => l10n.blocklistedStatus,
+      SeerrMediaStatus.deleted => l10n.deletedStatus,
+      _ => l10n.notRequestedStatus,
+    };
+
 /// Whether a track is worth a badge beside a library item's metadata.
 ///
 /// A title already on screen in your library doesn't need to be told it is

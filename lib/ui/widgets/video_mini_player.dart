@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -1021,14 +1020,23 @@ class _HdrHoleState extends State<_HdrHole> {
 /// Clips [hole] out of whatever it wraps. The hole is in global logical
 /// pixels and is mapped into the clipped widget's own space through
 /// [originKey], or used as is when there is no key (a widget at the origin).
+/// While anyone but the mini player holds [windowOwner], the video shows
+/// through the whole screen and everything is clipped away.
 class _HoleClipper extends CustomClipper<Path> {
   final ValueListenable<Rect?> hole;
   final GlobalKey? originKey;
+  final ValueListenable<Object?>? windowOwner;
 
-  _HoleClipper({required this.hole, this.originKey}) : super(reclip: hole);
+  _HoleClipper({required this.hole, this.originKey, this.windowOwner})
+    : super(reclip: Listenable.merge([hole, windowOwner]));
 
   @override
   Path getClip(Size size) {
+    final owner = windowOwner?.value;
+    if (owner != null &&
+        !identical(owner, VideoMiniPlayerController.instance)) {
+      return Path();
+    }
     final path = Path()..addRect(Offset.zero & size);
     var rect = hole.value;
     if (rect == null) return path;
@@ -1045,7 +1053,9 @@ class _HoleClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(_HoleClipper oldClipper) =>
-      oldClipper.hole != hole || oldClipper.originKey != originKey;
+      oldClipper.hole != hole ||
+      oldClipper.originKey != originKey ||
+      oldClipper.windowOwner != windowOwner;
 }
 
 /// A [ClipPath] that clips painting only. A plain one also drops hits outside
@@ -1073,8 +1083,9 @@ class _RenderHoleClipPath extends RenderClipPath {
   }
 }
 
-/// Clips the HDR thumbnail's hole out of the app's backdrop, so nothing
-/// behind the shell covers the video either. Used by the app shell.
+/// Clips the app's backdrop so it can't cover the video: just the thumbnail's
+/// hole while the mini player has the native window, and all of it while the
+/// full player does.
 class VideoMiniPlayerHoleClip extends StatelessWidget {
   final Widget child;
 
@@ -1083,8 +1094,12 @@ class VideoMiniPlayerHoleClip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!PlatformDetection.isWindows) return child;
+    final controller = VideoMiniPlayerController.instance;
     return _HoleClipPath(
-      clipper: _HoleClipper(hole: VideoMiniPlayerController.instance.hdrHole),
+      clipper: _HoleClipper(
+        hole: controller.hdrHole,
+        windowOwner: controller.hdrBackend?.hdrOutput.window.claimedBy,
+      ),
       child: child,
     );
   }
@@ -1450,9 +1465,11 @@ class _MiniProgressBarState extends State<_MiniProgressBar> {
     );
 
     Widget image(TrickplayTile t) => TrickplayTileImage(
-      sheet: CachedNetworkImageProvider(
+      sheet: trickplaySheetProvider(
         t.url,
-        headers: t.headers.isEmpty ? null : t.headers,
+        t.headers,
+        sheetWidth: (t.thumbWidth * t.tileWidth).round(),
+        sheetHeight: (t.thumbHeight * t.tileHeight).round(),
       ),
       sourceRect: t.sourceRect,
       thumbWidth: t.thumbWidth,

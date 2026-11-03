@@ -60,6 +60,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.decoder.av1.Dav1dLibrary
 import androidx.media3.decoder.av1.Libdav1dVideoRenderer
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
@@ -3086,6 +3087,11 @@ class Media3VideoView(
                     result.success(null)
                 }
 
+                "updateRequestHeaders" -> {
+                    updateRequestHeaders(call.arguments)
+                    result.success(null)
+                }
+
                 "stop" -> {
                     stopPlaybackAndRestoreDisplayMode()
                     if (isDisposedByFlutter && currentMediaType != "audio") {
@@ -3314,6 +3320,8 @@ class Media3VideoView(
                     resumeLiveEdge()
                     emitState()
                 }
+
+                "updateRequestHeaders" -> updateRequestHeaders(args)
 
                 "stop" -> {
                     stopPlaybackAndRestoreDisplayMode()
@@ -6310,6 +6318,28 @@ class Media3VideoView(
         return false
     }
 
+    // Every data source the factory makes reads its request properties when
+    // it opens a request, so renewed credentials reach the next request of
+    // the stream that is playing, without reopening it.
+    private fun updateRequestHeaders(args: Any?) {
+        val raw = (args as? Map<*, *>)?.get("headers") as? Map<*, *> ?: return
+        currentHeaders = raw.mapNotNull { (k, v) ->
+            if (k == null || v == null) null else k.toString() to v.toString()
+        }.toMap()
+        if (::httpDataSourceFactory.isInitialized) {
+            httpDataSourceFactory.setDefaultRequestProperties(currentHeaders)
+        }
+    }
+
+    private fun httpStatusOf(error: Throwable): Int? {
+        var cause: Throwable? = error
+        while (cause != null) {
+            if (cause is HttpDataSource.InvalidResponseCodeException) return cause.responseCode
+            cause = cause.cause
+        }
+        return null
+    }
+
     private fun emitRecoverablePlayerError(
         error: PlaybackException,
         audioOffloadRetryTriggered: Boolean,
@@ -6349,6 +6379,21 @@ class Media3VideoView(
                 } else {
                     null
                 }
+
+            // A refusal is usually a token that expired while the stream
+            // played, and a gateway or overload status clears up on its own,
+            // so the manager reopens the stream for those. Any other status
+            // won't change on a retry, so playback fails on it.
+            PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS ->
+                when (httpStatusOf(error)) {
+                    401, 403 -> "source_refused"
+                    408, 429, 502, 503, 504 -> "network"
+                    else -> null
+                }
+
+            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT,
+            -> "network"
 
             else -> null
         }

@@ -121,6 +121,17 @@
         return normalized.indexOf('format=hls') !== -1;
       }
 
+      // The URL with its token= value replaced, for a URL that carries one.
+      function withToken(url, token) {
+        if (typeof url !== 'string') {
+          return url;
+        }
+        return url.replace(
+          /([?&])token=[^&#]*/,
+          '$1token=' + encodeURIComponent(token)
+        );
+      }
+
       function shouldTreatAsHls(url, forceHls) {
         return !!forceHls || isHlsPlaylistUrl(url);
       }
@@ -143,7 +154,7 @@
           }
           return !!window.Hls.isSupported();
         },
-        attach: function (video, url, forceHls) {
+        attach: function (video, url, forceHls, onFatalError) {
           if (!this.canUseHlsJs(video, url, forceHls)) {
             return null;
           }
@@ -151,10 +162,36 @@
             enableWorker: true,
             lowLatencyMode: true,
             backBufferLength: 90,
+            // A stream that authenticates with a token in its URLs gets
+            // renewed ones through setToken while it plays, and every request
+            // after that carries the latest.
+            xhrSetup: function (xhr, requestUrl) {
+              if (hls && hls.moonfinToken) {
+                xhr.open('GET', withToken(requestUrl, hls.moonfinToken), true);
+              }
+            },
           });
+          if (typeof onFatalError === 'function') {
+            hls.on(window.Hls.Events.ERROR, function (_, data) {
+              if (!data || !data.fatal) {
+                return;
+              }
+              var status = data.response && data.response.code;
+              onFatalError(
+                String(data.type || ''),
+                String(data.details || ''),
+                typeof status === 'number' ? status : 0
+              );
+            });
+          }
           hls.loadSource(url);
           hls.attachMedia(video);
           return hls;
+        },
+        setToken: function (hls, token) {
+          if (hls) {
+            hls.moonfinToken = token;
+          }
         },
         destroy: function (hls) {
           if (hls && typeof hls.destroy === 'function') {

@@ -9,7 +9,6 @@ class PlayerLoadingOverlay extends StatefulWidget {
   const PlayerLoadingOverlay({
     super.key,
     this.label,
-    this.labelSpacing,
     this.customImage,
     this.customSize,
     this.customPosition,
@@ -19,9 +18,8 @@ class PlayerLoadingOverlay extends StatefulWidget {
   });
 
   final String? label;
-  final double? labelSpacing;
   final LoadingAnimationImage? customImage;
-  final double? customSize;
+  final LoadingAnimationSize? customSize;
   final LoadingAnimationPosition? customPosition;
   final bool? customShowText;
   final LoadingAnimationSpeed? customSpeed;
@@ -75,10 +73,9 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
         prefs?.get(UserPreferences.loadingAnimationImage) ??
         LoadingAnimationImage.moonfinLogo;
 
-    final sizePref = prefs?.get(UserPreferences.loadingAnimationSize) ??
+    final sizePref = widget.customSize ??
+        prefs?.get(UserPreferences.loadingAnimationSize) ??
         LoadingAnimationSize.medium;
-
-    final effectiveSize = widget.customSize ?? sizePref.pixelSize;
 
     final effectivePosition = widget.customPosition ??
         prefs?.get(UserPreferences.loadingAnimationPosition) ??
@@ -100,7 +97,7 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
       return const SizedBox.shrink();
     }
 
-    final spacing = widget.labelSpacing ?? sizePref.labelSpacing;
+    final spacing = sizePref.labelSpacing;
     final fontSize = sizePref.labelFontSize;
     final letterSpacing = sizePref.labelLetterSpacing;
 
@@ -113,7 +110,7 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
           RepaintBoundary(
             child: LoadingAnimationWidget(
               image: image,
-              size: effectiveSize,
+              size: sizePref.pixelSize,
               position: effectivePosition,
               flipHorizontal: widget.flipHorizontal,
               speed: effectiveSpeed,

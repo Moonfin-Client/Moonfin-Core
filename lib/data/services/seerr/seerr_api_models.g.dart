@@ -1071,6 +1071,7 @@ SeerrSeason _$SeerrSeasonFromJson(Map<String, dynamic> json) => SeerrSeason(
   episodeCount: (json['episodeCount'] as num?)?.toInt(),
   name: json['name'] as String?,
   airDate: json['airDate'] as String?,
+  posterPath: json['posterPath'] as String?,
 );
 
 Map<String, dynamic> _$SeerrSeasonToJson(SeerrSeason instance) =>
@@ -1080,6 +1081,7 @@ Map<String, dynamic> _$SeerrSeasonToJson(SeerrSeason instance) =>
       'episodeCount': instance.episodeCount,
       'name': instance.name,
       'airDate': instance.airDate,
+      'posterPath': instance.posterPath,
     };
 
 SeerrRequestCounts _$SeerrRequestCountsFromJson(Map<String, dynamic> json) =>

@@ -79,9 +79,11 @@ String localizeHomeRowTitle({
     case 'activeRecordings':
       return l10n.activeRecordings;
     case 'radarr_calendar':
-      return 'Upcoming Movies (Radarr)';
+      return l10n.radarrCalendarRow;
     case 'sonarr_calendar':
-      return 'Upcoming TV Shows (Sonarr)';
+      return l10n.sonarrCalendarRow;
+    case 'merged_calendar':
+      return l10n.mergedCalendarRow;
     case 'seerr_recent_requests':
       return l10n.recentRequests;
     case 'seerr_recently_added':

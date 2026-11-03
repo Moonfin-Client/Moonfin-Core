@@ -10,6 +10,7 @@ import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/settings/home_sections_screen.dart';
+import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -79,7 +80,11 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<void> pump(WidgetTester tester, InterfaceLayout layout) async {
+  Future<void> pump(
+    WidgetTester tester,
+    InterfaceLayout layout, {
+    Widget home = const HomeSectionsScreen(),
+  }) async {
     PlatformDetection.setInterfaceLayout(layout);
     tester.view.physicalSize = const Size(1200, 6000);
     tester.view.devicePixelRatio = 1;
@@ -88,7 +93,7 @@ void main() {
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const HomeSectionsScreen(),
+        home: home,
       ),
     );
     await tester.pumpAndSettle();
@@ -144,6 +149,41 @@ void main() {
       expect(top(tester, name), greaterThan(top(tester, 'Disabled')));
     }
   });
+
+  for (final layout in [InterfaceLayout.phone, InterfaceLayout.tv]) {
+    testWidgets('entering the editor on ${layout.name} opens no group', (
+      tester,
+    ) async {
+      // Opened the way Settings opens it, which focuses the first thing it
+      // finds before the rows have loaded.
+      await pump(
+        tester,
+        layout,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () =>
+                context.pushSettingsScreen(const HomeSectionsScreen()),
+            child: const Text('Rows'),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Rows'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('General'), findsOneWidget);
+      expect(find.text('Collections'), findsOneWidget);
+      // General's rows and the collections stay folded away.
+      expect(find.text('Live TV'), findsNothing);
+      expect(find.text('Marvel'), findsNothing);
+      // A remote lands on the first row rather than the reset button above.
+      if (layout == InterfaceLayout.tv) {
+        expect(
+          FocusManager.instance.primaryFocus?.debugLabel,
+          'section_${enabledOrder().first}',
+        );
+      }
+    });
+  }
 
   testWidgets('rows switched off where they live stay out of the editor', (
     tester,
@@ -244,6 +284,8 @@ void main() {
     await pump(tester, InterfaceLayout.phone);
     await dragDown(tester, find.text('My Media'), 600, hold: longPress);
 
+    await tester.tap(find.text('General'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Live TV'));
     await tester.pumpAndSettle();
 
