@@ -54,6 +54,8 @@ import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/models/media_segment.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/models/trickplay_prefetch_planner.dart';
+import '../../../data/models/trickplay_sheet_keeper.dart';
+import '../../../util/device_performance.dart';
 import '../../../data/models/trickplay_preview_layout.dart';
 import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/cast/cast_target.dart';
@@ -301,6 +303,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // _wasPlayingBeforeScrubPause, doesn't imply resuming afterward.
   bool _isPausedScrubActive = false;
   final Set<int> _prefetchedTrickplayIndexes = {};
+  // The decode size for the current item's trickplay sheets: the full sheet
+  // when two fit the image cache whole. Null when the player keeps no sheets
+  // and builds the providers it always has (off TV, the reduced tier,
+  // individual frames, or no size fits).
+  ({int width, int height})? _trickplaySheetDecode;
+  final TrickplaySheetKeeper _trickplaySheetKeeper = TrickplaySheetKeeper();
+  bool _trickplayKeepAwaitingFrame = false;
+  int? _trickplayKeptSheet;
+  bool? _trickplayKeptForward;
   bool _touchTrickplayPrefetchStarted = false;
   Duration? _lastTrickplayPreviewPosition;
   Duration? _hoverPosition;
@@ -1982,6 +1993,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final itemId = _itemIdForQueueItem(item);
     final mediaSourceId = _manager.currentResolution?.mediaSourceId;
     _prefetchedTrickplayIndexes.clear();
+    _trickplaySheetKeeper.reset();
+    _trickplayKeptSheet = null;
+    _trickplayKeptForward = null;
+    _trickplaySheetDecode = null;
     _touchTrickplayPrefetchStarted = false;
     _lastTrickplayPreviewPosition = null;
     if (mounted) {
@@ -2031,7 +2046,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
     setState(() {
-      _trickplayInfo = info?.isValid == true ? info : null;
+      final valid = info?.isValid == true ? info : null;
+      _trickplayInfo = valid;
+      // The budget is the image cache's own, fixed at startup, so the rule
+      // stays within it whatever the performance tier reads now.
+      _trickplaySheetDecode =
+          valid != null &&
+              PlatformDetection.isTV &&
+              _prefs.resolveDevicePerformanceTier() ==
+                  DevicePerformanceTier.standard &&
+              !valid.usesIndividualFrames
+          ? TrickplayPrefetchPlanner.planSheetDecodeSize(
+              sheetWidth: valid.width * valid.tileWidth,
+              sheetHeight: valid.height * valid.tileHeight,
+              cacheBytes: PaintingBinding.instance.imageCache.maximumSizeBytes,
+            )
+          : null;
       _trickplayMediaSourceId = mediaSourceId;
     });
     if (_controlsVisible) {
@@ -2076,15 +2106,48 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final duration = _state.duration;
     if (duration <= Duration.zero) return;
 
+    // Off the keep path the prefetch looks forward as before; on it, the
+    // prefetch asks for the same neighbor as the keep, because a third sheet
+    // would evict the current one.
+    final keepForward =
+        _trickplaySheetDecode == null ||
+        TrickplayPrefetchPlanner.planPlaybackKeepForward(
+          info: info,
+          position: position,
+          totalDuration: duration,
+          forwardStepMs: _prefs.get(UserPreferences.skipForwardLength),
+          backwardStepMs: _prefs.get(UserPreferences.skipBackLength),
+        );
     _precacheTrickplayIndexes(
       TrickplayPrefetchPlanner.planImageIndexes(
         info: info,
         position: position,
         totalDuration: duration,
-        directionForward: true,
+        directionForward: keepForward,
         sheetsAhead: 1,
       ),
     );
+    if (_trickplaySheetDecode == null) return;
+    // precacheImage releases its listener after the next frame; without
+    // frames, ask once per sheet.
+    final sheet = info
+        .resolveTile(
+          position >= duration
+              ? Duration(milliseconds: duration.inMilliseconds - 1)
+              : position,
+        )
+        .imageIndex;
+    if (!_trickplayKeepAwaitingFrame ||
+        sheet != _trickplayKeptSheet ||
+        keepForward != _trickplayKeptForward) {
+      _trickplayKeptSheet = sheet;
+      _trickplayKeptForward = keepForward;
+      _trickplayKeepAwaitingFrame = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _trickplayKeepAwaitingFrame = false;
+      });
+      _keepTrickplaySheets(position, forward: keepForward);
+    }
   }
 
   // Every sheet, nearest first. Held back until the first scrub or hover so
@@ -2145,6 +2208,75 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  /// Asks for the sheet at [index] through the image cache, so that it is
+  /// loaded if it is not tracked and moved to the newest end of the cache if it
+  /// is held. A sheet whose load failed is not asked for again for a while.
+  void _keepTrickplaySheet(int index) {
+    if (!mounted || _trickplaySheetDecode == null) return;
+    if (_prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
+      return;
+    }
+    final info = _trickplayInfo;
+    if (info == null) return;
+    if (!_trickplaySheetKeeper.mayRequest(index, DateTime.now())) return;
+    final item = _queue.currentItem;
+    final itemId = _itemIdForQueueItem(item);
+    if (itemId == null || itemId.isEmpty) return;
+    final client = _clientForQueueItem(item);
+    final url = _trickplayImageUrl(
+      info: info,
+      imageIndex: index,
+      itemId: itemId,
+      client: client,
+    );
+    if (url == null) return;
+    final headers = trickplayImageHeaders(client, withUserAgent: false);
+    final generation = _trickplayLoadGeneration;
+    var errored = false;
+    unawaited(
+      precacheImage(
+        _trickplaySheetProvider(url, headers),
+        context,
+        onError: (_, _) {
+          errored = true;
+          if (generation == _trickplayLoadGeneration) {
+            _trickplaySheetKeeper.failed(index, DateTime.now());
+          }
+        },
+      ).then((_) {
+        if (!errored && generation == _trickplayLoadGeneration) {
+          _trickplaySheetKeeper.loaded(index);
+        }
+      }).catchError((_) {}),
+    );
+  }
+
+  /// Keeps the sheet under [position] and the next one in the scrub direction
+  /// in the image cache. The next sheet goes last, so it ends at the newest
+  /// end.
+  void _keepTrickplaySheets(Duration position, {required bool forward}) {
+    final info = _trickplayInfo;
+    final duration = _state.duration;
+    if (_trickplaySheetDecode == null ||
+        info == null ||
+        duration <= Duration.zero) {
+      return;
+    }
+    final clamped = position >= duration
+        ? Duration(milliseconds: duration.inMilliseconds - 1)
+        : position;
+    _keepTrickplaySheet(info.resolveTile(clamped).imageIndex);
+    for (final index in TrickplayPrefetchPlanner.planImageIndexes(
+      info: info,
+      position: clamped,
+      totalDuration: duration,
+      directionForward: forward,
+      sheetsAhead: 1,
+    )) {
+      _keepTrickplaySheet(index);
+    }
+  }
+
   void _precacheTrickplayIndexes(List<int> indexes) {
     if (indexes.isEmpty) return;
     final info = _trickplayInfo;
@@ -2170,10 +2302,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
       unawaited(
         precacheImage(
-          CachedNetworkImageProvider(
-            url,
-            headers: headers.isEmpty ? null : headers,
-          ),
+          _trickplaySheetProvider(url, headers),
           context,
           onError: (_, _) {
             if (generation == _trickplayLoadGeneration) {
@@ -2183,6 +2312,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ).catchError((_) {}),
       );
     }
+  }
+
+  /// The provider for a trickplay sheet. The preview and every request build
+  /// theirs here, so they share one image cache key; a sheet is decoded at
+  /// [_trickplaySheetDecode] when that is smaller than the sheet, so that two
+  /// sheets fit in the image cache.
+  ImageProvider _trickplaySheetProvider(
+    String url,
+    Map<String, String> headers,
+  ) {
+    final decode = _trickplaySheetDecode;
+    final info = _trickplayInfo;
+    if (decode != null &&
+        info != null &&
+        decode.width < info.width * info.tileWidth) {
+      return ArtworkDecode.provider(
+        url,
+        width: decode.width,
+        height: decode.height,
+        headers: headers.isEmpty ? null : headers,
+      );
+    }
+    return CachedNetworkImageProvider(
+      url,
+      headers: headers.isEmpty ? null : headers,
+    );
   }
 
   void _onPositionUpdate(Duration position) {
@@ -3044,6 +3199,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _transportPosition;
     final target = basePosition + Duration(milliseconds: ms);
     _prefetchTrickplayDirectional(target, forward: ms > 0);
+    _keepTrickplaySheets(target, forward: ms > 0);
     _accumulateScrub(target);
   }
 
@@ -3080,10 +3236,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _isPausedScrubActive = true;
         // If an earlier still-resolving commit already paused playback for
         // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-        // already correctly true - re-reading _state.isPlaying now would see
+        // already correctly true - re-reading the player's state now would see
         // "paused" and wrongly conclude nothing needs resuming later.
+        // Read the intent to play, not isPlaying, which is false while the
+        // player buffers, as it does just after the direct seek that a Left or
+        // Right press with the controls hidden makes before the scrub begins;
+        // the scrub would then never pause.
         if (!_wasPlayingBeforeScrubPause) {
-          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          _wasPlayingBeforeScrubPause = !_state.isPaused;
           if (_wasPlayingBeforeScrubPause) {
             _manager.pause();
           }
@@ -5442,10 +5602,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Widget _trickplayTileImage(TrickplayTile tile) {
     return TrickplayTileImage(
-      sheet: CachedNetworkImageProvider(
-        tile.url,
-        headers: tile.headers.isEmpty ? null : tile.headers,
-      ),
+      sheet: _trickplaySheetProvider(tile.url, tile.headers),
       sourceRect: tile.sourceRect,
       thumbWidth: tile.thumbWidth,
       thumbHeight: tile.thumbHeight,

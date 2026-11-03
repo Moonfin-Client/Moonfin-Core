@@ -161,4 +161,122 @@ void main() {
     );
     expect(indexes.every((index) => index >= 0 && index < 20), isTrue);
   });
+
+  group('planSheetDecodeSize', () {
+    const budget = 100663296;
+    ({int width, int height})? plan(int width, int height, int bytes) =>
+        TrickplayPrefetchPlanner.planSheetDecodeSize(
+          sheetWidth: width,
+          sheetHeight: height,
+          cacheBytes: bytes,
+        );
+
+    test('decodes a 6400 x 3200 sheet at three quarters', () {
+      expect(plan(6400, 3200, budget), (width: 4800, height: 2400));
+    });
+    test('keeps a 3200 x 1600 sheet at its full size', () {
+      expect(plan(3200, 1600, budget), (width: 3200, height: 1600));
+    });
+    test('budgets for two sheets, not one', () {
+      expect(plan(7200, 3600, budget), (width: 4500, height: 2250));
+    });
+    test('skips an eighth with a fractional height', () {
+      expect(plan(6400, 3202, budget), (width: 3200, height: 1601));
+    });
+    test('skips an eighth with a fractional width', () {
+      expect(plan(6402, 3200, budget), (width: 3201, height: 1600));
+    });
+    test('decodes a 9800 x 4900 sheet at one half', () {
+      expect(plan(9800, 4900, budget), (width: 4900, height: 2450));
+    });
+    test('gives a 16:9 sheet five eighths because two do not fit at three', () {
+      expect(plan(6400, 3600, budget), (width: 4000, height: 2250));
+    });
+    test('follows the budget it is given', () {
+      expect(plan(6400, 3200, 33554432), (width: 2400, height: 1200));
+    });
+    test('accepts a decode that exactly fills the budget with two sheets', () {
+      expect(plan(4800, 2400, 92160000), (width: 4800, height: 2400));
+    });
+    test('falls to one eighth when nothing larger fits', () {
+      expect(plan(6400, 3200, 2560000), (width: 800, height: 400));
+    });
+    test('returns null for a sheet width below 1', () {
+      expect(plan(0, 3200, budget), isNull);
+    });
+    test('returns null for a sheet height below 1', () {
+      expect(plan(6400, 0, budget), isNull);
+    });
+    test('returns null for a cache budget below 1', () {
+      expect(plan(6400, 3200, 0), isNull);
+    });
+    test('returns null when not even one eighth fits', () {
+      expect(plan(100000, 100000, 1000), isNull);
+    });
+  });
+
+  group('planPlaybackKeepForward', () {
+    // A sheet covers 1,000 s; the last of three starts at 2,000 s. With steps
+    // of 30 s forward and 10 s back, the next sheet is held from 250 s in.
+    const sheets = TrickplayInfo(
+      width: 640,
+      height: 320,
+      tileWidth: 10,
+      tileHeight: 10,
+      interval: 10000,
+    );
+    const duration = Duration(milliseconds: 2578000);
+    bool keepForward(
+      int positionMs, {
+      int forwardStepMs = 30000,
+      int backwardStepMs = 10000,
+      TrickplayInfo source = sheets,
+    }) => TrickplayPrefetchPlanner.planPlaybackKeepForward(
+      info: source,
+      position: Duration(milliseconds: positionMs),
+      totalDuration: duration,
+      forwardStepMs: forwardStepMs,
+      backwardStepMs: backwardStepMs,
+    );
+
+    test('holds the previous sheet early in a sheet', () {
+      expect(keepForward(1100000), isFalse);
+    });
+    test('holds the previous sheet just before the switch', () {
+      expect(keepForward(1249000), isFalse);
+    });
+    test('holds the next sheet from the switch on', () {
+      expect(keepForward(1250000), isTrue);
+    });
+    test('holds the next sheet on the first sheet', () {
+      expect(keepForward(60000), isTrue);
+    });
+    test('holds the previous sheet on the last sheet', () {
+      expect(keepForward(2500000), isFalse);
+    });
+    test('moves the switch with the step lengths', () {
+      expect(
+        keepForward(1700000, forwardStepMs: 10000, backwardStepMs: 30000),
+        isFalse,
+      );
+    });
+    test('looks forward for a forward step below 1', () {
+      expect(keepForward(1100000, forwardStepMs: 0), isTrue);
+    });
+    test('looks forward for individual frames', () {
+      const frames = TrickplayInfo(
+        width: 320,
+        height: 180,
+        tileWidth: 1,
+        tileHeight: 1,
+        interval: 10000,
+        frames: [
+          TrickplayFrameInfo(positionTicks: 0, imageTag: 'a'),
+          TrickplayFrameInfo(positionTicks: 100000000, imageTag: 'b'),
+          TrickplayFrameInfo(positionTicks: 200000000, imageTag: 'c'),
+        ],
+      );
+      expect(keepForward(1060000, source: frames), isTrue);
+    });
+  });
 }

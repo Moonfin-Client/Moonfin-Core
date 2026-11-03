@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -30,6 +31,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 class _AuthStore extends Fake implements AuthenticationStore {}
 
@@ -57,11 +59,32 @@ class _Manager extends PlaybackManager {
   Future<void> stop({bool userInitiated = true}) async {}
 }
 
+class _Images extends Fake implements ImageApi {
+  @override
+  String getTrickplayTileImageUrl(
+    String itemId, {
+    required int width,
+    required int index,
+    String? mediaSourceId,
+  }) => 'http://localhost/Videos/$itemId/Trickplay/$width/$index.jpg';
+}
+
 class _Client extends Fake implements MediaServerClient {
   @override
   ServerType get serverType => ServerType.emby;
   @override
   TrickplayApi? get trickplayApi => null;
+  @override
+  final imageApi = _Images();
+  @override
+  DeviceInfo get deviceInfo => const DeviceInfo(
+    id: 'device',
+    name: 'Device',
+    appName: 'Moonfin',
+    appVersion: '1',
+  );
+  @override
+  String? accessToken;
 }
 
 class _Factory extends Fake implements MediaServerClientFactory {
@@ -242,6 +265,80 @@ void main() {
       TargetPlatform.windows,
     }),
   );
+
+  // A held Right with the controls hidden, as on a TV remote: the first press
+  // seeks directly and shows the controls, the repeats then scrub. [playing]
+  // is what the player reports, [playWhenReady] what it was told to do.
+  Future<void> holdRightWithControlsHidden(
+    WidgetTester tester, {
+    required bool playing,
+    required bool playWhenReady,
+  }) async {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    manager.queueService.setQueue([
+      const AggregatedItem(
+        id: 'one',
+        serverId: 'server',
+        rawData: {
+          'Type': 'Episode',
+          'Name': 'One',
+          'Trickplay': {
+            'one': {
+              '320': {
+                'Width': 320,
+                'Height': 180,
+                'TileWidth': 10,
+                'TileHeight': 10,
+                'Interval': 10000,
+              },
+            },
+          },
+        },
+      ),
+    ]);
+    await open(tester);
+    await tester.pump(const Duration(seconds: 10));
+    manager.state.setPlaying(playing);
+    manager.state.setPlayWhenReady(playWhenReady);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+    expect(manager.seeks, hasLength(1), reason: 'the direct seek');
+    expect(manager.pauses, 0);
+    // Focus moves to the seek bar after a frame and retries a moment later.
+    for (var i = 0; i < 3; i++) {
+      tester.binding.scheduleFrame();
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+  }
+
+  testWidgets(
+    'a TV scrub that begins while the player buffers still pauses it',
+    (tester) async {
+      await holdRightWithControlsHidden(
+        tester,
+        playing: false,
+        playWhenReady: true,
+      );
+      expect(manager.pauses, 1);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets('a TV scrub does not pause a player the viewer paused', (
+    tester,
+  ) async {
+    await holdRightWithControlsHidden(
+      tester,
+      playing: false,
+      playWhenReady: false,
+    );
+    expect(manager.pauses, 0);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets(
     'Next Up close button dismisses the card and keeps the episode playing',
