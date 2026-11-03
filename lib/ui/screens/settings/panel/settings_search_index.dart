@@ -1334,7 +1334,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'recently added',
       'recently released',
       'newest',
+      'new seasons',
+      'new episodes',
     ]),
+    mediaBar.leaf(
+      'mediaBarNewReleaseBanner',
+      l10n.mediaBarNewReleaseBanner,
+      subtitle: l10n.mediaBarNewReleaseBannerDescription,
+      keywords: ['new season', 'new episode', 'badge'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewReleaseDays',
+      l10n.mediaBarNewReleaseDays,
+      subtitle: l10n.mediaBarNewReleaseDaysDescription,
+    ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(
         'mediaBarRowPeek',

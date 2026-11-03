@@ -148,14 +148,19 @@ class MediaBarViewModel extends ChangeNotifier {
     }
   }
 
-  /// Everything that picks which titles the bar draws from.
+  /// Everything that picks which titles the bar draws from, and the new
+  /// release banner those titles carry.
   String _sources() => [
-    UserPreferences.mediaBarSourceType,
-    UserPreferences.mediaBarLibraryIds,
-    UserPreferences.mediaBarCollectionIds,
-    UserPreferences.mediaBarExcludedGenres,
-    UserPreferences.mediaBarExternalLists,
-  ].map(_prefs.get).join('|');
+    ...[
+      UserPreferences.mediaBarSourceType,
+      UserPreferences.mediaBarLibraryIds,
+      UserPreferences.mediaBarCollectionIds,
+      UserPreferences.mediaBarExcludedGenres,
+      UserPreferences.mediaBarExternalLists,
+    ].map(_prefs.get),
+    _prefs.get(UserPreferences.mediaBarNewReleaseBanner),
+    _prefs.get(UserPreferences.mediaBarNewReleaseDays),
+  ].join('|');
 
   void _onPrefsChanged() {
     final mode = UserPreferences.normalizeMediaBarMode(
