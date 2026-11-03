@@ -1419,6 +1419,7 @@ class Media3PlayerBackend extends PlayerBackend
             hasDoviCompat: true,
           ),
       directPlayVideoContainers: media3DirectPlayVideoContainers,
+      hlsCopyPlaysAsPlainHevc: true,
     );
   }
 
