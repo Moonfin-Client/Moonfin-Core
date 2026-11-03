@@ -3439,7 +3439,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final radarrCalendarShowCinema = Preference(
     key: 'radarr_calendar_show_cinema',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   static final radarrCalendarShowDigital = Preference(
