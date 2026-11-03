@@ -328,9 +328,9 @@ class _MediaBarState extends State<MediaBar>
     try {
       await _appleTvTrailerPlayer?.stop();
     } catch (_) {}
-    try {
-      await _media3TrailerBackend?.release();
-    } catch (_) {}
+    // _cancelTrailerPreview released Media3 if the trailer owned it. The
+    // backend is shared with main playback, which is what revokes the
+    // trailer, so releasing it again here would stop that playback.
   }
 
   @override
@@ -1023,7 +1023,7 @@ class _MediaBarState extends State<MediaBar>
     // Media3 is a shared singleton (also drives row previews); only release it
     // when the trailer owned it.
     if (wasUsingMedia3) {
-      unawaited(_media3TrailerBackend?.release());
+      unawaited(_media3TrailerBackend?.release(previewOnly: true));
     }
     _activeTrailerItemId = null;
     _pendingTrailerItemId = null;
