@@ -240,7 +240,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailScreenStyle => '详情界面样式';
 
   @override
-  String get detailScreenStyleSubtitle => 'Moonfin 是经典布局；Modern 是自适应影院风布局。';
+  String get detailScreenStyleSubtitle =>
+      'Moonfin 是经典布局；Modern 是自适应影院风布局。Spotlight 是一种以主视觉区优先、带有弹出式内容卡片的布局。Nouveau 是一种全屏布局，各个版块沿页面自上而下堆叠。Minimalist 是有封面图、一个播放按钮和各集列表。';
 
   @override
   String get detailScreenStyleMoonfin => 'Moonfin';
@@ -491,7 +492,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get expandedTabsSubtitle => '浏览时自动加载标签内容；关闭后需手动展开/收起标签。';
 
   @override
-  String get showTechnicalDetails => '显示媒体技术参数？';
+  String get showTechnicalDetails => '显示媒体详情';
 
   @override
   String get showTechnicalDetailsSubtitle => '在顶部概览栏显示编码、分辨率及音视频流信息';
@@ -501,7 +502,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      '可选用「Moonfin本地资料库推荐算法」，或线上 TMDb 相似度匹配算法。注意：线上推荐功能需要对接 Seerr 服务。';
+      '使用 Moonfin Recommends 本地媒体库算法、Jellyfin Recommends 服务器引擎，或在线 TMDb 的相似度指标。注意：在线推荐需要集成 Seerr。';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin 智能推荐';
@@ -513,7 +514,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb 相似影片推荐';
 
   @override
-  String get recommendationsApplyParentalRatingCap => '是否启用家长分级上限限制？';
+  String get recommendationsApplyParentalRatingCap => '启用推荐分级限制';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -1241,7 +1242,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bookFormatComic => '漫画';
 
   @override
-  String get noBooksFound => '未找到该作者的图书。';
+  String get noBooksFound => '未找到该作者的图书';
 
   @override
   String get noBooksFoundDescription => '此媒体库中暂无书籍、有声书或漫画。';
@@ -1670,7 +1671,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadSubtitlesLabel => '下载字幕...';
 
   @override
-  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 插件进行搜索';
+  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 搜索';
 
   @override
   String get downloadSubtitles => '下载字幕';
@@ -3238,7 +3239,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loadingAnimationSpeedUltra => '极速';
 
   @override
-  String get showLoadingAnimationText => '显示文字？';
+  String get showLoadingAnimationText => '显示文字';
 
   @override
   String get loadingAnimationPreview => '预览';
@@ -3375,7 +3376,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loopThemeMusicSubtitle => '单曲循环，而非仅播放一次';
 
   @override
-  String get detailsBackgroundBlur => '详情页背景模糊';
+  String get detailsBackgroundBlur => '背景虚化';
 
   @override
   String get detailsBackgroundOpacity => '详情页背景不透明度';
