@@ -201,6 +201,10 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       case 'systemVolume':
         final volume = map['value'];
         if (volume is num) _systemVolumeStream.add(volume.toDouble());
+      // The engine is holding the stream for new credentials, so playback
+      // state stands.
+      case 'credentialsRefused':
+        _errorStream.add(map.cast<String, dynamic>());
       case 'playerError':
       case 'error':
         _logPlaybackError(map);
@@ -362,6 +366,19 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   // No way to re-open a live source in place, so the manager escalates.
   @override
   Future<bool> resumeLiveEdge() async => false;
+
+  // The engine replaces the open stream's request headers in place (a
+  // route whose requests AVFoundation makes reloads at the playhead
+  // instead). The server reads the headers before a token in the URL, so
+  // the URL stays as it opened.
+  @override
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
+    if (credentials.requestHeaders.isEmpty) return false;
+    await _invoke<void>('updateRequestHeaders', {
+      'headers': credentials.requestHeaders,
+    });
+    return true;
+  }
 
   @override
   LiveSeekWindow? get liveSeekWindow => _liveSeekWindow;

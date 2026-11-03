@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -849,6 +849,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick Look'**
   String get detailScreenStyleQuickLook;
+
+  /// Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get detailScreenStyleFrost;
 
   /// Button at the foot of the Quick Look drawer that opens the title's full details page
   ///
@@ -4738,6 +4744,12 @@ abstract class AppLocalizations {
   /// **'Reconnecting… ({attempt} of {total})'**
   String liveReconnecting(int attempt, int total);
 
+  /// Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94
+  ///
+  /// In en, this message translates to:
+  /// **'Matching display to {fps} fps…'**
+  String playerMatchingDisplayRate(String fps);
+
   /// Error when recordings fail to load
   ///
   /// In en, this message translates to:
@@ -6759,6 +6771,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tomorrow'**
   String get upcomingEpisodeTomorrow;
+
+  /// Home row title for upcoming movies from the Radarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Movies (Radarr)'**
+  String get radarrCalendarRow;
+
+  /// Home row title for upcoming episodes from the Sonarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming TV Shows (Sonarr)'**
+  String get sonarrCalendarRow;
+
+  /// Home row title when the Radarr and Sonarr calendars are merged
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Releases'**
+  String get mergedCalendarRow;
+
+  /// Subtitle under the home row that merges the Radarr and Sonarr calendars
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr and Sonarr Calendars'**
+  String get arrCalendarsRowSubtitle;
+
+  /// Subtitle under the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Radarr Calendar'**
+  String get radarrCalendarRowSubtitle;
+
+  /// Subtitle under the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Sonarr Calendar'**
+  String get sonarrCalendarRowSubtitle;
+
+  /// Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})'**
+  String calendarReleaseIn(int days, String date);
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Cinema'**
+  String get calendarReleaseCinema;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Digital'**
+  String get calendarReleaseDigital;
+
+  /// Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'
+  ///
+  /// In en, this message translates to:
+  /// **'Physical'**
+  String get calendarReleasePhysical;
+
+  /// Settings screen for the Radarr and Sonarr calendar home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Calendars'**
+  String get upcomingCalendars;
+
+  /// Subtitle of the Upcoming Calendars settings entry
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Upcoming Calendars from Radarr/Sonarr.'**
+  String get upcomingCalendarsDescription;
+
+  /// Turns on the Radarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Radarr\'s Upcoming Calendar'**
+  String get enableRadarrCalendar;
+
+  /// Includes cinema release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Cinema Releases'**
+  String get radarrCalendarShowCinema;
+
+  /// Includes digital release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Digital Releases'**
+  String get radarrCalendarShowDigital;
+
+  /// Includes physical release dates in the Radarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Upcoming Physical Releases'**
+  String get radarrCalendarShowPhysical;
+
+  /// Shows the release date under each item of a calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Show Release Date on Home Screen'**
+  String get calendarShowReleaseDate;
+
+  /// Leaves out movies Radarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Movies Already on the Server'**
+  String get radarrCalendarHideDownloaded;
+
+  /// Turns on the Sonarr calendar home row
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Sonarr\'s Upcoming Calendar'**
+  String get enableSonarrCalendar;
+
+  /// Shows the season and episode number in the Sonarr calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Display Episode Information'**
+  String get sonarrCalendarShowEpisodeInfo;
+
+  /// Leaves out episodes Sonarr already downloaded from the calendar row
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Episodes Already on the Server'**
+  String get sonarrCalendarHideDownloaded;
+
+  /// Shows the Radarr and Sonarr calendars as a single home row
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sonarr and Radarr Calendars'**
+  String get mergeRadarrSonarrCalendars;
 
   /// Moves a button one place earlier in its row
   ///
@@ -9760,17 +9904,35 @@ abstract class AppLocalizations {
   /// **'Include missing items on Collection pages'**
   String get showMissingCollectionItemsDesc;
 
-  /// Setting title for showing Seerr availability badges on media details pages
+  /// Setting title for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
   /// **'Show Seerr Availability Badges'**
   String get showSeerrAvailabilityBadges;
 
-  /// Setting description for showing Seerr availability badges on media details pages
+  /// Setting description for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
-  /// **'Show season availability badges on media details pages'**
+  /// **'Show the Seerr status on posters and seasons across the app'**
   String get showSeerrAvailabilityBadgesDescription;
+
+  /// Setting title for how posters show their Seerr status
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Style'**
+  String get seerrBadgeStyle;
+
+  /// Setting description for the Seerr badge style choices
+  ///
+  /// In en, this message translates to:
+  /// **'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.'**
+  String get seerrBadgeStyleDescription;
+
+  /// Seerr badge style that shows a status dot in a poster corner
+  ///
+  /// In en, this message translates to:
+  /// **'Badge'**
+  String get seerrBadgeStyleBadge;
 
   /// Header for the Seerr notifications settings section
   ///
@@ -26107,6 +26269,18 @@ abstract class AppLocalizations {
   /// **'A drawer over the screen you were on, with play and the basics, and the full page a press away.'**
   String get setupDetailQuickLookHint;
 
+  /// Name of the detail layout that floats the title in a glass window, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get setupStyleFrost;
+
+  /// What the Frost detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'The title in a glass window over its blurred art, with tabs under the buttons.'**
+  String get setupDetailFrostHint;
+
   /// Setup question asking which style the bottom navigation bar should use
   ///
   /// In en, this message translates to:
@@ -27437,6 +27611,18 @@ abstract class AppLocalizations {
   /// **'Why'**
   String get playbackInfoWhy;
 
+  /// Playback information row label for reasons retained from a server compatibility check during live relay
+  ///
+  /// In en, this message translates to:
+  /// **'Server compatibility check'**
+  String get playbackInfoServerCompatibilityCheck;
+
+  /// Playback information value when an incomplete live source prevents a reliable aggregate bitrate
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate unavailable'**
+  String get playbackInfoBitrateUnavailable;
+
   /// Playback information row label: the maximum streaming bitrate the user picked
   ///
   /// In en, this message translates to:
@@ -27537,6 +27723,102 @@ abstract class AppLocalizations {
   /// **'The server is repackaging the file without converting it.'**
   String get playbackInfoNoteDirectStream;
 
+  /// Playback information note under the play method for a live TV channel the server passes through
+  ///
+  /// In en, this message translates to:
+  /// **'The server is relaying the channel without converting it.'**
+  String get playbackInfoNoteLiveRelay;
+
+  /// Playback information frame rate with where the player got it
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} fps ({source})'**
+  String playbackInfoFrameRateFrom(String rate, String source);
+
+  /// Playback information: the frame rate came from the video stream's own header
+  ///
+  /// In en, this message translates to:
+  /// **'stream header'**
+  String get playbackInfoRateSourceHeader;
+
+  /// Playback information: the frame rate was measured from the video's frame timing
+  ///
+  /// In en, this message translates to:
+  /// **'measured'**
+  String get playbackInfoRateSourceMeasured;
+
+  /// Playback information: the frame rate came from the server's description of the media
+  ///
+  /// In en, this message translates to:
+  /// **'server'**
+  String get playbackInfoRateSourceServer;
+
+  /// Playback information row: the frame rate the server reports, shown when it differs from what is playing
+  ///
+  /// In en, this message translates to:
+  /// **'Server Frame Rate'**
+  String get playbackInfoServerFrameRate;
+
+  /// Playback information row: whether the video is progressive or interlaced
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get playbackInfoScan;
+
+  /// Playback information scan type
+  ///
+  /// In en, this message translates to:
+  /// **'Progressive'**
+  String get playbackInfoProgressive;
+
+  /// Playback information scan type
+  ///
+  /// In en, this message translates to:
+  /// **'Interlaced'**
+  String get playbackInfoInterlaced;
+
+  /// Playback information scan type: film carried in an interlaced stream with repeated fields
+  ///
+  /// In en, this message translates to:
+  /// **'Telecined (repeated fields)'**
+  String get playbackInfoRepeatedFields;
+
+  /// Playback information row: the display mode the device is sending
+  ///
+  /// In en, this message translates to:
+  /// **'HDMI Output'**
+  String get playbackInfoHdmiOutput;
+
+  /// Playback information display mode, for example 1920×1080 @ 59.94 Hz
+  ///
+  /// In en, this message translates to:
+  /// **'{width}×{height} @ {rate} Hz'**
+  String playbackInfoDisplayMode(String width, String height, String rate);
+
+  /// Playback information row: how many times live TV changed the display rate after it started
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Corrections'**
+  String get playbackInfoRateCorrections;
+
+  /// Playback information row in the Audio section: how the audio leaves the device
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get playbackInfoAudioOutput;
+
+  /// Playback information audio output: the bitstream goes to the receiver undecoded
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough ({codec})'**
+  String playbackInfoPassthroughOf(String codec);
+
+  /// Playback information audio output: the device decodes the audio, with its channel layout
+  ///
+  /// In en, this message translates to:
+  /// **'Decoded ({channels})'**
+  String playbackInfoDecodedTo(String channels);
+
   /// Playback information note under the play method when only the video is transcoded
   ///
   /// In en, this message translates to:
@@ -27632,6 +27914,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This device can\'t play {codec} video'**
   String playbackInfoWhyVideoCodec(String codec);
+
+  /// Playback information reason when the server could not determine the video profile
+  ///
+  /// In en, this message translates to:
+  /// **'The server couldn\'t verify this stream\'s {codec} profile.'**
+  String playbackInfoWhyVideoProfileUnknown(String codec);
 
   /// Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported
   ///
@@ -28616,6 +28904,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved'**
   String get settingsPreviewSaved;
+
+  /// Title of the search results row with library titles the server's natural-language search matched to a vague query
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search'**
+  String get smartSearch;
+
+  /// Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search on {seerr}'**
+  String smartSearchOnSeerr(String seerr);
 }
 
 class _AppLocalizationsDelegate

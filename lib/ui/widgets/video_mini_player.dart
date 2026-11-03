@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -1466,9 +1465,11 @@ class _MiniProgressBarState extends State<_MiniProgressBar> {
     );
 
     Widget image(TrickplayTile t) => TrickplayTileImage(
-      sheet: CachedNetworkImageProvider(
+      sheet: trickplaySheetProvider(
         t.url,
-        headers: t.headers.isEmpty ? null : t.headers,
+        t.headers,
+        sheetWidth: (t.thumbWidth * t.tileWidth).round(),
+        sheetHeight: (t.thumbHeight * t.tileHeight).round(),
       ),
       sourceRect: t.sourceRect,
       thumbWidth: t.thumbWidth,

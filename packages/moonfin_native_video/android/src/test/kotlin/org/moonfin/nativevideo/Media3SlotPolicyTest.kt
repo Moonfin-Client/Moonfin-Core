@@ -11,6 +11,16 @@ import org.moonfin.nativevideo.Media3SlotPolicy.SourceRoute
 
 class Media3SlotPolicyTest {
 
+    @Test
+    fun `only a preview-only release on the main source is stray`() {
+        assertTrue(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = true, currentIsPreview = false))
+        assertFalse(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = true, currentIsPreview = true))
+        assertFalse(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = null, currentIsPreview = false))
+        assertFalse(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = null, currentIsPreview = true))
+        assertFalse(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = false, currentIsPreview = false))
+        assertFalse(Media3SlotPolicy.isStrayPreviewRelease(previewOnly = false, currentIsPreview = true))
+    }
+
     private fun route(
         isPreview: Boolean = false,
         isAudio: Boolean = false,

@@ -4,6 +4,7 @@ import 'package:moonfin/playback/offline_stream_resolver.dart';
 import 'package:playback_core/playback_core.dart';
 
 class _ServerResolver extends MediaStreamResolver {
+
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -16,11 +17,31 @@ class _ServerResolver extends MediaStreamResolver {
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
     bool enableTranscoding = true,
-  }) async => const StreamResolutionResult(
-    streamUrl: 'https://server/movie',
-    mediaSourceId: 'movie',
-    playMethod: StreamPlayMethod.directPlay,
-  );
+  }) async {
+    return const StreamResolutionResult(
+      streamUrl: 'https://server/movie',
+      mediaSourceId: 'movie',
+      playMethod: StreamPlayMethod.directPlay,
+    );
+  }
+}
+
+/// A server whose streams' credentials expire.
+class _RenewingServerResolver extends _ServerResolver
+    implements StreamCredentialRefresher {
+  final List<bool> asked = <bool>[];
+
+  @override
+  Future<StreamCredentials?> currentCredentials(
+    StreamResolutionResult current, {
+    bool refresh = false,
+  }) async {
+    asked.add(refresh);
+    return const StreamCredentials(
+      streamUrl: 'https://server/movie',
+      requestHeaders: {'Authorization': 'Bearer fresh'},
+    );
+  }
 }
 
 class _Downloads extends Fake implements OfflineStreamResolver {
@@ -50,9 +71,55 @@ void main() {
     expect(result.streamUrl, '/downloads/movie.mp4');
   });
 
+  group('credential renewal', () {
+    const stream = StreamResolutionResult(
+      streamUrl: 'https://server/movie',
+      mediaSourceId: 'movie',
+      playMethod: StreamPlayMethod.directPlay,
+    );
+
+    test('reaches the server resolver for a server stream', () async {
+      final server = _RenewingServerResolver();
+      final resolver = LocalFirstMediaStreamResolver(
+        inner: server,
+        offline: _Downloads(),
+      );
+      final credentials = await resolver.currentCredentials(
+        stream,
+        refresh: true,
+      );
+      expect(credentials?.requestHeaders['Authorization'], 'Bearer fresh');
+      expect(server.asked, [true]);
+    });
+
+    test('has nothing for a download or a server without expiry', () async {
+      final server = _RenewingServerResolver();
+      final local = await LocalFirstMediaStreamResolver(
+        inner: server,
+        offline: _Downloads(),
+      ).resolve(movie);
+      expect(
+        await LocalFirstMediaStreamResolver(
+          inner: server,
+          offline: _Downloads(),
+        ).currentCredentials(local),
+        isNull,
+      );
+      expect(server.asked, isEmpty);
+      expect(
+        await LocalFirstMediaStreamResolver(
+          inner: _ServerResolver(),
+          offline: _Downloads(),
+        ).currentCredentials(stream),
+        isNull,
+      );
+    });
+  });
+
   test('play from server skips the download while the server is up', () async {
     final result = await resolveWith(fromServer: true);
     expect(result.isLocalMedia, isFalse);
     expect(result.streamUrl, 'https://server/movie');
   });
+
 }
