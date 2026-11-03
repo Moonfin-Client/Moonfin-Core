@@ -194,6 +194,9 @@ class MediaBarRepository {
             targetTypes,
             fetchLimit,
             parentId: allParentIds.first,
+            // Asking again for new releases would find nothing again, so
+            // a quiet window shows random titles instead.
+            random: _isNewReleaseSource,
           ),
         );
 
@@ -225,8 +228,6 @@ class MediaBarRepository {
         excludedGenres,
       );
       if (items.isEmpty) {
-        // Nothing aired lately is a quiet week, not a failure.
-        if (_isNewReleaseSource) return const MediaBarDisabled();
         return const MediaBarError('No items with backdrop images found');
       }
       return MediaBarReady(items);
@@ -348,16 +349,20 @@ class MediaBarRepository {
   /// How many libraries and collections are read at once.
   static const _sourceConcurrency = 6;
 
+  /// [random] skips the chosen source and reads a random window.
   Future<List<Map<String, dynamic>>> _fetchItems(
     List<String>? itemTypes,
     int limit, {
     String? parentId,
+    bool random = false,
   }) async {
     if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
         GetIt.instance<MediaBarRepository>() != this) {
       return const <Map<String, dynamic>>[];
     }
-    final sourceType = _prefs.get(UserPreferences.mediaBarSourceType);
+    final sourceType = random
+        ? UserPreferences.mediaBarSourceRandom
+        : _prefs.get(UserPreferences.mediaBarSourceType);
     if (sourceType == UserPreferences.mediaBarSourceNewReleases) {
       return _fetchNewReleaseSeries(itemTypes, limit, parentId: parentId);
     }
@@ -519,15 +524,15 @@ class MediaBarRepository {
           .timeout(const Duration(seconds: 15));
       return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } catch (error) {
-      // Same as the dated sources: a server that fails falls back to random
-      // titles, so the bar doesn't vanish as if nothing aired.
+      // A server that fails falls back to random titles, so the bar doesn't
+      // vanish as if nothing aired.
       final statusCode = error is DioException
           ? (error.response?.statusCode ?? 0)
           : 0;
       if (statusCode == 401 || statusCode == 403) {
         return const <Map<String, dynamic>>[];
       }
-      return _fetchItemsFromFallbackSource(itemTypes, limit, parentId: parentId);
+      return _fetchItems(itemTypes, limit, parentId: parentId, random: true);
     }
   }
 
