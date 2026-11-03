@@ -186,6 +186,7 @@ class SearchViewModel extends ChangeNotifier {
     final l10n = currentAppLocalizations();
     return [
       SearchResultGroup(title: l10n.books, itemTypes: const ['Book']),
+      SearchResultGroup(title: l10n.audiobooks, itemTypes: const ['AudioBook']),
       SearchResultGroup(title: l10n.movies, itemTypes: const ['Movie']),
       SearchResultGroup(title: l10n.series, itemTypes: const ['Series']),
       SearchResultGroup(title: l10n.seasons, itemTypes: const ['Season']),
@@ -357,9 +358,15 @@ class SearchViewModel extends ChangeNotifier {
     ).then(_interleave).catchError((_) => <AggregatedItem>[]);
     final channelsFuture = _channelMatches(query);
     final perServerItems = await _searchEachServer(
-      (repository) => repository.search(
+      (repository) => repository.searchGroups(
         query,
-        parentId: _scopedParentId,
+        [
+          for (final group in activeGroups)
+            if (!group.itemTypes.contains('Person') &&
+                !group.itemTypes.contains('LiveTvChannel'))
+              group.itemTypes,
+        ],
+        perGroup: _resultLimit,
         limit: _globalFetchLimit,
       ),
       label: 'search',

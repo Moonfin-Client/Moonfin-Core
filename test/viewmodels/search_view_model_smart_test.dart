@@ -161,6 +161,7 @@ void main() {
           searchTerm: any(named: 'searchTerm'),
           parentId: any(named: 'parentId'),
           includeItemTypes: any(named: 'includeItemTypes'),
+          excludeItemTypes: any(named: 'excludeItemTypes'),
           limit: any(named: 'limit'),
           recursive: any(named: 'recursive'),
           fields: any(named: 'fields'),
