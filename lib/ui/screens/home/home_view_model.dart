@@ -3509,9 +3509,10 @@ class HomeViewModel extends ChangeNotifier {
     final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
     final hideDownloaded = _prefs.get(UserPreferences.radarrCalendarHideDownloaded);
     final l10n = currentAppLocalizations();
-    // Digital and physical both end up on the server. The format only matters
-    // when a cinema date can sit next to them in the row.
-    final showFormat = showCinema && (showDigital || showPhysical);
+    // Cinema dates keep their label, so a date alone never reads as a server
+    // release. Digital and physical both end up on the server, so on their own
+    // they need none.
+    final showFormat = showCinema;
 
     // From today on. A release from yesterday isn't upcoming any more.
     bool upcoming(DateTime date) => calendarDaysBetween(now, date) >= 0;
