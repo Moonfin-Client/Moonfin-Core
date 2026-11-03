@@ -110,6 +110,8 @@ String localizeHomeRowTitle({
       return l10n.networks;
     case 'rewatch':
       return 'Rewatch';
+    case 'mdblist_watching_now':
+      return l10n.mdblistWatchingNow;
   }
 
   if (row.id.startsWith('resume_')) return l10n.continueWatching;

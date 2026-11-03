@@ -1131,6 +1131,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     rowImages.screen(keywords: ['poster', 'thumbnail', 'banner']),
     if (pluginAvailable) ...[
+      home.leaf(
+        'mdblist_watching_now_enabled',
+        l10n.mdblistWatchingNow,
+        subtitle: l10n.mdblistWatchingNowDescription,
+        keywords: ['mdblist', 'watching now', 'scrobble', 'live', 'viewers'],
+      ),
       seasonalRow.screen(keywords: ['holiday', 'christmas', 'halloween', 'seasonal']),
       seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),

@@ -343,6 +343,7 @@ void main() {
     'tmdbTopRatedMoviesEnabled',
     'tmdbTopRatedTvEnabled',
     'tmdbTrendingAllWeeklyEnabled',
+    'mdblistWatchingNowEnabled',
     'tmdbTrendingMovieDailyEnabled',
     'tmdbTrendingMovieWeeklyEnabled',
     'tmdbTrendingTvDailyEnabled',

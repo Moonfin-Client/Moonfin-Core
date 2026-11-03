@@ -573,6 +573,7 @@ enum HomeSectionType {
   tmdbTrendingTvDaily('tmdb_trending_tv_daily'),
   tmdbTrendingTvWeekly('tmdb_trending_tv_weekly'),
   tmdbTrendingAllWeekly('tmdb_trending_all_weekly'),
+  mdblistWatchingNow('mdblist_watching_now'),
   radarrCalendar('radarr_calendar'),
   sonarrCalendar('sonarr_calendar'),
   sinceYouWatched1('sinceyouwatched1'),

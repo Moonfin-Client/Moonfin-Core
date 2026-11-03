@@ -7144,6 +7144,53 @@
   "@additionalRatings": {
     "description": "Setting for additional ratings"
   },
+  "mdblistWatchingNow": "Watching on MDBList",
+  "@mdblistWatchingNow": {
+    "description": "Title of the Watching on MDBList home row"
+  },
+  "mdblistWatchingNowDescription": "Show what MDBList users are currently watching",
+  "@mdblistWatchingNowDescription": {
+    "description": "Description for the Watching on MDBList setting"
+  },
+  "watchingNowWatchersCount": "{count} watching",
+  "@watchingNowWatchersCount": {
+    "description": "Badge on Watching on MDBList card showing current watchers count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchingNowLiveSummary": "{users} watching now · {movies} movies · {shows} shows",
+  "@watchingNowLiveSummary": {
+    "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+    "placeholders": {
+      "users": {
+        "type": "String"
+      },
+      "movies": {
+        "type": "String"
+      },
+      "shows": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingNowLiveSummaryToday": "{users} watched today · {movies} movies · {shows} shows",
+  "@watchingNowLiveSummaryToday": {
+    "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+    "placeholders": {
+      "users": {
+        "type": "String"
+      },
+      "movies": {
+        "type": "String"
+      },
+      "shows": {
+        "type": "String"
+      }
+    }
+  },
   "showMdbListAndTmdbRatings": "Show MDBList and TMDB ratings",
   "@showMdbListAndTmdbRatings": {
     "description": "Description for additional ratings"
