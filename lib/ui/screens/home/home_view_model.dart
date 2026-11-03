@@ -3447,13 +3447,10 @@ class HomeViewModel extends ChangeNotifier {
         'mdblist_watching_now',
         () async {
           final rows = await _loadMdblistWatchingNowRow(l10n);
-          return rows.isNotEmpty
-              ? rows.first
-              : HomeRow(
-                  id: 'mdblist_watching_now',
-                  title: l10n.mdblistWatchingNow,
-                  rowType: HomeRowType.pluginDynamic,
-                );
+          if (rows.isEmpty) {
+            throw Exception('Transient error refreshing mdblist_watching_now');
+          }
+          return rows.first;
         },
         (items) => items,
       );

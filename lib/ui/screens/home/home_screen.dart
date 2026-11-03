@@ -6223,11 +6223,15 @@ class _ContentRowsState extends State<_ContentRows>
                             ),
                             const SizedBox(width: 6),
                           ],
-                          Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppColorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
+                          Flexible(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
