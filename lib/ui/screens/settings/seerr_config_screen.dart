@@ -606,6 +606,18 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
               onChanged: _setShowAvailabilityBadges,
             ),
           ),
+          if (_userPreferences.get(UserPreferences.showSeerrAvailabilityBadges))
+            EnumPreferenceTile<SeerrBadgeStyle>(
+              preference: UserPreferences.seerrBadgeStyle,
+              title: l10n.seerrBadgeStyle,
+              description: l10n.seerrBadgeStyleDescription,
+              icon: Icons.label_outline,
+              labelOf: (style) => switch (style) {
+                SeerrBadgeStyle.badge => l10n.seerrBadgeStyleBadge,
+                SeerrBadgeStyle.banner => l10n.bannerLabel,
+              },
+              onChanged: _pushSync,
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Align(

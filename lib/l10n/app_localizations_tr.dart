@@ -5514,6 +5514,16 @@ class AppLocalizationsTr extends AppLocalizations {
       'Medya detay sayfalarında sezon durum rozetlerini göster';
 
   @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
+
+  @override
   String get seerrNotificationsSection => 'Bildirimler';
 
   @override

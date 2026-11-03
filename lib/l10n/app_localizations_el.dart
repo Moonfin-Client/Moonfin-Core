@@ -5545,7 +5545,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Show season availability badges on media details pages';
+      'Show the Seerr status on posters and seasons across the app';
+
+  @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
 
   @override
   String get seerrNotificationsSection => 'Ειδοποιήσεις';

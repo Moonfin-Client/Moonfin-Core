@@ -1877,12 +1877,26 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               fit: BoxFit.cover,
               errorWidget: (_, _, _) => const SizedBox.shrink(),
             ),
-          if (SeerrMediaStatus.hasDot(seerrStatus))
-            Positioned(
-              right: badge / 3,
-              top: badge / 3,
-              child: SeerrStatusDot(status: seerrStatus, size: badge),
-            ),
+          ...switch (SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle()
+              : null) {
+            SeerrBadgeStyle.badge => [
+              Positioned(
+                right: badge / 3,
+                top: badge / 3,
+                child: SeerrStatusDot(status: seerrStatus, size: badge),
+              ),
+            ],
+            SeerrBadgeStyle.banner => [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SeerrStatusBanner(status: seerrStatus),
+              ),
+            ],
+            null => const <Widget>[],
+          },
           if (progress != null)
             Positioned(
               left: 8,

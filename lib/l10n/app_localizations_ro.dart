@@ -5562,6 +5562,16 @@ class AppLocalizationsRo extends AppLocalizations {
       'Arată insignele de disponibilitate a sezoanelor în paginile de detalii media';
 
   @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
+
+  @override
   String get seerrNotificationsSection => 'Notificări';
 
   @override

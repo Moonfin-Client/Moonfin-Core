@@ -9766,17 +9766,35 @@ abstract class AppLocalizations {
   /// **'Include missing items on Collection pages'**
   String get showMissingCollectionItemsDesc;
 
-  /// Setting title for showing Seerr availability badges on media details pages
+  /// Setting title for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
   /// **'Show Seerr Availability Badges'**
   String get showSeerrAvailabilityBadges;
 
-  /// Setting description for showing Seerr availability badges on media details pages
+  /// Setting description for showing Seerr availability badges on posters across the app
   ///
   /// In en, this message translates to:
-  /// **'Show season availability badges on media details pages'**
+  /// **'Show the Seerr status on posters and seasons across the app'**
   String get showSeerrAvailabilityBadgesDescription;
+
+  /// Setting title for how posters show their Seerr status
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Style'**
+  String get seerrBadgeStyle;
+
+  /// Setting description for the Seerr badge style choices
+  ///
+  /// In en, this message translates to:
+  /// **'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.'**
+  String get seerrBadgeStyleDescription;
+
+  /// Seerr badge style that shows a status dot in a poster corner
+  ///
+  /// In en, this message translates to:
+  /// **'Badge'**
+  String get seerrBadgeStyleBadge;
 
   /// Header for the Seerr notifications settings section
   ///

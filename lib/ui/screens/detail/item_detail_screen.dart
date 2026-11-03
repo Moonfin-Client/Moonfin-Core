@@ -15308,11 +15308,12 @@ class DetailSeasonsRow extends StatelessWidget {
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
         itemBuilder: (context, index) {
           final season = seasons[index];
-          final showAvailabilityBadges =
-              prefs.get(UserPreferences.showSeerrAvailabilityBadges);
           final seerrStatus = seerrSeasonStatus?[season.indexNumber];
-          final hasSeerrDot =
-              showAvailabilityBadges && SeerrMediaStatus.hasDot(seerrStatus);
+          final seerrStyle = SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle(prefs)
+              : null;
+          final hasSeerrDot = seerrStyle == SeerrBadgeStyle.badge;
+          final hasSeerrBanner = seerrStyle == SeerrBadgeStyle.banner;
           return MediaCard(
             title: season.name,
             subtitle: _progressText(season),
@@ -15323,6 +15324,9 @@ class DetailSeasonsRow extends StatelessWidget {
             imageUrl: _seasonImageUrl(season, isMobile: isMobile),
             width: cardWidth,
             aspectRatio: 2 / 3,
+            // The card draws a banner itself, while its own dot would take the
+            // watched corner, so the dot goes top left here.
+            seerrStatus: hasSeerrBanner ? seerrStatus : null,
             overlayOccupiesTopLeft: hasSeerrDot,
             imageOverlays: [
               if (hasSeerrDot)
@@ -15331,10 +15335,12 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
-              // Top left, dropped below the Seerr dot when there is one so the two stack
-              // rather than overlap.
+              // Top left, dropped below the Seerr dot or banner when there is one so
+              // the two stack rather than overlap.
               Positioned(
-                top: hasSeerrDot ? 30 : 6,
+                top: hasSeerrDot
+                    ? 30
+                    : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
                 child: AnimeSeasonAudioBadge(
                   seriesId: season.seriesId,

@@ -558,6 +558,7 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
     final node = pageNode('seasons');
     final seerr = _vm.isSeerrOnly ? _vm.seerr : null;
     final status = seerrItemSeasonStatus(_vm);
+    final showStatus = seerr != null && seerrBadgeStyle() != null;
     final on = AppColorScheme.onBackground;
 
     Widget card(int index, AggregatedItem season) {
@@ -628,7 +629,7 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
                         fontSize: 12,
                       ),
                     ),
-                  if (seerr != null)
+                  if (showStatus)
                     SeerrStatusDot(status: status[number], size: 14),
                 ],
               ),

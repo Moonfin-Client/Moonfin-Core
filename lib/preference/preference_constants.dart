@@ -785,6 +785,10 @@ enum SortDirection {
   final String apiValue;
 }
 
+/// How a poster shows its Seerr status: [badge] is Seerr's own dot in a corner
+/// and [banner] runs the status across the top. Stored per server and user.
+enum SeerrBadgeStyle { badge, banner }
+
 enum ExternalRowSortBy {
   none('Default (List Order)'),
   name('Name'),

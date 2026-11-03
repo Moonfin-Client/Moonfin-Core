@@ -5380,6 +5380,16 @@ class AppLocalizationsKo extends AppLocalizations {
       '미디어 상세 페이지에 시즌별 이용 가능 배지를 표시합니다';
 
   @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
+
+  @override
   String get seerrNotificationsSection => '알림';
 
   @override

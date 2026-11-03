@@ -5563,6 +5563,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche les badges de disponibilité des saisons sur les écrans de détails des médias';
 
   @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
+
+  @override
   String get seerrNotificationsSection => 'Notifications';
 
   @override

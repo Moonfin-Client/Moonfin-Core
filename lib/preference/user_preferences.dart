@@ -578,6 +578,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_home_rows_fullscreen',
     'pref_show_seerr_button',
     'pref_show_seerr_availability_badges',
+    'pref_seerr_badge_style',
     'pref_show_server_messages_button',
     'pref_show_friends_button',
     'pref_show_book_discover_tab',
@@ -2016,6 +2017,12 @@ class UserPreferences extends ChangeNotifier {
   static final showSeerrAvailabilityBadges = Preference(
     key: 'pref_show_seerr_availability_badges',
     defaultValue: true,
+  );
+
+  static final seerrBadgeStyle = EnumPreference(
+    key: 'pref_seerr_badge_style',
+    defaultValue: SeerrBadgeStyle.badge,
+    values: SeerrBadgeStyle.values,
   );
 
   /// Off by default. An admin who wants it on for everyone can set it in the

@@ -2091,6 +2091,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         'discover',
         'nsfw',
         'notifications',
+        'badges',
+        'banner',
       ]),
 
     about.screen(keywords: ['version', 'update', 'discord', 'license']),
