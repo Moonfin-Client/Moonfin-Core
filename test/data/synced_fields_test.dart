@@ -258,6 +258,7 @@ void main() {
     'seasonalRowEnabled',
     'seasonalRowHiddenHolidays',
     'seasonalSurprise',
+    'seerrBadgeStyle',
     'seerrBlockNsfw',
     'seerrEnabled',
     'seerrShowMissingCollectionItems',

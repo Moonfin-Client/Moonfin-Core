@@ -110,6 +110,71 @@ class SearchRepository {
     List<String>? includeItemTypes,
     String? parentId,
     int? limit,
+  }) async => withoutBlockedItems(
+    await _search(
+      query,
+      includeItemTypes: includeItemTypes,
+      parentId: parentId,
+      limit: limit,
+    ),
+  );
+
+  // Types a search across every library turns up that have no group, since
+  // people and channels come from their own requests.
+  static const _ungroupedTypes = [
+    'Person',
+    'Studio',
+    'Genre',
+    'MusicGenre',
+    'TvChannel',
+  ];
+
+  /// One search across every library for the types in [groups].
+  ///
+  /// Jellyfin fills the page with whatever matched first, so lots of episodes
+  /// or audiobook chapters can push every movie and series out of it. Types
+  /// with no group are left out of the page, and when it still comes back
+  /// full, each group that didn't get [perGroup] items is searched again on
+  /// its own. The page names no types to include, since Jellyfin only finds
+  /// Live TV programs when it's asked for every type.
+  Future<List<AggregatedItem>> searchGroups(
+    String query,
+    List<List<String>> groups, {
+    required int perGroup,
+    required int limit,
+  }) async {
+    if (_client.serverType != ServerType.jellyfin) {
+      return search(query, limit: limit);
+    }
+    final page = await _search(
+      query,
+      excludeItemTypes: _ungroupedTypes,
+      limit: limit,
+    );
+    if (page.length < limit) return withoutBlockedItems(page);
+    final refills = await Future.wait([
+      for (final group in groups)
+        if (page.where((item) => group.contains(item.type)).length < perGroup)
+          _search(
+            query,
+            includeItemTypes: group,
+            limit: perGroup,
+          ).catchError((Object _) => <AggregatedItem>[]),
+    ]);
+    final seen = {for (final item in page) item.id};
+    return withoutBlockedItems([
+      ...page,
+      for (final item in refills.expand((items) => items))
+        if (seen.add(item.id)) item,
+    ]);
+  }
+
+  Future<List<AggregatedItem>> _search(
+    String query, {
+    List<String>? includeItemTypes,
+    List<String>? excludeItemTypes,
+    String? parentId,
+    int? limit,
   }) async {
     final isStudioQuery = query.toLowerCase().startsWith('studio:');
     final searchTerm = isStudioQuery ? null : query;
@@ -119,6 +184,7 @@ class SearchRepository {
       searchTerm: searchTerm,
       parentId: parentId,
       includeItemTypes: includeItemTypes,
+      excludeItemTypes: excludeItemTypes,
       limit: limit ?? 24,
       recursive: true,
       fields: _searchFields,
@@ -126,15 +192,13 @@ class SearchRepository {
     );
 
     final items = response['Items'] as List? ?? [];
-    return withoutBlockedItems(
-      items.map((item) {
-        final data = item as Map<String, dynamic>;
-        return AggregatedItem(
-          id: data['Id']?.toString() ?? '',
-          serverId: data['ServerId']?.toString() ?? '',
-          rawData: data,
-        );
-      }).toList(),
-    );
+    return items.map((item) {
+      final data = item as Map<String, dynamic>;
+      return AggregatedItem(
+        id: data['Id']?.toString() ?? '',
+        serverId: data['ServerId']?.toString() ?? '',
+        rawData: data,
+      );
+    }).toList();
   }
 }

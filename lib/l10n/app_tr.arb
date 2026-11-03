@@ -2740,7 +2740,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "Detay Arka Plan Bulanıklığı",
+    "detailsBackgroundBlur": "Arka Plan Bulanıklığı",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -2773,7 +2773,7 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Otomatik Kırp",
+    "autoCrop": "Sığdırarak Yakınlaştır",
     "@autoCrop": {
         "description": "Zoom mode: auto crop"
     },
@@ -2949,7 +2949,7 @@
     "@unsafeMpvOptionsDescription": {
         "description": "Description for unsafe mpv options"
     },
-    "hardwareDecoding": "Donanım kod çözme",
+    "hardwareDecoding": "Donanım Kod Çözme",
     "@hardwareDecoding": {
         "description": "Label for hardware decoding toggle"
     },
@@ -3249,7 +3249,7 @@
     "@defaultLabel": {
         "description": "Option: default"
     },
-    "saveToDownloadsFolder": "İndirilenler klasörüne kaydet",
+    "saveToDownloadsFolder": "İndirilenler Klasörüne Kaydet",
     "@saveToDownloadsFolder": {
         "description": "Setting for saving to downloads folder"
     },
@@ -6565,7 +6565,7 @@
     "settingsDoNothing": "Hiçbir şey yapma",
     "settingsMaxBitrateDescription": "Akış bit hızını sınırlayın. Bu eşiğin üzerindeki içeriğin kodu sığacak şekilde dönüştürülecektir.",
     "settingsMaxResolutionDescription": "Oyuncunun isteyeceği maksimum çözünürlüğü sınırlayın. Daha yüksek çözünürlüklü içeriğin kodu dönüştürülecektir.",
-    "settingsPlayerZoomDescription": "Videonun ekrana sığacak şekilde nasıl ölçeklendirilmesi gerektiği.",
+    "settingsPlayerZoomDescription": "Videonun ekrana nasıl ölçeklendirileceğini belirler. Sığdırarak Yakınlaştır, görüntüyü ekranı kaplayacak şekilde büyütür ve kenarlardan kırpar. Siyah şeritleri algılamaz.",
     "settingsPlaybackEngineAndroidTv": "Oynatma Motoru (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Android TV cihazlarında varsayılan oynatma motorunu seçin. Değişiklikler bir sonraki oynatma oturumuna uygulanır.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (önerilir)",
@@ -6605,7 +6605,7 @@
             }
         }
     },
-    "settingsLiveTvDirect": "Canlı TV Doğrudan",
+    "settingsLiveTvDirect": "Canlı TV Doğrudan Oynatma",
     "settingsLiveTvDirectSubtitle": "Canlı TV için doğrudan oynatmayı etkinleştirin",
     "settingsOpenGroups": "Grupları Aç",
     "settingsOpenGroupsSubtitle": "SyncPlay grupları oluşturun, katılın veya yönetin",
@@ -6917,7 +6917,7 @@
     "@skipSilenceSubtitle": {
         "description": "Setting subtitle for skip silence"
     },
-    "allowExternalAudioEffectsTitle": "Harici ses efektlerine izin ver",
+    "allowExternalAudioEffectsTitle": "Harici Ses Efektlerine İzin Ver",
     "@allowExternalAudioEffectsTitle": {
         "description": "Setting title: allow equalizer apps to attach to Media3"
     },
@@ -6933,7 +6933,7 @@
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "Dolby Vision profil 7'yi her zaman HDR10 olarak oynat",
+    "mapDolbyVisionP7Title": "Dolby Vision Profil 7'yi Her Zaman HDR10 Olarak Oynat",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
@@ -6941,7 +6941,7 @@
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
-    "subtitlesUseEmbeddedStyles": "Gömülü altyazı stillerini kullan",
+    "subtitlesUseEmbeddedStyles": "Gömülü Altyazı Stillerini Kullan",
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
@@ -6949,7 +6949,7 @@
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
-    "subtitlesUseEmbeddedFontSizes": "Gömülü altyazı boyutlarını kullan",
+    "subtitlesUseEmbeddedFontSizes": "Gömülü Altyazı Boyutlarını Kullan",
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
@@ -6993,7 +6993,7 @@
             }
         }
     },
-    "savedThemesTitle": "Kayıtlı temalar",
+    "savedThemesTitle": "Kayıtlı Temalar",
     "savedThemesDescription": "Bunlar, mevcut sunucu için Moonfin eklentisinden indirilen temalardır. Silme işlemi yalnızca bu yerel kopyayı kaldırır.",
     "savedThemesEmpty": "Bu sunucu için kayıtlı tema bulunamadı.",
     "savedThemesCurrentThemeId": "{themeId} • Şu an aktif",
@@ -7031,8 +7031,8 @@
     "genresRowItems": "Türler Satırı Ögeleri",
     "genresRowItemsDescription": "Türler satırlarında Filmleri, Dizileri veya her ikisini birden göster.",
     "appearance": "Görünüm",
-    "cardSize": "Ana Sayfa Satırı Kart Gösterim Boyutu",
-    "externalPlayerApp": "Harici oynatıcı",
+    "cardSize": "Kart Boyutu",
+    "externalPlayerApp": "Harici Oynatıcı",
     "externalPlayerAskEachTimeSubtitle": "Oynatma başladığında uygulama seçiciyi göster.",
     "loadingInstalledPlayers": "Yüklü oynatıcılar yükleniyor…",
     "connection": "Bağlantı",
@@ -7049,12 +7049,12 @@
     "replaceSkipOutroWithNextUpDisplay": "\"Jeneriği Atla\" yerine \"Sıradaki Bölüm Ekranını\" yerleştir",
     "replaceSkipOutroWithNextUpDisplaySubtitle": "\"Jeneriği Atla\" butonu yerine \"Sıradaki Bölüm\" ekranını göster.",
     "playerRouting": "Oynatıcı Yönlendirme",
-    "preferSoftwareDecoders": "Yazılımsal kod çözücüleri tercih et",
+    "preferSoftwareDecoders": "Yazılımsal Kod Çözücüleri Tercih Et",
     "preferSoftwareDecodersSubtitle": "Donanımsal kod çözücülerden önce FFmpeg (ses) ve libgav1 (AV1) kullan. HDMI ses doğrudan geçişi (passthrough) bozulursa devre dışı bırak.",
-    "useExternalPlayer": "Her zaman harici oynatıcı kullan",
+    "useExternalPlayer": "Her Zaman Harici Oynatıcı Kullan",
     "useExternalPlayerSubtitle": "Android TV'de video oynatmayı seçtiğiniz harici uygulamada açın.",
     "automaticQueuing": "Otomatik Sıraya Ekleme",
-    "preferSdhSubtitles": "SDH altyazıları tercih et",
+    "preferSdhSubtitles": "SDH Altyazıları Tercih Et",
     "preferSdhSubtitlesSubtitle": "Otomatik seçim yaparken SDH/CC altyazı parçalarına öncelik ver.",
     "webDiagnostics": "Web Tanılama",
     "webDiagnosticsTitle": "Moonfin Web Tanılama",
@@ -7281,7 +7281,7 @@
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
-    "settingsScrollWheelAction": "Fare tekerleği",
+    "settingsScrollWheelAction": "Fare Tekerleği",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
@@ -7417,7 +7417,7 @@
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "fullScreenRows": "Genişletilmiş Ana Sayfa Satırları",
+    "fullScreenRows": "Genişletilmiş Satırlar",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
@@ -7458,7 +7458,7 @@
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "enableTunnelingTitle": "Tünellemeyi etkinleştir",
+    "enableTunnelingTitle": "Tünellemeyi Etkinleştir",
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
@@ -7755,7 +7755,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "'{libraryName}' kütüphaneniz, görselleri doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış ('Görselleri medya klasörlerine kaydet' seçeneği etkin). Ancak Jellyfin yazma erişimini test etti ve bu dizine dosya yazma izni olmadığını belirledi:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "\"{libraryName}\" kütüphaneniz, kapak görsellerini doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış ('Kapak görsellerini medya klasörlerine kaydet' seçeneği etkin). Ancak Jellyfin yazma erişimini test etti ve bu dizine dosya yazma iznine sahip değil:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -7924,7 +7924,7 @@
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "İstek güncellemeleri",
+    "seerrNotifyLibraryAddedTitle": "İstek Güncellemeleri",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
@@ -8017,7 +8017,7 @@
     },
     "checkingDirectPlay": "Doğrudan Oynatma uyumluluğu kontrol ediliyor…",
     "directPlayCapabilityLabel": "Doğrudan Oynatma Uyumluluğu: ",
-    "seerrNotifyNewRequestsTitle": "Yeni keşfet bildirimleri",
+    "seerrNotifyNewRequestsTitle": "Yeni Keşfet Bildirimleri",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
@@ -8115,7 +8115,7 @@
     "adminRecordingPostProcessorArgs": "Son işleme argümanları",
     "adminNetworkingAutoDiscovery": "Otomatik port eşlemeyi etkinleştir",
     "adminNetworkingLocalSubnets": "Yerel Ağlar",
-    "recommendationsApplyParentalRatingCap": "Ebeveyn Reyting Sınırı Uygulansın mı?",
+    "recommendationsApplyParentalRatingCap": "Yaş Sınırını Önerilere Uygula",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -8147,7 +8147,7 @@
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRemoveDeviceConfirm": "'{name}' cihazı kaldırılsın mı? Kullanıcının bu cihazda tekrar oturum açması gerekecektir.",
+    "adminRemoveDeviceConfirm": "\"{name}\" cihazı kaldırılsın mı? Kullanıcının bu cihazda yeniden oturum açması gerekecek.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8356,7 +8356,7 @@
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Kendinden imzalı sertifikalara izin ver",
+    "settingsAllowSelfSignedCerts": "Kendinden İmzalı Sertifikalara İzin Ver",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
@@ -8888,7 +8888,7 @@
     "imdbMostPopularTvShows": "IMDB En Popüler Diziler",
     "imdbLowestRatedMovies": "IMDB En Düşük Puanlı Filmler",
     "imdbTopEnglishMovies": "IMDB En Yüksek Puanlı İngilizce Filmler",
-    "showTechnicalDetails": "Teknik Detaylar Gösterilsin Mi?",
+    "showTechnicalDetails": "Teknik Detayları Göster",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -8900,7 +8900,7 @@
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "reportDownloadsActivity": "İndirmeleri sunucuda göster",
+    "reportDownloadsActivity": "İndirmeleri Sunucuda Göster",
     "reportDownloadsActivitySubtitle": "Sunucu yöneticisinin, kodu dönüştürülmüş indirmelerinizi panelde görmesine izin verin",
     "mbValue": "{value} MB",
     "@mbValue": {
@@ -8911,8 +8911,8 @@
             }
         }
     },
-    "imageCacheLimit": "Görsel önbelleği sınırı",
-    "clearImageCache": "Görsel önbelleğini temizle",
+    "imageCacheLimit": "Görsel Önbelleği Sınırı",
+    "clearImageCache": "Görsel Önbelleğini Temizle",
     "imageCacheCleared": "Görsel önbelleği temizlendi",
     "adminEditTuner": "Tuner'i Düzenle",
     "adminTunerTypeM3u": "M3U Tuner",
@@ -8969,7 +8969,7 @@
             }
         }
     },
-    "homeRowsPadding": "Ana Sayfa Satır Boşluğu",
+    "homeRowsPadding": "Satır Boşluğu",
     "@homeRowsPadding": {
         "description": "Title for home rows padding setting"
     },
@@ -8985,7 +8985,7 @@
     "@finalizingDownload": {
         "description": "Status label shown while a finished download is being moved to its final location and validated"
     },
-    "detailsBackgroundOpacity": "Detay Arka Plan Opaklığı",
+    "detailsBackgroundOpacity": "Arka Plan Opaklığı",
     "@detailsBackgroundOpacity": {
         "description": "Setting for details background opacity on modern screens"
     },
@@ -9056,7 +9056,7 @@
     "@trailerCaptions": {
         "description": "Setting for YouTube trailer captions"
     },
-    "trailerCaptionsDescription": "YouTube fragmanlarında medya çubuğunda altyazıları göster",
+    "trailerCaptionsDescription": "YouTube fragmanlarında altyazıları göster",
     "@trailerCaptionsDescription": {
         "description": "Description for YouTube trailer captions"
     },
@@ -9145,7 +9145,7 @@
             }
         }
     },
-    "seerrNotifyNewMediaTitle": "Yeni medya eklendi",
+    "seerrNotifyNewMediaTitle": "Yeni Medya Eklendi",
     "@seerrNotifyNewMediaTitle": {
         "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
     },
@@ -9535,7 +9535,7 @@
         "description": "Setting label for automatically dismissing the skip intro and outro button after a delay"
     },
     "settingsSkipButtonAutoHideDescription": "İntro ve jenerik atlama butonunu birkaç saniye sonra otomatik olarak gizle.",
-    "personalRatingStyle": "Kişisel derecelendirme tarzı",
+    "personalRatingStyle": "Kişisel Derecelendirme Tarzı",
     "@personalRatingStyle": {
         "description": "Selects how personal ratings are displayed and entered on media details."
     },
@@ -9808,7 +9808,7 @@
     "@mediaDetailsAndSpoilers": {
         "description": "Section header for media details and spoiler settings"
     },
-    "hideDetailsMediaDescription": "Ayrıntılar Sayfasında Medya Açıklamasını Gizle",
+    "hideDetailsMediaDescription": "Medya Açıklamasını Gizle",
     "@hideDetailsMediaDescription": {
         "description": "Setting title to hide media description on details screen"
     },
@@ -9816,7 +9816,7 @@
     "@hideDetailsMediaDescriptionSubtitle": {
         "description": "Description for setting to hide media description on details page"
     },
-    "detailUseSeriesThumbnails": "Ayrıntılar Sayfasında Dizi Küçük Resimlerini Kullan",
+    "detailUseSeriesThumbnails": "Dizi Küçük Resimlerini Kullan",
     "@detailUseSeriesThumbnails": {
         "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
     },
@@ -9824,7 +9824,7 @@
     "@detailUseSeriesThumbnailsSubtitle": {
         "description": "Description for setting to use series thumbnails on Classic details page"
     },
-    "hideHomeMediaDescription": "Ana Sayfada Medya Açıklamasını Gizle",
+    "hideHomeMediaDescription": "Medya Açıklamasını Gizle",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -9928,7 +9928,7 @@
     "@autoDetect": {
         "description": "Option: detect the value automatically"
     },
-    "tvOfflineDownloads": "Çevrimdışı indirmeleri etkinleştir",
+    "tvOfflineDownloads": "Çevrimdışı İndirmeleri Etkinleştir",
     "@tvOfflineDownloads": {
         "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
     },
@@ -10165,7 +10165,7 @@
     "@serverMessagesMarkAllRead": {
         "description": "Button in the messages window that marks every message as read"
     },
-    "serverMessagesShowButton": "Mesajlar butonunu göster",
+    "serverMessagesShowButton": "Mesajlar Butonunu Göster",
     "@serverMessagesShowButton": {
         "description": "Setting that shows or hides the messages button in the menu"
     },
@@ -11029,7 +11029,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "Yazı Gözüksün Mü?",
+    "showLoadingAnimationText": "Yazıyı Göster",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
@@ -11037,11 +11037,11 @@
     "@loadingAnimationPreview": {
         "description": "Label for loading animation preview window"
     },
-    "cropBlackBars": "Siyah bantları kırp",
+    "cropBlackBars": "Siyah Bantları Kırp",
     "@cropBlackBars": {
         "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
     },
-    "settingsCropBlackBarsDescription": "Kodlanmış siyah bantları tespit et, kırp ve ekranı doldur.",
+    "settingsCropBlackBarsDescription": "Oynatma başladıktan sonra kodlanmış siyah şeritleri tespit et, kırp ve ekranı doldur. Oynatıcıdaki yakınlaştırma düğmesinden yeniden kırpılabilir.",
     "@settingsCropBlackBarsDescription": {
         "description": "Description for the crop black bars playback setting"
     },
@@ -11156,7 +11156,7 @@
     "@upcomingEpisodeTomorrow": {
         "description": "Upcoming episode airs tomorrow"
     },
-    "settingsAudioPassthroughOutput": "Doğrudan Geçiş (Passthrough) çıkışı",
+    "settingsAudioPassthroughOutput": "Doğrudan Geçiş (Passthrough) Çıkışı",
     "@settingsAudioPassthroughOutput": {
         "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
     },

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
@@ -2178,9 +2177,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
       unawaited(
         precacheImage(
-          CachedNetworkImageProvider(
+          trickplaySheetProvider(
             url,
-            headers: headers.isEmpty ? null : headers,
+            headers,
+            sheetWidth: info.width * info.tileWidth,
+            sheetHeight: info.height * info.tileHeight,
           ),
           context,
           onError: (_, _) {
@@ -3088,10 +3089,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _isPausedScrubActive = true;
         // If an earlier still-resolving commit already paused playback for
         // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-        // already correctly true - re-reading _state.isPlaying now would see
+        // already correctly true. Re-reading the player's state now would see
         // "paused" and wrongly conclude nothing needs resuming later.
+        // isPlaying reads false while the seek from a Left or Right press with
+        // the controls hidden is still buffering, so this checks isPaused.
         if (!_wasPlayingBeforeScrubPause) {
-          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          _wasPlayingBeforeScrubPause = !_state.isPaused;
           if (_wasPlayingBeforeScrubPause) {
             _manager.pause();
           }
@@ -5245,29 +5248,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     required double bufferMs,
   }) {
     return SliderTheme(
-      data: SliderThemeData(
-        trackHeight: 4,
-        thumbShape: const RoundSliderThumbShape(
-          enabledThumbRadius:
-              TrickplayPreviewLayout.seekThumbRadius,
-        ),
-        overlayShape: const RoundSliderOverlayShape(
-          overlayRadius: 14,
-        ),
-        activeTrackColor:
-            AppColorScheme.rangeProgress,
-        secondaryActiveTrackColor: AppColorScheme
-            .rangeTrack
-            .withValues(alpha: 0.8),
-        inactiveTrackColor: AppColorScheme.rangeTrack,
-        thumbColor:
-            (PlatformDetection.isTV &&
-                _seekbarFocused)
-            ? Colors.white
-            : AppColorScheme.rangeThumb,
-        overlayColor: AppColorScheme.rangeThumb
-            .withValues(alpha: 0.2),
-      ),
+      data: osdSeekBarTheme(thumbFocused: _seekbarFocused),
       child: Slider(
         value: positionMs.clamp(0.0, durationMs),
         secondaryTrackValue: bufferMs.clamp(
@@ -5481,9 +5462,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Widget _trickplayTileImage(TrickplayTile tile) {
     return TrickplayTileImage(
-      sheet: CachedNetworkImageProvider(
+      sheet: trickplaySheetProvider(
         tile.url,
-        headers: tile.headers.isEmpty ? null : tile.headers,
+        tile.headers,
+        sheetWidth: (tile.thumbWidth * tile.tileWidth).round(),
+        sheetHeight: (tile.thumbHeight * tile.tileHeight).round(),
       ),
       sourceRect: tile.sourceRect,
       thumbWidth: tile.thumbWidth,
@@ -5595,84 +5578,74 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final l10n = AppLocalizations.of(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final scale = _osdButtonScale;
-    final buttonExtent = (isLandscape ? 56.0 : 48.0) * scale;
-    final buttonIconSize = (isLandscape ? 28.0 : 24.0) * scale;
 
     return FocusTraversalGroup(
       policy: ReadingOrderTraversalPolicy(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _controlButton(
-              Icons.skip_previous_rounded,
-              onPressed: _manager.previous,
-              size: buttonIconSize,
-              extent: buttonExtent,
-              focusNode: _tvTransportFirstFocus,
-              tooltip: l10n.playerTooltipPrevious,
+      child: osdDockedTransport(
+        landscape: isLandscape,
+        scale: _osdButtonScale,
+        build: (button, size, extent) => switch (button) {
+          OsdTransportButton.previous => _controlButton(
+            Icons.skip_previous_rounded,
+            onPressed: _manager.previous,
+            size: size,
+            extent: extent,
+            focusNode: _tvTransportFirstFocus,
+            tooltip: l10n.playerTooltipPrevious,
+          ),
+          OsdTransportButton.seekBack => _controlButton(
+            seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
+            onPressed: () =>
+                _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
+            size: size,
+            extent: extent,
+            tooltip: _tooltipMessage(
+              l10n.playerTooltipSeekBack,
+              shortcut: 'Left',
             ),
-            const SizedBox(width: 4),
-            _controlButton(
-              seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
-              onPressed: () =>
-                  _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
-              size: buttonIconSize,
-              extent: buttonExtent,
-              tooltip: _tooltipMessage(
-                l10n.playerTooltipSeekBack,
-                shortcut: 'Left',
-              ),
+          ),
+          OsdTransportButton.playPause => StreamBuilder<bool>(
+            stream: _state.playingStream,
+            initialData: _state.isPlaying,
+            builder: (context, snap) {
+              final isPlaying = _isPlayingShown;
+              return _controlButton(
+                isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                onPressed: () => isPlaying
+                    ? _manager.pause()
+                    : _resumeWithConfiguredRewind(),
+                size: size,
+                extent: extent,
+                focusNode: _primaryPlayFocus,
+                tooltip: _tooltipMessage(
+                  isPlaying ? l10n.pause : l10n.play,
+                  shortcut: 'Space',
+                ),
+              );
+            },
+          ),
+          OsdTransportButton.seekForward => _controlButton(
+            seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
+            onPressed: () =>
+                _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
+            size: size,
+            extent: extent,
+            tooltip: _tooltipMessage(
+              l10n.playerTooltipSeekForward,
+              shortcut: 'Right',
             ),
-            const SizedBox(width: 8),
-            StreamBuilder<bool>(
-              stream: _state.playingStream,
-              initialData: _state.isPlaying,
-              builder: (context, snap) {
-                final isPlaying = _isPlayingShown;
-                return _controlButton(
-                  isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  onPressed: () => isPlaying
-                      ? _manager.pause()
-                      : _resumeWithConfiguredRewind(),
-                  size: buttonIconSize,
-                  extent: buttonExtent,
-                  focusNode: _primaryPlayFocus,
-                  tooltip: _tooltipMessage(
-                    isPlaying ? l10n.pause : l10n.play,
-                    shortcut: 'Space',
-                  ),
-                );
-              },
-            ),
-            const SizedBox(width: 8),
-            _controlButton(
-              seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
-              onPressed: () =>
-                  _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
-              size: buttonIconSize,
-              extent: buttonExtent,
-              tooltip: _tooltipMessage(
-                l10n.playerTooltipSeekForward,
-                shortcut: 'Right',
-              ),
-            ),
-            const SizedBox(width: 4),
-            // Always here, because it steps chapters before it steps the
-            // queue, so it has something to do on a lone movie too.
-            _controlButton(
-              Icons.skip_next_rounded,
-              onPressed: _manager.next,
-              size: buttonIconSize,
-              extent: buttonExtent,
-              focusNode: _tvTransportLastFocus,
-              tooltip: l10n.next,
-            ),
-          ],
-        ),
+          ),
+          // Always here, because it steps chapters before it steps the
+          // queue, so it has something to do on a lone movie too.
+          OsdTransportButton.next => _controlButton(
+            Icons.skip_next_rounded,
+            onPressed: _manager.next,
+            size: size,
+            extent: extent,
+            focusNode: _tvTransportLastFocus,
+            tooltip: l10n.next,
+          ),
+        },
       ),
     );
   }
@@ -5773,8 +5746,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final isLandscape =
             MediaQuery.of(context).orientation == Orientation.landscape;
         final scale = _osdButtonScale;
-        final secondaryIconSize = (isLandscape ? 28.0 : 24.0) * scale;
-        final secondaryExtent = (isLandscape ? 56.0 : 48.0) * scale;
+        final rowSize = osdRowButtonSize(landscape: isLandscape);
+        final secondaryIconSize = rowSize.icon * scale;
+        final secondaryExtent = rowSize.extent * scale;
         final secondaryTextSize = isLandscape
             ? AppTypography.fontSizeMd
             : AppTypography.fontSizeSm;
@@ -5996,43 +5970,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               )
             : secondaryButtons;
 
-        final estimatedWidth =
-            orderedSecondaryButtons.length * (secondaryExtent + 8);
-
-        final layoutBuilder = LayoutBuilder(
-          builder: (context, constraints) {
-            final canFitLandscapeRow =
-                isLandscape && estimatedWidth <= constraints.maxWidth;
-
-            if (canFitLandscapeRow) {
-              return SizedBox(
-                height: secondaryExtent,
-                child: Row(
-                  mainAxisAlignment: PlatformDetection.isTV
-                      ? MainAxisAlignment.start
-                      : MainAxisAlignment.spaceEvenly,
-                  children: orderedSecondaryButtons,
-                ),
-              );
-            }
-
-            return SizedBox(
-              height: secondaryExtent,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    for (final button in orderedSecondaryButtons)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: button,
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
+        final layoutBuilder = osdButtonRow(
+          buttons: orderedSecondaryButtons,
+          extent: secondaryExtent,
+          landscape: isLandscape,
         );
 
         if (PlatformDetection.isTV) {
@@ -6920,84 +6861,59 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       builder: (context, snap) {
         final l10n = AppLocalizations.of(context);
         final isPlaying = _isPlayingShown;
-        final scale = _osdButtonScale;
 
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _controlButton(
-                      Icons.skip_previous_rounded,
-                      onPressed: _manager.previous,
-                      size: 40 * scale,
-                      extent: 72 * scale,
-                      tooltip: l10n.playerTooltipPrevious,
-                    ),
-                    _controlButton(
-                      seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
-                      onPressed: () => _seekRelative(
-                        -_prefs.get(UserPreferences.skipBackLength),
-                      ),
-                      size: 46 * scale,
-                      extent: 78 * scale,
-                      tooltip: _tooltipMessage(
-                        l10n.playerTooltipSeekBack,
-                        shortcut: 'Left',
-                      ),
-                    ),
-                  ],
-                ),
+        return osdCenterTransport(
+          _osdButtonScale,
+          (button, size, extent) => switch (button) {
+            OsdTransportButton.previous => _controlButton(
+              Icons.skip_previous_rounded,
+              onPressed: _manager.previous,
+              size: size,
+              extent: extent,
+              tooltip: l10n.playerTooltipPrevious,
+            ),
+            OsdTransportButton.seekBack => _controlButton(
+              seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
+              onPressed: () =>
+                  _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
+              size: size,
+              extent: extent,
+              tooltip: _tooltipMessage(
+                l10n.playerTooltipSeekBack,
+                shortcut: 'Left',
               ),
             ),
-            _controlButton(
+            OsdTransportButton.playPause => _controlButton(
               isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
               onPressed: () =>
                   isPlaying ? _manager.pause() : _resumeWithConfiguredRewind(),
-              size: 64 * scale,
-              extent: 92 * scale,
+              size: size,
+              extent: extent,
               focusNode: _primaryPlayFocus,
               tooltip: _tooltipMessage(
                 isPlaying ? l10n.pause : l10n.play,
                 shortcut: 'Space',
               ),
             ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _controlButton(
-                      seekForwardIcon(
-                        _prefs.get(UserPreferences.skipForwardLength),
-                      ),
-                      onPressed: () => _seekRelative(
-                        _prefs.get(UserPreferences.skipForwardLength),
-                      ),
-                      size: 46 * scale,
-                      extent: 78 * scale,
-                      tooltip: _tooltipMessage(
-                        l10n.playerTooltipSeekForward,
-                        shortcut: 'Right',
-                      ),
-                    ),
-                    _controlButton(
-                      Icons.skip_next_rounded,
-                      onPressed: _manager.next,
-                      size: 40 * scale,
-                      extent: 72 * scale,
-                      tooltip: l10n.next,
-                    ),
-                  ],
-                ),
+            OsdTransportButton.seekForward => _controlButton(
+              seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
+              onPressed: () =>
+                  _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
+              size: size,
+              extent: extent,
+              tooltip: _tooltipMessage(
+                l10n.playerTooltipSeekForward,
+                shortcut: 'Right',
               ),
             ),
-          ],
+            OsdTransportButton.next => _controlButton(
+              Icons.skip_next_rounded,
+              onPressed: _manager.next,
+              size: size,
+              extent: extent,
+              tooltip: l10n.next,
+            ),
+          },
         );
       },
     );
@@ -7429,13 +7345,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         onRightBoundary: onRightBoundary,
       );
     }
-    final icon = switch (_zoomMode) {
-      ZoomMode.fit => Icons.fit_screen_rounded,
-      ZoomMode.autoCrop => Icons.crop_rounded,
-      ZoomMode.stretch => Icons.open_in_full_rounded,
-    };
     return _controlButton(
-      icon,
+      osdZoomIcon(_zoomMode),
       size: size,
       extent: extent,
       onPressed: _cyclePlayerZoom,

@@ -11247,7 +11247,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Show season availability badges on media details pages",
+    "showSeerrAvailabilityBadgesDescription": "Show the Seerr status on posters and seasons across the app",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },

@@ -12,6 +12,7 @@ import '../../../../../util/artwork_request_size.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
+import '../../../../widgets/scroll_edge_arrows.dart';
 import '../../../../widgets/sliding_pill_tabs.dart';
 import '../../detail_episode_images.dart';
 import '../../detail_layout_metrics.dart';
@@ -46,6 +47,10 @@ class MinimalistEpisodesSection extends StatefulWidget {
   /// Up out of the section, usually back to the play button.
   final bool Function(bool isUp)? onVerticalNavigation;
 
+  /// Left off the first tab or the first episode, for a layout that has
+  /// something to its left.
+  final VoidCallback? onLeftEdge;
+
   const MinimalistEpisodesSection({
     super.key,
     required this.viewModel,
@@ -54,6 +59,7 @@ class MinimalistEpisodesSection extends StatefulWidget {
     this.maxHeight,
     this.episodesFocusNode,
     this.onVerticalNavigation,
+    this.onLeftEdge,
   });
 
   @override
@@ -222,6 +228,7 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
                 selectedIndex: selected == null ? 0 : seasons.indexOf(selected),
                 onChanged: (index) => _selectSeason(seasons[index]),
                 focusNode: widget.episodesFocusNode,
+                onExitLeft: widget.onLeftEdge,
                 onVerticalNavigation: (isUp) {
                   if (!isUp) {
                     _railKey.currentState?.requestFocusAt(0);
@@ -235,47 +242,54 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
             SizedBox(
               key: const ValueKey('minimalist-episode-rail'),
               height: railHeight,
-              child: LockedFocusRow<AggregatedItem>(
-                key: _railKey,
-                items: episodes,
-                itemKey: (item, _) => '${item.serverId}|${item.id}',
-                hubKey: 'minimalist-episodes-${_vm.item?.id ?? ''}-$selected',
-                itemExtent: cardWidth,
-                itemSpacing: minimalistEpisodeRailGap(
-                  landscape: widget.landscape,
-                ),
-                height: railHeight,
+              child: ScrollEdgeArrows(
                 controller: _railController,
-                focusNode: showTabs ? null : widget.episodesFocusNode,
-                clipBehavior: Clip.none,
-                // The row handles the remote's select and hold. The card below
-                // handles the pointer, so both have to agree.
-                onTap: (_, episode) => _openEpisode(context, episode),
-                onLongPress: (_, episode) => _showEpisodeMenu(context, episode),
-                onVerticalNavigation: (isUp) {
-                  if (isUp && showTabs) {
-                    widget.episodesFocusNode?.requestFocus();
-                    return true;
-                  }
-                  return widget.onVerticalNavigation?.call(isUp) ?? false;
-                },
-                itemBuilder: (context, episode, index, isFocused) {
-                  return MinimalistEpisodeCard(
-                    episode: episode,
-                    width: cardWidth,
-                    isFocused: isFocused,
-                    isCurrent: _isEpisode && episode.id == _vm.item?.id,
-                    imageUrl: minimalistEpisodeImageUrl(
-                      episode,
-                      _vm,
-                      prefs: widget.prefs,
-                      cardWidth: cardWidth,
-                      devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-                    ),
-                    onTap: () => _openEpisode(context, episode),
-                    onLongPress: () => _showEpisodeMenu(context, episode),
-                  );
-                },
+                child: LockedFocusRow<AggregatedItem>(
+                  key: _railKey,
+                  items: episodes,
+                  itemKey: (item, _) => '${item.serverId}|${item.id}',
+                  hubKey: 'minimalist-episodes-${_vm.item?.id ?? ''}-$selected',
+                  itemExtent: cardWidth,
+                  itemSpacing: minimalistEpisodeRailGap(
+                    landscape: widget.landscape,
+                  ),
+                  height: railHeight,
+                  controller: _railController,
+                  focusNode: showTabs ? null : widget.episodesFocusNode,
+                  onLeftEdge: widget.onLeftEdge,
+                  clipBehavior: Clip.none,
+                  // The row handles the remote's select and hold. The card
+                  // below handles the pointer, so both have to agree.
+                  onTap: (_, episode) => _openEpisode(context, episode),
+                  onLongPress: (_, episode) =>
+                      _showEpisodeMenu(context, episode),
+                  onVerticalNavigation: (isUp) {
+                    if (isUp && showTabs) {
+                      widget.episodesFocusNode?.requestFocus();
+                      return true;
+                    }
+                    return widget.onVerticalNavigation?.call(isUp) ?? false;
+                  },
+                  itemBuilder: (context, episode, index, isFocused) {
+                    return MinimalistEpisodeCard(
+                      episode: episode,
+                      width: cardWidth,
+                      isFocused: isFocused,
+                      isCurrent: _isEpisode && episode.id == _vm.item?.id,
+                      imageUrl: minimalistEpisodeImageUrl(
+                        episode,
+                        _vm,
+                        prefs: widget.prefs,
+                        cardWidth: cardWidth,
+                        devicePixelRatio: MediaQuery.devicePixelRatioOf(
+                          context,
+                        ),
+                      ),
+                      onTap: () => _openEpisode(context, episode),
+                      onLongPress: () => _showEpisodeMenu(context, episode),
+                    );
+                  },
+                ),
               ),
             ),
           ],

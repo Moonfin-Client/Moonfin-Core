@@ -157,6 +157,41 @@ CustomTransitionPage<T> _opaqueFullScreenPage<T>({
   );
 }
 
+/// A title's page. Quick Look opens it as a drawer over the screen it was
+/// picked on, unless the full page was asked for, and anything else gets the
+/// page go_router builds for a plain route.
+Page<void> _detailPage(
+  GoRouterState state,
+  Widget Function({bool quickLook}) screen,
+) {
+  final quickLook =
+      GetIt.instance<UserPreferences>().effectiveDetailScreenStyle ==
+          DetailScreenStyle.quickLook &&
+      state.uri.queryParameters['full'] != 'true';
+  if (!quickLook) {
+    return MaterialPage<void>(
+      key: state.pageKey,
+      name: state.name ?? state.path,
+      arguments: <String, String>{
+        ...state.pathParameters,
+        ...state.uri.queryParameters,
+      },
+      restorationId: state.pageKey.value,
+      child: screen(),
+    );
+  }
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    name: state.name ?? state.path,
+    opaque: false,
+    transitionDuration: const Duration(milliseconds: 260),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        child,
+    child: screen(quickLook: true),
+  );
+}
+
 final appRouter = GoRouter(
   initialLocation: Destinations.startup,
   observers: [
@@ -440,7 +475,7 @@ final appRouter = GoRouter(
     // Item details
     GoRoute(
       path: Destinations.itemDetail,
-      builder: (context, state) {
+      pageBuilder: (_, state) => _detailPage(state, ({quickLook = false}) {
         final itemId = state.pathParameters['itemId']!;
         final serverId = state.uri.queryParameters['serverId'];
         final autoPlay = state.uri.queryParameters['autoPlay'] == 'true';
@@ -453,8 +488,9 @@ final appRouter = GoRouter(
           serverId: serverId,
           autoPlay: autoPlay,
           contextSeasonId: contextSeasonId,
+          quickLook: quickLook,
         );
-      },
+      }),
       routes: [
         GoRoute(
           path: 'list',
@@ -709,7 +745,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: Destinations.seerrMediaDetail,
-      builder: (context, state) {
+      pageBuilder: (_, state) => _detailPage(state, ({quickLook = false}) {
         final rawId = state.pathParameters['itemId']!;
         final kind = state.uri.queryParameters['mediaType'] == 'tv'
             ? TmdbItemKind.tv
@@ -719,8 +755,9 @@ final appRouter = GoRouter(
           key: ValueKey(ref.itemId),
           itemId: ref.itemId,
           seerrTitle: state.uri.queryParameters['title'],
+          quickLook: quickLook,
         );
-      },
+      }),
     ),
     GoRoute(
       path: Destinations.seerrCollectionDetail,

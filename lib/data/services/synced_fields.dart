@@ -376,6 +376,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('showMediaDetailsOnLibraryPage', UserPreferences.showMediaDetailsOnLibraryPage, SyncCodec.boolean),
   SyncedField('libraryCardTitles', UserPreferences.libraryCardTitles, SyncCodec.boolean),
   SyncedField('showSeerrAvailabilityBadges', UserPreferences.showSeerrAvailabilityBadges, SyncCodec.boolean),
+  SyncedField('seerrBadgeStyle', UserPreferences.seerrBadgeStyle, SyncCodec.enumName, enumValues: prefs.SeerrBadgeStyle.values),
   SyncedField('showSeerrButton', UserPreferences.showSeerrButton, SyncCodec.boolean),
   SyncedField('showServerMessagesButton', UserPreferences.showServerMessagesButton, SyncCodec.boolean),
   SyncedField('sinceYouWatched1Enabled', UserPreferences.sinceYouWatched1Enabled, SyncCodec.boolean),

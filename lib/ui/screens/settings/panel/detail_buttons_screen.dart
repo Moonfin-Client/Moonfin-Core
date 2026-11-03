@@ -44,36 +44,46 @@ class _DetailButtonsScreenState extends State<_DetailButtonsScreen> {
         context,
         Scaffold(
           appBar: buildSettingsAppBar(context, Text(l10n.detailButtons)),
-          body: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                child: Text(l10n.detailButtonsSectionDescription, style: hint),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: Text(l10n.buttonOrderHint, style: hint),
-              ),
-              ButtonLayoutList(
-                layout: detailButtonLayout,
-                entries: [
-                  for (final button in DetailButton.values.where(
-                    (button) =>
-                        button.isOffered &&
-                        (button != DetailButton.keepAsComplete || _hasLiveTv),
-                  ))
-                    ButtonLayoutEntry(
-                      id: button.id,
-                      title: button.label(l10n),
-                      subtitle: button == DetailButton.watchWithGroup
-                          ? l10n.buttonShownInSyncPlayGroup
-                          : null,
-                      icon: button.icon,
-                      canHide: button.canHide,
-                    ),
-                ],
-              ),
-            ],
+          body: SettingsPreviewReporter(
+            describe: () => SettingsPreviewEntry(
+              prefKey: detailButtonLayout.orderPreference.key,
+              title: l10n.detailButtons,
+              description: l10n.detailButtonsDescription,
+            ),
+            child: ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: Text(
+                    l10n.detailButtonsSectionDescription,
+                    style: hint,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Text(l10n.buttonOrderHint, style: hint),
+                ),
+                ButtonLayoutList(
+                  layout: detailButtonLayout,
+                  entries: [
+                    for (final button in DetailButton.values.where(
+                      (button) =>
+                          button.isOffered &&
+                          (button != DetailButton.keepAsComplete || _hasLiveTv),
+                    ))
+                      ButtonLayoutEntry(
+                        id: button.id,
+                        title: button.label(l10n),
+                        subtitle: button == DetailButton.watchWithGroup
+                            ? l10n.buttonShownInSyncPlayGroup
+                            : null,
+                        icon: button.icon,
+                        canHide: button.canHide,
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

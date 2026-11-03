@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../data/models/trickplay_preview_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
+import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 
@@ -114,3 +117,134 @@ final osdButtonLayout = ButtonLayout(
   orderMobile: UserPreferences.osdButtonOrderMobile,
   orderDesktop: UserPreferences.osdButtonOrderDesktop,
 );
+
+IconData osdZoomIcon(ZoomMode mode) => switch (mode) {
+  ZoomMode.fit => Icons.fit_screen_rounded,
+  ZoomMode.autoCrop => Icons.crop_rounded,
+  ZoomMode.stretch => Icons.open_in_full_rounded,
+};
+
+/// The size of the buttons along the bottom of the controls, a docked
+/// transport's included, before the UI scale.
+({double icon, double extent}) osdRowButtonSize({required bool landscape}) =>
+    landscape ? (icon: 28.0, extent: 56.0) : (icon: 24.0, extent: 48.0);
+
+enum OsdTransportButton { previous, seekBack, playPause, seekForward, next }
+
+typedef OsdTransportBuilder =
+    Widget Function(OsdTransportButton button, double iconSize, double extent);
+
+/// The transport in the middle of the picture, with play centered and the
+/// seeks and skips spreading out from it.
+Widget osdCenterTransport(double scale, OsdTransportBuilder build) {
+  Widget side(Alignment alignment, List<Widget> buttons) => Expanded(
+    child: Align(
+      alignment: alignment,
+      child: Row(mainAxisSize: MainAxisSize.min, children: buttons),
+    ),
+  );
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      side(Alignment.centerRight, [
+        build(OsdTransportButton.previous, 40 * scale, 72 * scale),
+        build(OsdTransportButton.seekBack, 46 * scale, 78 * scale),
+      ]),
+      build(OsdTransportButton.playPause, 64 * scale, 92 * scale),
+      side(Alignment.centerLeft, [
+        build(OsdTransportButton.seekForward, 46 * scale, 78 * scale),
+        build(OsdTransportButton.next, 40 * scale, 72 * scale),
+      ]),
+    ],
+  );
+}
+
+/// The transport docked at the start of the bottom row, sized like the
+/// buttons beside it.
+Widget osdDockedTransport({
+  required bool landscape,
+  required double scale,
+  required OsdTransportBuilder build,
+}) {
+  final size = osdRowButtonSize(landscape: landscape);
+  Widget button(OsdTransportButton button) =>
+      build(button, size.icon * scale, size.extent * scale);
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        button(OsdTransportButton.previous),
+        const SizedBox(width: 4),
+        button(OsdTransportButton.seekBack),
+        const SizedBox(width: 8),
+        button(OsdTransportButton.playPause),
+        const SizedBox(width: 8),
+        button(OsdTransportButton.seekForward),
+        const SizedBox(width: 4),
+        button(OsdTransportButton.next),
+      ],
+    ),
+  );
+}
+
+/// The extra buttons spread along the row when they all fit in landscape,
+/// packed to the start on a TV, and scrolling sideways when they don't.
+Widget osdButtonRow({
+  required List<Widget> buttons,
+  required double extent,
+  required bool landscape,
+}) {
+  final estimatedWidth = buttons.length * (extent + 8);
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      if (landscape && estimatedWidth <= constraints.maxWidth) {
+        return SizedBox(
+          height: extent,
+          child: Row(
+            mainAxisAlignment: PlatformDetection.isTV
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.spaceEvenly,
+            children: buttons,
+          ),
+        );
+      }
+      return SizedBox(
+        height: extent,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (final button in buttons)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: button,
+                ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+/// The seek bar's look. A TV whitens the thumb while the bar has focus.
+SliderThemeData osdSeekBarTheme({required bool thumbFocused}) =>
+    SliderThemeData(
+      trackHeight: 4,
+      thumbShape: const RoundSliderThumbShape(
+        enabledThumbRadius: TrickplayPreviewLayout.seekThumbRadius,
+      ),
+      overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+      activeTrackColor: AppColorScheme.rangeProgress,
+      secondaryActiveTrackColor: AppColorScheme.rangeTrack.withValues(
+        alpha: 0.8,
+      ),
+      inactiveTrackColor: AppColorScheme.rangeTrack,
+      thumbColor: PlatformDetection.isTV && thumbFocused
+          ? Colors.white
+          : AppColorScheme.rangeThumb,
+      overlayColor: AppColorScheme.rangeThumb.withValues(alpha: 0.2),
+    );

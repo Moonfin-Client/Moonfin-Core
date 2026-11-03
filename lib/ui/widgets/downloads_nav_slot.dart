@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../data/services/saved_media_presence.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/download_utils.dart';
 import '../../util/platform_detection.dart';
 
 /// Wraps the downloads button for a nav bar.
@@ -25,6 +26,9 @@ class DownloadsNavSlot extends StatelessWidget {
       ) &&
       PlatformDetection.supportsOfflineDownloads &&
       !PlatformDetection.isWeb;
+
+  /// Whether this device and the signed in user can download at all.
+  static bool isAvailable() => !PlatformDetection.isWeb && userCanDownload();
 
   /// Whether there is anything saved to show right now.
   static bool hasSavedMedia() {

@@ -41,6 +41,7 @@ import '../../../playback/appletv_preview_player.dart';
 import '../../../playback/inline_preview_engine.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../playback/mpv_client_certificate.dart';
+import '../../../playback/mpv_player_registry.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -1858,8 +1859,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (releaseResources || kIsWeb) {
       _previewCompletedSub?.cancel();
       _previewCompletedSub = null;
-      _previewPlayer?.dispose();
-      _previewPlayer = null;
+      _disposePreviewPlayer();
       _previewController = null;
       unawaited(_releaseAppleTvPreviewPlayer());
     }
@@ -1926,8 +1926,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (kIsWeb) {
       _previewCompletedSub?.cancel();
       _previewCompletedSub = null;
-      _previewPlayer?.dispose();
-      _previewPlayer = null;
+      _disposePreviewPlayer();
       _previewController = null;
     } else {
       _previewPlayer?.stop();
@@ -2147,13 +2146,21 @@ class _ContentRowsState extends State<_ContentRows>
     return player;
   }
 
+  void _disposePreviewPlayer() {
+    final player = _previewPlayer;
+    _previewPlayer = null;
+    if (player != null) {
+      unawaited(MpvPlayerRegistry.instance.dispose(player));
+    }
+  }
+
   Player _ensureSharedPreviewPlayer() {
     final existing = _previewPlayer;
     if (existing != null) {
       return existing;
     }
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: const PlayerConfiguration(libass: false),
     );
     final platform = player.platform;

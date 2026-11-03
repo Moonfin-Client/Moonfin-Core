@@ -192,6 +192,52 @@
   "@whosWatching": {
     "description": "Server user selection heading"
   },
+  "signedInOnThisDevice": "Signed in on this device",
+  "@signedInOnThisDevice": {
+    "description": "Status under a user on the Who's watching screen when this device already has their session"
+  },
+  "pinRequired": "PIN required",
+  "@pinRequired": {
+    "description": "Status under a user or account that asks for a PIN before signing in"
+  },
+  "passwordRequired": "Password required",
+  "@passwordRequired": {
+    "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+  },
+  "continueAsUser": "Continue as {name}",
+  "@continueAsUser": {
+    "description": "Phone button that signs in as the selected user on the Who's watching screen",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "switchToUser": "Switch to {name}",
+  "@switchToUser": {
+    "description": "Phone button in the Switch User sheet that switches to the selected account",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signedInAsOnServer": "Signed in as {user} on {server}",
+  "@signedInAsOnServer": {
+    "description": "Line at the top of the Switch User screen naming the current account and its server",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      },
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "accountActive": "Active",
+  "@accountActive": {
+    "description": "Marks the account that is signed in now in the Switch User screen"
+  },
   "addUser": "Add User",
   "@addUser": {
     "description": "Button to add a new user on the server screen"
@@ -290,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -500,6 +546,42 @@
   "detailScreenStyleMinimalist": "Minimalist",
   "@detailScreenStyleMinimalist": {
     "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+  },
+  "detailScreenStyleStage": "Stage",
+  "@detailScreenStyleStage": {
+    "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+  },
+  "detailScreenStylePremiere": "Premiere",
+  "@detailScreenStylePremiere": {
+    "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+  },
+  "detailScreenStyleQuickLook": "Quick Look",
+  "@detailScreenStyleQuickLook": {
+    "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+  },
+  "detailScreenStyleFrost": "Frost",
+  "@detailScreenStyleFrost": {
+    "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+  },
+  "quickLookOpenFullPage": "Open full page",
+  "@quickLookOpenFullPage": {
+    "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+  },
+  "quickLookBackToClose": "Back to close",
+  "@quickLookBackToClose": {
+    "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+  },
+  "quickLookSeasonPlayed": "{played} of {total}",
+  "@quickLookSeasonPlayed": {
+    "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+    "placeholders": {
+      "played": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
@@ -7143,11 +7225,23 @@
   },
   "showSeerrAvailabilityBadges": "Show Seerr Availability Badges",
   "@showSeerrAvailabilityBadges": {
-    "description": "Setting title for showing Seerr availability badges on media details pages"
+    "description": "Setting title for showing Seerr availability badges on posters across the app"
   },
-  "showSeerrAvailabilityBadgesDescription": "Show season availability badges on media details pages",
+  "showSeerrAvailabilityBadgesDescription": "Show the Seerr status on posters and seasons across the app",
   "@showSeerrAvailabilityBadgesDescription": {
-    "description": "Setting description for showing Seerr availability badges on media details pages"
+    "description": "Setting description for showing Seerr availability badges on posters across the app"
+  },
+  "seerrBadgeStyle": "Badge Style",
+  "@seerrBadgeStyle": {
+    "description": "Setting title for how posters show their Seerr status"
+  },
+  "seerrBadgeStyleDescription": "Badge puts Seerr's dot in a corner. Banner runs the status across the top of the poster.",
+  "@seerrBadgeStyleDescription": {
+    "description": "Setting description for the Seerr badge style choices"
+  },
+  "seerrBadgeStyleBadge": "Badge",
+  "@seerrBadgeStyleBadge": {
+    "description": "Seerr badge style that shows a status dot in a poster corner"
   },
   "seerrNotificationsSection": "Notifications",
   "@seerrNotificationsSection": {
@@ -13366,6 +13460,38 @@
   "@setupDetailMinimalistHint": {
     "description": "What the minimalist detail screen style gives you"
   },
+  "setupStyleStage": "Stage",
+  "@setupStyleStage": {
+    "description": "Name of the poster-led detail layout, offered in the setup wizard"
+  },
+  "setupDetailStageHint": "The poster up front, with play under it and the details beside it.",
+  "@setupDetailStageHint": {
+    "description": "What the Stage detail screen style gives you"
+  },
+  "setupStylePremiere": "Premiere",
+  "@setupStylePremiere": {
+    "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+  },
+  "setupDetailPremiereHint": "The title centered over a full screen backdrop, with everything else down the page.",
+  "@setupDetailPremiereHint": {
+    "description": "What the Premiere detail screen style gives you"
+  },
+  "setupStyleQuickLook": "Quick Look",
+  "@setupStyleQuickLook": {
+    "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+  },
+  "setupDetailQuickLookHint": "A drawer over the screen you were on, with play and the basics, and the full page a press away.",
+  "@setupDetailQuickLookHint": {
+    "description": "What the Quick Look detail screen style gives you"
+  },
+  "setupStyleFrost": "Frost",
+  "@setupStyleFrost": {
+    "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+  },
+  "setupDetailFrostHint": "The title in a glass window over its blurred art, with tabs under the buttons.",
+  "@setupDetailFrostHint": {
+    "description": "What the Frost detail screen style gives you"
+  },
   "setupNavbarStyleQuestion": "How should the bottom bar look?",
   "@setupNavbarStyleQuestion": {
     "description": "Setup question asking which style the bottom navigation bar should use"
@@ -15452,5 +15578,19 @@
   "settingsPreviewSaved": "Saved",
   "@settingsPreviewSaved": {
     "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+  },
+  "smartSearch": "Smart Search",
+  "@smartSearch": {
+    "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+  },
+  "smartSearchOnSeerr": "Smart Search on {seerr}",
+  "@smartSearchOnSeerr": {
+    "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+    "placeholders": {
+      "seerr": {
+        "type": "String",
+        "example": "Seerr"
+      }
+    }
   }
 }
