@@ -3510,9 +3510,9 @@ class HomeViewModel extends ChangeNotifier {
     final hideDownloaded = _prefs.get(UserPreferences.radarrCalendarHideDownloaded);
     final l10n = currentAppLocalizations();
     // Cinema dates keep their label, so a date alone never reads as a server
-    // release. Digital and physical both end up on the server, so on their own
-    // they need none.
-    final showFormat = showCinema;
+    // release. Digital and physical together keep it too, since a stream and a
+    // disc can come out months apart. A single one on its own needs none.
+    final showFormat = showCinema || (showDigital && showPhysical);
 
     // From today on. A release from yesterday isn't upcoming any more.
     bool upcoming(DateTime date) => calendarDaysBetween(now, date) >= 0;
