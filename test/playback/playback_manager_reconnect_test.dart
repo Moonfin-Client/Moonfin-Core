@@ -208,6 +208,9 @@ class _ExpiringResolver extends _Resolver implements StreamCredentialRefresher {
   /// The token a forced renewal gets.
   String? renewedToken;
 
+  /// When [token] lapses, if the resolver says.
+  DateTime? expiresAt;
+
   @override
   Future<StreamCredentials?> currentCredentials(
     StreamResolutionResult current, {
@@ -221,6 +224,7 @@ class _ExpiringResolver extends _Resolver implements StreamCredentialRefresher {
         'token=$token',
       ),
       requestHeaders: {'Authorization': 'Bearer $token'},
+      expiresAt: expiresAt,
     );
   }
 }
@@ -345,6 +349,52 @@ void main() {
         expect(service.stops, isEmpty);
         expect(backend.playStarts.last, const Duration(minutes: 20));
         expect(manager.currentResolution?.streamUrl, contains('token=t2'));
+      });
+    });
+
+    test('wait on HLS while the old ones have time left, then reopen it '
+        'shortly before they lapse', () {
+      final resolver = _ExpiringResolver()
+        ..expiresAt = DateTime(2026, 10, 30, 20, 12);
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.takesCredentialsLive = false;
+        async.elapse(const Duration(seconds: 5));
+
+        resolver
+          ..token = 't2'
+          ..expiresAt = DateTime(2026, 10, 30, 21, 12);
+        async.elapse(const Duration(seconds: 5));
+        expect(resolver.requests, isEmpty);
+
+        // t1 lapses at 20:12, so the reopen runs at 20:10:30.
+        async.elapse(const Duration(minutes: 10, seconds: 19));
+        expect(resolver.requests, isEmpty);
+        async.elapse(const Duration(seconds: 1));
+
+        expect(resolver.requests.single.reason, ReplanReason.trackChange);
+        expect(backend.playStarts.last, const Duration(minutes: 20));
+        expect(manager.currentResolution?.streamUrl, contains('token=t2'));
+      });
+    });
+
+    test('reopen HLS at a seek made before the old ones lapse, and not again',
+        () {
+      final resolver = _ExpiringResolver()
+        ..expiresAt = DateTime(2026, 10, 30, 20, 12);
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.takesCredentialsLive = false;
+        async.elapse(const Duration(seconds: 5));
+        resolver
+          ..token = 't2'
+          ..expiresAt = DateTime(2026, 10, 30, 21, 12);
+        async.elapse(const Duration(seconds: 5));
+
+        unawaited(manager.seekTo(const Duration(minutes: 45)));
+        async.flushMicrotasks();
+        expect(resolver.requests.single.position, const Duration(minutes: 45));
+
+        async.elapse(const Duration(minutes: 15));
+        expect(resolver.requests, hasLength(1));
       });
     });
 

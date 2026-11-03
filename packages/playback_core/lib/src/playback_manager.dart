@@ -320,19 +320,29 @@ class PlaybackManager implements AudioOwnable {
 
   /// The player couldn't take the renewed credentials in place, so its
   /// stream still carries ones that will lapse. They go in at the next
-  /// reopen: a seek, or a reconnect.
+  /// reopen: a seek, a reconnect, or the one an HLS stream runs before they
+  /// lapse.
   bool _credentialsAwaitingReopen = false;
   bool _credentialsReopenRunning = false;
 
   /// A seek made while that reopen was opening, served once it has.
   Duration? _seekAfterCredentialsReopen;
 
+  /// When the credentials the player's requests carry stop being accepted,
+  /// once the resolver has said.
+  DateTime? _credentialsInPlayerExpiresAt;
+
+  /// Reopens the stream for renewed credentials shortly before the player's
+  /// lapse, unless a seek has done it first.
+  Timer? _credentialsReopenTimer;
+  static const _credentialsReopenLead = Duration(seconds: 90);
+
   /// Reconnect budget for a stream (not live, not a local file) whose
   /// connection failed mid-play: a dropped network, or a server refusing
-  /// credentials that lapsed. Silo's protocol asks for the same: keep the
-  /// position, retry with a backoff from 1s doubling to 15s for about two
-  /// minutes, each retry reopening the stream where it was. A stream that
-  /// plays again for [_reconnectProvenAfter] gets the whole budget back.
+  /// credentials that lapsed. It keeps the position and retries with a
+  /// backoff from 1s doubling to 15s for about two minutes, each retry
+  /// reopening the stream where it was. A stream that plays again for
+  /// [_reconnectProvenAfter] gets the whole budget back.
   static const _reconnectBudget = Duration(minutes: 2);
   static const _reconnectFirstDelay = Duration(seconds: 1);
   static const _reconnectMaxDelay = Duration(seconds: 15);
@@ -2065,9 +2075,17 @@ class PlaybackManager implements AudioOwnable {
       if (!identical(_credentialsResolution, resolution)) {
         _credentialsResolution = resolution;
         _credentialsInPlayer = StreamCredentials.of(resolution);
+        _credentialsInPlayerExpiresAt = null;
         _credentialsAwaitingReopen = false;
       }
-      if (credentials == _credentialsInPlayer) return false;
+      if (credentials == _credentialsInPlayer) {
+        // While a reopen is pending these are the renewed ones, which the
+        // player hasn't taken yet.
+        if (!_credentialsAwaitingReopen) {
+          _credentialsInPlayerExpiresAt = credentials.expiresAt;
+        }
+        return false;
+      }
       var applied = false;
       try {
         applied = await backend.updateStreamCredentials(credentials);
@@ -2076,6 +2094,7 @@ class PlaybackManager implements AudioOwnable {
       _credentialsInPlayer = credentials;
       _credentialsAwaitingReopen = !applied;
       if (applied) {
+        _credentialsInPlayerExpiresAt = credentials.expiresAt;
         _diagnosticLogger?.call('Stream credentials renewed in the player');
         return true;
       }
@@ -2083,10 +2102,7 @@ class PlaybackManager implements AudioOwnable {
           !_waitingForMedia &&
           !_reconnecting &&
           !_currentItemIsLive) {
-        _diagnosticLogger?.call(
-          'Stream credentials renewed, reopening the stream to carry them',
-        );
-        unawaited(_reopenForCredentials());
+        _reopenBeforeCredentialsLapse(resolution);
       } else {
         _diagnosticLogger?.call(
           'Stream credentials renewed, the player takes them at its next '
@@ -2098,6 +2114,38 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call('Renewing the stream credentials failed: $error');
       return false;
     }
+  }
+
+  /// Reopens [resolution]'s stream for renewed credentials its player couldn't
+  /// take in place. The ones it carries stay good until they lapse, so the
+  /// reopen waits for the viewer's next seek (see [seekTo]) and only runs on
+  /// its own shortly before then, or right away when that time isn't known.
+  void _reopenBeforeCredentialsLapse(StreamResolutionResult resolution) {
+    _credentialsReopenTimer?.cancel();
+    _credentialsReopenTimer = null;
+    final wait = _credentialsInPlayerExpiresAt
+        ?.subtract(_credentialsReopenLead)
+        .difference(clock());
+    if (wait == null || wait <= Duration.zero) {
+      _diagnosticLogger?.call(
+        'Stream credentials renewed, reopening the stream to carry them',
+      );
+      unawaited(_reopenForCredentials());
+      return;
+    }
+    _diagnosticLogger?.call(
+      'Stream credentials renewed, reopening the stream at the next seek or '
+      'in ${wait.inSeconds}s',
+    );
+    _credentialsReopenTimer = Timer(wait, () {
+      _credentialsReopenTimer = null;
+      if (!identical(resolution, _currentResolution) ||
+          _waitingForMedia ||
+          _reconnecting) {
+        return;
+      }
+      unawaited(_reopenForCredentials());
+    });
   }
 
   /// Reopens the stream at [at] (else where it plays), so the new one opens
@@ -5369,6 +5417,7 @@ class PlaybackManager implements AudioOwnable {
     _liveRecoveryStatusController.close();
     _reconnectRetry?.cancel();
     _reconnectProvenTimer?.cancel();
+    _credentialsReopenTimer?.cancel();
     _reconnectingController.close();
     _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
