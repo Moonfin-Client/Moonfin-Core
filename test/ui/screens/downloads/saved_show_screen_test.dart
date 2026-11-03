@@ -9,6 +9,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/downloads/saved_show_screen.dart';
 import 'package:moonfin/ui/screens/downloads/widgets/saved_media_row.dart';
+import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -158,5 +159,78 @@ void main() {
     // The show name is already the heading here.
     expect(find.text('S1 E1 • original'), findsOneWidget);
     expect(find.text('Breaking Bad • S1 E1'), findsNothing);
+  });
+  // Opens the show the way the Downloads list does.
+  Future<void> openFromList(
+    WidgetTester tester,
+    List<DownloadedItem> episodes,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          downloadedEpisodesProvider(
+            'bb',
+          ).overrideWith((_) => Stream.value(episodes)),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          // Watching the episodes up front has them loaded before the show
+          // opens, like the list does; an empty show closes itself.
+          home: Consumer(
+            builder: (context, ref, _) {
+              ref.watch(downloadedEpisodesProvider('bb'));
+              return TextButton(
+                autofocus: true,
+                onPressed: () => context.pushSettingsScreen(
+                  const SavedShowScreen(seriesId: 'bb', title: 'Breaking Bad'),
+                  autofocus: false,
+                ),
+                child: const Text('open'),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    // Initial focus retries on a short timer until the row attaches.
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Pilot'), findsOneWidget);
+  }
+
+  testWidgets('on TV the first episode takes focus on open', (tester) async {
+    PlatformDetection.setTvMode(true);
+    await openFromList(tester, [
+      _episode('e1', season: 1, episode: 1, name: 'Pilot'),
+    ]);
+
+    expect(
+      FocusManager.instance.primaryFocus?.debugLabel,
+      'SavedShowInitialFocus',
+    );
+  });
+
+  testWidgets('off TV no control in the show starts out focused', (
+    tester,
+  ) async {
+    await openFromList(tester, [
+      _episode('e1', season: 1, episode: 1, name: 'Pilot'),
+      _episode('e2', season: 1, episode: 2, name: 'Second'),
+    ]);
+
+    // A focused control draws a ring or a white fill, which looks stuck under
+    // a mouse. The back arrow and the last row's menu button both used to.
+    final focused = FocusManager.instance.primaryFocus;
+    final insideShow =
+        focused?.context?.findAncestorWidgetOfExactType<SavedShowScreen>() !=
+        null;
+    expect(
+      insideShow && focused is! FocusScopeNode,
+      isFalse,
+      reason: 'focused: ${focused?.debugLabel}',
+    );
   });
 }

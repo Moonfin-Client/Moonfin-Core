@@ -118,37 +118,40 @@ class _SavedShowScreenState extends ConsumerState<SavedShowScreen> {
       (sum, item) => sum + item.fileSizeBytes,
     );
 
-    return RequestInitialFocus(
-      targetNode: PlatformDetection.isTV ? _initialFocusNode : null,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _header(l10n, episodes.length, totalBytes, current),
-              if (seasons.length > 1)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SlidingPillTabs(
-                    labels: [for (final season in seasons) season.label],
-                    alignment: Alignment.center,
-                    selectedIndex: seasonIndex,
-                    onChanged: (index) => setState(() => _season = index),
-                    focusNode: _seasonTabsFocusNode,
-                    onVerticalNavigation: (isUp) {
-                      isUp
-                          ? _backFocusNode.requestFocus()
-                          : _rowNodes[0].requestFocus();
-                      return true;
-                    },
-                  ),
+    final screen = Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _header(l10n, episodes.length, totalBytes, current),
+            if (seasons.length > 1)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SlidingPillTabs(
+                  labels: [for (final season in seasons) season.label],
+                  alignment: Alignment.center,
+                  selectedIndex: seasonIndex,
+                  onChanged: (index) => setState(() => _season = index),
+                  focusNode: _seasonTabsFocusNode,
+                  onVerticalNavigation: (isUp) {
+                    isUp
+                        ? _backFocusNode.requestFocus()
+                        : _rowNodes[0].requestFocus();
+                    return true;
+                  },
                 ),
-              Expanded(child: _episodeList(l10n, current, seasons.length > 1)),
-            ],
-          ),
+              ),
+            Expanded(child: _episodeList(l10n, current, seasons.length > 1)),
+          ],
         ),
       ),
     );
+
+    // A remote needs a starting point, so TV lands on the first episode. Off
+    // TV nothing starts focused, since a focused control looks stuck under a
+    // mouse.
+    if (!PlatformDetection.isTV) return screen;
+    return RequestInitialFocus(targetNode: _initialFocusNode, child: screen);
   }
 
   Widget _header(
