@@ -3690,7 +3690,9 @@ class HomeViewModel extends ChangeNotifier {
       } else {
         final cached = await _loadRadarrCalendarFromCache();
         items = _filterAndFormatRadarrItems(cached);
-        if (items.isEmpty) {
+        // Only an empty cache is a miss. A cache the filters empty is still
+        // fresh, so it isn't fetched again on every refresh.
+        if (cached.isEmpty) {
           final fetchedItems = await _fetchRadarrCalendarFromApi();
           if (fetchedItems != null) {
             await _saveRadarrCalendarToCache(fetchedItems);
@@ -3744,7 +3746,8 @@ class HomeViewModel extends ChangeNotifier {
       } else {
         final cached = await _loadSonarrCalendarFromCache();
         items = _formatSonarrItems(cached);
-        if (items.isEmpty) {
+        // Same as Radarr: only an empty cache is a miss.
+        if (cached.isEmpty) {
           final fetchedItems = await _fetchSonarrCalendarFromApi();
           if (fetchedItems != null) {
             await _saveSonarrCalendarToCache(fetchedItems);
