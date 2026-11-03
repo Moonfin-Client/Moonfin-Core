@@ -16092,6 +16092,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Saved';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

@@ -15993,4 +15993,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => '저장됨';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }

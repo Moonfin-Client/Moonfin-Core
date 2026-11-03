@@ -16604,6 +16604,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Saved';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

@@ -15578,5 +15578,19 @@
   "settingsPreviewSaved": "Saved",
   "@settingsPreviewSaved": {
     "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+  },
+  "smartSearch": "Smart Search",
+  "@smartSearch": {
+    "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+  },
+  "smartSearchOnSeerr": "Smart Search on {seerr}",
+  "@smartSearchOnSeerr": {
+    "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+    "placeholders": {
+      "seerr": {
+        "type": "String",
+        "example": "Seerr"
+      }
+    }
   }
 }

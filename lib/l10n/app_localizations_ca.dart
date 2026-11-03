@@ -16793,4 +16793,12 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Desat';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }

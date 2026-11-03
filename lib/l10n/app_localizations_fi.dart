@@ -16632,4 +16632,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Tallennettu';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }

@@ -28652,6 +28652,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved'**
   String get settingsPreviewSaved;
+
+  /// Title of the search results row with library titles the server's natural-language search matched to a vague query
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search'**
+  String get smartSearch;
+
+  /// Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search on {seerr}'**
+  String smartSearchOnSeerr(String seerr);
 }
 
 class _AppLocalizationsDelegate
