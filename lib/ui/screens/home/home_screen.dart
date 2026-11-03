@@ -5734,7 +5734,7 @@ class _ContentRowsState extends State<_ContentRows>
                   final card = MediaCard(
                     animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
                     recordingItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
-                    title: isWatchingNow ? null : cardTitle,
+                    title: isWatchingNow ? item.name : cardTitle,
                     showLabel: !isWatchingNow,
                     imageOverlays: isWatchingNow
                         ? _buildWatchingNowOverlays(item, l10n)
@@ -6098,10 +6098,13 @@ class _ContentRowsState extends State<_ContentRows>
         child: (logoUrl != null && logoUrl.isNotEmpty)
             ? Align(
                 alignment: Alignment.bottomCenter,
-                child: BoundedNetworkImage(
-                  imageUrl: logoUrl,
-                  fit: BoxFit.contain,
-                  maxWidth: 300,
+                child: Semantics(
+                  label: item.name,
+                  child: BoundedNetworkImage(
+                    imageUrl: logoUrl,
+                    fit: BoxFit.contain,
+                    maxWidth: 300,
+                  ),
                 ),
               )
             : Align(
