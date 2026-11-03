@@ -281,6 +281,16 @@ void main() {
     expect(play.hasPrimaryFocus, isTrue);
   });
 
+  testWidgets('a click on a tab opens it', (tester) async {
+    await pumpContent(tester, viewModel('Movie', data: movieWithTracks()));
+    await tester.pump();
+
+    await tester.tap(find.text('Details'));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('A useful detail overview'), findsNothing);
+    expect(find.text('MOVIE TITLE'), findsOneWidget);
+  });
+
   testWidgets('a phone gets the sheet with its tabs across the top', (
     tester,
   ) async {

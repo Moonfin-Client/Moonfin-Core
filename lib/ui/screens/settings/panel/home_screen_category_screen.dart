@@ -32,8 +32,10 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
   Future<void> _checkServices() async {
     try {
       final repo = GetIt.instance<SeerrRepository>();
-      final radarr = await repo.getRadarrSettings();
-      final sonarr = await repo.getSonarrSettings();
+      // Seerr only lets admins read settings/*, while the calendars work for
+      // every user, so ask the service list any signed in user can read.
+      final radarr = await repo.getRadarrServers();
+      final sonarr = await repo.getSonarrServers();
       if (mounted) {
         setState(() {
           _radarrInstalled = radarr.isNotEmpty;
@@ -472,10 +474,8 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 if (showUpcomingCalendars)
                   _TvSettingsListTile(
                     leading: const Icon(Icons.calendar_month),
-                    title: const Text('Upcoming Calendars'),
-                    subtitle: const Text(
-                      'Toggle Upcoming Calendars from Radarr/Sonarr.',
-                    ),
+                    title: Text(l10n.upcomingCalendars),
+                    subtitle: Text(l10n.upcomingCalendarsDescription),
                     onTap: () => context.pushSettingsScreen(
                       const _UpcomingCalendarsScreen(),
                     ),

@@ -102,6 +102,62 @@ void main() {
     expect(find.text('Enable Offline Downloads'), findsNothing);
   });
 
+  testWidgets('phone image cache picker scrolls in a short settings list', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(false);
+    tester.view.physicalSize = const Size(1080, 1100);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.set(UserPreferences.imageCacheLimitMb, 2048);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [storageUsedProvider.overrideWith((_) => Stream.value(0))],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const DownloadSettingsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tile = find.text('Image Cache Limit');
+    await tester.scrollUntilVisible(tile, 200);
+    await tester.ensureVisible(tile);
+    await tester.pumpAndSettle();
+    expect(find.text('2 GB'), findsOneWidget);
+
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
+    final sheet = find.byType(BottomSheet);
+    final sheetList = find.descendant(
+      of: sheet,
+      matching: find.byType(Scrollable),
+    );
+    expect(
+      tester.state<ScrollableState>(sheetList).position.maxScrollExtent,
+      greaterThan(0),
+    );
+
+    final lastOption = find.descendant(of: sheet, matching: find.text('2 GB'));
+    await tester.scrollUntilVisible(lastOption, 100, scrollable: sheetList);
+    await tester.ensureVisible(lastOption);
+    await tester.pumpAndSettle();
+    expect(tester.getBottomLeft(lastOption).dy, lessThan(366));
+
+    final noLimit = find.descendant(of: sheet, matching: find.text('No limit'));
+    await tester.scrollUntilVisible(noLimit, -100, scrollable: sheetList);
+    await tester.ensureVisible(noLimit);
+    await tester.pumpAndSettle();
+    await tester.tap(noLimit);
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.imageCacheLimitMb), 0);
+  });
+
   testWidgets('TV quality picker scrolls focused options into view', (
     tester,
   ) async {

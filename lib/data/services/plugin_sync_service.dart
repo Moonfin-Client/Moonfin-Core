@@ -120,6 +120,8 @@ class PluginSyncService extends ChangeNotifier {
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
+  bool _smartSearchEnabled = false;
+  bool get smartSearchEnabled => _pluginAvailable && _smartSearchEnabled;
 
   /// Whether the server will take an uploaded diagnostic report. An older
   /// plugin, or none at all, leaves it false.
@@ -251,6 +253,7 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbReviewsSupported = false;
     _tmdbDetailsSupported = false;
     _recommendationsSupported = false;
+    _smartSearchEnabled = false;
     _clientLogSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
@@ -361,6 +364,8 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'tmdbDetailsSupported') ?? false;
       _recommendationsSupported =
           _readBool(pingResult, 'recommendationsSupported') ?? false;
+      _smartSearchEnabled =
+          _readBool(pingResult, 'smartSearchEnabled') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
@@ -1313,6 +1318,31 @@ class PluginSyncService extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('[PluginSyncService] fetchSimilarItems failed: $e');
+    }
+    return null;
+  }
+
+  /// Moonbase's natural-language search. Null when the admin has it off or
+  /// the plugin is older, both of which answer 404.
+  Future<Map<String, dynamic>?> fetchSmartSearch(
+    MediaServerClient client,
+    String query, {
+    int limit = 20,
+  }) async {
+    final ep = await moonbaseEndpoint(client, _dio);
+    if (ep == null) return null;
+
+    try {
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/SmartSearch',
+        queryParameters: {'query': query, 'limit': limit},
+        options: Options(headers: ep.headers),
+      );
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      }
+    } catch (e) {
+      debugPrint('[PluginSyncService] fetchSmartSearch failed: $e');
     }
     return null;
   }

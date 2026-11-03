@@ -581,6 +581,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_home_rows_fullscreen',
     'pref_show_seerr_button',
     'pref_show_seerr_availability_badges',
+    'pref_seerr_badge_style',
     'pref_show_server_messages_button',
     'pref_show_friends_button',
     'pref_show_book_discover_tab',
@@ -765,6 +766,8 @@ class UserPreferences extends ChangeNotifier {
     'radarr_calendar_show_date',
     'sonarr_calendar_show_date',
     'sonarr_calendar_show_episode_info',
+    'radarr_calendar_hide_downloaded',
+    'sonarr_calendar_hide_downloaded',
     'last_radarr_calendar_fetch_time',
     'last_sonarr_calendar_fetch_time',
     'merge_radarr_sonarr_calendars',
@@ -2021,6 +2024,12 @@ class UserPreferences extends ChangeNotifier {
   static final showSeerrAvailabilityBadges = Preference(
     key: 'pref_show_seerr_availability_badges',
     defaultValue: true,
+  );
+
+  static final seerrBadgeStyle = EnumPreference(
+    key: 'pref_seerr_badge_style',
+    defaultValue: SeerrBadgeStyle.badge,
+    values: SeerrBadgeStyle.values,
   );
 
   /// Off by default. An admin who wants it on for everyone can set it in the
@@ -3483,6 +3492,18 @@ class UserPreferences extends ChangeNotifier {
 
   static final sonarrCalendarShowEpisodeInfo = Preference(
     key: 'sonarr_calendar_show_episode_info',
+    defaultValue: true,
+  );
+
+  /// Radarr and Sonarr also list what they already downloaded, which is on the
+  /// server and not upcoming.
+  static final radarrCalendarHideDownloaded = Preference(
+    key: 'radarr_calendar_hide_downloaded',
+    defaultValue: true,
+  );
+
+  static final sonarrCalendarHideDownloaded = Preference(
+    key: 'sonarr_calendar_hide_downloaded',
     defaultValue: true,
   );
 

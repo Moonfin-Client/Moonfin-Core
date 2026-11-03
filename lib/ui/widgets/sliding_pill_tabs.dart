@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/idiom/glass_capability.dart';
 import 'focus/glass_focus_halo.dart';
+import 'scroll_edge_arrows.dart';
 
 /// Release velocity, in track widths per second, beyond which the pill flicks
 /// to the next segment even if it hasn't crossed the halfway point.
@@ -85,6 +86,7 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
   List<GlobalKey> _segmentKeys = const [];
   List<double> _widths = const [];
   bool _focused = false;
+  final _scroll = ScrollController();
 
   /// Where the pill rests. Follows selectedIndex, but a drag release moves it
   /// first so the pill lands on the segment the finger chose instead of
@@ -125,6 +127,7 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
   @override
   void dispose() {
     _ownedNode?.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -477,12 +480,17 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
             padding: const EdgeInsets.all(_kPanePadding),
             child: SizedBox(
               height: _kSegmentHeight,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                // Only clip when there is something scrolled out of view to
-                // clip. Otherwise it would cut the swell off at the segments.
-                clipBehavior: fits ? Clip.none : Clip.hardEdge,
-                child: stack,
+              child: ScrollEdgeArrows(
+                controller: _scroll,
+                size: _kSegmentHeight,
+                child: SingleChildScrollView(
+                  controller: _scroll,
+                  scrollDirection: Axis.horizontal,
+                  // Only clip when there is something scrolled out of view to
+                  // clip. Otherwise it would cut the swell off at the segments.
+                  clipBehavior: fits ? Clip.none : Clip.hardEdge,
+                  child: stack,
+                ),
               ),
             ),
           );

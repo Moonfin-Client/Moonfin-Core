@@ -68,6 +68,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/player_edge_drag.dart';
+import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/player_surface_taps.dart';
 import '../../../playback/hdr_composition.dart';
 import '../../../playback/hdr_output_controller.dart';
@@ -383,6 +384,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
+  StreamSubscription<bool>? _reconnectingSub;
+  bool _reconnecting = false;
   StreamSubscription? _pipChangedSub;
   StreamSubscription? _pipActionSub;
   StreamSubscription? _playingSub;
@@ -796,6 +799,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
+    _reconnecting = _manager.isReconnecting;
+    _reconnectingSub = _manager.reconnectingStream.listen((reconnecting) {
+      if (!mounted) return;
+      setState(() => _reconnecting = reconnecting);
+    });
     _bringupState = _manager.bringupState;
     _bringupSub = _manager.bringupStateStream.listen((state) {
       if (!mounted) return;
@@ -1075,6 +1083,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
     _bringupSub?.cancel();
+    _reconnectingSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
     _pipActionSub?.cancel();
@@ -1736,6 +1745,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         resolution?.mediaSourceId ?? mediaSource?['Id']?.toString(),
       ),
       hdrOutput: _hdrOutputRange(hdrTonemapped: hdrTonemapped),
+      nativeStatus: switch (_activeBackend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 
@@ -4317,6 +4330,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   String _bringupLabel() {
+    if (_reconnecting) {
+      return AppLocalizations.of(context).watchPartyReconnecting;
+    }
     switch (_bringupState.phase) {
       case PlaybackBringupPhase.preparing:
         return _streamLoadingLabel;
@@ -4340,31 +4356,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
 
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.45),
+    return _withDisplayMatchFps((fps) {
+      final label = fps == null
+          ? _bringupLabel()
+          : AppLocalizations.of(
+              context,
+            ).playerMatchingDisplayRate(frameRateLabel(fps));
+      return Positioned.fill(
+        child: IgnorePointer(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.45),
+            ),
+            child: pos == LoadingAnimationPosition.bouncing
+                ? BouncingPositionWrapper(
+                    speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                    safePadding: const EdgeInsets.all(40.0),
+                    builder: (context, movingLeft) => PlayerLoadingOverlay(
+                      label: label,
+                      flipHorizontal: movingLeft,
+                    ),
+                  )
+                : Align(
+                    alignment: pos.alignment,
+                    child: Padding(
+                      padding: pos.safePadding,
+                      child: PlayerLoadingOverlay(label: label),
+                    ),
+                  ),
           ),
-          child: pos == LoadingAnimationPosition.bouncing
-              ? BouncingPositionWrapper(
-                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
-                  safePadding: const EdgeInsets.all(40.0),
-                  builder: (context, movingLeft) => PlayerLoadingOverlay(
-                    label: _bringupLabel(),
-                    flipHorizontal: movingLeft,
-                  ),
-                )
-              : Align(
-                  alignment: pos.alignment,
-                  child: Padding(
-                    padding: pos.safePadding,
-                    child: PlayerLoadingOverlay(label: _bringupLabel()),
-                  ),
-                ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildBufferingIndicator() {
@@ -4372,9 +4395,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       stream: _state.bufferingStream,
       initialData: _state.isBuffering,
       builder: (context, snap) {
-        if (snap.data != true || _isBringupInProgress(_bringupState.phase)) {
+        // Between reconnect attempts the player has failed rather than
+        // buffering, and the wait still needs saying.
+        if ((snap.data != true && !_reconnecting) ||
+            _isBringupInProgress(_bringupState.phase)) {
           return const SizedBox.shrink();
         }
+        final label = _reconnecting
+            ? AppLocalizations.of(context).watchPartyReconnecting
+            : _streamLoadingLabel;
         final hasTrickplay = _trickplayInfo != null && _trickplayInfo!.isValid;
         final recentlySought =
             _lastSeekTime != null &&
@@ -4385,26 +4414,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
         final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
         return Positioned.fill(
-          child: pos == LoadingAnimationPosition.bouncing
-              ? BouncingPositionWrapper(
-                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
-                  safePadding: const EdgeInsets.all(40.0),
-                  builder: (context, movingLeft) => PlayerLoadingOverlay(
-                    label: _streamLoadingLabel,
-                    flipHorizontal: movingLeft,
-                  ),
-                )
-              : Align(
-                  alignment: pos.alignment,
-                  child: Padding(
-                    padding: pos.safePadding,
-                    child: PlayerLoadingOverlay(
-                      label: _streamLoadingLabel,
+          child: _withDisplayMatchFps((fps) {
+            // While the TV switches to the video's rate, say so instead.
+            final shown = fps == null
+                ? label
+                : AppLocalizations.of(
+                    context,
+                  ).playerMatchingDisplayRate(frameRateLabel(fps));
+            return pos == LoadingAnimationPosition.bouncing
+                ? BouncingPositionWrapper(
+                    speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                    safePadding: const EdgeInsets.all(40.0),
+                    builder: (context, movingLeft) => PlayerLoadingOverlay(
+                      label: shown,
+                      flipHorizontal: movingLeft,
                     ),
-                  ),
-                ),
+                  )
+                : Align(
+                    alignment: pos.alignment,
+                    child: Padding(
+                      padding: pos.safePadding,
+                      child: PlayerLoadingOverlay(label: shown),
+                    ),
+                  );
+          }),
         );
       },
+    );
+  }
+
+  /// Rebuilds with the rate the display is switching to, while the start
+  /// waits for the TV.
+  Widget _withDisplayMatchFps(Widget Function(double? fps) builder) {
+    final notifier = _activeMedia3Backend?.displayMatchFps;
+    if (notifier == null) return builder(null);
+    return ValueListenableBuilder<double?>(
+      valueListenable: notifier,
+      builder: (context, fps, _) => builder(fps),
     );
   }
 

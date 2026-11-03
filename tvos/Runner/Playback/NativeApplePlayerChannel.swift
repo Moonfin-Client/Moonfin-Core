@@ -138,6 +138,12 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             }
         case "setSource":
             setSource(args)
+        case "updateRequestHeaders":
+            var headers: [String: String] = [:]
+            if let raw = args["headers"] as? [String: Any] {
+                for (key, value) in raw { headers[key] = "\(value)" }
+            }
+            player?.updateRequestHeaders(headers)
         case "setEngineLogForwarding":
             setEngineLogForwarding((args["enabled"] as? Bool) == true)
         case "setAllowUntrustedTls":

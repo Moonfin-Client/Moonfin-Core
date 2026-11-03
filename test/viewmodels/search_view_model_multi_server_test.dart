@@ -38,6 +38,7 @@ void main() {
     searchTerm: any(named: 'searchTerm'),
     parentId: any(named: 'parentId'),
     includeItemTypes: any(named: 'includeItemTypes'),
+    excludeItemTypes: any(named: 'excludeItemTypes'),
     limit: any(named: 'limit'),
     recursive: any(named: 'recursive'),
     fields: any(named: 'fields'),
@@ -71,6 +72,7 @@ void main() {
       when(() => client.itemsApi).thenReturn(itemsApi);
       when(() => client.imageApi).thenReturn(_MockImageApi());
       when(() => client.gamesApi).thenReturn(null);
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
       when(() => itemsApi.getPersons(
         searchTerm: any(named: 'searchTerm'),
         limit: any(named: 'limit'),
@@ -164,6 +166,19 @@ void main() {
       expect(item.channelId, 'c1');
     },
   );
+
+  test('audiobooks get their own row', () async {
+    when(() => itemsSearch(itemsApis['a']!)).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'ab1', 'Type': 'AudioBook', 'Name': 'Chapter 01'},
+        ],
+      },
+    );
+    final vm = await search(query: 'chapter');
+    expect(vm.results.single.itemTypes, ['AudioBook']);
+    expect(vm.results.single.items.single.id, 'ab1');
+  });
 
   test('results come from every signed-in server, taking turns', () async {
     when(() => itemsSearch(itemsApis['a']!))
