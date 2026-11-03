@@ -503,6 +503,10 @@ class MediaBarRepository {
     int limit, {
     String? parentId,
   }) async {
+    // A movie library, or movies only. Nothing here, so a movie library doesn't
+    // add random movies next to the new series. If every library is empty, the
+    // bar falls back to random titles.
+    if (itemTypes != null && !itemTypes.contains('Series')) return const [];
     try {
       final episodes = await _recentEpisodes(parentId: parentId, limit: 300);
       final seriesIds = <String>[];
@@ -586,7 +590,9 @@ class MediaBarRepository {
     final releases = <String, MediaBarNewReleaseInfo>{};
     if (_prefs.get(UserPreferences.mediaBarNewReleaseBanner)) {
       final days = _prefs.get(UserPreferences.mediaBarNewReleaseDays);
-      await mapBounded(
+      // The banner is a bonus, so a slow server doesn't hold the bar back. A
+      // series that answers late just goes without one.
+      final lookups = mapBounded(
         selected.where((item) => item['Type'] == 'Series').toList(),
         _sourceConcurrency,
         (series) async {
@@ -613,6 +619,11 @@ class MediaBarRepository {
           return null;
         },
       );
+      try {
+        await lookups.timeout(const Duration(seconds: 5));
+      } on TimeoutException {
+        // Keep the banners found so far.
+      }
     }
 
     return [
