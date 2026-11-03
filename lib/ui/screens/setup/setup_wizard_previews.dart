@@ -420,7 +420,8 @@ Widget _mediaBarModePreview(
 
 /// The titles the preview draws, with the new release banner on the first one
 /// while the switch is on and on none while it is off. The bar only finds a
-/// release when one aired lately, so a series stands in with a sample.
+/// release when one aired lately, so a series stands in with a sample. With no
+/// series there's nothing to flag, as on the bar.
 List<MediaBarSlideItem> _withNewReleasePreview(
   BuildContext context,
   List<MediaBarSlideItem> items,
@@ -430,7 +431,8 @@ List<MediaBarSlideItem> _withNewReleasePreview(
   }
   final flagged = items.indexWhere((item) => item.newRelease != null);
   final series = items.indexWhere((item) => item.itemType == 'Series');
-  final lead = flagged >= 0 ? flagged : (series >= 0 ? series : 0);
+  if (flagged < 0 && series < 0) return items;
+  final lead = flagged >= 0 ? flagged : series;
   final first = items[lead].newRelease != null
       ? items[lead]
       : items[lead].withNewRelease(
