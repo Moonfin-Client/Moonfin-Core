@@ -17,6 +17,8 @@ import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/ui/screens/detail/frost/frost_detail_content.dart';
+import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
+import 'package:moonfin/ui/widgets/bottom_nav/bottom_navbar.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -153,6 +155,7 @@ void main() {
     ItemDetailViewModel vm, {
     Size size = const Size(1920, 1080),
     FocusNode? playNode,
+    double? bottomBar,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.view.physicalSize = size;
@@ -161,6 +164,14 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
     await vm.load();
+    Widget content(BuildContext context) => FrostDetailContent(
+      viewModel: vm,
+      prefs: prefs,
+      onSelectedMediaSourceChanged: (_) {},
+      initialFocusNode: playNode,
+      actionsExpanded: false,
+      onActionsExpandedChanged: (_) {},
+    );
     await tester.pumpWidget(
       MediaQuery(
         data: MediaQueryData(size: size),
@@ -171,14 +182,12 @@ void main() {
           home: Scaffold(
             body: ListenableBuilder(
               listenable: Listenable.merge([vm, prefs]),
-              builder: (context, _) => FrostDetailContent(
-                viewModel: vm,
-                prefs: prefs,
-                onSelectedMediaSourceChanged: (_) {},
-                initialFocusNode: playNode,
-                actionsExpanded: false,
-                onActionsExpandedChanged: (_) {},
-              ),
+              builder: (context, _) => bottomBar == null
+                  ? content(context)
+                  : BottomNavInsetScope(
+                      height: bottomBar,
+                      child: Builder(builder: content),
+                    ),
             ),
           ),
         ),
@@ -285,6 +294,46 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Movie title'), findsOneWidget);
     expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+  });
+
+  testWidgets('a phone keeps its buttons above the bottom navbar', (
+    tester,
+  ) async {
+    await pumpContent(
+      tester,
+      viewModel('Movie', data: movieWithTracks()),
+      size: const Size(390, 844),
+      bottomBar: 96,
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getRect(find.byType(DetailActionButtons)).bottom,
+      lessThanOrEqualTo(844 - 96),
+    );
+  });
+
+  testWidgets('the stage sits above a bottom navbar and clear of its back '
+      'button', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(1280, 720);
+    addTearDown(tester.view.reset);
+    const stage = Key('stage');
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: BottomNavInsetScope(
+          height: 100,
+          child: FrostStage(navbarTop: false, child: SizedBox(key: stage)),
+        ),
+      ),
+    );
+
+    final rect = tester.getRect(find.byKey(stage));
+    expect(rect.left, closeTo(72, 0.01));
+    expect(rect.bottom, closeTo(620, 0.01));
   });
 
   test('the stage is 1280 by 720 at the least, in the room\'s own shape', () {

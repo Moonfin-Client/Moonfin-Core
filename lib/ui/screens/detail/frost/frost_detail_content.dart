@@ -20,6 +20,7 @@ import '../../../../util/media_source_summary.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../navigation/destinations.dart';
+import '../../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
@@ -78,7 +79,8 @@ Size frostStageSize(BoxConstraints room) {
 }
 
 /// Scales [child], laid out on the stage, to fill the room the app's own
-/// navigation leaves, under a top navbar or past the collapsed left sidebar.
+/// navigation leaves, under a top navbar, past the collapsed left sidebar or
+/// the back button a bottom navbar brings, and above that bar.
 class FrostStage extends StatelessWidget {
   final bool navbarTop;
   final Widget child;
@@ -90,6 +92,7 @@ class FrostStage extends StatelessWidget {
     padding: EdgeInsets.only(
       top: navbarTop ? TopToolbar.heightFor(context) : 0,
       left: navbarTop ? 0 : 72,
+      bottom: BottomNavInsetScope.maybeOf(context) ?? 0,
     ),
     child: LayoutBuilder(
       builder: (context, constraints) => FittedBox(
@@ -2447,7 +2450,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     AppLocalizations l10n,
   ) {
     final size = MediaQuery.sizeOf(context);
-    final bottom = MediaQuery.paddingOf(context).bottom;
+    final bottom = bottomContentInset(context);
 
     final sheet = DraggableScrollableSheet(
       controller: _sheet,

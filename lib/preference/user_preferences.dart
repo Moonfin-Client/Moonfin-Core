@@ -1800,7 +1800,9 @@ class UserPreferences extends ChangeNotifier {
   /// because it syncs to that server's profile.
   static final detailScreenStyle = EnumPreference(
     key: 'pref_detail_screen_style',
-    defaultValue: DetailScreenStyle.modern,
+    defaultValue: PlatformDetection.useMobileUi
+        ? DetailScreenStyle.modern
+        : DetailScreenStyle.frost,
     values: DetailScreenStyle.values,
   );
 
