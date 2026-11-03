@@ -3378,11 +3378,22 @@ class HomeViewModel extends ChangeNotifier {
       if (!GetIt.instance.isRegistered<MdbListRepository>()) return const [];
       final repo = GetIt.instance<MdbListRepository>();
       final data = await repo.getWatchingNow();
-      if (data == null || data.items.isEmpty) return const [];
+      if (data == null) {
+        throw Exception('Failed to fetch MDBList watching now feed');
+      }
+      if (data.items.isEmpty) return const [];
+
+      final identifiedItems = data.items
+          .where((item) =>
+              item.imdbId.isNotEmpty ||
+              item.tmdbId != null ||
+              item.publicId.isNotEmpty)
+          .toList();
+      if (identifiedItems.isEmpty) return const [];
 
       final aggregatedItems = <AggregatedItem>[];
-      for (var i = 0; i < data.items.length; i++) {
-        final item = data.items[i];
+      for (var i = 0; i < identifiedItems.length; i++) {
+        final item = identifiedItems[i];
         final itemId = item.imdbId.isNotEmpty
             ? item.imdbId
             : (item.tmdbId != null ? item.tmdbId.toString() : item.publicId);
@@ -3433,7 +3444,7 @@ class HomeViewModel extends ChangeNotifier {
       ];
     } catch (e) {
       debugPrint('[HomeViewModel] Failed to load mdblistWatchingNow: $e');
-      return const [];
+      rethrow;
     }
   }
 
