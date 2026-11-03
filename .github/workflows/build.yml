@@ -76,6 +76,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare Android runner resources
+        run: |
+          # Multi-ABI APK/AAB builds need space for both AOT and native outputs.
+          # These preinstalled SDKs are unused by this Android-only job.
+          df -h /
+          free -h
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost
+          df -h /
+          # User-level properties override the desktop-sized project defaults.
+          mkdir -p "$HOME/.gradle"
+          cat >> "$HOME/.gradle/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=2G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError
+          org.gradle.workers.max=2
+          kotlin.daemon.jvmargs=-Xmx1G
+          EOF
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
