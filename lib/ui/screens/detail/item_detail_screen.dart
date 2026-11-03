@@ -285,6 +285,7 @@ class ItemDetailScreen extends StatefulWidget {
   final String itemId;
   final String? serverId;
   final bool autoPlay;
+  final String? libraryId;
 
   /// Only used to resolve an IMDb-keyed Seerr id by searching for it.
   final String? seerrTitle;
@@ -305,6 +306,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.seerrTitle,
     this.contextSeasonId,
     this.quickLook = false,
+    this.libraryId,
   });
 
   @override
@@ -360,6 +362,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       mutations: ItemMutationRepository(client),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       tmdbRepository: GetIt.instance<TmdbRepository>(),
+      libraryId: widget.libraryId,
     );
     _viewModel.seerrOnlyTitle = widget.seerrTitle;
     _viewModel.addListener(_onChanged);

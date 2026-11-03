@@ -272,6 +272,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _episodesFirstFocusNode = FocusNode(debugLabel: 'episodesFirst');
   final FocusNode _episodesCurrentFocusNode = FocusNode(debugLabel: 'episodesCurrent');
   final FocusNode _overviewFocusNode = FocusNode(debugLabel: 'overview');
+  final FocusNode _booksFirstFocusNode = FocusNode(debugLabel: 'booksFirst');
   final FocusNode _personMoviesFirstFocusNode = FocusNode(debugLabel: 'personMoviesFirst');
   final FocusNode _personSeriesFirstFocusNode = FocusNode(debugLabel: 'personSeriesFirst');
   final FocusNode _personSeerrAppearancesFirstFocusNode = FocusNode(debugLabel: 'personSeerrAppearancesFirst');
@@ -512,6 +513,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _reviewsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seasonsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _episodesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _booksFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personMoviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeerrAppearancesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
@@ -547,6 +549,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     attachAutoScroll(_seasonsFirstFocusNode);
     attachAutoScroll(_episodesFirstFocusNode);
     attachAutoScroll(_episodesCurrentFocusNode);
+    attachAutoScroll(_booksFirstFocusNode);
 
     for (final cat in extraCategoriesOrder) {
       final node = FocusNode(debugLabel: 'modernFeatureFirst_$cat');
@@ -708,6 +711,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _episodesFirstFocusNode.dispose();
     _episodesCurrentFocusNode.dispose();
     _overviewFocusNode.dispose();
+    _booksFirstFocusNode.dispose();
     _personMoviesFirstFocusNode.dispose();
     _personSeriesFirstFocusNode.dispose();
     _personSeerrAppearancesFirstFocusNode.dispose();
@@ -901,6 +905,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 _personSeriesFirstFocusNode.requestFocus();
               }
               break;
+            case 'books':
+              _booksFirstFocusNode.requestFocus();
             case 'other':
               _otherFirstFocusNode.requestFocus();
               break;
@@ -1084,6 +1090,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (showDetails) details,
           ...extraTabs,
           if (hasSimilar) similar,
+        ];
+      case 'BookSeries':
+        final booksList = _vm.seriesBooks;
+        return [
+          _ModernTab('books', l10n.books, (context, item) => _mediaGrid(context, booksList, firstFocusNode: _booksFirstFocusNode)),
         ];
       case 'MusicAlbum':
       case 'Playlist':

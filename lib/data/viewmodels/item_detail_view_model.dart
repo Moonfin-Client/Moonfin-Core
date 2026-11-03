@@ -29,6 +29,7 @@ import '../services/user_data_sync.dart';
 import '../services/seerr/seerr_api_models.dart';
 import 'seerr_discover_view_model.dart';
 import 'seerr_media_detail_view_model.dart';
+import 'book_browse_view_model.dart';
 import '../models/upcoming_episode_info.dart';
 import '../services/upcoming_episode_service.dart';
 
@@ -268,6 +269,10 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   AggregatedItem? _item;
   AggregatedItem? get item => _item;
+
+  late final BookBrowseViewModel _bookVm;
+  List<AggregatedItem> _seriesBooks = const [];
+  List<AggregatedItem> get seriesBooks => _seriesBooks;
 
   String? _localPersonId;
   String? get localPersonId => _localPersonId;
@@ -548,6 +553,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       _tracks.every(hasPlaylistEntryId);
 
   final String? _serverId;
+  final String? _libraryId;
   bool _isDisposed = false;
 
   /// What the server probed in place of the item's placeholder source, kept so
@@ -683,7 +689,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     required ItemMutationRepository mutations,
     required MdbListRepository mdbListRepository,
     required TmdbRepository tmdbRepository,
+    String? libraryId,
   }) : _serverId = serverId,
+       _libraryId = libraryId,
        _client = client,
        _mutations = mutations,
        _mdbListRepository = mdbListRepository,
@@ -728,6 +736,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionItems = patch(_collectionItems);
     _playlistItems = patch(_playlistItems);
     _features = patch(_features);
+    _seriesBooks = patch(_seriesBooks);
     final collections = [..._parentCollections];
     var collectionsChanged = false;
     for (var i = 0; i < collections.length; i++) {
@@ -760,6 +769,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         _collectionItems,
         _playlistItems,
         _features,
+        _seriesBooks,
       ])
         for (final item in list) item.id,
       for (final collection in _parentCollections)
@@ -970,6 +980,15 @@ class ItemDetailViewModel extends ChangeNotifier {
             );
           } catch (_) {}
         }
+      } else if (itemId.contains('bookSeries') && _libraryId != null) {
+        _bookVm = BookBrowseViewModel(
+          libraryId: _libraryId,
+          dataSource: GetIt.instance<RowDataSource>(),
+          client: _client,
+        );
+        await _bookVm.load();
+        final allSeries = _bookVm.allSeries;
+        _item = allSeries.firstWhere((item) => item.id == itemId);
       } else {
         final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
         final candidate = AggregatedItem(
@@ -1137,6 +1156,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       // collection's own members back.
       unawaited(_loadBoxSetSeerrItems());
       futures.add(_buildPlaylistIndex());  // playlist — Phase 1, runs concurrently
+    } else if (type == 'BookSeries') {
+      futures.add(_loadBooks());
     } else if (type == 'MusicVideo' ||
         type == 'Movie' ||
         type == 'Trailer' ||
@@ -1166,6 +1187,15 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {
     } finally {
       _seasonsLoaded = true;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadBooks() async {
+    try {
+      _seriesBooks = _bookVm.seriesBooks(_item);
+    } catch (_) {
+    } finally {
       notifyListeners();
     }
   }

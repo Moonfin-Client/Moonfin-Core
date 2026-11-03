@@ -205,6 +205,7 @@ class Destinations {
     bool autoPlay = false,
     String? seasonContext,
     bool full = false,
+    String? libraryId,
   }) {
     final base = '/item/$itemId';
     final params = <String>[
@@ -213,6 +214,7 @@ class Destinations {
       if (seasonContext != null && seasonContext.isNotEmpty)
         'seasonContext=${Uri.encodeQueryComponent(seasonContext)}',
       if (full) 'full=true',
+      if (libraryId != null) 'libraryId=$libraryId',
     ];
     return params.isEmpty ? base : '$base?${params.join('&')}';
   }

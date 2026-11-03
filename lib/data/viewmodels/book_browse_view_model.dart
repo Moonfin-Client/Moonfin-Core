@@ -256,7 +256,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       _bookCount = titles.where(isBookItem).length;
       _audiobookCount = titles.where(isAudiobookItem).length;
       _comicCount = titles.where(isComicItem).length;
-      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF);
+      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF, libraryId: this.libraryId);
 
       _authorTitles = _tallyAuthorTitles(titles);
       final artists = await artistsF;
@@ -357,7 +357,8 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   }
 
   /// The books of [series] in reading order, by number and then by name.
-  List<AggregatedItem> seriesBooks(AggregatedItem series) {
+  List<AggregatedItem> seriesBooks(AggregatedItem? series) {
+    if (series == null) return const [];
     final ids = {...?(series.rawData['MemberIds'] as List?)};
     return _titles.where((title) => ids.contains(title.id)).toList()
       ..sort((a, b) {
@@ -989,6 +990,7 @@ mixin BookLibraryHelpers {
 List<AggregatedItem> bookSeriesEntries({
   required List<AggregatedItem> books,
   required List<AggregatedItem> folders,
+  required String libraryId,
 }) {
   final folderIds = {for (final folder in folders) folder.id};
   final seriesFolders = {
@@ -1011,11 +1013,11 @@ List<AggregatedItem> bookSeriesEntries({
 
   return [
     for (final MapEntry(key: id, value: members) in byFolder.entries)
-      _seriesEntry(id, seriesFolders[id]!.name, members, seriesFolders[id]),
+      _seriesEntry(id, seriesFolders[id]!.name, members, seriesFolders[id], libraryId),
     for (final MapEntry(key: name, value: members) in byName.entries)
       if (members.length >= 2 &&
           !members.every((m) => byFolder.containsKey(m.parentId)))
-        _seriesEntry('bookSeries:$name', name, members, null),
+        _seriesEntry('bookSeries:$name', name, members, null, libraryId),
   ]..sort((a, b) => a.name.compareTo(b.name));
 }
 
@@ -1024,6 +1026,7 @@ AggregatedItem _seriesEntry(
   String name,
   List<AggregatedItem> members,
   AggregatedItem? folder,
+  String libraryId,
 ) {
   final folderTag = folder?.primaryImageTag;
   final cover = members.firstWhere(
