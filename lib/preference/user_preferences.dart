@@ -1278,7 +1278,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final modernCardsOnMyMediaRow = Preference<bool>(
     key: 'pref_modern_cards_my_media',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   /// How far a mouse wheel notch scrolls, as a percentage of what the platform
