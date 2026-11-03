@@ -54,6 +54,7 @@ import 'mediabar/aya_media_bar.dart';
 import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
 import 'mediabar/media_bar_status_focus.dart';
+import 'mediabar/media_bar_new_release_label.dart';
 import 'mediabar/media_bar_title.dart';
 import 'rating_display.dart';
 import 'web_local_trailer.dart';
@@ -2098,14 +2099,33 @@ class _MediaBarState extends State<MediaBar>
                       left: logoLeftInset,
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
-                        child: SizedBox(
+                        child: Column(
                           key: ValueKey('logo_${currentItem.itemId}'),
-                          width: MediaBar.logoBoxWidth,
-                          height: 120,
-                          child: _buildLogoWithShadow(
-                            currentItem.logoUrl,
-                            currentItem.title,
-                          ),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: MediaBar.logoBoxWidth,
+                              height: 120,
+                              child: _buildLogoWithShadow(
+                                currentItem.logoUrl,
+                                currentItem.title,
+                              ),
+                            ),
+                            if (currentItem.newRelease case final release?) ...[
+                              const SizedBox(height: 8),
+                              // Wider than the logo, so the label still fits
+                              // on one row in a longer language.
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: MediaBar.logoBoxWidth * 1.6,
+                                ),
+                                child: MediaBarNewReleaseLine(
+                                  release: release,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ),
@@ -2165,6 +2185,8 @@ class _MediaBarState extends State<MediaBar>
                                 ),
                               _SlideInfo(
                                 item: currentItem,
+                                // Desktop and TV carry it under the logo.
+                                showRelease: isMobile && !isTablet,
                                 ratings: widget.viewModel.ratingsFor(
                                   currentItem.itemId,
                                 ),
@@ -2386,16 +2408,31 @@ class _MediaBarState extends State<MediaBar>
                                           duration: const Duration(
                                             milliseconds: 300,
                                           ),
-                                          child: SizedBox(
+                                          child: Column(
                                             key: ValueKey(
                                               'makd_logo_${currentItem.itemId}',
                                             ),
-                                            width: mobileLogoWidth,
-                                            height: mobileLogoHeight,
-                                            child: _buildLogoWithShadow(
-                                              currentItem.logoUrl,
-                                              currentItem.title,
-                                            ),
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                width: mobileLogoWidth,
+                                                height: mobileLogoHeight,
+                                                child: _buildLogoWithShadow(
+                                                  currentItem.logoUrl,
+                                                  currentItem.title,
+                                                ),
+                                              ),
+                                              if (currentItem.newRelease
+                                                  case final release?) ...[
+                                                const SizedBox(height: 8),
+                                                MediaBarNewReleaseLine(
+                                                  release: release,
+                                                  showMessage: false,
+                                                  alignment:
+                                                      CrossAxisAlignment.center,
+                                                ),
+                                              ],
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -2404,16 +2441,35 @@ class _MediaBarState extends State<MediaBar>
                                       duration: const Duration(
                                         milliseconds: 300,
                                       ),
-                                      child: SizedBox(
+                                      child: Column(
                                         key: ValueKey(
                                           'makd_logo_${currentItem.itemId}',
                                         ),
-                                        width: logoWidth,
-                                        height: logoHeight,
-                                        child: _buildLogoWithShadow(
-                                          currentItem.logoUrl,
-                                          currentItem.title,
-                                        ),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            width: logoWidth,
+                                            height: logoHeight,
+                                            child: _buildLogoWithShadow(
+                                              currentItem.logoUrl,
+                                              currentItem.title,
+                                            ),
+                                          ),
+                                          if (currentItem.newRelease
+                                              case final release?) ...[
+                                            const SizedBox(height: 8),
+                                            ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                maxWidth: logoWidth,
+                                              ),
+                                              child: MediaBarNewReleaseLine(
+                                                release: release,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                     ),
                             ),
@@ -3276,8 +3332,12 @@ class _SlideInfo extends StatelessWidget {
   final double leftInset;
   final double rightInset;
 
+  /// The new release label, on its own first line of the card.
+  final bool showRelease;
+
   const _SlideInfo({
     required this.item,
+    this.showRelease = false,
     required this.ratings,
     required this.enableAdditionalRatings,
     required this.enabledRatings,
@@ -3313,6 +3373,11 @@ class _SlideInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (showRelease && !compact)
+            if (item.newRelease case final release?) ...[
+              MediaBarNewReleaseLine(release: release, showMessage: false),
+              const SizedBox(height: 6),
+            ],
           _MetadataRow(item: item),
           if (!compact &&
               (ratings.isNotEmpty ||

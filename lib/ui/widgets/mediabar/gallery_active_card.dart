@@ -5,6 +5,7 @@ import '../../../data/models/gallery_detail.dart';
 import '../../../data/models/media_bar_slide_item.dart';
 import '../../../util/overview_text.dart';
 import '../../../util/platform_detection.dart';
+import 'media_bar_new_release_label.dart';
 
 class GalleryActiveCard extends StatelessWidget {
   final MediaBarSlideItem item;
@@ -117,6 +118,13 @@ class _LeftColumn extends StatelessWidget {
             shadows: shadows,
           ),
         ),
+        if (item.newRelease case final release?) ...[
+          const SizedBox(height: 12),
+          MediaBarNewReleaseLine(
+            release: release,
+            showMessage: !PlatformDetection.useMobileUi,
+          ),
+        ],
         const SizedBox(height: 12),
         _BadgeRow(item: item, accent: accent),
         if (ratings != null) ...[

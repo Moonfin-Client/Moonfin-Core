@@ -120,6 +120,9 @@ class UserPreferences extends ChangeNotifier {
   static const mediaBarSourceRandom = 'random';
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
+  // Series with episodes that aired lately, found from the episodes rather than
+  // the series, whose own date is its first season's.
+  static const mediaBarSourceNewReleases = 'newReleases';
 
   // What a focused home card plays. episodePreviewEnabled says whether it
   // plays anything, which older apps also read, and mediaPreviewMode says
@@ -676,6 +679,8 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarContentType',
     'mediaBarSourceType',
     'mediaBarItemCount',
+    'mediaBarNewReleaseBanner',
+    'mediaBarNewReleaseDays',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -3008,6 +3013,20 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarItemCount = Preference(
     key: 'mediaBarItemCount',
     defaultValue: '10',
+  );
+
+  /// Flags a series slide whose episodes aired lately as a new season or new
+  /// episodes, whatever source put it on the bar.
+  static final mediaBarNewReleaseBanner = Preference(
+    key: 'mediaBarNewReleaseBanner',
+    defaultValue: true,
+  );
+
+  /// How many days back an episode's air date still counts as new, for the
+  /// banner and for the new releases source.
+  static final mediaBarNewReleaseDays = Preference(
+    key: 'mediaBarNewReleaseDays',
+    defaultValue: 30,
   );
 
   static final navbarOpacity = Preference(

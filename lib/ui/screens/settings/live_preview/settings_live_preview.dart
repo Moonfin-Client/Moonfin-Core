@@ -169,7 +169,9 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
         'mediaBarEnableAdditionalRatings' ||
         'mediaBarEnabledRatings' ||
         'mediaBarShowRatingLabels' ||
-        'mediaBarShowRatingBadges' => Builder(
+        'mediaBarShowRatingBadges' ||
+        'mediaBarNewReleaseBanner' ||
+        'mediaBarNewReleaseDays' => Builder(
           builder: (context) => mediaBarPreview(
             previewValue(context, UserPreferences.mediaBarMode),
           ),

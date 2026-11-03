@@ -6512,6 +6512,32 @@
   "@mediaBarSourceRandom": {
     "description": "Media bar source: any eligible title"
   },
+  "mediaBarSourceNewReleases": "New Seasons & Episodes",
+  "@mediaBarSourceNewReleases": {
+    "description": "Media bar source: series with episodes that aired recently"
+  },
+  "mediaBarNewReleaseBanner": "New Release Banner",
+  "@mediaBarNewReleaseBanner": {
+    "description": "Setting that flags series in the media bar when new episodes aired recently"
+  },
+  "mediaBarNewReleaseBannerDescription": "Flag series with a new season or new episodes that aired recently.",
+  "mediaBarNewReleaseDays": "New Release Window",
+  "@mediaBarNewReleaseDays": {
+    "description": "Setting for how many days an episode counts as new in the media bar"
+  },
+  "mediaBarNewReleaseDaysDescription": "How long after an episode airs it still counts as new.",
+  "mediaBarNewSeries": "New Series",
+  "@mediaBarNewSeries": {
+    "description": "Media bar label on a series whose first season was released recently"
+  },
+  "mediaBarNewSeason": "New Season",
+  "@mediaBarNewSeason": {
+    "description": "Media bar label on a series whose latest season was released all at once recently"
+  },
+  "mediaBarNewEpisodes": "New Episodes",
+  "@mediaBarNewEpisodes": {
+    "description": "Media bar label on a series with one or more episodes that aired recently"
+  },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {
     "description": "Content type: movies and TV shows"
