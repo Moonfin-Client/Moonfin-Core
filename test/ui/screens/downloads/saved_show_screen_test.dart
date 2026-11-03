@@ -244,10 +244,7 @@ void main() {
       _episode('e1', season: 1, episode: 1, name: 'Pilot'),
     ]);
 
-    expect(
-      FocusManager.instance.primaryFocus?.debugLabel,
-      'SavedShowInitialFocus',
-    );
+    expect(focusedEpisode(), 'Pilot');
   });
 
   testWidgets('off TV no control in the show starts out focused', (
