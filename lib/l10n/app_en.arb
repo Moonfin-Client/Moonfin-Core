@@ -11631,7 +11631,7 @@
   },
   "watchPartyResumeAt": "Resume at {time}",
   "@watchPartyResumeAt": {
-    "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached; time is a position like 42:10",
+    "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
     "placeholders": {
       "time": {
         "type": "String"

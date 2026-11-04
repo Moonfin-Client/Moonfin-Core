@@ -12,6 +12,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/user_avatar_image.dart';
@@ -585,11 +586,7 @@ class _EmptyStage extends StatelessWidget {
 /// A title's poster from the server, or a placeholder. [fallbackId]'s
 /// poster stands in when [contentId] has none.
 class _Poster extends StatelessWidget {
-  const _Poster({
-    required this.contentId,
-    required this.width,
-    this.fallbackId,
-  });
+  const _Poster({required this.contentId, required this.width, this.fallbackId});
 
   final String? contentId;
   final String? fallbackId;
@@ -609,8 +606,10 @@ class _Poster extends StatelessWidget {
     final id = contentId;
     final url = id == null
         ? null
-        : GetIt.instance<SiloWatchPartyManager>().activeSiloClient?.imageApi
-              .getPrimaryImageUrl(id, maxHeight: (width * 4.5).round());
+        : GetIt.instance<SiloWatchPartyManager>()
+            .activeSiloClient
+            ?.imageApi
+            .getPrimaryImageUrl(id, maxHeight: (width * 4.5).round());
     final fallback = fallbackId;
     return ClipRRect(
       borderRadius: BorderRadius.circular(width > 60 ? 10 : 6),
@@ -694,8 +693,14 @@ class _ItemHeroState extends State<_ItemHero> {
     return FutureBuilder<SiloRoomResumePoint?>(
       future: _resume,
       builder: (context, resumeSnapshot) {
-        final resume = room.isHost && room.isStaged && !room.isPlaying
-            ? resumeSnapshot.data
+        // A new title's answer is still loading while the last one shows.
+        final data = resumeSnapshot.data;
+        final resume =
+            room.isHost &&
+                room.isStaged &&
+                !room.isPlaying &&
+                data?.contentId == room.selectedContentId
+            ? data
             : null;
         return FutureBuilder<Map<String, dynamic>?>(
           future: _item,
@@ -731,14 +736,18 @@ class _ItemHeroState extends State<_ItemHero> {
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.syncPlayPlayNow),
                 ),
-              if (room.isHost && room.isStaged && resume != null) ...[
+              if (resume != null) ...[
                 FilledButton.icon(
                   style: _primaryButton,
                   onPressed: busy
                       ? null
                       : () => manager.startPlayback(atSeconds: resume.seconds),
                   icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(l10n.watchPartyResumeAt(_clock(resume.seconds))),
+                  label: Text(
+                    l10n.watchPartyResumeAt(
+                      formatPlaybackDuration(Duration(seconds: resume.seconds)),
+                    ),
+                  ),
                 ),
                 OutlinedButton.icon(
                   onPressed: busy ? null : manager.startPlayback,
@@ -821,7 +830,7 @@ class _ItemHeroState extends State<_ItemHero> {
                   const SizedBox(height: 16),
                   Wrap(spacing: 8, runSpacing: 8, children: actions),
                 ],
-                if (resume != null && room.isHost && room.isStaged) ...[
+                if (resume != null) ...[
                   const SizedBox(height: 8),
                   Text(
                     _resumeHint(l10n, resume, room),
@@ -837,14 +846,6 @@ class _ItemHeroState extends State<_ItemHero> {
       },
     );
   }
-}
-
-/// A position as the player shows it, `42:10` or `1:02:10`.
-String _clock(int seconds) {
-  final h = seconds ~/ 3600;
-  final m = (seconds % 3600) ~/ 60;
-  final s = (seconds % 60).toString().padLeft(2, '0');
-  return h > 0 ? '$h:${m.toString().padLeft(2, '0')}:$s' : '$m:$s';
 }
 
 /// Whose spot the resume is, and who it takes past the start.

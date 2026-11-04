@@ -243,11 +243,10 @@ class SiloRoomSuggestion {
 }
 
 /// Where a room can pick a title up from: the earliest point any connected
-/// member stopped at, so nobody misses what they haven't seen. Silo starts
-/// every room at the beginning, so the host seeks the room here once its
-/// player is in.
+/// member stopped at, so nobody misses what they haven't seen.
 class SiloRoomResumePoint {
   const SiloRoomResumePoint({
+    required this.contentId,
     required this.seconds,
     this.profileId,
     this.notStarted = 0,
@@ -256,6 +255,7 @@ class SiloRoomResumePoint {
   /// Under this a member has barely started, which isn't worth resuming.
   static const minimumSeconds = 30;
 
+  final String contentId;
   final int seconds;
 
   /// The member whose spot it is.
@@ -295,6 +295,7 @@ class SiloRoomResumePoint {
     }
     if (earliest == null) return null;
     return SiloRoomResumePoint(
+      contentId: contentId,
       seconds: positionOf(earliest).floor(),
       profileId: earliest['profile_id']?.toString(),
       notStarted: members.where((m) => m['state'] == 'unseen').length,
