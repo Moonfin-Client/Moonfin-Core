@@ -657,16 +657,14 @@ class _ItemHeroState extends State<_ItemHero> {
 
   static String _resumeKeyOf(SiloRoom room) => [
     room.selectedContentId,
-    room.isHost && room.isStaged && !room.isPlaying,
+    room.isHost && room.isStaged,
     for (final m in room.members)
       if (m.connected) m.profileId,
   ].join(',');
 
   Future<SiloRoomResumePoint?> _readResume() {
     final room = widget.room;
-    if (!room.isHost || !room.isStaged || room.isPlaying) {
-      return Future.value(null);
-    }
+    if (!room.isHost || !room.isStaged) return Future.value(null);
     return widget.manager.resumePoint();
   }
 
@@ -693,15 +691,13 @@ class _ItemHeroState extends State<_ItemHero> {
     return FutureBuilder<SiloRoomResumePoint?>(
       future: _resume,
       builder: (context, resumeSnapshot) {
-        // A new title's answer is still loading while the last one shows.
-        final data = resumeSnapshot.data;
-        final resume =
-            room.isHost &&
-                room.isStaged &&
-                !room.isPlaying &&
-                data?.contentId == room.selectedContentId
-            ? data
-            : null;
+        // FutureBuilder holds on to the last answer while a new lookup runs,
+        // so the start buttons wait for it instead of offering an old spot or
+        // swapping under the host's finger.
+        final lobby = room.isHost && room.isStaged;
+        final looking =
+            lobby && resumeSnapshot.connectionState != ConnectionState.done;
+        final resume = lobby && !looking ? resumeSnapshot.data : null;
         return FutureBuilder<Map<String, dynamic>?>(
           future: _item,
           builder: (context, snapshot) {
@@ -754,10 +750,10 @@ class _ItemHeroState extends State<_ItemHero> {
                   icon: const Icon(Icons.replay_rounded),
                   label: Text(l10n.watchPartyStartFromBeginning),
                 ),
-              ] else if (room.isHost && room.isStaged)
+              ] else if (lobby)
                 FilledButton.icon(
                   style: _primaryButton,
-                  onPressed: busy ? null : manager.startPlayback,
+                  onPressed: busy || looking ? null : manager.startPlayback,
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.watchPartyStartForEveryone),
                 ),
