@@ -187,24 +187,23 @@ class MediaBarRepository {
       );
 
       if (selected.isEmpty && allParentIds.isNotEmpty) {
-        final fallbackItems = <Map<String, dynamic>>[];
-        final targetTypes = allParentItemTypes[allParentIds.first] ?? includeTypes;
-        fallbackItems.addAll(
-          await _fetchItems(
-            targetTypes,
-            fetchLimit,
-            parentId: allParentIds.first,
-            // Asking again for new releases would find nothing again, so
-            // a quiet window shows random titles instead.
-            random: _isNewReleaseSource,
-          ),
-        );
-
-        selected = _selectItemsWithBackdrops(
-          fallbackItems,
-          maxItems,
-          excludedGenres,
-        );
+        // Asking again for new releases would find nothing again, so a quiet
+        // window shows random titles from the first library that has some.
+        final newReleases = _isNewReleaseSource;
+        final retryParents = newReleases ? allParentIds : [allParentIds.first];
+        for (final parentId in retryParents) {
+          selected = _selectItemsWithBackdrops(
+            await _fetchItems(
+              allParentItemTypes[parentId] ?? includeTypes,
+              fetchLimit,
+              parentId: parentId,
+              random: newReleases,
+            ),
+            maxItems,
+            excludedGenres,
+          );
+          if (selected.isNotEmpty) break;
+        }
       }
 
       if (selected.isEmpty) {
@@ -331,7 +330,12 @@ class MediaBarRepository {
         return const <Map<String, dynamic>>[];
       }
 
-      return await _fetchItems(itemTypes, limit, parentId: libraryId);
+      return await _fetchItems(
+        itemTypes,
+        limit,
+        parentId: libraryId,
+        random: _isNewReleaseSource,
+      );
     } catch (_) {
       return const <Map<String, dynamic>>[];
     }
