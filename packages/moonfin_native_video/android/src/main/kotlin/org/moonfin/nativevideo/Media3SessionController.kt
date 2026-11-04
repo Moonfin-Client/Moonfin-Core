@@ -69,17 +69,36 @@ object Media3SessionController {
     private var activePlayer: Player? = null
 
     @Volatile
+    private var activeSessionPlayer: Player? = null
+
+    private var playbackIntentPlayer: SessionPlaybackIntentPlayer? = null
+
+    @Volatile
     private var activeService: MoonfinMediaSessionService? = null
 
     @Synchronized
-    fun attachPlayer(context: Context, player: Player) {
+    fun attachPlayer(
+        context: Context,
+        player: Player,
+        isPlaybackRequestCurrent: (() -> Boolean)? = null,
+        onPlaybackRequest: ((Boolean) -> Unit)? = null,
+    ) {
+        val sessionPlayer = if (isPlaybackRequestCurrent != null && onPlaybackRequest != null) {
+            val wrapper = playbackIntentPlayer?.takeIf { it.rawPlayer === player }
+                ?: SessionPlaybackIntentPlayer(player).also { playbackIntentPlayer = it }
+            wrapper.updateRequestHandler(isPlaybackRequestCurrent, onPlaybackRequest)
+            wrapper
+        } else {
+            playbackIntentPlayer = null
+            player
+        }
         val existingSession = mediaSession
         if (existingSession == null) {
             val appContext = context.applicationContext
             val sessionActivityIntent = appContext.packageManager.getLaunchIntentForPackage(
                 appContext.packageName,
             )?.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val sessionBuilder = MediaSession.Builder(appContext, player)
+            val sessionBuilder = MediaSession.Builder(appContext, sessionPlayer)
                 .setId(SESSION_ID)
                 .setCallback(sessionCallback)
             if (sessionActivityIntent != null) {
@@ -98,14 +117,16 @@ object Media3SessionController {
             }
             activeService?.registerSession(mediaSession)
             activePlayer = player
+            activeSessionPlayer = sessionPlayer
             return
         }
 
-        if (activePlayer !== player) {
+        if (activePlayer !== player || activeSessionPlayer !== sessionPlayer) {
             runCatching {
-                existingSession.setPlayer(player)
+                existingSession.setPlayer(sessionPlayer)
             }
             activePlayer = player
+            activeSessionPlayer = sessionPlayer
         }
     }
 
@@ -136,6 +157,8 @@ object Media3SessionController {
         }
         mediaSession = null
         activePlayer = null
+        activeSessionPlayer = null
+        playbackIntentPlayer = null
     }
 
     private fun uiMetadataBoolean(key: String): Boolean {

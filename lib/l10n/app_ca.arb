@@ -986,7 +986,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "No s'han trobat llibres per a aquest autor.",
+    "noBooksFound": "No s'ha trobat cap llibre",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -6129,7 +6129,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay requereix un servidor Jellyfin. El servidor actual no ho admet.",
     "syncPlayGroupFallbackName": "Grup SyncPlay",
     "syncPlayGroupTooltip": "Grup SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {{count} participant} other {{count} participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -7518,7 +7518,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis.",
+    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis. Escenari posa el pòster al davant, amb el botó de reproducció a sota i els detalls al costat. Estrena centra el títol sobre un teló de fons que omple la pantalla, amb totes les seccions a sota al llarg de la pàgina.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -15673,7 +15673,7 @@
     "@addServerChooseHow": {
         "description": "Subtitle of the first step of the Add Server dialog"
     },
-    "addServerAddressChoice": "Jellyfin o Emby a la teva xarxa o en línia",
+    "addServerAddressChoice": "Jellyfin, Emby o Silo a la teva xarxa o en línia",
     "@addServerAddressChoice": {
         "description": "Add Server dialog: what the Server Address option is for"
     },
@@ -15685,7 +15685,7 @@
     "@addServerAddressHelp": {
         "description": "Add Server dialog: help under the Connect to Server title"
     },
-    "addServerDetectNote": "Funciona amb Jellyfin i Emby. Una adreça de Plex obre l'inici de sessió de Plex.",
+    "addServerDetectNote": "Funciona amb Jellyfin, Emby i Silo. Una adreça de Plex obre l'inici de sessió de Plex.",
     "@addServerDetectNote": {
         "description": "Add Server dialog: note under the address field"
     },
@@ -16048,5 +16048,500 @@
     "setupMediaBarOffHint": "Sense zona destacada. L'inici s'obre directament a les teves files.",
     "@setupMediaBarOffHint": {
         "description": "What turning the media bar off does to the Home screen"
+    },
+    "signingIn": "S'està iniciant la sessió...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "moonbaseAddress": "Adreça de Moonbase",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "watchPartyGroupSubtitles": "Subtítols per a tothom",
+    "@watchPartyGroupSubtitles": {
+        "description": "The Watch Party host's subtitle choice for the whole group"
+    },
+    "watchPartyOwnSubtitles": "A elecció de cadascú",
+    "@watchPartyOwnSubtitles": {
+        "description": "Watch Party subtitle option that leaves subtitles to each member"
+    },
+    "watchPartyLobby": "A la sala d'espera",
+    "@watchPartyLobby": {
+        "description": "Watch Party status while nothing plays"
+    },
+    "watchPartyUpNextLabel": "Següent",
+    "@watchPartyUpNextLabel": {
+        "description": "Label over the title a Watch Party host has staged"
+    },
+    "watchPartyRoomSettings": "Configuració de la sala",
+    "@watchPartyRoomSettings": {
+        "description": "Heading over a Watch Party host's room switches"
+    },
+    "watchPartyCodeOrLink": "Codi de la sala o enllaç d'invitació",
+    "@watchPartyCodeOrLink": {
+        "description": "Join box on the Watch Party screen"
+    },
+    "watchPartyCopyInvite": "Copia l'enllaç d'invitació",
+    "@watchPartyCopyInvite": {
+        "description": "Host button that copies a Watch Party invite link"
+    },
+    "watchPartyInviteCopied": "S'ha copiat l'enllaç d'invitació",
+    "@watchPartyInviteCopied": {
+        "description": "Snackbar after copying a Watch Party invite link"
+    },
+    "watchPartyLetEveryoneVote": "Permet que tothom voti les pel·lícules",
+    "@watchPartyLetEveryoneVote": {
+        "description": "Host switch that turns a Watch Party into a vote on movies"
+    },
+    "watchPartyVoteHelp": "Afegeix pel·lícules perquè tothom les voti i després reprodueix la que vulguis. Els episodis de sèries els continues triant tu.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "watchPartyGuestVoteHelp": "Vota el que vulguis veure. L'amfitrió en reprodueix una.",
+    "@watchPartyGuestVoteHelp": {
+        "description": "Under a guest's vote list in a Watch Party"
+    },
+    "watchPartySearchMovies": "Cerca pel·lícules",
+    "@watchPartySearchMovies": {
+        "description": "Hint in the host's movie search in a Watch Party vote"
+    },
+    "watchPartyNoSuggestions": "Encara no hi ha pel·lícules per votar.",
+    "@watchPartyNoSuggestions": {
+        "description": "Shown when a Watch Party vote has no movies"
+    },
+    "watchPartySuggested": "S'ha afegit a la votació de la Watch Party",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "watchPartyVoteCount": "{count, plural, one {{count} vot} other {{count} vots}}",
+    "@watchPartyVoteCount": {
+        "description": "How many votes a movie has in a Watch Party vote",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchParty": "Watch Party",
+    "@watchParty": {
+        "description": "Title of Silo's Watch Party screen"
+    },
+    "watchPartyUnavailable": "Aquest servidor no ofereix Watch Party.",
+    "@watchPartyUnavailable": {
+        "description": "Shown when the Silo server has no Watch Party rooms"
+    },
+    "watchPartyRoomCode": "Codi de la sala",
+    "@watchPartyRoomCode": {
+        "description": "Label for a Watch Party room's join code"
+    },
+    "watchPartyStart": "Inicia una Watch Party",
+    "@watchPartyStart": {
+        "description": "Button that opens a new Watch Party room"
+    },
+    "watchPartyPickTitle": "Obre un títol i tria «Veure amb grup» per escollir què mira tothom.",
+    "@watchPartyPickTitle": {
+        "description": "How a Watch Party host picks what to watch"
+    },
+    "watchPartyWaitingForHost": "S'està esperant que l'amfitrió triï alguna cosa.",
+    "@watchPartyWaitingForHost": {
+        "description": "Shown to Watch Party guests before anything is picked"
+    },
+    "watchPartyShareCode": "Els altres s'hi uneixen amb aquest codi des de la seva pantalla de Watch Party.",
+    "@watchPartyShareCode": {
+        "description": "Under a Watch Party room's code"
+    },
+    "watchPartyReconnecting": "S'està reconnectant...",
+    "@watchPartyReconnecting": {
+        "description": "Watch Party connection status while the room socket reconnects"
+    },
+    "watchPartyOffline": "fora de línia",
+    "@watchPartyOffline": {
+        "description": "After a Watch Party member's name when they are not connected"
+    },
+    "watchPartyStartForEveryone": "Inicia per a tothom",
+    "@watchPartyStartForEveryone": {
+        "description": "Host button that starts the staged item for the whole Watch Party"
+    },
+    "watchPartyBackToLobby": "Torna a la sala d'espera",
+    "@watchPartyBackToLobby": {
+        "description": "Host button that stops Watch Party playback"
+    },
+    "watchPartyGuestsCanPause": "Els convidats poden reproduir i posar en pausa",
+    "@watchPartyGuestsCanPause": {
+        "description": "Host switch for guest transport control in a Watch Party"
+    },
+    "watchPartyEnd": "Finalitza la Watch Party",
+    "@watchPartyEnd": {
+        "description": "Host button that closes the Watch Party room for everyone"
+    },
+    "watchPartyEnded": "La Watch Party ha finalitzat.",
+    "@watchPartyEnded": {
+        "description": "Shown when the Watch Party room was closed"
+    },
+    "watchPartyStaged": "Triat per a la Watch Party",
+    "@watchPartyStaged": {
+        "description": "Snackbar after the host picks an item for the Watch Party"
+    },
+    "watchPartyUpNext": "Següent: {title}",
+    "@watchPartyUpNext": {
+        "description": "The item a Watch Party host has staged",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "hideHomeWatchProgress": "Amaga el progrés de visualització",
+    "@hideHomeWatchProgress": {
+        "description": "Setting title to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeWatchProgressSubtitle": "Amaga la barra de progrés als pòsters del contingut que has començat a veure.",
+    "@hideHomeWatchProgressSubtitle": {
+        "description": "Description for setting to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeUnwatchedCount": "Amaga el recompte de no vistos",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "hideHomeUnwatchedCountSubtitle": "Amaga la insígnia que mostra quants episodis queden per veure.",
+    "@hideHomeUnwatchedCountSubtitle": {
+        "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
+    },
+    "siloPasswordChangeTitle": "Tria una contrasenya nova",
+    "@siloPasswordChangeTitle": {
+        "description": "Title of the dialog shown after signing in to a Silo server with a temporary password"
+    },
+    "siloPasswordChangeMessage": "Aquest compte té una contrasenya temporal. Tria'n una de nova per acabar d'iniciar la sessió.",
+    "@siloPasswordChangeMessage": {
+        "description": "Explanation in the Silo change-password dialog. The temporary password was set by the server's admin."
+    },
+    "siloPasswordChangeNew": "Contrasenya nova",
+    "@siloPasswordChangeNew": {
+        "description": "Field label in the Silo change-password dialog"
+    },
+    "siloPasswordChangeConfirm": "Confirma la contrasenya nova",
+    "@siloPasswordChangeConfirm": {
+        "description": "Field label in the Silo change-password dialog: the new password typed a second time"
+    },
+    "siloPasswordChangeSubmit": "Canvia la contrasenya",
+    "@siloPasswordChangeSubmit": {
+        "description": "Button in the Silo change-password dialog that saves the new password and finishes signing in"
+    },
+    "siloPasswordChangeTooShort": "{count, plural, =1{Fes servir almenys 1 caràcter} other{Fes servir almenys {count} caràcters}}",
+    "@siloPasswordChangeTooShort": {
+        "description": "Error in the Silo change-password dialog when the new password is shorter than the server allows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPasswordChangeTooLong": "La contrasenya és massa llarga",
+    "@siloPasswordChangeTooLong": {
+        "description": "Error in the Silo change-password dialog when the new password is longer than the server allows"
+    },
+    "siloPasswordChangeMismatch": "Les contrasenyes no coincideixen",
+    "@siloPasswordChangeMismatch": {
+        "description": "Error in the Silo change-password dialog when the two new password fields differ"
+    },
+    "siloPasswordChangeSameAsTemporary": "Tria una contrasenya diferent de la temporal",
+    "@siloPasswordChangeSameAsTemporary": {
+        "description": "Error in the Silo change-password dialog when the new password equals the temporary one used to sign in"
+    },
+    "siloPasswordChangeFailed": "No s'ha pogut canviar la contrasenya. Torna-ho a provar.",
+    "@siloPasswordChangeFailed": {
+        "description": "Error in the Silo change-password dialog when the request failed (network or server error)"
+    },
+    "siloPasswordChangeUnavailable": "Aquest compte té una contrasenya temporal i aquest servidor no permet canviar-la aquí. Canvia-la a l'aplicació web de Silo i torna a iniciar la sessió.",
+    "@siloPasswordChangeUnavailable": {
+        "description": "Sign-in error for a Silo account with a temporary password when the server has password changes switched off"
+    },
+    "siloPasswordChangedSignInAgain": "S'ha canviat la contrasenya. Inicia la sessió amb la contrasenya nova.",
+    "@siloPasswordChangedSignInAgain": {
+        "description": "Shown on the sign-in screen when the Silo password was changed but the session could not continue"
+    },
+    "siloServerRowSubtitle": "Del teu servidor",
+    "@siloServerRowSubtitle": {
+        "description": "Subtitle of a Home row the media server curates itself (a Silo home section), on Home and in Home settings"
+    },
+    "siloCodeSignIn": "Inicia la sessió amb un codi",
+    "@siloCodeSignIn": {
+        "description": "Silo login screen: the toggle for signing in by approving a code from another device (Silo's name for what Jellyfin calls Quick Connect)"
+    },
+    "siloCodeSignInInstruction": "Escaneja el codi QR amb el telèfon o ves a {address} en qualsevol dispositiu amb la sessió iniciada i introdueix aquest codi:",
+    "@siloCodeSignInInstruction": {
+        "description": "Silo login screen, sign in with a code: how to approve the code shown below",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "silo.example.com/activate"
+            }
+        }
+    },
+    "siloCodeSignInInstructionNoLink": "Introdueix aquest codi a Silo en un dispositiu on tinguis la sessió iniciada:",
+    "@siloCodeSignInInstructionNoLink": {
+        "description": "Silo login screen, sign in with a code, when the server gave no page address"
+    },
+    "siloCodeSignInOpened": "S'ha trobat el codi. Aprova l'inici de sessió a l'altre dispositiu.",
+    "@siloCodeSignInOpened": {
+        "description": "Silo login screen, sign in with a code: someone has looked the code up and is about to approve it"
+    },
+    "siloCodeSignInDenied": "S'ha rebutjat aquest inici de sessió.",
+    "@siloCodeSignInDenied": {
+        "description": "Silo login screen, sign in with a code: the person approving refused the request"
+    },
+    "siloCodeSignInNewCode": "Obtén un codi nou",
+    "@siloCodeSignInNewCode": {
+        "description": "Silo login screen, sign in with a code: button that shows a new code after the last one ended"
+    },
+    "siloCodeSignInOff": "L'inici de sessió amb codi està desactivat en aquest servidor.",
+    "@siloCodeSignInOff": {
+        "description": "Silo login screen: the server doesn't offer sign-in with a code"
+    },
+    "siloCodeSignInPasswordChangeRequired": "Aquest compte té una contrasenya temporal. Inicia la sessió una vegada amb la contrasenya per substituir-la.",
+    "@siloCodeSignInPasswordChangeRequired": {
+        "description": "Silo login screen: a code was approved for an account that must first replace its temporary password, which needs a password sign-in"
+    },
+    "siloApproveSignIn": "Aprova un inici de sessió",
+    "@siloApproveSignIn": {
+        "description": "Title of the dialog where a signed-in Silo user types the code another device shows, to sign that device in (Silo's counterpart of authorizing a Quick Connect code)"
+    },
+    "siloApproveSignInHint": "Codi que es mostra a l'altre dispositiu",
+    "@siloApproveSignInHint": {
+        "description": "Hint in the Silo approve-a-sign-in dialog's code field"
+    },
+    "siloApproveSignInApprove": "Aprovar",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "siloApproveSignInDone": "S'ha aprovat. L'altre dispositiu està iniciant la sessió.",
+    "@siloApproveSignInDone": {
+        "description": "Shown after a Silo sign-in code was approved"
+    },
+    "siloApproveSignInNoRequest": "No hi ha cap inici de sessió pendent amb aquest codi. Comprova'l o obtén un codi nou a l'altre dispositiu.",
+    "@siloApproveSignInNoRequest": {
+        "description": "Shown when Silo has no pending sign-in for the typed code (unknown, expired, already used or declined)"
+    },
+    "siloNativeOfferTitle": "Vols connectar-te directament a Silo?",
+    "@siloNativeOfferTitle": {
+        "description": "Title of the dialog shown when the address being added is Silo's Jellyfin-compatible service and Silo's own API answers on another port of the same host"
+    },
+    "siloNativeOfferMessage": "Aquesta adreça és el servei compatible amb Jellyfin de {serverName}. Moonfin es pot connectar directament a Silo a {address}, amb les funcions pròpies de Silo.",
+    "@siloNativeOfferMessage": {
+        "description": "Body of the dialog offering to add a Silo server natively instead of through its Jellyfin-compatible service",
+        "placeholders": {
+            "serverName": {
+                "type": "String"
+            },
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloNativeOfferUse": "Fes servir Silo",
+    "@siloNativeOfferUse": {
+        "description": "Button: add the Silo server through its native API"
+    },
+    "siloNativeOfferKeep": "Mantén Jellyfin",
+    "@siloNativeOfferKeep": {
+        "description": "Button: add the address as a Jellyfin server, as entered"
+    },
+    "siloAppUpdateRequired": "Aquest servidor Silo necessita una versió més nova de Moonfin. Actualitza Moonfin per fer-lo servir.",
+    "@siloAppUpdateRequired": {
+        "description": "Shown when a Silo server no longer speaks the API this version of Moonfin uses (its API is newer)"
+    },
+    "siloServerUpdateRequired": "Aquest servidor Silo és massa antic per a aquesta versió de Moonfin. Actualitza Silo per fer-lo servir.",
+    "@siloServerUpdateRequired": {
+        "description": "Shown when a Silo server's API is older than the one this version of Moonfin uses"
+    },
+    "siloTooManyAttempts": "Massa intents. Torna-ho a provar més tard.",
+    "@siloTooManyAttempts": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429) without saying how long to wait"
+    },
+    "siloTooManyAttemptsWait": "Massa intents. Torna-ho a provar d'aquí a {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloServerBusy": "El servidor està ocupat o encara s'està iniciant. Torna-ho a provar més tard.",
+    "@siloServerBusy": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503) without saying how long to wait"
+    },
+    "siloServerBusyWait": "El servidor està ocupat o encara s'està iniciant. Torna-ho a provar d'aquí a {wait}.",
+    "@siloServerBusyWait": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloWaitSeconds": "{count, plural, =1{1 segon} other{{count} segons}}",
+    "@siloWaitSeconds": {
+        "description": "How long to wait before trying again, in seconds; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloWaitMinutes": "{count, plural, =1{1 minut} other{{count} minuts}}",
+    "@siloWaitMinutes": {
+        "description": "How long to wait before trying again, in minutes; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPlaybackUnavailable": "La reproducció no està disponible en aquest servidor Silo.",
+    "@siloPlaybackUnavailable": {
+        "description": "Player message: the Silo server has playback switched off for this account"
+    },
+    "siloPlaybackUpdateRequired": "Aquest servidor Silo necessita una versió més nova de Moonfin per reproduir.",
+    "@siloPlaybackUpdateRequired": {
+        "description": "Player message: the Silo server no longer speaks the playback protocol this version of Moonfin uses"
+    },
+    "siloPlaybackEndedOnServer": "S'ha finalitzat la reproducció al servidor Silo.",
+    "@siloPlaybackEndedOnServer": {
+        "description": "Player message: an administrator ended this playback session on the Silo server"
+    },
+    "siloPinTitle": "PIN de {name}",
+    "@siloPinTitle": {
+        "description": "Title of the dialog asking for a Silo household profile's PIN; name is the profile's name",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinHint": "PIN",
+    "@siloPinHint": {
+        "description": "Field label in the Silo profile PIN dialog"
+    },
+    "siloPinUnlock": "Desbloqueja",
+    "@siloPinUnlock": {
+        "description": "Button in the Silo profile PIN dialog that checks the PIN"
+    },
+    "siloPinWrong": "Aquest PIN no és correcte.",
+    "@siloPinWrong": {
+        "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
+    },
+    "siloPinLocked": "Massa PIN incorrectes. Torna-ho a provar més tard.",
+    "@siloPinLocked": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs, without saying for how long"
+    },
+    "siloPinLockedWait": "Massa PIN incorrectes. Torna-ho a provar d'aquí a {wait}.",
+    "@siloPinLockedWait": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs; wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinFailed": "No s'ha pogut comprovar el PIN. Torna-ho a provar.",
+    "@siloPinFailed": {
+        "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
+    },
+    "siloSignOutAccount": "Tanca la sessió del compte de Silo",
+    "@siloSignOutAccount": {
+        "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
+    },
+    "settingsLivePreview": "Vista prèvia en directe",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "settingsPreviewShowsOn": "Es mostra a la vista prèvia de {screen}",
+    "@settingsPreviewShowsOn": {
+        "description": "Under the Settings live preview, says the focused setting changes the named preview screen",
+        "placeholders": {
+            "screen": {
+                "type": "String",
+                "example": "Home"
+            }
+        }
+    },
+    "settingsPreviewNotShown": "No es mostra a la vista prèvia",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsPreviewSaved": "Desat",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "signedInOnThisDevice": "Sessió iniciada en aquest dispositiu",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "Cal PIN",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Cal contrasenya",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Continua com a {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Canvia a {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Sessió iniciada com a {user} a {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Actiu",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStyleStage": "Escenari",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Estrena",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStyleStage": "Escenari",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupDetailStageHint": "El pòster al davant, amb el botó de reproducció a sota i els detalls al costat.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupStylePremiere": "Estrena",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupDetailPremiereHint": "El títol centrat sobre un teló de fons a pantalla completa, amb tota la resta a sota al llarg de la pàgina.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
     }
 }

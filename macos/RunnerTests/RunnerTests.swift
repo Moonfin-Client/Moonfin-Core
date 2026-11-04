@@ -208,8 +208,11 @@ final class StalledStateTests: XCTestCase {
 /// problem. A dead connection would fail the transcode the same way.
 final class SessionErrorClassificationTests: XCTestCase {
 
-    private func kind(_ engineKind: String?, domain: String? = nil) -> String {
-        AetherPlayerWrapper.classifySessionError(engineKind: engineKind, underlyingDomain: domain)
+    private func kind(
+        _ engineKind: String?, domain: String? = nil, afterPlayback: Bool = false
+    ) -> String {
+        AetherPlayerWrapper.classifySessionError(
+            engineKind: engineKind, underlyingDomain: domain, afterPlayback: afterPlayback)
     }
 
     func testADeadVODSourceIsANetworkFailure() {
@@ -230,6 +233,10 @@ final class SessionErrorClassificationTests: XCTestCase {
 
     func testARefusedSourceStillTranscodes() {
         XCTAssertEqual(kind("sourceRefused"), "unsupported_container")
+    }
+
+    func testARefusalAfterPlaybackIsALapsedCredential() {
+        XCTAssertEqual(kind("sourceRefused", afterPlayback: true), "source_refused")
     }
 
     func testAnUnclassifiedFailureStillTranscodes() {

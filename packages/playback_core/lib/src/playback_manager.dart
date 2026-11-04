@@ -8,6 +8,7 @@ import 'player_backend.dart';
 import 'player_service.dart';
 import 'player_state.dart';
 import 'queue_service.dart';
+import 'stream_credentials.dart';
 import 'stream_replanner.dart';
 import 'stream_resolution_result.dart';
 import 'track_ordinal_mapper.dart';
@@ -249,10 +250,30 @@ class PlaybackManager implements AudioOwnable {
   bool _skipExternalRoutingOnce = false;
   bool _forceExternalPlayerOnce = false;
   bool _forceExternalChooserOnce = false;
-  bool _unsupportedAudioRecoveryInFlight = false;
+  bool _streamRecoveryInFlight = false;
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
-  bool _teardownForReResolve = false;
+  // A paired generic `error` is suppressed only when its ID matches the typed
+  // decoder failure that requested recovery. This survives _playCurrentItem's
+  // reset of the ordinary recovery latch without swallowing later errors.
+  String? _suppressedDecoderFailureEventId;
+  dynamic _videoDecoderRecoveryAttemptedQueueItem;
+  // True only while a re-resolve stops the old player, before the
+  // replacement starts, so the old player's typed failures stay dropped.
+  bool _reResolveStoppingOldPlayer = false;
+
+  /// The kind of the last typed error the player reported for the stream
+  /// that plays. A player that names the fault (an unplayable container, a
+  /// codec) follows it with a generic error, which must not be taken for a
+  /// lost connection.
+  String? _lastPlayerErrorKind;
+  /// Bumped whenever an item starts afresh (not a reopen of the one that
+  /// was playing). A re-resolve's teardown flag and a recovery's hold on
+  /// failed bringup states belong to the item they were taken for: one still
+  /// in flight when the queue moves on must not cover the next item.
+  int _itemEpoch = 0;
+  int? _teardownEpoch;
+  bool get _teardownForReResolve => _teardownEpoch == _itemEpoch;
 
   /// Sessions that have claimed their one live stream release attempt, set
   /// before the close is sent, so a failed close is not retried. Keyed by
@@ -296,6 +317,57 @@ class PlaybackManager implements AudioOwnable {
   }
   int _liveRecoveryAttempts = 0;
   DateTime? _lastLiveRecoveryAt;
+
+  /// The stream whose credentials [_credentialsInPlayer] describes.
+  StreamResolutionResult? _credentialsResolution;
+
+  /// What the player's requests authenticate with now: what its stream
+  /// opened with, or the last renewal handed to it.
+  StreamCredentials? _credentialsInPlayer;
+  Future<bool>? _credentialsCheck;
+
+  /// The player couldn't take the renewed credentials in place, so its
+  /// stream still carries ones that will lapse. They go in at the next
+  /// reopen: a seek, a reconnect, or the one an HLS stream runs before they
+  /// lapse.
+  bool _credentialsAwaitingReopen = false;
+  bool _credentialsReopenRunning = false;
+
+  /// A seek made while that reopen was opening, served once it has.
+  Duration? _seekAfterCredentialsReopen;
+
+  /// When the credentials the player's requests carry stop being accepted,
+  /// once the resolver has said.
+  DateTime? _credentialsInPlayerExpiresAt;
+
+  /// Reopens the stream for renewed credentials shortly before the player's
+  /// lapse, unless a seek has done it first.
+  Timer? _credentialsReopenTimer;
+  static const _credentialsReopenLead = Duration(seconds: 90);
+
+  /// Reconnect budget for a stream (not live, not a local file) whose
+  /// connection failed mid-play: a dropped network, or a server refusing
+  /// credentials that lapsed. It keeps the position and retries with a
+  /// backoff from 1s doubling to 15s for about two minutes, each retry
+  /// reopening the stream where it was. A stream that plays again for
+  /// [_reconnectProvenAfter] gets the whole budget back.
+  static const _reconnectBudget = Duration(minutes: 2);
+  static const _reconnectFirstDelay = Duration(seconds: 1);
+  static const _reconnectMaxDelay = Duration(seconds: 15);
+  static const _reconnectProvenAfter = Duration(seconds: 30);
+  DateTime? _reconnectStartedAt;
+  int _reconnectAttempts = 0;
+  /// Bumped whenever a reconnect ends, so an attempt that outlives its
+  /// reconnect (the queue moved on while it was reopening) neither blocks
+  /// nor schedules the next reconnect's retries.
+  int _reconnectGeneration = 0;
+  int? _reconnectInFlightGeneration;
+  bool get _reconnectInFlight =>
+      _reconnectInFlightGeneration == _reconnectGeneration;
+  bool _reconnecting = false;
+  Timer? _reconnectRetry;
+  Timer? _reconnectProvenTimer;
+  final _reconnectingController = StreamController<bool>.broadcast();
   bool _liveRecoveryInFlight = false;
   Timer? _liveRecoveryRetry;
 
@@ -306,12 +378,23 @@ class PlaybackManager implements AudioOwnable {
   static const _liveRecoveryProvenAfter = Duration(seconds: 20);
   Timer? _liveRecoveryProvenTimer;
 
-  /// Set only around the re-resolve await inside `_recoverStalledStream`. A
-  /// failed bringup state raised in that window is an intermediate failure
-  /// the recovery loop may still paper over, not the terminal one listeners
-  /// should see -- that only comes from `_giveUpOnStalledStream`, which runs
-  /// outside this window.
-  bool _suppressFailedBringupDuringRecovery = false;
+  /// Held only around a recovery's re-resolve await (a live recovery, a
+  /// reconnect, a credential reopen). A failed bringup state raised in that
+  /// window is an intermediate failure the recovery loop may still paper
+  /// over, not the terminal one listeners should see -- that only comes from
+  /// `_giveUpOnStalledStream`, which runs outside this window. One hold per
+  /// recovery, so one finishing doesn't lift another's, each held for the
+  /// item it was taken for (see [_itemEpoch]).
+  final List<int> _failedBringupHolds = <int>[];
+  bool get _suppressFailedBringupDuringRecovery =>
+      _failedBringupHolds.contains(_itemEpoch);
+
+  int _holdFailedBringup() {
+    _failedBringupHolds.add(_itemEpoch);
+    return _itemEpoch;
+  }
+
+  void _releaseFailedBringup(int hold) => _failedBringupHolds.remove(hold);
 
   /// A live stream can open and keep receiving bytes without ever rendering
   /// a frame -- weak reception trickles data, so the HTTP read never times
@@ -395,7 +478,13 @@ class PlaybackManager implements AudioOwnable {
   /// Marks the first frame seen, clears the recovery status, and drops any
   /// retry still waiting to fire -- the channel does not need it any more.
   void _onProgressStreamsUpdated() {
-    if (!_isActuallyPlaying) return;
+    if (!_isActuallyPlaying) {
+      // A reconnect earns its budget back with continuous playback: a pause
+      // or a stall starts the count again (see [_armReconnectProven]).
+      _reconnectProvenTimer?.cancel();
+      _reconnectProvenTimer = null;
+      return;
+    }
     _liveFrameSeenSinceOpen = true;
     _setLiveRecoveryStatus(null);
     if (_liveRecoveryRetry?.isActive ?? false) {
@@ -406,6 +495,7 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryRetry = null;
     }
     _armLiveRecoveryProven();
+    _armReconnectProven();
   }
 
   /// Once a recovery has the channel playing again, gives the budget back
@@ -514,6 +604,12 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call('Live recovery: dropping a held retry, $reason');
     }
     _resetLiveRecoveryBudget();
+    _endReconnect();
+  }
+
+  void _beginNewPlaybackSource(String reason) {
+    _abandonLiveRecovery(reason);
+    _videoDecoderRecoveryAttemptedQueueItem = null;
   }
 
   /// Clears the live recovery attempt count, its timestamp, and any held
@@ -645,6 +741,11 @@ class PlaybackManager implements AudioOwnable {
   Stream<LiveRecoveryStatus?> get liveRecoveryStatusStream =>
       _liveRecoveryStatusController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
+
+  /// Whether a stream that lost its connection is being reopened, for a
+  /// screen to say so rather than show a plain buffering spinner.
+  bool get isReconnecting => _reconnecting;
+  Stream<bool> get reconnectingStream => _reconnectingController.stream;
 
   /// Item that gained a stream on the server after this session resolved. The
   /// resolution still lists what the item had at play time, so a selector
@@ -914,10 +1015,20 @@ class PlaybackManager implements AudioOwnable {
     // rate is missing.
     final realRate = videoStream?['RealFrameRate'];
     final averageRate = videoStream?['AverageFrameRate'];
-    final videoFrameRate = realRate is num
-        ? realRate.toDouble()
-        : averageRate is num
-        ? averageRate.toDouble()
+    double? validFrameRate(dynamic value) {
+      if (value is! num) return null;
+      final rate = value.toDouble();
+      return rate.isFinite && rate > 0 ? rate : null;
+    }
+
+    final videoRealFrameRate = validFrameRate(realRate);
+    final videoAverageFrameRate = validFrameRate(averageRate);
+    final videoFrameRate = videoRealFrameRate ?? videoAverageFrameRate;
+    // Even an explicit server scan flag is source metadata, never evidence of
+    // the currently decoded stream's scan type.
+    final interlacedMetadata = videoStream?['IsInterlaced'];
+    final bool? videoInterlaced = interlacedMetadata is bool
+        ? interlacedMetadata
         : null;
 
     final audioStreamLang = _extractLanguage(audioStream);
@@ -988,6 +1099,11 @@ class PlaybackManager implements AudioOwnable {
           (videoStream['Codec']?.toString().isNotEmpty ?? false))
         'videoCodec': videoStream['Codec'].toString().toLowerCase(),
       if (videoFrameRate != null) 'videoFrameRate': videoFrameRate,
+      if (videoRealFrameRate != null)
+        'videoRealFrameRate': videoRealFrameRate,
+      if (videoAverageFrameRate != null)
+        'videoAverageFrameRate': videoAverageFrameRate,
+      'videoInterlaced': videoInterlaced,
       if (videoStream != null && videoStream['Width'] is int)
         'videoWidth': videoStream['Width'],
       if (videoStream != null && videoStream['Height'] is int)
@@ -1105,6 +1221,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _setBringupState(PlaybackBringupState state) {
+    if (state.phase == PlaybackBringupPhase.ready) _reconnectSucceeded();
     if (_suppressFailedBringupDuringRecovery &&
         state.phase == PlaybackBringupPhase.failed) {
       _diagnosticLogger?.call(
@@ -1122,8 +1239,9 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     final previous = _backend;
-    _unsupportedAudioRecoveryInFlight = false;
+    _streamRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
+    _suppressedDecoderFailureEventId = null;
     _endLiveStallWatch();
     _disposeStreamSubs();
     _backend = backend;
@@ -1687,8 +1805,10 @@ class PlaybackManager implements AudioOwnable {
       final serverServed = attempt >= _liveRecoveryMaxAttempts;
       final currentPlayMethod =
           (_currentResolution ?? _lastPlaybackResolution)?.playMethod;
-      final forceTranscode =
-          serverServed && currentPlayMethod != StreamPlayMethod.directPlay;
+      final finalRoute = serverServed
+          ? _finalRecoveryRoute(currentPlayMethod)
+          : (disableDirectPlay: false, forceTranscode: false);
+      final forceTranscode = finalRoute.forceTranscode;
       _diagnosticLogger?.call(
         'Live recovery: $trigger, attempt $attempt of '
         '$_liveRecoveryMaxAttempts, re-resolving the channel'
@@ -1704,11 +1824,11 @@ class PlaybackManager implements AudioOwnable {
       // to hold and try again. Suppressing just around this await keeps
       // that intermediate failure off listeners; the give-up path below and
       // the budget-exceeded one above are outside it and still emit.
-      _suppressFailedBringupDuringRecovery = true;
+      final hold = _holdFailedBringup();
       try {
         await _reResolveAtCurrentPosition(
           isErrorRecovery: true,
-          disableDirectPlay: serverServed,
+          disableDirectPlay: finalRoute.disableDirectPlay,
           forceTranscode: forceTranscode,
           reason: forceTranscode
               ? 'live-edge-recovery-transcode'
@@ -1716,9 +1836,10 @@ class PlaybackManager implements AudioOwnable {
               ? 'live-edge-recovery-server-stream'
               : 'live-edge-recovery',
           allowStartupRecovery: false,
+          shouldProceed: () => intent == _viewerIntentGeneration,
         );
       } finally {
-        _suppressFailedBringupDuringRecovery = false;
+        _releaseFailedBringup(hold);
       }
     } catch (e) {
       // The source is gone, not just stalled -- a re-resolve that threw
@@ -1751,6 +1872,42 @@ class PlaybackManager implements AudioOwnable {
       // slow-but-working re-resolve from eating its own gap.
       _lastLiveRecoveryAt = clock();
       _liveRecoveryInFlight = false;
+    }
+  }
+
+  ({bool disableDirectPlay, bool forceTranscode}) _finalRecoveryRoute(
+    StreamPlayMethod? currentPlayMethod,
+  ) => (
+    disableDirectPlay: true,
+    forceTranscode: currentPlayMethod != StreamPlayMethod.directPlay,
+  );
+
+  /// Whether a live source error is one the channel's own URL would give again
+  /// however often it is asked: the provider refused it (an HTTP 4xx other
+  /// than a timeout or rate limit) or answered with something that isn't a
+  /// stream. Only judged for a direct-played channel that hasn't shown a
+  /// frame, where the client fetches the provider's URL itself. A stream the
+  /// server relays can return 404 for a session it has just closed, which a
+  /// re-resolve does fix.
+  bool _isPermanentLiveSourceError(Map<String, dynamic> event) {
+    final playMethod =
+        (_currentResolution ?? _lastPlaybackResolution)?.playMethod;
+    if (playMethod != StreamPlayMethod.directPlay || _liveFrameSeenSinceOpen) {
+      return false;
+    }
+    switch (event['errorCodeName']?.toString()) {
+      case 'ERROR_CODE_PARSING_MANIFEST_MALFORMED':
+      case 'ERROR_CODE_IO_FILE_NOT_FOUND':
+        return true;
+      case 'ERROR_CODE_IO_BAD_HTTP_STATUS':
+        final status = event['httpStatus'] as int?;
+        return status != null &&
+            status >= 400 &&
+            status < 500 &&
+            status != 408 &&
+            status != 429;
+      default:
+        return false;
     }
   }
 
@@ -1855,6 +2012,38 @@ class PlaybackManager implements AudioOwnable {
     );
   }
 
+  Future<void> _stopForVideoDecoderFailure(String error) async {
+    final item = queueService.currentItem ?? _lastPlaybackItem;
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    final intent = _viewerIntentGeneration;
+    _isAutoNexting = true;
+    _mediaSourceId = null;
+    try {
+      await _stopAndReportCurrent(
+        skipQueueChange: true,
+        expectedItem: queueService.currentItem,
+      );
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping after a video decoder failure: $e');
+    } finally {
+      _isAutoNexting = false;
+    }
+    if (intent != _viewerIntentGeneration ||
+        !identical(queueService.currentItem, item)) {
+      return;
+    }
+    _setBringupState(
+      PlaybackBringupState(
+        phase: PlaybackBringupPhase.failed,
+        sessionToken: _playbackSessionToken,
+        itemId: item == null ? null : _traceItemId(item),
+        backend: _traceBackendName(_backend),
+        playMethod: resolution?.playMethod.name,
+        error: error.trim().isEmpty ? 'Playback failed.' : error.trim(),
+      ),
+    );
+  }
+
   void _clearPendingItemOverrides() {
     _pendingItemOverrideId = null;
     _pendingItemAudioStreamIndex = null;
@@ -1916,6 +2105,344 @@ class PlaybackManager implements AudioOwnable {
     return added;
   }
 
+  /// The resolver as a [StreamCredentialRefresher] for [current]'s stream,
+  /// else null. A local file needs no credentials.
+  StreamCredentialRefresher? _credentialRefresherFor(
+    StreamResolutionResult? current,
+  ) {
+    final resolver = _resolver;
+    if (current == null || current.isLocalMedia || _isOfflinePlayback) {
+      return null;
+    }
+    if (resolver is! StreamCredentialRefresher) return null;
+    return resolver as StreamCredentialRefresher;
+  }
+
+  /// Whether every request of [resolution]'s stream carries its
+  /// credentials: an HLS playlist is fetched segment by segment, while a
+  /// file is read through one long request that only a seek or a dropped
+  /// connection replaces.
+  static bool _requestsCredentialsThroughout(
+    StreamResolutionResult resolution,
+  ) {
+    final container = resolution.container?.toLowerCase() ?? '';
+    if (container.contains('hls') || container.contains('m3u8')) return true;
+    final path = Uri.tryParse(resolution.streamUrl)?.path.toLowerCase() ?? '';
+    return path.endsWith('.m3u8');
+  }
+
+  /// Hands the player the account's current credentials once they differ
+  /// from the ones its stream carries (see [StreamCredentialRefresher]).
+  /// Runs on every progress tick, and with [refresh] when the server has
+  /// just refused them. Returns whether the player took new ones in place.
+  ///
+  /// A player that can't change an open stream gets them at its next
+  /// reopen. A stream that requests them throughout (HLS) is reopened now,
+  /// at the position: it would fail at the next segment otherwise.
+  Future<bool> _refreshStreamCredentials({bool refresh = false}) async {
+    final running = _credentialsCheck;
+    if (running != null) {
+      // A routine check only repeats the one running. A refusal can't wait
+      // for the next tick: it renews once that one is done.
+      if (!refresh) return false;
+      await running;
+      return _refreshStreamCredentials(refresh: true);
+    }
+    final check = _checkStreamCredentials(refresh: refresh);
+    _credentialsCheck = check;
+    try {
+      return await check;
+    } finally {
+      if (identical(_credentialsCheck, check)) _credentialsCheck = null;
+    }
+  }
+
+  Future<bool> _checkStreamCredentials({required bool refresh}) async {
+    final resolution = _currentResolution;
+    final backend = _backend;
+    final refresher = _credentialRefresherFor(resolution);
+    if (refresher == null || backend == null) return false;
+    try {
+      final credentials = await refresher.currentCredentials(
+        resolution!,
+        refresh: refresh,
+      );
+      if (credentials == null ||
+          !identical(resolution, _currentResolution) ||
+          !identical(backend, _backend)) {
+        return false;
+      }
+      if (!identical(_credentialsResolution, resolution)) {
+        _credentialsResolution = resolution;
+        _credentialsInPlayer = StreamCredentials.of(resolution);
+        _credentialsInPlayerExpiresAt = null;
+        _credentialsAwaitingReopen = false;
+      }
+      if (credentials == _credentialsInPlayer) {
+        // While a reopen is pending these are the renewed ones, which the
+        // player hasn't taken yet.
+        if (!_credentialsAwaitingReopen) {
+          _credentialsInPlayerExpiresAt = credentials.expiresAt;
+        }
+        return false;
+      }
+      var applied = false;
+      try {
+        applied = await backend.updateStreamCredentials(credentials);
+      } catch (_) {}
+      if (!identical(resolution, _currentResolution)) return false;
+      _credentialsInPlayer = credentials;
+      _credentialsAwaitingReopen = !applied;
+      if (applied) {
+        _credentialsInPlayerExpiresAt = credentials.expiresAt;
+        _diagnosticLogger?.call('Stream credentials renewed in the player');
+        return true;
+      }
+      if (_requestsCredentialsThroughout(resolution) &&
+          !_waitingForMedia &&
+          !_reconnecting &&
+          !_currentItemIsLive) {
+        _reopenBeforeCredentialsLapse(resolution);
+      } else {
+        _diagnosticLogger?.call(
+          'Stream credentials renewed, the player takes them at its next '
+          'reopen',
+        );
+      }
+      return false;
+    } catch (error) {
+      _diagnosticLogger?.call('Renewing the stream credentials failed: $error');
+      return false;
+    }
+  }
+
+  /// Reopens [resolution]'s stream for renewed credentials its player couldn't
+  /// take in place. The ones it carries stay good until they lapse, so the
+  /// reopen waits for the viewer's next seek (see [seekTo]) and only runs on
+  /// its own shortly before then, or right away when that time isn't known.
+  void _reopenBeforeCredentialsLapse(StreamResolutionResult resolution) {
+    _credentialsReopenTimer?.cancel();
+    _credentialsReopenTimer = null;
+    final wait = _credentialsInPlayerExpiresAt
+        ?.subtract(_credentialsReopenLead)
+        .difference(clock());
+    if (wait == null || wait <= Duration.zero) {
+      _diagnosticLogger?.call(
+        'Stream credentials renewed, reopening the stream to carry them',
+      );
+      unawaited(_reopenForCredentials());
+      return;
+    }
+    _diagnosticLogger?.call(
+      'Stream credentials renewed, reopening the stream at the next seek or '
+      'in ${wait.inSeconds}s',
+    );
+    _credentialsReopenTimer = Timer(wait, () {
+      _credentialsReopenTimer = null;
+      if (!identical(resolution, _currentResolution) ||
+          _waitingForMedia ||
+          _reconnecting) {
+        return;
+      }
+      unawaited(_reopenForCredentials());
+    });
+  }
+
+  /// Reopens the stream at [at] (else where it plays), so the new one opens
+  /// with the account's current credentials. A resolver that can replan
+  /// keeps the session: an unchanged track change is how Silo reissues a
+  /// stream.
+  Future<void> _reopenForCredentials({Duration? at}) async {
+    if (_credentialsReopenRunning) return;
+    _credentialsReopenRunning = true;
+    final intent = _viewerIntentGeneration;
+    var failed = false;
+    // A reopen that fails is a lost connection, so the reconnect budget
+    // decides whether the viewer sees a failure, not this one attempt.
+    final hold = _holdFailedBringup();
+    try {
+      // The viewer's intent, not the player's: a stream reopened while it
+      // buffers would otherwise come back paused.
+      await _reResolveAtCurrentPosition(
+        reason: 'credential-renewal',
+        replanReason: ReplanReason.trackChange,
+        atPosition: at,
+        allowStartupRecovery: false,
+        autoPlay: !_viewerPaused,
+      );
+    } catch (error) {
+      failed = true;
+      _diagnosticLogger?.call(
+        'Reopening the stream for its credentials failed: $error',
+      );
+    } finally {
+      _releaseFailedBringup(hold);
+      _credentialsReopenRunning = false;
+    }
+    final seek = _seekAfterCredentialsReopen;
+    _seekAfterCredentialsReopen = null;
+    if (intent != _viewerIntentGeneration) return;
+    if (failed) {
+      if (_canReconnect(_currentResolution ?? _lastPlaybackResolution)) {
+        _beginReconnect('credential-renewal');
+      }
+      return;
+    }
+    if (seek != null) await seekTo(seek);
+  }
+
+  /// Whether a stream that lost its connection is reconnected rather than
+  /// failed: a server stream that isn't live. A live channel has its own
+  /// recovery, and a local file has no connection to lose.
+  bool _canReconnect(StreamResolutionResult? resolution) =>
+      resolution != null &&
+      !resolution.isLocalMedia &&
+      !_isOfflinePlayback &&
+      !_currentItemIsLive;
+
+  void _setReconnecting(bool value) {
+    if (_reconnecting == value) return;
+    _reconnecting = value;
+    _reconnectingController.add(value);
+  }
+
+  /// Starts reconnecting the stream, or schedules its next attempt when it
+  /// already is (see [_reconnectBudget]).
+  void _beginReconnect(String trigger) {
+    _reconnectProvenTimer?.cancel();
+    _reconnectProvenTimer = null;
+    if (_reconnectStartedAt == null) {
+      _reconnectStartedAt = clock();
+      _reconnectAttempts = 0;
+      _diagnosticLogger?.call('Connection lost ($trigger), reconnecting');
+    }
+    _setReconnecting(true);
+    if (_reconnectInFlight || (_reconnectRetry?.isActive ?? false)) return;
+    _scheduleReconnect(trigger);
+  }
+
+  Duration _reconnectDelayBefore(int attempt) {
+    var delay = _reconnectFirstDelay;
+    for (var i = 1; i < attempt && delay < _reconnectMaxDelay; i++) {
+      delay *= 2;
+    }
+    return delay > _reconnectMaxDelay ? _reconnectMaxDelay : delay;
+  }
+
+  void _scheduleReconnect(String trigger) {
+    final startedAt = _reconnectStartedAt;
+    if (startedAt == null) return;
+    final intent = _viewerIntentGeneration;
+    final item = queueService.currentItem;
+    final generation = _reconnectGeneration;
+    final attempt = _reconnectAttempts + 1;
+    final delay = _reconnectDelayBefore(attempt);
+    if (clock().add(delay).difference(startedAt) > _reconnectBudget) {
+      unawaited(_giveUpReconnect(intent, attempt - 1));
+      return;
+    }
+    _reconnectRetry?.cancel();
+    _reconnectRetry = Timer(delay, () {
+      _reconnectRetry = null;
+      unawaited(_runReconnect(trigger, attempt, intent, item, generation));
+    });
+  }
+
+  Future<void> _runReconnect(
+    String trigger,
+    int attempt,
+    int intent,
+    dynamic item,
+    int generation,
+  ) async {
+    // A newer reconnect owns the state now; this retry is not its to end.
+    if (generation != _reconnectGeneration) return;
+    if (intent != _viewerIntentGeneration ||
+        !identical(item, queueService.currentItem) ||
+        !_reconnecting) {
+      _endReconnect();
+      return;
+    }
+    _reconnectAttempts = attempt;
+    _reconnectInFlightGeneration = generation;
+    var failed = false;
+    _diagnosticLogger?.call('Reconnecting after $trigger, attempt $attempt');
+    // A failed attempt can emit a failed bringup state on its way out; the
+    // budget, not one attempt, decides whether the viewer sees a failure.
+    final hold = _holdFailedBringup();
+    try {
+      // An unchanged track change, not a failure: the route was fine, and a
+      // failure replan would rule it out.
+      await _reResolveAtCurrentPosition(
+        isErrorRecovery: true,
+        replanReason: ReplanReason.trackChange,
+        reason: 'connection-lost',
+        allowStartupRecovery: false,
+        autoPlay: !_viewerPaused,
+      );
+    } catch (error) {
+      failed = true;
+      _diagnosticLogger?.call('Reconnect attempt $attempt failed: $error');
+    } finally {
+      _releaseFailedBringup(hold);
+      if (_reconnectInFlightGeneration == generation) {
+        _reconnectInFlightGeneration = null;
+      }
+    }
+    if (failed &&
+        generation == _reconnectGeneration &&
+        _reconnecting &&
+        intent == _viewerIntentGeneration) {
+      _scheduleReconnect('retry-after-failure');
+    }
+  }
+
+  /// The stream opened again. The reconnecting label goes, and the budget
+  /// comes back once it has kept playing for [_reconnectProvenAfter].
+  void _reconnectSucceeded() {
+    if (_reconnectStartedAt == null) return;
+    _setReconnecting(false);
+    _armReconnectProven();
+  }
+
+  /// Gives the reconnect budget back after [_reconnectProvenAfter] of
+  /// playback. Armed only while the stream actually plays, so a reopened
+  /// stream the viewer left paused proves nothing; playback starting arms it
+  /// again (see [_onProgressStreamsUpdated]).
+  void _armReconnectProven() {
+    if (_reconnectStartedAt == null || _reconnecting) return;
+    if (_reconnectProvenTimer?.isActive ?? false) return;
+    if (!_isActuallyPlaying) return;
+    final generation = _reconnectGeneration;
+    _reconnectProvenTimer = Timer(_reconnectProvenAfter, () {
+      _reconnectProvenTimer = null;
+      if (generation != _reconnectGeneration || _reconnecting) return;
+      if (!_isActuallyPlaying) return;
+      _reconnectStartedAt = null;
+      _reconnectAttempts = 0;
+    });
+  }
+
+  void _endReconnect() {
+    _reconnectGeneration++;
+    _reconnectRetry?.cancel();
+    _reconnectRetry = null;
+    _reconnectProvenTimer?.cancel();
+    _reconnectProvenTimer = null;
+    _reconnectStartedAt = null;
+    _reconnectAttempts = 0;
+    _setReconnecting(false);
+  }
+
+  Future<void> _giveUpReconnect(int intent, int attempts) async {
+    _endReconnect();
+    if (intent != _viewerIntentGeneration) return;
+    _diagnosticLogger?.call(
+      'Reconnect budget spent after $attempts attempts, giving up',
+    );
+    await _giveUpOnStalledStream(live: false, intent: intent);
+  }
+
   void _onBackendErrorEvent(Map<String, dynamic> event) {
     unawaited(_handleBackendErrorEvent(event));
   }
@@ -1924,6 +2451,13 @@ class PlaybackManager implements AudioOwnable {
     if (event['event'] == 'subtitleError') {
       // Log subtitle failures without interrupting the video.
       _diagnosticLogger?.call(event['message']?.toString() ?? 'Subtitle error');
+      return;
+    }
+    final decoderFailureEventId = event['decoderFailureEventId']?.toString();
+    if (event['event'] == 'error' &&
+        decoderFailureEventId != null &&
+        decoderFailureEventId == _suppressedDecoderFailureEventId) {
+      _suppressedDecoderFailureEventId = null;
       return;
     }
     final queueItem = queueService.currentItem;
@@ -1938,7 +2472,10 @@ class PlaybackManager implements AudioOwnable {
 
     // The old player is being stopped for a track-switch restart; its dying
     // error events are noise (the new stream's own failures still surface).
-    if (_teardownForReResolve) {
+    if (_teardownForReResolve &&
+        (_reResolveStoppingOldPlayer ||
+            !(event['event'] == 'playerError' &&
+                event['kind'] == 'video_decoder_failure'))) {
       return;
     }
 
@@ -1963,6 +2500,28 @@ class PlaybackManager implements AudioOwnable {
     final kind = event['kind']?.toString();
     final recoverable = event['recoverable'] == true;
     final resolution = _currentResolution ?? _lastPlaybackResolution;
+
+    // The server refused the stream's credentials, and the player holds the
+    // stream open a moment for new ones. Renewing them now heals it in
+    // place; if they don't arrive it fails, and that is a lost connection.
+    if (eventType == 'credentialsRefused') {
+      _diagnosticLogger?.call(
+        'The server refused the stream\'s credentials '
+        '(HTTP ${event['status'] ?? '?'}), renewing them',
+      );
+      await _refreshStreamCredentials(refresh: true);
+      return;
+    }
+
+    // A reconnect is reopening the stream, so whatever the player reports
+    // meanwhile is its to handle: a failed attempt schedules the next one,
+    // and the budget decides when to give up.
+    if (_reconnecting &&
+        _canReconnect(resolution) &&
+        (eventType == 'error' || eventType == 'playerError')) {
+      if (!_reconnectInFlight) _beginReconnect('$eventType ${kind ?? ''}'.trim());
+      return;
+    }
 
     void emitFailedBringupState(String fallbackMessage) {
       final message = event['message']?.toString().trim();
@@ -2032,7 +2591,36 @@ class PlaybackManager implements AudioOwnable {
       // be spent. A re-resolve's own dying-player noise is already dropped by
       // the _teardownForReResolve guard above.
       if (_currentItemIsLive && !_isOfflinePlayback) {
+        // Asking the provider again can't change a refusal or a reply that
+        // isn't a stream; the recovery ladder would only keep the viewer on
+        // a spinner for a minute before saying so.
+        if (_isPermanentLiveSourceError(event)) {
+          _diagnosticLogger?.call(
+            'Live recovery: source-error the provider will repeat '
+            '(${event['errorCodeName']}), giving the channel up',
+          );
+          await _giveUpOnStalledStream(
+            live: true,
+            intent: _viewerIntentGeneration,
+          );
+          return;
+        }
         await _recoverStalledStream(trigger: 'source-error');
+        return;
+      }
+
+      // A stream whose credentials expire may have failed because they did:
+      // engines that don't say why (mpv) report a refused request as a
+      // plain error. Reopening it carries the account's current ones.
+      final namedFault =
+          _lastPlayerErrorKind != null &&
+          _lastPlayerErrorKind != 'network' &&
+          _lastPlayerErrorKind != 'source_refused';
+      if (!_waitingForMedia &&
+          !namedFault &&
+          _canReconnect(resolution) &&
+          _credentialRefresherFor(resolution) != null) {
+        _beginReconnect('error');
         return;
       }
 
@@ -2041,6 +2629,19 @@ class PlaybackManager implements AudioOwnable {
     }
 
     if (eventType != 'playerError') {
+      return;
+    }
+    _lastPlayerErrorKind = kind;
+
+    // The connection failed, not the stream: the network dropped, or the
+    // server refused credentials that lapsed. Reopening it where it was is
+    // what brings it back, so it is not a reason to change the route. An
+    // error before the stream first plays is left to the startup handling.
+    if ((kind == 'network' || kind == 'source_refused') &&
+        !_waitingForMedia &&
+        _canReconnect(resolution)) {
+      // The generic error that follows is absorbed by the reconnect.
+      _beginReconnect(kind!);
       return;
     }
 
@@ -2062,6 +2663,7 @@ class PlaybackManager implements AudioOwnable {
     // stays on the file, so it is left to run.
     if (resolution != null &&
         resolution.isLocalMedia &&
+        kind != 'video_decoder_failure' &&
         event['audioOffloadRetryTriggered'] != true) {
       _suppressNextGenericBackendError = true;
       emitFailedBringupState('Playback failed.');
@@ -2077,10 +2679,17 @@ class PlaybackManager implements AudioOwnable {
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
-        !_unsupportedAudioRecoveryInFlight;
+        !_streamRecoveryInFlight;
 
-    Future<void> recoverViaTranscode() async {
-      _unsupportedAudioRecoveryInFlight = true;
+    Future<void> recoverViaTranscode({
+      String reason = 'unsupported-audio-recovery',
+      bool Function()? shouldProceed,
+      bool Function()? autoPlayIntent,
+      bool forceTranscode = true,
+      bool disableDirectPlay = false,
+      bool allowStartupRecovery = true,
+    }) async {
+      _streamRecoveryInFlight = true;
       // The stop below lets a startup still inside play() return, and the
       // next token is only taken after that stop. Retire the startup here or
       // it finishes as a normal start and reports a start for a session whose
@@ -2088,15 +2697,64 @@ class PlaybackManager implements AudioOwnable {
       ++_playbackSessionToken;
       try {
         await _reResolveAtCurrentPosition(
-          forceTranscode: true,
+          forceTranscode: forceTranscode,
+          disableDirectPlay: disableDirectPlay,
           isErrorRecovery: true,
-          reason: 'unsupported-audio-recovery',
+          reason: reason,
+          shouldProceed: shouldProceed,
+          autoPlayIntent: autoPlayIntent,
+          allowStartupRecovery: allowStartupRecovery,
         );
       } catch (_) {
-        emitFailedBringupState('Playback failed.');
+        if (shouldProceed == null || shouldProceed()) {
+          emitFailedBringupState('Playback failed.');
+        }
       } finally {
-        _unsupportedAudioRecoveryInFlight = false;
+        _streamRecoveryInFlight = false;
       }
+    }
+
+    if (kind == 'video_decoder_failure') {
+      // The ordinary recovery latch is reset during _playCurrentItem, so keep
+      // the paired event ID separately. A backend that emits only the typed
+      // event needs no generic-error suppression.
+      _suppressedDecoderFailureEventId =
+          event['decoderFailureEventId']?.toString();
+      if (_currentItemIsLive) {
+        _abandonLiveRecovery('typed video decoder failure is terminal');
+      }
+      final canForceTranscode =
+          queueItem != null &&
+          resolution != null &&
+          (resolution.playMethod == StreamPlayMethod.directPlay ||
+              resolution.playMethod == StreamPlayMethod.directStream) &&
+          !_isOfflinePlayback &&
+          !resolution.isLocalMedia &&
+          !_streamRecoveryInFlight &&
+          !identical(queueItem, _videoDecoderRecoveryAttemptedQueueItem);
+      if (!canForceTranscode) {
+        await _stopForVideoDecoderFailure(
+          event['message']?.toString() ?? 'Playback failed.',
+        );
+        return;
+      }
+
+      // A typed startup failure supersedes any paced live recovery already
+      // waiting or resuming. Its generation guard also prevents an in-flight
+      // generic recovery from re-resolving after this forced fallback.
+      // Unlike the ladder's final step, direct play also goes straight to a
+      // transcode: a remux keeps the codec the device just failed to decode.
+      _videoDecoderRecoveryAttemptedQueueItem = queueItem;
+      final recoveryIntent = _viewerIntentGeneration;
+      await recoverViaTranscode(
+        reason: 'video-decoder-recovery',
+        shouldProceed: () => recoveryIntent == _viewerIntentGeneration,
+        autoPlayIntent: () => !_viewerPaused,
+        forceTranscode: true,
+        disableDirectPlay: true,
+        allowStartupRecovery: false,
+      );
+      return;
     }
 
     // A live source dropped or was reset upstream: re-resolve the stream at
@@ -2124,7 +2782,7 @@ class PlaybackManager implements AudioOwnable {
     // surface.
     if (kind == 'unsupported_container' || kind == 'unsupported_video') {
       if (!canReResolve()) {
-        if (kind == 'unsupported_video' && !_unsupportedAudioRecoveryInFlight) {
+        if (kind == 'unsupported_video' && !_streamRecoveryInFlight) {
           await _stopForUnsupportedVideo();
         }
         return;
@@ -2160,13 +2818,14 @@ class PlaybackManager implements AudioOwnable {
         resolution.playMethod == StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
         !_waitingForMedia &&
-        !_unsupportedAudioRecoveryInFlight) {
+        !_streamRecoveryInFlight) {
       await recoverViaTranscode();
     }
   }
 
   Future<void> _autoNext() async {
     if (await _maybeIntercept(TransportAction.next)) return;
+    _beginNewPlaybackSource('the queue advanced to another item');
     _mediaSourceId = null;
     if (_isOfflinePlayback) {
       await _stopAndReportCurrent(skipQueueChange: true);
@@ -2280,8 +2939,8 @@ class PlaybackManager implements AudioOwnable {
     // the next episode. The track arguments are ignored then.
     bool carryTrackSelections = false,
   }) async {
-    _abandonLiveRecovery('the viewer tuned somewhere else');
-    _viewerPaused = false;
+    _beginNewPlaybackSource('the viewer tuned somewhere else');
+    _viewerPaused = !autoPlay;
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
     if (!carryTrackSelections) {
@@ -2362,6 +3021,7 @@ class PlaybackManager implements AudioOwnable {
 
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
+    _videoDecoderRecoveryAttemptedQueueItem = null;
     await _playCurrentItem(
       startPosition: startPosition,
       enableDirectPlay: enableDirectPlay,
@@ -2431,19 +3091,30 @@ class PlaybackManager implements AudioOwnable {
     bool enableTranscoding = true,
     bool allowStartupRecovery = true,
     bool autoPlay = true,
+    bool Function()? autoPlayIntent,
     bool withholdExternalPgs = false,
     // A stream of this item whose session the resolver can move to the new
     // one instead of starting another (see [StreamReplanner]), and why.
     StreamResolutionResult? replanFrom,
     ReplanReason replanReason = ReplanReason.trackChange,
+    // This reopens the item that was playing (a re-resolve, or a startup
+    // fallback), rather than starting one. Said outright: a queue change
+    // made while a re-resolve is still running would otherwise read that
+    // re-resolve's teardown as its own.
+    bool reopening = false,
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     // A channel started afresh -- a tune, or Retry on the card a spent budget
     // raised -- gets the whole budget back. A re-resolve reaches here too, and
     // that one is an attempt being spent, so it must not clear the count.
-    if (!_teardownForReResolve) {
+    // A reconnect belongs to the item it was reopening too: a queue change
+    // (next, previous, auto-advance) ends it, or the new item's errors would
+    // be taken for the old one's and its budget would carry over.
+    if (!reopening) {
+      _itemEpoch++;
       _resetLiveRecoveryBudget();
+      _endReconnect();
     }
 
     if (_forceTranscodeForQueue) {
@@ -2462,6 +3133,11 @@ class PlaybackManager implements AudioOwnable {
     // The backstop for everything the queue filter couldn't answer without a
     // lookup. Prerolls carry no rating of their own and are skipped.
     final refusal = _playContentRefusal;
+    // The lookup can take a while, and a stop or another start made during
+    // it (each takes the next session token) supersedes this one: a reopen
+    // must not bring back a stream the app has since stopped, for the
+    // background or for the next item.
+    final tokenBeforeRefusal = _playbackSessionToken;
     if (refusal != null && !_isPreroll(item) && await refusal(item)) {
       suppressAutoNext = true;
       queueService.clear();
@@ -2469,6 +3145,12 @@ class PlaybackManager implements AudioOwnable {
       // Closes a player that's already open, rather than leaving it frozen on
       // the last frame.
       _notifySessionEnded();
+      return;
+    }
+    if (_playbackSessionToken != tokenBeforeRefusal) {
+      _diagnosticLogger?.call(
+        'Superseded while checking whether the item may play, not opening it',
+      );
       return;
     }
 
@@ -2589,6 +3271,8 @@ class PlaybackManager implements AudioOwnable {
           // wouldn't change it (or it ended the session on purpose).
           rethrow;
         } catch (error) {
+          // A retired replan must not open its old source again after a tune.
+          if (sessionToken != _playbackSessionToken) rethrow;
           // The session can't move, so it ends here like any re-resolved
           // one, and a new one starts below.
           _diagnosticLogger?.call(
@@ -2657,6 +3341,7 @@ class PlaybackManager implements AudioOwnable {
       _cleanupPreemptedSession(item, resolution);
       return;
     }
+    autoPlay = autoPlayIntent?.call() ?? autoPlay;
 
     // Unless the request names the source as well, the server judges the
     // audio by its own default track whatever track was asked for, and with
@@ -2768,8 +3453,10 @@ class PlaybackManager implements AudioOwnable {
             enableDirectStream: false,
             enableTranscoding: true,
             allowStartupRecovery: allowStartupRecovery,
+            autoPlayIntent: autoPlayIntent,
             withholdExternalPgs: withholdExternalPgs,
             replanFrom: resolution,
+            reopening: true,
             replanReason: ReplanReason.failure,
           );
         } finally {
@@ -2873,8 +3560,10 @@ class PlaybackManager implements AudioOwnable {
           enableTranscoding: enableTranscoding,
           allowStartupRecovery: allowStartupRecovery,
           autoPlay: autoPlay,
+          autoPlayIntent: autoPlayIntent,
           withholdExternalPgs: pickedEmbeddedPgs,
           replanFrom: resolution,
+          reopening: true,
         );
         return;
       } finally {
@@ -2979,13 +3668,44 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _playbackStartTime = clock();
-    _unsupportedAudioRecoveryInFlight = false;
+    _streamRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
+    _lastPlayerErrorKind = null;
     _waitingForMedia = true;
     bool mediaReady = false;
     Object? startupError;
     StackTrace? startupStackTrace;
     final useNativeStart = startTicks != null;
+
+    Future<bool> reconcileLatestPlaybackIntent() async {
+      final readAutoPlayIntent = autoPlayIntent;
+      if (readAutoPlayIntent == null) return true;
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return false;
+      }
+
+      var desiredAutoPlay = readAutoPlayIntent();
+      while (desiredAutoPlay != autoPlay) {
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return false;
+        }
+        if (desiredAutoPlay) {
+          await _backend!.resume();
+        } else {
+          await _backend!.pause();
+        }
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return false;
+        }
+        autoPlay = desiredAutoPlay;
+        desiredAutoPlay = readAutoPlayIntent();
+      }
+      return true;
+    }
+
     try {
       final currentItemId = MediaStreamResolver.extractItemId(item);
       final secondaryStreams = resolution.mediaStreams
@@ -3037,6 +3757,10 @@ class PlaybackManager implements AudioOwnable {
         _cleanupPreemptedSession(item, resolution);
         return;
       }
+      if (autoPlayIntent != null) {
+        autoPlay = autoPlayIntent();
+        backendMediaPayload['autoPlay'] = autoPlay;
+      }
       // Reset before the source opens, not after: web (and possibly
       // MediaKit) can emit playing/non-buffering from inside `open`, before
       // it returns, and a reset placed after would erase that first frame.
@@ -3048,6 +3772,14 @@ class PlaybackManager implements AudioOwnable {
             ? _playerPosition(startPosition)
             : Duration.zero,
       );
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
+      if (autoPlayIntent != null &&
+          !await reconcileLatestPlaybackIntent()) {
+        return;
+      }
       if (sessionToken != _playbackSessionToken) {
         _cleanupPreemptedSession(item, resolution);
         return;
@@ -3158,8 +3890,10 @@ class PlaybackManager implements AudioOwnable {
               : enableDirectStream,
           enableTranscoding: forceTranscodeFallback ? true : enableTranscoding,
           allowStartupRecovery: false,
-          autoPlay: autoPlay,
+          autoPlay: autoPlayIntent?.call() ?? autoPlay,
+          autoPlayIntent: autoPlayIntent,
           replanFrom: resolution,
+          reopening: true,
           replanReason: ReplanReason.failure,
         );
         return;
@@ -3213,6 +3947,17 @@ class PlaybackManager implements AudioOwnable {
         startPosition,
         resumeAfterSeek: autoPlay,
       );
+    }
+
+    // Ready and resume-position work can also take long enough for the viewer
+    // to change intent, so reconcile immediately before publishing ready.
+    if (autoPlayIntent != null &&
+        !await reconcileLatestPlaybackIntent()) {
+      return;
+    }
+    if (sessionToken != _playbackSessionToken) {
+      _cleanupPreemptedSession(item, resolution);
+      return;
     }
 
     if (resolution.externalSubtitles.isNotEmpty) {
@@ -3285,6 +4030,7 @@ class PlaybackManager implements AudioOwnable {
     // `autoPlay` is the manager's own intent, so it decides arming here
     // rather than the backend's (possibly stale) playWhenReady. The frame-seen
     // flag was already reset before the source opened, above.
+    autoPlay = autoPlayIntent?.call() ?? autoPlay;
     if (autoPlay) {
       _viewerPaused = false;
       _startLiveStallWatch();
@@ -3318,10 +4064,10 @@ class PlaybackManager implements AudioOwnable {
     }
 
     final activeGeneration = generation;
-    _progressTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) => _reportProgress(activeGeneration),
-    );
+    _progressTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _reportProgress(activeGeneration);
+      unawaited(_refreshStreamCredentials());
+    });
   }
 
   void _reportProgress(_ProgressGeneration generation) {
@@ -3531,6 +4277,10 @@ class PlaybackManager implements AudioOwnable {
         !identical(queueService.currentItem, expectedItem)) {
       return false;
     }
+    // The queue item and the viewer's intent both survive this stop, so a
+    // retry waiting to fire would pass its own checks and reopen the stream
+    // in the background.
+    _endReconnect();
     return _stopAndReportCurrent(
       skipQueueChange: true,
       expectedItem: expectedItem,
@@ -3555,6 +4305,24 @@ class PlaybackManager implements AudioOwnable {
         _replannerFor(current) != null) {
       state.setPosition(position);
       await _seekThroughServer(position);
+      return;
+    }
+    // The stream is being reopened for its credentials; the seek lands once
+    // the new one is open, rather than on the player being replaced.
+    if (_credentialsReopenRunning) {
+      state.setPosition(position);
+      _seekAfterCredentialsReopen = position;
+      return;
+    }
+    // The player has to reopen the stream to take renewed credentials, and
+    // a seek is a reopen the viewer already waits for. Its lapsed ones
+    // would fail the seek's first request.
+    if (current != null &&
+        _credentialsAwaitingReopen &&
+        identical(_credentialsResolution, current) &&
+        !_currentItemIsLive) {
+      state.setPosition(position);
+      await _reopenForCredentials(at: position);
       return;
     }
     await _backend?.seekTo(_playerPosition(position));
@@ -3626,6 +4394,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     if (_isManualNexting || _isAutoNexting) return;
+    _beginNewPlaybackSource('the viewer advanced the queue');
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
@@ -3654,6 +4423,7 @@ class PlaybackManager implements AudioOwnable {
       await seekTo(Duration.zero);
       return;
     }
+    _beginNewPlaybackSource('the viewer moved to the previous item');
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -3662,6 +4432,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> playFromQueue(int index) async {
+    _beginNewPlaybackSource('the viewer selected another queued item');
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -4284,6 +5055,10 @@ class PlaybackManager implements AudioOwnable {
     Duration? atPosition,
     // Whether it plays once open. Null keeps what the player was doing.
     bool? autoPlay,
+    // Retires obsolete recovery after queue waits and asynchronous teardown.
+    bool Function()? shouldProceed,
+    // Latest viewer intent takes precedence over an earlier autoplay snapshot.
+    bool Function()? autoPlayIntent,
   }) {
     final previous = _reResolveQueue;
 
@@ -4294,7 +5069,10 @@ class PlaybackManager implements AudioOwnable {
         } catch (_) {}
       }
 
+      if (shouldProceed != null && !shouldProceed()) return;
+
       final autoPlayAfterResolve =
+          autoPlayIntent?.call() ??
           autoPlay ??
           (isErrorRecovery ? true : (_backend?.isPlaying ?? state.isPlaying));
 
@@ -4309,6 +5087,8 @@ class PlaybackManager implements AudioOwnable {
             replanReason ??
             (isErrorRecovery ? ReplanReason.failure : ReplanReason.trackChange),
         atPosition: atPosition,
+        shouldProceed: shouldProceed,
+        autoPlayIntent: autoPlayIntent,
       );
     }();
 
@@ -4325,7 +5105,10 @@ class PlaybackManager implements AudioOwnable {
     bool allowStartupRecovery = true,
     ReplanReason replanReason = ReplanReason.trackChange,
     Duration? atPosition,
+    bool Function()? shouldProceed,
+    bool Function()? autoPlayIntent,
   }) async {
+    if (shouldProceed != null && !shouldProceed()) return;
     // A re-resolve stops the backend, reports the stop and kills the server
     // job, so it is one of the few things that can clear the player's
     // playlist mid-playback. Naming the caller is what tells that apart from
@@ -4373,7 +5156,9 @@ class PlaybackManager implements AudioOwnable {
     // player can't fetch segments of a killed transcode and surface a
     // spurious source error. The flag stays set through the whole teardown
     // because the dying player's error events arrive asynchronously.
-    _teardownForReResolve = true;
+    final teardownEpoch = _itemEpoch;
+    _teardownEpoch = teardownEpoch;
+    _reResolveStoppingOldPlayer = true;
     try {
       await _backend?.stop();
     } catch (_) {}
@@ -4403,6 +5188,12 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    _reResolveStoppingOldPlayer = false;
+    if (shouldProceed != null && !shouldProceed()) {
+      if (_teardownEpoch == teardownEpoch) _teardownEpoch = null;
+      return;
+    }
+
     if (!isErrorRecovery) {
       _lastTrackSwitchReResolveAt = DateTime.now();
       _transcodeSwitchRecoveryConsumed = false;
@@ -4413,13 +5204,15 @@ class PlaybackManager implements AudioOwnable {
         startPosition: currentPos,
         enableDirectPlay: !forceTranscode && !disableDirectPlay,
         enableDirectStream: !forceTranscode,
-        autoPlay: autoPlayAfterResolve,
+        autoPlay: autoPlayIntent?.call() ?? autoPlayAfterResolve,
+        autoPlayIntent: autoPlayIntent,
         allowStartupRecovery: allowStartupRecovery,
         replanFrom: replanFrom,
         replanReason: replanReason,
+        reopening: true,
       );
     } finally {
-      _teardownForReResolve = false;
+      if (_teardownEpoch == teardownEpoch) _teardownEpoch = null;
     }
   }
 
@@ -4655,6 +5448,7 @@ class PlaybackManager implements AudioOwnable {
     Future<void> Function()? onStop,
     Future<void> Function(String url)? onAutoNext,
   }) async {
+    _beginNewPlaybackSource('the viewer started an offline source');
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;
@@ -4670,6 +5464,10 @@ class PlaybackManager implements AudioOwnable {
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
+    // A local file has no connection to reconnect, and a retry still pending
+    // for the server stream would stop it.
+    _itemEpoch++;
+    _endReconnect();
     await _stopAndReportCurrent();
     _resetBackendSelectionLock();
     _isOfflinePlayback = true;
@@ -4885,6 +5683,10 @@ class PlaybackManager implements AudioOwnable {
     _bringupStateController.close();
     _sessionEndedController.close();
     _liveRecoveryStatusController.close();
+    _reconnectRetry?.cancel();
+    _reconnectProvenTimer?.cancel();
+    _credentialsReopenTimer?.cancel();
+    _reconnectingController.close();
     _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();

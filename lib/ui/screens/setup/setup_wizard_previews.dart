@@ -43,12 +43,14 @@ import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
+import '../../widgets/mediabar/media_bar_new_release_label.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/user_avatar_image.dart';
 import '../detail/detail_buttons.dart';
 import '../detail/detail_layout_metrics.dart';
+import '../detail/frost/frost_detail_content.dart' show frostStageSize;
 
 /// The artwork behind every preview, shared with the home screen.
 ///
@@ -354,6 +356,8 @@ Widget _sampleRatings(
   bool? badges,
   bool singleLine = false,
   bool inlineChips = false,
+  bool columns = false,
+  double columnTextScale = 1,
 }) => RatingsRow(
   ratings: _sampleScores,
   communityRating: item.communityRating ?? 7.8,
@@ -365,6 +369,8 @@ Widget _sampleRatings(
   showBadges: badges ?? previewValue(context, settings.badges),
   singleLine: singleLine,
   inlineChips: inlineChips,
+  columns: columns,
+  columnTextScale: columnTextScale,
 );
 
 Color _overlayColor(BuildContext context) => OverlayColorPalette.resolveColor(
@@ -382,25 +388,92 @@ double _overlayOpacity(BuildContext context) =>
 // ---------------------------------------------------------------------------
 
 Widget mediaBarPreview(String mode) => _liveOrFallback(
-  live: (context, items) => switch (mode) {
-    UserPreferences.mediaBarModeMakd => _makdBar(context, items),
-    UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
-    UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
-    UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
-    UserPreferences.mediaBarModeAya => _ayaBar(context, items),
-    // The rows carry the whole screen with the bar off, so the preview packs
-    // them tighter than the style default to show more than one.
-    UserPreferences.mediaBarModeOff => _homeRowsScreen(
-      context,
-      items,
-      modern: !_phone,
-      rowGapOverride: 24,
-    ),
-    _ => _moonfinBar(context, items),
-  },
+  live: (context, titles) => _mediaBarModePreview(
+    context,
+    mode,
+    _withNewReleasePreview(context, titles),
+  ),
   fallback: _fallbackMediaBar(mode),
   fallbackAspect: 16 / 7,
 );
+
+Widget _mediaBarModePreview(
+  BuildContext context,
+  String mode,
+  List<MediaBarSlideItem> items,
+) => switch (mode) {
+  UserPreferences.mediaBarModeMakd => _makdBar(context, items),
+  UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
+  UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
+  UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
+  UserPreferences.mediaBarModeAya => _ayaBar(context, items),
+  // The rows carry the whole screen with the bar off, so the preview packs
+  // them tighter than the style default to show more than one.
+  UserPreferences.mediaBarModeOff => _homeRowsScreen(
+    context,
+    items,
+    modern: !_phone,
+    rowGapOverride: 24,
+  ),
+  _ => _moonfinBar(context, items),
+};
+
+/// The titles the preview draws, with the new release banner on the first one
+/// while the switch is on and on none while it is off. The bar only finds a
+/// release when one aired lately, so a series stands in with a sample. With no
+/// series there's nothing to flag, as on the bar.
+List<MediaBarSlideItem> _withNewReleasePreview(
+  BuildContext context,
+  List<MediaBarSlideItem> items,
+) {
+  if (!previewValue(context, UserPreferences.mediaBarNewReleaseBanner)) {
+    return [for (final item in items) item.withNewRelease(null)];
+  }
+  final flagged = items.indexWhere((item) => item.newRelease != null);
+  final series = items.indexWhere((item) => item.itemType == 'Series');
+  if (flagged < 0 && series < 0) return items;
+  final lead = flagged >= 0 ? flagged : series;
+  final first = items[lead].newRelease != null
+      ? items[lead]
+      : items[lead].withNewRelease(
+          const MediaBarNewReleaseInfo(
+            kind: MediaBarNewRelease.newSeason,
+            season: 2,
+          ),
+        );
+  return [
+    first,
+    for (var i = 0; i < items.length; i++)
+      if (i != lead) items[i],
+  ];
+}
+
+/// [title] with the new release banner under it, the way every mode but
+/// bookshelf draws it. Phones keep the label alone.
+Widget _titleWithRelease(
+  MediaBarSlideItem item,
+  Widget title, {
+  bool center = false,
+}) {
+  final release = item.newRelease;
+  if (release == null) return title;
+  final alignment = center
+      ? CrossAxisAlignment.center
+      : CrossAxisAlignment.start;
+  return Column(
+    crossAxisAlignment: alignment,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      title,
+      const SizedBox(height: 8),
+      MediaBarNewReleaseLine(
+        release: release,
+        showMessage: !_phone,
+        alignment: alignment,
+      ),
+    ],
+  );
+}
 
 /// On phones the bar takes 55 percent of the screen (46 for makd) and the
 /// rows carry on beneath, which is exactly what the preview shows too.
@@ -532,6 +605,12 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Phones carry the label in the card, its own first line.
+          if (_phone)
+            if (item.newRelease case final release?) ...[
+              MediaBarNewReleaseLine(release: release, showMessage: false),
+              const SizedBox(height: 6),
+            ],
           _metadataWrap(item),
           const SizedBox(height: 6),
           _sampleRatings(context, item, UserPreferences.mediaBarRatings),
@@ -561,16 +640,19 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         Positioned(
           top: 56,
           left: 40,
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: 280,
-            height: 120,
-            fallbackStyle: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              height: 1.05,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: 280,
+              height: 120,
+              fallbackStyle: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                height: 1.05,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
         ),
@@ -649,17 +731,21 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
         ColoredBox(color: AppColorScheme.scrim.withValues(alpha: 0.26)),
         Align(
           alignment: const Alignment(0, -0.1),
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: (size.width * 0.7).clamp(190.0, 380.0),
-            height: (barHeight * 0.18).clamp(58.0, 112.0),
-            alignment: Alignment.center,
-            fallbackStyle: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: (size.width * 0.7).clamp(190.0, 380.0),
+              height: (barHeight * 0.18).clamp(58.0, 112.0),
+              alignment: Alignment.center,
+              fallbackStyle: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
+            center: true,
           ),
         ),
         Positioned(
@@ -742,16 +828,19 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 50,
         top: size.height * 0.22,
-        child: _logoOrTitle(
+        child: _titleWithRelease(
           item,
-          width: (size.width * 0.45).clamp(220.0, 640.0),
-          height: (size.height * 0.35).clamp(90.0, 300.0),
-          fallbackStyle: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w800,
-            height: 1.05,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
+          _logoOrTitle(
+            item,
+            width: (size.width * 0.45).clamp(220.0, 640.0),
+            height: (size.height * 0.35).clamp(90.0, 300.0),
+            fallbackStyle: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              height: 1.05,
+              color: AppColorScheme.onSurface,
+              shadows: _textShadows,
+            ),
           ),
         ),
       ),
@@ -1240,24 +1329,27 @@ Widget _galleryBar(BuildContext context, List<MediaBarSlideItem> items) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                active.title.toUpperCase(),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.02,
-                                  letterSpacing: 1.0,
-                                  color: AppColorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 12,
-                                      color: AppColorScheme.scrim.withValues(
-                                        alpha: 0.7,
+                              _titleWithRelease(
+                                active,
+                                Text(
+                                  active.title.toUpperCase(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.02,
+                                    letterSpacing: 1.0,
+                                    color: AppColorScheme.onSurface,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 12,
+                                        color: AppColorScheme.scrim.withValues(
+                                          alpha: 0.7,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -1425,6 +1517,11 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
     if (active.runtime != null) _runtimeText(active.runtime),
     if (active.officialRating != null) active.officialRating!,
   ];
+  final metaStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+  );
 
   final bar = Stack(
     children: [
@@ -1513,13 +1610,29 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  metaParts.join('  ·  '),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                // The label leads the meta line, like the real carousel.
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (active.newRelease case final release?) ...[
+                      MediaBarNewReleaseLine(
+                        release: release,
+                        showMessage: false,
+                        alignment: CrossAxisAlignment.center,
+                      ),
+                      Text('  ·  ', style: metaStyle),
+                    ],
+                    Flexible(
+                      child: Text(
+                        metaParts.join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: metaStyle,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 _sampleRatings(
@@ -1585,20 +1698,23 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _logoOrTitle(
+                  _titleWithRelease(
                     item,
-                    width: 240,
-                    height: 56,
-                    fallbackStyle: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: AppColorScheme.onSurface,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10,
-                          color: AppColorScheme.scrim.withValues(alpha: 0.8),
-                        ),
-                      ],
+                    _logoOrTitle(
+                      item,
+                      width: 240,
+                      height: 56,
+                      fallbackStyle: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColorScheme.onSurface,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: AppColorScheme.scrim.withValues(alpha: 0.8),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -1686,23 +1802,27 @@ Widget _ayaBar(BuildContext context, List<MediaBarSlideItem> items) {
             Positioned(
               left: 44,
               top: 40,
-              child: _logoOrTitle(
-                item,
-                width: 340,
-                height: 100,
-                alignment: Alignment.topLeft,
-                fallbackStyle: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                  height: 1.0,
-                  color: AppColorScheme.onSurface,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20,
-                      color: AppColorScheme.scrim.withValues(alpha: 0.72),
-                    ),
-                  ],
+              // Phones show Aya's poster bare, so no banner there.
+              child: _titleWithRelease(
+                _phone ? item.withNewRelease(null) : item,
+                _logoOrTitle(
+                  item,
+                  width: 340,
+                  height: 100,
+                  alignment: Alignment.topLeft,
+                  fallbackStyle: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                    height: 1.0,
+                    color: AppColorScheme.onSurface,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 20,
+                        color: AppColorScheme.scrim.withValues(alpha: 0.72),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -2836,6 +2956,8 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.minimalist => _minimalistDetail(context, items.first),
       DetailScreenStyle.stage => _stageDetail(context, items.first),
       DetailScreenStyle.premiere => _premiereDetail(context, items.first),
+      DetailScreenStyle.quickLook => _quickLookDetail(context, items),
+      DetailScreenStyle.frost => _frostDetail(context, items.first),
     };
   },
   fallback: _fallbackDetail(style),
@@ -3734,87 +3856,137 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
-/// The poster on the left with play under it and the title beside it, or
-/// stacked under a centered poster on a phone.
+/// The poster on the left with play and the circles under it and the title,
+/// ratings and tracks beside it, or the same parts stacked under a centered
+/// poster on a phone.
 Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
+  final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
-  final posterWidth = landscape ? 78.0 : 66.0;
-  final metaStyle = TextStyle(
-    fontSize: landscape ? 11 : 10,
-    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-  );
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final posterWidth = landscape ? 258.0 : 160.0;
+  final buttons = _detailButtons(context, auto: 3);
 
   final poster = SizedBox(
     width: posterWidth,
     child: AspectRatio(
       aspectRatio: 2 / 3,
       child: ClipRRect(
-        borderRadius: AppRadius.circular(6),
+        borderRadius: AppRadius.circular(8),
         child: _artwork(item.posterUrl ?? item.backdropUrl),
       ),
     ),
   );
-  final buttons = Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: 6,
+  final tracks = Wrap(
+    spacing: 8,
+    runSpacing: 8,
     children: [
-      Container(
-        height: landscape ? 20 : 18,
-        decoration: BoxDecoration(
-          color: AppColorScheme.accent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: [
-          for (final (icon, _) in _detailButtons(context, auto: 3))
-            Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.18),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 11, color: AppColorScheme.onSurface),
+      for (final label in [l10n.audio, l10n.subtitles])
+        Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.22),
             ),
-        ],
-      ),
+          ),
+          child: Center(
+            widthFactor: 1,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+              ),
+            ),
+          ),
+        ),
     ],
   );
   final text = Column(
     crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 6,
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Text(
-        item.title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          fontSize: landscape ? 18 : 15,
+      _logoOrTitle(
+        item,
+        width: landscape ? 400 : 300,
+        height: landscape ? 110 : 72,
+        alignment: landscape ? Alignment.topLeft : Alignment.bottomLeft,
+        fallbackStyle: TextStyle(
+          fontSize: landscape ? 42 : 28,
           fontWeight: FontWeight.w700,
           color: AppColorScheme.onSurface,
         ),
       ),
-      if (meta.isNotEmpty)
-        Text(
-          meta,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: metaStyle,
+      const SizedBox(height: 10),
+      _modernDetailMeta(item),
+      ..._techChips(context),
+      const SizedBox(height: 8),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
+      if (item.overview != null) ...[
+        const SizedBox(height: 10),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Text(
+            item.overview!,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.45,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+            ),
+          ),
         ),
-      if (item.overview != null && item.overview!.isNotEmpty)
-        Text(
-          item.overview!,
-          maxLines: landscape ? 3 : 2,
-          overflow: TextOverflow.ellipsis,
-          style: metaStyle,
-        ),
-      Row(spacing: 5, children: [_bar(46, 12, _weak), _bar(40, 12, _weak)]),
+      ],
+      const SizedBox(height: 16),
+      tracks,
     ],
   );
+
+  final page = landscape
+      ? Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: posterWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  poster,
+                  const SizedBox(height: 18),
+                  _detailPlayPill(context, landscape: true),
+                  const SizedBox(height: 14),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final (icon, _) in buttons)
+                        _detailCircleButton(icon, 52),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 44),
+            Expanded(child: text),
+          ],
+        )
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: poster),
+            const SizedBox(height: 20),
+            text,
+            const SizedBox(height: 20),
+            ..._detailActionRow(context, landscape: false, buttons: buttons),
+          ],
+        );
 
   return Stack(
     fit: StackFit.expand,
@@ -3825,47 +3997,45 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
           alpha: 0.55 + 0.3 * _detailBackgroundAmount(context),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-        child: landscape
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: posterWidth,
-                    child: Column(
-                      spacing: 8,
-                      children: [poster, buttons],
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(child: text),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Center(child: poster),
-                  text,
-                ],
-              ),
+      ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          maxHeight: double.infinity,
+          child: Padding(
+            padding: landscape
+                ? const EdgeInsets.fromLTRB(53, 100, 53, 0)
+                : const EdgeInsets.fromLTRB(20, 100, 20, 0),
+            child: page,
+          ),
+        ),
       ),
     ],
   );
 }
 
-/// The title centered over a backdrop that fills the preview, with play and
-/// the circles under it, and on a TV a hint that the page runs on.
+/// The title centered over a backdrop that fills the preview with play and
+/// the circles under it, then the ratings where the page's sections start
+/// and on a TV a hint that the page runs on.
 Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   final landscape = !_phone;
   final base = AppColorScheme.background;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' • ');
+  final buttons = _detailButtons(context, auto: 4);
+  final titleStyle = TextStyle(
+    fontSize: landscape ? 56 : 32,
+    fontWeight: FontWeight.w700,
+    letterSpacing: landscape ? 4 : 2,
+    color: AppColorScheme.onSurface,
+  );
 
   return Stack(
     fit: StackFit.expand,
     children: [
-      _artwork(item.backdropUrl),
+      ColoredBox(color: base),
+      _detailBackdropFit(
+        context,
+        _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+      ),
       DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -3878,75 +4048,656 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
               ),
               base.withValues(alpha: 0),
             ],
-            stops: const [0.05, 0.45, 0.8],
+            stops: const [0.05, 0.5, 0.85],
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+        padding: landscape
+            ? const EdgeInsets.fromLTRB(100, 0, 100, 16)
+            : const EdgeInsets.fromLTRB(20, 0, 20, 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 6,
           children: [
-            Text(
-              item.title.toUpperCase(),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: landscape ? 20 : 17,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppColorScheme.onSurface,
+            if (item.logoUrl != null)
+              _logoOrTitle(
+                item,
+                width: landscape ? 580 : 320,
+                height: landscape ? 150 : 90,
+                alignment: Alignment.bottomCenter,
+                fallbackStyle: titleStyle,
+              )
+            else
+              Text(
+                item.title.toUpperCase(),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle,
               ),
-            ),
-            if (meta.isNotEmpty)
+            if (meta.isNotEmpty) ...[
+              const SizedBox(height: 12),
               Text(
                 meta,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: landscape ? 11 : 10,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorScheme.onSurface,
                 ),
               ),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 4,
-              runSpacing: 4,
-              children: [
-                Container(
-                  width: 54,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.accent,
-                    borderRadius: BorderRadius.circular(9),
+            ],
+            if (item.overview != null) ...[
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 840),
+                child: Text(
+                  item.overview!,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.82),
                   ),
                 ),
-                for (final (icon, _) in _detailButtons(context, auto: 4))
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.18),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      icon,
-                      size: 11,
-                      color: AppColorScheme.onSurface,
-                    ),
-                  ),
-              ],
+              ),
+            ],
+            const SizedBox(height: 22),
+            if (landscape)
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  _detailPlayPill(context, landscape: true),
+                  for (final (icon, _) in buttons)
+                    _detailCircleButton(icon, 52),
+                ],
+              )
+            else
+              ..._detailActionRow(context, landscape: false, buttons: buttons),
+            const SizedBox(height: 22),
+            _sampleRatings(
+              context,
+              item,
+              UserPreferences.detailsRatings,
+              personal: true,
+              singleLine: true,
             ),
-            if (_tv)
+            if (_tv) ...[
+              const SizedBox(height: 10),
               Icon(
                 Icons.keyboard_arrow_down,
-                size: 14,
-                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                size: 32,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.65),
               ),
+            ],
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+/// The art blurred behind a glass window that holds it sharp, with the
+/// toolbar over its foot and the tab bar under it, laid out on the same stage
+/// as the real page. A phone gets the glass sheet over the art with the
+/// buttons in a capsule.
+Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
+  final l10n = AppLocalizations.of(context);
+  final buttons = _detailButtons(context, auto: 4);
+  final meta = _modernDetailMeta(item);
+  const glass = Color(0xE6303036);
+  const muted = Color(0x99EBEBF5);
+
+  Widget playPill({required bool phone}) => Container(
+    height: phone ? 48 : 60,
+    constraints: BoxConstraints(minWidth: phone ? 140 : 200),
+    padding: EdgeInsets.symmetric(horizontal: phone ? 20 : 28),
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: 0.86),
+      borderRadius: BorderRadius.circular(phone ? 24 : 30),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.play_arrow, size: 22, color: Colors.black),
+        const SizedBox(width: 8),
+        Text(
+          l10n.play,
+          style: TextStyle(
+            fontSize: phone ? 17 : 19,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    ),
+  );
+  final circles = [
+    for (final (icon, _) in buttons)
+      SizedBox.square(
+        dimension: _phone ? 46 : 60,
+        child: Icon(icon, size: _phone ? 22 : 25, color: Colors.white),
+      ),
+  ];
+  final ratings = _sampleRatings(
+    context,
+    item,
+    UserPreferences.detailsRatings,
+    personal: true,
+    columns: true,
+    columnTextScale: _phone ? 1 : 1.3,
+  );
+  final environment = [
+    ImageFiltered(
+      imageFilter: ui.ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+      child: _artwork(item.backdropUrl),
+    ),
+    ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
+  ];
+
+  if (_phone) {
+    final height = _designSize().height;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ...environment,
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: height * 0.62,
+          child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (rect) => const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white, Colors.transparent],
+              stops: [0, 0.62, 1],
+            ).createShader(rect),
+            child: _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+          ),
+        ),
+        Positioned(
+          top: height * 0.42,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            decoration: const BoxDecoration(
+              color: Color(0xE61E1E22),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(38)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: _bar(36, 5, const Color(0x52FFFFFF))),
+                const SizedBox(height: 14),
+                Text(
+                  item.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    height: 1.13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                meta,
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: const Color(0x14FFFFFF),
+                    borderRadius: BorderRadius.circular(19),
+                  ),
+                  child: Row(
+                    spacing: 2,
+                    children: [
+                      for (final (index, label) in [
+                        l10n.overview,
+                        l10n.cast,
+                        l10n.similar,
+                        l10n.details,
+                      ].indexed)
+                        Expanded(
+                          child: Container(
+                            height: 32,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: index == 0
+                                  ? const Color(0x33FFFFFF)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: index == 0 ? Colors.white : muted,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: const BoxDecoration(
+                    border: Border.symmetric(
+                      horizontal: BorderSide(
+                        color: Color(0x29FFFFFF),
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: ratings,
+                  ),
+                ),
+                if (item.overview != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    item.overview!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.38,
+                      color: Color(0xE0FFFFFF),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 12,
+          right: 12,
+          bottom: 12,
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xE63A3A40),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: double.infinity, child: playPill(phone: true)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: circles,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  final tabs = [
+    (Icons.smart_display_outlined, l10n.overview),
+    (Icons.people_outline, l10n.castAndCrew),
+    (Icons.grid_view, l10n.moreLikeThis),
+    (Icons.info_outline, l10n.details),
+  ];
+  final window = ClipRRect(
+    borderRadius: AppRadius.circular(44),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        const ColoredBox(color: Color(0x5C1C1C20)),
+        _artwork(item.backdropUrl),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [Color(0xF20C0C0E), Color(0xBD0C0C0E), Color(0x000C0C0E)],
+              stops: [0, 0.5, 0.8],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(56, 0, 56, 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 64,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -1.6,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              meta,
+              const SizedBox(height: 14),
+              Container(
+                height: 100,
+                decoration: const BoxDecoration(
+                  border: Border.symmetric(
+                    horizontal: BorderSide(color: Color(0x24FFFFFF)),
+                  ),
+                ),
+                child: ratings,
+              ),
+              if (item.overview != null) ...[
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 744,
+                  child: Text(
+                    item.overview!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.44,
+                      color: Color(0xE6FFFFFF),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ...environment,
+      LayoutBuilder(
+        builder: (context, constraints) => FittedBox(
+          child: SizedBox.fromSize(
+            size: frostStageSize(constraints),
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  top: 12,
+                  bottom: 146,
+                  child: window,
+                ),
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 106,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: glass,
+                        borderRadius: BorderRadius.circular(38),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          playPill(phone: false),
+                          const SizedBox(width: 6),
+                          ...circles,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 36,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: glass,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 4,
+                        children: [
+                          for (final (index, (icon, label)) in tabs.indexed)
+                            Container(
+                              height: 48,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: index == 0
+                                    ? const Color(0x29FFFFFF)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(icon, size: 22, color: Colors.white),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    label,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+/// The drawer down the right over a dimmed row of titles, or the sheet up
+/// from the foot of a phone, with the backdrop, the title, its ratings, play
+/// and the circles, and Open full page at its foot.
+Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
+  final l10n = AppLocalizations.of(context);
+  final landscape = !_phone;
+  final item = items.first;
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final buttons = _detailButtons(context, auto: 4);
+  final surface = Color.alphaBlend(
+    AppColorScheme.onSurface.withValues(alpha: 0.03),
+    AppColorScheme.background,
+  );
+  final inset = landscape ? 28.0 : 20.0;
+
+  final panel = ColoredBox(
+    color: surface,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (landscape)
+          SizedBox(
+            height: 230,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [surface.withValues(alpha: 0), surface],
+                      stops: const [0.4, 1],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 14),
+            child: Center(
+              child: _bar(
+                36,
+                5,
+                AppColorScheme.onSurface.withValues(alpha: 0.3),
+              ),
+            ),
+          ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: inset),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: landscape ? 30 : 26,
+                  height: 1.15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+              if (meta.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  meta,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColorScheme.onSurface,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
+              _sampleRatings(
+                context,
+                item,
+                UserPreferences.detailsRatings,
+                personal: true,
+                labels: false,
+              ),
+              const SizedBox(height: 16),
+              ..._detailActionRow(
+                context,
+                landscape: landscape,
+                buttons: buttons,
+              ),
+              if (item.overview != null) ...[
+                const SizedBox(height: 14),
+                Text(
+                  item.overview!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.82),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const Spacer(),
+        Container(
+          height: 50,
+          margin: EdgeInsets.fromLTRB(inset, 8, inset, 24),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.25),
+            ),
+          ),
+          child: Text(
+            l10n.quickLookOpenFullPage,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: AppColorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ColoredBox(color: AppColorScheme.background),
+      Padding(
+        padding: const EdgeInsets.all(40),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Row(
+            spacing: 14,
+            children: [
+              for (final shown in items.take(landscape ? 5 : 2))
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: 2 / 3,
+                    child: ClipRRect(
+                      borderRadius: AppRadius.circular(10),
+                      child: _artwork(shown.posterUrl ?? shown.backdropUrl),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+      ColoredBox(color: AppColors.black.withValues(alpha: 0.62)),
+      Align(
+        alignment: landscape ? Alignment.centerRight : Alignment.bottomCenter,
+        child: FractionallySizedBox(
+          widthFactor: landscape ? 0.5 : 1,
+          heightFactor: landscape ? 1 : 0.8,
+          child: ClipRRect(
+            borderRadius: landscape
+                ? BorderRadius.zero
+                : const BorderRadius.vertical(top: Radius.circular(28)),
+            child: panel,
+          ),
         ),
       ),
     ],
@@ -4441,6 +5192,87 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.frost) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        ColoredBox(color: AppColors.black.withValues(alpha: 0.45)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 26),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColorScheme.surface.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 5,
+                children: [_bar(56, 8, _strong), _bar(40, 5, _weak)],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 17,
+          child: Center(child: _bar(60, 12, _weak)),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 4,
+          child: Center(child: _bar(80, 8, _weak)),
+        ),
+      ],
+    );
+  }
+
+  if (style == DetailScreenStyle.quickLook) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        ColoredBox(color: AppColors.black.withValues(alpha: 0.62)),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FractionallySizedBox(
+            widthFactor: 0.5,
+            heightFactor: 1,
+            child: ColoredBox(
+              color: AppColorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    const Spacer(),
+                    _bar(48, 8, _strong),
+                    _bar(36, 5, _weak),
+                    Row(
+                      spacing: 4,
+                      children: [
+                        _bar(22, 8, _strong),
+                        _bar(8, 8, _weak),
+                        _bar(8, 8, _weak),
+                      ],
+                    ),
+                    const Spacer(flex: 2),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.premiere) {
     return Stack(
       fit: StackFit.expand,

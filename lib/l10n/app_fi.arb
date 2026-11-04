@@ -7287,7 +7287,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetyn moonfin asettelun versio. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on hero first asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista.",
+    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä yksityiskohdat. Premiere keskittää otsikon näytön täyttävän taustakuvan päälle, ja kaikki sivun osiot sijaitsevat sen alapuolella.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -16489,5 +16489,75 @@
     "settingsPreviewSaved": "Tallennettu",
     "@settingsPreviewSaved": {
         "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "signedInOnThisDevice": "Kirjautunut sisään tällä laitteella",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "PIN koodi vaaditaan",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Salasana vaaditaan",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Jatka nimellä {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Vaihda {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Kirjautunut sisään käyttäjänä {user} palvelimella {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Aktiivinen",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStyleStage": "Stage",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Premiere",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStyleStage": "Stage",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupDetailStageHint": "Edessä oleva juliste, jonka alla on ohjelma ja jonka vieressä on lisätietoja.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupStylePremiere": "Premiere",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupDetailPremiereHint": "Otsikko oli keskitetty koko näytön kokoisen taustakuvan päälle, ja kaikki muu oli sijoitettu sivun alaosaan.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
     }
 }

@@ -1192,6 +1192,7 @@ class SeerrSeason {
   final int? episodeCount;
   final String? name;
   final String? airDate;
+  final String? posterPath;
 
   const SeerrSeason({
     this.id,
@@ -1199,6 +1200,7 @@ class SeerrSeason {
     this.episodeCount,
     this.name,
     this.airDate,
+    this.posterPath,
   });
 
   factory SeerrSeason.fromJson(Map<String, dynamic> json) =>

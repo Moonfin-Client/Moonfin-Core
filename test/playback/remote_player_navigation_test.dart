@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -25,6 +26,7 @@ import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/theme_music_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
+import 'package:moonfin/playback/aether_backend.dart';
 import 'package:moonfin/playback/playback_lifecycle_handler.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
@@ -45,10 +47,13 @@ class _PluginSync extends Fake implements PluginSyncService {}
 
 class _Manager extends PlaybackManager {
   int pauses = 0;
+  int resumes = 0;
   int advances = 0;
   final seeks = <Duration>[];
   @override
   Future<void> pause() async => pauses++;
+  @override
+  Future<void> resume() async => resumes++;
   @override
   Future<void> seekTo(Duration position) async => seeks.add(position);
   @override
@@ -274,5 +279,43 @@ void main() {
       TargetPlatform.iOS,
       TargetPlatform.windows,
     }),
+  );
+
+  testWidgets(
+    'Play and Pause from Now Playing reach the engine-backed Flutter player',
+    (tester) async {
+      const control = MethodChannel('moonfin/ios_aether_control');
+      const events = MethodChannel('moonfin/ios_aether_events');
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(control, (_) async => null);
+      messenger.setMockMethodCallHandler(events, (_) async => null);
+      addTearDown(() {
+        messenger.setMockMethodCallHandler(control, null);
+        messenger.setMockMethodCallHandler(events, null);
+      });
+      final engine = AetherBackend(GetIt.instance<UserPreferences>());
+      GetIt.instance.registerSingleton<AetherBackend>(engine);
+      manager.setBackend(engine);
+      await open(tester);
+
+      Future<void> remote(String event) async {
+        await messenger.handlePlatformMessage(
+          events.name,
+          const StandardMethodCodec().encodeSuccessEnvelope({'event': event}),
+          (_) {},
+        );
+        await tester.pump();
+      }
+
+      await remote('pause');
+      expect(manager.pauses, 1);
+      manager.state.setPlaying(false);
+      await remote('play');
+      expect(manager.resumes, 1);
+      manager.state.setPlaying(true);
+      await remote('play');
+      expect(manager.resumes, 1, reason: 'already playing');
+      await tester.pumpWidget(const SizedBox());
+    },
   );
 }

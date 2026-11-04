@@ -11,6 +11,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/overview_text.dart';
+import '../../../util/playback_time_label.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
@@ -125,6 +126,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
   DetailPageSection? tracksSection(
     AppLocalizations l10n, {
     VoidCallback? onLeftEdge,
+    bool shareRow = false,
   }) {
     final choices = actionsKey.currentState?.trackChoices(l10n);
     if (choices == null && !pageViewModel.isSeerrOnly) {
@@ -143,6 +145,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
         onNavigateUp: () => moveUp(node),
         onNavigateDown: () => moveDown(node),
         onLeftEdge: onLeftEdge,
+        shareRow: shareRow,
       ),
     );
   }
@@ -150,8 +153,9 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
   /// The people and studios behind the title.
   DetailPageSection? factsSection(
     AggregatedItem item,
-    DetailSectionVisibility sections,
-  ) {
+    DetailSectionVisibility sections, {
+    bool weighByText = false,
+  }) {
     final vm = pageViewModel;
     final hasCrew =
         sections.shows(DetailSection.crew) &&
@@ -170,6 +174,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
         viewModel: vm,
         showCrew: hasCrew,
         showStudios: hasStudios,
+        weighByText: weighByText,
         firstItemFocusNode: node,
         upTarget: up,
         downTarget: down,
@@ -287,6 +292,34 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
       hideMediaDescription: pagePrefs.effectiveHideDetailsMediaDescription,
     );
     return overview.isEmpty || hidden ? null : overview;
+  }
+
+  /// How far into the title the viewer is, and the line beside the bar: the
+  /// time left, after the episode for a show. Null when there's nowhere to
+  /// resume.
+  ({double fraction, String label})? resumeLine(
+    AggregatedItem item,
+    AppLocalizations l10n,
+  ) {
+    final show = item.type == 'Series';
+    final target = show ? pageViewModel.nextUp : item;
+    final runtime = target?.runtime;
+    final position = target?.playbackPosition;
+    if (target == null ||
+        target.isPlayed ||
+        runtime == null ||
+        position == null ||
+        position <= Duration.zero ||
+        position >= runtime) {
+      return null;
+    }
+    return (
+      fraction: position.inMilliseconds / runtime.inMilliseconds,
+      label: [
+        if (show) ?episodeNumber(target),
+        l10n.timeRemaining(formatRuntimeShort(runtime - position)),
+      ].join(' · '),
+    );
   }
 
   String? episodeNumber(AggregatedItem item) {

@@ -240,7 +240,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailScreenStyle => '详情界面样式';
 
   @override
-  String get detailScreenStyleSubtitle => 'Moonfin 是经典布局；Modern 是自适应影院风布局。';
+  String get detailScreenStyleSubtitle =>
+      'Moonfin 是经典布局；Modern 是自适应影院风布局。Spotlight 是一种以主视觉区优先、带有弹出式内容卡片的布局。Nouveau 是一种全屏布局，各个版块沿页面自上而下堆叠。Minimalist 是有封面图、一个播放按钮和各集列表。';
 
   @override
   String get detailScreenStyleMoonfin => 'Moonfin';
@@ -468,13 +469,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailScreenStylePremiere => 'Premiere';
 
   @override
+  String get detailScreenStyleQuickLook => 'Quick Look';
+
+  @override
+  String get detailScreenStyleFrost => 'Frost';
+
+  @override
+  String get quickLookOpenFullPage => 'Open full page';
+
+  @override
+  String get quickLookBackToClose => 'Back to close';
+
+  @override
+  String quickLookSeasonPlayed(int played, int total) {
+    return '$played of $total';
+  }
+
+  @override
   String get expandedTabs => '自动展开标签页';
 
   @override
   String get expandedTabsSubtitle => '浏览时自动加载标签内容；关闭后需手动展开/收起标签。';
 
   @override
-  String get showTechnicalDetails => '显示媒体技术参数？';
+  String get showTechnicalDetails => '显示媒体详情';
 
   @override
   String get showTechnicalDetailsSubtitle => '在顶部概览栏显示编码、分辨率及音视频流信息';
@@ -484,7 +502,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      '可选用「Moonfin本地资料库推荐算法」，或线上 TMDb 相似度匹配算法。注意：线上推荐功能需要对接 Seerr 服务。';
+      '使用 Moonfin Recommends 本地媒体库算法、Jellyfin Recommends 服务器引擎，或在线 TMDb 的相似度指标。注意：在线推荐需要集成 Seerr。';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin 智能推荐';
@@ -496,7 +514,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb 相似影片推荐';
 
   @override
-  String get recommendationsApplyParentalRatingCap => '是否启用家长分级上限限制？';
+  String get recommendationsApplyParentalRatingCap => '启用推荐分级限制';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -1224,7 +1242,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bookFormatComic => '漫画';
 
   @override
-  String get noBooksFound => '未找到该作者的图书。';
+  String get noBooksFound => '未找到该作者的图书';
 
   @override
   String get noBooksFoundDescription => '此媒体库中暂无书籍、有声书或漫画。';
@@ -1653,7 +1671,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadSubtitlesLabel => '下载字幕...';
 
   @override
-  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 插件进行搜索';
+  String get searchOpenSubtitlesPlugin => '使用 OpenSubtitles 搜索';
 
   @override
   String get downloadSubtitles => '下载字幕';
@@ -2658,6 +2676,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => '加载录制内容失败';
 
   @override
@@ -3221,7 +3244,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loadingAnimationSpeedUltra => '极速';
 
   @override
-  String get showLoadingAnimationText => '显示文字？';
+  String get showLoadingAnimationText => '显示文字';
 
   @override
   String get loadingAnimationPreview => '预览';
@@ -3358,7 +3381,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loopThemeMusicSubtitle => '单曲循环，而非仅播放一次';
 
   @override
-  String get detailsBackgroundBlur => '详情页背景模糊';
+  String get detailsBackgroundBlur => '背景虚化';
 
   @override
   String get detailsBackgroundOpacity => '详情页背景不透明度';
@@ -3758,6 +3781,84 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
+
+  @override
+  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+
+  @override
+  String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
+
+  @override
+  String get mergedCalendarRow => 'Upcoming Releases';
+
+  @override
+  String get arrCalendarsRowSubtitle => 'Radarr and Sonarr Calendars';
+
+  @override
+  String get radarrCalendarRowSubtitle => 'Radarr Calendar';
+
+  @override
+  String get sonarrCalendarRowSubtitle => 'Sonarr Calendar';
+
+  @override
+  String calendarReleaseIn(int days, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'In $days days',
+      one: 'Tomorrow',
+      zero: 'Today',
+    );
+    return '$_temp0 ($date)';
+  }
+
+  @override
+  String get calendarReleaseCinema => 'Cinema';
+
+  @override
+  String get calendarReleaseDigital => 'Digital';
+
+  @override
+  String get calendarReleasePhysical => 'Physical';
+
+  @override
+  String get upcomingCalendars => 'Upcoming Calendars';
+
+  @override
+  String get upcomingCalendarsDescription =>
+      'Toggle Upcoming Calendars from Radarr/Sonarr.';
+
+  @override
+  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+
+  @override
+  String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
+
+  @override
+  String get radarrCalendarShowDigital => 'Show Upcoming Digital Releases';
+
+  @override
+  String get radarrCalendarShowPhysical => 'Show Upcoming Physical Releases';
+
+  @override
+  String get calendarShowReleaseDate => 'Show Release Date on Home Screen';
+
+  @override
+  String get radarrCalendarHideDownloaded =>
+      'Hide Movies Already on the Server';
+
+  @override
+  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
+
+  @override
+  String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
+
+  @override
+  String get sonarrCalendarHideDownloaded =>
+      'Hide Episodes Already on the Server';
+
+  @override
+  String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
   String get moveUp => '上移';
@@ -4813,6 +4914,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mediaBarSourceRandom => '随机';
 
   @override
+  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
+
+  @override
+  String get mediaBarNewReleaseBanner => 'New Release Banner';
+
+  @override
+  String get mediaBarNewReleaseBannerDescription =>
+      'Flag series with a new season or new episodes that aired recently.';
+
+  @override
+  String get mediaBarNewReleaseDays => 'New Release Window';
+
+  @override
+  String get mediaBarNewReleaseDaysDescription =>
+      'How long after an episode airs it still counts as new.';
+
+  @override
+  String get mediaBarNewSeries => 'New Series';
+
+  @override
+  String get mediaBarNewSeason => 'New Season';
+
+  @override
+  String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
   String get moviesAndTvShows => '电影和剧集';
 
   @override
@@ -5192,6 +5319,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String get additionalRatings => '附加评分';
 
   @override
+  String get mdblistWatchingNow => 'Watching on MDBList';
+
+  @override
+  String get mdblistWatchingNowDescription =>
+      'Show what MDBList users are currently watching';
+
+  @override
+  String watchingNowWatchersCount(int count) {
+    return '$count watching';
+  }
+
+  @override
+  String watchingNowLiveSummary(String users, String movies, String shows) {
+    return '$users watching now · $movies movies · $shows shows';
+  }
+
+  @override
+  String watchingNowLiveSummaryToday(
+    String users,
+    String movies,
+    String shows,
+  ) {
+    return '$users watched today · $movies movies · $shows shows';
+  }
+
+  @override
   String get showMdbListAndTmdbRatings => '显示 MDBList 和 TMDB 评级';
 
   @override
@@ -5349,7 +5502,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Show season availability badges on media details pages';
+      'Show the Seerr status on posters and seasons across the app';
+
+  @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
 
   @override
   String get seerrNotificationsSection => '通知';
@@ -11879,6 +12042,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get displayStudiosRowsSubtitle => '在首页分区显示制作公司行。';
 
   @override
+  String get sinceYouWatched => 'Since You Watched';
+
+  @override
+  String get sinceYouWatchedRowTitle => 'Since you watched';
+
+  @override
+  String sinceYouWatchedItemRowTitle(String title) {
+    return 'Since you watched \"$title\"';
+  }
+
+  @override
+  String sinceYouWatchedRowNumber(int number) {
+    return 'Since You Watched Row $number';
+  }
+
+  @override
+  String get displaySinceYouWatchedRows => 'Display Since You Watched Rows';
+
+  @override
+  String get displaySinceYouWatchedRowsSubtitle =>
+      'Show and customize Since You Watched rows in Home Sections.';
+
+  @override
+  String get sinceYouWatchedSource => 'Recommendation Source';
+
+  @override
+  String get sinceYouWatchedSourceDescription =>
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+
+  @override
+  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+
+  @override
+  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+
+  @override
+  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+
+  @override
+  String get sinceYouWatchedSourceType => 'Source Type';
+
+  @override
+  String get sinceYouWatchedSourceTypeDescription =>
+      'Choose type of items to recommend';
+
+  @override
+  String get sinceYouWatchedSourceItem => 'Source Item';
+
+  @override
+  String get sinceYouWatchedSourceItemDescription =>
+      'Choose which source item to base recommendations on';
+
+  @override
+  String get sinceYouWatchedRecentlyWatched => 'Recently Watched';
+
+  @override
+  String get sinceYouWatchedNumRows => 'Number of Rows to Add';
+
+  @override
+  String get sinceYouWatchedNumRowsDescription =>
+      'Choose how many Since You Watched rows to display (1-5)';
+
+  @override
+  String get sinceYouWatchedIncludeWatched => 'Include Previously Watched';
+
+  @override
+  String get sinceYouWatchedIncludeWatchedSubtitle =>
+      'Include watched items in recommendations';
+
+  @override
   String get studiosRowSorting => '制作公司行排序';
 
   @override
@@ -12103,6 +12336,24 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get av1SoftwareUhdDirectPlaySubtitle =>
       'Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.';
+
+  @override
+  String get cadenceSlowdown => 'Smooth 24 fps on a 60 Hz TV';
+
+  @override
+  String get cadenceSlowdownSubtitle =>
+      'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
+
+  @override
+  String get cadenceTipTitle => 'Turn On Match Frame Rate';
+
+  @override
+  String get cadenceTipMessage =>
+      'This video can\'t play smoothly at your TV\'s current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.';
+
+  @override
+  String get cadenceTipSlowdownHint =>
+      'Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.';
 
   @override
   String get useExternalPlayer => '始终使用外部播放器';
@@ -14429,6 +14680,20 @@ class AppLocalizationsZh extends AppLocalizations {
       'The title centered over a full screen backdrop, with everything else down the page.';
 
   @override
+  String get setupStyleQuickLook => 'Quick Look';
+
+  @override
+  String get setupDetailQuickLookHint =>
+      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+
+  @override
+  String get setupStyleFrost => 'Frost';
+
+  @override
+  String get setupDetailFrostHint =>
+      'The title in a glass window over its blurred art, with tabs under the buttons.';
+
+  @override
   String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
 
   @override
@@ -15247,6 +15512,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playbackInfoWhy => 'Why';
 
   @override
+  String get playbackInfoServerCompatibilityCheck =>
+      'Server compatibility check';
+
+  @override
+  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+
+  @override
   String get playbackInfoQualityLimit => 'Quality Limit';
 
   @override
@@ -15306,6 +15578,63 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get playbackInfoNoteDirectStream =>
       'The server is repackaging the file without converting it.';
+
+  @override
+  String get playbackInfoNoteLiveRelay =>
+      'The server is relaying the channel without converting it.';
+
+  @override
+  String playbackInfoFrameRateFrom(String rate, String source) {
+    return '$rate fps ($source)';
+  }
+
+  @override
+  String get playbackInfoRateSourceHeader => 'stream header';
+
+  @override
+  String get playbackInfoRateSourceMeasured => 'measured';
+
+  @override
+  String get playbackInfoRateSourceServer => 'server';
+
+  @override
+  String get playbackInfoServerFrameRate => 'Server Frame Rate';
+
+  @override
+  String get playbackInfoScan => 'Scan';
+
+  @override
+  String get playbackInfoProgressive => 'Progressive';
+
+  @override
+  String get playbackInfoInterlaced => 'Interlaced';
+
+  @override
+  String get playbackInfoRepeatedFields => 'Telecined (repeated fields)';
+
+  @override
+  String get playbackInfoHdmiOutput => 'HDMI Output';
+
+  @override
+  String playbackInfoDisplayMode(String width, String height, String rate) {
+    return '$width×$height @ $rate Hz';
+  }
+
+  @override
+  String get playbackInfoRateCorrections => 'Rate Corrections';
+
+  @override
+  String get playbackInfoAudioOutput => 'Output';
+
+  @override
+  String playbackInfoPassthroughOf(String codec) {
+    return 'Passthrough ($codec)';
+  }
+
+  @override
+  String playbackInfoDecodedTo(String channels) {
+    return 'Decoded ($channels)';
+  }
 
   @override
   String get playbackInfoNoteTranscodeVideo =>
@@ -15368,6 +15697,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String playbackInfoWhyVideoCodec(String codec) {
     return 'This device can\'t play $codec video';
+  }
+
+  @override
+  String playbackInfoWhyVideoProfileUnknown(String codec) {
+    return 'The server couldn\'t verify this stream\'s $codec profile.';
   }
 
   @override
@@ -16050,6 +16384,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Saved';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

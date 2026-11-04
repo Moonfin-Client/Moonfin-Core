@@ -614,7 +614,7 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
       );
     }
 
-    final facts = factsSection(item, sections);
+    final facts = factsSection(item, sections, weighByText: true);
     if (facts != null) {
       out.add(framed(facts.node!, facts.child, title: l10n.details));
     }

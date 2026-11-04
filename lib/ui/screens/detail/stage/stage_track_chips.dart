@@ -18,6 +18,10 @@ class StageTrackChips extends StatelessWidget {
   /// Left off the first chip, back to the buttons beside the poster.
   final VoidCallback? onLeftEdge;
 
+  /// Keeps the chips to one row, a share each at most, and leaves out their
+  /// names, for a column too narrow for them to wrap.
+  final bool shareRow;
+
   const StageTrackChips({
     super.key,
     required this.choices,
@@ -26,6 +30,7 @@ class StageTrackChips extends StatelessWidget {
     required this.onNavigateUp,
     required this.onNavigateDown,
     this.onLeftEdge,
+    this.shareRow = false,
   });
 
   @override
@@ -34,59 +39,72 @@ class StageTrackChips extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.62);
 
+    Widget chip(int index, DetailTrackChoice choice) => FocusableButton(
+      focusNode: index == 0 ? firstFocusNode : null,
+      onPressed: () => onOpen(choice.kind),
+      onNavigateUp: onNavigateUp,
+      onNavigateDown: onNavigateDown,
+      onNavigateLeft: index == 0 ? onLeftEdge : null,
+      borderRadius: 20,
+      padding: EdgeInsets.zero,
+      semanticLabel: '${choice.kind.label(l10n)}: ${choice.current}',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: AppColorScheme.onBackground.withValues(alpha: 0.06),
+          borderRadius: AppRadius.circular(20),
+          border: Border.all(
+            color: AppColorScheme.onBackground.withValues(alpha: 0.22),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(choice.kind.icon, size: 18, color: muted),
+            const SizedBox(width: 8),
+            if (!shareRow) ...[
+              Text(
+                choice.kind.label(l10n),
+                style: textTheme.bodySmall?.copyWith(color: muted),
+              ),
+              const SizedBox(width: 8),
+            ],
+            // Gives way on a screen too narrow for the whole name.
+            Flexible(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: Text(
+                  choice.current,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: AppColorScheme.onBackground,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (shareRow) {
+      return Row(
+        key: const ValueKey('stage-track-chips'),
+        spacing: 8,
+        children: [
+          for (final (index, choice) in choices.indexed)
+            Flexible(child: chip(index, choice)),
+        ],
+      );
+    }
     return Wrap(
       key: const ValueKey('stage-track-chips'),
       spacing: 10,
       runSpacing: 10,
       children: [
-        for (final (index, choice) in choices.indexed)
-          FocusableButton(
-            focusNode: index == 0 ? firstFocusNode : null,
-            onPressed: () => onOpen(choice.kind),
-            onNavigateUp: onNavigateUp,
-            onNavigateDown: onNavigateDown,
-            onNavigateLeft: index == 0 ? onLeftEdge : null,
-            borderRadius: 20,
-            padding: EdgeInsets.zero,
-            semanticLabel: '${choice.kind.label(l10n)}: ${choice.current}',
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              decoration: BoxDecoration(
-                color: AppColorScheme.onBackground.withValues(alpha: 0.06),
-                borderRadius: AppRadius.circular(20),
-                border: Border.all(
-                  color: AppColorScheme.onBackground.withValues(alpha: 0.22),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(choice.kind.icon, size: 18, color: muted),
-                  const SizedBox(width: 8),
-                  Text(
-                    choice.kind.label(l10n),
-                    style: textTheme.bodySmall?.copyWith(color: muted),
-                  ),
-                  const SizedBox(width: 8),
-                  // Gives way on a screen too narrow for the whole name.
-                  Flexible(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 240),
-                      child: Text(
-                        choice.current,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColorScheme.onBackground,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        for (final (index, choice) in choices.indexed) chip(index, choice),
       ],
     );
   }
