@@ -7287,7 +7287,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä yksityiskohdat. Premiere keskittää otsikon näytön täyttävän taustakuvan päälle, ja kaikki sivun osiot sijaitsevat sen alapuolella.",
+    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä tiedot. Premiere keskittää otsikon koko näytön täyttävälle taustalle, ja kaikki osiot sijaitsevat sen alla sivua alaspäin. Quick Look avaa laatikon sen näytön päälle, jolla olit, ja koko sivu avautuu yhdellä painalluksella. Frost sijoittaa otsikon kelluvaan lasi-ikkunaan sen taideteoksen sumennetun kopion päälle, ja sen osat ovat välilehdissä painikkeiden alla.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11290,7 +11290,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Näytä kauden saatavuustiedot mediatietosivuilla",
+    "showSeerrAvailabilityBadgesDescription": "Näytä Seerr tila julisteissa ja kausissa kaikkialla sovelluksessa",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -16559,5 +16559,75 @@
     "setupDetailPremiereHint": "Otsikko oli keskitetty koko näytön kokoisen taustakuvan päälle, ja kaikki muu oli sijoitettu sivun alaosaan.",
     "@setupDetailPremiereHint": {
         "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Pikakatsaus",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Pakkanen",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Avaa koko sivu",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Takaisin sulkemiseen",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} of {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrBadgeStyle": "Tunnuksen tyyli",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "Badge sijoittaa Seerrin pisteen kulmaan. Bannerissa tilatiedot näkyvät julisteen yläreunassa.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Merkki",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "setupStyleQuickLook": "Pikakatsaus",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Auki avautuva valikko, jossa näkyy se näyttö, jolla olit, sekä toistopainike ja perustoiminnot, ja koko sivu avautuu yhdellä painalluksella.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Pakkanen",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "Lasiruudussa oleva otsikko sumennetun taiteen yläpuolella, ja painikkeiden alla olevat välilehdet.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "smartSearch": "Älykäs haku",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "Älykäs haku päällä {seerr}",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
     }
 }
