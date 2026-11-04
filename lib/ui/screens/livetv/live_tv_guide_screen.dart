@@ -1082,9 +1082,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           final focusedChannel =
               !_channelRailFocused.value && focusedProgram != null
               ? _vm.channelForId(focusedProgram.channelId)
-              : (widget.currentChannel ?? _focusedChannel.value);
+              : (_focusedChannel.value ?? widget.currentChannel);
+          // On the channel column, what that channel is airing, as the full
+          // guide's hero shows.
           return _buildProgramInfoHeader(
-            program: focusedProgram,
+            program:
+                focusedProgram ??
+                (focusedChannel == null
+                    ? null
+                    : _vm.nowNextForChannel(focusedChannel.id).now),
             channel: focusedChannel,
           );
         },
@@ -2424,11 +2430,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           case GuideCellKind.program:
             final program = cell.program;
             if (program == null) return;
-            if (widget.miniPlayerMode) {
-              _watchChannel(channelId);
-            } else {
-              _showProgramDetails(program);
-            }
+            _showProgramDetails(program);
           case GuideCellKind.gap:
           case GuideCellKind.filtered:
             _watchChannel(channelId);
