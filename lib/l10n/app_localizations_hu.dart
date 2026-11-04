@@ -1704,6 +1704,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get audioTrack => 'Hangsáv';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Feliratsáv';
 
   @override

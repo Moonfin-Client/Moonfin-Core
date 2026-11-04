@@ -1707,6 +1707,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get audioTrack => 'Audio celiņš';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Subtitru celiņš';
 
   @override

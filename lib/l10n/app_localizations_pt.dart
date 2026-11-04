@@ -1703,6 +1703,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get audioTrack => 'Faixa de Áudio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Faixa de Legenda';
 
   @override

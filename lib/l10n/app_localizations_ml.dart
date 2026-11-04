@@ -1707,6 +1707,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get audioTrack => 'ഓഡിയോ ട്രാക്ക്';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'സബ്ടൈറ്റിൽ ട്രാക്ക്';
 
   @override

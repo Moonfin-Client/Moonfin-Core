@@ -1698,6 +1698,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get audioTrack => 'ऑडियो ट्रैक';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'उपशीर्षक ट्रैक';
 
   @override

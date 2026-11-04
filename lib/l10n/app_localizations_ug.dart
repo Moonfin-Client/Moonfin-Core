@@ -1701,6 +1701,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get audioTrack => 'ئاۋاز يولى';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'ئېكران خېتى يولى';
 
   @override

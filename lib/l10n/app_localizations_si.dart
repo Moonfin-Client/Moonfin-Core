@@ -1695,6 +1695,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get audioTrack => 'ශ්‍රව්‍ය පථය';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'උපසිරැසි පථය';
 
   @override

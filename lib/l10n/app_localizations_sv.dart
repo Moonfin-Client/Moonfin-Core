@@ -1701,6 +1701,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get audioTrack => 'Ljudspår';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Undertextspår';
 
   @override

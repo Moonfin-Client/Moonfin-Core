@@ -1667,6 +1667,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get audioTrack => '音軌';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => '字幕軌道';
 
   @override

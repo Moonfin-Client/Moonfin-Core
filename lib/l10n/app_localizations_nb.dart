@@ -1701,6 +1701,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get audioTrack => 'Lydspor';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Undertekstspor';
 
   @override

@@ -1713,6 +1713,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get audioTrack => 'Pista de audio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Pista de subtítulos';
 
   @override

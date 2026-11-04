@@ -1708,6 +1708,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get audioTrack => 'Аудио дорожка';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Дорожка субтитров';
 
   @override

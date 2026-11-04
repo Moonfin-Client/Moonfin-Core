@@ -1701,6 +1701,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get audioTrack => 'Аудио трек';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Субтитр жолы';
 
   @override

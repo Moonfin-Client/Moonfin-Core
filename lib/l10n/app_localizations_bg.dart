@@ -1700,6 +1700,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get audioTrack => 'Аудио запис';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Запис със субтитри';
 
   @override

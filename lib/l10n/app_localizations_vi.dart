@@ -1705,6 +1705,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get audioTrack => 'Bản âm thanh';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Bản nhạc phụ đề';
 
   @override

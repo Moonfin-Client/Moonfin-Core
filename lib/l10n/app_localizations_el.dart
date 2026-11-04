@@ -1712,6 +1712,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get audioTrack => 'Κομμάτι ήχου';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Κομμάτι υπότιτλων';
 
   @override

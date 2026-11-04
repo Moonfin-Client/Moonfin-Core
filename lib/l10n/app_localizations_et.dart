@@ -1703,6 +1703,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get audioTrack => 'Helirada';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Subtiitrirada';
 
   @override

@@ -1695,6 +1695,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get audioTrack => 'แทร็กเสียง';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'แทร็กคำบรรยาย';
 
   @override

@@ -1703,6 +1703,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get audioTrack => 'Garso takelis';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Subtitrų takelis';
 
   @override

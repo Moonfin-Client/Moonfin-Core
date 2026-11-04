@@ -1701,6 +1701,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get audioTrack => 'ਆਡੀਓ ਟਰੈਕ';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'ਉਪਸਿਰਲੇਖ ਟਰੈਕ';
 
   @override

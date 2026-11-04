@@ -1708,6 +1708,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get audioTrack => 'Pjesë audio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Pjesa e titrave';
 
   @override

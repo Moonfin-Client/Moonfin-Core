@@ -3016,6 +3016,12 @@ abstract class AppLocalizations {
   /// **'Audio Track'**
   String get audioTrack;
 
+  /// Shown when the remote's Audio button is pressed and the channel has one audio track or none
+  ///
+  /// In en, this message translates to:
+  /// **'No other audio tracks'**
+  String get noOtherAudioTracks;
+
   /// Dialog title for subtitle track selection
   ///
   /// In en, this message translates to:

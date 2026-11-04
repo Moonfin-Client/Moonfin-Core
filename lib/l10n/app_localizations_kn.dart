@@ -1703,6 +1703,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get audioTrack => 'ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'ಉಪಶೀರ್ಷಿಕೆ ಟ್ರ್ಯಾಕ್';
 
   @override

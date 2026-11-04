@@ -1706,6 +1706,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get audioTrack => 'Аудіодоріжка';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Доріжка субтитрів';
 
   @override

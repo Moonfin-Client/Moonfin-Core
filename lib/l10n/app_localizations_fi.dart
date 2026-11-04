@@ -1706,6 +1706,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get audioTrack => 'Ääniraita';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Tekstitysraita';
 
   @override

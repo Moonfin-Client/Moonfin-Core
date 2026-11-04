@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 
+import '../../ui/navigation/destinations.dart';
 import '../../util/platform_detection.dart';
 
 /// Routes OS-registered `moonfin://` deep links into the app. tvOS and web
@@ -41,6 +42,8 @@ class DeepLinkService {
   ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///    (starts playback)
   ///  - `moonfin://search?query=<text>` (opens search with the query text)
+  ///  - `moonfin://live-tv/guide` and `moonfin://live-tv/recordings`, for
+  ///    remapping remote buttons the system keeps from apps (Guide, DVR)
   ///
   /// `userId` optionally pins a stored user, skipping the profile picker on a
   /// cold start and switching to that user when another one is signed in. It
@@ -52,6 +55,13 @@ class DeepLinkService {
       final searchQuery = uri.queryParameters['query'];
       if (searchQuery == null || searchQuery.isEmpty) return null;
       return '/search?query=${Uri.encodeComponent(searchQuery)}';
+    }
+    if (uri.host == 'live-tv') {
+      return switch (uri.path) {
+        '/guide' => Destinations.liveTvGuide,
+        '/recordings' => Destinations.liveTvRecordings,
+        _ => null,
+      };
     }
     final id = uri.queryParameters['id'];
     if (id == null || id.isEmpty) return null;

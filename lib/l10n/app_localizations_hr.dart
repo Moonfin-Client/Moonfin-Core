@@ -1761,6 +1761,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get audioTrack => 'Audio zapis';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Zapis titlova';
 
   @override
