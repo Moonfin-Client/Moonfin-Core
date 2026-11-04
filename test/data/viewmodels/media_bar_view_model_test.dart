@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/models/media_bar_state.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/media_bar_repository.dart';
@@ -36,6 +37,8 @@ void main() {
   late _Sync sync;
   late List<Completer<MediaBarState>> loads;
 
+  setUpAll(() => registerFallbackValue(<MediaBarSlideItem>[]));
+
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -50,6 +53,9 @@ void main() {
       loads.add(load);
       return load.future;
     });
+    when(
+      () => repository.loadNewReleases(any()),
+    ).thenAnswer((_) async => const {});
   });
 
   tearDown(() => GetIt.instance.reset());
@@ -67,6 +73,43 @@ void main() {
     await pumpEventQueue();
 
     expect(loads, hasLength(2));
+  });
+
+  test('the bar shows before its new release labels, which follow', () async {
+    const series = MediaBarSlideItem(
+      itemId: 'series',
+      serverId: 'server',
+      title: 'Show',
+      itemType: 'Series',
+    );
+    const movie = MediaBarSlideItem(
+      itemId: 'movie',
+      serverId: 'server',
+      title: 'Film',
+    );
+    final labels = Completer<Map<String, MediaBarNewReleaseInfo>>();
+    when(
+      () => repository.loadNewReleases(any()),
+    ).thenAnswer((_) => labels.future);
+    final viewModel = create();
+    unawaited(viewModel.load());
+    loads.first.complete(const MediaBarReady([series, movie]));
+    await pumpEventQueue();
+
+    expect(viewModel.state, isA<MediaBarReady>());
+    expect(viewModel.items.map((item) => item.newRelease), [null, null]);
+
+    labels.complete({
+      'series': const MediaBarNewReleaseInfo(
+        kind: MediaBarNewRelease.newSeason,
+        season: 2,
+      ),
+    });
+    await pumpEventQueue();
+
+    expect(viewModel.items.first.newRelease?.kind, MediaBarNewRelease.newSeason);
+    expect(viewModel.items.last.newRelease, isNull);
+    viewModel.dispose();
   });
 
   test('picked lists load again once Moonbase answers', () async {

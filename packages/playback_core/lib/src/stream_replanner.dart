@@ -62,9 +62,10 @@ abstract interface class StreamReplanner {
   /// replan. False hands the change to an ordinary stop and resolve.
   bool canReplan(StreamResolutionResult current);
 
-  /// A new stream for [mediaItem] in place of [current], in the same
-  /// session. Throws when the server refuses, and the player then stops
-  /// [current] and resolves afresh.
+  /// A new stream for [mediaItem] in place of [current], in the same session.
+  /// A server refusal (`PlaybackRefusedException`) is terminal. Other failures
+  /// fall back to stopping [current] and resolving afresh while the playback
+  /// request is still current.
   Future<StreamResolutionResult> replan(
     dynamic mediaItem,
     StreamResolutionResult current,
