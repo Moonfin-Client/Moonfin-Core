@@ -5897,9 +5897,11 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
         const double horizontalPadding = 14.0;
         const double totalPadding = horizontalPadding * 2;
 
-        final double availableWidth = constraints.maxWidth - totalPadding;
         final double stride = bWidth + spacing;
-        int fitCount = ((availableWidth + spacing) / stride).floor();
+        // With no width limit there's nothing to scroll, so every button fits.
+        int fitCount = constraints.hasBoundedWidth
+            ? ((constraints.maxWidth - totalPadding + spacing) / stride).floor()
+            : widget.children.length;
         fitCount = fitCount.clamp(1, widget.children.length);
         _fitCount = fitCount;
 
