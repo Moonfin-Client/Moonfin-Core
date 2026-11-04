@@ -7518,7 +7518,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis. Escenari posa el pòster al davant, amb el botó de reproducció a sota i els detalls al costat. Estrena centra el títol sobre un teló de fons que omple la pantalla, amb totes les seccions a sota al llarg de la pàgina.",
+    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis. Escenari posa el pòster al davant, amb el botó de reproducció a sota i els detalls al costat. Estrena centra el títol sobre un teló de fons que omple la pantalla, amb totes les seccions a sota al llarg de la pàgina. Vista ràpida obre un calaix sobre la pantalla on eres, amb la pàgina completa a només una pulsació. Esmerilat fa surar el títol en una finestra de vidre sobre una còpia difuminada de la seva il·lustració, amb les seves parts en pestanyes sota els botons.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11290,7 +11290,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Mostra les insígnies de disponibilitat de temporades a les pàgines de detalls dels mitjans",
+    "showSeerrAvailabilityBadgesDescription": "Mostra l'estat de Seerr als pòsters i a les temporades de tota l'aplicació",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -16543,5 +16543,75 @@
     "setupDetailPremiereHint": "El títol centrat sobre un teló de fons a pantalla completa, amb tota la resta a sota al llarg de la pàgina.",
     "@setupDetailPremiereHint": {
         "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Vista ràpida",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Esmerilat",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Obre la pàgina completa",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Prem Enrere per tancar",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} de {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrBadgeStyle": "Estil de la insígnia",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "«Insígnia» posa el punt de Seerr en una cantonada. «Bàner» mostra l'estat a la part superior del pòster.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Insígnia",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "setupStyleQuickLook": "Vista ràpida",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Un calaix sobre la pantalla on eres, amb el botó de reproducció i el més bàsic, i la pàgina completa a només una pulsació.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Esmerilat",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "El títol en una finestra de vidre sobre la seva il·lustració difuminada, amb pestanyes sota els botons.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "smartSearch": "Cerca intel·ligent",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "Cerca intel·ligent a {seerr}",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
     }
 }
