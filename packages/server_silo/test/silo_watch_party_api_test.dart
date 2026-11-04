@@ -306,6 +306,7 @@ void main() {
       ],
     };
     final point = SiloRoomResumePoint.fromMemberState(answer, 'ep1')!;
+    expect(point.contentId, 'ep1');
     expect(point.seconds, 1500);
     expect(point.profileId, 'p2');
     expect(point.notStarted, 1);
