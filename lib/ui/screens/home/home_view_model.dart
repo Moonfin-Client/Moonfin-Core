@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
@@ -47,6 +48,7 @@ import '../../../data/utils/blocked_ratings.dart';
 import '../../../util/seasonal_country.dart';
 import '../../../util/seerr_genre_art.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../navigation/app_router.dart' show PlayerRouteObserver;
 
 class HomeViewModel extends ChangeNotifier {
   /// Cards in a merged row, matching what a single library row shows.
@@ -3477,6 +3479,14 @@ class HomeViewModel extends ChangeNotifier {
       if (!isConfigured) {
         _watchingNowTimer?.cancel();
         _watchingNowTimer = null;
+        return;
+      }
+      // Nobody sees Home under the player or with the app in the background,
+      // so those ticks are skipped and the next one catches up.
+      final lifecycle = WidgetsBinding.instance.lifecycleState;
+      if (PlayerRouteObserver.instance.isPlayerActive.value ||
+          lifecycle == AppLifecycleState.paused ||
+          lifecycle == AppLifecycleState.hidden) {
         return;
       }
       final l10n = currentAppLocalizations();
