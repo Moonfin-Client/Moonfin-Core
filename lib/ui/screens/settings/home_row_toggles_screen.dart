@@ -674,7 +674,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => switch (v) {
                         SinceYouWatchedSourceItem.recentlyWatched => l10n.sinceYouWatchedRecentlyWatched,
                         SinceYouWatchedSourceItem.favorites => l10n.favorites,
-                        SinceYouWatchedSourceItem.random => l10n.sinceYouWatchedRandom,
+                        SinceYouWatchedSourceItem.random => l10n.mediaBarSourceRandom,
                       },
                       onChanged: _onSinceYouWatchedConfigChanged,
                     ),

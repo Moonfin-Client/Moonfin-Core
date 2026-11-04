@@ -12576,9 +12576,6 @@ class AppLocalizationsGl extends AppLocalizations {
   String get sinceYouWatchedRecentlyWatched => 'Recently Watched';
 
   @override
-  String get sinceYouWatchedRandom => 'Random';
-
-  @override
   String get sinceYouWatchedNumRows => 'Number of Rows to Add';
 
   @override

@@ -21922,12 +21922,6 @@ abstract class AppLocalizations {
   /// **'Recently Watched'**
   String get sinceYouWatchedRecentlyWatched;
 
-  /// No description provided for @sinceYouWatchedRandom.
-  ///
-  /// In en, this message translates to:
-  /// **'Random'**
-  String get sinceYouWatchedRandom;
-
   /// No description provided for @sinceYouWatchedNumRows.
   ///
   /// In en, this message translates to:

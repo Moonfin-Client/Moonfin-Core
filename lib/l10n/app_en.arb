@@ -11352,7 +11352,6 @@
   "sinceYouWatchedSourceItem": "Source Item",
   "sinceYouWatchedSourceItemDescription": "Choose which source item to base recommendations on",
   "sinceYouWatchedRecentlyWatched": "Recently Watched",
-  "sinceYouWatchedRandom": "Random",
   "sinceYouWatchedNumRows": "Number of Rows to Add",
   "sinceYouWatchedNumRowsDescription": "Choose how many Since You Watched rows to display (1-5)",
   "sinceYouWatchedIncludeWatched": "Include Previously Watched",
