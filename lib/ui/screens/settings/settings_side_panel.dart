@@ -892,6 +892,8 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     Widget list,
     bool searching,
   ) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final previewHidden = prefs.get(UserPreferences.settingsPreviewHidden);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -911,9 +913,18 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               child: pill,
             ),
           if (!searching)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: _PhoneLivePreview(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: _PhoneLivePreview(
+                hidden: previewHidden,
+                onToggle: () async {
+                  await prefs.set(
+                    UserPreferences.settingsPreviewHidden,
+                    !previewHidden,
+                  );
+                  if (mounted) setState(() {});
+                },
+              ),
             ),
           Expanded(child: list),
         ],
@@ -987,10 +998,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   }
 }
 
-/// The phone's preview strip: the scene chips, the mock screen at the phone's
-/// own proportions, and the touched setting spelled out beside it.
+/// The phone's preview strip: the scene chips with the show/hide toggle, the
+/// mock screen at the phone's own proportions, and the touched setting spelled
+/// out beside it. Hidden leaves only the chips row, so the toggle stays put.
 class _PhoneLivePreview extends StatelessWidget {
-  const _PhoneLivePreview();
+  final bool hidden;
+  final VoidCallback onToggle;
+
+  const _PhoneLivePreview({required this.hidden, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -998,11 +1013,25 @@ class _PhoneLivePreview extends StatelessWidget {
         .dependOnInheritedWidgetOfExactType<SettingsPreviewScope>()
         ?.notifier;
     if (controller == null) return const SizedBox.shrink();
+    final chips = SettingsPreviewSceneChips(
+      controller: controller,
+      onSceneTap: hidden ? onToggle : null,
+      trailing: IconButton(
+        tooltip: AppLocalizations.of(context).settingsLivePreview,
+        isSelected: !hidden,
+        visualDensity: VisualDensity.compact,
+        iconSize: 20,
+        icon: const Icon(Icons.visibility_off_outlined),
+        selectedIcon: const Icon(Icons.visibility_outlined),
+        onPressed: onToggle,
+      ),
+    );
+    if (hidden) return chips;
     final landscape = controller.scene == SettingsPreviewScene.player;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SettingsPreviewSceneChips(controller: controller),
+        chips,
         const SizedBox(height: 10),
         AnimatedSize(
           duration: const Duration(milliseconds: 200),

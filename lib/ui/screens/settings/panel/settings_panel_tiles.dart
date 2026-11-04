@@ -197,7 +197,7 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
         onKeyEvent: _onKeyEvent,
         onFocusChange: (focused) {
           if (focused) {
-            _ensureSettingsTileVisible(context);
+            ensureSettingsTileVisible(context);
           }
           if (_outerFocused != focused && mounted) {
             setState(() => _outerFocused = focused);

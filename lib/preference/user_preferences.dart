@@ -3707,6 +3707,13 @@ class UserPreferences extends ChangeNotifier {
     key: 'syncplay_extra_time_offset',
     defaultValue: 0.0,
   );
+
+  /// Hides the live preview above the phone's settings list.
+  static final settingsPreviewHidden = Preference(
+    key: 'pref_settings_preview_hidden',
+    defaultValue: false,
+  );
+
   static final pluginSyncEnabled = Preference(
     key: 'pref_plugin_sync_enabled',
     defaultValue: false,
