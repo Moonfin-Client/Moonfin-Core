@@ -72,7 +72,7 @@ class MediaBarSlideItem {
   /// opens in Seerr and has nothing to play.
   bool get isExternal => serverId == externalServerId;
 
-  /// The same title with [release] as its banner, for the settings preview.
+  /// The same title with [release] as its banner.
   MediaBarSlideItem withNewRelease(MediaBarNewReleaseInfo? release) =>
       MediaBarSlideItem(
         itemId: itemId,

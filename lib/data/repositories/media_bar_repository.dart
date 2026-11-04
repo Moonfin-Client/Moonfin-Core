@@ -222,7 +222,7 @@ class MediaBarRepository {
       }
 
       final items = await _mixInExternal(
-        await _toSlides(selected),
+        selected.map(_toSlideItem).toList(),
         externalPool,
         maxItems,
         excludedGenres,
@@ -243,7 +243,7 @@ class MediaBarRepository {
         excludedGenres,
       );
       if (selected.isNotEmpty) {
-        return MediaBarReady(await _toSlides(selected));
+        return MediaBarReady(selected.map(_toSlideItem).toList());
       }
       return MediaBarError(e);
     }
@@ -582,54 +582,45 @@ class MediaBarRepository {
     return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
   }
 
-  /// Turns the picked items into slides, flagging the series with something
-  /// new when the banner is on. One small query per series, run together.
-  Future<List<MediaBarSlideItem>> _toSlides(
-    List<Map<String, dynamic>> selected,
+  /// What aired lately for each series slide on the server, by item id. Asked
+  /// for once the bar shows, so a slow server only holds back the labels.
+  Future<Map<String, MediaBarNewReleaseInfo>> loadNewReleases(
+    List<MediaBarSlideItem> slides,
   ) async {
+    if (!_prefs.get(UserPreferences.mediaBarNewReleaseBanner)) return const {};
+    final days = _prefs.get(UserPreferences.mediaBarNewReleaseDays);
+    final now = DateTime.now();
     final releases = <String, MediaBarNewReleaseInfo>{};
-    if (_prefs.get(UserPreferences.mediaBarNewReleaseBanner)) {
-      final days = _prefs.get(UserPreferences.mediaBarNewReleaseDays);
-      // The banner is a bonus, so a slow server doesn't hold the bar back. A
-      // series that answers late just goes without one.
-      final lookups = mapBounded(
-        selected.where((item) => item['Type'] == 'Series').toList(),
-        _sourceConcurrency,
-        (series) async {
-          final id = series['Id']?.toString();
-          if (id == null) return null;
-          try {
-            final now = DateTime.now();
-            final recent = await _recentEpisodes(parentId: id, limit: 100);
-            // Only a season with several recent episodes on one day can have
-            // come out at once, so only then is the whole season fetched.
-            final seasonId = mediaBarSeasonToCheck(recent, now: now, days: days);
-            final release = mediaBarNewReleaseOf(
-              recent,
-              latestSeason: seasonId == null
-                  ? null
-                  : await _seasonEpisodes(seasonId),
-              now: now,
-              days: days,
-            );
-            if (release != null) releases[id] = release;
-          } catch (_) {
-            // A series that can't be asked about just goes without a banner.
-          }
-          return null;
-        },
-      );
-      try {
-        await lookups.timeout(const Duration(seconds: 5));
-      } on TimeoutException {
-        // Keep the banners found so far.
-      }
-    }
-
-    return [
-      for (final item in selected)
-        _toSlideItem(item, newRelease: releases[item['Id']?.toString()]),
-    ];
+    await mapBounded(
+      slides
+          .where((slide) => !slide.isExternal && slide.itemType == 'Series')
+          .toList(),
+      _sourceConcurrency,
+      (series) async {
+        try {
+          final recent = await _recentEpisodes(
+            parentId: series.itemId,
+            limit: 100,
+          );
+          // Only a season with several recent episodes on one day can have
+          // come out at once, so only then is the whole season fetched.
+          final seasonId = mediaBarSeasonToCheck(recent, now: now, days: days);
+          final release = mediaBarNewReleaseOf(
+            recent,
+            latestSeason: seasonId == null
+                ? null
+                : await _seasonEpisodes(seasonId),
+            now: now,
+            days: days,
+          );
+          if (release != null) releases[series.itemId] = release;
+        } catch (_) {
+          // A series that can't be asked about just goes without a label.
+        }
+        return null;
+      },
+    );
+    return releases;
   }
 
   Future<List<Map<String, dynamic>>> _fetchItemsFromFallbackSource(
@@ -863,10 +854,7 @@ class MediaBarRepository {
     }
   }
 
-  MediaBarSlideItem _toSlideItem(
-    Map<String, dynamic> data, {
-    MediaBarNewReleaseInfo? newRelease,
-  }) {
+  MediaBarSlideItem _toSlideItem(Map<String, dynamic> data) {
     final itemId = data['Id']?.toString() ?? '';
     final serverId = data['ServerId']?.toString() ?? '';
     final providerIds = data['ProviderIds'] as Map<String, dynamic>?;
@@ -928,7 +916,6 @@ class MediaBarRepository {
       remoteTrailers:
           (data['RemoteTrailers'] as List?)?.cast<Map<String, dynamic>>() ??
           const [],
-      newRelease: newRelease,
     );
   }
 }

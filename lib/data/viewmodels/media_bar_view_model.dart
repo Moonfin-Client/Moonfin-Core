@@ -233,6 +233,7 @@ class MediaBarViewModel extends ChangeNotifier {
 
       if (_state is MediaBarReady) {
         _loadRatings((_state as MediaBarReady).items);
+        _loadNewReleases((_state as MediaBarReady).items);
       }
     } finally {
       _isLoading = false;
@@ -241,6 +242,24 @@ class MediaBarViewModel extends ChangeNotifier {
         load(force: true);
       }
     }
+  }
+
+  Future<void> _loadNewReleases(List<MediaBarSlideItem> items) async {
+    final releases = await _repository.loadNewReleases(items);
+    final state = _state;
+    if (releases.isEmpty ||
+        state is! MediaBarReady ||
+        !identical(state.items, items)) {
+      return;
+    }
+    _state = MediaBarReady([
+      for (final item in items)
+        if (releases[item.itemId] case final release?)
+          item.withNewRelease(release)
+        else
+          item,
+    ]);
+    notifyListeners();
   }
 
   Future<void> _loadRatings(List<MediaBarSlideItem> items) async {
