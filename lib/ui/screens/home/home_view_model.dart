@@ -29,7 +29,6 @@ import '../../../l10n/current_app_localizations.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
-import 'package:intl/intl.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -524,6 +523,11 @@ class HomeViewModel extends ChangeNotifier {
           .map((c) => c.type)
           .toList();
 
+      if (!sections.contains(HomeSectionType.mdblistWatchingNow)) {
+        _watchingNowTimer?.cancel();
+        _watchingNowTimer = null;
+      }
+
       if (!sections.contains(HomeSectionType.mediaBar)) {
         _mediaBarViewModel.load(force: forceRefresh);
       }
@@ -599,14 +603,14 @@ class HomeViewModel extends ChangeNotifier {
             _rows,
             cfg,
           ).any((r) => !r.isLoading);
+          if (cfg.type == HomeSectionType.mdblistWatchingNow) {
+            _ensureWatchingNowTimer();
+          }
           if (keepsRowsOnFailure(
             preserveExisting: preserveExisting,
             hydratedFromCache: hydratedFromCache,
             hasVisibleRow: hasVisibleRow,
           )) {
-            if (cfg.type == HomeSectionType.mdblistWatchingNow) {
-              _ensureWatchingNowTimer();
-            }
             return;
           }
           sectionRows = const <HomeRow>[];
@@ -3440,6 +3444,12 @@ class HomeViewModel extends ChangeNotifier {
           ? l10n.watchingNowLiveSummaryToday(usersStr, moviesStr, showsStr)
           : l10n.watchingNowLiveSummary(usersStr, moviesStr, showsStr);
 
+      final filteredItems = withoutUnratedOrBlockedItems(aggregatedItems);
+      if (filteredItems.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
+
       _ensureWatchingNowTimer();
 
       return [
@@ -3448,7 +3458,7 @@ class HomeViewModel extends ChangeNotifier {
           title: l10n.mdblistWatchingNow,
           subtitle: subtitle,
           rowType: HomeRowType.pluginDynamic,
-          items: aggregatedItems,
+          items: filteredItems,
         ),
       ];
     } catch (e) {
@@ -3462,6 +3472,13 @@ class HomeViewModel extends ChangeNotifier {
   void _ensureWatchingNowTimer() {
     if (_watchingNowTimer != null && _watchingNowTimer!.isActive) return;
     _watchingNowTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      final isConfigured = _prefs.get(UserPreferences.mdblistWatchingNowEnabled) &&
+          _prefs.activeHomeSectionConfigs.any((c) => c.type == HomeSectionType.mdblistWatchingNow);
+      if (!isConfigured) {
+        _watchingNowTimer?.cancel();
+        _watchingNowTimer = null;
+        return;
+      }
       final l10n = currentAppLocalizations();
       if (!_rows.any((row) => row.id == 'mdblist_watching_now')) {
         unawaited(load(preserveExisting: true, newSectionsOnly: true));

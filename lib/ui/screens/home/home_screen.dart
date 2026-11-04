@@ -6104,6 +6104,23 @@ class _ContentRowsState extends State<_ContentRows>
                     imageUrl: logoUrl,
                     fit: BoxFit.contain,
                     maxWidth: 300,
+                    errorBuilder: (_, _, _) => Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        item.name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          shadows: [
+                            Shadow(blurRadius: 6, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               )
