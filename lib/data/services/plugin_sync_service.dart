@@ -1888,6 +1888,13 @@ class PluginSyncService extends ChangeNotifier {
         );
         continue;
       }
+      if (type == prefs.HomeSectionType.mdblistWatchingNow) {
+        final localEnabled = _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
       sections.add(
         HomeSectionConfig(type: type, enabled: false, order: order++),
       );
@@ -1919,8 +1926,10 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-      final enabled = type == prefs.HomeSectionType.seasonal &&
-          _prefs.get(UserPreferences.seasonalRowEnabled);
+      final enabled = (type == prefs.HomeSectionType.seasonal &&
+              _prefs.get(UserPreferences.seasonalRowEnabled)) ||
+          (type == prefs.HomeSectionType.mdblistWatchingNow &&
+              _prefs.get(UserPreferences.mdblistWatchingNowEnabled));
       sections.add(
         HomeSectionConfig(type: type, enabled: enabled, order: order++),
       );
@@ -2382,6 +2391,8 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.enableSonarrCalendar,
       prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
       prefs.HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        UserPreferences.mdblistWatchingNowEnabled,
       prefs.HomeSectionType.sinceYouWatched1 =>
         UserPreferences.sinceYouWatched1Enabled,
       prefs.HomeSectionType.sinceYouWatched2 =>

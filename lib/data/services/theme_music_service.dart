@@ -110,7 +110,11 @@ class ThemeMusicService implements AudioOwnable {
       return;
     }
     if (item.serverId == 'seerr') {
-      fadeOutAndStop();
+      if (_player == null) {
+        stop();
+      } else {
+        fadeOutAndStop();
+      }
       return;
     }
 
