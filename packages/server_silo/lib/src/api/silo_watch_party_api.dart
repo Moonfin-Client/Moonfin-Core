@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
@@ -384,21 +386,26 @@ class SiloWatchPartyApi {
     String roomToken,
     String contentId,
   ) async {
-    final response = await _dio.post<dynamic>(
-      '/api/v2/watch-together/rooms/$roomId/member-state',
-      data: {
-        'content_ids': [contentId],
-      },
-      // The host's start buttons wait on this, so it can't hang for long.
-      options: Options(
-        headers: {'X-Room-Token': roomToken},
-        receiveTimeout: const Duration(seconds: 5),
-      ),
-    );
-    return SiloRoomResumePoint.fromMemberState(
-      asJsonMap(response.data),
-      contentId,
-    );
+    // The host's start buttons wait on this, so the whole request is called
+    // off after five seconds.
+    final cancel = CancelToken();
+    final deadline = Timer(const Duration(seconds: 5), cancel.cancel);
+    try {
+      final response = await _dio.post<dynamic>(
+        '/api/v2/watch-together/rooms/$roomId/member-state',
+        data: {
+          'content_ids': [contentId],
+        },
+        options: Options(headers: {'X-Room-Token': roomToken}),
+        cancelToken: cancel,
+      );
+      return SiloRoomResumePoint.fromMemberState(
+        asJsonMap(response.data),
+        contentId,
+      );
+    } finally {
+      deadline.cancel();
+    }
   }
 
   /// Host only: back to the lobby, keeping the item staged.

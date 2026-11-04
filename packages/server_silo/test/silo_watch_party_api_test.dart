@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 import 'package:test/test.dart';
@@ -327,4 +330,31 @@ void main() {
     );
     expect(SiloRoomResumePoint.fromMemberState(answer, 'other'), isNull);
   });
+
+  test('a stalled resume lookup is called off after five seconds', () async {
+    final server = _SilentServer();
+    final watch = Stopwatch()..start();
+    await expectLater(
+      _client(server).watchPartyApi.resumePoint('room-1', 'proof', 'ep1'),
+      throwsA(anything),
+    );
+    expect(watch.elapsed, lessThan(const Duration(seconds: 7)));
+    expect(server.cancelled, isTrue);
+  });
+}
+
+class _SilentServer extends FixtureServer {
+  _SilentServer() : super(const {});
+
+  bool cancelled = false;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    cancelFuture?.then((_) => cancelled = true);
+    return Completer<ResponseBody>().future;
+  }
 }
