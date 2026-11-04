@@ -2369,6 +2369,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final cadenceSlowdown = Preference(
+    key: 'cadence_slowdown',
+    defaultValue: false,
+  );
+
   static final media3SkipSilence = Preference(
     key: 'media3_skip_silence',
     defaultValue: false,

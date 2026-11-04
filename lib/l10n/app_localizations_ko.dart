@@ -12248,6 +12248,24 @@ class AppLocalizationsKo extends AppLocalizations {
       '서버에 트랜스코딩을 요청하지 않고 HDR10을 포함한 1080p 초과 AV1을 원본 파일 그대로 재생합니다. 이 기기는 AV1을 소프트웨어로 디코딩하므로 4K나 높은 비트레이트의 무거운 파일은 끊길 수 있습니다.';
 
   @override
+  String get cadenceSlowdown => 'Smooth 24 fps on a 60 Hz TV';
+
+  @override
+  String get cadenceSlowdownSubtitle =>
+      'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
+
+  @override
+  String get cadenceTipTitle => 'Turn On Match Frame Rate';
+
+  @override
+  String get cadenceTipMessage =>
+      'This video can\'t play smoothly at your TV\'s current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.';
+
+  @override
+  String get cadenceTipSlowdownHint =>
+      'Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.';
+
+  @override
   String get useExternalPlayer => '항상 외부 플레이어 사용';
 
   @override

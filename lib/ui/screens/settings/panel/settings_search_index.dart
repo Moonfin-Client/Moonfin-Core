@@ -1711,6 +1711,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['frame rate', 'hz', '24p'],
       ),
     ],
+    if (PlatformDetection.isAppleTV)
+      quality.leaf(
+        'cadence_slowdown',
+        l10n.cadenceSlowdown,
+        subtitle: l10n.cadenceSlowdownSubtitle,
+        keywords: ['frame rate', 'hz', '24p', 'stutter', 'judder', 'match'],
+      ),
     quality.leaf('video_start_delay', l10n.settingsVideoStartDelay),
     if (PlatformDetection.isWindows)
       quality.leaf('auto_hdr_switching_behavior', l10n.autoHdrSwitching),

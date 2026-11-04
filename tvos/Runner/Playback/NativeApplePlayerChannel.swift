@@ -616,7 +616,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
                     from: args["externalSubtitles"]),
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
-                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
+                cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

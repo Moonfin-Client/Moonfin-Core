@@ -22258,6 +22258,36 @@ abstract class AppLocalizations {
   /// **'Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.'**
   String get av1SoftwareUhdDirectPlaySubtitle;
 
+  /// No description provided for @cadenceSlowdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Smooth 24 fps on a 60 Hz TV'**
+  String get cadenceSlowdown;
+
+  /// No description provided for @cadenceSlowdownSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.'**
+  String get cadenceSlowdownSubtitle;
+
+  /// No description provided for @cadenceTipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn On Match Frame Rate'**
+  String get cadenceTipTitle;
+
+  /// No description provided for @cadenceTipMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This video can\'t play smoothly at your TV\'s current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.'**
+  String get cadenceTipMessage;
+
+  /// No description provided for @cadenceTipSlowdownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.'**
+  String get cadenceTipSlowdownHint;
+
   /// No description provided for @useExternalPlayer.
   ///
   /// In en, this message translates to:

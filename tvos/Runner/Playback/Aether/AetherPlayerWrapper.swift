@@ -576,6 +576,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             sawPlaybackThisLoad = false
         case .playing:
             state = .playing
+            if !sawPlaybackThisLoad { scheduleCadenceCheck() }
             sawPlaybackThisLoad = true
         case .paused: state = .paused
         case .seeking: state = .buffering(bufferProgress)
@@ -916,6 +917,43 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var externalSubtitles: [ExternalSubtitleTrack] = []
         var subtitleDelay: Double = 0
         var secondarySubtitle = SecondarySubtitleConfiguration()
+        var cadenceSlowdown = false
+        var cadenceTip: CadenceTip?
+    }
+
+    /// The Match Frame Rate hint, localized on the Dart side.
+    struct CadenceTip {
+        var title: String
+        var message: String
+        var slowdownHint: String
+        var button: String
+    }
+
+    static func cadenceTip(from args: [String: Any]) -> CadenceTip? {
+        guard let title = args["cadenceTipTitle"] as? String,
+            let message = args["cadenceTipMessage"] as? String,
+            let hint = args["cadenceTipSlowdownHint"] as? String,
+            let button = args["cadenceTipButton"] as? String
+        else { return nil }
+        return CadenceTip(title: title, message: message, slowdownHint: hint, button: button)
+    }
+
+    /// Every frame gets the same number of refreshes (3:2 pulldown counts)
+    /// when twice the panel rate over the frame rate is a whole number.
+    /// 23.976 on 59.94 Hz fits, 24.000 there drops a frame every 42 s.
+    static func cadenceFits(contentFps: Double, panelHz: Double) -> Bool {
+        guard contentFps > 0, panelHz > 0 else { return true }
+        let ratio = 2 * panelHz / contentFps
+        return abs(ratio - ratio.rounded()) / ratio < 2e-4
+    }
+
+    static let cadenceSlowdownFactor: Float = 1000.0 / 1001.0
+
+    /// True when playing 0.1% slower turns a rate that doesn't fit into one
+    /// that does, as 24.000 into 23.976. 25 fps on 59.94 Hz has no such fix.
+    static func cadenceSlowdownApplies(contentFps: Double, panelHz: Double) -> Bool {
+        !cadenceFits(contentFps: contentFps, panelHz: panelHz)
+            && cadenceFits(contentFps: contentFps * Double(cadenceSlowdownFactor), panelHz: panelHz)
     }
 
     struct SecondarySubtitleSelection: Equatable {
@@ -1089,6 +1127,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         state = .opening
         loadGeneration &+= 1
         let generation = loadGeneration
+        resetCadence()
 
         if !audioOnly {
             await waitForSurface()
@@ -1351,9 +1390,119 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     func setRate(_ newRate: Float) {
         guard let engine = Self.sharedEngine() else { return }
         let clamped = min(max(newRate, 0), engine.maxSupportedRate)
-        engine.setRate(clamped)
+        engine.setRate(clamped * cadenceFactor)
         rate = clamped == 0 ? rate : clamped
     }
+
+    // MARK: - Display cadence
+
+    /// Applied under the viewer's speed, which `rate` keeps reporting.
+    private var cadenceFactor: Float = 1
+    private var cadenceCheck: Task<Void, Never>?
+    private static let cadenceTipShownKey = "moonfin.cadenceTipShown"
+    /// tvOS runs two wrappers over the shared engine, and only the one that
+    /// started the load may change its speed.
+    private static weak var cadenceOwner: AetherPlayerWrapper?
+
+    private func resetCadence() {
+        Self.cadenceOwner = self
+        cadenceCheck?.cancel()
+        cadenceCheck = nil
+        cadenceFactor = 1
+    }
+
+    /// Runs when a load first plays, after any frame rate switch has settled,
+    /// and again after a reload, since an audio switch can change the route.
+    private func scheduleCadenceCheck() {
+        #if os(tvOS)
+            guard !isAudioOnlySession, Self.cadenceOwner === self else { return }
+            let generation = loadGeneration
+            cadenceCheck?.cancel()
+            cadenceCheck = Task { @MainActor [weak self] in
+                try? await Task.sleep(for: .seconds(1))
+                guard let self, !Task.isCancelled, generation == self.loadGeneration,
+                    let engine = Self.sharedEngine(),
+                    let content = engine.sourceVideoFrameRate,
+                    let panel = await Self.panelRefreshRate(),
+                    !Task.isCancelled, generation == self.loadGeneration
+                else { return }
+                let fits = Self.cadenceFits(contentFps: content, panelHz: panel)
+                let canSlow = Self.cadenceSlowdownApplies(contentFps: content, panelHz: panel)
+                    && engine.audioDelivery != .streamCopy
+                let wanted = canSlow && sourceConfiguration.cadenceSlowdown
+                    ? Self.cadenceSlowdownFactor : 1
+                if !fits {
+                    hostLog(
+                        "cadence: \(String(format: "%.3f", content)) fps on "
+                            + "\(String(format: "%.3f", panel)) Hz, slowdown "
+                            + (canSlow ? (wanted == 1 ? "off" : "on") : "unavailable"))
+                }
+                if wanted != cadenceFactor {
+                    cadenceFactor = wanted
+                    engine.setRate(rate * wanted)
+                }
+                if !fits, wanted == 1 { presentCadenceTipOnce(mentionSlowdown: canSlow) }
+            }
+        #endif
+    }
+
+    #if os(tvOS)
+        private func presentCadenceTipOnce(mentionSlowdown: Bool) {
+            let defaults = UserDefaults.standard
+            guard let tip = sourceConfiguration.cadenceTip,
+                !defaults.bool(forKey: Self.cadenceTipShownKey),
+                var top = Self.keyWindow()?.rootViewController
+            else { return }
+            while let presented = top.presentedViewController { top = presented }
+            guard !(top is UIAlertController) else { return }
+            defaults.set(true, forKey: Self.cadenceTipShownKey)
+            let message = mentionSlowdown ? "\(tip.message)\n\n\(tip.slowdownHint)" : tip.message
+            let alert = UIAlertController(title: tip.title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: tip.button, style: .default))
+            top.present(alert, animated: true)
+        }
+
+        private static func keyWindow() -> UIWindow? {
+            guard
+                let scene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene }).first
+            else { return nil }
+            return scene.windows.first(where: { $0.isKeyWindow }) ?? scene.windows.first
+        }
+
+        /// The panel's current rate from one display link tick.
+        private static func panelRefreshRate() async -> Double? {
+            guard let screen = keyWindow()?.screen else { return nil }
+            let probe = RefreshRateProbe()
+            probe.start(screen: screen)
+            defer { probe.stop() }
+            for _ in 0..<50 {
+                if probe.rate != nil { break }
+                try? await Task.sleep(for: .milliseconds(10))
+            }
+            return probe.rate
+        }
+
+        private final class RefreshRateProbe: NSObject {
+            private var link: CADisplayLink?
+            private(set) var rate: Double?
+
+            func start(screen: UIScreen) {
+                link = screen.displayLink(withTarget: self, selector: #selector(tick(_:)))
+                link?.add(to: .main, forMode: .common)
+            }
+
+            func stop() {
+                link?.invalidate()
+                link = nil
+            }
+
+            @objc private func tick(_ link: CADisplayLink) {
+                let duration = link.targetTimestamp - link.timestamp
+                if duration > 0 { rate = 1 / duration }
+            }
+        }
+    #endif
 
     // MARK: - Volume / ReplayGain
 
@@ -2234,13 +2383,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     private func displayCriteriaMatchingEnabled() -> Bool {
         #if os(tvOS)
-            guard
-                let windowScene = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene }).first,
-                let window = windowScene.windows.first(where: { $0.isKeyWindow })
-                    ?? windowScene.windows.first
-            else { return false }
-            return window.avDisplayManager.isDisplayCriteriaMatchingEnabled
+            return Self.keyWindow()?.avDisplayManager.isDisplayCriteriaMatchingEnabled ?? false
         #else
             // Display-criteria matching is a tvOS concept. iOS panels manage
             // EDR themselves.
