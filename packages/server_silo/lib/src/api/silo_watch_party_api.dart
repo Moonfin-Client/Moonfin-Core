@@ -246,7 +246,6 @@ class SiloRoomSuggestion {
 /// member stopped at, so nobody misses what they haven't seen.
 class SiloRoomResumePoint {
   const SiloRoomResumePoint({
-    required this.contentId,
     required this.seconds,
     this.profileId,
     this.notStarted = 0,
@@ -255,7 +254,6 @@ class SiloRoomResumePoint {
   /// Under this a member has barely started, which isn't worth resuming.
   static const minimumSeconds = 30;
 
-  final String contentId;
   final int seconds;
 
   /// The member whose spot it is.
@@ -295,7 +293,6 @@ class SiloRoomResumePoint {
     }
     if (earliest == null) return null;
     return SiloRoomResumePoint(
-      contentId: contentId,
       seconds: positionOf(earliest).floor(),
       profileId: earliest['profile_id']?.toString(),
       notStarted: members.where((m) => m['state'] == 'unseen').length,
@@ -392,7 +389,11 @@ class SiloWatchPartyApi {
       data: {
         'content_ids': [contentId],
       },
-      options: Options(headers: {'X-Room-Token': roomToken}),
+      // The host's start buttons wait on this, so it can't hang for long.
+      options: Options(
+        headers: {'X-Room-Token': roomToken},
+        receiveTimeout: const Duration(seconds: 5),
+      ),
     );
     return SiloRoomResumePoint.fromMemberState(
       asJsonMap(response.data),
