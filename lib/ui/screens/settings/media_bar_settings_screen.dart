@@ -320,6 +320,26 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                         l10n.recentlyAdded,
                     UserPreferences.mediaBarSourceRecentlyReleased:
                         l10n.recentlyReleased,
+                    UserPreferences.mediaBarSourceNewReleases:
+                        l10n.mediaBarSourceNewReleases,
+                  },
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseBanner,
+                  title: l10n.mediaBarNewReleaseBanner,
+                  subtitle: l10n.mediaBarNewReleaseBannerDescription,
+                  icon: Icons.new_releases_outlined,
+                  onChanged: _pushSync,
+                ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseDays,
+                  title: l10n.mediaBarNewReleaseDays,
+                  description: l10n.mediaBarNewReleaseDaysDescription,
+                  icon: Icons.date_range,
+                  options: {
+                    for (final days in const [7, 14, 30, 60, 90])
+                      days: l10n.daysValue(days),
                   },
                   onChanged: _pushSync,
                 ),

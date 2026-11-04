@@ -7,6 +7,7 @@ import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../util/platform_detection.dart';
 import '../focus/glass_focus_halo.dart';
 import '../offline_aware_image.dart';
+import 'media_bar_new_release_label.dart';
 
 class AyaMediaBar extends StatefulWidget {
   static const _cornerRadius = 18.0;
@@ -332,7 +333,25 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         Positioned(
           left: AyaMediaBar._contentLeftPadding,
           top: AyaMediaBar._contentTopPadding,
-          child: _buildLogoOrTitle(theme, item),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLogoOrTitle(theme, item),
+              if (item.newRelease case final release?) ...[
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AyaMediaBar._titleMaxWidth,
+                  ),
+                  child: MediaBarNewReleaseLine(
+                    release: release,
+                    showMessage: !PlatformDetection.useMobileUi,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );

@@ -144,6 +144,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.sinceYouWatched5 => 'Since You Watched Row 5',
         HomeSectionType.rewatch => 'Rewatch',
         HomeSectionType.seasonal => l10n.seasonalRow,
+        HomeSectionType.mdblistWatchingNow => l10n.mdblistWatchingNow,
         HomeSectionType.none => l10n.none,
       };
 
@@ -180,6 +181,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
                   c.type != HomeSectionType.mediaBar &&
                   c.type != HomeSectionType.resumeAudio &&
                   c.type != HomeSectionType.libraryButtons &&
+                  c.type != HomeSectionType.mdblistWatchingNow &&
                   (liveTvOnAnyServer ||
                       (c.type != HomeSectionType.liveTv &&
                           c.type != HomeSectionType.activeRecordings)) &&

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -20,9 +21,11 @@ import '../../../../util/media_source_summary.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../navigation/destinations.dart';
+import '../../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
+import '../../../widgets/scroll_edge_arrows.dart';
 import '../../../widgets/seerr/seerr_image_urls.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
 import '../../../widgets/seerr/seerr_request_dialog.dart';
@@ -62,8 +65,19 @@ class _Row {
   const _Row(this.label, this.value, [this.logoPath]);
 }
 
-const _muted = Color(0x99EBEBF5);
-const _platter = Color(0x24FFFFFF);
+// Frost takes its colors from the theme. Its text, icons and hairlines are
+// the ink drawn on the background, its glass is tinted with the surface and
+// focus lights up in the focused button color, each at the strength Frost's
+// own look gives it.
+Color _ink([double alpha = 1]) =>
+    AppColorScheme.onBackground.withValues(alpha: alpha);
+Color _tint(double alpha) => AppColorScheme.surface.withValues(alpha: alpha);
+Color _shade(double alpha) =>
+    AppColorScheme.background.withValues(alpha: alpha);
+Color _lit(double alpha) =>
+    AppColorScheme.buttonFocused.withValues(alpha: alpha);
+Color get _muted => _ink(0.6);
+Color get _platter => _lit(0.14);
 const _duration = Duration(milliseconds: 200);
 
 /// The stage Frost's TV view is laid out on: 1280 by 720 at the least, in
@@ -78,7 +92,8 @@ Size frostStageSize(BoxConstraints room) {
 }
 
 /// Scales [child], laid out on the stage, to fill the room the app's own
-/// navigation leaves, under a top navbar or past the collapsed left sidebar.
+/// navigation leaves, under a top navbar, past the collapsed left sidebar or
+/// the back button a bottom navbar brings, and above that bar.
 class FrostStage extends StatelessWidget {
   final bool navbarTop;
   final Widget child;
@@ -90,6 +105,7 @@ class FrostStage extends StatelessWidget {
     padding: EdgeInsets.only(
       top: navbarTop ? TopToolbar.heightFor(context) : 0,
       left: navbarTop ? 0 : 72,
+      bottom: BottomNavInsetScope.maybeOf(context) ?? 0,
     ),
     child: LayoutBuilder(
       builder: (context, constraints) => FittedBox(
@@ -150,6 +166,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
 
   final _sheet = DraggableScrollableController();
   final _detailsScroll = ScrollController();
+  final _chipScroll = ScrollController();
 
   ItemDetailViewModel get _vm => widget.viewModel;
 
@@ -196,6 +213,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     FocusManager.instance.removeListener(_trackHome);
     _sheet.dispose();
     _detailsScroll.dispose();
+    _chipScroll.dispose();
     super.dispose();
   }
 
@@ -340,8 +358,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       _Tab.details => Icons.info_outline,
     };
     return icon == null
-        ? const SeerrIcon(size: 22, color: Colors.white)
-        : Icon(icon, color: Colors.white, size: 22);
+        ? SeerrIcon(size: 22, color: _ink())
+        : Icon(icon, color: _ink(), size: 22);
   }
 
   /// The Seerr tab's segments, and the related ones for a title that's only
@@ -630,7 +648,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     showDialog<void>(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: const Color(0xF22C2C30),
+        backgroundColor: _tint(0.95),
         insetPadding: const EdgeInsets.symmetric(horizontal: 80, vertical: 60),
         shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(36)),
         child: Focus(
@@ -650,8 +668,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: _ink(),
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
                     ),
@@ -659,8 +677,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   const SizedBox(height: 20),
                   Text(
                     overview,
-                    style: const TextStyle(
-                      color: Color(0xE6FFFFFF),
+                    style: TextStyle(
+                      color: _ink(0.9),
                       fontSize: 18,
                       height: 1.6,
                     ),
@@ -719,13 +737,13 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               errorWidget: (_, _, _) => const SizedBox.shrink(),
             ),
           ),
-        ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
-        const DecoratedBox(
+        ColoredBox(color: _shade(0.55)),
+        DecoratedBox(
           decoration: BoxDecoration(
             gradient: RadialGradient(
               center: Alignment(0, -0.1),
               radius: 0.9,
-              colors: [Color(0x00000000), Color(0x80000000)],
+              colors: [_shade(0), _shade(0.5)],
               stops: [0.35, 1],
             ),
           ),
@@ -751,13 +769,15 @@ class _FrostDetailContentState extends State<FrostDetailContent>
   Widget _glass({
     required Widget child,
     required double radius,
-    Color color = const Color(0x802C2C32),
+    Color? color,
     EdgeInsetsGeometry? padding,
     bool shadow = false,
+    bool liveBlur = true,
   }) => glassPane(
     tier: _tier,
-    fallbackColor: color,
+    fallbackColor: color ?? _tint(0.5),
     cornerRadius: radius,
+    sigma: liveBlur ? GlassRecipe.panelSigma : 0,
     padding: padding,
     shadow: shadow,
     context: context,
@@ -816,6 +836,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     AppLocalizations l10n,
   ) {
     final overview = _tab == _Tab.overview;
+    // Everything under these panes is already blurred or shaded, so a live
+    // blur barely shows, and on some Windows PCs it washes the window out gray.
+    final liveBlur = !PlatformDetection.isWindows;
 
     final window = Positioned(
       left: 24,
@@ -824,8 +847,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       bottom: 146,
       child: _glass(
         radius: 44,
-        color: const Color(0x5C1C1C20),
+        color: _tint(0.36),
         shadow: true,
+        liveBlur: liveBlur,
         child: ClipRRect(
           borderRadius: AppRadius.circular(44),
           child: Stack(
@@ -838,24 +862,20 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   fit: StackFit.expand,
                   children: [
                     _art(item),
-                    const DecoratedBox(
+                    DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
-                          colors: [
-                            Color(0xF20C0C0E),
-                            Color(0xBD0C0C0E),
-                            Color(0x000C0C0E),
-                          ],
+                          colors: [_shade(0.95), _shade(0.74), _shade(0)],
                           stops: [0, 0.5, 0.8],
                         ),
                       ),
                     ),
-                    const DecoratedBox(
+                    DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0x800C0C0E), Color(0x000C0C0E)],
+                          colors: [_shade(0.5), _shade(0)],
                           stops: [0, 0.62],
                         ),
                       ),
@@ -872,7 +892,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     children: [
                       Text(
                         item.name.toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _muted,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -882,8 +902,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                       const SizedBox(height: 2),
                       Text(
                         _tabLabel(_tab, l10n),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: _ink(),
                           fontSize: 36,
                           height: 1.17,
                           fontWeight: FontWeight.w800,
@@ -908,6 +928,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 38,
           shadow: true,
+          liveBlur: liveBlur,
           padding: const EdgeInsets.all(8),
           // Unbounded across, so the row sizes to its buttons and never wraps.
           child: UnconstrainedBox(
@@ -938,6 +959,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 30,
           shadow: true,
+          liveBlur: liveBlur,
           padding: const EdgeInsets.all(6),
           child: FittedBox(
             fit: BoxFit.scaleDown,
@@ -980,7 +1002,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         if (focused && _tab != tab) setState(() => _tab = tab);
         _trackHome();
       },
-      onSelect: _enterContent,
+      // Focus picks the tab, but a click doesn't move focus, so it has to.
+      onSelect: selected ? _enterContent : _tabNode(tab).requestFocus,
       onLeft: index > 0
           ? () => _tabNode(tabs[index - 1]).requestFocus()
           : _toSidebar,
@@ -998,8 +1021,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           padding: const EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             color: focused
-                ? const Color(0x61FFFFFF)
-                : (selected ? const Color(0x29FFFFFF) : Colors.transparent),
+                ? _lit(0.38)
+                : (selected ? _ink(0.16) : Colors.transparent),
             borderRadius: AppRadius.circular(24),
           ),
           child: Row(
@@ -1010,8 +1033,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               Text(
                 _tabLabel(tab, l10n),
                 maxLines: 1,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: _ink(),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1172,7 +1195,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     child: SizedBox.square(
       dimension: size,
       child: path == null
-          ? const ColoredBox(color: Color(0x1FFFFFFF))
+          ? ColoredBox(color: _ink(0.12))
           : OfflineAwareImage(
               imageUrl: '$seerrLogoBase$path',
               fit: BoxFit.cover,
@@ -1212,7 +1235,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: const Color(0xCCEBEBF5),
+              color: _ink(0.8),
               fontSize: phone ? 13 : 16,
               fontWeight: FontWeight.w500,
             ),
@@ -1244,7 +1267,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               ? const EdgeInsets.fromLTRB(10, 10, 16, 10)
               : const EdgeInsets.fromLTRB(12, 12, 16, 12),
           decoration: BoxDecoration(
-            color: phone ? const Color(0x12FFFFFF) : const Color(0x1AFFFFFF),
+            color: _ink(phone ? 0.07 : 0.1),
             borderRadius: AppRadius.circular(phone ? 20 : 22),
           ),
           child: Row(
@@ -1261,7 +1284,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: _ink(),
                         fontSize: phone ? 16 : 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1343,8 +1366,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   overview,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xE6FFFFFF),
+                  style: TextStyle(
+                    color: _ink(0.9),
                     fontSize: 18,
                     height: 1.44,
                   ),
@@ -1370,8 +1393,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             item.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: _ink(),
               fontSize: 64,
               height: 1.1,
               fontWeight: FontWeight.w800,
@@ -1393,9 +1416,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             const SizedBox(height: 14),
             Container(
               height: 100,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border.symmetric(
-                  horizontal: BorderSide(color: Color(0x24FFFFFF)),
+                  horizontal: BorderSide(color: _ink(0.14)),
                 ),
               ),
               child: ratings,
@@ -1441,11 +1464,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           if (index > 0) const TextSpan(text: '    '),
           TextSpan(
             text: '$label  ',
-            style: const TextStyle(color: _muted, fontWeight: FontWeight.w600),
+            style: TextStyle(color: _muted, fontWeight: FontWeight.w600),
           ),
           TextSpan(
             text: names,
-            style: const TextStyle(color: Color(0xE6FFFFFF)),
+            style: TextStyle(color: _ink(0.9)),
           ),
         ],
       ],
@@ -1468,8 +1491,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           child: LinearProgressIndicator(
             value: resume.fraction,
             minHeight: phone ? 4 : 5,
-            color: Colors.white,
-            backgroundColor: const Color(0x40FFFFFF),
+            color: AppColorScheme.rangeProgress,
+            backgroundColor: AppColorScheme.rangeTrack,
           ),
         ),
       ),
@@ -1480,7 +1503,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: const Color(0xCCEBEBF5),
+            color: _ink(0.8),
             fontSize: phone ? 13 : 16,
             fontWeight: FontWeight.w500,
           ),
@@ -1531,17 +1554,17 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            color: focused ? const Color(0x52FFFFFF) : const Color(0x1AFFFFFF),
+            color: focused ? _lit(0.32) : _ink(0.1),
             borderRadius: AppRadius.circular(20),
           ),
           child: Row(
             children: [
-              Icon(choice.kind.icon, color: Colors.white, size: 18),
+              Icon(choice.kind.icon, color: _ink(), size: 18),
               const SizedBox(width: 10),
               Text(
                 choice.kind.label(l10n),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: _ink(),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1553,14 +1576,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    color: Color(0xB8EBEBF5),
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: _ink(0.72), fontSize: 16),
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.unfold_more, color: _muted, size: 14),
+              Icon(Icons.unfold_more, color: _muted, size: 14),
             ],
           ),
         ),
@@ -1615,16 +1635,14 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: focused
-                      ? const Color(0x61FFFFFF)
-                      : (picked ? const Color(0x2EFFFFFF) : Colors.transparent),
+                      ? _lit(0.38)
+                      : (picked ? _ink(0.18) : Colors.transparent),
                   borderRadius: AppRadius.circular(phone ? 16 : 21),
                 ),
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: focused || picked
-                        ? Colors.white
-                        : const Color(0xADEBEBF5),
+                    color: _ink(focused || picked ? 1 : 0.68),
                     fontSize: phone ? 14 : 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1637,12 +1655,34 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0x14FFFFFF),
+        color: _ink(0.08),
         borderRadius: AppRadius.circular(phone ? 20 : 25),
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(mainAxisSize: MainAxisSize.min, spacing: 4, children: chips),
+      child: Listener(
+        // A mouse wheel only turns up and down, so it moves the chips sideways.
+        onPointerSignal: (signal) {
+          final position = _chipScroll.positions.singleOrNull;
+          if (signal is! PointerScrollEvent || position == null) return;
+          position.jumpTo(
+            (position.pixels + signal.scrollDelta.dy).clamp(
+              position.minScrollExtent,
+              position.maxScrollExtent,
+            ),
+          );
+        },
+        child: ScrollEdgeArrows(
+          controller: _chipScroll,
+          size: phone ? 32 : 42,
+          child: SingleChildScrollView(
+            controller: _chipScroll,
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: chips,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1750,7 +1790,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     spacing: 5,
                     children: [
                       if (phone && episode.isPlayed)
-                        const Icon(Icons.check_circle, color: _muted, size: 12),
+                        Icon(Icons.check_circle, color: _muted, size: 12),
                       Text(
                         caps,
                         style: TextStyle(
@@ -1768,7 +1808,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _ink(),
                       fontSize: phone ? 15 : 20,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1803,16 +1843,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                       spacing: 7,
                       children: [
                         if (episode.isPlayed)
-                          const Icon(
-                            Icons.check_circle,
-                            color: _muted,
-                            size: 17,
-                          ),
+                          Icon(Icons.check_circle, color: _muted, size: 17),
                         if (runtime != null)
                           Text(
                             formatRuntimeShort(runtime),
-                            style: const TextStyle(
-                              color: Color(0xB8EBEBF5),
+                            style: TextStyle(
+                              color: _ink(0.72),
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
@@ -1827,8 +1863,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                           child: LinearProgressIndicator(
                             value: resume.fraction,
                             minHeight: 5,
-                            color: Colors.white,
-                            backgroundColor: const Color(0x40FFFFFF),
+                            color: AppColorScheme.rangeProgress,
+                            backgroundColor: AppColorScheme.rangeTrack,
                           ),
                         ),
                       ),
@@ -1836,10 +1872,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                         resume.label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Color(0xB8EBEBF5),
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: _ink(0.72), fontSize: 14),
                       ),
                     ],
                   ],
@@ -1867,19 +1900,33 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const ColoredBox(color: Color(0xFF1C1C1E)),
+          ColoredBox(color: _tint(1)),
           if (url != null)
             OfflineAwareImage(
               imageUrl: url,
               fit: BoxFit.cover,
               errorWidget: (_, _, _) => const SizedBox.shrink(),
             ),
-          if (SeerrMediaStatus.hasDot(seerrStatus))
-            Positioned(
-              right: badge / 3,
-              top: badge / 3,
-              child: SeerrStatusDot(status: seerrStatus, size: badge),
-            ),
+          ...switch (SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle()
+              : null) {
+            SeerrBadgeStyle.badge => [
+              Positioned(
+                right: badge / 3,
+                top: badge / 3,
+                child: SeerrStatusDot(status: seerrStatus, size: badge),
+              ),
+            ],
+            SeerrBadgeStyle.banner => [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SeerrStatusBanner(status: seerrStatus),
+              ),
+            ],
+            null => const <Widget>[],
+          },
           if (progress != null)
             Positioned(
               left: 8,
@@ -1890,8 +1937,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 3,
-                  color: Colors.white,
-                  backgroundColor: const Color(0x59FFFFFF),
+                  color: AppColorScheme.rangeProgress,
+                  backgroundColor: AppColorScheme.rangeTrack,
                 ),
               ),
             ),
@@ -2000,7 +2047,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _ink(),
                       fontSize: phone ? 16 : 22,
                       fontWeight: FontWeight.w700,
                     ),
@@ -2020,7 +2067,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               height: phone ? 28 : 34,
               padding: EdgeInsets.symmetric(horizontal: phone ? 12 : 16),
               decoration: BoxDecoration(
-                color: const Color(0x14FFFFFF),
+                color: _ink(0.08),
                 borderRadius: AppRadius.circular(phone ? 14 : 17),
               ),
               child: Row(
@@ -2038,7 +2085,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   Text(
                     seerrMediaStatusLabel(status, l10n),
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _ink(),
                       fontSize: phone ? 13 : 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -2104,16 +2151,15 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   width: avatar,
                   height: avatar,
                   child: url == null
-                      ? const ColoredBox(
-                          color: Color(0xFF1C1C1E),
+                      ? ColoredBox(
+                          color: _tint(1),
                           child: Icon(Icons.person, color: _muted, size: 40),
                         )
                       : OfflineAwareImage(
                           imageUrl: url,
                           fit: BoxFit.cover,
                           alignment: const Alignment(0, -0.6),
-                          errorWidget: (_, _, _) =>
-                              const ColoredBox(color: Color(0xFF1C1C1E)),
+                          errorWidget: (_, _, _) => ColoredBox(color: _tint(1)),
                         ),
                 ),
               ),
@@ -2124,7 +2170,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.white,
+                color: _ink(),
                 fontSize: phone ? 14 : 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -2210,7 +2256,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _ink(),
                   fontSize: phone ? 15 : 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -2299,7 +2345,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: const Color(0xE6FFFFFF),
+                color: _ink(0.9),
                 fontSize: phone ? 13 : 15,
                 fontWeight: FontWeight.w600,
               ),
@@ -2337,9 +2383,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         AnimatedContainer(
           duration: _duration,
           decoration: BoxDecoration(
-            color: focused
-                ? const Color(0x1FFFFFFF)
-                : (phone ? const Color(0x12FFFFFF) : const Color(0x0FFFFFFF)),
+            color: focused ? _lit(0.12) : _ink(phone ? 0.07 : 0.06),
             borderRadius: AppRadius.circular(phone ? 20 : 22),
           ),
           child: Column(
@@ -2356,9 +2400,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   decoration: BoxDecoration(
                     border: index == info.$2.length - 1
                         ? null
-                        : const Border(
-                            bottom: BorderSide(color: Color(0x14FFFFFF)),
-                          ),
+                        : Border(bottom: BorderSide(color: _ink(0.08))),
                   ),
                   child: Row(
                     children: [
@@ -2381,7 +2423,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                           maxLines: phone ? 3 : 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: const Color(0xEBFFFFFF),
+                            color: _ink(0.92),
                             fontSize: phone ? 15 : 16,
                           ),
                         ),
@@ -2447,7 +2489,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     AppLocalizations l10n,
   ) {
     final size = MediaQuery.sizeOf(context);
-    final bottom = MediaQuery.paddingOf(context).bottom;
+    final bottom = bottomContentInset(context);
 
     final sheet = DraggableScrollableSheet(
       controller: _sheet,
@@ -2458,7 +2500,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       snapSizes: const [0.58, 0.88],
       builder: (context, scroll) => _glass(
         radius: 38,
-        color: const Color(0x991E1E22),
+        color: _tint(0.6),
         shadow: true,
         child: ListView(
           controller: scroll,
@@ -2478,7 +2520,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     width: 36,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: const Color(0x52FFFFFF),
+                      color: _ink(0.32),
                       borderRadius: AppRadius.circular(3),
                     ),
                   ),
@@ -2488,8 +2530,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             const SizedBox(height: 4),
             Text(
               item.name,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: _ink(),
                 fontSize: 30,
                 height: 1.13,
                 fontWeight: FontWeight.w800,
@@ -2542,7 +2584,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           bottom: 12 + bottom,
           child: _glass(
             radius: 30,
-            color: const Color(0x8C3A3A40),
+            color: _tint(0.55),
             shadow: true,
             padding: const EdgeInsets.all(6),
             child: _actions(phone: true),
@@ -2555,7 +2597,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
   Widget _phoneTabs(List<_Tab> tabs, AppLocalizations l10n) => Container(
     padding: const EdgeInsets.all(3),
     decoration: BoxDecoration(
-      color: const Color(0x14FFFFFF),
+      color: _ink(0.08),
       borderRadius: AppRadius.circular(19),
     ),
     child: Row(
@@ -2572,9 +2614,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: tab == _tab
-                      ? const Color(0x33FFFFFF)
-                      : Colors.transparent,
+                  color: tab == _tab ? _ink(0.2) : Colors.transparent,
                   borderRadius: AppRadius.circular(16),
                 ),
                 child: FittedBox(
@@ -2582,9 +2622,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                   child: Text(
                     _tabLabel(tab, l10n, short: true),
                     style: TextStyle(
-                      color: tab == _tab
-                          ? Colors.white
-                          : const Color(0xB3EBEBF5),
+                      color: _ink(tab == _tab ? 1 : 0.7),
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -2704,9 +2742,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           const SizedBox(height: 14),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border.symmetric(
-                horizontal: BorderSide(color: Color(0x29FFFFFF), width: 0.5),
+                horizontal: BorderSide(color: _ink(0.16), width: 0.5),
               ),
             ),
             child: SingleChildScrollView(
@@ -2723,11 +2761,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               overview,
               maxLines: _overviewOpen ? null : 3,
               overflow: _overviewOpen ? null : TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xE0FFFFFF),
-                fontSize: 16,
-                height: 1.38,
-              ),
+              style: TextStyle(color: _ink(0.88), fontSize: 16, height: 1.38),
             ),
           ),
         ],
@@ -2740,7 +2774,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           _heading(l10n.playback, phone: true),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0x12FFFFFF),
+              color: _ink(0.07),
               borderRadius: AppRadius.circular(20),
             ),
             child: Column(
@@ -2762,7 +2796,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                             ),
                             child: Icon(
                               choice.kind.icon,
-                              color: Colors.white,
+                              color: _ink(),
                               size: 17,
                             ),
                           ),
@@ -2774,9 +2808,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                               decoration: BoxDecoration(
                                 border: index == choices.length - 1
                                     ? null
-                                    : const Border(
+                                    : Border(
                                         bottom: BorderSide(
-                                          color: Color(0x1FFFFFFF),
+                                          color: _ink(0.12),
                                           width: 0.5,
                                         ),
                                       ),
@@ -2785,8 +2819,8 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                                 children: [
                                   Text(
                                     choice.kind.label(l10n),
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: _ink(),
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -2798,16 +2832,16 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.right,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: _muted,
                                         fontSize: 14,
                                       ),
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  const Icon(
+                                  Icon(
                                     Icons.unfold_more,
-                                    color: Color(0x73EBEBF5),
+                                    color: _ink(0.45),
                                     size: 16,
                                   ),
                                 ],

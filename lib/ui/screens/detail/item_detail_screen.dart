@@ -12887,6 +12887,11 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
     final size = compact ? 46.0 : 60.0;
 
     if (widget.isPrimary) {
+      // Filled the way Modern fills its labeled Play, in the accent until it
+      // has focus.
+      final ink = focused
+          ? AppColorScheme.onButtonFocused
+          : AppColorScheme.onAccent;
       return AnimatedScale(
         scale: focused ? 1.06 : 1,
         duration: duration,
@@ -12897,12 +12902,14 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
           constraints: BoxConstraints(minWidth: compact ? 140 : 200),
           padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 28),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: focused ? 1 : 0.86),
+            color: focused
+                ? AppColorScheme.buttonFocused
+                : AppColorScheme.accent,
             borderRadius: AppRadius.circular(size / 2),
             boxShadow: [
               if (focused)
                 BoxShadow(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: AppColorScheme.buttonFocused.withValues(alpha: 0.3),
                   spreadRadius: 4,
                 ),
             ],
@@ -12913,7 +12920,7 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
             children: [
               AdaptiveIcon(
                 widget.icon ?? Icons.play_arrow,
-                color: Colors.black,
+                color: ink,
                 size: 22,
               ),
               const SizedBox(width: 8),
@@ -12925,7 +12932,7 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: ink,
                     fontSize: compact ? 17 : 19,
                     fontWeight: FontWeight.w600,
                   ),
@@ -12941,9 +12948,9 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
     if (widget.isActive && widget.icon == Icons.favorite) {
       color = const Color(0xFFFF375F);
     } else if (widget.isActive) {
-      color = widget.activeColor ?? const Color(0xFF30D158);
+      color = widget.activeColor ?? AppColorScheme.accent;
     } else {
-      color = Colors.white;
+      color = AppColorScheme.onButtonNormal;
     }
     final face = AnimatedScale(
       scale: focused ? 1.12 : 1,
@@ -12954,7 +12961,9 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: focused ? 0.32 : 0),
+          color: AppColorScheme.buttonFocused.withValues(
+            alpha: focused ? 0.32 : 0,
+          ),
         ),
         child: Center(
           child: widget.iconBuilder != null
@@ -12989,7 +12998,7 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xF22C2C30),
+                  color: AppColorScheme.surface.withValues(alpha: 0.95),
                   borderRadius: AppRadius.circular(16),
                   boxShadow: const [
                     BoxShadow(
@@ -13001,8 +13010,8 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
                 ),
                 child: Text(
                   widget.label,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -15308,11 +15317,12 @@ class DetailSeasonsRow extends StatelessWidget {
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
         itemBuilder: (context, index) {
           final season = seasons[index];
-          final showAvailabilityBadges =
-              prefs.get(UserPreferences.showSeerrAvailabilityBadges);
           final seerrStatus = seerrSeasonStatus?[season.indexNumber];
-          final hasSeerrDot =
-              showAvailabilityBadges && SeerrMediaStatus.hasDot(seerrStatus);
+          final seerrStyle = SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle(prefs)
+              : null;
+          final hasSeerrDot = seerrStyle == SeerrBadgeStyle.badge;
+          final hasSeerrBanner = seerrStyle == SeerrBadgeStyle.banner;
           return MediaCard(
             title: season.name,
             subtitle: _progressText(season),
@@ -15323,6 +15333,9 @@ class DetailSeasonsRow extends StatelessWidget {
             imageUrl: _seasonImageUrl(season, isMobile: isMobile),
             width: cardWidth,
             aspectRatio: 2 / 3,
+            // The card draws a banner itself, while its own dot would take the
+            // watched corner, so the dot goes top left here.
+            seerrStatus: hasSeerrBanner ? seerrStatus : null,
             overlayOccupiesTopLeft: hasSeerrDot,
             imageOverlays: [
               if (hasSeerrDot)
@@ -15331,10 +15344,12 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
-              // Top left, dropped below the Seerr dot when there is one so the two stack
-              // rather than overlap.
+              // Top left, dropped below the Seerr dot or banner when there is one so
+              // the two stack rather than overlap.
               Positioned(
-                top: hasSeerrDot ? 30 : 6,
+                top: hasSeerrDot
+                    ? 30
+                    : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
                 child: AnimeSeasonAudioBadge(
                   seriesId: season.seriesId,

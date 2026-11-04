@@ -2737,6 +2737,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'فشل في تحميل التسجيلات';
 
   @override
@@ -3861,6 +3866,84 @@ class AppLocalizationsAr extends AppLocalizations {
   String get upcomingEpisodeTomorrow => 'Tomorrow';
 
   @override
+  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+
+  @override
+  String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
+
+  @override
+  String get mergedCalendarRow => 'Upcoming Releases';
+
+  @override
+  String get arrCalendarsRowSubtitle => 'Radarr and Sonarr Calendars';
+
+  @override
+  String get radarrCalendarRowSubtitle => 'Radarr Calendar';
+
+  @override
+  String get sonarrCalendarRowSubtitle => 'Sonarr Calendar';
+
+  @override
+  String calendarReleaseIn(int days, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'In $days days',
+      one: 'Tomorrow',
+      zero: 'Today',
+    );
+    return '$_temp0 ($date)';
+  }
+
+  @override
+  String get calendarReleaseCinema => 'Cinema';
+
+  @override
+  String get calendarReleaseDigital => 'Digital';
+
+  @override
+  String get calendarReleasePhysical => 'Physical';
+
+  @override
+  String get upcomingCalendars => 'Upcoming Calendars';
+
+  @override
+  String get upcomingCalendarsDescription =>
+      'Toggle Upcoming Calendars from Radarr/Sonarr.';
+
+  @override
+  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+
+  @override
+  String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
+
+  @override
+  String get radarrCalendarShowDigital => 'Show Upcoming Digital Releases';
+
+  @override
+  String get radarrCalendarShowPhysical => 'Show Upcoming Physical Releases';
+
+  @override
+  String get calendarShowReleaseDate => 'Show Release Date on Home Screen';
+
+  @override
+  String get radarrCalendarHideDownloaded =>
+      'Hide Movies Already on the Server';
+
+  @override
+  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
+
+  @override
+  String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
+
+  @override
+  String get sonarrCalendarHideDownloaded =>
+      'Hide Episodes Already on the Server';
+
+  @override
+  String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
+
+  @override
   String get moveUp => 'Move Up';
 
   @override
@@ -4953,6 +5036,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mediaBarSourceRandom => 'Random';
 
   @override
+  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
+
+  @override
+  String get mediaBarNewReleaseBanner => 'New Release Banner';
+
+  @override
+  String get mediaBarNewReleaseBannerDescription =>
+      'Flag series with a new season or new episodes that aired recently.';
+
+  @override
+  String get mediaBarNewReleaseDays => 'New Release Window';
+
+  @override
+  String get mediaBarNewReleaseDaysDescription =>
+      'How long after an episode airs it still counts as new.';
+
+  @override
+  String get mediaBarNewSeries => 'New Series';
+
+  @override
+  String get mediaBarNewSeason => 'New Season';
+
+  @override
+  String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
   String get moviesAndTvShows => 'الأفلام والبرامج التلفزيونية';
 
   @override
@@ -5345,6 +5454,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get additionalRatings => 'تقييمات إضافية';
 
   @override
+  String get mdblistWatchingNow => 'Watching on MDBList';
+
+  @override
+  String get mdblistWatchingNowDescription =>
+      'Show what MDBList users are currently watching';
+
+  @override
+  String watchingNowWatchersCount(int count) {
+    return '$count watching';
+  }
+
+  @override
+  String watchingNowLiveSummary(String users, String movies, String shows) {
+    return '$users watching now · $movies movies · $shows shows';
+  }
+
+  @override
+  String watchingNowLiveSummaryToday(
+    String users,
+    String movies,
+    String shows,
+  ) {
+    return '$users watched today · $movies movies · $shows shows';
+  }
+
+  @override
   String get showMdbListAndTmdbRatings => 'عرض تقييمات MDBlist وTMDB';
 
   @override
@@ -5507,7 +5642,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Show season availability badges on media details pages';
+      'Show the Seerr status on posters and seasons across the app';
+
+  @override
+  String get seerrBadgeStyle => 'Badge Style';
+
+  @override
+  String get seerrBadgeStyleDescription =>
+      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+
+  @override
+  String get seerrBadgeStyleBadge => 'Badge';
 
   @override
   String get seerrNotificationsSection => 'الإشعارات';
@@ -15691,6 +15836,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get playbackInfoWhy => 'Why';
 
   @override
+  String get playbackInfoServerCompatibilityCheck =>
+      'Server compatibility check';
+
+  @override
+  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+
+  @override
   String get playbackInfoQualityLimit => 'Quality Limit';
 
   @override
@@ -15750,6 +15902,63 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get playbackInfoNoteDirectStream =>
       'The server is repackaging the file without converting it.';
+
+  @override
+  String get playbackInfoNoteLiveRelay =>
+      'The server is relaying the channel without converting it.';
+
+  @override
+  String playbackInfoFrameRateFrom(String rate, String source) {
+    return '$rate fps ($source)';
+  }
+
+  @override
+  String get playbackInfoRateSourceHeader => 'stream header';
+
+  @override
+  String get playbackInfoRateSourceMeasured => 'measured';
+
+  @override
+  String get playbackInfoRateSourceServer => 'server';
+
+  @override
+  String get playbackInfoServerFrameRate => 'Server Frame Rate';
+
+  @override
+  String get playbackInfoScan => 'Scan';
+
+  @override
+  String get playbackInfoProgressive => 'Progressive';
+
+  @override
+  String get playbackInfoInterlaced => 'Interlaced';
+
+  @override
+  String get playbackInfoRepeatedFields => 'Telecined (repeated fields)';
+
+  @override
+  String get playbackInfoHdmiOutput => 'HDMI Output';
+
+  @override
+  String playbackInfoDisplayMode(String width, String height, String rate) {
+    return '$width×$height @ $rate Hz';
+  }
+
+  @override
+  String get playbackInfoRateCorrections => 'Rate Corrections';
+
+  @override
+  String get playbackInfoAudioOutput => 'Output';
+
+  @override
+  String playbackInfoPassthroughOf(String codec) {
+    return 'Passthrough ($codec)';
+  }
+
+  @override
+  String playbackInfoDecodedTo(String channels) {
+    return 'Decoded ($channels)';
+  }
 
   @override
   String get playbackInfoNoteTranscodeVideo =>
@@ -15812,6 +16021,11 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String playbackInfoWhyVideoCodec(String codec) {
     return 'This device can\'t play $codec video';
+  }
+
+  @override
+  String playbackInfoWhyVideoProfileUnknown(String codec) {
+    return 'The server couldn\'t verify this stream\'s $codec profile.';
   }
 
   @override
@@ -16494,4 +16708,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsPreviewSaved => 'Saved';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String smartSearchOnSeerr(String seerr) {
+    return 'Smart Search on $seerr';
+  }
 }

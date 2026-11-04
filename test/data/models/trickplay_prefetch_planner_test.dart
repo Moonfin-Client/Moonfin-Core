@@ -40,6 +40,22 @@ void main() {
       expect(plan(frames, 95, true), [95, 99, 90, 85]);
       expect(plan(info, 20, true), [0]);
     });
+    test('asks for the next sprite sheet as soon as the scrub enters one', () {
+      List<int> sheets(int seconds, bool forward) =>
+          TrickplayPrefetchPlanner.planSeekImageIndexes(
+            info: info,
+            position: Duration(seconds: seconds),
+            totalDuration: totalDuration,
+            forwardStepMs: 30000,
+            backwardStepMs: 10000,
+            directionForward: forward,
+          );
+      expect(sheets(205, true), [1, 0, 2]);
+      expect(sheets(395, false), [1, 2, 0]);
+      expect(sheets(1150, true), [5]);
+      expect(sheets(1300, true), [5]);
+      expect(sheets(5, false), [0]);
+    });
     test('resolves irregular timestamped frames at seek destinations', () {
       final irregular = TrickplayInfo.fromThumbnailSet(
         TrickplayThumbnailSet(
