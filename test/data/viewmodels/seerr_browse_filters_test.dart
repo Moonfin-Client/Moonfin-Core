@@ -1,7 +1,64 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/repositories/seerr_repository.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/seerr_browse_view_model.dart';
 
+/// Answers the calls a browse load makes and keeps the discover ones.
+class _Repo implements SeerrRepository {
+  final discovers = <Invocation>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    switch (invocation.memberName) {
+      case #ensureInitialized:
+        return Future<void>.value();
+      case #discoverMovies:
+      case #discoverTv:
+        discovers.add(invocation);
+        return Future.value(const SeerrDiscoverPage());
+      default:
+        return Future<Never>.error(UnsupportedError('${invocation.memberName}'));
+    }
+  }
+}
+
 void main() {
+  test('switching to movies keeps the sort by name and drops series statuses', () async {
+    final repo = _Repo();
+    final vm = SeerrBrowseViewModel(
+      repo,
+      filterId: '18',
+      mediaType: 'tv',
+      filterType: 'genre',
+    );
+    vm.setSortBy(const SeerrSortOption('Title', 'name.desc'));
+    vm.toggleTvStatus(SeerrTvStatus.ended);
+    vm.toggleGenre(35);
+
+    vm.setMediaType('movie');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(vm.mediaType, 'movie');
+    expect(vm.state.sortBy.value, 'original_title.desc');
+    expect(vm.state.tvStatuses, isEmpty);
+    expect(vm.state.genreIds, isEmpty);
+    expect(repo.discovers.last.memberName, #discoverMovies);
+    expect(repo.discovers.last.namedArguments[#sortBy], 'original_title.desc');
+    expect(repo.discovers.last.namedArguments[#genre], '18');
+  });
+
+  test('a sort only movies have falls back to the first series sort', () async {
+    final repo = _Repo();
+    final vm = SeerrBrowseViewModel(repo, mediaType: 'movie', filterType: 'keyword');
+    vm.setSortBy(const SeerrSortOption('Revenue', 'revenue.desc'));
+
+    vm.setMediaType('tv');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(vm.state.sortBy.value, 'popularity.desc');
+    expect(repo.discovers.last.memberName, #discoverTv);
+  });
+
   test('tv statuses carry the values seerr defines, pipe joined', () {
     expect(SeerrTvStatus.returningSeries.apiValue, 0);
     expect(SeerrTvStatus.planned.apiValue, 1);
