@@ -124,9 +124,10 @@ void main() {
   });
 
   test('the start lead takes the first start, then averages', () {
-    expect(SiloWatchPartyManager.nextStartLeadMs(0, 600), 600);
+    expect(SiloWatchPartyManager.nextStartLeadMs(null, 600), 600);
     expect(SiloWatchPartyManager.nextStartLeadMs(600, 400), 500);
-    expect(SiloWatchPartyManager.nextStartLeadMs(0, 9000), 2000);
+    expect(SiloWatchPartyManager.nextStartLeadMs(0, 400), 200);
+    expect(SiloWatchPartyManager.nextStartLeadMs(null, 9000), 2000);
   });
 
   test('the next episode follows season and episode order', () {
