@@ -4133,6 +4133,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     AggregatedItem item,
     List<_ModernTab> tabs,
   ) {
+    AggregatedItem? series;
+    List<AggregatedItem>? seriesBooks;
+    if (item.type == 'BookSeries') {
+      series = item;
+      seriesBooks = _vm.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook != null) item = firstBook;
+    }
+
     final textTheme = Theme.of(context).textTheme;
     final isEpisode = item.type == 'Episode';
     final isSeason = item.type == 'Season';
@@ -4304,9 +4317,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ),
       );
 
-      final authorOrArtistName = isBookLayout
-          ? (_getAuthorName(item) ?? item.albumArtist)
-          : item.albumArtist;
+      final authorOrArtistName = series == null
+          ? isBookLayout
+              ? (_getAuthorName(item) ?? item.albumArtist)
+              : item.albumArtist
+          : item.name;
+
+      final itemName = series == null
+          ? item.name
+          : series.rawData["Name"];
 
       final playlistInfo = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -4317,7 +4336,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               maxWidth: _landscape ? 600 : (MediaQuery.sizeOf(context).width - 40),
             ),
             child: MarqueeText(
-              text: item.name,
+              text: itemName,
               style: textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: _titleColor,
