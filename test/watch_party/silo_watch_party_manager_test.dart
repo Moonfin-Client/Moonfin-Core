@@ -81,7 +81,7 @@ void main() {
   });
 
   test('a start\'s delay is the time before its position moved', () {
-    // resume() at 1000 from 60 s; at 2000 it has played 400 ms, so it
+    // resume() at 1000 from 60 s. At 2000 it has played 400 ms, so it
     // started moving at 1600.
     expect(
       SiloWatchPartyManager.startDelayMs(

@@ -41,7 +41,6 @@ class SiloWatchPartyManager extends ChangeNotifier {
   static const _waitingReportInterval = Duration(milliseconds: 500);
   static const _bufferingGrace = Duration(seconds: 2);
   static const _maxDriftSeconds = 1.0;
-  // The most a start is begun ahead of its command's time.
   static const _maxStartLeadMs = 2000;
 
   SiloMediaServerClient? _client;
@@ -101,13 +100,10 @@ class SiloWatchPartyManager extends ChangeNotifier {
   bool _hostStopping = false;
   int _lastDriftSeekMs = 0;
   bool _applying = false;
-  // How long this player takes from resume() to its position moving, learned
-  // from its starts. A start from paused begins this much before the
-  // command's time, so playback is moving when the room's timeline says it
-  // is; otherwise a heavy file's decoder start comes out as drift for the
-  // rate to close.
+  // How long this player takes to start moving after resume(), learned per
+  // file. A start from paused begins this much early so a heavy file's slow
+  // decoder start doesn't show up as drift.
   int _startLeadMs = 0;
-  // A start being timed: when resume() was called and from where.
   ({int calledAtMs, int fromMs})? _startTiming;
   bool _interceptorInstalled = false;
   Timer? _reportTimer;
@@ -946,6 +942,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
         _openedRevision = next.selectionRevision;
         _appliedCommandId = null;
         _reference = null;
+        _startLeadMs = 0;
+        _startTiming = null;
         unawaited(_openSelection(next));
       }
     } else if (previous.isPlaying) {
@@ -1150,8 +1148,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
 
   /// How long a start took to move, from a position sample past where it
   /// began: the sample's time less the media it has played since. Null until
-  /// it has moved, for a sample that went backwards (a seek), or for one
-  /// more than five seconds after resume() (a stall, even if it moved).
+  /// it has moved, for a sample that jumped (a seek), or for one more than
+  /// five seconds after resume() (a stall, even if it moved).
   @visibleForTesting
   static int? startDelayMs({
     required int calledAtMs,
