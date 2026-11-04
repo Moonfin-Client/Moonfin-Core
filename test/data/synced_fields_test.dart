@@ -166,6 +166,8 @@ void main() {
     'mediaBarIntervalMs',
     'mediaBarItemCount',
     'mediaBarLibraryIds',
+    'mediaBarNewReleaseBanner',
+    'mediaBarNewReleaseDays',
     'mediaBarOpacity',
     'mediaBarOverlayColor',
     'mediaBarRowPeek',

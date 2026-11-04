@@ -51,6 +51,9 @@ void main() {
 
   Future<AppLocalizations> pumpFor(WidgetTester tester, String mode) async {
     await prefs.set(UserPreferences.mediaBarMode, mode);
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildTheme(ThemeRegistry.active),

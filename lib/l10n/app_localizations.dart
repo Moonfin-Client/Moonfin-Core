@@ -8872,6 +8872,54 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get mediaBarSourceRandom;
 
+  /// Media bar source: series with episodes that aired recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Seasons & Episodes'**
+  String get mediaBarSourceNewReleases;
+
+  /// Setting that flags series in the media bar when new episodes aired recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Release Banner'**
+  String get mediaBarNewReleaseBanner;
+
+  /// No description provided for @mediaBarNewReleaseBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag series with a new season or new episodes that aired recently.'**
+  String get mediaBarNewReleaseBannerDescription;
+
+  /// Setting for how many days an episode counts as new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'New Release Window'**
+  String get mediaBarNewReleaseDays;
+
+  /// No description provided for @mediaBarNewReleaseDaysDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'How long after an episode airs it still counts as new.'**
+  String get mediaBarNewReleaseDaysDescription;
+
+  /// Media bar label on a series whose first season was released recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Series'**
+  String get mediaBarNewSeries;
+
+  /// Media bar label on a series whose latest season was released all at once recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Season'**
+  String get mediaBarNewSeason;
+
+  /// Media bar label on a series with one or more episodes that aired recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Episodes'**
+  String get mediaBarNewEpisodes;
+
   /// Content type: movies and TV shows
   ///
   /// In en, this message translates to:

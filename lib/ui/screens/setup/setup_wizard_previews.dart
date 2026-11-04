@@ -43,6 +43,7 @@ import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
+import '../../widgets/mediabar/media_bar_new_release_label.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
@@ -387,25 +388,92 @@ double _overlayOpacity(BuildContext context) =>
 // ---------------------------------------------------------------------------
 
 Widget mediaBarPreview(String mode) => _liveOrFallback(
-  live: (context, items) => switch (mode) {
-    UserPreferences.mediaBarModeMakd => _makdBar(context, items),
-    UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
-    UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
-    UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
-    UserPreferences.mediaBarModeAya => _ayaBar(context, items),
-    // The rows carry the whole screen with the bar off, so the preview packs
-    // them tighter than the style default to show more than one.
-    UserPreferences.mediaBarModeOff => _homeRowsScreen(
-      context,
-      items,
-      modern: !_phone,
-      rowGapOverride: 24,
-    ),
-    _ => _moonfinBar(context, items),
-  },
+  live: (context, titles) => _mediaBarModePreview(
+    context,
+    mode,
+    _withNewReleasePreview(context, titles),
+  ),
   fallback: _fallbackMediaBar(mode),
   fallbackAspect: 16 / 7,
 );
+
+Widget _mediaBarModePreview(
+  BuildContext context,
+  String mode,
+  List<MediaBarSlideItem> items,
+) => switch (mode) {
+  UserPreferences.mediaBarModeMakd => _makdBar(context, items),
+  UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
+  UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
+  UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
+  UserPreferences.mediaBarModeAya => _ayaBar(context, items),
+  // The rows carry the whole screen with the bar off, so the preview packs
+  // them tighter than the style default to show more than one.
+  UserPreferences.mediaBarModeOff => _homeRowsScreen(
+    context,
+    items,
+    modern: !_phone,
+    rowGapOverride: 24,
+  ),
+  _ => _moonfinBar(context, items),
+};
+
+/// The titles the preview draws, with the new release banner on the first one
+/// while the switch is on and on none while it is off. The bar only finds a
+/// release when one aired lately, so a series stands in with a sample. With no
+/// series there's nothing to flag, as on the bar.
+List<MediaBarSlideItem> _withNewReleasePreview(
+  BuildContext context,
+  List<MediaBarSlideItem> items,
+) {
+  if (!previewValue(context, UserPreferences.mediaBarNewReleaseBanner)) {
+    return [for (final item in items) item.withNewRelease(null)];
+  }
+  final flagged = items.indexWhere((item) => item.newRelease != null);
+  final series = items.indexWhere((item) => item.itemType == 'Series');
+  if (flagged < 0 && series < 0) return items;
+  final lead = flagged >= 0 ? flagged : series;
+  final first = items[lead].newRelease != null
+      ? items[lead]
+      : items[lead].withNewRelease(
+          const MediaBarNewReleaseInfo(
+            kind: MediaBarNewRelease.newSeason,
+            season: 2,
+          ),
+        );
+  return [
+    first,
+    for (var i = 0; i < items.length; i++)
+      if (i != lead) items[i],
+  ];
+}
+
+/// [title] with the new release banner under it, the way every mode but
+/// bookshelf draws it. Phones keep the label alone.
+Widget _titleWithRelease(
+  MediaBarSlideItem item,
+  Widget title, {
+  bool center = false,
+}) {
+  final release = item.newRelease;
+  if (release == null) return title;
+  final alignment = center
+      ? CrossAxisAlignment.center
+      : CrossAxisAlignment.start;
+  return Column(
+    crossAxisAlignment: alignment,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      title,
+      const SizedBox(height: 8),
+      MediaBarNewReleaseLine(
+        release: release,
+        showMessage: !_phone,
+        alignment: alignment,
+      ),
+    ],
+  );
+}
 
 /// On phones the bar takes 55 percent of the screen (46 for makd) and the
 /// rows carry on beneath, which is exactly what the preview shows too.
@@ -537,6 +605,12 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Phones carry the label in the card, its own first line.
+          if (_phone)
+            if (item.newRelease case final release?) ...[
+              MediaBarNewReleaseLine(release: release, showMessage: false),
+              const SizedBox(height: 6),
+            ],
           _metadataWrap(item),
           const SizedBox(height: 6),
           _sampleRatings(context, item, UserPreferences.mediaBarRatings),
@@ -566,16 +640,19 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         Positioned(
           top: 56,
           left: 40,
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: 280,
-            height: 120,
-            fallbackStyle: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              height: 1.05,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: 280,
+              height: 120,
+              fallbackStyle: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                height: 1.05,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
         ),
@@ -654,17 +731,21 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
         ColoredBox(color: AppColorScheme.scrim.withValues(alpha: 0.26)),
         Align(
           alignment: const Alignment(0, -0.1),
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: (size.width * 0.7).clamp(190.0, 380.0),
-            height: (barHeight * 0.18).clamp(58.0, 112.0),
-            alignment: Alignment.center,
-            fallbackStyle: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: (size.width * 0.7).clamp(190.0, 380.0),
+              height: (barHeight * 0.18).clamp(58.0, 112.0),
+              alignment: Alignment.center,
+              fallbackStyle: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
+            center: true,
           ),
         ),
         Positioned(
@@ -747,16 +828,19 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 50,
         top: size.height * 0.22,
-        child: _logoOrTitle(
+        child: _titleWithRelease(
           item,
-          width: (size.width * 0.45).clamp(220.0, 640.0),
-          height: (size.height * 0.35).clamp(90.0, 300.0),
-          fallbackStyle: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w800,
-            height: 1.05,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
+          _logoOrTitle(
+            item,
+            width: (size.width * 0.45).clamp(220.0, 640.0),
+            height: (size.height * 0.35).clamp(90.0, 300.0),
+            fallbackStyle: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              height: 1.05,
+              color: AppColorScheme.onSurface,
+              shadows: _textShadows,
+            ),
           ),
         ),
       ),
@@ -1245,24 +1329,27 @@ Widget _galleryBar(BuildContext context, List<MediaBarSlideItem> items) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                active.title.toUpperCase(),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.02,
-                                  letterSpacing: 1.0,
-                                  color: AppColorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 12,
-                                      color: AppColorScheme.scrim.withValues(
-                                        alpha: 0.7,
+                              _titleWithRelease(
+                                active,
+                                Text(
+                                  active.title.toUpperCase(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.02,
+                                    letterSpacing: 1.0,
+                                    color: AppColorScheme.onSurface,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 12,
+                                        color: AppColorScheme.scrim.withValues(
+                                          alpha: 0.7,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -1430,6 +1517,11 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
     if (active.runtime != null) _runtimeText(active.runtime),
     if (active.officialRating != null) active.officialRating!,
   ];
+  final metaStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+  );
 
   final bar = Stack(
     children: [
@@ -1518,13 +1610,29 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  metaParts.join('  ·  '),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                // The label leads the meta line, like the real carousel.
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (active.newRelease case final release?) ...[
+                      MediaBarNewReleaseLine(
+                        release: release,
+                        showMessage: false,
+                        alignment: CrossAxisAlignment.center,
+                      ),
+                      Text('  ·  ', style: metaStyle),
+                    ],
+                    Flexible(
+                      child: Text(
+                        metaParts.join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: metaStyle,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 _sampleRatings(
@@ -1590,20 +1698,23 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _logoOrTitle(
+                  _titleWithRelease(
                     item,
-                    width: 240,
-                    height: 56,
-                    fallbackStyle: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: AppColorScheme.onSurface,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10,
-                          color: AppColorScheme.scrim.withValues(alpha: 0.8),
-                        ),
-                      ],
+                    _logoOrTitle(
+                      item,
+                      width: 240,
+                      height: 56,
+                      fallbackStyle: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColorScheme.onSurface,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: AppColorScheme.scrim.withValues(alpha: 0.8),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -1691,23 +1802,27 @@ Widget _ayaBar(BuildContext context, List<MediaBarSlideItem> items) {
             Positioned(
               left: 44,
               top: 40,
-              child: _logoOrTitle(
-                item,
-                width: 340,
-                height: 100,
-                alignment: Alignment.topLeft,
-                fallbackStyle: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                  height: 1.0,
-                  color: AppColorScheme.onSurface,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20,
-                      color: AppColorScheme.scrim.withValues(alpha: 0.72),
-                    ),
-                  ],
+              // Phones show Aya's poster bare, so no banner there.
+              child: _titleWithRelease(
+                _phone ? item.withNewRelease(null) : item,
+                _logoOrTitle(
+                  item,
+                  width: 340,
+                  height: 100,
+                  alignment: Alignment.topLeft,
+                  fallbackStyle: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                    height: 1.0,
+                    color: AppColorScheme.onSurface,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 20,
+                        color: AppColorScheme.scrim.withValues(alpha: 0.72),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -148,14 +148,19 @@ class MediaBarViewModel extends ChangeNotifier {
     }
   }
 
-  /// Everything that picks which titles the bar draws from.
+  /// Everything that picks which titles the bar draws from, and the new
+  /// release banner those titles carry.
   String _sources() => [
-    UserPreferences.mediaBarSourceType,
-    UserPreferences.mediaBarLibraryIds,
-    UserPreferences.mediaBarCollectionIds,
-    UserPreferences.mediaBarExcludedGenres,
-    UserPreferences.mediaBarExternalLists,
-  ].map(_prefs.get).join('|');
+    ...[
+      UserPreferences.mediaBarSourceType,
+      UserPreferences.mediaBarLibraryIds,
+      UserPreferences.mediaBarCollectionIds,
+      UserPreferences.mediaBarExcludedGenres,
+      UserPreferences.mediaBarExternalLists,
+    ].map(_prefs.get),
+    _prefs.get(UserPreferences.mediaBarNewReleaseBanner),
+    _prefs.get(UserPreferences.mediaBarNewReleaseDays),
+  ].join('|');
 
   void _onPrefsChanged() {
     final mode = UserPreferences.normalizeMediaBarMode(
@@ -228,6 +233,7 @@ class MediaBarViewModel extends ChangeNotifier {
 
       if (_state is MediaBarReady) {
         _loadRatings((_state as MediaBarReady).items);
+        _loadNewReleases((_state as MediaBarReady).items);
       }
     } finally {
       _isLoading = false;
@@ -236,6 +242,24 @@ class MediaBarViewModel extends ChangeNotifier {
         load(force: true);
       }
     }
+  }
+
+  Future<void> _loadNewReleases(List<MediaBarSlideItem> items) async {
+    final releases = await _repository.loadNewReleases(items);
+    final state = _state;
+    if (releases.isEmpty ||
+        state is! MediaBarReady ||
+        !identical(state.items, items)) {
+      return;
+    }
+    _state = MediaBarReady([
+      for (final item in items)
+        if (releases[item.itemId] case final release?)
+          item.withNewRelease(release)
+        else
+          item,
+    ]);
+    notifyListeners();
   }
 
   Future<void> _loadRatings(List<MediaBarSlideItem> items) async {
