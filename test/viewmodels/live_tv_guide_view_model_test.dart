@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:server_core/server_core.dart';
@@ -109,6 +110,7 @@ void main() {
   late _MockLiveTvApi liveTv;
 
   setUp(() {
+    userDataSync.reset();
     client = _MockClient();
     liveTv = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTv);
@@ -991,6 +993,7 @@ void main() {
       await byNumber.toggleChannelFavorite('c3');
       expect(byNumber.filteredChannels.map((c) => c.id), ['c1', 'c2', 'c3']);
 
+      userDataSync.reset();
       final favoritesFirst = LiveTvGuideViewModel(
         client,
         initialSortBy: ChannelSortBy.favoritesFirst,
@@ -1004,6 +1007,22 @@ void main() {
       ]);
     },
   );
+
+  test('channel favorites follow user-data updates and the favorites filter', () async {
+    _stubChannels(liveTv, [_channel('c1'), _channel('c2')]);
+    final vm = LiveTvGuideViewModel(client);
+    await vm.load();
+    vm.setFilter(GuideFilter.favorites);
+    expect(vm.filteredChannels, isEmpty);
+
+    userDataSync.publish('c2', {'IsFavorite': true});
+    vm.syncChannelUserData();
+    expect(vm.filteredChannels.map((channel) => channel.id), ['c2']);
+    userDataSync.publish('c2', {'IsFavorite': false});
+    vm.syncChannelUserData();
+    expect(vm.filteredChannels, isEmpty);
+    vm.dispose();
+  });
 
   group('category filters', () {
     test('a category chip walks the lineup in flagged batches', () async {

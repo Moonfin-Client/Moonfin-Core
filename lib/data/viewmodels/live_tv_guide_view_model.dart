@@ -8,6 +8,8 @@ import 'package:server_core/server_core.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../repositories/item_mutation_repository.dart';
+import '../services/user_data_sync.dart';
 import '../models/live_tv_recording_state.dart';
 import '../models/series_recording_episodes.dart';
 
@@ -27,6 +29,34 @@ class GuideChannel {
     this.isFavorite = false,
     required this.rawData,
   });
+
+  GuideChannel withSyncedUserData() {
+    final synced = userDataSync.favoriteFor(id);
+    if (synced == null || synced == isFavorite) return this;
+    final current = rawData['UserData'];
+    return GuideChannel(
+      id: id,
+      name: name,
+      number: number,
+      imageTag: imageTag,
+      isFavorite: synced,
+      rawData: {
+        ...rawData,
+        'UserData': {if (current is Map) ...current, 'IsFavorite': synced},
+      },
+    );
+  }
+
+  /// [channels] with synced user data applied, or null when none changed.
+  static List<GuideChannel>? withSyncedUserDataAll(
+    List<GuideChannel> channels,
+  ) {
+    final updated = [for (final c in channels) c.withSyncedUserData()];
+    for (var i = 0; i < updated.length; i++) {
+      if (!identical(updated[i], channels[i])) return updated;
+    }
+    return null;
+  }
 
   factory GuideChannel.fromRawItem(Map<String, dynamic> raw) => GuideChannel(
     id: raw['Id']?.toString() ?? '',
@@ -490,6 +520,21 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     GuideFilter.favorites => true,
   };
 
+  bool _publishingFetchedUserData = false;
+
+  void syncChannelUserData() {
+    if (_publishingFetchedUserData) return;
+    final updated = GuideChannel.withSyncedUserDataAll(_channels);
+    if (updated == null) return;
+    if (_sortReadsFavorite) updated.sort(comparatorFor(_sortBy));
+    _channels = updated;
+    if (_sortReadsFavorite) _programsHighWater = 0;
+    _notifyListeners();
+    if (_sortReadsFavorite && _state == GuideState.ready) {
+      unawaited(loadMorePrograms());
+    }
+  }
+
   Future<void> toggleChannelFavorite(String channelId) async {
     final index = _channels.indexWhere((c) => c.id == channelId);
     if (index < 0) return;
@@ -514,13 +559,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     );
 
     _applyChannelUpdate(updated);
-
     try {
-      if (next) {
-        await _client.userLibraryApi.markFavorite(channelId);
-      } else {
-        await _client.userLibraryApi.unmarkFavorite(channelId);
-      }
+      await ItemMutationRepository(
+        _client,
+      ).setFavorite(channelId, isFavorite: next);
     } catch (_) {
       _applyChannelUpdate(current);
       rethrow;
@@ -895,6 +937,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   }
 
   Future<bool> _fetchChannels(int loadGeneration) async {
+    final revision = userDataSync.revision;
     final response = await _client.liveTvApi.getChannels(
       sortBy: 'SortName',
       sortOrder: 'Ascending',
@@ -904,10 +947,30 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     );
     if (_disposed || loadGeneration != _loadGeneration) return false;
     final items = (response['Items'] as List?) ?? [];
+    final fresh = <String, Map<String, dynamic>>{};
+    for (final item in items.cast<Map<String, dynamic>>()) {
+      final id = item['Id']?.toString();
+      final data = item['UserData'];
+      if (id != null &&
+          data is Map &&
+          !userDataSync.favoriteChangePending(id) &&
+          userDataSync.revisionFor(id) <= revision) {
+        fresh[id] = Map<String, dynamic>.from(data);
+      }
+    }
+    // The lineup below is rebuilt from this data; syncing the old one first
+    // would re-sort it and fetch programs for rows about to be replaced.
+    _publishingFetchedUserData = true;
+    try {
+      userDataSync.publishAll(fresh, replace: true);
+    } finally {
+      _publishingFetchedUserData = false;
+    }
     _channels =
         items
             .cast<Map<String, dynamic>>()
             .map(GuideChannel.fromRawItem)
+            .map((channel) => channel.withSyncedUserData())
             .toList()
           ..sort(comparatorFor(_sortBy));
     return true;
