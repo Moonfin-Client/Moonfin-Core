@@ -613,9 +613,17 @@ class HomeViewModel extends ChangeNotifier {
             hydratedFromCache: hydratedFromCache,
             hasVisibleRow: hasVisibleRow,
           )) {
-            return;
+            if (cfg.type != HomeSectionType.mdblistWatchingNow) return;
+            // Kept Watching Now cards still follow the parental settings,
+            // which may have changed since they were fetched.
+            sectionRows = [
+              for (final row in _rowsForConfig(_rows, cfg))
+                if (!row.isLoading)
+                  row.copyWith(items: withoutUnratedOrBlockedItems(row.items)),
+            ];
+          } else {
+            sectionRows = const <HomeRow>[];
           }
-          sectionRows = const <HomeRow>[];
         }
         final currentConfigs = _prefs.activeHomeSectionConfigs;
         final isStillActive = currentConfigs.any((c) => c.stableId == cfg.stableId);
@@ -3389,6 +3397,9 @@ class HomeViewModel extends ChangeNotifier {
       final data = await repo.getWatchingNow();
       if (data == null) {
         throw Exception('Failed to fetch MDBList watching now feed');
+      }
+      if (data.error?.isNotEmpty == true) {
+        throw Exception('MDBList watching now feed error: ${data.error}');
       }
       if (data.items.isEmpty) {
         _ensureWatchingNowTimer();
