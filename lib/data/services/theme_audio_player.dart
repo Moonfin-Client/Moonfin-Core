@@ -20,9 +20,9 @@ abstract class ThemeAudioPlayer {
 
 class MediaKitThemeAudioPlayer implements ThemeAudioPlayer {
   final Player _player = MpvPlayerRegistry.instance.create();
-  // Tracks the last commanded volume. On Web, media_kit only updates
-  // state.volume once the volumechange event arrives, so a fresh player can
-  // still report its default of 100 right after setVolume(0).
+  // The last volume set. On Web, media_kit only updates state.volume when the
+  // volumechange event arrives, so right after setVolume(0) it can still read
+  // its default of 100.
   double _volume = 0;
 
   @override

@@ -267,19 +267,26 @@ class ThemeMusicService implements AudioOwnable {
     return '${_client.baseUrl}/Audio/$songId/stream?static=true&audioCodec=mp3&audioBitrate=128000&${_client.serverType.tokenQueryParam}=$token';
   }
 
+  /// The fade-in step that matches the player's [current] volume. A fresh
+  /// player is silent and starts at 0, while a fade-out that gets reversed
+  /// carries on from where it is instead of dropping to silence first.
+  @visibleForTesting
+  static int fadeInStartStep({
+    required double current,
+    required double target,
+    required int steps,
+  }) => target > 0
+      ? ((current / target) * steps).clamp(0, steps - 1).floor()
+      : 0;
+
   void _fadeIn(int generation) {
     _fadeTimer?.cancel();
     final steps = _fadeDurationMs ~/ _fadeStepMs;
-    // Pick up from the volume the player is at. A fresh player sits at 0, so
-    // the ramp starts from silence as before. When a fade-out is reversed
-    // (the Home screen starts one on push, then the detail screen claims the
-    // same theme), the player is still audible: starting over from 0 made the
-    // music dip to near-silence before climbing back for two seconds.
-    final target = _targetVolume * 100;
-    final current = _player?.currentVolume ?? 0;
-    var step = target > 0
-        ? ((current / target) * steps).clamp(0, steps - 1).floor()
-        : 0;
+    var step = fadeInStartStep(
+      current: _player?.currentVolume ?? 0,
+      target: _targetVolume * 100,
+      steps: steps,
+    );
     _fadeTimer = Timer.periodic(Duration(milliseconds: _fadeStepMs), (timer) {
       if (generation != _playGeneration || _player == null) {
         timer.cancel();
