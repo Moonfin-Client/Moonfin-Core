@@ -1073,41 +1073,19 @@ enum ScreensaverTimeout {
 enum SinceYouWatchedSource {
   local,
   server,
-  online;
-
-  String get displayName => switch (this) {
-    SinceYouWatchedSource.local => 'Moonfin Recommends',
-    SinceYouWatchedSource.server => 'Jellyfin Recommends',
-    SinceYouWatchedSource.online => 'TMDb Similarity',
-  };
+  online,
 }
 
 enum SinceYouWatchedSourceType {
   movies,
   shows,
-  both;
-
-  String get displayName {
-    switch (this) {
-      case movies: return 'Movies';
-      case shows: return 'Shows';
-      case both: return 'Both';
-    }
-  }
+  both,
 }
 
 enum SinceYouWatchedSourceItem {
   recentlyWatched,
   favorites,
-  random;
-
-  String get displayName {
-    switch (this) {
-      case recentlyWatched: return 'Recently Watched';
-      case favorites: return 'Favorites';
-      case random: return 'Random';
-    }
-  }
+  random,
 }
 
 enum SinceYouWatchedNumRows {
