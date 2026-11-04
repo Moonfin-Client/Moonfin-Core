@@ -12,6 +12,8 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 
 import '../../../data/services/log_service.dart';
+import '../../../data/services/user_data_sync.dart';
+import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
@@ -64,6 +66,7 @@ class LiveTvPlayerScreen extends StatefulWidget {
 
 class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     with WidgetsBindingObserver, ImmersiveSystemUi {
+  late List<GuideChannel> _syncedChannels;
   final _manager = GetIt.instance<PlaybackManager>();
   // media_kit isn't registered on platforms that run a different backend, so
   // ask the container rather than listing them.
@@ -203,6 +206,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
   final _tvRecordFocus = FocusNode(debugLabel: 'LiveTvRecord');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
+  final _tvFavoriteFocus = FocusNode(debugLabel: 'LiveTvFavorite');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
   final _tvSkipBackFocus = FocusNode(debugLabel: 'LiveTvSkipBack');
   final _tvSkipForwardFocus = FocusNode(debugLabel: 'LiveTvSkipForward');
@@ -236,6 +240,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   @override
   void initState() {
     super.initState();
+    _syncedChannels = [
+      for (final channel in widget.channels) channel.withSyncedUserData(),
+    ];
+    userDataSync.addListener(_onChannelUserDataChanged);
     _screensaverController.setPlaybackActive(true);
     _screensaverPlayingSub = _state.playingStream.listen(
       _screensaverController.setPlaybackActive,
@@ -274,6 +282,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
     _tvRecordFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
+    _tvFavoriteFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _tvSkipBackFocus.addListener(_onControlFocusChanged);
     _tvSkipForwardFocus.addListener(_onControlFocusChanged);
@@ -309,6 +318,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   @override
   void dispose() {
+    userDataSync.removeListener(_onChannelUserDataChanged);
     _screensaverPlayingSub?.cancel();
     _screensaverController.setPlaybackActive(false);
     _carouselPrewarm?.dispose();
@@ -361,6 +371,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
     _tvRecordFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
+    _tvFavoriteFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _tvSkipBackFocus.removeListener(_onControlFocusChanged);
     _tvSkipForwardFocus.removeListener(_onControlFocusChanged);
@@ -373,6 +384,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.dispose();
     _tvRecordFocus.dispose();
     _tvBitrateFocus.dispose();
+    _tvFavoriteFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     _tvSkipBackFocus.dispose();
     _tvSkipForwardFocus.dispose();
@@ -807,7 +819,41 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  GuideChannel get _currentChannel => widget.channels[_currentIndex];
+  List<GuideChannel> get _channels => _syncedChannels;
+
+  GuideChannel get _currentChannel => _syncedChannels[_currentIndex];
+
+  @override
+  void didUpdateWidget(covariant LiveTvPlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.channels, widget.channels)) {
+      _syncedChannels = [
+        for (final channel in widget.channels) channel.withSyncedUserData(),
+      ];
+    }
+  }
+
+  void _onChannelUserDataChanged() {
+    if (!mounted) return;
+    final updated = GuideChannel.withSyncedUserDataAll(_syncedChannels);
+    if (updated != null) setState(() => _syncedChannels = updated);
+  }
+
+  Future<void> _toggleChannelFavorite() async {
+    final channel = _currentChannel;
+    try {
+      await ItemMutationRepository(_client).setFavorite(
+        channel.id,
+        isFavorite: !channel.isFavorite,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).failedToUpdateFavoriteChannel)),
+        );
+      }
+    }
+  }
 
   Future<bool> _playCurrentChannel() async {
     // A channel change starts a new stream, so whatever caption choice is
@@ -1213,6 +1259,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_hasSubtitleChoices) _tvSubtitleFocus,
     _tvBitrateFocus,
     if (_canRecordCurrentProgram) _tvRecordFocus,
+    _tvFavoriteFocus,
     _tvPlaybackInfoFocus,
   ];
 
@@ -1289,7 +1336,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _warmChannelCarousel() {
     if (!PlatformDetection.isTV || widget.channels.length < 2) return;
     final prewarm = _carouselPrewarm ??= ChannelCarouselPrewarm(_client);
-    prewarm.tuned(widget.channels, _currentChannel.id);
+    prewarm.tuned(_channels, _currentChannel.id);
   }
 
   void _showChannelCarousel() {
@@ -2122,7 +2169,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     return Positioned.fill(
       child: ChannelCarouselOverlay(
         client: _client,
-        channels: widget.channels,
+        channels: _channels,
         currentChannelId: _currentChannel.id,
         selectionRevision: _carouselSelectionRevision,
         onChannelSelected: _onCarouselChannelSelected,
@@ -2548,6 +2595,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               onPressed: () => unawaited(_showRecordingDialog()),
             ),
           ],
+          const SizedBox(width: AppSpacing.spaceSm),
+          _buildOverlayControlButton(
+            focusNode: PlatformDetection.isTV ? _tvFavoriteFocus : null,
+            icon: Icons.favorite,
+            iconColor: _currentChannel.isFavorite ? Colors.red : Colors.grey,
+            tooltip: _currentChannel.isFavorite
+                ? l10n.unfavoriteChannel
+                : l10n.favoriteChannel,
+            onPressed: () => unawaited(_toggleChannelFavorite()),
+          ),
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
             focusNode: PlatformDetection.isTV ? _tvPlaybackInfoFocus : null,

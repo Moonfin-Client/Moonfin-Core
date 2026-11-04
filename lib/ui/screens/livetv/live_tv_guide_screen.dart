@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/series_recording_episodes.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
+import '../../../data/services/user_data_sync.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/emby_premiere_dialog.dart';
 import '../../util/error_message.dart';
@@ -238,6 +239,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       initialSortBy: _prefs.get(UserPreferences.liveTvChannelSortBy),
     );
     _vm.addListener(_onChanged);
+    userDataSync.addListener(_vm.syncChannelUserData);
     widget.backController?._onBackPressed = _consumeBackIfExploring;
     WidgetsBinding.instance.addObserver(this);
     _mobileView = _prefs.get(UserPreferences.epgMobileView);
@@ -820,6 +822,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   @override
   void dispose() {
+    userDataSync.removeListener(_vm.syncChannelUserData);
     widget.backController?._onBackPressed = null;
     _reanchorTimer?.cancel();
     _displayClockTimer?.cancel();

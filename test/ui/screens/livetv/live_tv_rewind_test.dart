@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/log_service.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
@@ -23,6 +24,8 @@ import 'package:moonfin/util/platform_detection.dart';
 class _Client extends Mock implements MediaServerClient {}
 
 class _LiveTvApi extends Mock implements LiveTvApi {}
+
+class _UserLibraryApi extends Mock implements UserLibraryApi {}
 
 class _Log extends Fake implements LogService {
   @override
@@ -77,7 +80,14 @@ class _Manager extends PlaybackManager {
   PlayerBackend? get backend => fakeBackend;
 
   @override
-  Stream<PlaybackBringupState> get bringupStateStream => _bringup.stream;
+  Stream<PlaybackBringupState> get bringupStateStream => Stream.multi((c) {
+    final sub = _bringup.stream.listen(c.add);
+    // A null cancel future completes outside the fake clock and stalls the tune.
+    c.onCancel = () {
+      sub.cancel();
+      return Future<void>.value();
+    };
+  }, isBroadcast: true);
 
   @override
   Future<void> playItems(
@@ -138,6 +148,7 @@ class _Manager extends PlaybackManager {
 void main() {
   late _Manager manager;
   late _Backend backend;
+  late _UserLibraryApi userLibrary;
   late AppLocalizations l10n;
 
   const twoHours = Duration(hours: 2);
@@ -148,6 +159,7 @@ void main() {
 
   setUp(() async {
     PlatformDetection.setTvMode(true);
+    userDataSync.reset();
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
@@ -161,7 +173,11 @@ void main() {
       ),
     ).thenAnswer((_) async => const <String, dynamic>{'Items': []});
     when(liveTv.getTimers).thenAnswer((_) async => const <String, dynamic>{});
+    userLibrary = _UserLibraryApi();
+    when(() => userLibrary.markFavorite(any())).thenAnswer((_) async {});
+    when(() => userLibrary.unmarkFavorite(any())).thenAnswer((_) async {});
     final client = _Client();
+    when(() => client.userLibraryApi).thenReturn(userLibrary);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user');
     when(() => client.liveTvApi).thenReturn(liveTv);
@@ -179,6 +195,7 @@ void main() {
 
   tearDown(() async {
     PlatformDetection.setTvMode(false);
+    userDataSync.reset();
     manager.dispose();
     await GetIt.instance.reset();
   });
@@ -212,6 +229,42 @@ void main() {
     await tester.sendKeyEvent(key);
     await tester.pump();
   }
+
+  testWidgets('favorite control toggles the current channel', (
+    tester,
+  ) async {
+    await pumpPlayer(tester);
+    final favorite = find.byTooltip(l10n.favoriteChannel);
+    expect(favorite, findsOneWidget);
+    expect(tester.widget<Icon>(find.descendant(
+      of: favorite, matching: find.byIcon(Icons.favorite),
+    )).color, Colors.grey);
+
+    await tester.tap(favorite);
+    await tester.pump();
+    verify(() => userLibrary.markFavorite('ard')).called(1);
+    final unfavorite = find.byTooltip(l10n.unfavoriteChannel);
+    expect(unfavorite, findsOneWidget);
+    expect(tester.widget<Icon>(find.descendant(
+      of: unfavorite, matching: find.byIcon(Icons.favorite),
+    )).color, Colors.red);
+
+    await tester.tap(find.byTooltip(l10n.unfavoriteChannel));
+    await tester.pump();
+    verify(() => userLibrary.unmarkFavorite('ard')).called(1);
+    expect(find.byTooltip(l10n.favoriteChannel), findsOneWidget);
+  });
+
+  testWidgets('failed favorite request leaves the channel unchanged', (
+    tester,
+  ) async {
+    when(() => userLibrary.markFavorite('ard')).thenThrow(Exception('failed'));
+    await pumpPlayer(tester);
+    await tester.tap(find.byTooltip(l10n.favoriteChannel));
+    await tester.pump();
+    expect(find.byTooltip(l10n.favoriteChannel), findsOneWidget);
+    expect(find.text(l10n.failedToUpdateFavoriteChannel), findsOneWidget);
+  });
 
   testWidgets('a long window shows the rewind controls at live', (
     tester,
