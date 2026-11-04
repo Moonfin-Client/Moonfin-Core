@@ -1020,6 +1020,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       if (!mounted || _isStopping) return;
       final current = ModalRoute.of(context);
       if (current != null && !current.isCurrent) return;
+      // Focus still on a closing dialog: the framework hands it back once
+      // the dialog is gone, and that change runs this check again.
+      final now = FocusManager.instance.primaryFocus;
+      if (now != null && !now.canRequestFocus) return;
       _focusPlayerRoot();
     });
   }
