@@ -103,6 +103,12 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
         switch call.method {
         case "setSource":
             setSource(args)
+        case "updateRequestHeaders":
+            var headers: [String: String] = [:]
+            if let raw = args["headers"] as? [String: Any] {
+                for (key, value) in raw { headers[key] = "\(value)" }
+            }
+            player.updateRequestHeaders(headers)
         case "play":
             player.resume()
         case "pause":
@@ -230,7 +236,9 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
                     from: args["externalSubtitles"]),
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
-                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
+                cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

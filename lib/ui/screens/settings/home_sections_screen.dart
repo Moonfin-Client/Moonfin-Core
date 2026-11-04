@@ -115,9 +115,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   final bool _musicOnAnyServer = musicOnAnySignedInServer();
   final bool _playlistsOnAnyServer = playlistsOnAnySignedInServer();
 
-  /// The disabled groups that are open, by [_getSectionCategory]. General
-  /// starts open since it's short.
-  final Set<int> _openGroups = {1};
+  /// The disabled groups that are open, by [_getSectionCategory].
+  final Set<int> _openGroups = {};
   final Map<int, FocusNode> _groupHeaderFocusNodes = {};
 
   /// Seerr slider rows whose slider Seerr still has but this client can't
@@ -553,6 +552,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         section.type == HomeSectionType.sonarrCalendar) {
       return 6;
     }
+    if (section.type == HomeSectionType.mdblistWatchingNow) {
+      return 7;
+    }
     // general builtins (resume, nextUp, etc.)
     return 1;
   }
@@ -707,6 +709,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         section.type == HomeSectionType.seasonal &&
         (!GetIt.instance<PluginSyncService>().pluginAvailable ||
             !_prefs.get(UserPreferences.seasonalRowEnabled));
+    final hiddenByMdblist =
+        section.type == HomeSectionType.mdblistWatchingNow &&
+        !_prefs.get(UserPreferences.mdblistWatchingNowEnabled);
 
     final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
     final hiddenByAudio = !showAudioRows && _isAudioSectionType(section.type);
@@ -747,6 +752,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         hiddenByImdb ||
         hiddenByTmdb ||
         hiddenBySeasonal ||
+        hiddenByMdblist ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
         hiddenByRewatch ||
@@ -912,6 +918,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     if (type == HomeSectionType.seasonal) {
       return _prefs.get(UserPreferences.seasonalRowEnabled);
     }
+    if (type == HomeSectionType.mdblistWatchingNow) {
+      return _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+    }
     return null;
   }
 
@@ -1010,10 +1019,18 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         if (PlatformDetection.isTV) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
+            // The rows can't take focus while they load, so Settings parks it
+            // on the reset button on the way in. The first row takes it over.
+            final focused = FocusManager.instance.primaryFocus;
+            if (focused != null &&
+                (_focusNodes.contains(focused) ||
+                    _groupHeaderFocusNodes.containsValue(focused))) {
               return;
             }
-            final first = _visibleSectionIndices().firstOrNull;
+            // A disabled row waits in a closed group, so it can't take focus.
+            final first = _visibleSectionIndices()
+                .where((i) => _sections[i].enabled)
+                .firstOrNull;
             if (first != null) _focusSectionAndEnsureVisible(first);
           });
         }
@@ -1620,6 +1637,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           UserPreferences.sinceYouWatched4Enabled,
         HomeSectionType.sinceYouWatched5 =>
           UserPreferences.sinceYouWatched5Enabled,
+        HomeSectionType.mdblistWatchingNow =>
+          UserPreferences.mdblistWatchingNowEnabled,
         _ => null,
       };
     }
@@ -2521,7 +2540,21 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                                                     ),
                                               ),
                                             )
-                                          : null)))),
+                                          : (section.type == HomeSectionType.mdblistWatchingNow
+                                                ? Text(
+                                                    'MDBList',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontFamily:
+                                                          kCleanSettingsFontFamily,
+                                                      color: AppColorScheme
+                                                          .onSurface
+                                                          .withValues(
+                                                            alpha: 0.7,
+                                                          ),
+                                                    ),
+                                                  )
+                                                : null))))),
               onTap: isEmpty
                   ? null
                   : () => _toggleSection(sectionIndex, !section.enabled),
@@ -2621,7 +2654,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                               ? 'IMDb List'
                               : (_isTmdbSectionType(section.type)
                                     ? 'TMDB Lists'
-                                    : null)))),
+                                    : (section.type == HomeSectionType.mdblistWatchingNow
+                                          ? 'MDBList'
+                                          : null))))),
         enabled: section.enabled,
         isFirst: isFirst,
         isLast: isLast,
@@ -2937,7 +2972,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                                   ? const Text('IMDb List')
                                   : (_isTmdbSectionType(section.type)
                                         ? const Text('TMDB Lists')
-                                        : null)))),
+                                        : (section.type == HomeSectionType.mdblistWatchingNow
+                                              ? const Text('MDBList')
+                                              : null))))),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -3440,6 +3477,7 @@ String homeSectionTypeLabel(HomeSectionType type, AppLocalizations l10n) =>
       HomeSectionType.tmdbTrendingTvDaily => 'Trending TV (Daily)',
       HomeSectionType.tmdbTrendingTvWeekly => 'Trending TV (Weekly)',
       HomeSectionType.tmdbTrendingAllWeekly => 'Trending All (Weekly)',
+      HomeSectionType.mdblistWatchingNow => l10n.mdblistWatchingNow,
       HomeSectionType.sinceYouWatched1 => 'Since You Watched Row 1',
       HomeSectionType.sinceYouWatched2 => 'Since You Watched Row 2',
       HomeSectionType.sinceYouWatched3 => 'Since You Watched Row 3',

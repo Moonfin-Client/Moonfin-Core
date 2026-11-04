@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../util/idiom/glass_capability.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../adaptive/adaptive_glass.dart';
+import '../settings/settings_preview_scope.dart';
 
 /// Colours and surface treatment for the bottom navbar, taken from the active
 /// theme so custom and store themes work without knowing about the bar.
@@ -55,14 +55,15 @@ class BottomNavTheme {
         AppColorScheme.surface,
       );
     } else {
-      final prefs = GetIt.instance<UserPreferences>();
       final opacity =
-          (prefs.get(UserPreferences.navbarOpacity) / 100.0).clamp(0.0, 1.0);
+          (previewValue(context, UserPreferences.navbarOpacity) / 100.0)
+              .clamp(0.0, 1.0);
       // The navbar colour and opacity still count, with a floor so the bar
       // never fades into the posters under it.
       surface = Color.alphaBlend(
-        OverlayColorPalette.resolveColor(prefs.get(UserPreferences.navbarColor))
-            .withValues(alpha: 0.78 + 0.19 * opacity),
+        OverlayColorPalette.resolveColor(
+          previewValue(context, UserPreferences.navbarColor),
+        ).withValues(alpha: 0.78 + 0.19 * opacity),
         AppColorScheme.surface,
       );
     }

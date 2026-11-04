@@ -186,6 +186,20 @@ void main() {
     expect(prefs.get(UserPreferences.sinceYouWatched3Enabled), isFalse);
   });
 
+  test('a row order without sections keeps Watching Now on when its switch '
+      'is', () async {
+    await prefs.set(UserPreferences.mdblistWatchingNowEnabled, true);
+    adapter.resolvedProfile = {
+      'homeRowOrder': ['resume'],
+    };
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+
+    final watchingNow = prefs.homeSectionsConfig.firstWhere(
+      (c) => c.type == HomeSectionType.mdblistWatchingNow,
+    );
+    expect(watchingNow.enabled, isTrue);
+  });
+
   group('Seerr slider rows', () {
     final slider = seerrSliderSection(
       const SeerrDiscoverSlider(

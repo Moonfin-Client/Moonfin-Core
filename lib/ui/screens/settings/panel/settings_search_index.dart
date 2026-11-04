@@ -11,6 +11,7 @@ class _SettingsSearchEntry {
     required this.icon,
     required this.onOpen,
     required String matchText,
+    this.path = const [],
   }) : titleLower = title.toLowerCase(),
        haystack = matchText.toLowerCase();
 
@@ -19,6 +20,9 @@ class _SettingsSearchEntry {
   final String subtitle;
   final IconData icon;
   final VoidCallback onOpen;
+
+  /// The screen it opens, as a path from its category.
+  final List<String> path;
   final String titleLower;
   final String haystack;
 }
@@ -51,6 +55,7 @@ class _SearchSection {
         icon: icon,
         onOpen: open,
         matchText: [...path, ...keywords].join(' '),
+        path: path,
       );
 
   /// [header] is the section header the setting sits under, worth passing
@@ -70,6 +75,7 @@ class _SearchSection {
     icon: icon,
     onOpen: open,
     matchText: [title, ?subtitle, ...keywords, ...path].join(' '),
+    path: path,
   );
 }
 
@@ -264,7 +270,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   );
   final calendars = _SearchSection(
     slug: 'calendars',
-    path: [l10n.appearance, l10n.homeScreen, 'Upcoming Calendars'],
+    path: [l10n.appearance, l10n.homeScreen, l10n.upcomingCalendars],
     icon: Icons.calendar_month,
     open: () => push(const _UpcomingCalendarsScreen()),
   );
@@ -670,6 +676,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'spotlight',
       'nouveau',
       'minimalist',
+      'stage',
+      'premiere',
+      'quick look',
+      'frost',
     ]),
     details.leaf(
       'pref_show_details_backdrop',
@@ -1121,6 +1131,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     rowImages.screen(keywords: ['poster', 'thumbnail', 'banner']),
     if (pluginAvailable) ...[
+      home.leaf(
+        'mdblist_watching_now_enabled',
+        l10n.mdblistWatchingNow,
+        subtitle: l10n.mdblistWatchingNowDescription,
+        keywords: ['mdblist', 'watching now', 'scrobble', 'live', 'viewers'],
+      ),
       seasonalRow.screen(keywords: ['holiday', 'christmas', 'halloween', 'seasonal']),
       seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
@@ -1182,46 +1198,56 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         calendars.screen(keywords: ['radarr', 'sonarr', 'upcoming releases']),
         calendars.leaf(
           'merge_radarr_sonarr_calendars',
-          'Merge Sonarr and Radarr Calendars',
+          l10n.mergeRadarrSonarrCalendars,
         ),
         calendars.leaf(
           'enable_radarr_calendar',
-          "Enable Radarr's Upcoming Calendar",
+          l10n.enableRadarrCalendar,
           keywords: ['movies'],
         ),
         calendars.leaf(
           'radarr_calendar_show_cinema',
-          'Show Upcoming Cinema Releases',
+          l10n.radarrCalendarShowCinema,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_digital',
-          'Show Upcoming Digital Releases',
+          l10n.radarrCalendarShowDigital,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_physical',
-          'Show Upcoming Physical Releases',
+          l10n.radarrCalendarShowPhysical,
           header: 'Radarr',
         ),
         calendars.leaf(
           'radarr_calendar_show_date',
-          'Show Release Date on Home Screen',
+          l10n.calendarShowReleaseDate,
+          header: 'Radarr',
+        ),
+        calendars.leaf(
+          'radarr_calendar_hide_downloaded',
+          l10n.radarrCalendarHideDownloaded,
           header: 'Radarr',
         ),
         calendars.leaf(
           'enable_sonarr_calendar',
-          "Enable Sonarr's Upcoming Calendar",
+          l10n.enableSonarrCalendar,
           keywords: ['shows', 'episodes'],
         ),
         calendars.leaf(
           'sonarr_calendar_show_episode_info',
-          'Display Episode Information',
+          l10n.sonarrCalendarShowEpisodeInfo,
           header: 'Sonarr',
         ),
         calendars.leaf(
           'sonarr_calendar_show_date',
-          'Show Release Date on Home Screen',
+          l10n.calendarShowReleaseDate,
+          header: 'Sonarr',
+        ),
+        calendars.leaf(
+          'sonarr_calendar_hide_downloaded',
+          l10n.sonarrCalendarHideDownloaded,
           header: 'Sonarr',
         ),
         seerrLists.screen(keywords: ['discovery rows', 'watchlist', 'trending']),
@@ -1314,7 +1340,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'recently added',
       'recently released',
       'newest',
+      'new seasons',
+      'new episodes',
     ]),
+    mediaBar.leaf(
+      'mediaBarNewReleaseBanner',
+      l10n.mediaBarNewReleaseBanner,
+      subtitle: l10n.mediaBarNewReleaseBannerDescription,
+      keywords: ['new season', 'new episode', 'badge'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewReleaseDays',
+      l10n.mediaBarNewReleaseDays,
+      subtitle: l10n.mediaBarNewReleaseDaysDescription,
+    ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(
         'mediaBarRowPeek',
@@ -1672,6 +1711,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['frame rate', 'hz', '24p'],
       ),
     ],
+    if (PlatformDetection.isAppleTV)
+      quality.leaf(
+        'cadence_slowdown',
+        l10n.cadenceSlowdown,
+        subtitle: l10n.cadenceSlowdownSubtitle,
+        keywords: ['frame rate', 'hz', '24p', 'stutter', 'judder', 'match'],
+      ),
     quality.leaf('video_start_delay', l10n.settingsVideoStartDelay),
     if (PlatformDetection.isWindows)
       quality.leaf('auto_hdr_switching_behavior', l10n.autoHdrSwitching),
@@ -2081,6 +2127,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         'discover',
         'nsfw',
         'notifications',
+        'badges',
+        'banner',
       ]),
 
     about.screen(keywords: ['version', 'update', 'discord', 'license']),

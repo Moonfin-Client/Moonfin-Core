@@ -41,6 +41,7 @@ import '../../../playback/appletv_preview_player.dart';
 import '../../../playback/inline_preview_engine.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../playback/mpv_client_certificate.dart';
+import '../../../playback/mpv_player_registry.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -202,12 +203,14 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastEnableRadarrCalendar = false;
   bool _lastEnableSonarrCalendar = false;
   bool _lastMergeRadarrSonarrCalendars = false;
-  bool _lastRadarrCalendarShowCinema = true;
+  bool _lastRadarrCalendarShowCinema = false;
   bool _lastRadarrCalendarShowDigital = true;
   bool _lastRadarrCalendarShowPhysical = true;
   bool _lastRadarrCalendarShowDate = true;
   bool _lastSonarrCalendarShowEpisodeInfo = true;
   bool _lastSonarrCalendarShowDate = true;
+  bool _lastRadarrCalendarHideDownloaded = true;
+  bool _lastSonarrCalendarHideDownloaded = true;
 
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
@@ -251,6 +254,8 @@ class _HomeShellState extends State<_HomeShell>
     _lastRadarrCalendarShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
     _lastSonarrCalendarShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
     _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+    _lastRadarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
+    _lastSonarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
 
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
@@ -371,6 +376,8 @@ class _HomeShellState extends State<_HomeShell>
     final currentShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
     final currentShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
     final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+    final currentRadarrHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
+    final currentSonarrHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
@@ -386,7 +393,9 @@ class _HomeShellState extends State<_HomeShell>
         currentShowPhysical != _lastRadarrCalendarShowPhysical ||
         currentShowDate != _lastRadarrCalendarShowDate ||
         currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
-        currentShowSonarrDate != _lastSonarrCalendarShowDate) {
+        currentShowSonarrDate != _lastSonarrCalendarShowDate ||
+        currentRadarrHideDownloaded != _lastRadarrCalendarHideDownloaded ||
+        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
@@ -402,6 +411,8 @@ class _HomeShellState extends State<_HomeShell>
       _lastRadarrCalendarShowDate = currentShowDate;
       _lastSonarrCalendarShowEpisodeInfo = currentShowEpisodeInfo;
       _lastSonarrCalendarShowDate = currentShowSonarrDate;
+      _lastRadarrCalendarHideDownloaded = currentRadarrHideDownloaded;
+      _lastSonarrCalendarHideDownloaded = currentSonarrHideDownloaded;
 
       _viewModel.refresh();
     }
@@ -1508,10 +1519,9 @@ class _ContentRowsState extends State<_ContentRows>
 
   @override
   Future<void> onAudioRevoked(RevokeReason reason) async {
+    // Releases the Media3 preview only when it owned the player. The backend
+    // is shared with main playback, which is what revokes the preview.
     _finishSharedPreview(releaseResources: true);
-    try {
-      await _media3PreviewBackend?.release();
-    } catch (_) {}
   }
 
   @override
@@ -1847,7 +1857,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (_previewUsingMedia3) {
       _previewUsingMedia3 = false;
-      unawaited(_media3PreviewBackend!.release());
+      unawaited(_media3PreviewBackend!.release(previewOnly: true));
       _media3PreviewBackend.resetVolumeState();
     }
     Future<void>? appleTvReleased;
@@ -1858,8 +1868,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (releaseResources || kIsWeb) {
       _previewCompletedSub?.cancel();
       _previewCompletedSub = null;
-      _previewPlayer?.dispose();
-      _previewPlayer = null;
+      _disposePreviewPlayer();
       _previewController = null;
       unawaited(_releaseAppleTvPreviewPlayer());
     }
@@ -1926,8 +1935,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (kIsWeb) {
       _previewCompletedSub?.cancel();
       _previewCompletedSub = null;
-      _previewPlayer?.dispose();
-      _previewPlayer = null;
+      _disposePreviewPlayer();
       _previewController = null;
     } else {
       _previewPlayer?.stop();
@@ -2147,13 +2155,21 @@ class _ContentRowsState extends State<_ContentRows>
     return player;
   }
 
+  void _disposePreviewPlayer() {
+    final player = _previewPlayer;
+    _previewPlayer = null;
+    if (player != null) {
+      unawaited(MpvPlayerRegistry.instance.dispose(player));
+    }
+  }
+
   Player _ensureSharedPreviewPlayer() {
     final existing = _previewPlayer;
     if (existing != null) {
       return existing;
     }
 
-    final player = Player(
+    final player = MpvPlayerRegistry.instance.create(
       configuration: const PlayerConfiguration(libass: false),
     );
     final platform = player.platform;
@@ -2776,7 +2792,7 @@ class _ContentRowsState extends State<_ContentRows>
     return (_isHomeRowsStyleV2() ? 7.0 : 24.0) +
         lineHeight(textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)) +
         (subtitle != null && subtitle.isNotEmpty
-            ? 2.0 + lineHeight(textTheme.bodySmall)
+            ? (row.id == 'mdblist_watching_now' ? 14.0 : 2.0) + lineHeight(textTheme.bodySmall)
             : 0.0);
   }
 
@@ -3295,9 +3311,9 @@ class _ContentRowsState extends State<_ContentRows>
         (row.rowType != HomeRowType.liveTv &&
             row.rowType != HomeRowType.libraryTilesSmall);
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
-    final headerPaddingBottom = isRowsV2 ? 1.0 : 8.0;
+    final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
-    final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
+    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 24.0 : 18.0) * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
     var totalHeight = childHeight + headerHeight;
@@ -4502,9 +4518,12 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   String? _rowSubtitle(HomeRow row, AppLocalizations l10n) {
-    if (row.id == 'merged_calendar' || row.id == 'radarr_calendar' || row.id == 'sonarr_calendar') {
-      return 'Radarr and Sonarr Calendars';
+    if (row.subtitle != null && row.subtitle!.isNotEmpty) {
+      return row.subtitle;
     }
+    if (row.id == 'merged_calendar') return l10n.arrCalendarsRowSubtitle;
+    if (row.id == 'radarr_calendar') return l10n.radarrCalendarRowSubtitle;
+    if (row.id == 'sonarr_calendar') return l10n.sonarrCalendarRowSubtitle;
     if (row.id.startsWith('seerr_')) return seerrBrand(l10n.seerrDiscoveryRows);
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
     if (row.id.startsWith('imdb_')) return 'IMDb List';
@@ -5382,13 +5401,14 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitle = _rowSubtitle(row, l10n);
     final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
     final rowTotalHeight =
-        lockedRowHeight + (hasSubtitle ? 18.0 : 0.0);
+        lockedRowHeight + (hasSubtitle ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) : 0.0);
 
     if (row.isLoading && row.items.isEmpty) {
       return _buildTitledRow(
         key: _rowContainerKey(rowIndex),
         title: _localizedRowTitle(row, l10n),
         subtitle: subtitle,
+        isWatchingNow: row.id == 'mdblist_watching_now',
         rowIndex: rowIndex,
         hasItems: false,
         height: rowTotalHeight,
@@ -5418,6 +5438,7 @@ class _ContentRowsState extends State<_ContentRows>
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
       subtitle: subtitle,
+      isWatchingNow: row.id == 'mdblist_watching_now',
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowTotalHeight,
@@ -5709,13 +5730,17 @@ class _ContentRowsState extends State<_ContentRows>
                   // the way the Jellyfin genre row does.
                   final isSeerrGenreCard =
                       _isSeerrFilterRow(row) && item.type == 'Genre';
+                  final isWatchingNow = row.id == 'mdblist_watching_now';
                   final card = MediaCard(
-                    animeMarkerItemId: isSeerrGenreCard ? null : item.id,
-                    recordingItemId: isSeerrGenreCard ? null : item.id,
-                    title: cardTitle,
-                    imageOverlays: isSeerrGenreCard
-                        ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
-                        : const <Widget>[],
+                    animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    recordingItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    title: isWatchingNow ? item.name : cardTitle,
+                    showLabel: !isWatchingNow,
+                    imageOverlays: isWatchingNow
+                        ? _buildWatchingNowOverlays(item, l10n)
+                        : (isSeerrGenreCard
+                            ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
+                            : const <Widget>[]),
                     imageUnderlays: [
                       if (glide != null &&
                           canUseExpandedV2Card &&
@@ -6000,10 +6025,179 @@ class _ContentRowsState extends State<_ContentRows>
     return '${hours}h ${minutes}m';
   }
 
+
+  List<Widget> _buildWatchingNowOverlays(
+    AggregatedItem item,
+    AppLocalizations l10n,
+  ) {
+    final rank = (item.rawData['Rank'] ?? item.rawData['WatchingNowRank'])?.toString() ?? '';
+    final mediaType = (item.rawData['MediaType'] ?? item.rawData['WatchingNowType']) as String? ?? 'movie';
+    final watchers = (item.rawData['Watchers'] ?? item.rawData['WatchingNowWatchers']) as int? ?? 0;
+    final logoUrl = (item.rawData['LogoUrl'] ?? item.rawData['LogoPath']) as String?;
+
+    return [
+      Positioned.fill(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.25),
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.85),
+              ],
+              stops: const [0.0, 0.4, 1.0],
+            ),
+          ),
+        ),
+      ),
+      if (rank.isNotEmpty)
+        Positioned(
+          top: 10,
+          left: 12,
+          child: Text(
+            rank,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              shadows: [
+                Shadow(blurRadius: 6, color: Colors.black),
+                Shadow(blurRadius: 12, color: Colors.black87),
+              ],
+            ),
+          ),
+        ),
+      Positioned(
+        top: 10,
+        right: 12,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.65),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Colors.white24, width: 0.5),
+          ),
+          child: Text(
+            mediaType.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 14,
+        right: 14,
+        bottom: 26,
+        height: 44,
+        child: (logoUrl != null && logoUrl.isNotEmpty)
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: Semantics(
+                  label: item.name,
+                  child: BoundedNetworkImage(
+                    imageUrl: logoUrl,
+                    fit: BoxFit.contain,
+                    maxWidth: 300,
+                    errorBuilder: (_, _, _) => Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        item.name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          shadows: [
+                            Shadow(blurRadius: 6, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  item.name,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    shadows: [
+                      Shadow(blurRadius: 6, color: Colors.black),
+                    ],
+                  ),
+                ),
+              ),
+      ),
+      Positioned(
+        left: 12,
+        bottom: 8,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 7,
+              height: 7,
+              decoration: const BoxDecoration(
+                color: Color(0xFF22C55E),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x8822C55E),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              l10n.watchingNowWatchersCount(watchers),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                shadows: [
+                  Shadow(blurRadius: 4, color: Colors.black),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildWatchingNowSubtitle(BuildContext context, String subtitle) {
+    return Text(
+      subtitle,
+      style: TextStyle(
+        fontSize: 13.0,
+        fontWeight: FontWeight.w700,
+        color: AppColorScheme.onSurface.withValues(alpha: 0.95),
+      ),
+    );
+  }
+
   Widget _buildTitledRow({
     Key? key,
     required String title,
     String? subtitle,
+    bool isWatchingNow = false,
     required int rowIndex,
     required bool hasItems,
     required double height,
@@ -6026,7 +6220,7 @@ class _ContentRowsState extends State<_ContentRows>
               _kHomeRowLabelInset,
               _rowHeaderPaddingTop(isRowsV2),
               8,
-              isRowsV2 ? 1 : 8,
+              isWatchingNow ? 12.0 : (isRowsV2 ? 1 : 8),
             ),
             child: Row(
               children: [
@@ -6035,22 +6229,66 @@ class _ContentRowsState extends State<_ContentRows>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isWatchingNow) ...[
+                            Icon(
+                              Icons.public,
+                              size: 18,
+                              color: AppColorScheme.onSurface,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          Flexible(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       if (subtitle != null && subtitle.isNotEmpty) ...[
                         const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.5,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (isWatchingNow) ...[
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF22C55E),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0xAA22C55E),
+                                      blurRadius: 5,
+                                      spreadRadius: 1.5,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                            Flexible(
+                              child: isWatchingNow
+                                  ? _buildWatchingNowSubtitle(context, subtitle)
+                                  : Text(
+                                      subtitle,
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColorScheme.onSurface.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                      ),
+                                    ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ],
@@ -6115,6 +6353,7 @@ class _ContentRowsState extends State<_ContentRows>
   /// classic layout whichever style is picked.
   static bool _isWideArtworkRow(HomeRow row) =>
       _isSeerrFilterRow(row) ||
+      row.id == 'mdblist_watching_now' ||
       (row.rowType == HomeRowType.studios && row.id == 'studios');
 
   static bool _isRowModern(HomeRow row, UserPreferences prefs) {
@@ -6503,6 +6742,14 @@ class _ContentRowsState extends State<_ContentRows>
               : _homeRowImageTypeForRow(row, prefs));
     final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
     final isMyMediaRow = row.rowType == HomeRowType.libraryTiles;
+    if (row.id == 'mdblist_watching_now') {
+      final height = posterSize.landscapeHeight.toDouble() * platformScale;
+      return (
+        url: item.rawData['BackdropPath'] as String?,
+        width: height * (16 / 9),
+        aspectRatio: 16 / 9,
+      );
+    }
     if (isRowsV2 && !isModernMyMediaStatic) {
       final v2ImageHeight =
           modernImageHeight(posterSize, platformScale);
@@ -6651,6 +6898,9 @@ class _ContentRowsState extends State<_ContentRows>
     HomeRow row,
     ImageType imageType,
   ) {
+    if (row.id == 'mdblist_watching_now') {
+      return 16 / 9;
+    }
     if (row.isAudio) {
       return 1.0;
     }

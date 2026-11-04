@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 
 import '../../playback/mpv_client_certificate.dart';
+import '../../playback/mpv_player_registry.dart';
 import '../../util/platform_detection.dart';
 
 abstract class ThemeAudioPlayer {
@@ -18,7 +19,7 @@ abstract class ThemeAudioPlayer {
 }
 
 class MediaKitThemeAudioPlayer implements ThemeAudioPlayer {
-  final Player _player = Player();
+  final Player _player = MpvPlayerRegistry.instance.create();
   // Tracks the last commanded volume. On Web, media_kit only updates
   // state.volume once the volumechange event arrives, so a fresh player can
   // still report its default of 100 right after setVolume(0).
@@ -46,7 +47,7 @@ class MediaKitThemeAudioPlayer implements ThemeAudioPlayer {
   Future<void> pause() => _player.pause();
 
   @override
-  Future<void> dispose() => _player.dispose();
+  Future<void> dispose() => MpvPlayerRegistry.instance.dispose(_player);
 }
 
 class AppleTvThemeAudioPlayer implements ThemeAudioPlayer {

@@ -112,21 +112,25 @@ class _MinimalistEpisodeCardState extends State<MinimalistEpisodeCard> {
                 ),
               ),
               const SizedBox(height: MinimalistEpisodeCard.titleGap),
-              Text(
-                widget.episode.name,
-                maxLines: MinimalistEpisodeCard.titleMaxLines,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: AppColorScheme.onSurface,
-                  fontWeight: FontWeight.w700,
-                  fontSize: MinimalistEpisodeCard.titleFontSize(widget.width),
-                  height: MinimalistEpisodeCard.titleLineHeight,
-                  // The rail sits straight on the artwork, with no scrim under
-                  // it, so the title carries its own separation.
-                  shadows: const [
-                    Shadow(blurRadius: 8, color: Color(0xEB000000)),
-                    Shadow(blurRadius: 3, color: Color(0xD9000000)),
-                  ],
+              // The rail reserves two lines at the font's nominal height, and
+              // a two line title can lay out a pixel taller than that.
+              Flexible(
+                child: Text(
+                  widget.episode.name,
+                  maxLines: MinimalistEpisodeCard.titleMaxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: MinimalistEpisodeCard.titleFontSize(widget.width),
+                    height: MinimalistEpisodeCard.titleLineHeight,
+                    // The rail sits straight on the artwork, with no scrim
+                    // under it, so the title carries its own separation.
+                    shadows: const [
+                      Shadow(blurRadius: 8, color: Color(0xEB000000)),
+                      Shadow(blurRadius: 3, color: Color(0xD9000000)),
+                    ],
+                  ),
                 ),
               ),
             ],

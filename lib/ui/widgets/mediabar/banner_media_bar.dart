@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/media_bar_slide_item.dart';
+import 'media_bar_new_release_label.dart';
 import 'media_bar_title.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
@@ -423,8 +424,15 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             )
           else
             MediaBarTitle(title: item.title, shadows: shadows),
+        if (item.newRelease case final release?) ...[
+          if (showTitle) const SizedBox(height: 8),
+          MediaBarNewReleaseLine(
+            release: release,
+            showMessage: !PlatformDetection.useMobileUi,
+          ),
+        ],
         if (meta.isNotEmpty) ...[
-          if (showTitle) const SizedBox(height: 6),
+          if (showTitle || item.newRelease != null) const SizedBox(height: 6),
           Text(
             meta,
             maxLines: 1,

@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/scroll_edge_arrows.dart';
 
 class NouveauSegmentedSelector<T> extends StatefulWidget {
   final List<T> values;
@@ -203,16 +204,20 @@ class NouveauSegmentedSelectorState<T>
       // Keeps segments scrolled past either end inside the pill's outline.
       child: ClipRRect(
         borderRadius: BorderRadius.circular(17),
-        child: SingleChildScrollView(
+        child: ScrollEdgeArrows(
           controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var index = 0; index < widget.values.length; index++)
-                _buildSegment(context, index, widget.values[index]),
-            ],
+          size: widget.height - 4,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var index = 0; index < widget.values.length; index++)
+                  _buildSegment(context, index, widget.values[index]),
+              ],
+            ),
           ),
         ),
       ),

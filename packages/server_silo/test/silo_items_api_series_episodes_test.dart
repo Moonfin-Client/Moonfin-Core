@@ -63,6 +63,19 @@ void main() {
     expect(_ids(watched), ['episode-imdb-tt1641384-1-1']);
   });
 
+  test('a premiere date floor applies before the page is cut', () async {
+    // The media bar's check for episodes aired lately, which reads a few.
+    final page = await siloTestClient(_server()).itemsApi.getItems(
+      parentId: _series,
+      includeItemTypes: ['Episode'],
+      recursive: true,
+      minPremiereDate: DateTime.utc(2011),
+      limit: 1,
+    );
+    expect(_ids(page), ['episode-imdb-tt1641384-1-3']);
+    expect(page['TotalRecordCount'], 1);
+  });
+
   test('without episode types a series still lists its seasons', () async {
     final page = await siloTestClient(
       _server(),

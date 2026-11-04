@@ -264,7 +264,15 @@ Widget buildSettingsSelectionBubble(
   );
 }
 
-void _ensureFocusVisible(BuildContext context, {double alignment = 0.9}) {
+void ensureSettingsTileVisible(
+  BuildContext context, {
+  double alignment = 0.9,
+}) {
+  // Only a D-pad or keyboard scrolls here. On touch, autofocus fires again
+  // whenever a lazy list rebuilds the tile and would pull the list back to it.
+  if (FocusManager.instance.highlightMode != FocusHighlightMode.traditional) {
+    return;
+  }
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (!context.mounted) return;
     Scrollable.ensureVisible(
@@ -821,7 +829,7 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
       onKeyEvent: _onKeyEvent,
       onFocusChange: (focused) {
         if (focused) {
-          _ensureFocusVisible(context);
+          ensureSettingsTileVisible(context);
         }
         if (_outerFocused != focused && mounted) {
           setState(() => _outerFocused = focused);
@@ -1403,7 +1411,7 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   void _onFocusChange(bool focused) {
     setState(() => _focused = focused);
     if (focused) {
-      _ensureFocusVisible(context);
+      ensureSettingsTileVisible(context);
     }
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/playback/hdr_output_controller.dart';
@@ -22,6 +23,9 @@ class _FakeWindow implements HdrVideoWindow {
 
   @override
   void Function()? onMonitorChanged;
+
+  @override
+  final ValueNotifier<Object?> claimedBy = ValueNotifier<Object?>(null);
 
   @override
   Future<int?> create() async {

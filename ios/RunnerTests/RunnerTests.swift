@@ -557,3 +557,38 @@ final class RunnerTests: XCTestCase {
         }
     }
 }
+
+@MainActor
+final class DisplayCadenceTests: XCTestCase {
+    private func fits(_ fps: Double, _ hz: Double) -> Bool {
+        AetherPlayerWrapper.cadenceFits(contentFps: fps, panelHz: hz)
+    }
+
+    private func slows(_ fps: Double, _ hz: Double) -> Bool {
+        AetherPlayerWrapper.cadenceSlowdownApplies(contentFps: fps, panelHz: hz)
+    }
+
+    func testRatesThatPlayEvenlyAreLeftAlone() {
+        XCTAssertTrue(fits(24000.0 / 1001, 60000.0 / 1001))
+        XCTAssertTrue(fits(30000.0 / 1001, 60000.0 / 1001))
+        XCTAssertTrue(fits(24, 24))
+        XCTAssertTrue(fits(24, 60))
+        XCTAssertTrue(fits(25, 50))
+        XCTAssertFalse(slows(24000.0 / 1001, 60000.0 / 1001))
+    }
+
+    // The reporter's Apple TV read 59.941 Hz for a 24.000 fps title.
+    func testRatesJustAboveAFitAreSlowedToIt() {
+        XCTAssertFalse(fits(24, 59.941))
+        XCTAssertTrue(slows(24, 59.941))
+        XCTAssertTrue(slows(30, 60000.0 / 1001))
+        XCTAssertTrue(slows(60, 60000.0 / 1001))
+    }
+
+    func testRatesNoSlowdownCanFixOnlyGetTheTip() {
+        XCTAssertFalse(fits(25, 60000.0 / 1001))
+        XCTAssertFalse(slows(25, 60000.0 / 1001))
+        XCTAssertFalse(fits(50, 60))
+        XCTAssertFalse(slows(50, 60))
+    }
+}

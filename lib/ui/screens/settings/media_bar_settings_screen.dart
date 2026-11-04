@@ -18,6 +18,7 @@ import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/multi_select_dialog.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'home_sections_screen.dart';
 import 'ratings_config_screen.dart';
 import 'settings_app_bar.dart';
@@ -319,6 +320,26 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                         l10n.recentlyAdded,
                     UserPreferences.mediaBarSourceRecentlyReleased:
                         l10n.recentlyReleased,
+                    UserPreferences.mediaBarSourceNewReleases:
+                        l10n.mediaBarSourceNewReleases,
+                  },
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseBanner,
+                  title: l10n.mediaBarNewReleaseBanner,
+                  subtitle: l10n.mediaBarNewReleaseBannerDescription,
+                  icon: Icons.new_releases_outlined,
+                  onChanged: _pushSync,
+                ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseDays,
+                  title: l10n.mediaBarNewReleaseDays,
+                  description: l10n.mediaBarNewReleaseDaysDescription,
+                  icon: Icons.date_range,
+                  options: {
+                    for (final days in const [7, 14, 30, 60, 90])
+                      days: l10n.daysValue(days),
                   },
                   onChanged: _pushSync,
                 ),
@@ -350,13 +371,20 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     icon: Icons.star,
                     onChanged: _pushSync,
                   ),
-                  _MediaBarActionTile(
-                    icon: const Icon(Icons.reorder),
-                    title: Text(l10n.ratingSources),
-                    subtitle: Text(l10n.ratingSourcesDescription),
-                    onTap: () => context.pushSettingsScreen(
-                      RatingsConfigScreen(
-                        settings: UserPreferences.mediaBarRatings,
+                  SettingsPreviewReporter(
+                    describe: () => SettingsPreviewEntry(
+                      prefKey: UserPreferences.mediaBarRatings.sources.key,
+                      title: l10n.ratingSources,
+                      description: l10n.ratingSourcesDescription,
+                    ),
+                    child: _MediaBarActionTile(
+                      icon: const Icon(Icons.reorder),
+                      title: Text(l10n.ratingSources),
+                      subtitle: Text(l10n.ratingSourcesDescription),
+                      onTap: () => context.pushSettingsScreen(
+                        RatingsConfigScreen(
+                          settings: UserPreferences.mediaBarRatings,
+                        ),
                       ),
                     ),
                   ),
