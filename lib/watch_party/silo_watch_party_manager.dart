@@ -1244,8 +1244,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     final localAtMs =
         command.executeAt.millisecondsSinceEpoch - _serverOffsetMs;
     final startsFromPaused =
-        command.playbackState == 'playing' &&
-        !_playbackManager.state.isPlaying;
+        command.playbackState == 'playing' && _playbackManager.state.isPaused;
     final delayMs =
         localAtMs -
         (startsFromPaused ? _startLeadMs ?? 0 : 0) -
@@ -1291,9 +1290,10 @@ class SiloWatchPartyManager extends ChangeNotifier {
         );
       }
       if (playing && !_playbackManager.state.isPlaying) {
-        // A start straight after a seek also waits on the seek's load, which
-        // says nothing about the next start, so only a plain one is timed.
-        if (!sought) {
+        // A start straight after a seek waits on the seek's load, and a player
+        // that stalled mid-play waits on its buffer. Neither says anything
+        // about the next start, so only a plain start from paused is timed.
+        if (!sought && _playbackManager.state.isPaused) {
           _startTiming = (
             calledAtMs: DateTime.now().millisecondsSinceEpoch,
             fromMs: _playbackManager.state.position.inMilliseconds,
