@@ -397,6 +397,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<Map<String, dynamic>>? _dlnaEventsSub;
   StreamSubscription<Map<String, dynamic>>? _airPlayEventsSub;
   StreamSubscription<Map<String, dynamic>>? _media3ActivityActionSub;
+  StreamSubscription<Map<String, dynamic>>? _aetherRemoteCommandSub;
   final Map<String, List<Map<String, dynamic>>> _media3CastPeopleCache = {};
 
   TrickplayInfo? _trickplayInfo;
@@ -940,6 +941,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _onMedia3ActivityAction,
       onError: (_) {},
     );
+    // While a video plays, tvOS sends the remote's Play/Pause to Now Playing
+    // instead of as a key press. iOS already routes these through the audio
+    // handler.
+    if (!PlatformDetection.isIOS &&
+        GetIt.instance.isRegistered<AetherBackend>()) {
+      _aetherRemoteCommandSub = GetIt.instance<AetherBackend>()
+          .remoteCommandStream
+          .listen(_onAetherRemoteCommand, onError: (_) {});
+    }
 
     final isMobilePlayback =
         (PlatformDetection.isAndroid && !PlatformDetection.isTV) ||
@@ -1095,6 +1105,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _dlnaEventsSub?.cancel();
     _airPlayEventsSub?.cancel();
     _media3ActivityActionSub?.cancel();
+    _aetherRemoteCommandSub?.cancel();
     _screenLockSub?.cancel();
     _completedSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
@@ -1914,6 +1925,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       castVolume: _remoteVolume,
       selectedBitrateMbps: _manager.maxBitrateOverrideMbps,
     );
+  }
+
+  void _onAetherRemoteCommand(Map<String, dynamic> command) {
+    if (!mounted || _activeBackend is! AetherBackend) return;
+    final wantsPlay = switch (command['event']) {
+      'play' => true,
+      'pause' => false,
+      _ => null,
+    };
+    if (wantsPlay == null) return;
+    if (wantsPlay != _state.isPlaying) _togglePlayPause();
+    _revealControlsAfterTransport();
   }
 
   void _onMedia3ActivityAction(Map<String, dynamic> event) {
