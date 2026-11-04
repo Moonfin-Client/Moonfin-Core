@@ -1696,6 +1696,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get audioTrack => 'অডিও ট্র্যাক';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'সাবটাইটেল ট্র্যাক';
 
   @override

@@ -1709,6 +1709,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get audioTrack => 'Trac Sain';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Trac Isdeitl';
 
   @override

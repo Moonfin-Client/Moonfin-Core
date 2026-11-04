@@ -1809,6 +1809,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get audioTrack => 'Ścieżka dźwiękowa';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Ścieżka napisów';
 
   @override

@@ -1696,6 +1696,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get audioTrack => 'آهنگ صوتی';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'آهنگ زیرنویس';
 
   @override

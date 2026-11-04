@@ -1704,6 +1704,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get audioTrack => 'Аудио песна';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Песна со титл';
 
   @override

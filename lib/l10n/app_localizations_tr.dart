@@ -1697,6 +1697,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get audioTrack => 'Ses Parçası';
+  @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
 
   @override
   String get subtitleTrack => 'Altyazı Parçası';

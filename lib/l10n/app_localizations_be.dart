@@ -1705,6 +1705,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get audioTrack => 'Гукавая дарожка';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Трэк субтытраў';
 
   @override

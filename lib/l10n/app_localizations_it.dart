@@ -1704,6 +1704,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get audioTrack => 'Traccia Audio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Traccia Sottotitoli';
 
   @override

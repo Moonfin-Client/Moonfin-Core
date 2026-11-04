@@ -1704,6 +1704,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get audioTrack => 'Trek Audio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Trek Subtitle';
 
   @override

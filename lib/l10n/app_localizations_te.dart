@@ -1703,6 +1703,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get audioTrack => 'ఆడియో ట్రాక్';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'ఉపశీర్షిక ట్రాక్';
 
   @override

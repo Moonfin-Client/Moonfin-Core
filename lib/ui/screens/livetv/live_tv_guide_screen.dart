@@ -106,6 +106,9 @@ class LiveTvGuideScreen extends StatefulWidget {
   /// mini-player frame) instead of `Navigator.pop()`.
   final VoidCallback? onClose;
 
+  /// Leaves the hosting player before opening recordings.
+  final Future<void> Function()? onOpenRecordings;
+
   /// Lets an [embedded] host, which owns the only [PopScope] in its route,
   /// give this screen first refusal on a back press so it can reset to its
   /// entry state instead of always closing. Unused on the standalone route,
@@ -120,6 +123,7 @@ class LiveTvGuideScreen extends StatefulWidget {
     this.embedded = false,
     this.onChannelSelected,
     this.onClose,
+    this.onOpenRecordings,
     this.backController,
   });
 
@@ -813,7 +817,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _cancelPendingVerticalMove();
     _isOpeningRecordings = true;
     try {
-      await context.push(Destinations.liveTvRecordings);
+      if (widget.onOpenRecordings case final open?) {
+        await open();
+      } else {
+        await context.push(Destinations.liveTvRecordings);
+      }
     } finally {
       _isOpeningRecordings = false;
     }
@@ -914,7 +922,17 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   @override
   Widget build(BuildContext context) {
-    final content = RequestInitialFocus(child: _buildContent(context));
+    final content = Focus(
+      canRequestFocus: false,
+      onKeyEvent: (_, event) {
+        if (!event.logicalKey.isRecordingsKey) {
+          return KeyEventResult.ignored;
+        }
+        if (event is KeyDownEvent) unawaited(_openRecordings());
+        return KeyEventResult.handled;
+      },
+      child: RequestInitialFocus(child: _buildContent(context)),
+    );
     // The embedded overlay shares its host's single route and its PopScope;
     // the host asks widget.backController instead. The standalone route owns
     // its own pop attempts, so it needs its own PopScope here.

@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteConfig, FlutterTvosPlatform;
 import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
@@ -22,6 +23,7 @@ import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/remove_watched_service.dart';
 import 'data/services/download_service.dart';
+import 'data/services/log_service.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
 import 'data/services/server_messages_service.dart';
@@ -454,6 +456,63 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   DateTime? _lastMouseThumbNavAt;
   String? _pendingRouteHistoryLocation;
   bool _exitDialogShowing = false;
+  bool _checkingLiveTvShortcut = false;
+
+  /// Why Home can't take the Live TV shortcut right now, or null when it can.
+  /// Nothing focused (focus back at the root after a pop) counts as Home;
+  /// focus in a dialog, popup or overlay sheet does not.
+  String? _liveTvShortcutBlocker() {
+    final focus = FocusManager.instance.primaryFocus;
+    if (focus == null || focus == FocusManager.instance.rootScope) return null;
+    final focusContext = focus.context;
+    final focusRoute = focusContext == null || !focusContext.mounted
+        ? null
+        : ModalRoute.of(focusContext);
+    if (focusRoute == null) return 'focus is outside any page';
+    if (focusRoute is! PageRoute) return 'focus is in ${focusRoute.runtimeType}';
+    if (!focusRoute.isCurrent) return 'focus is in a covered page';
+    return null;
+  }
+
+  Future<void> _openLiveTvShortcut(LogicalKeyboardKey key) async {
+    if (_checkingLiveTvShortcut) return;
+    _checkingLiveTvShortcut = true;
+    try {
+      // The client the Live TV screens use; the Riverpod provider is unset.
+      final client = GetIt.instance<MediaServerClient>();
+      final response = await client.liveTvApi.getChannels(
+        limit: 1,
+        enableTotalRecordCount: true,
+      );
+      final items = response['Items'] as List?;
+      final hasChannels =
+          (response['TotalRecordCount'] as int? ?? 0) > 0 ||
+          (items?.isNotEmpty ?? false);
+      if (!mounted || !_isHomeRoute()) return;
+      final blocked = hasChannels ? _liveTvShortcutBlocker() : 'no channels';
+      if (blocked != null) {
+        GetIt.instance<LogService>().playback(
+          'Live TV shortcut ignored: $blocked',
+          level: LogLevel.info,
+        );
+        return;
+      }
+      appRouter.push(
+        key == LogicalKeyboardKey.guide
+            ? Destinations.liveTvGuide
+            : Destinations.liveTvRecordings,
+      );
+    } catch (e) {
+      // An unavailable or unauthorized Live TV service has no shortcut.
+      GetIt.instance<LogService>().playback(
+        'Live TV shortcut ignored: channel check failed',
+        level: LogLevel.info,
+        error: e,
+      );
+    } finally {
+      _checkingLiveTvShortcut = false;
+    }
+  }
 
   @override
   void initState() {
@@ -752,6 +811,19 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     }
 
     final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.guide || key.isRecordingsKey) {
+      final blocked = _isHomeRoute()
+          ? _liveTvShortcutBlocker()
+          : 'route is ${_currentRoutePath()}';
+      if (blocked == null) {
+        unawaited(_openLiveTvShortcut(key));
+        return true;
+      }
+      GetIt.instance<LogService>().playback(
+        'Live TV shortcut ignored: $blocked',
+        level: LogLevel.info,
+      );
+    }
     final keys = HardwareKeyboard.instance.logicalKeysPressed;
     final ctrlPressed =
         keys.contains(LogicalKeyboardKey.controlLeft) ||

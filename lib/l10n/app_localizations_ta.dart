@@ -1707,6 +1707,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get audioTrack => 'ஆடியோ டிராக்';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'வசன வரி';
 
   @override

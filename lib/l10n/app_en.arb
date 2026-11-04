@@ -2195,6 +2195,10 @@
   "@audioTrack": {
     "description": "Dialog title for audio track selection"
   },
+  "noOtherAudioTracks": "No other audio tracks",
+  "@noOtherAudioTracks": {
+    "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+  },
   "subtitleTrack": "Subtitle Track",
   "@subtitleTrack": {
     "description": "Dialog title for subtitle track selection"

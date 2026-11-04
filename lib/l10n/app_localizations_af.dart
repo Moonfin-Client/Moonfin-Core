@@ -1705,6 +1705,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get audioTrack => 'Oudiosnit';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Ondertitelsnit';
 
   @override

@@ -1710,6 +1710,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get audioTrack => 'Wimbo wa Sauti';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Wimbo wa Manukuu';
 
   @override

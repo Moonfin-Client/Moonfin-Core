@@ -26,6 +26,23 @@ void main() {
       );
     });
 
+    test('routes the Live TV guide and recordings', () {
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://live-tv/guide')),
+        '/live-tv/guide',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://live-tv/recordings'),
+        ),
+        '/live-tv/recordings',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://live-tv/other')),
+        isNull,
+      );
+    });
+
     test('routes play host with autoPlay', () {
       expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://play?id=abc123')),

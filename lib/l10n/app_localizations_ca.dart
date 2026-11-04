@@ -1711,6 +1711,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get audioTrack => 'Pista d\'àudio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Pista de subtítols';
 
   @override

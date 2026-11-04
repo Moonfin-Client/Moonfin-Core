@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
@@ -29,12 +30,14 @@ import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/player_edge_drag.dart';
 import '../../../util/system_ui.dart';
+import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -95,6 +98,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   late int _currentIndex;
+  bool _leavingPlayer = false;
   bool _infoVisible = true;
   Timer? _hideTimer;
   bool _isStopping = false;
@@ -1639,6 +1643,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         title: l10n.audioTrack,
         options: options,
         selectedIndex: selected >= 0 ? selected : null,
+        closeKeys: {LogicalKeyboardKey.mediaAudioTrack},
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -1690,6 +1695,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           captionPosition: selectedCaption,
           streamCount: streams.length,
         ),
+        closeKeys: {LogicalKeyboardKey.closedCaptionToggle},
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -1861,9 +1867,59 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         subtitleStreamIndex: _manager.subtitleStreamIndex,
       );
 
+  Future<void> _openRecordings() =>
+      _leavePlayerFor(Destinations.liveTvRecordings);
+
+  Future<void> _openFullGuide() => _leavePlayerFor(Destinations.liveTvGuide);
+
+  /// Stops playback and opens [route] in the player's place.
+  Future<void> _leavePlayerFor(String route) async {
+    if (_leavingPlayer || _isStopping) return;
+    _leavingPlayer = true;
+    try {
+      _isStopping = true;
+      await _manager.stop(userInitiated: false);
+      await _releasePlayerDisplayMode();
+      // Pop rather than replace, so whoever opened the player sees it close
+      // (the guide reloads and restores focus) and Back returns there.
+      if (mounted) {
+        final router = GoRouter.of(context);
+        final matches = router.routerDelegate.currentConfiguration.matches;
+        final below = matches.length < 2
+            ? null
+            : matches[matches.length - 2].matchedLocation;
+        Navigator.of(context).pop();
+        // Opened from that page already: closing the player returns there.
+        if (below != route) unawaited(router.push(route));
+      }
+    } finally {
+      _leavingPlayer = false;
+    }
+  }
+
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.guide) {
+      if (event is KeyDownEvent) {
+        if (_isGuidePickerOpen) {
+          _closeGuideOverlay();
+        } else {
+          if (_isCarouselOpen) _dismissChannelCarousel();
+          unawaited(_openFullGuide());
+        }
+      }
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey.isRecordingsKey && !_isGuidePickerOpen) {
+      if (event is KeyDownEvent) {
+        if (_isCarouselOpen) _dismissChannelCarousel();
+        unawaited(_openRecordings());
+      }
+      return KeyEventResult.handled;
     }
 
     // While either in-player picker is open it owns all navigation keys.
@@ -1873,6 +1929,38 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
 
     switch (event.logicalKey) {
+      case LogicalKeyboardKey.closedCaptionToggle:
+        if (event is KeyDownEvent && _hasSubtitleChoices) {
+          _showSubtitleSelector();
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.mediaAudioTrack:
+        if (event is KeyDownEvent) {
+          if (_streamsOfType('Audio').length > 1) {
+            _showAudioSelector();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context).noOtherAudioTracks),
+              ),
+            );
+          }
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.channelUp:
+      case LogicalKeyboardKey.channelDown:
+        if (event is KeyDownEvent) {
+          final delta = event.logicalKey == LogicalKeyboardKey.channelUp
+              ? 1
+              : -1;
+          // The guide's order, as the carousel and arrow zapping use; wraps.
+          final next = (_currentIndex + delta) % widget.channels.length;
+          if (next != _currentIndex) unawaited(_switchChannel(next));
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.mediaRecord:
+        if (event is KeyDownEvent) unawaited(_showRecordingDialog());
+        return KeyEventResult.handled;
       case LogicalKeyboardKey.arrowUp:
         if (PlatformDetection.isTV) {
           _showChannelCarousel();
@@ -2160,6 +2248,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         currentChannel: _currentChannel,
         onChannelSelected: _onGuideChannelSelected,
         onClose: _closeGuideOverlay,
+        onOpenRecordings: _openRecordings,
         backController: _guideBackController,
       ),
     );

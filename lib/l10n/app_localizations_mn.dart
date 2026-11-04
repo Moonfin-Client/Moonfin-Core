@@ -1701,6 +1701,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get audioTrack => 'Аудио зам';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Хадмал орчуулга';
 
   @override

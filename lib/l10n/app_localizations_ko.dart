@@ -1667,6 +1667,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audioTrack => '오디오 트랙';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => '자막 트랙';
 
   @override

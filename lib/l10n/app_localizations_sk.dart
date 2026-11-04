@@ -1712,6 +1712,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get audioTrack => 'Zvuková stopa';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Titulková stopa';
 
   @override

@@ -1778,6 +1778,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get audioTrack => 'Audiospur';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Untertitelspur';
 
   @override

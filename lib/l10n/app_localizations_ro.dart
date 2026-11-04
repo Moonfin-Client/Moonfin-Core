@@ -1724,6 +1724,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioTrack => 'Piesă audio';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Piesă de subtitrare';
 
   @override

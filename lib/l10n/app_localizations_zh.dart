@@ -1662,6 +1662,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioTrack => '音轨';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => '字幕轨道';
 
   @override

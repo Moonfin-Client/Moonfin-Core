@@ -1709,6 +1709,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get audioTrack => 'Zvočni posnetek';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'Skladba s podnapisi';
 
   @override
