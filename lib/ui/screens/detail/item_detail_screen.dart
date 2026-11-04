@@ -1884,6 +1884,7 @@ class _DetailContentState extends State<_DetailContent> {
       'MusicAlbum' || 'Playlist' => _buildAlbumContent(context, item),
       'BoxSet' => _buildBoxSetContent(context, item),
       'Photo' => _buildPhotoContent(item),
+      'BookSeries' => _buildBookContent(context, item),
       _ =>
         _isReadableBookItem(item)
             ? _buildBookContent(context, item)
@@ -2009,6 +2010,19 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   List<Widget> _buildBookContent(BuildContext context, AggregatedItem item) {
+    AggregatedItem? series;
+    List<AggregatedItem>? seriesBooks;
+    if (item.type == 'BookSeries') {
+      series = item;
+      seriesBooks = viewModel.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook != null) item = firstBook;
+    }
+    final booksInSeries = seriesBooks ?? const [];
     final l10n = AppLocalizations.of(context);
     final author = _bookAuthorName(item);
     final authorDisplay = author ?? l10n.unknownAuthor;
@@ -2024,6 +2038,9 @@ class _DetailContentState extends State<_DetailContent> {
         _visibility.shows(DetailSection.moreLikeThis);
     final similarFocusNode = showSimilar
         ? _sectionFocusNode('detailBookSimilar')
+        : null;
+    final bookFocusNode = (series != null)
+        ? _sectionFocusNode('detailSeriesBook')
         : null;
     final coverTag = item.primaryImageTag;
     const coverWidth = 132.0;
@@ -2148,9 +2165,11 @@ class _DetailContentState extends State<_DetailContent> {
           text: overview,
           focusNode: overviewFocusNode,
           onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
-          onArrowDown: similarFocusNode != null
-              ? () => _requestSectionFocus(similarFocusNode)
-              : null,
+          onArrowDown: bookFocusNode != null
+              ? () => _requestSectionFocus(bookFocusNode)
+              : similarFocusNode != null
+                  ? () => _requestSectionFocus(similarFocusNode)
+                  : null,
           onArrowLeft: () => _tryFocusSidebar(),
           onCollapse: () => setState(() {}),
           style: const TextStyle(
@@ -2168,6 +2187,32 @@ class _DetailContentState extends State<_DetailContent> {
             height: 1.5,
           ),
         ),
+      if (booksInSeries.isNotEmpty) ...[
+        const SizedBox(height: 32),
+        HorizontalScrollSection(
+          title: l10n.books,
+          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+            ? AppColorScheme.onSurface
+            : Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+          builder: (_, ctrl) => DetailSimilarRow(
+            items: booksInSeries,
+            imageApi: viewModel.imageApi,
+            prefs: prefs,
+            firstItemFocusNode: bookFocusNode,
+            onItemLongPress: _showItemContextMenu,
+            scrollController: ctrl,
+            onItemKeyEvent: _buildVerticalRowHandler(
+              sourceFocusNode: bookFocusNode,
+              upTarget: overviewFocusNode ?? actionButtonsFocusNode,
+              itemCount: viewModel.similar.length,
+              consumeDownWhenNoTarget: true,
+            ),
+          )
+        )
+      ],
       if (item.genres.isNotEmpty &&
           _visibility.shows(DetailSection.bookGenres)) ...[
         const SizedBox(height: 20),
@@ -6917,7 +6962,16 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   @override
   Widget build(BuildContext context) {
-    final item = viewModel.item!;
+    var item = viewModel.item!;
+    if (item.type == 'BookSeries') {
+      final seriesBooks = viewModel.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook != null) item = firstBook;
+    }
     final l10n = AppLocalizations.of(context);
     // Only grab initial focus when this screen is actually in front. A settings
     // panel change (detail style or theme) rebuilds the details underneath the

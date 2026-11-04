@@ -606,7 +606,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
           sortOrder: 'Ascending',
           fields:
               'SeriesName,ParentId,Path,People,AlbumArtist,Artists,Genres,'
-              'DateCreated,ProductionYear,RunTimeTicks',
+              'DateCreated,ProductionYear,RunTimeTicks,Overview',
           enableImageTypes: 'Primary',
           imageTypeLimit: 1,
           enableTotalRecordCount: false,
