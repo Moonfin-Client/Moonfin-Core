@@ -53,31 +53,28 @@ List<TmdbReview> parseTmdbReviews(Map<String, dynamic> response) => [
 
 String _studioLogoKey(String name) => name.trim().toLowerCase();
 
-/// Where a studio item keeps the TMDB id of its Moonbase logo. The home row
-/// cache saves rawData to disk, so it holds the id and not a URL with the
-/// session token in it.
-const studioLogoIdKey = 'MoonfinStudioLogoId';
+/// Where a studio item keeps the TMDB image of its Moonbase logo.
+const studioLogoUrlKey = 'MoonfinStudioLogoUrl';
 
-/// Tags each studio or network Moonbase has a logo for with that logo's id.
-void attachStudioLogoIds(List<AggregatedItem> items, Map<String, int> logoIds) {
-  if (logoIds.isEmpty) return;
+/// Gives each studio or network Moonbase has a logo for that logo's image.
+void attachStudioLogoUrls(List<AggregatedItem> items, Map<String, String> logoUrls) {
+  if (logoUrls.isEmpty) return;
   for (final item in items) {
-    final id = logoIds[_studioLogoKey(item.name)];
-    if (id != null) item.rawData[studioLogoIdKey] = id;
+    final url = logoUrls[_studioLogoKey(item.name)];
+    if (url != null) item.rawData[studioLogoUrlKey] = url;
   }
 }
 
-/// Moonbase's studio and network logo list as TMDB company ids by name, leaving
-/// out any without a logo.
+/// Moonbase's studio and network logo list as TMDB images by name, which it
+/// has already turned white for a dark logo.
 @visibleForTesting
-Map<String, int> parseStudioLogoIds(Map<String, dynamic> response) => {
+Map<String, String> parseStudioLogoUrls(Map<String, dynamic> response) => {
   for (final c in (response['companies'] as List?) ?? const [])
     if (c is Map &&
-        c['hasLogo'] == true &&
-        c['id'] is num &&
+        c['logoUrl'] is String &&
         c['name'] is String &&
         (c['name'] as String).trim().isNotEmpty)
-      _studioLogoKey(c['name'] as String): (c['id'] as num).toInt(),
+      _studioLogoKey(c['name'] as String): c['logoUrl'] as String,
 };
 
 class TmdbRepository {
@@ -97,7 +94,7 @@ class TmdbRepository {
   final _pendingEpisodes = <String, Completer<double?>>{};
   final _pendingSeasons = <String, Completer<Map<int, double>?>>{};
   final _pendingCompanies = <String, Completer<List<StudioCompany>?>>{};
-  Future<Map<String, int>>? _studioLogoIds;
+  Future<Map<String, String>>? _studioLogoUrls;
 
   TmdbRepository(this._client);
 
@@ -141,10 +138,10 @@ class TmdbRepository {
         final id = (entry['id'] as num?)?.toInt();
         final name = entry['name']?.toString() ?? '';
         if (id == null || name.isEmpty) continue;
-        // Moonbase on Silo links the logo on TMDB, since an image URL can't
-        // carry Silo's headers.
+        // Moonbase links the logo on TMDB, white when it's a dark one. An older
+        // Moonbase only serves its own copy.
         final imageUrl = entry['hasLogo'] == true
-            ? studioImageUrl(id) ?? entry['logoUrl'] as String?
+            ? entry['logoUrl'] as String? ?? _studioImageUrl(id)
             : null;
         companies.add((name: name, imageUrl: imageUrl));
       }
@@ -161,25 +158,25 @@ class TmdbRepository {
     }
   }
 
-  /// The TMDB company ids of every studio and network Moonbase has a logo for,
-  /// by lowercased name. A studio item carries no TMDB id, so the Studios row
-  /// matches it by name. Empty when the plugin is missing or can't list them,
-  /// and a failed fetch is tried again next time.
-  Future<Map<String, int>> getStudioLogoIds() =>
-      _studioLogoIds ??= _fetchStudioLogoIds();
+  /// The logo of every studio and network Moonbase has one for, by lowercased
+  /// name. A studio item carries no TMDB id, so the Studios row matches it by
+  /// name. Empty when the plugin is missing or can't list them, and a failed
+  /// fetch is tried again next time.
+  Future<Map<String, String>> getStudioLogoUrls() =>
+      _studioLogoUrls ??= _fetchStudioLogoUrls();
 
-  Future<Map<String, int>> _fetchStudioLogoIds() async {
+  Future<Map<String, String>> _fetchStudioLogoUrls() async {
     try {
       final response = await _get('/Moonfin/Tmdb/StudioLogos', const {});
-      if (response != null) return parseStudioLogoIds(response);
+      if (response != null) return parseStudioLogoUrls(response);
     } catch (e) {
       debugPrint('[Moonfin] Studio logo list fetch failed: $e');
     }
-    _studioLogoIds = null;
+    _studioLogoUrls = null;
     return const {};
   }
 
-  String? studioImageUrl(int companyId) {
+  String? _studioImageUrl(int companyId) {
     final token = _client.accessToken;
     if (token == null || !_hasPlugin) return null;
     return '${_client.baseUrl}/Moonfin/Tmdb/StudioImage/$companyId?${_client.serverType.tokenQueryParam}=$token';
@@ -429,7 +426,7 @@ class TmdbRepository {
     _pendingEpisodes.clear();
     _pendingSeasons.clear();
     _pendingCompanies.clear();
-    _studioLogoIds = null;
+    _studioLogoUrls = null;
   }
 
   void dispose() {

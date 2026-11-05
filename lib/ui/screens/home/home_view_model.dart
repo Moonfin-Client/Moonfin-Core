@@ -1607,7 +1607,7 @@ class HomeViewModel extends ChangeNotifier {
         final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
         final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
-        final logoIds = GetIt.instance<TmdbRepository>().getStudioLogoIds();
+        final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();
         final studiosRow = _multiServerEnabled
             ? await _multiServerRepo.getAggregatedStudios(
                 sortBy: studiosSortBy,
@@ -1622,7 +1622,7 @@ class HomeViewModel extends ChangeNotifier {
                 selectedIds: selectedIds,
                 title: l10n.studios,
               );
-        attachStudioLogoIds(studiosRow.items, await logoIds);
+        attachStudioLogoUrls(studiosRow.items, await logoUrls);
         return [studiosRow];
       case HomeSectionType.libraryTilesSmall:
         return [

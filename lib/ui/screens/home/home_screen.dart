@@ -7062,11 +7062,8 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
-    final studioLogoId = item.rawData[studioLogoIdKey];
-    if (studioLogoId is int) {
-      final logo = GetIt.instance<TmdbRepository>().studioImageUrl(studioLogoId);
-      if (logo != null) return logo;
-    }
+    final studioLogo = item.rawData[studioLogoUrlKey];
+    if (studioLogo is String) return studioLogo;
 
     if (item.type == 'Studio' || item.type == 'Network') {
       final maxW = artworkRequestWidth(
