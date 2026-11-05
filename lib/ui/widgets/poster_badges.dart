@@ -117,7 +117,9 @@ class _PosterBadgesState extends State<PosterBadges> {
     final corner = widget.corner;
     // The admin orders the rules, so the first ones win the corner.
     final shown = _badges
-        .where((badge) => badge.corner == corner)
+        // A label with no text and an icon this app doesnt know would be an
+        // empty pill, from a server newer than the app.
+        .where((badge) => badge.corner == corner && _BadgePill.canDraw(badge))
         .take(GetIt.instance<PosterBadgeRepository>().maxPerCorner)
         .toList();
     if (shown.isEmpty) return const SizedBox.shrink();
@@ -282,6 +284,13 @@ class _BadgePill extends StatelessWidget {
     );
   }
 
+  /// Whether the label has text or an icon this app knows, so it isnt drawn as
+  /// an empty pill.
+  static bool canDraw(PosterBadge badge) =>
+      badge.label.trim().isNotEmpty ||
+      _icons.containsKey(badge.icon) ||
+      _flagCode(badge.icon) != null;
+
   /// The flag's code when this app has its image, else null.
   static String? _flagCode(String icon) {
     if (!icon.startsWith('flag-')) return null;
@@ -305,6 +314,8 @@ class _BadgePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!canDraw(badge)) return const SizedBox.shrink();
+
     final size = scale * (_sizes[badge.size] ?? 1.0);
     final hasText = badge.label.trim().isNotEmpty;
     final textStyle = TextStyle(

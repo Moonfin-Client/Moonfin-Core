@@ -41,6 +41,10 @@ void main() {
     await _pump(tester, const PosterBadge(label: 'VFQ', color: '#2563EB', icon: 'dolby'));
     expect(find.text('VFQ'), findsOneWidget);
     expect(find.byType(Icon), findsNothing);
+
+    // With no text either, there is nothing to draw: no empty pill.
+    await _pump(tester, const PosterBadge(label: '', color: '#2563EB', icon: 'dolby'));
+    expect(tester.getSize(find.byType(PosterBadgeSample)), Size.zero);
   });
 
   testWidgets('a flag stands in for the icon, alone or with text', (tester) async {
