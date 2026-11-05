@@ -8529,7 +8529,7 @@
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "detailScreenStyleSubtitle": "Klasik, orijinal ortalanmış Moonfin düzenidir. Modern, duyarlı sinematik bir düzendir. Spotlight, açılır içerik kartlarına sahip, ana görsel odaklı bir düzendir. Nouveau, bölümlerin sayfa boyunca alt alta sıralandığı tam ekran bir düzendir. Minimalist ise sadece kapak görselinden, tek bir oynatma butonundan ve bölümlerden oluşur. Sahne, solda afiş (poster), altında oyun/oynatma düğmesi ve yanında detaylar ile başlar. Premiere, başlığı tüm ekranı kaplayan bir arka planın üzerine ortalar ve sayfa boyunca her bir bölüm bunun altında yer alır.",
+    "detailScreenStyleSubtitle": "Klasik, orijinal ortalanmış Moonfin düzenidir. Modern, duyarlı sinematik bir düzendir. Spotlight, açılır içerik kartlarına sahip, ana görsel odaklı bir düzendir. Nouveau, bölümlerin sayfa boyunca alt alta sıralandığı tam ekran bir düzendir. Minimalist ise sadece kapak görselinden, tek bir oynatma butonundan ve bölümlerden oluşur. Sahne, solda afiş (poster), altında oyun/oynatma düğmesi ve yanında detaylar ile başlar. Premiere, başlığı tüm ekranı kaplayan bir arka planın üzerine ortalar ve sayfa boyunca her bir bölüm bunun altında yer alır. Stage: Afişi öne çıkarır; oynatma düğmesi afişin altında, detaylar ise yanında yer alır. Premiere: Başlığı ekranı kaplayan arka plan görselinin üzerine ortalar; kalan tüm bölümler sayfa boyunca bunun altında sıralanır. Quick Look: Bulunduğunuz ekranın üzerine bir çekmece (drawer) açar; tam sayfaya geçmek için tek bir basış yeterlidir. Frost: Başlığı, kapak görselinin bulanık bir kopyası üzerinde cam efektli bir pencerede gösterir; bölümleri ise düğmelerin altındaki sekmelerde sunar.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11268,7 +11268,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Medya detay sayfalarında sezon durum rozetlerini göster",
+    "showSeerrAvailabilityBadgesDescription": "Seerr durumunu uygulama genelinde afişlerde ve sezonlarda göster",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -16500,7 +16500,7 @@
     "@settingsPreviewSaved": {
         "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
     },
-    "detailScreenStyleStage": "Sahne",
+    "detailScreenStyleStage": "Stage",
     "@detailScreenStyleStage": {
         "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
     },
@@ -16523,5 +16523,118 @@
     "setupDetailPremiereHint": "Başlık tam ekran arka plan üzerinde ortalanmış, diğer her şey sayfanın alt kısmında.",
     "@setupDetailPremiereHint": {
         "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Quick Look",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Frost",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Tam sayfayı aç",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Geri ile çık",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played}/{total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "noOtherAudioTracks": "Başka ses izi yok",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "playerMatchingDisplayRate": "Ekran {fps} fps ile eşleştiriliyor…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "radarrCalendarRow": "Gelecek Filmler (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Gelecek Diziler (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Gelecek Yayınlar",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Radarr ve Sonarr Takvimleri",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Radarr Takvimi",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Sonarr Takvimi",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Bugün} =1{Yarın} other{{days} gün sonra}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Sinema",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Dijital",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Fiziksel",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Gelecek Takvimler",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "enableRadarrCalendar": "Radarr Gelecek Takvimini Etkinleştir",
+    "@enableRadarrCalendar": {
+        "description": "Turns on the Radarr calendar home row"
+    },
+    "radarrCalendarShowCinema": "Gelecek Sinema Vizyonlarını Göster",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Gelecek Dijital Yayınları Göster",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Gelecek Fiziksel Yayınları Göster",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
     }
 }
