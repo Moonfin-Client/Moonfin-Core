@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/home/home_screen.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
+import 'package:server_core/server_core.dart' show ImageApi;
 import 'package:shared_preferences/shared_preferences.dart';
 
 HomeRow _row(String id, [HomeRowType rowType = HomeRowType.pluginDynamic]) =>
@@ -22,6 +24,38 @@ List<HomeSectionConfig> _everySection({bool radarrEnabled = true}) => [
         enabled: type != HomeSectionType.radarrCalendar || radarrEnabled,
       ),
 ];
+
+/// Names the image kind and tag in the url so a test can tell which one a
+/// card asked for.
+class _TagEchoImageApi implements ImageApi {
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) => 'http://fake/$itemId/Primary?tag=${tag ?? ''}';
+
+  @override
+  String getThumbImageUrl(String itemId, {int? maxWidth, String? tag}) =>
+      'http://fake/$itemId/Thumb?tag=${tag ?? ''}';
+
+  @override
+  String getBannerImageUrl(String itemId, {int? maxWidth, String? tag}) =>
+      'http://fake/$itemId/Banner?tag=${tag ?? ''}';
+
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+AggregatedItem _studio(
+  Map<String, String> imageTags, {
+  String type = 'Studio',
+}) => AggregatedItem(
+  id: 'studio1',
+  serverId: 'srv',
+  rawData: {'Id': 'studio1', 'Type': type, 'ImageTags': imageTags},
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -302,6 +336,61 @@ void main() {
       );
 
       expect(imageType(_row('seasonal'), prefs), ImageType.banner);
+    });
+  });
+
+  group('Studio card artwork', () {
+    final api = _TagEchoImageApi();
+
+    test('a poster row falls back to the Thumb Jellyfin gives studios', () {
+      expect(
+        HomeScreen.resolveRowImageUrl(
+          _studio({'Thumb': 't1'}),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Thumb?tag=t1',
+      );
+    });
+
+    test('a network gets the same fallback', () {
+      expect(
+        HomeScreen.resolveRowImageUrl(
+          _studio({'Thumb': 't1'}, type: 'Network'),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Thumb?tag=t1',
+      );
+    });
+
+    test('a studio with no artwork still asks for nothing', () {
+      expect(
+        HomeScreen.resolveRowImageUrl(_studio({}), api, ImageType.poster),
+        isNull,
+      );
+    });
+
+    test('a Primary still wins over the Thumb', () {
+      expect(
+        HomeScreen.resolveRowImageUrl(
+          _studio({'Primary': 'p1', 'Thumb': 't1'}),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Primary?tag=p1',
+      );
+    });
+
+    test('a banner row keeps the Banner ahead of the Thumb', () {
+      expect(
+        HomeScreen.resolveRowImageUrl(
+          _studio({'Banner': 'b1', 'Thumb': 't1'}),
+          api,
+          ImageType.banner,
+        ),
+        'http://fake/studio1/Banner?tag=b1',
+      );
     });
   });
 }
