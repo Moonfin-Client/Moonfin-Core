@@ -68,6 +68,8 @@ class ItemMembershipService {
 
   static const Duration _cacheTtl = Duration(minutes: 5);
 
+  int _sessionGeneration = 0;
+
   // canonicalServerKey -> (playlistId -> list of (itemId, entryId))
   final Map<String, Map<String, List<({String itemId, String entryId})>>>
       _playlistItems = {};
@@ -260,11 +262,13 @@ class ItemMembershipService {
       return const [];
     }
 
+    final generation = _sessionGeneration;
     final isCached = _playlistLastFetched.containsKey(serverKey) &&
         DateTime.now().difference(_playlistLastFetched[serverKey]!) < _cacheTtl;
 
     if (forceRefresh || !isCached) {
       await _syncPlaylists(serverKey);
+      if (generation != _sessionGeneration) return const [];
     }
 
     return getCachedPlaylistsContaining(item);
@@ -275,12 +279,14 @@ class ItemMembershipService {
       return _playlistInFlight[serverKey]!.future;
     }
 
+    final generation = _sessionGeneration;
     final completer = Completer<void>();
     _playlistInFlight[serverKey] = completer;
 
     try {
       final client = _getClient(serverKey);
       final data = await client.itemsApi.getPlaylists();
+      if (generation != _sessionGeneration) return;
       final items = (data['Items'] as List?) ?? const [];
 
       final previous = _playlistItems[serverKey] ?? const {};
@@ -325,13 +331,16 @@ class ItemMembershipService {
       }
 
       await Future.wait(futures);
+      if (generation != _sessionGeneration) return;
 
       _playlistNames[serverKey] = nameMap;
       _playlistItems[serverKey] = itemMap;
       _playlistLastFetched[serverKey] = DateTime.now();
     } catch (_) {
     } finally {
-      _playlistInFlight.remove(serverKey);
+      if (identical(_playlistInFlight[serverKey], completer)) {
+        _playlistInFlight.remove(serverKey);
+      }
       if (!completer.isCompleted) completer.complete();
     }
   }
@@ -348,6 +357,7 @@ class ItemMembershipService {
       return const [];
     }
 
+    final generation = _sessionGeneration;
     final serverKey = _canonicalServerKey(item.serverId);
     final client = _getClient(serverKey);
 
@@ -359,6 +369,7 @@ class ItemMembershipService {
     final ancestorBoxSets = <String, String>{};
     try {
       final ancestors = await client.itemsApi.getAncestors(item.id);
+      if (generation != _sessionGeneration) return const [];
       for (final ancestor in ancestors) {
         if (ancestor['Type'] == 'BoxSet') {
           final id = ancestor['Id']?.toString();
@@ -372,6 +383,7 @@ class ItemMembershipService {
 
     if (forceRefresh || !isCached) {
       await _syncCollections(serverKey);
+      if (generation != _sessionGeneration) return const [];
     }
 
     final results = <ItemCollectionMembership>[
@@ -386,6 +398,7 @@ class ItemMembershipService {
             parentId: entry.key,
             fields: 'BasicSyncInfo',
           );
+          if (generation != _sessionGeneration) return const [];
           final memberIds = ((data['Items'] as List?) ?? const [])
               .whereType<Map>()
               .map((member) => member['Id']?.toString())
@@ -410,6 +423,7 @@ class ItemMembershipService {
       return _collectionInFlight[serverKey]!.future;
     }
 
+    final generation = _sessionGeneration;
     final completer = Completer<void>();
     _collectionInFlight[serverKey] = completer;
 
@@ -428,6 +442,7 @@ class ItemMembershipService {
         );
         items = (data['Items'] as List?) ?? const [];
       }
+      if (generation != _sessionGeneration) return;
 
       final previous = _collectionMembers[serverKey] ?? const {};
       final nameMap = <String, String>{};
@@ -446,6 +461,7 @@ class ItemMembershipService {
       // Batch membership lookups with maxConcurrent = 24
       const maxConcurrent = 24;
       for (var i = 0; i < candidates.length; i += maxConcurrent) {
+        if (generation != _sessionGeneration) return;
         final batch = candidates.skip(i).take(maxConcurrent);
         await Future.wait(batch.map((candidate) async {
           try {
@@ -467,13 +483,16 @@ class ItemMembershipService {
           }
         }));
       }
+      if (generation != _sessionGeneration) return;
 
       _collectionNames[serverKey] = nameMap;
       _collectionMembers[serverKey] = memberMap;
       _collectionLastFetched[serverKey] = DateTime.now();
     } catch (_) {
     } finally {
-      _collectionInFlight.remove(serverKey);
+      if (identical(_collectionInFlight[serverKey], completer)) {
+        _collectionInFlight.remove(serverKey);
+      }
       if (!completer.isCompleted) completer.complete();
     }
   }
@@ -539,14 +558,23 @@ class ItemMembershipService {
     _collectionLastFetched.remove(serverKey);
   }
 
-  /// Clears in-memory caches (e.g. on account or server switch).
+  /// Clears in-memory caches and invalidates any in-flight syncs (e.g. on account or server switch).
   void clearCache() {
+    _sessionGeneration++;
     _playlistItems.clear();
     _playlistNames.clear();
     _playlistLastFetched.clear();
+    for (final c in _playlistInFlight.values) {
+      if (!c.isCompleted) c.complete();
+    }
+    _playlistInFlight.clear();
     _collectionMembers.clear();
     _collectionNames.clear();
     _collectionLastFetched.clear();
+    for (final c in _collectionInFlight.values) {
+      if (!c.isCompleted) c.complete();
+    }
+    _collectionInFlight.clear();
   }
 
   /// Pre-warms caches in the background.

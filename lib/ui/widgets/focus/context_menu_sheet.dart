@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -96,27 +98,53 @@ class _ContextMenuState extends State<_ContextMenu> {
     _item = widget.item;
     _playlists = widget.initialPlaylists;
     _collections = widget.initialCollections;
+    FocusManager.instance.addListener(_onFocusChanged);
 
     if (!(_item.serverId == 'seerr' || _item.id.startsWith('tt'))) {
       _pollMemberships();
     }
   }
 
-  Future<void> _pollMemberships() async {
-    final result = await ItemMembershipService.instance.getMemberships(
-      _item,
-      timeout: const Duration(seconds: 4),
-    );
+  @override
+  void dispose() {
+    FocusManager.instance.removeListener(_onFocusChanged);
+    super.dispose();
+  }
+
+  void _onFocusChanged() {
     if (!mounted) return;
-    final newPl = result.playlists;
-    final newCol = result.collections;
-    if (!listEquals(newPl, _playlists ?? const []) ||
-        !listEquals(newCol, _collections ?? const [])) {
-      setState(() {
-        _playlists = newPl;
-        _collections = newCol;
-      });
-    }
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    if (focusContext == null || !focusContext.mounted) return;
+    if (Scrollable.maybeOf(focusContext) == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && focusContext.mounted) {
+        Scrollable.ensureVisible(
+          focusContext,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+          duration: FocusTheme.animationDuration,
+        );
+      }
+    });
+  }
+
+  void _pollMemberships() {
+    final service = ItemMembershipService.instance;
+    unawaited(
+      service.getPlaylistsContaining(_item).then((newPl) {
+        if (!mounted) return;
+        if (!listEquals(newPl, _playlists ?? const [])) {
+          setState(() => _playlists = newPl);
+        }
+      }).catchError((_) {}),
+    );
+    unawaited(
+      service.getCollectionsContaining(_item).then((newCol) {
+        if (!mounted) return;
+        if (!listEquals(newCol, _collections ?? const [])) {
+          setState(() => _collections = newCol);
+        }
+      }).catchError((_) {}),
+    );
   }
 
   @override
@@ -137,10 +165,12 @@ class _ContextMenuState extends State<_ContextMenu> {
 
     final theme = Theme.of(context);
     final title = _item.name;
+    final maxHeight =
+        (MediaQuery.sizeOf(context).height - 32).clamp(160.0, double.infinity);
     return Material(
       color: Colors.transparent,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 360),
+        constraints: BoxConstraints(maxWidth: 360, maxHeight: maxHeight),
         child: Container(
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
@@ -168,16 +198,31 @@ class _ContextMenuState extends State<_ContextMenu> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              for (var i = 0; i < actions.length; i++)
-                MenuActionRow(
-                  icon: actions[i].icon,
-                  label: actions[i].label,
-                  autofocus: i == 0,
-                  onPressed: () async {
-                    await OverlaySheetController.closeAdaptive<void>(context);
-                    await actions[i].onSelect();
-                  },
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < actions.length; i++)
+                        MenuActionRow(
+                          key: ValueKey(
+                            '${actions[i].icon.codePoint}:${actions[i].label}',
+                          ),
+                          icon: actions[i].icon,
+                          label: actions[i].label,
+                          autofocus: i == 0,
+                          onPressed: () async {
+                            await OverlaySheetController.closeAdaptive<void>(
+                              context,
+                            );
+                            await actions[i].onSelect();
+                          },
+                        ),
+                    ],
+                  ),
                 ),
+              ),
             ],
           ),
         ),

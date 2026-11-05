@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -293,6 +295,45 @@ void main() {
           await ItemMembershipService.instance.getPlaylistsContaining(movie);
       expect(playlists.length, equals(1));
       expect(playlists.first.entryId, equals('server-entry-999'));
+    });
+
+    test('clearCache invalidates in-flight syncs so stale user data is discarded', () async {
+      final oldUserPlaylists = Completer<Map<String, dynamic>>();
+      var callCount = 0;
+
+      when(() => itemsApi.getPlaylists()).thenAnswer((_) {
+        callCount++;
+        if (callCount == 1) {
+          return oldUserPlaylists.future;
+        }
+        return Future.value({'Items': []});
+      });
+
+      final movie = _movie(id: 'movie-1');
+      final oldLookup =
+          ItemMembershipService.instance.getPlaylistsContaining(movie);
+
+      // Account switch occurs while old sync is in flight
+      ItemMembershipService.instance.clearCache();
+
+      // New user lookup starts a separate request instead of joining old sync
+      final newResult =
+          await ItemMembershipService.instance.getPlaylistsContaining(movie);
+      expect(newResult, isEmpty);
+      expect(callCount, equals(2));
+
+      // Old request finishes late with previous user's playlist
+      oldUserPlaylists.complete({
+        'Items': [
+          {'Id': 'pl-old', 'Name': 'Old User Playlist'},
+        ],
+      });
+      final oldResult = await oldLookup;
+      expect(oldResult, isEmpty);
+      expect(
+        ItemMembershipService.instance.getCachedPlaylistsContaining(movie),
+        isEmpty,
+      );
     });
   });
 }
