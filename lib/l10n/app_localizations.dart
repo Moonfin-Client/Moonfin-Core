@@ -5464,6 +5464,18 @@ abstract class AppLocalizations {
   /// **'Watched Indicators'**
   String get watchedIndicators;
 
+  /// Setting that shows or hides the labels the server admin adds to posters
+  ///
+  /// In en, this message translates to:
+  /// **'Poster Labels'**
+  String get showPosterLabels;
+
+  /// Subtitle of the Poster Labels setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show the labels on posters, such as 4K or HDR.'**
+  String get showPosterLabelsSubtitle;
+
   /// Option: always
   ///
   /// In en, this message translates to:

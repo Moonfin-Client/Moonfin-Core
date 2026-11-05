@@ -3168,6 +3168,13 @@ class AppLocalizationsMl extends AppLocalizations {
   String get watchedIndicators => 'സൂചകങ്ങൾ നിരീക്ഷിച്ചു';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'എപ്പോഴും';
 
   @override

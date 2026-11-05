@@ -15682,6 +15682,16 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                             left: 6,
                             child: PosterBadges(itemId: ep.id, scale: 0.8),
                           ),
+                          Positioned.fill(
+                            child: PosterBadgeCorners(
+                              itemId: ep.id,
+                              scale: 0.8,
+                              top: ep.isPlayed && (ep.playedPercentage ?? 0) == 0
+                                  ? 30
+                                  : 6,
+                              bottom: (ep.playedPercentage ?? 0) > 0 ? 12 : 6,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -15929,6 +15939,13 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                               top: 6,
                               left: 6,
                               child: PosterBadges(itemId: episode.id, scale: 0.8),
+                            ),
+                            Positioned.fill(
+                              child: PosterBadgeCorners(
+                                itemId: episode.id,
+                                scale: 0.8,
+                                bottom: (episode.playedPercentage ?? 0) > 0 ? 12 : 6,
+                              ),
                             ),
                           ],
                         ),
@@ -16216,6 +16233,16 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                     ),
                                     PosterBadges(itemId: episode.id, scale: 0.8),
                                   ],
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: PosterBadgeCorners(
+                                  itemId: episode.id,
+                                  scale: 0.8,
+                                  top: episode.isPlayed ? 30 : 6,
+                                  bottom: (episode.playedPercentage ?? 0) > 0
+                                      ? 12
+                                      : 6,
                                 ),
                               ),
                               if (episode.isPlayed)

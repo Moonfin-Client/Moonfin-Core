@@ -3103,6 +3103,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get watchedIndicators => '已观看标记';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => '总是';
 
   @override

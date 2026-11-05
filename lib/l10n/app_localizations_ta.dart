@@ -3170,6 +3170,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get watchedIndicators => 'குறிகாட்டிகளைப் பார்த்தேன்';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'எப்போதும்';
 
   @override

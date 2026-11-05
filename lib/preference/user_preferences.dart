@@ -638,6 +638,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_bottom_navbar_tabs',
     'focus_color',
     'pref_watched_indicator_behavior',
+    'pref_show_poster_labels',
     'pref_card_focus_expansion',
     'pref_home_rows_style',
     'pref_modern_home_rows_padding',
@@ -1656,6 +1657,13 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_watched_indicator_behavior',
     defaultValue: WatchedIndicatorBehavior.always,
     values: WatchedIndicatorBehavior.values,
+  );
+
+  /// The labels the server's admin puts on posters, such as 4K or VFQ. The admin
+  /// picks who gets them, and this lets each person turn them off for themselves.
+  static final showPosterLabels = Preference(
+    key: 'pref_show_poster_labels',
+    defaultValue: true,
   );
 
   static final mergeContinueWatchingNextUp = Preference(
