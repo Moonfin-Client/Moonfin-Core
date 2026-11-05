@@ -2353,7 +2353,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// user would have landed opening the guide fresh, back re-homes it instead
   /// of exiting. Returns true when it handled the press. With nothing to
   /// re-home (already there, or a filter hides the entry channel), a TV moves
-  /// focus up to the header and the next back leaves; elsewhere the press
+  /// focus up to the header and the next back leaves. Elsewhere the press
   /// falls through to the normal close/exit path. With no channel ever tuned,
   /// the target is row 0 as long as the lineup is non-empty.
   bool _consumeBackIfExploring() {

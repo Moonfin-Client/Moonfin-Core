@@ -39,7 +39,7 @@ class UserDataSync extends ChangeNotifier {
   int get session => _session;
   int _session = 0;
 
-  /// Shows [value] as the favourite flag straight away, before the server
+  /// Shows [value] as the favorite flag straight away, before the server
   /// has it, so a quick next toggle starts from what the user last chose.
   void requestFavorite(String itemId, bool value) {
     if (!_pendingFavorites.containsKey(itemId)) {
@@ -55,7 +55,7 @@ class UserDataSync extends ChangeNotifier {
   /// The flag the server last confirmed for a change still in progress.
   bool? confirmedFavorite(String itemId) => _confirmedFavorites[itemId];
 
-  /// The server now holds [value]; the change ends if that is still the wish.
+  /// The server now holds [value]. The change ends if that's what was asked.
   void confirmFavorite(String itemId, bool value) {
     _confirmedFavorites[itemId] = value;
     if (_pendingFavorites[itemId] != value) return;
@@ -76,7 +76,7 @@ class UserDataSync extends ChangeNotifier {
       _pendingFavorites.containsKey(itemId);
   StreamSubscription<ServerWebSocketMessage>? _socketSubscription;
 
-  /// The synced favourite flag, or null when none is known.
+  /// The synced favorite flag, or null when none is known.
   bool? favoriteFor(String itemId) =>
       _pendingFavorites[itemId] ?? _userData[itemId]?['IsFavorite'] as bool?;
 

@@ -539,7 +539,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           for (final c in _channels)
             if (c.isFavorite) c.id,
         ]).catchError((Object _) {
-          // The row stays unloaded; reselecting the filter or the next
+          // The row stays unloaded, so reselecting the filter or the next
           // favorite change asks again.
         }),
       );
@@ -972,7 +972,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         fresh[id] = Map<String, dynamic>.from(data);
       }
     }
-    // The lineup below is rebuilt from this data; syncing the old one first
+    // The lineup below is rebuilt from this data. Syncing the old one first
     // would re-sort it and fetch programs for rows about to be replaced.
     _publishingFetchedUserData = true;
     try {

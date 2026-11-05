@@ -23,7 +23,6 @@ import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/remove_watched_service.dart';
 import 'data/services/download_service.dart';
-import 'data/services/log_service.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
 import 'data/services/server_messages_service.dart';
@@ -458,29 +457,26 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   bool _exitDialogShowing = false;
   bool _checkingLiveTvShortcut = false;
 
-  /// Why Home can't take the Live TV shortcut right now, or null when it can.
-  /// Nothing focused (focus back at the root after a pop) counts as Home;
-  /// focus in a dialog, popup or overlay sheet does not.
-  String? _liveTvShortcutBlocker() {
+  /// Whether Home can take a Live TV shortcut now. Nothing focused (focus
+  /// back at the root after a pop) counts as Home. Focus in a dialog, popup
+  /// or overlay sheet doesn't.
+  bool _canTakeLiveTvShortcut() {
+    if (!_isHomeRoute()) return false;
     // A sheet takes focus a couple of frames after it opens.
-    if (OverlaySheetController.hasOpenSheet) return 'an overlay sheet is open';
+    if (OverlaySheetController.hasOpenSheet) return false;
     final focus = FocusManager.instance.primaryFocus;
-    if (focus == null || focus == FocusManager.instance.rootScope) return null;
+    if (focus == null || focus == FocusManager.instance.rootScope) return true;
     final focusContext = focus.context;
     final focusRoute = focusContext == null || !focusContext.mounted
         ? null
         : ModalRoute.of(focusContext);
-    if (focusRoute == null) return 'focus is outside any page';
-    if (focusRoute is! PageRoute) return 'focus is in ${focusRoute.runtimeType}';
-    if (!focusRoute.isCurrent) return 'focus is in a covered page';
-    return null;
+    return focusRoute is PageRoute && focusRoute.isCurrent;
   }
 
   Future<void> _openLiveTvShortcut(LogicalKeyboardKey key) async {
     if (_checkingLiveTvShortcut) return;
     _checkingLiveTvShortcut = true;
     try {
-      // The client the Live TV screens use; the Riverpod provider is unset.
       final client = GetIt.instance<MediaServerClient>();
       final response = await client.liveTvApi.getChannels(
         limit: 1,
@@ -490,27 +486,14 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       final hasChannels =
           (response['TotalRecordCount'] as int? ?? 0) > 0 ||
           (items?.isNotEmpty ?? false);
-      if (!mounted || !_isHomeRoute()) return;
-      final blocked = hasChannels ? _liveTvShortcutBlocker() : 'no channels';
-      if (blocked != null) {
-        GetIt.instance<LogService>().playback(
-          'Live TV shortcut ignored: $blocked',
-          level: LogLevel.info,
-        );
-        return;
-      }
+      if (!mounted || !hasChannels || !_canTakeLiveTvShortcut()) return;
       appRouter.push(
         key == LogicalKeyboardKey.guide
             ? Destinations.liveTvGuide
             : Destinations.liveTvRecordings,
       );
-    } catch (e) {
+    } catch (_) {
       // An unavailable or unauthorized Live TV service has no shortcut.
-      GetIt.instance<LogService>().playback(
-        'Live TV shortcut ignored: channel check failed',
-        level: LogLevel.info,
-        error: e,
-      );
     } finally {
       _checkingLiveTvShortcut = false;
     }
@@ -813,18 +796,10 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     }
 
     final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.guide || key.isRecordingsKey) {
-      final blocked = _isHomeRoute()
-          ? _liveTvShortcutBlocker()
-          : 'route is ${_currentRoutePath()}';
-      if (blocked == null) {
-        unawaited(_openLiveTvShortcut(key));
-        return true;
-      }
-      GetIt.instance<LogService>().playback(
-        'Live TV shortcut ignored: $blocked',
-        level: LogLevel.info,
-      );
+    if ((key == LogicalKeyboardKey.guide || key.isRecordingsKey) &&
+        _canTakeLiveTvShortcut()) {
+      unawaited(_openLiveTvShortcut(key));
+      return true;
     }
     final keys = HardwareKeyboard.instance.logicalKeysPressed;
     final ctrlPressed =
