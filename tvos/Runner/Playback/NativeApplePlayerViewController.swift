@@ -199,7 +199,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private var subtitleLoadingAboveOsd: NSLayoutConstraint?
     private var subtitleLoadingInCorner: NSLayoutConstraint?
 
-    private var isLive = false
+    private(set) var isLive = false
     private var liveProgram:
         (
             name: String, episodeTitle: String, episodeLine: String, startMs: Int, endMs: Int,
@@ -1383,6 +1383,7 @@ final class NativeApplePlayerViewController: UIViewController {
             if !subtitleTracks.isEmpty, osdShows(.subtitles) { ids.append(.subtitles) }
             if osdShows(.quality) { ids.append(.quality) }
             if liveRecord != nil { ids.append(.record) }
+            if canFavorite, osdShows(.favorite) { ids.append(.favorite) }
             if !streamInfoSections.isEmpty, osdShows(.info) { ids.append(.info) }
         } else {
             // Both always present, because they step chapters before they
@@ -2182,6 +2183,14 @@ final class NativeApplePlayerViewController: UIViewController {
             return true
         case .rightArrow:
             seekOrMoveFocus(forward: true)
+            return true
+        case .pageUp, .pageDown:
+            // A remote's channel buttons arrive as page presses. They follow the
+            // guide's order like the carousel and wrap at the ends.
+            guard isLive, channelList.count > 1 else { return false }
+            let step = type == .pageUp ? 1 : -1
+            let next = (selectedChannelIndex + step + channelList.count) % channelList.count
+            onSelectChannel?(channelList[next].channelId)
             return true
         default:
             break

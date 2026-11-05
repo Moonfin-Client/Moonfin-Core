@@ -530,6 +530,14 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         onPlayerChanged?()
     }
 
+    /// The remote's Guide button, which tvOS sends as an app activity rather
+    /// than a press. It still reaches a Live TV player that stepped aside for
+    /// its guide.
+    func handleGuideButton() {
+        guard playerVC?.isLive == true else { return }
+        send(["event": "guideButton"])
+    }
+
     /// Takes the player off screen while the engine keeps playing, so Flutter
     /// can show the Live TV guide or a dialog over the live picture.
     private func suspend(result: @escaping FlutterResult) {
@@ -616,7 +624,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
                     from: args["externalSubtitles"]),
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
-                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
+                cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

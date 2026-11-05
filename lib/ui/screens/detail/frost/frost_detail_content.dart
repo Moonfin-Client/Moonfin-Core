@@ -772,12 +772,10 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     Color? color,
     EdgeInsetsGeometry? padding,
     bool shadow = false,
-    bool liveBlur = true,
   }) => glassPane(
     tier: _tier,
     fallbackColor: color ?? _tint(0.5),
     cornerRadius: radius,
-    sigma: liveBlur ? GlassRecipe.panelSigma : 0,
     padding: padding,
     shadow: shadow,
     context: context,
@@ -836,9 +834,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     AppLocalizations l10n,
   ) {
     final overview = _tab == _Tab.overview;
-    // Everything under these panes is already blurred or shaded, so a live
-    // blur barely shows, and on some Windows PCs it washes the window out gray.
-    final liveBlur = !PlatformDetection.isWindows;
 
     final window = Positioned(
       left: 24,
@@ -849,7 +844,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         radius: 44,
         color: _tint(0.36),
         shadow: true,
-        liveBlur: liveBlur,
         child: ClipRRect(
           borderRadius: AppRadius.circular(44),
           child: Stack(
@@ -928,7 +922,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 38,
           shadow: true,
-          liveBlur: liveBlur,
           padding: const EdgeInsets.all(8),
           // Unbounded across, so the row sizes to its buttons and never wraps.
           child: UnconstrainedBox(
@@ -959,7 +952,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 30,
           shadow: true,
-          liveBlur: liveBlur,
           padding: const EdgeInsets.all(6),
           child: FittedBox(
             fit: BoxFit.scaleDown,

@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteConfig, FlutterTvosPlatform;
 import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
@@ -454,6 +455,53 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   DateTime? _lastMouseThumbNavAt;
   String? _pendingRouteHistoryLocation;
   bool _exitDialogShowing = false;
+  bool _checkingLiveTvShortcut = false;
+
+  /// Whether Home can take a Live TV shortcut now. Nothing focused (focus
+  /// back at the root after a pop, or parked on this scope by a desktop mouse
+  /// scroll) counts as Home. Focus in a dialog, popup or overlay sheet doesn't.
+  bool _canTakeLiveTvShortcut() {
+    if (!_isHomeRoute()) return false;
+    // A sheet takes focus a couple of frames after it opens.
+    if (OverlaySheetController.hasOpenSheet) return false;
+    final focus = FocusManager.instance.primaryFocus;
+    if (focus == null ||
+        focus == FocusManager.instance.rootScope ||
+        focus == _focusNode) {
+      return true;
+    }
+    final focusContext = focus.context;
+    final focusRoute = focusContext == null || !focusContext.mounted
+        ? null
+        : ModalRoute.of(focusContext);
+    return focusRoute is PageRoute && focusRoute.isCurrent;
+  }
+
+  Future<void> _openLiveTvShortcut(LogicalKeyboardKey key) async {
+    if (_checkingLiveTvShortcut) return;
+    _checkingLiveTvShortcut = true;
+    try {
+      final client = GetIt.instance<MediaServerClient>();
+      final response = await client.liveTvApi.getChannels(
+        limit: 1,
+        enableTotalRecordCount: true,
+      );
+      final items = response['Items'] as List?;
+      final hasChannels =
+          (response['TotalRecordCount'] as int? ?? 0) > 0 ||
+          (items?.isNotEmpty ?? false);
+      if (!mounted || !hasChannels || !_canTakeLiveTvShortcut()) return;
+      appRouter.push(
+        key == LogicalKeyboardKey.guide
+            ? Destinations.liveTvGuide
+            : Destinations.liveTvRecordings,
+      );
+    } catch (_) {
+      // An unavailable or unauthorized Live TV service has no shortcut.
+    } finally {
+      _checkingLiveTvShortcut = false;
+    }
+  }
 
   @override
   void initState() {
@@ -752,6 +800,11 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     }
 
     final key = event.logicalKey;
+    if ((key == LogicalKeyboardKey.guide || key.isRecordingsKey) &&
+        _canTakeLiveTvShortcut()) {
+      unawaited(_openLiveTvShortcut(key));
+      return true;
+    }
     final keys = HardwareKeyboard.instance.logicalKeysPressed;
     final ctrlPressed =
         keys.contains(LogicalKeyboardKey.controlLeft) ||

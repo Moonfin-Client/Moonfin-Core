@@ -218,7 +218,16 @@ class _SettingsCategory {
   final String subtitle;
   final Widget Function() screen;
 
-  const _SettingsCategory(this.title, this.subtitle, this.screen);
+  /// Off for a category whose settings never change the live preview, so the
+  /// phone gives that room to the list.
+  final bool preview;
+
+  const _SettingsCategory(
+    this.title,
+    this.subtitle,
+    this.screen, {
+    this.preview = true,
+  });
 }
 
 /// A category page that is a short list of entries rather than settings:
@@ -276,6 +285,10 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   List<_SettingsCategory> _categories = const [];
   int _categoryIndex = 0;
   String? _shownCategory;
+
+  /// The category a search result belongs to while its screen is open, since
+  /// that screen sits on top of whichever tab the search started from.
+  _SettingsCategory? _searchedCategory;
 
   /// On a TV the list can't take focus while the pill or search has it, so a
   /// category screen's own initial focus doesn't pull the D-pad off the pill
@@ -570,6 +583,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               ),
             ],
           ),
+          preview: false,
         ),
       ];
     }
@@ -592,11 +606,13 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               ),
             ],
           ),
+          preview: false,
         ),
       _SettingsCategory(
         l10n.account,
         l10n.settingsAccountSubtitle,
         () => const _AccountScreen(),
+        preview: false,
       ),
       _SettingsCategory(
         l10n.general,
@@ -620,6 +636,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           l10n.storage,
           l10n.settingsStorageSubtitle,
           () => const DownloadSettingsScreen(),
+          preview: false,
         ),
       // Seerr and achievements both come from the Moonfin plugin. With
       // neither on offer (only Silo signed in) the screen would be empty.
@@ -628,11 +645,13 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           l10n.integrations,
           seerrBrand(l10n.settingsServicesSubtitle),
           () => const _ServicesScreen(),
+          preview: false,
         ),
       _SettingsCategory(
         l10n.aboutTitle,
         l10n.settingsAboutSubtitle,
         () => const _AboutCategoryScreen(),
+        preview: false,
       ),
     ];
   }
@@ -892,6 +911,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     Widget list,
     bool searching,
   ) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final previewHidden = prefs.get(UserPreferences.settingsPreviewHidden);
+    final category = _searchedCategory ?? _categories[_categoryIndex];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -910,10 +932,19 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: pill,
             ),
-          if (!searching)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: _PhoneLivePreview(),
+          if (!searching && category.preview)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: _PhoneLivePreview(
+                hidden: previewHidden,
+                onToggle: () async {
+                  await prefs.set(
+                    UserPreferences.settingsPreviewHidden,
+                    !previewHidden,
+                  );
+                  if (mounted) setState(() {});
+                },
+              ),
             ),
           Expanded(child: list),
         ],
@@ -937,12 +968,24 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
         final navigatorContext = _listNavKey.currentContext;
         _searchController.clear();
         if (navigatorContext == null) return;
+        final before = _searchedCategory;
+        final title = openingPath?.firstOrNull;
+        setState(() {
+          _searchedCategory = _categories
+              .where((c) => c.title == title)
+              .firstOrNull;
+        });
+        // Switching tabs removes the screen, which also completes this future.
         unawaited(
-          navigatorContext.pushSettingsScreen(
-            screen,
-            returnFocus: _phone ? null : _pillFocus,
-            previewPath: openingPath,
-          ),
+          navigatorContext
+              .pushSettingsScreen(
+                screen,
+                returnFocus: _phone ? null : _pillFocus,
+                previewPath: openingPath,
+              )
+              .then((_) {
+                if (mounted) setState(() => _searchedCategory = before);
+              }),
         );
       },
       openAdmin: () {
@@ -987,10 +1030,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   }
 }
 
-/// The phone's preview strip: the scene chips, the mock screen at the phone's
-/// own proportions, and the touched setting spelled out beside it.
+/// The phone's preview strip: the scene chips with the show/hide toggle, the
+/// mock screen at the phone's own proportions, and the touched setting spelled
+/// out beside it. Hidden leaves only the chips row, so the toggle stays put.
 class _PhoneLivePreview extends StatelessWidget {
-  const _PhoneLivePreview();
+  final bool hidden;
+  final VoidCallback onToggle;
+
+  const _PhoneLivePreview({required this.hidden, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -998,11 +1045,25 @@ class _PhoneLivePreview extends StatelessWidget {
         .dependOnInheritedWidgetOfExactType<SettingsPreviewScope>()
         ?.notifier;
     if (controller == null) return const SizedBox.shrink();
+    final chips = SettingsPreviewSceneChips(
+      controller: controller,
+      onSceneTap: hidden ? onToggle : null,
+      trailing: IconButton(
+        tooltip: AppLocalizations.of(context).settingsLivePreview,
+        isSelected: !hidden,
+        visualDensity: VisualDensity.compact,
+        iconSize: 20,
+        icon: const Icon(Icons.visibility_off_outlined),
+        selectedIcon: const Icon(Icons.visibility_outlined),
+        onPressed: onToggle,
+      ),
+    );
+    if (hidden) return chips;
     final landscape = controller.scene == SettingsPreviewScene.player;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SettingsPreviewSceneChips(controller: controller),
+        chips,
         const SizedBox(height: 10),
         AnimatedSize(
           duration: const Duration(milliseconds: 200),

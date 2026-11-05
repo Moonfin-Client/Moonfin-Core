@@ -1,7 +1,9 @@
 package org.moonfin.nativevideo
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -20,8 +22,10 @@ import androidx.media3.extractor.text.CuesWithTiming
 import androidx.media3.extractor.text.Subtitle
 import androidx.media3.extractor.text.SubtitleParser
 import io.github.peerless2012.ass.AssFrame
+import io.github.peerless2012.ass.AssTex
 import io.github.peerless2012.ass.AssTexType
 import io.github.peerless2012.ass.media.AssHandler
+import io.github.peerless2012.ass.media.parser.AssNoOpSubtitleParser
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
@@ -54,11 +58,17 @@ import java.util.concurrent.atomic.AtomicBoolean
 class MoonfinAssOverlayView(
     context: Context,
     private val assHandler: AssHandler,
+    private val assDialogue: AssDialogueQueue,
 ) : View(context) {
 
-    private val paint = Paint().apply {
+    // Render thread only.
+    private val compositePaint = Paint().apply {
         xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
     }
+
+    private val buffers = AssCompositeBuffers()
+    private val renderSerial = Any()
+    private val drawPaint = Paint()
 
     private var executor: ExecutorService? = null
 
@@ -87,11 +97,22 @@ class MoonfinAssOverlayView(
     // destination render. Keep requesting that position until playback resumes.
     @Volatile private var awaitingPausedSeekDialogue = false
 
+    // [ink] keeps each image's own rect for the secondary to avoid.
+    private class Composite(
+        val bitmap: Bitmap,
+        val left: Int,
+        val top: Int,
+        val ink: List<Rect>,
+    )
+
     // libass reports differences from its last actual render, not from the
     // selected track. Retain that image and its owner across unrendered switches.
+    // [frame]'s bitmaps are recycled once flattened, so draw [composite], which
+    // is null when the frame had no pixels.
     private data class CachedFrame(
         val track: Any,
         val frame: AssFrame,
+        val composite: Composite?,
         val visible: Boolean = true,
     )
 
@@ -165,8 +186,8 @@ class MoonfinAssOverlayView(
         requestRender(positionMs * 1000L)
     }
 
-    // The MKV loader calls this after adding a dialogue chunk under the native
-    // lock. A paused player may never produce another clock callback.
+    // The MKV loader calls this after queueing a dialogue line. A paused
+    // player may never produce another clock callback.
     fun onAssDialogueLoaded() {
         if (awaitingPausedSeekDialogue && primaryAssTrackActive && primaryVisible) {
             redrawCurrentAssFrame()
@@ -177,10 +198,10 @@ class MoonfinAssOverlayView(
         awaitingPausedSeekDialogue = false
     }
 
-    private fun visibleFrame(): AssFrame? {
+    private fun visibleCachedFrame(): CachedFrame? {
         if (!primaryVisible || !primaryAssTrackActive) return null
         val cached = cachedFrame ?: return null
-        return cached.frame.takeIf { cached.visible && cached.track === primaryNativeTrack }
+        return cached.takeIf { it.visible && it.track === primaryNativeTrack }
     }
 
     private val renderTask = Runnable {
@@ -189,27 +210,9 @@ class MoonfinAssOverlayView(
         renderPending.set(false)
         var generation = -1
         try {
-            val timeUs = pendingTimeUs
-            synchronized(assHandler) {
-                // Render and publish under the same lock as track activation.
-                // Otherwise Off -> same-track can discard the new image and
-                // libass's unchanged-frame retry can't reconstruct it.
-                val track = assHandler.track
-                syncNativeAssTrack(track)
-                generation = primaryTrackGeneration
-                val hasActiveTrack = track != null
-                val frame = try {
-                    if (released || !hasActiveTrack) {
-                        null
-                    } else {
-                        assHandler.render?.renderFrame(timeUs / 1000, AssTexType.BITMAP_ALPHA)
-                    }
-                } catch (error: Throwable) {
-                    // A dropped frame beats taking the process down.
-                    null
-                }
-                publishFrame(frame, generation, hasActiveTrack)
-            }
+            // A render that outlived stopRendering's timeout may still be running
+            // when a reattached view starts its next executor.
+            generation = synchronized(renderSerial) { renderAndPublish() }
         } finally {
             renderScheduled.set(false)
             // A paused seek can change the time without changing the track.
@@ -220,6 +223,44 @@ class MoonfinAssOverlayView(
                 scheduleRender()
             }
         }
+    }
+
+    // Returns the track generation the frame was rendered for.
+    private fun renderAndPublish(): Int {
+        var generation: Int
+        val timeUs = pendingTimeUs
+        var track: Any? = null
+        var render: Any? = null
+        var frame: AssFrame? = null
+        synchronized(assHandler) {
+            track = assHandler.track
+            syncNativeAssTrack(track)
+            generation = primaryTrackGeneration
+            render = assHandler.render
+            frame = try {
+                assDialogue.drainInto(assHandler)
+                if (released || track == null) {
+                    null
+                } else {
+                    assHandler.render?.renderFrame(timeUs / 1000, AssTexType.BITMAP_ALPHA)
+                }
+            } catch (error: Throwable) {
+                // A dropped frame beats taking the process down.
+                null
+            }
+        }
+        // The images are Java copies, so flattening doesn't need the lock.
+        val flattened = flattenFrame(frame)
+        synchronized(assHandler) {
+            when {
+                // A rebuilt renderer won't compare its next frame with this one.
+                released || assHandler.render !== render -> Unit
+                generation == primaryTrackGeneration ->
+                    publishFrame(frame, flattened, generation, track != null)
+                else -> retainUnconfirmedFrame(track, frame, flattened)
+            }
+        }
+        return generation
     }
 
     init {
@@ -284,6 +325,7 @@ class MoonfinAssOverlayView(
         renderPending.set(false)
         awaitingPausedSeekDialogue = false
         cachedFrame = null
+        buffers.clear()
     }
 
     // Called on the ExoPlayer playback thread for every video frame, so it
@@ -313,7 +355,25 @@ class MoonfinAssOverlayView(
         }
     }
 
-    private fun publishFrame(frame: AssFrame?, generation: Int, hasActiveTrack: Boolean) {
+    private class Flattened(val composite: Composite?)
+
+    // Null when the frame has no images. A failure leaves nothing to draw,
+    // rather than letting a later unchanged render show older pixels.
+    private fun flattenFrame(frame: AssFrame?): Flattened? {
+        val images = frame?.images?.takeUnless { it.isEmpty() } ?: return null
+        return try {
+            Flattened(flatten(images))
+        } catch (error: Throwable) {
+            Flattened(null)
+        }
+    }
+
+    private fun publishFrame(
+        frame: AssFrame?,
+        flattened: Flattened?,
+        generation: Int,
+        hasActiveTrack: Boolean,
+    ) {
         if (!hasActiveTrack || generation != primaryTrackGeneration) return
         val retained = cachedFrame
         if (frame?.changed == 0) {
@@ -321,26 +381,88 @@ class MoonfinAssOverlayView(
             // confirms they are valid for the newly selected track as well.
             if (retained == null || (retained.visible && retained.track === primaryNativeTrack)) return
             cachedFrame = retained.copy(track = requireNotNull(primaryNativeTrack), visible = true)
-        } else if (frame == null || frame.images.isNullOrEmpty()) {
+        } else if (frame == null || flattened == null) {
             // No current cue (or no dialogue loaded yet): hide the image but
             // keep its pixels. An unchanged render can still need them later.
             if (retained == null || !retained.visible) return
             cachedFrame = retained.copy(visible = false)
         } else {
-            frame.images?.forEach { it.bitmap?.prepareToDraw() }
-            cachedFrame = CachedFrame(requireNotNull(primaryNativeTrack), frame)
+            cachedFrame = CachedFrame(requireNotNull(primaryNativeTrack), frame, flattened.composite)
         }
         postInvalidate()
+    }
+
+    /*
+     * The track changed while this frame was being flattened. libass has
+     * already rendered it, so its next unchanged-frame report refers to these
+     * pixels. Keep them as the cached image, hidden until a render for the
+     * current selection confirms them.
+     */
+    private fun retainUnconfirmedFrame(track: Any?, frame: AssFrame?, flattened: Flattened?) {
+        if (track == null || frame?.changed == 0) return
+        cachedFrame = if (frame == null || flattened == null) {
+            cachedFrame?.copy(visible = false)
+        } else {
+            CachedFrame(track, frame, flattened.composite, visible = false)
+        }
+        postInvalidate()
+    }
+
+    /*
+     * ass-kt allocates a Bitmap per ASS_Image on every changed frame, over a
+     * thousand in typeset scenes. Left to the GC, their native pixels outrun the
+     * reference queue until the process is killed for memory. Nothing else
+     * holds them, so recycle them as soon as they're drawn into the buffer.
+     *
+     * Null if no image has pixels.
+     */
+    private fun flatten(images: Array<AssTex>): Composite? {
+        try {
+            var left = Int.MAX_VALUE
+            var top = Int.MAX_VALUE
+            var right = Int.MIN_VALUE
+            var bottom = Int.MIN_VALUE
+            val ink = ArrayList<Rect>(images.size)
+            for (image in images) {
+                val bitmap = image.bitmap?.takeUnless { it.isRecycled } ?: continue
+                val rect = Rect(image.x, image.y, image.x + bitmap.width, image.y + bitmap.height)
+                if (rect.isEmpty) continue
+                ink.add(rect)
+                left = minOf(left, rect.left)
+                top = minOf(top, rect.top)
+                right = maxOf(right, rect.right)
+                bottom = maxOf(bottom, rect.bottom)
+            }
+            if (ink.isEmpty()) return null
+
+            val target = buffers.acquire(right - left, bottom - top, cachedFrame?.composite?.bitmap)
+            val canvas = Canvas(target)
+            for (image in images) {
+                val bitmap = image.bitmap?.takeUnless { it.isRecycled } ?: continue
+                // libass packs RGBA with an inverted alpha byte.
+                val r = image.color shr 24 and 0xFF
+                val g = image.color shr 16 and 0xFF
+                val b = image.color shr 8 and 0xFF
+                val a = 0xFF - image.color and 0xFF
+                compositePaint.color = (a shl 24) or (r shl 16) or (g shl 8) or b
+                canvas.drawBitmap(
+                    bitmap,
+                    (image.x - left).toFloat(),
+                    (image.y - top).toFloat(),
+                    compositePaint,
+                )
+            }
+            return Composite(target, left, top, ink)
+        } finally {
+            images.forEach { it.bitmap?.recycle() }
+        }
     }
 
     // Where the primary was last drawn, so a secondary can keep clear of it.
     var onInkChanged: ((List<Rect>) -> Unit)? = null
     private var lastInk: List<Rect> = emptyList()
 
-    private fun reportInk(frame: AssFrame?) {
-        val ink = frame?.images.orEmpty().mapNotNull { image ->
-            image.bitmap?.let { Rect(image.x, image.y, image.x + it.width, image.y + it.height) }
-        }
+    private fun reportInk(ink: List<Rect>) {
         if (ink == lastInk) return
         lastInk = ink
         onInkChanged?.let { report -> post { report(ink) } }
@@ -348,19 +470,16 @@ class MoonfinAssOverlayView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val frame = visibleFrame()
-        reportInk(frame)
-        if (frame == null) return
-        frame.images?.forEach { image ->
-            val bitmap = image.bitmap ?: return@forEach
-            // libass packs RGBA with an inverted alpha byte.
-            val r = image.color shr 24 and 0xFF
-            val g = image.color shr 16 and 0xFF
-            val b = image.color shr 8 and 0xFF
-            val a = 0xFF - image.color and 0xFF
-            paint.color = (a shl 24) or (r shl 16) or (g shl 8) or b
-            canvas.drawBitmap(bitmap, image.x.toFloat(), image.y.toFloat(), paint)
+        // One lock for both, so acquire() can't hand this buffer out in between.
+        val composite = synchronized(buffers) {
+            visibleCachedFrame()?.composite.also {
+                // A software canvas is done with the pixels when onDraw returns.
+                if (canvas.isHardwareAccelerated) buffers.markDrawn(it?.bitmap)
+            }
         }
+        reportInk(composite?.ink.orEmpty())
+        if (composite == null) return
+        canvas.drawBitmap(composite.bitmap, composite.left.toFloat(), composite.top.toFloat(), drawPaint)
     }
 
     private companion object {
@@ -371,9 +490,87 @@ class MoonfinAssOverlayView(
 }
 
 /**
- * Wraps ass-media's parser factory so every ASS parse holds the [assHandler]
- * monitor. Track creation, header reads and dialogue reads all run on the
- * loading thread, concurrent with the overlay's render thread.
+ * Reusable buffers for [MoonfinAssOverlayView]'s flattened frames.
+ *
+ * A hardware display list points at a mutable bitmap's pixels instead of
+ * copying them, and reads them again at every sync. A buffer is safe to
+ * change once a recording without it has been synced, which is certain by the
+ * second hardware draw after its last one. Buffers are never recycled, only
+ * reused or dropped, so even a mistimed read can't hit freed pixels.
+ *
+ * [acquire] calls must not overlap. Only the overlay's render thread makes them.
+ */
+internal class AssCompositeBuffers {
+
+    private class Buffer(val bitmap: Bitmap) {
+        var lastDrawn = NEVER_DRAWN
+    }
+
+    private val buffers = ArrayList<Buffer>(MAX_BUFFERS)
+    private var draws = 0L
+
+    val size: Int @Synchronized get() = buffers.size
+
+    /** Never returns [current], the bitmap on screen. */
+    fun acquire(width: Int, height: Int, current: Bitmap?): Bitmap {
+        val needed = width.toLong() * height * BYTES_PER_PIXEL
+        // Clear and allocate outside the lock so onDraw isn't kept waiting.
+        val reused = synchronized(this) {
+            val free = buffers.filter { it.bitmap !== current && isFree(it) }
+            val fit = free.firstOrNull { it.bitmap.allocationByteCount >= needed }
+            if (fit != null) {
+                fit.lastDrawn = NEVER_DRAWN
+            } else if (buffers.size >= MAX_BUFFERS) {
+                // Dropped rather than recycled: hwui may still be reading it.
+                val evict = free.firstOrNull()
+                    ?: buffers.filter { it.bitmap !== current }.minByOrNull { it.lastDrawn }
+                if (evict != null) buffers.remove(evict)
+            }
+            fit
+        }
+        if (reused != null) {
+            reused.bitmap.reconfigure(width, height, Bitmap.Config.ARGB_8888)
+            reused.bitmap.eraseColor(Color.TRANSPARENT)
+            return reused.bitmap
+        }
+        // Rounded up so a growing caption doesn't reallocate every frame.
+        val bitmap = Bitmap.createBitmap(roundUp(width), roundUp(height), Bitmap.Config.ARGB_8888)
+        bitmap.reconfigure(width, height, Bitmap.Config.ARGB_8888)
+        synchronized(this) { buffers.add(Buffer(bitmap)) }
+        return bitmap
+    }
+
+    /** Call once per hardware-accelerated onDraw, with null if nothing was drawn. */
+    @Synchronized
+    fun markDrawn(bitmap: Bitmap?) {
+        draws++
+        if (bitmap == null) return
+        buffers.firstOrNull { it.bitmap === bitmap }?.lastDrawn = draws
+    }
+
+    @Synchronized
+    fun clear() {
+        buffers.clear()
+    }
+
+    private fun isFree(buffer: Buffer) =
+        buffer.lastDrawn == NEVER_DRAWN || draws >= buffer.lastDrawn + DRAWS_UNTIL_FREE
+
+    private fun roundUp(value: Int) = (value + SIZE_STEP - 1) / SIZE_STEP * SIZE_STEP
+
+    private companion object {
+        const val MAX_BUFFERS = 3
+        const val DRAWS_UNTIL_FREE = 2
+        const val NEVER_DRAWN = Long.MIN_VALUE
+        const val BYTES_PER_PIXEL = 4
+        const val SIZE_STEP = 64
+    }
+}
+
+/**
+ * Wraps ass-media's parser factory so ASS track creation and every parse that
+ * reaches libass hold the [assHandler] monitor. They run on the loading
+ * thread, concurrent with the overlay's render thread.
  */
 @UnstableApi
 class MoonfinAssParserFactory(
@@ -389,12 +586,13 @@ class MoonfinAssParserFactory(
     // create() reaches ass.createTrack() and ass.createRender() for an ASS
     // format. No other format touches libass, so those parse without the lock
     // and a long WebVTT file can't hold up the player callbacks waiting on it.
-    override fun create(format: Format): SubtitleParser =
-        if (format.sampleMimeType == MimeTypes.TEXT_SSA) {
-            synchronized(assHandler) { MoonfinAssParser(delegate.create(format), assHandler) }
-        } else {
-            delegate.create(format)
-        }
+    // Nor does parse() on the no-op parser for embedded MKV dialogue, which
+    // runs on the loader for every sample.
+    override fun create(format: Format): SubtitleParser {
+        if (format.sampleMimeType != MimeTypes.TEXT_SSA) return delegate.create(format)
+        val parser = synchronized(assHandler) { delegate.create(format) }
+        return if (parser is AssNoOpSubtitleParser) parser else MoonfinAssParser(parser, assHandler)
+    }
 }
 
 @UnstableApi
@@ -439,12 +637,16 @@ private class MoonfinAssParser(
 @UnstableApi
 class MoonfinAssPlayerListener(
     private val assHandler: AssHandler,
+    private val assDialogue: AssDialogueQueue,
     private val overlay: MoonfinAssOverlayView,
 ) : Player.Listener {
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         overlay.stopAwaitingPausedSeekDialogue()
-        synchronized(assHandler) { assHandler.onMediaItemTransition(mediaItem, reason) }
+        synchronized(assHandler) {
+            assHandler.onMediaItemTransition(mediaItem, reason)
+            assDialogue.clear()
+        }
     }
 
     override fun onTracksChanged(tracks: Tracks) {

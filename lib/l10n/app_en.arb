@@ -2195,6 +2195,10 @@
   "@audioTrack": {
     "description": "Dialog title for audio track selection"
   },
+  "noOtherAudioTracks": "No other audio tracks",
+  "@noOtherAudioTracks": {
+    "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+  },
   "subtitleTrack": "Subtitle Track",
   "@subtitleTrack": {
     "description": "Dialog title for subtitle track selection"
@@ -11314,6 +11318,48 @@
   "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
   "displayStudiosRows": "Display Studio Row",
   "displayStudiosRowsSubtitle": "Show Studio row in Home Sections.",
+  "sinceYouWatched": "Since You Watched",
+  "@sinceYouWatched": {
+    "description": "Settings section header for the Since You Watched rows"
+  },
+  "sinceYouWatchedRowTitle": "Since you watched",
+  "@sinceYouWatchedRowTitle": {
+    "description": "Home row title for a Since You Watched row before its source item is known"
+  },
+  "sinceYouWatchedItemRowTitle": "Since you watched \"{title}\"",
+  "@sinceYouWatchedItemRowTitle": {
+    "description": "Home row title for recommendations based on an item the user watched",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sinceYouWatchedRowNumber": "Since You Watched Row {number}",
+  "@sinceYouWatchedRowNumber": {
+    "description": "Name of one of the Since You Watched rows in the home sections list",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "displaySinceYouWatchedRows": "Display Since You Watched Rows",
+  "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
+  "sinceYouWatchedSource": "Recommendation Source",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceOnline": "TMDb Similarity",
+  "sinceYouWatchedSourceType": "Source Type",
+  "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
+  "sinceYouWatchedSourceItem": "Source Item",
+  "sinceYouWatchedSourceItemDescription": "Choose which source item to base recommendations on",
+  "sinceYouWatchedRecentlyWatched": "Recently Watched",
+  "sinceYouWatchedNumRows": "Number of Rows to Add",
+  "sinceYouWatchedNumRowsDescription": "Choose how many Since You Watched rows to display (1-5)",
+  "sinceYouWatchedIncludeWatched": "Include Previously Watched",
+  "sinceYouWatchedIncludeWatchedSubtitle": "Include watched items in recommendations",
   "studiosRowSorting": "Studio Row Sorting",
   "studiosRowSortingDescription": "Studio row by name, recently added, and more.",
   "studiosRowSortOrderDescription": "Choose Ascending or Descending sort order.",
@@ -11386,6 +11432,11 @@
   "hevcSoftwareDirectPlaySubtitle": "Play HEVC up to 1080p from the original file instead of asking the server to transcode it. This Apple TV decodes it in software, so heavy 10-bit or high bitrate files may stutter.",
   "av1SoftwareUhdDirectPlay": "Direct Play 4K AV1 (Software Decode)",
   "av1SoftwareUhdDirectPlaySubtitle": "Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.",
+  "cadenceSlowdown": "Smooth 24 fps on a 60 Hz TV",
+  "cadenceSlowdownSubtitle": "When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.",
+  "cadenceTipTitle": "Turn On Match Frame Rate",
+  "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
+  "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",
   "useExternalPlayer": "Always Use External Player",
   "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
   "externalPlayerLiveTvOnly": "Live TV Only",
@@ -11581,6 +11632,41 @@
   "watchPartyStartForEveryone": "Start for everyone",
   "@watchPartyStartForEveryone": {
     "description": "Host button that starts the staged item for the whole Watch Party"
+  },
+  "watchPartyResumeAt": "Resume at {time}",
+  "@watchPartyResumeAt": {
+    "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyStartFromBeginning": "Start from the beginning",
+  "@watchPartyStartFromBeginning": {
+    "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+  },
+  "watchPartyResumeWhere": "Where {name} left off, the earliest anyone here has reached.",
+  "@watchPartyResumeWhere": {
+    "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyResumeEarliest": "The earliest point anyone here has reached.",
+  "@watchPartyResumeEarliest": {
+    "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+  },
+  "watchPartyResumeNotStarted": "{count, plural, =1{1 person hasn't started it yet.} other{{count} people haven't started it yet.}}",
+  "@watchPartyResumeNotStarted": {
+    "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "watchPartyBackToLobby": "Back to the lobby",
   "@watchPartyBackToLobby": {

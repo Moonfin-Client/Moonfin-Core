@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/series_recording_episodes.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
+import '../../../data/services/user_data_sync.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/emby_premiere_dialog.dart';
 import '../../util/error_message.dart';
@@ -105,6 +106,9 @@ class LiveTvGuideScreen extends StatefulWidget {
   /// mini-player frame) instead of `Navigator.pop()`.
   final VoidCallback? onClose;
 
+  /// Leaves the hosting player before opening recordings.
+  final Future<void> Function()? onOpenRecordings;
+
   /// Lets an [embedded] host, which owns the only [PopScope] in its route,
   /// give this screen first refusal on a back press so it can reset to its
   /// entry state instead of always closing. Unused on the standalone route,
@@ -119,6 +123,7 @@ class LiveTvGuideScreen extends StatefulWidget {
     this.embedded = false,
     this.onChannelSelected,
     this.onClose,
+    this.onOpenRecordings,
     this.backController,
   });
 
@@ -238,6 +243,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       initialSortBy: _prefs.get(UserPreferences.liveTvChannelSortBy),
     );
     _vm.addListener(_onChanged);
+    userDataSync.addListener(_vm.syncChannelUserData);
     widget.backController?._onBackPressed = _consumeBackIfExploring;
     WidgetsBinding.instance.addObserver(this);
     _mobileView = _prefs.get(UserPreferences.epgMobileView);
@@ -671,6 +677,18 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _miniPlayerFocusNode.requestFocus();
   }
 
+  /// Back's stop above the grid: the filter rail, or the mini player in the
+  /// player's guide, which has no rail. False when focus can't move there.
+  bool _focusGuideHeader() {
+    if (!_mayTakeFocus) return false;
+    if (widget.miniPlayerMode) {
+      _focusMiniPlayer();
+    } else {
+      _focusFilterRail();
+    }
+    return true;
+  }
+
   void _focusFilterRail() {
     if (!_mayTakeFocus) return;
     _cancelPendingVerticalMove();
@@ -699,7 +717,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// DOWN out of the genre rail lands on the same button UP left behind.
   void _focusWindowBarFromGenres() => _focusWindowBar(_lastWindowBarIndex);
 
-  void _focusRowFromMiniPlayer() {
+  void _focusLastChannelRow() {
     final channels = _vm.filteredChannels;
     if (channels.isEmpty) return;
 
@@ -799,7 +817,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _cancelPendingVerticalMove();
     _isOpeningRecordings = true;
     try {
-      await context.push(Destinations.liveTvRecordings);
+      if (widget.onOpenRecordings case final open?) {
+        await open();
+      } else {
+        await context.push(Destinations.liveTvRecordings);
+      }
     } finally {
       _isOpeningRecordings = false;
     }
@@ -808,6 +830,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   @override
   void dispose() {
+    userDataSync.removeListener(_vm.syncChannelUserData);
     widget.backController?._onBackPressed = null;
     _reanchorTimer?.cancel();
     _displayClockTimer?.cancel();
@@ -899,7 +922,17 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   @override
   Widget build(BuildContext context) {
-    final content = RequestInitialFocus(child: _buildContent(context));
+    final content = Focus(
+      canRequestFocus: false,
+      onKeyEvent: (_, event) {
+        if (!event.logicalKey.isRecordingsKey) {
+          return KeyEventResult.ignored;
+        }
+        if (event is KeyDownEvent) unawaited(_openRecordings());
+        return KeyEventResult.handled;
+      },
+      child: RequestInitialFocus(child: _buildContent(context)),
+    );
     // The embedded overlay shares its host's single route and its PopScope;
     // the host asks widget.backController instead. The standalone route owns
     // its own pop attempts, so it needs its own PopScope here.
@@ -1049,9 +1082,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           final focusedChannel =
               !_channelRailFocused.value && focusedProgram != null
               ? _vm.channelForId(focusedProgram.channelId)
-              : (widget.currentChannel ?? _focusedChannel.value);
+              : (_focusedChannel.value ?? widget.currentChannel);
+          // On the channel column, what that channel is airing, as the full
+          // guide's hero shows.
           return _buildProgramInfoHeader(
-            program: focusedProgram,
+            program:
+                focusedProgram ??
+                (focusedChannel == null
+                    ? null
+                    : _vm.nowNextForChannel(focusedChannel.id).now),
             channel: focusedChannel,
           );
         },
@@ -1224,11 +1263,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         selectedIndex: filters.indexOf(_vm.filter),
         onSelect: (i) {
           _cancelPendingVerticalMove();
+          if (_vm.filter != filters[i]) {
+            _lastFocusedRowIndex = 0;
+            _focusedChannel.value = null;
+          }
           _vm.setFilter(filters[i]);
         },
         apple: _apple,
         focusNodeFor: _filterFocusNodeFor,
-        onNavigateDown: onNavigateDown ?? () => _focusChannelRow(0),
+        onNavigateDown: onNavigateDown ?? _focusLastChannelRow,
       ),
     );
   }
@@ -1553,7 +1596,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       onKeyEvent: (_, event) {
         if (!event.isActionable) return KeyEventResult.ignored;
         if (event.logicalKey.isDownKey) {
-          _focusRowFromMiniPlayer();
+          _focusLastChannelRow();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -1679,7 +1722,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           return KeyEventResult.handled;
         }
         if (key.isDownKey) {
-          _focusChannelRow(0);
+          _focusLastChannelRow();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -2240,19 +2283,36 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   Future<void> _resetToEntryState() async {
     _resettingToEntryState = true;
     try {
-      await _goToNow();
-    } finally {
-      _resettingToEntryState = false;
+      // Not _goToNow(): its full reload tears the grid down. This keeps the
+      // rows up and only refetches programs when the window was paged away.
+      _cancelPendingVerticalMove();
+      await _vm.setWindowStart(
+        guideLeftEdge(DateTime.now()),
+        livePosition: true,
+      );
+      if (mounted) _anchorToWindowStart();
+    } catch (_) {
+      // Fall back to the full reload, which shows its own error state.
+      if (mounted) await _goToNow();
     }
-    if (!mounted) return;
+    if (!mounted) {
+      _resettingToEntryState = false;
+      return;
+    }
     final homeId = _homeChannelId;
     final channels = _vm.filteredChannels;
     int index;
     if (homeId != null) {
       index = channels.indexWhere((channel) => channel.id == homeId);
-      if (index < 0) return;
+      if (index < 0) {
+        _resettingToEntryState = false;
+        return;
+      }
     } else {
-      if (channels.isEmpty) return;
+      if (channels.isEmpty) {
+        _resettingToEntryState = false;
+        return;
+      }
       index = 0;
     }
     // Set the tracked focus target directly instead of waiting on the
@@ -2276,10 +2336,14 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     // FocusNode not yet attached, exactly as in _scheduleInitialChannelFocus.
     final binding = WidgetsBinding.instance;
     binding.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted) {
+        _resettingToEntryState = false;
+        return;
+      }
       binding.scheduleFrame();
       binding.addPostFrameCallback((_) {
         if (mounted) _focusChannelRow(index, animate: false);
+        _resettingToEntryState = false;
       });
     });
     binding.scheduleFrame();
@@ -2287,25 +2351,32 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   /// A back press resolves here first: if the grid has drifted from where the
   /// user would have landed opening the guide fresh, back re-homes it instead
-  /// of exiting. Returns true when it handled the press. Resolves the entry
-  /// channel's index before committing to consume the press, so a genre
-  /// filter that excludes the entry channel falls through to the normal
-  /// close/exit path instead of consuming back presses forever. With no
-  /// channel ever tuned, the target is row 0 as long as the lineup is
-  /// non-empty.
+  /// of exiting. Returns true when it handled the press. With nothing to
+  /// re-home (already there, or a filter hides the entry channel), a TV moves
+  /// focus up to the header and the next back leaves. Elsewhere the press
+  /// falls through to the normal close/exit path. With no channel ever tuned,
+  /// the target is row 0 as long as the lineup is non-empty.
   bool _consumeBackIfExploring() {
     // A reset already running owns this press. Consuming it keeps the guide
     // from closing out from under a reset that is about to land.
     if (_resettingToEntryState) return true;
-    if (!_isExploringAwayFromEntry()) return false;
+    if (PlatformDetection.isTV && !_gridHasFocus) return false;
+    if (!_isExploringAwayFromEntry()) {
+      if (!PlatformDetection.isTV) return false;
+      return _focusGuideHeader();
+    }
     final homeId = _homeChannelId;
     if (homeId != null) {
       final index = _vm.filteredChannels.indexWhere(
         (channel) => channel.id == homeId,
       );
-      if (index < 0) return false;
+      if (index < 0) {
+        if (!PlatformDetection.isTV) return false;
+        return _focusGuideHeader();
+      }
     } else if (_vm.filteredChannels.isEmpty) {
-      return false;
+      if (!PlatformDetection.isTV) return false;
+      return _focusGuideHeader();
     }
     unawaited(_resetToEntryState());
     return true;
@@ -2359,11 +2430,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           case GuideCellKind.program:
             final program = cell.program;
             if (program == null) return;
-            if (widget.miniPlayerMode) {
-              _watchChannel(channelId);
-            } else {
-              _showProgramDetails(program);
-            }
+            _showProgramDetails(program);
           case GuideCellKind.gap:
           case GuideCellKind.filtered:
             _watchChannel(channelId);

@@ -423,12 +423,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   }
 
   Widget _buildSkeleton({double rowLeftInset = 0.0}) {
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
-    final modern = _isModern ? _modernSizes() : null;
-    final cardWidth = modern?.portraitWidth ?? 130.0 * desktopScale;
-    final imageHeight = modern?.imageHeight ?? 195.0 * desktopScale;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
     return SkeletonShimmer(
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
@@ -444,11 +440,11 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
               ),
             ),
             SkeletonHomeRow(
-              cardWidth: cardWidth,
-              imageHeight: imageHeight,
+              cardWidth: sizes.portraitWidth,
+              imageHeight: sizes.imageHeight,
               leadingPadding: 20 * desktopScale,
               itemSpacing: 12 * desktopScale,
-              isModern: modern != null,
+              isModern: _isModern,
             ),
             const SizedBox(height: 16),
           ],
@@ -685,17 +681,18 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       Color(GetIt.instance<UserPreferences>().get(UserPreferences.focusColor).colorValue);
     final cardExpansion =
       GetIt.instance<UserPreferences>().get(UserPreferences.cardFocusExpansion);
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
+    final cardWidth = sizes.portraitWidth;
 
     final upwardGrowth = cardExpansion && !PlatformDetection.useMobileUi
-        ? (195.0 * (MediaCard.focusScale - 1.0))
+        ? (sizes.imageHeight * (MediaCard.focusScale - 1.0))
         : 0.0;
     final itemSpacing = cardExpansion && !PlatformDetection.useMobileUi
-        ? MediaCard.focusGap(130.0, minimum: 12.0 * desktopScale)
+        ? MediaCard.focusGap(cardWidth, minimum: 12.0 * desktopScale)
         : 12.0 * desktopScale;
-    final rowHeight = (260.0 * desktopScale) + upwardGrowth;
+    // The poster plus 65 for the title and year under it.
+    final rowHeight = sizes.imageHeight + (65.0 * desktopScale) + upwardGrowth;
     final topPadding = (5.0 * desktopScale) + upwardGrowth;
 
     final focusKey = _getRowKey(rowIndex);
@@ -706,7 +703,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         items: row.items,
         hubKey: 'seerr_discover_media_${rowIndex}_${row.key}',
         controller: _getRowScroll(rowIndex),
-        itemExtent: 130,
+        itemExtent: cardWidth,
         itemSpacing: itemSpacing,
         height: rowHeight,
         clipBehavior: Clip.none,
@@ -738,7 +735,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             title: item.displayTitle,
             subtitle: _yearFromItem(item),
             imageUrl: _posterUrl(item),
-            width: 130,
+            width: cardWidth,
             aspectRatio: 2 / 3,
             seerrMediaType: item.mediaType,
             seerrStatus: item.mediaInfo?.status,
@@ -755,7 +752,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 260.0 + (upwardGrowth / desktopScale),
+      rowHeight: rowHeight / desktopScale,
       isLoading: row.isLoading && row.items.isEmpty,
       hasItems: row.items.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),
@@ -763,17 +760,33 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
   }
 
-  ({double imageHeight, double portraitWidth, double focusedWidth, double desktopScale})
-      _modernSizes() {
+  /// Posters and tiles both follow the poster size, so a row of tiles stays in
+  /// proportion with the posters around it. Tiles keep their 180 by 90 at
+  /// Medium. Discover stops at Extra Large, since a Grandparents row no longer
+  /// fits on a TV.
+  ({
+    double imageHeight,
+    double portraitWidth,
+    double focusedWidth,
+    double tileWidth,
+    double tileHeight,
+    double desktopScale,
+  })
+      _posterSizes() {
     final desktopScale = _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
     final platformScale =
         PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
-    final imageHeight =
-        modernImageHeight(_prefs.get(UserPreferences.posterSize), platformScale);
+    final posterSize = _prefs.get(UserPreferences.posterSize).upToExtraLarge;
+    final imageHeight = modernImageHeight(posterSize, platformScale);
+    final tileScale = posterSize.portraitHeight /
+        PosterSize.medium.portraitHeight *
+        desktopScale;
     return (
       imageHeight: imageHeight,
       portraitWidth: imageHeight * 2 / 3,
       focusedWidth: imageHeight * 16 / 9,
+      tileWidth: 180 * tileScale,
+      tileHeight: 90 * tileScale,
       desktopScale: desktopScale,
     );
   }
@@ -818,7 +831,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     bool autofocusFirst = false,
     FocusNode? firstFocusNode,
   }) {
-    final sizes = _modernSizes();
+    final sizes = _posterSizes();
     final desktopScale = sizes.desktopScale;
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
@@ -992,9 +1005,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     FocusNode? firstFocusNode,
   }) {
     final l10n = AppLocalizations.of(context);
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
     final shortcuts = SeerrShortcut.withoutDiscover;
     final backdrops = pickShortcutBackdrops(
       shortcuts: shortcuts,
@@ -1008,9 +1020,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       items: shortcuts,
       hubKey: 'seerr_discover_shortcuts_$rowIndex',
       controller: _getRowScroll(rowIndex),
-      itemExtent: 180,
+      itemExtent: sizes.tileWidth,
       itemSpacing: 12 * desktopScale,
-      height: 90 * desktopScale,
+      height: sizes.tileHeight,
       clipBehavior: Clip.none,
       padding: EdgeInsets.fromLTRB(
         20 * desktopScale,
@@ -1037,6 +1049,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       itemBuilder: (context, shortcut, index, isFocused) {
         final backdrop = backdrops[shortcut];
         return _GenreCard(
+          width: sizes.tileWidth,
+          height: sizes.tileHeight,
           name: shortcut.label(l10n),
           imageUrl: backdrop == null ? null : '$_tmdbBackdropBase$backdrop',
           icon: shortcut.icon,
@@ -1048,7 +1062,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 100 * desktopScale,
+      rowHeight: sizes.tileHeight / desktopScale + 10,
       isLoading: false,
       hasItems: true,
       scrollController: _getRowScroll(rowIndex),
@@ -1073,9 +1087,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     FocusNode? firstFocusNode,
   }) {
     final mediaType = row.type == SeerrRowType.movieGenres ? 'movie' : 'tv';
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
 
     final focusKey = _getRowKey(rowIndex);
     final child = LockedFocusRow<SeerrGenre>(
@@ -1083,9 +1096,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       items: row.genres,
       hubKey: 'seerr_discover_genres_${rowIndex}_${row.key}',
       controller: _getRowScroll(rowIndex),
-      itemExtent: 180,
+      itemExtent: sizes.tileWidth,
       itemSpacing: 12 * desktopScale,
-      height: 90 * desktopScale,
+      height: sizes.tileHeight,
       clipBehavior: Clip.none,
       padding: EdgeInsets.fromLTRB(
         20 * desktopScale,
@@ -1123,6 +1136,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       itemBuilder: (context, genre, index, isFocused) {
         final backdrop = seerrGenreBackdropUrl(genre.id, genre.backdrops);
         return _GenreCard(
+          width: sizes.tileWidth,
+          height: sizes.tileHeight,
           name: genre.name,
           imageUrl: backdrop,
           externalIsFocused: isFocused,
@@ -1144,7 +1159,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 90,
+      rowHeight: sizes.tileHeight / desktopScale,
       isLoading: row.isLoading && row.genres.isEmpty,
       hasItems: row.genres.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),
@@ -1159,9 +1174,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     bool autofocusFirst = false,
     FocusNode? firstFocusNode,
   }) {
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
 
     final focusKey = _getRowKey(rowIndex);
     final child = LockedFocusRow<SeerrNetwork>(
@@ -1169,9 +1183,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       items: row.networks,
       hubKey: 'seerr_discover_networks_${rowIndex}_${row.key}',
       controller: _getRowScroll(rowIndex),
-      itemExtent: 180,
+      itemExtent: sizes.tileWidth,
       itemSpacing: 12 * desktopScale,
-      height: 90 * desktopScale,
+      height: sizes.tileHeight,
       clipBehavior: Clip.none,
       padding: EdgeInsets.fromLTRB(
         20 * desktopScale,
@@ -1208,6 +1222,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       focusNode: autofocusFirst ? firstFocusNode : null,
       itemBuilder: (context, network, index, isFocused) {
         return _LogoCard(
+          width: sizes.tileWidth,
+          height: sizes.tileHeight,
           name: network.name,
           logoUrl: network.logoPath,
           externalIsFocused: isFocused,
@@ -1229,7 +1245,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 90,
+      rowHeight: sizes.tileHeight / desktopScale,
       isLoading: row.isLoading && row.networks.isEmpty,
       hasItems: row.networks.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),
@@ -1244,9 +1260,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     bool autofocusFirst = false,
     FocusNode? firstFocusNode,
   }) {
-    final desktopScale = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
+    final sizes = _posterSizes();
+    final desktopScale = sizes.desktopScale;
 
     final focusKey = _getRowKey(rowIndex);
     final child = LockedFocusRow<SeerrStudio>(
@@ -1254,9 +1269,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       items: row.studios,
       hubKey: 'seerr_discover_studios_${rowIndex}_${row.key}',
       controller: _getRowScroll(rowIndex),
-      itemExtent: 180,
+      itemExtent: sizes.tileWidth,
       itemSpacing: 12 * desktopScale,
-      height: 90 * desktopScale,
+      height: sizes.tileHeight,
       clipBehavior: Clip.none,
       padding: EdgeInsets.fromLTRB(
         20 * desktopScale,
@@ -1293,6 +1308,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       focusNode: autofocusFirst ? firstFocusNode : null,
       itemBuilder: (context, studio, index, isFocused) {
         return _LogoCard(
+          width: sizes.tileWidth,
+          height: sizes.tileHeight,
           name: studio.name,
           logoUrl: studio.logoPath,
           externalIsFocused: isFocused,
@@ -1314,7 +1331,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 90,
+      rowHeight: sizes.tileHeight / desktopScale,
       isLoading: row.isLoading && row.studios.isEmpty,
       hasItems: row.studios.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),
@@ -1483,6 +1500,8 @@ class _InfoPanel extends StatelessWidget {
 }
 
 class _GenreCard extends StatefulWidget {
+  final double width;
+  final double height;
   final String name;
   final String? imageUrl;
   final IconData? icon;
@@ -1490,6 +1509,8 @@ class _GenreCard extends StatefulWidget {
   final bool? externalIsFocused;
 
   const _GenreCard({
+    required this.width,
+    required this.height,
     required this.name,
     this.imageUrl,
     this.icon,
@@ -1524,8 +1545,8 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
           scale: effectiveFocused ? 1.05 : 1.0,
           duration: const Duration(milliseconds: 150),
           child: SizedBox(
-            width: 180,
-            height: 90,
+            width: widget.width,
+            height: widget.height,
             child: ClipRRect(
               borderRadius: AppRadius.circular(8),
               child: Stack(
@@ -1638,12 +1659,16 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
 }
 
 class _LogoCard extends StatefulWidget {
+  final double width;
+  final double height;
   final String name;
   final String? logoUrl;
   final VoidCallback? onTap;
   final bool? externalIsFocused;
 
   const _LogoCard({
+    required this.width,
+    required this.height,
     required this.name,
     this.logoUrl,
     this.onTap,
@@ -1677,8 +1702,8 @@ class _LogoCardState extends State<_LogoCard> with FocusStateMixin {
           scale: effectiveFocused ? 1.05 : 1.0,
           duration: const Duration(milliseconds: 150),
           child: SizedBox(
-            width: 180,
-            height: 90,
+            width: widget.width,
+            height: widget.height,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColorScheme.surface,

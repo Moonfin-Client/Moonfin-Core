@@ -327,7 +327,7 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
                             ? null
                             : () => setState(() => _focusedItem = null),
                     onTap: () {
-                      final mt = item.mediaType ?? widget.mediaType ?? 'movie';
+                      final mt = item.mediaType ?? _vm!.mediaType;
                       context.push(
                         Destinations.seerrMedia(
                           item.id.toString(),
@@ -1072,6 +1072,24 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
   ) {
     final divider = Divider(color: AppColorScheme.onSurface.withAlpha(20));
     return [
+      if (vm.filterType == 'genre' || vm.filterType == 'keyword') ...[
+        divider,
+        _sectionHeader(l10n.type),
+        for (final (type, label) in [
+          ('movie', l10n.movies),
+          ('tv', l10n.tvShows),
+        ])
+          _radioTile(
+            label: label,
+            selected: vm.mediaType == type,
+            onTap: () {
+              if (_popped) return;
+              _popped = true;
+              vm.setMediaType(type);
+              Navigator.of(context).pop();
+            },
+          ),
+      ],
       if (vm.filterGenres.isNotEmpty) ...[
         divider,
         _expanderTile(

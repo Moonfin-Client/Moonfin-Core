@@ -244,6 +244,17 @@ void main() {
     expect(find.text('English TrueHD 7.1'), findsOneWidget);
   });
 
+  testWidgets('a TV draws its toolbar with every action button on screen', (
+    tester,
+  ) async {
+    await prefs.set(UserPreferences.detailButtonsMaxVisible, -1);
+    await pumpContent(tester, viewModel('Movie', data: movieWithTracks()));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(DetailActionButtons), findsOneWidget);
+  });
+
   testWidgets('up from the toolbar enters the tab, down from it reaches the '
       'tab bar and right along the bar changes tab', (tester) async {
     final play = FocusNode(debugLabel: 'play');

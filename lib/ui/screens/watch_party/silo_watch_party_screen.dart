@@ -12,6 +12,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/user_avatar_image.dart';
@@ -649,11 +650,34 @@ class _ItemHero extends StatefulWidget {
 class _ItemHeroState extends State<_ItemHero> {
   late Future<Map<String, dynamic>?> _item = widget.manager.selectedItem();
 
+  /// Where the room could pick the staged title up, asked again as the title
+  /// or who's in the room changes.
+  late Future<SiloRoomResumePoint?> _resume = _readResume();
+  late String _resumeKey = _resumeKeyOf(widget.room);
+
+  static String _resumeKeyOf(SiloRoom room) => [
+    room.selectedContentId,
+    room.isHost && room.isStaged,
+    for (final m in room.members)
+      if (m.connected) m.profileId,
+  ].join(',');
+
+  Future<SiloRoomResumePoint?> _readResume() {
+    final room = widget.room;
+    if (!room.isHost || !room.isStaged) return Future.value(null);
+    return widget.manager.resumePoint();
+  }
+
   @override
   void didUpdateWidget(_ItemHero old) {
     super.didUpdateWidget(old);
     if (old.room.selectedContentId != widget.room.selectedContentId) {
       _item = widget.manager.selectedItem();
+    }
+    final key = _resumeKeyOf(widget.room);
+    if (key != _resumeKey) {
+      _resumeKey = key;
+      _resume = _readResume();
     }
   }
 
@@ -664,118 +688,177 @@ class _ItemHeroState extends State<_ItemHero> {
     final room = widget.room;
     final manager = widget.manager;
     final busy = widget.busy;
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _item,
-      builder: (context, snapshot) {
-        final item = snapshot.data;
-        final series = item?['SeriesName'];
-        final name = item?['Name'] as String? ?? '';
-        final hasSeries = series is String && series.isNotEmpty;
-        // An episode's still is landscape; its season's poster fits the
-        // portrait slot, then its series'. Nothing until the item is known,
-        // so the still never shows first.
-        final isEpisode = item?['Type'] == 'Episode';
-        final posterId = item == null
-            ? null
-            : isEpisode
-            ? (item['SeasonId'] ?? item['SeriesId']) as String?
-            : room.selectedContentId;
-        final posterFallback = isEpisode
-            ? (item?['SeriesId'] as String?)
-            : null;
-        final detail = [
-          if (item?['ParentIndexNumber'] case final int season when hasSeries)
-            if (item?['IndexNumber'] case final int episode)
-              'S$season:E$episode',
-          if (item?['ProductionYear'] case final int year) '$year',
-        ].join(' · ');
-        final actions = <Widget>[
-          if (room.isPlaying)
-            FilledButton.icon(
-              style: _primaryButton,
-              onPressed: manager.openPlayer,
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: Text(l10n.syncPlayPlayNow),
-            ),
-          if (room.isHost && room.isStaged)
-            FilledButton.icon(
-              style: _primaryButton,
-              onPressed: busy ? null : manager.startPlayback,
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: Text(l10n.watchPartyStartForEveryone),
-            ),
-          if (room.isHost && room.isPlaying)
-            OutlinedButton.icon(
-              onPressed: busy ? null : manager.stopPlayback,
-              icon: const Icon(Icons.stop_rounded),
-              label: Text(l10n.watchPartyBackToLobby),
-            ),
-          if (item != null)
-            _SubtitleButton(
-              item: item,
-              fileId: room.selectedFileId,
-              isHost: room.isHost,
-            ),
-        ];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Poster(
-                  contentId: posterId,
-                  fallbackId: posterFallback == posterId ? null : posterFallback,
-                  width: 96,
+    return FutureBuilder<SiloRoomResumePoint?>(
+      future: _resume,
+      builder: (context, resumeSnapshot) {
+        // FutureBuilder holds on to the last answer while a new lookup runs,
+        // so the start buttons wait for it instead of offering an old spot or
+        // swapping under the host's finger.
+        final lobby = room.isHost && room.isStaged;
+        final looking =
+            lobby && resumeSnapshot.connectionState != ConnectionState.done;
+        final resume = lobby && !looking ? resumeSnapshot.data : null;
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: _item,
+          builder: (context, snapshot) {
+            final item = snapshot.data;
+            final series = item?['SeriesName'];
+            final name = item?['Name'] as String? ?? '';
+            final hasSeries = series is String && series.isNotEmpty;
+            // An episode's still is landscape; its season's poster fits the
+            // portrait slot, then its series'. Nothing until the item is known,
+            // so the still never shows first.
+            final isEpisode = item?['Type'] == 'Episode';
+            final posterId = item == null
+                ? null
+                : isEpisode
+                ? (item['SeasonId'] ?? item['SeriesId']) as String?
+                : room.selectedContentId;
+            final posterFallback = isEpisode
+                ? (item?['SeriesId'] as String?)
+                : null;
+            final detail = [
+              if (item?['ParentIndexNumber'] case final int season
+                  when hasSeries)
+                if (item?['IndexNumber'] case final int episode)
+                  'S$season:E$episode',
+              if (item?['ProductionYear'] case final int year) '$year',
+            ].join(' · ');
+            final actions = <Widget>[
+              if (room.isPlaying)
+                FilledButton.icon(
+                  style: _primaryButton,
+                  onPressed: manager.openPlayer,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: Text(l10n.syncPlayPlayNow),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        room.isPlaying
-                            ? l10n.syncPlayStatePlaying
-                            : l10n.watchPartyUpNextLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        hasSeries ? series : name,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (hasSeries) ...[
-                        const SizedBox(height: 2),
-                        Text(name, style: theme.textTheme.titleSmall),
-                      ],
-                      if (detail.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          detail,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
+              if (resume != null) ...[
+                FilledButton.icon(
+                  style: _primaryButton,
+                  onPressed: busy
+                      ? null
+                      : () => manager.startPlayback(atSeconds: resume.seconds),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: Text(
+                    l10n.watchPartyResumeAt(
+                      formatPlaybackDuration(Duration(seconds: resume.seconds)),
+                    ),
                   ),
                 ),
+                OutlinedButton.icon(
+                  onPressed: busy ? null : manager.startPlayback,
+                  icon: const Icon(Icons.replay_rounded),
+                  label: Text(l10n.watchPartyStartFromBeginning),
+                ),
+              ] else if (lobby)
+                FilledButton.icon(
+                  style: _primaryButton,
+                  onPressed: busy || looking ? null : manager.startPlayback,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: Text(l10n.watchPartyStartForEveryone),
+                ),
+              if (room.isHost && room.isPlaying)
+                OutlinedButton.icon(
+                  onPressed: busy ? null : manager.stopPlayback,
+                  icon: const Icon(Icons.stop_rounded),
+                  label: Text(l10n.watchPartyBackToLobby),
+                ),
+              if (item != null)
+                _SubtitleButton(
+                  item: item,
+                  fileId: room.selectedFileId,
+                  isHost: room.isHost,
+                ),
+            ];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Poster(
+                      contentId: posterId,
+                      fallbackId: posterFallback == posterId
+                          ? null
+                          : posterFallback,
+                      width: 96,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            room.isPlaying
+                                ? l10n.syncPlayStatePlaying
+                                : l10n.watchPartyUpNextLabel,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            hasSeries ? series : name,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (hasSeries) ...[
+                            const SizedBox(height: 2),
+                            Text(name, style: theme.textTheme.titleSmall),
+                          ],
+                          if (detail.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              detail,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (actions.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Wrap(spacing: 8, runSpacing: 8, children: actions),
+                ],
+                if (resume != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _resumeHint(l10n, resume, room),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ],
-            ),
-            if (actions.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Wrap(spacing: 8, runSpacing: 8, children: actions),
-            ],
-          ],
+            );
+          },
         );
       },
     );
   }
+}
+
+/// Whose spot the resume is, and who it takes past the start.
+String _resumeHint(
+  AppLocalizations l10n,
+  SiloRoomResumePoint resume,
+  SiloRoom room,
+) {
+  String? name;
+  for (final m in room.members) {
+    if (m.profileId == resume.profileId) name = m.displayName;
+  }
+  final where = name == null
+      ? l10n.watchPartyResumeEarliest
+      : l10n.watchPartyResumeWhere(name);
+  if (resume.notStarted == 0) return where;
+  return '$where ${l10n.watchPartyResumeNotStarted(resume.notStarted)}';
 }
 
 /// The vote: the movies up for it with their tallies, a vote toggle for

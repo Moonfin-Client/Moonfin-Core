@@ -41,6 +41,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
   static const _waitingReportInterval = Duration(milliseconds: 500);
   static const _bufferingGrace = Duration(seconds: 2);
   static const _maxDriftSeconds = 1.0;
+  static const _maxStartLeadMs = 2000;
 
   SiloMediaServerClient? _client;
   String? _serverId;
@@ -97,8 +98,18 @@ class SiloWatchPartyManager extends ChangeNotifier {
   Timer? _driftTimer;
   double? _nudgedRate;
   bool _hostStopping = false;
+
+  /// A start the host asked to pick up part way. Silo starts every room at
+  /// the beginning, so the host seeks the room there once its player is in,
+  /// while the room still holds everyone paused waiting for them to load.
+  ({int seconds, String contentId})? _pendingResume;
   int _lastDriftSeekMs = 0;
   bool _applying = false;
+  // How long this player takes to start moving after resume(), learned per
+  // file. A start from paused begins this much early so a heavy file's slow
+  // decoder start doesn't show up as drift.
+  int? _startLeadMs;
+  ({int calledAtMs, int fromMs})? _startTiming;
   bool _interceptorInstalled = false;
   Timer? _reportTimer;
   Duration? _reportEvery;
@@ -354,9 +365,41 @@ class SiloWatchPartyManager extends ChangeNotifier {
     }
   }
 
-  Future<bool> startPlayback() => _hostAction((api, id) => api.start(id));
+  /// [atSeconds] picks the title up part way for everyone, where
+  /// [resumePoint] says the room got to.
+  Future<bool> startPlayback({int atSeconds = 0}) async {
+    final contentId = _room?.selectedContentId;
+    _pendingResume = atSeconds > 0 && contentId != null
+        ? (seconds: atSeconds, contentId: contentId)
+        : null;
+    final started = await _hostAction((api, id) => api.start(id));
+    if (!started) _pendingResume = null;
+    return started;
+  }
+
+  /// Where the room could resume the title the host has staged, or null.
+  Future<SiloRoomResumePoint?> resumePoint() async {
+    final room = _room;
+    final token = _roomToken;
+    final client = _client;
+    final contentId = room?.selectedContentId;
+    if (room == null || token == null || client == null || contentId == null) {
+      return null;
+    }
+    try {
+      return await client.watchPartyApi.resumePoint(
+        room.roomId,
+        token,
+        contentId,
+      );
+    } catch (e) {
+      _logger.w('Watch Party: reading where members are failed', error: e);
+      return null;
+    }
+  }
 
   Future<bool> stopPlayback() async {
+    _pendingResume = null;
     // A stop of the host's own doesn't move on to the next episode.
     _hostStopping = true;
     final done = await _hostAction((api, id) => api.stop(id));
@@ -936,6 +979,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
         _openedRevision = next.selectionRevision;
         _appliedCommandId = null;
         _reference = null;
+        _startLeadMs = null;
+        _startTiming = null;
         unawaited(_openSelection(next));
       }
     } else if (previous.isPlaying) {
@@ -1065,6 +1110,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     _item = null;
     _itemId = null;
     _openedRevision = null;
+    _pendingResume = null;
     _endedReason = reason;
     notifyListeners();
   }
@@ -1086,6 +1132,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     _positionSub ??= _playbackManager.state.positionStream.listen((p) {
       _sampleMs = p.inMilliseconds;
       _sampleAt = DateTime.now().millisecondsSinceEpoch;
+      _timeStart(p.inMilliseconds, _sampleAt);
     });
   }
 
@@ -1113,8 +1160,56 @@ class SiloWatchPartyManager extends ChangeNotifier {
     _positionSub?.cancel();
     _positionSub = null;
     _sampleMs = null;
+    _startTiming = null;
     _driftStrikes = 0;
     _restoreRate();
+  }
+
+  /// Ends the timing of a start once its position has moved.
+  void _timeStart(int positionMs, int atMs) {
+    final timing = _startTiming;
+    if (timing == null) return;
+    final delay = startDelayMs(
+      calledAtMs: timing.calledAtMs,
+      fromMs: timing.fromMs,
+      positionMs: positionMs,
+      atMs: atMs,
+    );
+    if (delay == null) {
+      // Not moving after five seconds: a stall, not a start to learn from.
+      if (atMs - timing.calledAtMs > 5000) _startTiming = null;
+      return;
+    }
+    _startTiming = null;
+    _startLeadMs = nextStartLeadMs(_startLeadMs, delay);
+  }
+
+  /// How long a start took to move, from a position sample past where it
+  /// began: the sample's time less the media it has played since. Null until
+  /// it has moved, for a sample that jumped (a seek), or for one more than
+  /// five seconds after resume() (a stall, even if it moved).
+  @visibleForTesting
+  static int? startDelayMs({
+    required int calledAtMs,
+    required int fromMs,
+    required int positionMs,
+    required int atMs,
+  }) {
+    if (atMs - calledAtMs > 5000) return null;
+    final played = positionMs - fromMs;
+    // A sample a hair past the start can be the pipeline settling.
+    if (played < 100 || played > 5000) return null;
+    return math.max(0, atMs - played - calledAtMs);
+  }
+
+  /// The start lead after a measured start: the first measurement as it is,
+  /// then an even average with what came before, so one slow start doesn't
+  /// throw the next one far early.
+  @visibleForTesting
+  static int nextStartLeadMs(int? leadMs, int measuredMs) {
+    final measured = math.min(measuredMs, _maxStartLeadMs);
+    if (leadMs == null) return measured;
+    return ((leadMs + measured) / 2).round();
   }
 
   String? get _sessionId => _playbackManager.currentResolution?.playSessionId;
@@ -1186,7 +1281,12 @@ class SiloWatchPartyManager extends ChangeNotifier {
     _commandTimer?.cancel();
     final localAtMs =
         command.executeAt.millisecondsSinceEpoch - _serverOffsetMs;
-    final delayMs = localAtMs - DateTime.now().millisecondsSinceEpoch;
+    final startsFromPaused =
+        command.playbackState == 'playing' && _playbackManager.state.isPaused;
+    final delayMs =
+        localAtMs -
+        (startsFromPaused ? _startLeadMs ?? 0 : 0) -
+        DateTime.now().millisecondsSinceEpoch;
     _commandTimer = Timer(
       Duration(milliseconds: math.max(0, delayMs)),
       () => unawaited(_applyCommand(command, localAtMs)),
@@ -1218,12 +1318,25 @@ class SiloWatchPartyManager extends ChangeNotifier {
           : byRate
           ? 5.0
           : _maxDriftSeconds;
+      var sought = false;
       if ((_positionSeconds - target).abs() > tolerance) {
+        sought = true;
+        // The jump would read as a start, so a seek ends any start being timed.
+        _startTiming = null;
         await _playbackManager.seekTo(
           Duration(milliseconds: (target * 1000).round()),
         );
       }
       if (playing && !_playbackManager.state.isPlaying) {
+        // A start straight after a seek waits on the seek's load, and a player
+        // that stalled mid-play waits on its buffer. Neither says anything
+        // about the next start, so only a plain start from paused is timed.
+        if (!sought && _playbackManager.state.isPaused) {
+          _startTiming = (
+            calledAtMs: DateTime.now().millisecondsSinceEpoch,
+            fromMs: _playbackManager.state.position.inMilliseconds,
+          );
+        }
         await _playbackManager.resume();
       } else if (!playing && _playbackManager.state.isPlaying) {
         await _playbackManager.pause();
@@ -1317,6 +1430,24 @@ class SiloWatchPartyManager extends ChangeNotifier {
       }
       return;
     }
+    final resume = _pendingResume;
+    if (resume != null && room.isHost) {
+      if (room.selectedContentId != resume.contentId) {
+        _pendingResume = null;
+      } else {
+        // Ahead of the ready report, so the room can't set off from the
+        // beginning before the seek lands.
+        if (_send({
+          'type': 'transport_request',
+          'action': 'seek',
+          'position_seconds': resume.seconds.toDouble(),
+          'is_paused': false,
+        })) {
+          _pendingResume = null;
+        }
+        return;
+      }
+    }
     final command = _lastCommand;
     final buffering = _playbackManager.state.isBuffering;
     if (_readyPending && command != null) {
@@ -1356,15 +1487,17 @@ class SiloWatchPartyManager extends ChangeNotifier {
   /// second while the room plays.
   void _correctDrift() {
     final reference = _reference;
+    final now = DateTime.now().millisecondsSinceEpoch;
     if (reference == null ||
         !reference.playing ||
+        // A start begun early by its lead isn't drift before the command's time.
+        now < reference.localMs ||
         _room?.playbackState != 'playing' ||
         !_playbackManager.state.isPlaying ||
         _playbackManager.state.isBuffering) {
       _restoreRate();
       return;
     }
-    final now = DateTime.now().millisecondsSinceEpoch;
     final expected =
         reference.positionSeconds + (now - reference.localMs) / 1000;
     final drift = _positionSeconds - expected;
@@ -1399,6 +1532,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
     if (now - _lastDriftSeekMs < _driftBackoffMs) return;
     _lastDriftSeekMs = now;
     _driftBackoffMs = math.min(_driftBackoffMs * 2, 16000);
+    _startTiming = null;
     _applying = true;
     unawaited(
       _playbackManager

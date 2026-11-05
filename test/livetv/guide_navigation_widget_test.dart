@@ -16,6 +16,7 @@ import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -699,6 +700,83 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(_focusedLabel(), 'GuideMiniPlayer');
+  });
+
+  testWidgets('TV back returns to the tuned channel, then header, then exits', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    tester.view.physicalSize = const Size(900, 700);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvLastChannelId,
+      'ch3',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => ElevatedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const LiveTvGuideScreen(),
+              ),
+            ),
+            child: const Text('open guide'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open guide'));
+    await tester.pumpAndSettle();
+    _nodeLabelled(tester, 'GuideChannel:4').requestFocus();
+    await tester.pumpAndSettle();
+    clearInteractions(liveTvApi);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideChannel:3');
+    // Already live, so returning to the channel reloads nothing.
+    verifyNever(
+      () => liveTvApi.getChannels(
+        startIndex: any(named: 'startIndex'),
+        limit: any(named: 'limit'),
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
+        fields: any(named: 'fields'),
+        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        userId: any(named: 'userId'),
+      ),
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideFilter:0');
+
+    // Down from the filters goes through the header, then returns to the
+    // channel row where Back left the grid, not the first channel.
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideWindowBar:0');
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideChannel:3');
+
+    // Re-entering the rows starts the same sequence again.
+    _nodeLabelled(tester, 'GuideChannel:4').requestFocus();
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideChannel:3');
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_focusedLabel(), 'GuideFilter:0');
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(LiveTvGuideScreen), findsNothing);
   });
 
   testWidgets(

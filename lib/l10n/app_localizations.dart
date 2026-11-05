@@ -3016,6 +3016,12 @@ abstract class AppLocalizations {
   /// **'Audio Track'**
   String get audioTrack;
 
+  /// Shown when the remote's Audio button is pressed and the channel has one audio track or none
+  ///
+  /// In en, this message translates to:
+  /// **'No other audio tracks'**
+  String get noOtherAudioTracks;
+
   /// Dialog title for subtitle track selection
   ///
   /// In en, this message translates to:
@@ -21826,6 +21832,126 @@ abstract class AppLocalizations {
   /// **'Show Studio row in Home Sections.'**
   String get displayStudiosRowsSubtitle;
 
+  /// Settings section header for the Since You Watched rows
+  ///
+  /// In en, this message translates to:
+  /// **'Since You Watched'**
+  String get sinceYouWatched;
+
+  /// Home row title for a Since You Watched row before its source item is known
+  ///
+  /// In en, this message translates to:
+  /// **'Since you watched'**
+  String get sinceYouWatchedRowTitle;
+
+  /// Home row title for recommendations based on an item the user watched
+  ///
+  /// In en, this message translates to:
+  /// **'Since you watched \"{title}\"'**
+  String sinceYouWatchedItemRowTitle(String title);
+
+  /// Name of one of the Since You Watched rows in the home sections list
+  ///
+  /// In en, this message translates to:
+  /// **'Since You Watched Row {number}'**
+  String sinceYouWatchedRowNumber(int number);
+
+  /// No description provided for @displaySinceYouWatchedRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Since You Watched Rows'**
+  String get displaySinceYouWatchedRows;
+
+  /// No description provided for @displaySinceYouWatchedRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show and customize Since You Watched rows in Home Sections.'**
+  String get displaySinceYouWatchedRowsSubtitle;
+
+  /// No description provided for @sinceYouWatchedSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation Source'**
+  String get sinceYouWatchedSource;
+
+  /// No description provided for @sinceYouWatchedSourceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
+  String get sinceYouWatchedSourceDescription;
+
+  /// No description provided for @sinceYouWatchedSourceLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Recommends'**
+  String get sinceYouWatchedSourceLocal;
+
+  /// No description provided for @sinceYouWatchedSourceServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Jellyfin Recommends'**
+  String get sinceYouWatchedSourceServer;
+
+  /// No description provided for @sinceYouWatchedSourceOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDb Similarity'**
+  String get sinceYouWatchedSourceOnline;
+
+  /// No description provided for @sinceYouWatchedSourceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Source Type'**
+  String get sinceYouWatchedSourceType;
+
+  /// No description provided for @sinceYouWatchedSourceTypeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose type of items to recommend'**
+  String get sinceYouWatchedSourceTypeDescription;
+
+  /// No description provided for @sinceYouWatchedSourceItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Source Item'**
+  String get sinceYouWatchedSourceItem;
+
+  /// No description provided for @sinceYouWatchedSourceItemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which source item to base recommendations on'**
+  String get sinceYouWatchedSourceItemDescription;
+
+  /// No description provided for @sinceYouWatchedRecentlyWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Watched'**
+  String get sinceYouWatchedRecentlyWatched;
+
+  /// No description provided for @sinceYouWatchedNumRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Rows to Add'**
+  String get sinceYouWatchedNumRows;
+
+  /// No description provided for @sinceYouWatchedNumRowsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how many Since You Watched rows to display (1-5)'**
+  String get sinceYouWatchedNumRowsDescription;
+
+  /// No description provided for @sinceYouWatchedIncludeWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Include Previously Watched'**
+  String get sinceYouWatchedIncludeWatched;
+
+  /// No description provided for @sinceYouWatchedIncludeWatchedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include watched items in recommendations'**
+  String get sinceYouWatchedIncludeWatchedSubtitle;
+
   /// No description provided for @studiosRowSorting.
   ///
   /// In en, this message translates to:
@@ -22257,6 +22383,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.'**
   String get av1SoftwareUhdDirectPlaySubtitle;
+
+  /// No description provided for @cadenceSlowdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Smooth 24 fps on a 60 Hz TV'**
+  String get cadenceSlowdown;
+
+  /// No description provided for @cadenceSlowdownSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.'**
+  String get cadenceSlowdownSubtitle;
+
+  /// No description provided for @cadenceTipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn On Match Frame Rate'**
+  String get cadenceTipTitle;
+
+  /// No description provided for @cadenceTipMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This video can\'t play smoothly at your TV\'s current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.'**
+  String get cadenceTipMessage;
+
+  /// No description provided for @cadenceTipSlowdownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.'**
+  String get cadenceTipSlowdownHint;
 
   /// No description provided for @useExternalPlayer.
   ///

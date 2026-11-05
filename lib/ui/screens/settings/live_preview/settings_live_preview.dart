@@ -223,10 +223,18 @@ class SettingsPreviewSceneChips extends StatelessWidget {
   /// the chips out of focus and the preview just follows the focused setting.
   final Map<SettingsPreviewScene, FocusNode>? focusNodes;
 
+  /// Sits right after the last chip, like the phone's show/hide toggle.
+  final Widget? trailing;
+
+  /// Runs after a chip switches the scene, so a hidden phone preview can open.
+  final VoidCallback? onSceneTap;
+
   const SettingsPreviewSceneChips({
     super.key,
     required this.controller,
     this.focusNodes,
+    this.trailing,
+    this.onSceneTap,
   });
 
   @override
@@ -242,8 +250,15 @@ class SettingsPreviewSceneChips extends StatelessWidget {
             label: settingsPreviewSceneName(l10n, scenes[i]),
             selected: controller.scene == scenes[i],
             focusNode: focusNodes?[scenes[i]],
-            onTap: () => controller.showScene(scenes[i]),
+            onTap: () {
+              controller.showScene(scenes[i]);
+              onSceneTap?.call();
+            },
           ),
+        ],
+        if (trailing case final trailing?) ...[
+          const SizedBox(width: 6),
+          trailing,
         ],
       ],
     );
