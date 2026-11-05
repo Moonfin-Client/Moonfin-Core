@@ -26623,6 +26623,102 @@ abstract class AppLocalizations {
   /// **'Current'**
   String get setupCurrent;
 
+  /// Row on the last setup wizard step that opens the Moonbase server plugin dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Add Moonbase to your server'**
+  String get setupMoonbaseTitle;
+
+  /// Line under the Moonbase row on the last setup wizard step
+  ///
+  /// In en, this message translates to:
+  /// **'A free server plugin that unlocks more of Moonfin'**
+  String get setupMoonbaseHint;
+
+  /// First line of the Moonbase dialog, followed by a list of features
+  ///
+  /// In en, this message translates to:
+  /// **'Moonbase is free and runs on your server. With it, Moonfin gets:'**
+  String get setupMoonbaseIntro;
+
+  /// Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps
+  ///
+  /// In en, this message translates to:
+  /// **'Only a server admin can install it. Send them this link.'**
+  String get setupMoonbaseAskAdmin;
+
+  /// Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps
+  ///
+  /// In en, this message translates to:
+  /// **'It takes a few steps on your server to install. They\'re all at this link.'**
+  String get setupMoonbaseManualSteps;
+
+  /// Shown in the Moonbase dialog while the plugin installs
+  ///
+  /// In en, this message translates to:
+  /// **'Installing Moonbase...'**
+  String get setupMoonbaseInstalling;
+
+  /// Shown in the Moonbase dialog after the plugin installed, above a Restart Server button
+  ///
+  /// In en, this message translates to:
+  /// **'Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.'**
+  String get setupMoonbaseInstalled;
+
+  /// Shown while the server restarts after Moonbase was installed
+  ///
+  /// In en, this message translates to:
+  /// **'The server is restarting. Moonbase turns on once it\'s back.'**
+  String get setupMoonbaseRestarting;
+
+  /// Moonbase dialog feature
+  ///
+  /// In en, this message translates to:
+  /// **'Settings synced across your devices'**
+  String get moonbaseFeatureSync;
+
+  /// Moonbase dialog feature
+  ///
+  /// In en, this message translates to:
+  /// **'Extra ratings and TMDB reviews'**
+  String get moonbaseFeatureRatings;
+
+  /// Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists
+  ///
+  /// In en, this message translates to:
+  /// **'Custom rows from your favorite lists'**
+  String get moonbaseFeatureRows;
+
+  /// Moonbase dialog feature
+  ///
+  /// In en, this message translates to:
+  /// **'Retro games with synced saves'**
+  String get moonbaseFeatureGames;
+
+  /// Moonbase dialog feature, upcoming episodes and movies
+  ///
+  /// In en, this message translates to:
+  /// **'A calendar of what\'s coming up'**
+  String get moonbaseFeatureCalendar;
+
+  /// Moonbase dialog feature
+  ///
+  /// In en, this message translates to:
+  /// **'Your own order for each collection'**
+  String get moonbaseFeatureCollections;
+
+  /// Moonbase dialog feature
+  ///
+  /// In en, this message translates to:
+  /// **'Messages from your server admin'**
+  String get moonbaseFeatureMessages;
+
+  /// Shown in the Moonbase dialog when installing or restarting failed
+  ///
+  /// In en, this message translates to:
+  /// **'Moonbase couldn\'t be installed. {error}'**
+  String setupMoonbaseInstallFailed(String error);
+
   /// Remote control hint at the bottom of the setup wizard on TVs
   ///
   /// In en, this message translates to:

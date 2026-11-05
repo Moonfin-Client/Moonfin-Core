@@ -13812,6 +13812,75 @@
   "@setupCurrent": {
     "description": "Tag beside the option that is chosen right now in a setup wizard list"
   },
+  "setupMoonbaseTitle": "Add Moonbase to your server",
+  "@setupMoonbaseTitle": {
+    "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+  },
+  "setupMoonbaseHint": "A free server plugin that unlocks more of Moonfin",
+  "@setupMoonbaseHint": {
+    "description": "Line under the Moonbase row on the last setup wizard step"
+  },
+  "setupMoonbaseIntro": "Moonbase is free and runs on your server. With it, Moonfin gets:",
+  "@setupMoonbaseIntro": {
+    "description": "First line of the Moonbase dialog, followed by a list of features"
+  },
+  "setupMoonbaseAskAdmin": "Only a server admin can install it. Send them this link.",
+  "@setupMoonbaseAskAdmin": {
+    "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseManualSteps": "It takes a few steps on your server to install. They're all at this link.",
+  "@setupMoonbaseManualSteps": {
+    "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseInstalling": "Installing Moonbase...",
+  "@setupMoonbaseInstalling": {
+    "description": "Shown in the Moonbase dialog while the plugin installs"
+  },
+  "setupMoonbaseInstalled": "Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.",
+  "@setupMoonbaseInstalled": {
+    "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+  },
+  "setupMoonbaseRestarting": "The server is restarting. Moonbase turns on once it's back.",
+  "@setupMoonbaseRestarting": {
+    "description": "Shown while the server restarts after Moonbase was installed"
+  },
+  "moonbaseFeatureSync": "Settings synced across your devices",
+  "@moonbaseFeatureSync": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRatings": "Extra ratings and TMDB reviews",
+  "@moonbaseFeatureRatings": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRows": "Custom rows from your favorite lists",
+  "@moonbaseFeatureRows": {
+    "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+  },
+  "moonbaseFeatureGames": "Retro games with synced saves",
+  "@moonbaseFeatureGames": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureCalendar": "A calendar of what's coming up",
+  "@moonbaseFeatureCalendar": {
+    "description": "Moonbase dialog feature, upcoming episodes and movies"
+  },
+  "moonbaseFeatureCollections": "Your own order for each collection",
+  "@moonbaseFeatureCollections": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureMessages": "Messages from your server admin",
+  "@moonbaseFeatureMessages": {
+    "description": "Moonbase dialog feature"
+  },
+  "setupMoonbaseInstallFailed": "Moonbase couldn't be installed. {error}",
+  "@setupMoonbaseInstallFailed": {
+    "description": "Shown in the Moonbase dialog when installing or restarting failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "setupTvHint": "Up and down to preview · OK to choose · Back twice to skip",
   "@setupTvHint": {
     "description": "Remote control hint at the bottom of the setup wizard on TVs"
