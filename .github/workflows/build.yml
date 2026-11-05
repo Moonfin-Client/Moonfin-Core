@@ -72,7 +72,7 @@ jobs:
           - target: tv
             artifact: android-tv
             files: Moonfin_AndroidTV_v*.*
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
 
@@ -794,7 +794,7 @@ jobs:
   # Web, built at the root base href so the artifact runs from any static server
   web:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
 
@@ -817,7 +817,7 @@ jobs:
   # what the PR comment reads its Tests line from.
   tests:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
 
@@ -1063,7 +1063,7 @@ jobs:
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
     needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests, apple-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Write outcomes.json
         run: |
@@ -1093,7 +1093,7 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [android, ios, macos, tvos, windows, windows-arm64, linux]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/download-artifact@v7
         with:

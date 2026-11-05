@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   label:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # Comments matter only because a screenshot can arrive as one, so skip
     # comments on issues and anything another bot said.
     if: >-
