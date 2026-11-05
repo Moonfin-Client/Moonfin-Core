@@ -11313,6 +11313,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToPlaylist => 'Add to Playlist';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'No lyrics available';
 
   @override

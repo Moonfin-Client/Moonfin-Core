@@ -11406,6 +11406,17 @@ class AppLocalizationsCs extends AppLocalizations {
   String get addToPlaylist => 'Přidat do seznamu skladeb';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Nejsou k dispozici žádné texty';
 
   @override

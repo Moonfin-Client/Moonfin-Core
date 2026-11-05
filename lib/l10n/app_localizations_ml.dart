@@ -11473,6 +11473,17 @@ class AppLocalizationsMl extends AppLocalizations {
   String get addToPlaylist => 'പ്ലേലിസ്റ്റിലേക്ക് ചേർക്കുക';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'വരികളൊന്നും ലഭ്യമല്ല';
 
   @override

@@ -11665,6 +11665,17 @@ class AppLocalizationsPl extends AppLocalizations {
   String get addToPlaylist => 'Dodaj do playlisty';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Brak dostępnych tekstów';
 
   @override

@@ -11091,6 +11091,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addToPlaylist => '添加到播放列表';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => '暂无可用歌词';
 
   @override

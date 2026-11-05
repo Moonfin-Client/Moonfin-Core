@@ -11425,6 +11425,17 @@ class AppLocalizationsCy extends AppLocalizations {
   String get addToPlaylist => 'Ychwanegu at y Rhestr Chwarae';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Dim geiriau ar gael';
 
   @override

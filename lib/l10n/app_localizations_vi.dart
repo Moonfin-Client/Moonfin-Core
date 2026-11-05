@@ -11381,6 +11381,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get addToPlaylist => 'Thêm vào danh sách phát';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Không có lời bài hát nào';
 
   @override

@@ -11369,6 +11369,17 @@ class AppLocalizationsEo extends AppLocalizations {
   String get addToPlaylist => 'Aldoni al Ludlisto';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Neniu kantoteksto haveblaj';
 
   @override

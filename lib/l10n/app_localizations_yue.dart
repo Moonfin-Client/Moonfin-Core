@@ -11125,6 +11125,17 @@ class AppLocalizationsYue extends AppLocalizations {
   String get addToPlaylist => '新增到播放列表';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => '沒有可用的歌詞';
 
   @override

@@ -11576,6 +11576,17 @@ class AppLocalizationsHr extends AppLocalizations {
   String get addToPlaylist => 'Dodaj na popis za reprodukciju';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Nema dostupnih pjesama';
 
   @override

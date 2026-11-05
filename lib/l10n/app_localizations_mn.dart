@@ -11395,6 +11395,17 @@ class AppLocalizationsMn extends AppLocalizations {
   String get addToPlaylist => 'Тоглуулах жагсаалтад нэмэх';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Дууны үг байхгүй';
 
   @override

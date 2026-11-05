@@ -11497,6 +11497,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get addToPlaylist => 'Προσθήκη στη λίστα αναπαραγωγής';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Δεν υπάρχουν διαθέσιμοι στίχοι';
 
   @override

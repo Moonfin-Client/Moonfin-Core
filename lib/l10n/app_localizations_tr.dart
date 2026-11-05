@@ -11408,6 +11408,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addToPlaylist => 'Oynatma Listesine Ekle';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Şarkı sözü mevcut değil';
 
   @override

@@ -11432,6 +11432,17 @@ class AppLocalizationsTe extends AppLocalizations {
   String get addToPlaylist => 'ప్లేజాబితాకు జోడించండి';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'సాహిత్యం అందుబాటులో లేదు';
 
   @override

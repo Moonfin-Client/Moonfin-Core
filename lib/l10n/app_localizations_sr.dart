@@ -11484,6 +11484,17 @@ class AppLocalizationsSr extends AppLocalizations {
   String get addToPlaylist => 'Додај на листу за репродукцију';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Текст песме није доступан';
 
   @override

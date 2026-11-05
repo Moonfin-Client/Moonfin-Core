@@ -11051,6 +11051,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addToPlaylist => '재생목록에 추가';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => '사용 가능한 가사가 없습니다.';
 
   @override

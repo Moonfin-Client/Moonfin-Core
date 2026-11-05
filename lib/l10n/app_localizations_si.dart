@@ -11368,6 +11368,17 @@ class AppLocalizationsSi extends AppLocalizations {
   String get addToPlaylist => 'ධාවන ලැයිස්තුවට එක් කරන්න';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'ගී පද නොමැත';
 
   @override

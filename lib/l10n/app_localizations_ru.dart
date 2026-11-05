@@ -11440,6 +11440,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addToPlaylist => 'Добавить в плейлист';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Нет доступных текстов';
 
   @override

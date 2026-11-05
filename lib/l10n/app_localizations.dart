@@ -20074,6 +20074,24 @@ abstract class AppLocalizations {
   /// **'Add to Playlist'**
   String get addToPlaylist;
 
+  /// Context menu action to remove an item from a playlist
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Playlist'**
+  String get removeFromPlaylist;
+
+  /// Confirmation shown before removing an item from a playlist
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {item} from {playlist}?'**
+  String removeFromPlaylistConfirm(String item, String playlist);
+
+  /// Error shown when removing an item from a playlist fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove from playlist'**
+  String get removeFromPlaylistFailed;
+
   /// No description provided for @lyricsNotAvailable.
   ///
   /// In en, this message translates to:

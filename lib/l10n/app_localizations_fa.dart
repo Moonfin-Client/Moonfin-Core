@@ -11330,6 +11330,17 @@ class AppLocalizationsFa extends AppLocalizations {
   String get addToPlaylist => 'به لیست پخش اضافه کنید';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'متن آهنگ موجود نیست';
 
   @override
