@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/repositories/poster_badge_repository.dart';
 import '../../preference/user_preferences.dart';
+import 'poster_badge_flags.dart';
 
 /// The labels the admin's rules put in one corner of an item's poster, stacked away
 /// from the corner. Draws nothing until they arrive, and nothing at all for an item
@@ -226,6 +228,26 @@ class _BadgePill extends StatelessWidget {
   /// The server's own default, for a colour that doesnt parse.
   static const _fallbackColor = Color(0xFF2563EB);
 
+  /// The icons the server can send, by their Material name. Kept in step with
+  /// PosterBadgeMatcher.Icons in Moonbase. An unknown name draws no icon.
+  static const _icons = <String, IconData>{
+    'contrast': Icons.contrast,
+    'hdr_on': Icons.hdr_on,
+    'high_quality': Icons.high_quality,
+    'movie': Icons.movie,
+    'theaters': Icons.theaters,
+    'aspect_ratio': Icons.aspect_ratio,
+    'surround_sound': Icons.surround_sound,
+    'speaker': Icons.speaker,
+    'graphic_eq': Icons.graphic_eq,
+    'album': Icons.album,
+    'translate': Icons.translate,
+    'subtitles': Icons.subtitles,
+    'record_voice_over': Icons.record_voice_over,
+    'star': Icons.star,
+    'check_circle': Icons.check_circle,
+  };
+
   static const _sizes = {
     'small': 0.8,
     'medium': 1.0,
@@ -238,6 +260,43 @@ class _BadgePill extends StatelessWidget {
 
   const _BadgePill({required this.badge, required this.scale});
 
+  /// The icon or flag before the text, null for none or a name this app doesnt
+  /// know. Read out for a label without text, since there is nothing else to read.
+  static Widget? _iconFor(String name, double fontSize, Color color, bool hasText) {
+    if (name.startsWith('flag-')) {
+      final code = _flagCode(name);
+      if (code == null) return null;
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(2),
+        child: _flagImage(code, fontSize),
+      );
+    }
+
+    final glyph = _icons[name];
+    if (glyph == null) return null;
+    return Icon(
+      glyph,
+      size: fontSize * 1.25,
+      color: color,
+      semanticLabel: hasText ? null : name.replaceAll('_', ' '),
+    );
+  }
+
+  /// The flag's code when this app has its image, else null.
+  static String? _flagCode(String icon) {
+    if (!icon.startsWith('flag-')) return null;
+    final code = icon.substring(5);
+    return posterBadgeFlags.contains(code) ? code : null;
+  }
+
+  static Widget _flagImage(String code, double height) => SvgPicture.asset(
+    'assets/icons/flags/$code.svg',
+    width: height * 4 / 3,
+    height: height,
+    fit: BoxFit.cover,
+    excludeFromSemantics: true,
+  );
+
   static Color? _parseColor(String hex) {
     final value = int.tryParse(hex.replaceFirst('#', ''), radix: 16);
     if (hex.length != 7 || value == null) return null;
@@ -246,6 +305,65 @@ class _BadgePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = scale * (_sizes[badge.size] ?? 1.0);
+    final hasText = badge.label.trim().isNotEmpty;
+    final textStyle = TextStyle(
+      fontSize: 10 * size,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.5,
+    );
+
+    // A flag alone is its own shape, so it gets no fill and no padding. It is as
+    // tall as a text label, measured with the same font and text scale, so its
+    // edge lines up with the labels around it.
+    final flag = hasText ? null : _flagCode(badge.icon);
+    if (flag != null) {
+      final line = TextPainter(
+        text: TextSpan(
+          text: 'A',
+          style: DefaultTextStyle.of(context).style.merge(textStyle),
+        ),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      final flagHeight = line.height + 4 * size;
+      line.dispose();
+
+      final flagRadius = switch (badge.shape) {
+        'square' => BorderRadius.zero,
+        'pill' => AppRadius.circular(5 * size),
+        _ => AppRadius.circular(3 * size),
+      };
+      return Semantics(
+        label: 'flag ${flag.toUpperCase()}',
+        child: Container(
+          foregroundDecoration: BoxDecoration(
+            // A faint edge, so a mostly white flag still reads on a light poster.
+            border: Border.all(
+              color: AppColors.black.withValues(alpha: 0.25),
+              width: 0.5,
+            ),
+            borderRadius: flagRadius,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: flagRadius,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withValues(alpha: 0.35),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: flagRadius,
+            child: _flagImage(flag, flagHeight),
+          ),
+        ),
+      );
+    }
+
     final color = _parseColor(badge.color) ?? _fallbackColor;
     final alpha = badge.opacity.clamp(10, 100) / 100;
     final luminance = color.computeLuminance();
@@ -282,15 +400,22 @@ class _BadgePill extends StatelessWidget {
             : Colors.white;
     }
 
-    final size = scale * (_sizes[badge.size] ?? 1.0);
     final radius = switch (badge.shape) {
       'pill' => AppRadius.circular(999),
       'square' => BorderRadius.zero,
       _ => AppRadius.circular(4 * size),
     };
 
+    final textColor = _parseColor(badge.textColor) ?? text;
+    final fontSize = 10 * size;
+    final icon = _iconFor(badge.icon, fontSize, textColor, hasText);
+
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6 * size, vertical: 2 * size),
+      // An icon alone sits in a squarer pill.
+      padding: EdgeInsets.symmetric(
+        horizontal: (icon != null && !hasText ? 3 : 6) * size,
+        vertical: 2 * size,
+      ),
       decoration: BoxDecoration(
         color: background,
         border: border,
@@ -303,16 +428,20 @@ class _BadgePill extends StatelessWidget {
           ),
         ],
       ),
-      child: Text(
-        badge.label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: _parseColor(badge.textColor) ?? text,
-          fontSize: 10 * size,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ?icon,
+          if (icon != null && hasText) SizedBox(width: 3 * size),
+          // No Flexible: the top-left column of a card gives no width limit.
+          if (hasText)
+            Text(
+              badge.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textStyle.copyWith(color: textColor),
+            ),
+        ],
       ),
     );
   }

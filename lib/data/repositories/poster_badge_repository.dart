@@ -34,6 +34,10 @@ class PosterBadge {
   /// rounded, pill or square.
   final String shape;
 
+  /// A Material icon name drawn before the text, empty for none. With no text the
+  /// label is the icon alone.
+  final String icon;
+
   const PosterBadge({
     required this.label,
     required this.color,
@@ -43,6 +47,7 @@ class PosterBadge {
     this.size = 'medium',
     this.corner = PosterBadgeCorner.topLeft,
     this.shape = 'rounded',
+    this.icon = '',
   });
 }
 
@@ -267,6 +272,7 @@ class PosterBadgeRepository {
               orElse: () => PosterBadgeCorner.topLeft,
             ),
             shape: entry['shape'] as String? ?? 'rounded',
+            icon: entry['icon'] as String? ?? '',
           ),
     ];
   }
