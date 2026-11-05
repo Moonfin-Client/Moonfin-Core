@@ -23,6 +23,10 @@
   </dict>
   <key>NSLocalNetworkUsageDescription</key>
   <string>Moonfin uses the local network to stream media from your server and to receive a client certificate from your phone when you add one on this device.</string>
+  <key>NSUserActivityTypes</key>
+  <array>
+    <string>TVUserActivityTypeBrowsingChannelGuide</string>
+  </array>
   <key>CFBundleDevelopmentRegion</key>
   <string>$(DEVELOPMENT_LANGUAGE)</string>
   <key>CFBundleDisplayName</key>
