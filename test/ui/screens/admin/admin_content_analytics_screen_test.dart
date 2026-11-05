@@ -313,6 +313,36 @@ void main() {
     expect(paging.starts['t1'], unorderedEquals([0, 300, 600, 900, 1200]));
   });
 
+  test('an invalidated read stops asking for pages', () async {
+    final paging = _PagingItemsApi({'t1': 3000});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    const library = (itemId: 't1', collectionType: 'tvshows');
+    final sub = container.listen(adminLibraryItemsProvider(library), (_, _) {});
+    addTearDown(sub.close);
+
+    // Invalidate while the first batch after page 0 is in flight.
+    while ((paging.starts['t1']?.length ?? 0) < 2) {
+      await Future<void>.delayed(Duration.zero);
+    }
+    container.invalidate(adminLibraryItemsProvider(library));
+    final fresh = await container.read(adminLibraryItemsProvider(library).future);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(fresh, hasLength(3000));
+    // Each page once for the fresh read, plus the stale read's page 0 and the
+    // one batch it already had going.
+    final counts = <int, int>{};
+    for (final start in paging.starts['t1']!) {
+      counts[start] = (counts[start] ?? 0) + 1;
+    }
+    expect(counts, {
+      for (var start = 0; start < 3000; start += 300)
+        start: start <= 1200 ? 2 : 1,
+    });
+  });
+
   testWidgets('home videos count videos and photos, collections need no /Items', (
     tester,
   ) async {
