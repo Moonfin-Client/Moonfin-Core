@@ -118,6 +118,17 @@ jobs:
             keytool -list -v -keystore android/app/release.keystore -storepass "$STORE_PASSWORD" >/dev/null
           fi
 
+      # The 8 GB heap in android/gradle.properties suits a dev machine, but on
+      # the 16 GB runner it leaves no room for the Dart AOT compiles. The user
+      # gradle.properties takes precedence over the project one.
+      - name: Limit Gradle memory
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError
+          kotlin.daemon.jvmargs=-Xmx2G
+          EOF
+
       - name: Build
         run: |
           chmod +x build-android.sh
