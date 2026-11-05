@@ -462,6 +462,8 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   /// Nothing focused (focus back at the root after a pop) counts as Home;
   /// focus in a dialog, popup or overlay sheet does not.
   String? _liveTvShortcutBlocker() {
+    // A sheet takes focus a couple of frames after it opens.
+    if (OverlaySheetController.hasOpenSheet) return 'an overlay sheet is open';
     final focus = FocusManager.instance.primaryFocus;
     if (focus == null || focus == FocusManager.instance.rootScope) return null;
     final focusContext = focus.context;
