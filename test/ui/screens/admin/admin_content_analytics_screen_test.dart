@@ -64,9 +64,12 @@ class _FakeItemsApi extends Fake implements ItemsApi {
 
 /// Pages through big libraries slowly and records how many reads overlap.
 class _PagingItemsApi extends Fake implements ItemsApi {
-  _PagingItemsApi(this.totals);
+  _PagingItemsApi(this.totals, {this.failAt = const {}});
 
   final Map<String, int> totals;
+
+  /// Pages that throw, by library and start index.
+  final Set<(String, int)> failAt;
   final limits = <int>{};
   final starts = <String, List<int>>{};
   var inFlight = 0;
@@ -89,6 +92,9 @@ class _PagingItemsApi extends Fake implements ItemsApi {
       (starts[parentId] ??= []).add(start);
       await Future<void>.delayed(const Duration(milliseconds: 2));
       inFlight--;
+      if (failAt.contains((parentId, start))) {
+        throw Exception('page $start of $parentId failed');
+      }
       final end = start + limit < total ? start + limit : total;
       return <String, dynamic>{
         'Items': [
@@ -289,6 +295,22 @@ void main() {
     expect(paging.starts['t2'], unorderedEquals([0, 300, 600, 900]));
     expect(lists[0].map((item) => item.id), [for (var i = 0; i < 1300; i++) 't1-$i']);
     expect(lists[1], hasLength(950));
+  });
+
+  test('a failed page stops the library from asking for more', () async {
+    final paging = _PagingItemsApi({'t1': 3000}, failAt: {('t1', 300)});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await expectLater(
+      container.read(
+        adminLibraryItemsProvider((itemId: 't1', collectionType: 'tvshows')).future,
+      ),
+      throwsException,
+    );
+    // The first page, then the batch holding the failure, and nothing after.
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600, 900, 1200]));
   });
 
   testWidgets('home videos count videos and photos, collections need no /Items', (
