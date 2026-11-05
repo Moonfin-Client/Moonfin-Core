@@ -1383,6 +1383,7 @@ final class NativeApplePlayerViewController: UIViewController {
             if !subtitleTracks.isEmpty, osdShows(.subtitles) { ids.append(.subtitles) }
             if osdShows(.quality) { ids.append(.quality) }
             if liveRecord != nil { ids.append(.record) }
+            if canFavorite, osdShows(.favorite) { ids.append(.favorite) }
             if !streamInfoSections.isEmpty, osdShows(.info) { ids.append(.info) }
         } else {
             // Both always present, because they step chapters before they
