@@ -284,8 +284,12 @@ class Destinations {
     return '$base?${params.join('&')}';
   }
 
-  static String studio(String studioName) =>
-      '/studio/${Uri.encodeComponent(studioName)}';
+  static String studio(String studioName, {String? serverId}) {
+    final base = '/studio/${Uri.encodeComponent(studioName)}';
+    return serverId != null && serverId.isNotEmpty
+        ? '$base?serverId=${Uri.encodeComponent(serverId)}'
+        : base;
+  }
 
   static String folder(String folderId, {String? serverId}) {
     final base = '/folder/$folderId';
