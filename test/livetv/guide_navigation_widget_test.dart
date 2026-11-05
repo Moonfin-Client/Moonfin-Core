@@ -705,8 +705,10 @@ void main() {
   testWidgets('TV back returns to the tuned channel, then header, then exits', (
     tester,
   ) async {
-    PlatformDetection.setTvMode(true);
-    addTearDown(() => PlatformDetection.setTvMode(false));
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
     tester.view.physicalSize = const Size(900, 700);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);

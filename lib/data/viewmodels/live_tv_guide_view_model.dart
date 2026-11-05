@@ -530,6 +530,14 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     _channels = updated;
     if (_sortReadsFavorite) _programsHighWater = 0;
     _notifyListeners();
+    if (_filter == GuideFilter.favorites) {
+      unawaited(
+        ensureProgramsForChannels([
+          for (final c in _channels)
+            if (c.isFavorite) c.id,
+        ]),
+      );
+    }
     if (_sortReadsFavorite && _state == GuideState.ready) {
       unawaited(loadMorePrograms());
     }

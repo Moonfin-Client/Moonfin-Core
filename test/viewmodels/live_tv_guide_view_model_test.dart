@@ -1024,6 +1024,22 @@ void main() {
     vm.dispose();
   });
 
+  test('a channel favorited under the favorites filter gets its programs', () async {
+    _stubChannels(liveTv, [
+      for (var i = 0; i < 120; i++) _channel('c$i', number: '$i'),
+    ]);
+    final vm = LiveTvGuideViewModel(client);
+    await vm.load();
+    vm.setFilter(GuideFilter.favorites);
+    expect(vm.hasProgramsFor('c110'), isFalse);
+
+    userDataSync.publish('c110', {'IsFavorite': true});
+    vm.syncChannelUserData();
+    await Future<void>.delayed(Duration.zero);
+    expect(vm.hasProgramsFor('c110'), isTrue);
+    vm.dispose();
+  });
+
   group('category filters', () {
     test('a category chip walks the lineup in flagged batches', () async {
       final channels = List.generate(120, (i) => _channel('c$i', number: '$i'));

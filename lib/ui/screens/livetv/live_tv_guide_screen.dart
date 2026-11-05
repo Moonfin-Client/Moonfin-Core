@@ -2292,8 +2292,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       );
       if (mounted) _anchorToWindowStart();
     } catch (_) {
-      _resettingToEntryState = false;
-      rethrow;
+      // Fall back to the full reload, which shows its own error state.
+      if (mounted) await _goToNow();
     }
     if (!mounted) {
       _resettingToEntryState = false;
