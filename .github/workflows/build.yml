@@ -815,13 +815,21 @@ jobs:
   # The platform builds above compile only reachable code, so a broken file
   # nothing imports and a failing test are invisible to them. This job is
   # what the PR comment reads its Tests line from.
+  # The suites are split across parallel runners because one after the other
+  # they took over half an hour, and tests-summary merges the results back.
   tests:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
     runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [analyze-packages, app, kotlin]
+    name: tests (${{ matrix.suite }})
     steps:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-java@v5
+        if: matrix.suite == 'kotlin'
         with:
           distribution: temurin
           java-version: '17'
@@ -837,23 +845,31 @@ jobs:
           packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
 
           flutter pub get
-          for pkg in $packages; do
-            (cd "packages/$pkg" && flutter pub get >/dev/null)
-          done
 
-          # Only error lines gate the job, the tree carries longstanding infos.
-          dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-          for pkg in $packages; do
-            (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-          done
+          case "${{ matrix.suite }}" in
+            analyze-packages)
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter pub get >/dev/null)
+              done
 
-          flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
-          for pkg in $packages; do
-            (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
-          done
+              # Only error lines gate the job, the tree carries longstanding infos.
+              dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+              for pkg in $packages; do
+                (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+              done
 
-          # gradlew is gitignored, and only a Flutter build writes it.
-          (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
+              done
+              ;;
+            app)
+              flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
+              ;;
+            kotlin)
+              # gradlew is gitignored, and only a Flutter build writes it.
+              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              ;;
+          esac
 
           echo "$status" > /tmp/test-results/run-status
 
@@ -929,7 +945,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: test-results
+          name: test-results-${{ matrix.suite }}
           path: /tmp/test-results/test-results.json
 
       - name: Gate on failures
@@ -942,6 +958,60 @@ jobs:
           bad = results['failed'] or results['analyzer_errors'] or results['run_status']
           sys.exit(1 if bad else 0)
           EOF
+
+  # Merges the per-suite results into the one test-results.json the PR comment
+  # reads. A suite that died before uploading counts as a failed run.
+  tests-summary:
+    if: ${{ always() && needs.tests.result != 'skipped' }}
+    needs: tests
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: test-results-*
+          path: parts
+
+      - name: Merge results
+        run: |
+          python3 - <<'EOF'
+          import json
+          import os
+
+          suites = ['analyze-packages', 'app', 'kotlin']
+          out = {
+              'passed': 0,
+              'failed': 0,
+              'failures': [],
+              'more_failures': 0,
+              'analyzer_errors': 0,
+              'analyzer_sample': [],
+              'run_status': 0,
+          }
+          for suite in suites:
+              path = f'parts/test-results-{suite}/test-results.json'
+              if not os.path.exists(path):
+                  print(f'No results from {suite}')
+                  out['run_status'] = 1
+                  continue
+              part = json.load(open(path))
+              for key in ('passed', 'failed', 'more_failures', 'analyzer_errors'):
+                  out[key] += part[key]
+              out['failures'] += part['failures']
+              out['analyzer_sample'] += part['analyzer_sample']
+              out['run_status'] = max(out['run_status'], part['run_status'])
+
+          out['more_failures'] += max(0, len(out['failures']) - 50)
+          out['failures'] = out['failures'][:50]
+          out['analyzer_sample'] = out['analyzer_sample'][:10]
+          with open('test-results.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
+          EOF
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: test-results
+          path: test-results.json
 
   # The XCTest targets for the native iOS and macOS code, which flutter test
   # can't reach. tvOS has no test target of its own.
