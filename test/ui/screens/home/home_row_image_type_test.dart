@@ -392,5 +392,40 @@ void main() {
         'http://fake/studio1/Banner?tag=b1',
       );
     });
+
+    test('a banner row asks for a Primary as wide as the banner card', () {
+      final widths = _PrimaryWidthImageApi();
+      HomeScreen.resolveRowImageUrl(
+        _studio({'Primary': 'p1'}),
+        widths,
+        ImageType.poster,
+      );
+      HomeScreen.resolveRowImageUrl(
+        _studio({'Primary': 'p1'}),
+        widths,
+        ImageType.banner,
+      );
+      expect(widths.maxWidths[0], greaterThanOrEqualTo(200 * 16 / 9));
+      expect(
+        widths.maxWidths[1],
+        greaterThanOrEqualTo(200 * kBannerAspectRatio),
+      );
+    });
   });
+}
+
+/// Records the width each Primary request asks for.
+class _PrimaryWidthImageApi extends _TagEchoImageApi {
+  final maxWidths = <int?>[];
+
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) {
+    maxWidths.add(maxWidth);
+    return super.getPrimaryImageUrl(itemId, tag: tag);
+  }
 }

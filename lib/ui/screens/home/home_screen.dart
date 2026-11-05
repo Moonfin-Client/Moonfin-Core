@@ -7064,7 +7064,7 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (item.type == 'Studio' || item.type == 'Network') {
       final maxW = artworkRequestWidth(
-        height * 16 / 9,
+        height * (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9),
         requestScale,
         ArtworkShape.landscape,
       );
