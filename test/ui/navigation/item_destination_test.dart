@@ -31,4 +31,24 @@ void main() {
       expect(uri.queryParameters['seasonContext'], 'a b&c');
     });
   });
+
+  group('Destinations.studio', () {
+    test('stays bare without a server', () {
+      expect(Destinations.studio('A24'), '/studio/A24');
+      expect(Destinations.studio('A24', serverId: ''), '/studio/A24');
+    });
+
+    test('carries the owning server so the studio opens on it', () {
+      const serverId = 'https://host:8096/jf?x=1&y';
+      final uri = Uri.parse(Destinations.studio('A24', serverId: serverId));
+      expect(uri.path, '/studio/A24');
+      expect(uri.queryParameters['serverId'], serverId);
+    });
+
+    test('escapes a studio name so it survives the path', () {
+      const name = 'Studio / R&D 100% é';
+      final uri = Uri.parse(Destinations.studio(name, serverId: 's1'));
+      expect(uri.pathSegments, ['studio', name]);
+    });
+  });
 }

@@ -5553,7 +5553,7 @@ class _ContentRowsState extends State<_ContentRows>
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
-            context.push(Destinations.studio(item.name));
+            context.push(Destinations.studio(item.name, serverId: item.serverId));
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
@@ -5678,7 +5678,7 @@ class _ContentRowsState extends State<_ContentRows>
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(Destinations.genre(item.name, genreId: item.id));
                     } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
-                      context.push(Destinations.studio(item.name));
+                      context.push(Destinations.studio(item.name, serverId: item.serverId));
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {

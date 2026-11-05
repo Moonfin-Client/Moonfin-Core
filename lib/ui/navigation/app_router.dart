@@ -479,7 +479,12 @@ final appRouter = GoRouter(
       path: Destinations.studioBrowse,
       builder: (context, state) {
         final studioName = state.pathParameters['studioName']!;
-        return LibraryBrowseScreen(libraryId: '', studioName: studioName);
+        final serverId = state.uri.queryParameters['serverId'];
+        return LibraryBrowseScreen(
+          libraryId: '',
+          serverId: serverId,
+          studioName: studioName,
+        );
       },
     ),
 
