@@ -138,6 +138,58 @@ void main() {
       expect(mostAtOnce, 8);
     });
 
+    test('skips playlist entries the server gives no entry id for', () async {
+      when(() => itemsApi.getPlaylists()).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'pl-1', 'Name': 'The Hux List'},
+          ],
+        },
+      );
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: 'PlaylistItemId'),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1'},
+          ],
+        },
+      );
+
+      final memberships =
+          await ItemMembershipService.instance.getPlaylistsContaining(_movie());
+
+      expect(memberships, isEmpty);
+    });
+
+    test('keeps a playlist\'s last entries when fetching them fails', () async {
+      when(() => itemsApi.getPlaylists()).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'pl-1', 'Name': 'The Hux List'},
+          ],
+        },
+      );
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: 'PlaylistItemId'),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1', 'PlaylistItemId': 'entry-100'},
+          ],
+        },
+      );
+      await ItemMembershipService.instance.getPlaylistsContaining(_movie());
+
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: 'PlaylistItemId'),
+      ).thenThrow(Exception('playlist items failed'));
+      final memberships = await ItemMembershipService.instance
+          .getPlaylistsContaining(_movie(), forceRefresh: true);
+
+      expect(memberships.single.entryId, 'entry-100');
+    });
+
     test('updates playlist cache on removal notification', () async {
       when(() => itemsApi.getPlaylists()).thenAnswer(
         (_) async => {

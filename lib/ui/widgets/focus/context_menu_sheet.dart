@@ -79,6 +79,7 @@ class _ContextMenuState extends State<_ContextMenu> {
   late AggregatedItem _item;
   late List<ItemPlaylistMembership> _playlists;
   late List<ItemCollectionMembership> _collections;
+  List<ItemContextAction> _actions = const [];
 
   @override
   void initState() {
@@ -136,18 +137,20 @@ class _ContextMenuState extends State<_ContextMenu> {
 
   @override
   Widget build(BuildContext context) {
-    // Pass widget.parentContext so action dialogs (such as RemoveFromPlaylistDialog)
-    // stay mounted when this sheet closes.
-    if (!widget.parentContext.mounted) return const SizedBox.shrink();
-    final actions = contextActionsFor(
-      widget.parentContext,
-      _item,
-      onChanged: widget.onChanged,
-      collectionRemoval: widget.collectionRemoval,
-      isContinueWatchingOrNextUp: widget.isContinueWatchingOrNextUp,
-      playlistMemberships: _playlists,
-      collectionMemberships: _collections,
-    );
+    // Actions are built on the opener's context so their dialogs outlive this
+    // sheet. Once the opener is gone, keep the last rows instead of going blank.
+    if (widget.parentContext.mounted) {
+      _actions = contextActionsFor(
+        widget.parentContext,
+        _item,
+        onChanged: widget.onChanged,
+        collectionRemoval: widget.collectionRemoval,
+        isContinueWatchingOrNextUp: widget.isContinueWatchingOrNextUp,
+        playlistMemberships: _playlists,
+        collectionMemberships: _collections,
+      );
+    }
+    final actions = _actions;
     if (actions.isEmpty) return const SizedBox.shrink();
 
     final theme = Theme.of(context);

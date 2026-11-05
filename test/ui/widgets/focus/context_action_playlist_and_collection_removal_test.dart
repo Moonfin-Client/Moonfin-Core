@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -14,8 +16,11 @@ import 'package:moonfin/data/services/item_membership_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/focus/context_action.dart';
+import 'package:moonfin/ui/widgets/focus/context_menu_sheet.dart';
 
 class _MockClient extends Mock implements MediaServerClient {}
+
+class _MockItemsApi extends Mock implements ItemsApi {}
 
 class _MockMutations extends Mock implements ItemMutationRepository {}
 
@@ -186,6 +191,58 @@ void main() {
       expect(addColIndex < remColIndex, isTrue);
       expect(remColIndex < addPlIndex, isTrue);
       expect(addPlIndex < remPlIndex, isTrue);
+    });
+
+    testWidgets('open menu keeps its rows when the card that opened it goes away',
+        (tester) async {
+      signIn();
+      addTearDown(ItemMembershipService.instance.clearCache);
+      final itemsApi = _MockItemsApi();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final playlists = Completer<Map<String, dynamic>>();
+      when(() => itemsApi.getPlaylists()).thenAnswer((_) => playlists.future);
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: 'PlaylistItemId'),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1', 'PlaylistItemId': 'entry-1'},
+          ],
+        },
+      );
+
+      final showCard = ValueNotifier(true);
+      late BuildContext cardContext;
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ValueListenableBuilder<bool>(
+            valueListenable: showCard,
+            builder: (_, show, _) => show
+                ? Builder(builder: (context) {
+                    cardContext = context;
+                    return const SizedBox.shrink();
+                  })
+                : const SizedBox.shrink(),
+          ),
+        ),
+      );
+
+      unawaited(showContextMenu(cardContext, _movie()));
+      await tester.pumpAndSettle();
+      expect(find.text('Add to Playlist'), findsOneWidget);
+
+      showCard.value = false;
+      await tester.pump();
+      playlists.complete({
+        'Items': [
+          {'Id': 'pl-1', 'Name': 'The Hux List'},
+        ],
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('Add to Playlist'), findsOneWidget);
     });
   });
 }

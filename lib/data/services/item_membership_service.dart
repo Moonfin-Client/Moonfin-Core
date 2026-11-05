@@ -263,24 +263,16 @@ class ItemMembershipService {
 
       await _inBatches(ids, isStale, (id) async {
         try {
-          Map<String, dynamic> res;
-          try {
-            res = await client.itemsApi.getPlaylistItems(
-              id,
-              fields: 'PlaylistItemId',
-            );
-          } catch (_) {
-            res = await client.itemsApi.getItems(
-              parentId: id,
-              fields: 'BasicSyncInfo,PlaylistItemId',
-            );
-          }
+          final res = await client.itemsApi.getPlaylistItems(
+            id,
+            fields: 'PlaylistItemId',
+          );
           final memberList = (res['Items'] as List?) ?? const [];
           final members = <({String itemId, String entryId})>[];
           for (final m in memberList.whereType<Map>()) {
             final map = m.cast<String, dynamic>();
             final itemId = map['Id']?.toString();
-            final entryId = map['PlaylistItemId']?.toString() ?? itemId;
+            final entryId = map['PlaylistItemId']?.toString();
             if (itemId != null && entryId != null) {
               members.add((itemId: itemId, entryId: entryId));
             }
