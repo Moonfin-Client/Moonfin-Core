@@ -343,6 +343,31 @@ void main() {
     });
   });
 
+  test('an invalidated read drops pages still waiting for a slot', () async {
+    final paging = _PagingItemsApi({'big': 3000, 't1': 900});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    const big = (itemId: 'big', collectionType: 'tvshows');
+    const t1 = (itemId: 't1', collectionType: 'tvshows');
+    final bigSub = container.listen(adminLibraryItemsProvider(big), (_, _) {});
+    addTearDown(bigSub.close);
+
+    // Once the big library holds all four slots, t1's first page waits.
+    while ((paging.starts['big']?.length ?? 0) < 2) {
+      await Future<void>.delayed(Duration.zero);
+    }
+    final t1Sub = container.listen(adminLibraryItemsProvider(t1), (_, _) {});
+    addTearDown(t1Sub.close);
+    container.invalidate(adminLibraryItemsProvider(t1));
+    final fresh = await container.read(adminLibraryItemsProvider(t1).future);
+    await container.read(adminLibraryItemsProvider(big).future);
+
+    expect(fresh, hasLength(900));
+    // Only the fresh read reached the server.
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600]));
+  });
+
   testWidgets('home videos count videos and photos, collections need no /Items', (
     tester,
   ) async {

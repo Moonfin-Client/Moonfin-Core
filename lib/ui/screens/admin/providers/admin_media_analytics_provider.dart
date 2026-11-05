@@ -967,9 +967,14 @@ Future<List<Map<String, dynamic>>> _fetchAllItems(
 }) async {
   const pageSize = 300;
 
-  Future<Map<String, dynamic>> page(int startIndex) => _itemPages.run(
+  // Checked once a page has its slot, so a read invalidated while its pages
+  // wait in line drops them instead of running them ahead of the fresh read.
+  Future<Map<String, dynamic>> page(int startIndex) => _itemPages.run(() {
+    if (cancelled()) {
+      throw StateError('Library read was invalidated');
+    }
     // GET /Items takes the user from the token, /Users/{id}/Items is obsolete.
-    () => client.itemsApi.getItems(
+    return client.itemsApi.getItems(
       serverWide: true,
       parentId: parentId,
       includeItemTypes: includeItemTypes,
@@ -982,8 +987,8 @@ Future<List<Map<String, dynamic>>> _fetchAllItems(
       enableTotalRecordCount: true,
       enableImageTypes: 'Primary',
       imageTypeLimit: 1,
-    ),
-  );
+    );
+  });
 
   final first = await page(0);
   final items = _mapList(first['Items']);
@@ -1000,9 +1005,6 @@ Future<List<Map<String, dynamic>>> _fetchAllItems(
   // A batch at a time, so a failed read stops the library instead of leaving
   // the rest of its pages queued in the shared slots.
   for (var i = 0; i < starts.length; i += _maxItemPages) {
-    if (cancelled()) {
-      throw StateError('Library read was invalidated');
-    }
     final pages = await Future.wait(
       starts.skip(i).take(_maxItemPages).map(page),
     );
