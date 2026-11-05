@@ -28,7 +28,7 @@ jobs:
       (github.event.issue.pull_request && github.event.comment.user.type != 'Bot')
     steps:
       - name: Apply platform, server, type and evidence labels
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Only the relevant section is read. Scanning the whole body matched

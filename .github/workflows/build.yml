@@ -74,9 +74,9 @@ jobs:
             files: Moonfin_AndroidTV_v*.*
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -134,7 +134,7 @@ jobs:
           chmod +x build-android.sh
           ./build-android.sh ${{ matrix.target }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.files }}
@@ -144,7 +144,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.ios }}
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -181,7 +181,7 @@ jobs:
           (cd "$TMPDIR" && zip -qry "$OLDPWD/Moonfin_iOS_v${VERSION}_unsigned.ipa" Payload)
           rm -rf "$TMPDIR"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: ios-ipa
@@ -233,7 +233,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.macos }}
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -278,7 +278,7 @@ jobs:
           chmod +x build-macos.sh
           ./build-macos.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: macos-dmg
@@ -317,7 +317,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Select Xcode 26.3
         run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
@@ -337,7 +337,7 @@ jobs:
 
       - name: Cache flutter-tvos toolchain
         id: cache-fluttertvos
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/flutter-tvos
           key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
@@ -468,7 +468,7 @@ jobs:
           cp -R "$APP" "$RUNNER_TEMP/Payload/"
           ( cd "$RUNNER_TEMP" && zip -qry "$GITHUB_WORKSPACE/Moonfin_tvOS_v${VERSION}_unsigned.ipa" Payload )
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: tvos-ipa
@@ -490,7 +490,7 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows) && inputs.distribution != 'testflight' }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -514,7 +514,7 @@ jobs:
           Write-Host "Found Windows artifact(s):"
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         id: unsigned-windows
         with:
           name: windows-exe
@@ -541,7 +541,7 @@ jobs:
       # architecture rather than two carrying the same filename.
       - name: Replace with the signed installer
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-exe
           path: signed/Moonfin_Windows_v*.exe
@@ -555,7 +555,7 @@ jobs:
         shell: pwsh
         run: .\build-windows.ps1 -Store
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
           name: windows-msix
@@ -567,7 +567,7 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64) && inputs.distribution != 'testflight' }}
     runs-on: windows-11-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Verify ARM64 runner
         shell: pwsh
@@ -616,7 +616,7 @@ jobs:
           Write-Host "Found Windows ARM64 artifact(s):"
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         id: unsigned-windows-arm64
         with:
           name: windows-arm64-exe
@@ -643,7 +643,7 @@ jobs:
       # architecture rather than two carrying the same filename.
       - name: Replace with the signed installer
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-arm64-exe
           path: signed/Moonfin_WindowsARM64_v*.exe
@@ -655,7 +655,7 @@ jobs:
         shell: pwsh
         run: .\build-windows.ps1 -Architecture arm64 -Store
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
           name: windows-arm64-msix
@@ -683,7 +683,7 @@ jobs:
             artifact_prefix: Moonfin_LinuxARM64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         if: matrix.arch == 'x64'
@@ -778,7 +778,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: linux-packages-${{ matrix.arch }}
           path: |
@@ -796,7 +796,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -805,7 +805,7 @@ jobs:
       - name: Build web
         run: flutter build web --wasm --release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: web
           path: build/web
@@ -819,9 +819,9 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -927,7 +927,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results
           path: /tmp/test-results/test-results.json
@@ -950,7 +950,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -1041,7 +1041,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: apple-test-results
           path: ${{ runner.temp }}/apple-tests/test-results.json
@@ -1084,7 +1084,7 @@ jobs:
           }
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: build-results
           path: outcomes.json
@@ -1095,11 +1095,11 @@ jobs:
     needs: [android, ios, macos, tvos, windows, windows-arm64, linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           draft: true
           files: Moonfin_*
