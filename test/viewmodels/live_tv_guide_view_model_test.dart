@@ -1040,6 +1040,51 @@ void main() {
     vm.dispose();
   });
 
+  test('overlapping program requests fetch a channel once', () async {
+    _stubChannels(liveTv, [
+      for (var i = 0; i < 120; i++) _channel('c$i', number: '$i'),
+    ]);
+    final vm = LiveTvGuideViewModel(client);
+    await vm.load();
+    final reply = Completer<Map<String, dynamic>>();
+    final requested = <String>[];
+    when(() => _guide(liveTv)).thenAnswer((inv) {
+      requested.addAll(_requestedIds(inv));
+      return reply.future;
+    });
+
+    final first = vm.ensureProgramsForChannels(['c110']);
+    final second = vm.ensureProgramsForChannels(['c110']);
+    reply.complete({
+      'Items': [_program('p', 'c110')],
+    });
+    await Future.wait([first, second]);
+
+    expect(requested, ['c110']);
+    expect(vm.programsForChannel('c110').map((p) => p.id), ['p']);
+    vm.dispose();
+  });
+
+  test('a failed favorite program request is asked again later', () async {
+    _stubChannels(liveTv, [
+      for (var i = 0; i < 120; i++) _channel('c$i', number: '$i'),
+    ]);
+    final vm = LiveTvGuideViewModel(client);
+    await vm.load();
+    vm.setFilter(GuideFilter.favorites);
+    when(() => _guide(liveTv)).thenThrow(Exception('offline'));
+
+    userDataSync.publish('c110', {'IsFavorite': true});
+    vm.syncChannelUserData();
+    await pumpEventQueue();
+    expect(vm.hasProgramsFor('c110'), isFalse);
+
+    when(() => _guide(liveTv)).thenAnswer((_) async => {'Items': <dynamic>[]});
+    await vm.ensureProgramsForChannels(['c110']);
+    expect(vm.hasProgramsFor('c110'), isTrue);
+    vm.dispose();
+  });
+
   group('category filters', () {
     test('a category chip walks the lineup in flagged batches', () async {
       final channels = List.generate(120, (i) => _channel('c$i', number: '$i'));
