@@ -22,8 +22,8 @@ class PhotoSlideshowScheduler {
 
   bool get isRunning => _running;
 
-  /// Starts the slideshow on the current photo, which completes [ready] once
-  /// it is on screen.
+  /// Starts the slideshow on the current photo. [ready] completes once that
+  /// photo is on screen.
   void start(Future<void> ready) {
     _running = true;
     photoChanged(ready);
@@ -46,11 +46,7 @@ class PhotoSlideshowScheduler {
     final generation = ++_generation;
     ready.then<void>((_) {}, onError: (Object _) {}).then((_) {
       if (!_running || generation != _generation) return;
-      _timer = Timer(interval, () {
-        if (!_running || generation != _generation) return;
-        _timer = null;
-        onAdvance();
-      });
+      _timer = Timer(interval, onAdvance);
     });
   }
 

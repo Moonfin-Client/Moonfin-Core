@@ -137,15 +137,14 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   }
 
   /// Completes once the current photo has loaded and the crossfade to it has
-  /// finished. Both waits run in parallel.
+  /// finished.
   Future<void> _currentPhotoShown([Future<void>? ready]) => Future.wait([
     ready ?? _photoReady(_currentIndex),
     Future<void>.delayed(_photoTransition),
   ]);
 
-  /// Restarts the slideshow countdown for the current photo once it has
-  /// loaded and the crossfade to it has finished, then preloads the next
-  /// photo so it is ready when its turn comes.
+  /// Restarts the slideshow countdown for the current photo, then preloads
+  /// the next one so it's ready when its turn comes.
   void _onPhotoShown() {
     final ready = _photoReady(_currentIndex);
     _slideshow.photoChanged(_currentPhotoShown(ready));
@@ -173,13 +172,12 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   }
 
   void _toggleSlideshow() {
-    setState(() {
-      if (_slideshow.isRunning) {
-        _slideshow.stop();
-      } else {
-        _slideshow.start(_currentPhotoShown());
-      }
-    });
+    if (_slideshow.isRunning) {
+      _slideshow.stop();
+    } else {
+      _slideshow.start(_currentPhotoShown());
+    }
+    setState(() {});
   }
 
   void _showControlsTemporarily() {
@@ -293,10 +291,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
             child: Row(
               children: [
                 IconButton(
-                  icon: AdaptiveIcon(
-                    Icons.arrow_back,
-                    color: AppColorScheme.onSurface,
-                  ),
+                  icon: AdaptiveIcon(Icons.arrow_back, color: AppColorScheme.onSurface),
                   onPressed: () {
                     if (context.canPop()) {
                       context.pop();
@@ -318,8 +313,9 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
                 ),
                 if (_items.length > 1)
                   Text(
-                    AppLocalizations.of(context)
-                        .photoCountOf(_currentIndex + 1, _items.length),
+                    AppLocalizations.of(
+                      context,
+                    ).photoCountOf(_currentIndex + 1, _items.length),
                     style: TextStyle(
                       color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                       fontSize: 14,
