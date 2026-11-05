@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../util/signed_in_server_features.dart';
+import '../models/aggregated_item.dart';
 import '../services/moonbase_endpoint.dart';
 
 /// A studio for the details screen: its name and, when the plugin has a cached
@@ -50,6 +51,35 @@ List<TmdbReview> parseTmdbReviews(Map<String, dynamic> response) => [
       ),
 ];
 
+String _studioLogoKey(String name) => name.trim().toLowerCase();
+
+/// Where a studio item keeps the TMDB id of its Moonbase logo. The home row
+/// cache saves rawData to disk, so it holds the id and not a URL with the
+/// session token in it.
+const studioLogoIdKey = 'MoonfinStudioLogoId';
+
+/// Tags each studio or network Moonbase has a logo for with that logo's id.
+void attachStudioLogoIds(List<AggregatedItem> items, Map<String, int> logoIds) {
+  if (logoIds.isEmpty) return;
+  for (final item in items) {
+    final id = logoIds[_studioLogoKey(item.name)];
+    if (id != null) item.rawData[studioLogoIdKey] = id;
+  }
+}
+
+/// Moonbase's studio and network logo list as TMDB company ids by name, leaving
+/// out any without a logo.
+@visibleForTesting
+Map<String, int> parseStudioLogoIds(Map<String, dynamic> response) => {
+  for (final c in (response['companies'] as List?) ?? const [])
+    if (c is Map &&
+        c['hasLogo'] == true &&
+        c['id'] is num &&
+        c['name'] is String &&
+        (c['name'] as String).trim().isNotEmpty)
+      _studioLogoKey(c['name'] as String): (c['id'] as num).toInt(),
+};
+
 class TmdbRepository {
   static const _maxEpisodeCacheEntries = 256;
   static const _maxSeasonCacheEntries = 64;
@@ -67,6 +97,7 @@ class TmdbRepository {
   final _pendingEpisodes = <String, Completer<double?>>{};
   final _pendingSeasons = <String, Completer<Map<int, double>?>>{};
   final _pendingCompanies = <String, Completer<List<StudioCompany>?>>{};
+  Future<Map<String, int>>? _studioLogoIds;
 
   TmdbRepository(this._client);
 
@@ -113,7 +144,7 @@ class TmdbRepository {
         // Moonbase on Silo links the logo on TMDB, since an image URL can't
         // carry Silo's headers.
         final imageUrl = entry['hasLogo'] == true
-            ? _studioImageUrl(id) ?? entry['logoUrl'] as String?
+            ? studioImageUrl(id) ?? entry['logoUrl'] as String?
             : null;
         companies.add((name: name, imageUrl: imageUrl));
       }
@@ -130,7 +161,25 @@ class TmdbRepository {
     }
   }
 
-  String? _studioImageUrl(int companyId) {
+  /// The TMDB company ids of every studio and network Moonbase has a logo for,
+  /// by lowercased name. A studio item carries no TMDB id, so the Studios row
+  /// matches it by name. Empty when the plugin is missing or can't list them,
+  /// and a failed fetch is tried again next time.
+  Future<Map<String, int>> getStudioLogoIds() =>
+      _studioLogoIds ??= _fetchStudioLogoIds();
+
+  Future<Map<String, int>> _fetchStudioLogoIds() async {
+    try {
+      final response = await _get('/Moonfin/Tmdb/StudioLogos', const {});
+      if (response != null) return parseStudioLogoIds(response);
+    } catch (e) {
+      debugPrint('[Moonfin] Studio logo list fetch failed: $e');
+    }
+    _studioLogoIds = null;
+    return const {};
+  }
+
+  String? studioImageUrl(int companyId) {
     final token = _client.accessToken;
     if (token == null || !_hasPlugin) return null;
     return '${_client.baseUrl}/Moonfin/Tmdb/StudioImage/$companyId?${_client.serverType.tokenQueryParam}=$token';
@@ -380,6 +429,7 @@ class TmdbRepository {
     _pendingEpisodes.clear();
     _pendingSeasons.clear();
     _pendingCompanies.clear();
+    _studioLogoIds = null;
   }
 
   void dispose() {
