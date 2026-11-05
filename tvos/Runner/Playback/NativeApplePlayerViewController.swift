@@ -2184,6 +2184,7 @@ final class NativeApplePlayerViewController: UIViewController {
         case .rightArrow:
             seekOrMoveFocus(forward: true)
             return true
+        #if os(tvOS)
         case .pageUp, .pageDown:
             // A remote's channel buttons arrive as page presses. They follow the
             // guide's order like the carousel and wrap at the ends.
@@ -2192,6 +2193,7 @@ final class NativeApplePlayerViewController: UIViewController {
             let next = (selectedChannelIndex + step + channelList.count) % channelList.count
             onSelectChannel?(channelList[next].channelId)
             return true
+        #endif
         default:
             break
         }
