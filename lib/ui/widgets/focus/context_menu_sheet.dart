@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -20,18 +21,28 @@ Future<void> showContextMenu(
   List<ItemCollectionMembership>? collectionMemberships,
 }) async {
   final isExternalItem = item.serverId == 'seerr' || item.id.startsWith('tt');
-  List<ItemPlaylistMembership>? resolvedPlaylists = isExternalItem ? const [] : playlistMemberships;
-  List<ItemCollectionMembership>? resolvedCollections = isExternalItem ? const [] : collectionMemberships;
+  List<ItemPlaylistMembership>? resolvedPlaylists =
+      isExternalItem ? const [] : playlistMemberships;
+  List<ItemCollectionMembership>? resolvedCollections =
+      isExternalItem ? const [] : collectionMemberships;
 
-  if (!isExternalItem &&
-      (resolvedPlaylists == null || resolvedCollections == null)) {
-    final memberships =
-        await ItemMembershipService.instance.getMemberships(item);
-    resolvedPlaylists ??= memberships.playlists;
-    resolvedCollections ??= memberships.collections;
+  if (!isExternalItem) {
+    final service = ItemMembershipService.instance;
+    resolvedPlaylists ??= service.getCachedPlaylistsContaining(item);
+    resolvedCollections ??= service.getCachedCollectionsContaining(item);
   }
 
   if (!context.mounted) return;
+  final hasActions = contextActionsFor(
+    context,
+    item,
+    onChanged: onChanged,
+    collectionRemoval: collectionRemoval,
+    isContinueWatchingOrNextUp: isContinueWatchingOrNextUp,
+    playlistMemberships: resolvedPlaylists,
+    collectionMemberships: resolvedCollections,
+  ).isNotEmpty;
+  if (!hasActions) return;
 
   final anchor = PlatformDetection.useDesktopUi
       ? InputModeTracker.lastPointerDownPosition
@@ -99,8 +110,8 @@ class _ContextMenuState extends State<_ContextMenu> {
     if (!mounted) return;
     final newPl = result.playlists;
     final newCol = result.collections;
-    if (newPl.length != (_playlists?.length ?? 0) ||
-        newCol.length != (_collections?.length ?? 0)) {
+    if (!listEquals(newPl, _playlists ?? const []) ||
+        !listEquals(newCol, _collections ?? const [])) {
       setState(() {
         _playlists = newPl;
         _collections = newCol;
@@ -112,6 +123,7 @@ class _ContextMenuState extends State<_ContextMenu> {
   Widget build(BuildContext context) {
     // Pass widget.parentContext so action dialogs (such as RemoveFromPlaylistDialog)
     // stay mounted when this sheet closes.
+    if (!widget.parentContext.mounted) return const SizedBox.shrink();
     final actions = contextActionsFor(
       widget.parentContext,
       _item,

@@ -182,6 +182,118 @@ void main() {
           ItemMembershipService.instance.getCachedCollectionsContaining(movie);
       expect(cachedAfter, isEmpty);
     });
+
+    test('evicts deleted playlists and collections on subsequent sync', () async {
+      var playlistsResponse = [
+        {'Id': 'pl-1', 'Name': 'The Hux List'},
+      ];
+      when(() => itemsApi.getPlaylists()).thenAnswer(
+        (_) async => {'Items': playlistsResponse},
+      );
+      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1', 'PlaylistItemId': 'entry-100'},
+          ],
+        },
+      );
+
+      final movie = _movie(id: 'movie-1');
+      final first = await ItemMembershipService.instance.getPlaylistsContaining(
+        movie,
+        forceRefresh: true,
+      );
+      expect(first.length, equals(1));
+
+      // Playlist deleted on server
+      playlistsResponse = [];
+      final second = await ItemMembershipService.instance.getPlaylistsContaining(
+        movie,
+        forceRefresh: true,
+      );
+      expect(second, isEmpty);
+    });
+
+    test('validates ancestor BoxSet direct membership before displaying', () async {
+      when(() => itemsApi.getAncestors('movie-1')).thenAnswer(
+        (_) async => [
+          {'Id': 'col-outer', 'Name': 'Outer BoxSet', 'Type': 'BoxSet'},
+          {'Id': 'col-direct', 'Name': 'Direct BoxSet', 'Type': 'BoxSet'},
+        ],
+      );
+
+      when(
+        () => itemsApi.getItems(
+          includeItemTypes: const ['BoxSet'],
+          recursive: true,
+          sortBy: 'SortName',
+          fields: 'BasicSyncInfo',
+        ),
+      ).thenAnswer((_) async => {'Items': []});
+
+      // Outer collection contains col-direct, not movie-1 directly
+      when(
+        () => itemsApi.getItems(
+          parentId: 'col-outer',
+          fields: 'BasicSyncInfo',
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'col-direct'},
+          ],
+        },
+      );
+
+      // Direct collection contains movie-1 directly
+      when(
+        () => itemsApi.getItems(
+          parentId: 'col-direct',
+          fields: 'BasicSyncInfo',
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1'},
+          ],
+        },
+      );
+
+      final movie = _movie(id: 'movie-1');
+      final collections =
+          await ItemMembershipService.instance.getCollectionsContaining(movie);
+
+      expect(collections.map((c) => c.collectionId).toList(), equals(['col-direct']));
+    });
+
+    test('notifyItemAddedToPlaylist refreshes server-assigned PlaylistItemId instead of synthesizing entryId', () async {
+      when(() => itemsApi.getPlaylists()).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'pl-1', 'Name': 'The Hux List'},
+          ],
+        },
+      );
+      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1', 'PlaylistItemId': 'server-entry-999'},
+          ],
+        },
+      );
+
+      ItemMembershipService.instance.notifyItemAddedToPlaylist(
+        'server-1',
+        'pl-1',
+        ['movie-1'],
+      );
+
+      final movie = _movie(id: 'movie-1');
+      final playlists =
+          await ItemMembershipService.instance.getPlaylistsContaining(movie);
+      expect(playlists.length, equals(1));
+      expect(playlists.first.entryId, equals('server-entry-999'));
+    });
   });
 }
 

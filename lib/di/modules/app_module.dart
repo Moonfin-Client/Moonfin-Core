@@ -49,6 +49,7 @@ import '../../data/services/retro_artwork/retro_artwork_disk_cache.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/custom_external_lists_service.dart';
 import '../../data/services/download_service.dart';
+import '../../data/services/item_membership_service.dart';
 import '../../data/services/remove_watched_service.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
@@ -90,6 +91,7 @@ void resetUserScopedSingletons() {
   unregister<AnimeMarkerRepository>();
   unregister<RowDataSource>();
   RowDataSource.clearRecommendationCache();
+  ItemMembershipService.instance.clearCache();
   unregister<ItemMutationRepository>();
   unregister<SearchRepository>();
   unregister<UserViewsRepository>();

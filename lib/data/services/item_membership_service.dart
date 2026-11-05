@@ -116,12 +116,16 @@ class ItemMembershipService {
     return GetIt.instance<MediaServerClient>();
   }
 
-  bool _canManageCollections(AggregatedItem item) {
+  bool _canManageCollections(AggregatedItem item) =>
+      _canUserManageCollections(serverId: item.serverId);
+
+  bool _canUserManageCollections({String? serverId}) {
     if (!GetIt.instance.isRegistered<UserRepository>()) return false;
-    final client = _getClient(item.serverId);
+    final client = _getClient(serverId);
     final currentUser = GetIt.instance<UserRepository>().currentUser;
     final isAdminUser = currentUser?.isAdministrator ?? false;
-    final isSameServerItem = currentUser?.serverId == item.serverId;
+    final isSameServerItem =
+        serverId == null || serverId.isEmpty || currentUser?.serverId == serverId;
     final requiresCollectionPermission =
         client.serverType == ServerType.jellyfin && isSameServerItem;
     return !requiresCollectionPermission ||
@@ -278,10 +282,10 @@ class ItemMembershipService {
       final client = _getClient(serverKey);
       final data = await client.itemsApi.getPlaylists();
       final items = (data['Items'] as List?) ?? const [];
-      final playlistEntries = <String, String>{};
 
-      final nameMap = _playlistNames.putIfAbsent(serverKey, () => {});
-      final itemMap = _playlistItems.putIfAbsent(serverKey, () => {});
+      final previous = _playlistItems[serverKey] ?? const {};
+      final nameMap = <String, String>{};
+      final itemMap = <String, List<({String itemId, String entryId})>>{};
 
       final futures = <Future<void>>[];
       for (final raw in items.whereType<Map>()) {
@@ -289,7 +293,6 @@ class ItemMembershipService {
         final id = pl['Id']?.toString();
         final name = pl['Name']?.toString();
         if (id == null || id.isEmpty || name == null) continue;
-        playlistEntries[id] = name;
         nameMap[id] = name;
 
         futures.add(() async {
@@ -314,13 +317,17 @@ class ItemMembershipService {
               }
             }
             itemMap[id] = members;
-          } catch (_) {}
+          } catch (_) {
+            final old = previous[id];
+            if (old != null) itemMap[id] = old;
+          }
         }());
       }
 
       await Future.wait(futures);
 
-      _playlistNames[serverKey] = playlistEntries;
+      _playlistNames[serverKey] = nameMap;
+      _playlistItems[serverKey] = itemMap;
       _playlistLastFetched[serverKey] = DateTime.now();
     } catch (_) {
     } finally {
@@ -371,9 +378,23 @@ class ItemMembershipService {
       ...getCachedCollectionsContaining(item)
     ];
 
-    // Merge any ancestors found directly
+    // Merge any ancestors found directly after verifying direct child membership
     for (final entry in ancestorBoxSets.entries) {
       if (!results.any((c) => c.collectionId == entry.key)) {
+        try {
+          final data = await client.itemsApi.getItems(
+            parentId: entry.key,
+            fields: 'BasicSyncInfo',
+          );
+          final memberIds = ((data['Items'] as List?) ?? const [])
+              .whereType<Map>()
+              .map((member) => member['Id']?.toString())
+              .whereType<String>()
+              .toSet();
+          if (!memberIds.contains(item.id)) continue;
+        } catch (_) {
+          continue;
+        }
         results.add(ItemCollectionMembership(
           collectionId: entry.key,
           collectionName: entry.value,
@@ -408,18 +429,16 @@ class ItemMembershipService {
         items = (data['Items'] as List?) ?? const [];
       }
 
-      final collectionEntries = <String, String>{};
+      final previous = _collectionMembers[serverKey] ?? const {};
+      final nameMap = <String, String>{};
+      final memberMap = <String, Set<String>>{};
       final candidates = <({String id, String name})>[];
-
-      final nameMap = _collectionNames.putIfAbsent(serverKey, () => {});
-      final memberMap = _collectionMembers.putIfAbsent(serverKey, () => {});
 
       for (final raw in items.whereType<Map>()) {
         final boxSet = raw.cast<String, dynamic>();
         final id = boxSet['Id']?.toString();
         final name = boxSet['Name']?.toString();
         if (id == null || id.isEmpty || name == null) continue;
-        collectionEntries[id] = name;
         nameMap[id] = name;
         candidates.add((id: id, name: name));
       }
@@ -442,11 +461,15 @@ class ItemMembershipService {
               if (id != null) memberIds.add(id);
             }
             memberMap[candidate.id] = memberIds;
-          } catch (_) {}
+          } catch (_) {
+            final old = previous[candidate.id];
+            if (old != null) memberMap[candidate.id] = old;
+          }
         }));
       }
 
-      _collectionNames[serverKey] = collectionEntries;
+      _collectionNames[serverKey] = nameMap;
+      _collectionMembers[serverKey] = memberMap;
       _collectionLastFetched[serverKey] = DateTime.now();
     } catch (_) {
     } finally {
@@ -456,22 +479,20 @@ class ItemMembershipService {
   }
 
   /// Updates cache when an item is added to a playlist.
+  ///
+  /// Do not synthesize `entryId` from `itemId`: server APIs require the
+  /// server-assigned `PlaylistItemId` when removing an entry. Instead,
+  /// invalidate the playlist cache TTL and trigger a background refresh.
   void notifyItemAddedToPlaylist(
     String serverId,
     String playlistId,
     List<String> itemIds,
   ) {
     final serverKey = _canonicalServerKey(serverId);
-    final serverPlaylists = _playlistItems[serverKey];
-    if (serverPlaylists != null && serverPlaylists.containsKey(playlistId)) {
-      final list = serverPlaylists[playlistId] ?? [];
-      for (final id in itemIds) {
-        if (!list.any((m) => m.itemId == id)) {
-          list.add((itemId: id, entryId: id));
-        }
-      }
-    }
     _playlistLastFetched.remove(serverKey);
+    if (itemServerSupports(serverId, (f) => f.supportsPlaylists)) {
+      unawaited(_syncPlaylists(serverKey));
+    }
   }
 
   /// Updates cache when an item is removed from a playlist.
@@ -531,7 +552,15 @@ class ItemMembershipService {
   /// Pre-warms caches in the background.
   void warmCache({String? serverId}) {
     final key = _canonicalServerKey(serverId);
-    unawaited(_syncPlaylists(key));
-    unawaited(_syncCollections(key));
+    bool fresh(Map<String, DateTime> m) =>
+        m[key] != null && DateTime.now().difference(m[key]!) < _cacheTtl;
+    if (!fresh(_playlistLastFetched) &&
+        itemServerSupports(serverId, (f) => f.supportsPlaylists)) {
+      unawaited(_syncPlaylists(key));
+    }
+    if (!fresh(_collectionLastFetched) &&
+        _canUserManageCollections(serverId: serverId)) {
+      unawaited(_syncCollections(key));
+    }
   }
 }
