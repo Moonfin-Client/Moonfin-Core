@@ -148,6 +148,20 @@ class HomeScreen extends StatelessWidget {
       _ContentRowsState._homeRowImageTypeForRow(row, prefs);
 
   @visibleForTesting
+  static String? resolveRowImageUrl(
+    AggregatedItem item,
+    ImageApi imageApi,
+    ImageType imageType,
+  ) => _ContentRowsState._resolveRowImageUrl(
+    item,
+    imageApi,
+    200,
+    imageType,
+    false,
+    1,
+  );
+
+  @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._showsCalendarSeeAll(row, prefs);
 
@@ -7049,6 +7063,11 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (item.type == 'Studio' || item.type == 'Network') {
+      final maxW = artworkRequestWidth(
+        height * 16 / 9,
+        requestScale,
+        ArtworkShape.landscape,
+      );
       final primaryUrl = _resolvePrimaryImageUrl(
         item,
         imageApi,
@@ -7057,13 +7076,21 @@ class _ContentRowsState extends State<_ContentRows>
           requestScale,
           ArtworkShape.poster,
         ),
-        maxWidth: artworkRequestWidth(
-          height * 16 / 9,
-          requestScale,
-          ArtworkShape.landscape,
-        ),
+        maxWidth: maxW,
       );
       if (primaryUrl != null) return primaryUrl;
+      // Jellyfin studios usually have only a Thumb, so a poster row would
+      // otherwise have nothing to show. Thumb and banner rows reach it below.
+      if (imageType == ImageType.poster) {
+        final thumbTag = _tagForType(item, 'Thumb');
+        if (thumbTag != null) {
+          return imageApi.getThumbImageUrl(
+            item.id,
+            maxWidth: maxW,
+            tag: thumbTag,
+          );
+        }
+      }
     }
 
     if (item.serverId == 'seerr') {
