@@ -116,6 +116,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
   Timer? _selectHoldTimer;
   bool _selectLongPressFired = false;
   bool _selectDownSeen = false;
+  PhysicalKeyboardKey? _selectDownPhysical;
   Ticker? _glideTicker;
   Duration _glideLastTick = Duration.zero;
 
@@ -351,10 +352,24 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (widget.items.isEmpty) return KeyEventResult.ignored;
 
-    if (event.logicalKey.isSelectKey) {
+    // The release of a select press can carry a different logical key than the
+    // press itself: a remote whose OK sits on a Linux scancode that maps to
+    // another key (scan code 97 is Right Control) has only its down event read
+    // as select, while the up event keeps the physical key's own logical key.
+    // Matching the release by physical key too keeps the hold timer from
+    // running on after a normal short press, which otherwise ends as a long
+    // press on every tap.
+    final logicalKey = event.logicalKey;
+    final isSelectPress = logicalKey.isSelectKey;
+    final isSelectRelease = event is KeyUpEvent &&
+        _selectDownSeen &&
+        (isSelectPress || event.physicalKey == _selectDownPhysical);
+
+    if (isSelectPress || isSelectRelease) {
       if (widget.onLongPress != null) {
         if (event is KeyDownEvent) {
           _selectDownSeen = true;
+          _selectDownPhysical = event.physicalKey;
           _selectLongPressFired = false;
           _selectHoldTimer?.cancel();
           _selectHoldTimer = Timer(_kSelectLongPressDuration, () {
@@ -372,6 +387,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
         if (event is KeyUpEvent) {
           if (!_selectDownSeen) return KeyEventResult.ignored;
           _selectDownSeen = false;
+          _selectDownPhysical = null;
           _selectHoldTimer?.cancel();
           _selectHoldTimer = null;
           final fired = _selectLongPressFired;

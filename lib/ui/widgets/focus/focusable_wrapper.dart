@@ -104,6 +104,7 @@ class _FocusableWrapperState extends State<FocusableWrapper>
   bool _hovered = false;
   Timer? _longPressTimer;
   bool _longPressFired = false;
+  PhysicalKeyboardKey? _longPressPhysical;
   late final GlobalKey _contentKey = GlobalKey();
 
   FocusNode get _node => widget.focusNode ?? (_ownedNode ??= FocusNode());
@@ -186,7 +187,19 @@ class _FocusableWrapperState extends State<FocusableWrapper>
     if (override != null && override != KeyEventResult.ignored) return override;
 
     if (widget.enableLongPress && widget.onSelect != null) {
-      if (event is KeyDownEvent && event.logicalKey.isSelectKey) {
+      final logicalKey = event.logicalKey;
+      final isSelectPress = logicalKey.isSelectKey;
+      // The release of a select press can carry a different logical key than
+      // the press itself (a remote whose OK sits on a Linux scancode that maps
+      // to another key, such as scan code 97 = Right Control, only reads as
+      // select on the way down). Match it by physical key too, or the hold
+      // timer never cancels and every tap becomes a long press.
+      final isSelectRelease = event is KeyUpEvent &&
+          _longPressPhysical != null &&
+          (isSelectPress || event.physicalKey == _longPressPhysical);
+
+      if (event is KeyDownEvent && isSelectPress) {
+        _longPressPhysical = event.physicalKey;
         _longPressFired = false;
         _longPressTimer?.cancel();
         _longPressTimer = Timer(widget.longPressDuration, () {
@@ -195,7 +208,8 @@ class _FocusableWrapperState extends State<FocusableWrapper>
         });
         return KeyEventResult.handled;
       }
-      if (event is KeyUpEvent && event.logicalKey.isSelectKey) {
+      if (event is KeyUpEvent && isSelectRelease) {
+        _longPressPhysical = null;
         _longPressTimer?.cancel();
         _longPressTimer = null;
         if (!_longPressFired) {
