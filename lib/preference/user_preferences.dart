@@ -772,6 +772,24 @@ class UserPreferences extends ChangeNotifier {
     'last_radarr_calendar_fetch_time',
     'last_sonarr_calendar_fetch_time',
     'merge_radarr_sonarr_calendars',
+    'pref_show_calendar_button',
+    'pref_calendar_style',
+    'pref_calendar_week_start',
+    'pref_calendar_scope',
+    'pref_calendar_show_episodes',
+    'pref_calendar_show_movies',
+    'pref_calendar_libraries',
+    'pref_calendar_unmonitored',
+    'pref_calendar_specials',
+    'pref_calendar_badges',
+    'pref_calendar_color_by',
+    'pref_calendar_image_type',
+    'pref_calendar_spoiler_safe',
+    'pref_calendar_select_action',
+    'pref_calendar_request_button',
+    'pref_calendar_reminders',
+    'pref_calendar_row_see_all',
+    'pref_show_next_air_date',
     'recently_released_series_type',
     'loading_animation_image',
     'loading_animation_size',
@@ -3515,6 +3533,103 @@ class UserPreferences extends ChangeNotifier {
 
   static final sonarrCalendarHideDownloaded = Preference(
     key: 'sonarr_calendar_hide_downloaded',
+    defaultValue: true,
+  );
+
+  static final showCalendarButton = Preference(
+    key: 'pref_show_calendar_button',
+    defaultValue: true,
+  );
+
+  static final calendarStyle = EnumPreference(
+    key: 'pref_calendar_style',
+    defaultValue: CalendarStyle.agenda,
+    values: CalendarStyle.values,
+  );
+
+  static final calendarWeekStart = EnumPreference(
+    key: 'pref_calendar_week_start',
+    defaultValue: CalendarWeekStart.locale,
+    values: CalendarWeekStart.values,
+  );
+
+  static final calendarScope = EnumPreference(
+    key: 'pref_calendar_scope',
+    defaultValue: CalendarScope.everything,
+    values: CalendarScope.values,
+  );
+
+  static final calendarShowEpisodes = Preference(
+    key: 'pref_calendar_show_episodes',
+    defaultValue: true,
+  );
+
+  static final calendarShowMovies = Preference(
+    key: 'pref_calendar_show_movies',
+    defaultValue: true,
+  );
+
+  /// Comma separated library ids. Empty means every library.
+  static final calendarLibraryIds = Preference(
+    key: 'pref_calendar_libraries',
+    defaultValue: '',
+  );
+
+  static final calendarIncludeUnmonitored = Preference(
+    key: 'pref_calendar_unmonitored',
+    defaultValue: false,
+  );
+
+  static final calendarShowSpecials = Preference(
+    key: 'pref_calendar_specials',
+    defaultValue: false,
+  );
+
+  static final calendarShowBadges = Preference(
+    key: 'pref_calendar_badges',
+    defaultValue: true,
+  );
+
+  static final calendarColorBy = EnumPreference(
+    key: 'pref_calendar_color_by',
+    defaultValue: CalendarColorBy.type,
+    values: CalendarColorBy.values,
+  );
+
+  static final calendarImageType = EnumPreference(
+    key: 'pref_calendar_image_type',
+    defaultValue: CalendarImageType.poster,
+    values: CalendarImageType.values,
+  );
+
+  static final calendarSpoilerSafe = Preference(
+    key: 'pref_calendar_spoiler_safe',
+    defaultValue: false,
+  );
+
+  static final calendarSelectAction = EnumPreference(
+    key: 'pref_calendar_select_action',
+    defaultValue: CalendarSelectAction.details,
+    values: CalendarSelectAction.values,
+  );
+
+  static final calendarRequestButton = Preference(
+    key: 'pref_calendar_request_button',
+    defaultValue: true,
+  );
+
+  static final calendarReminders = Preference(
+    key: 'pref_calendar_reminders',
+    defaultValue: true,
+  );
+
+  static final calendarRowSeeAll = Preference(
+    key: 'pref_calendar_row_see_all',
+    defaultValue: true,
+  );
+
+  static final showNextAirDate = Preference(
+    key: 'pref_show_next_air_date',
     defaultValue: true,
   );
 

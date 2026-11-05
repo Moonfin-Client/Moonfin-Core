@@ -113,6 +113,28 @@ void main() {
       const gates = BottomNavTabGates(showGenres: false);
       expect(gates.resolvePins('genres,search'), [BottomNavTab.search]);
     });
+
+    test('Calendar needs the plugin, its button and no Kids Mode', () {
+      const off = BottomNavTabGates();
+      const on = BottomNavTabGates(calendarAvailable: true);
+      expect(off.resolvePins('calendar,search'), [BottomNavTab.search]);
+      expect(on.resolvePins('calendar,search'), [
+        BottomNavTab.calendar,
+        BottomNavTab.search,
+      ]);
+      expect(
+        const BottomNavTabGates(calendarAvailable: true, showCalendar: false)
+            .resolvePins('calendar'),
+        isEmpty,
+      );
+      expect(
+        const BottomNavTabGates(calendarAvailable: true, kidsMode: true)
+            .offers(BottomNavTab.calendar),
+        isFalse,
+      );
+      // It never takes an automatic slot ahead of the older tabs.
+      expect(on.resolvePins(''), isNot(contains(BottomNavTab.calendar)));
+    });
   });
 
   group('upgrading from the old bottom navbar', () {

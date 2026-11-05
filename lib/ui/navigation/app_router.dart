@@ -28,6 +28,7 @@ import '../screens/auth/server_select_screen.dart';
 import '../screens/auth/startup_screen.dart';
 import '../screens/web_diagnostics_screen.dart';
 import '../screens/browse/all_genres_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 import '../screens/browse/collection_screen.dart';
 import '../screens/browse/favorites_screen.dart';
 import '../screens/browse/folder_browse_screen.dart';
@@ -385,6 +386,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.allGenres,
       builder: (context, state) => const AllGenresScreen(),
+    ),
+    GoRoute(
+      path: Destinations.calendar,
+      builder: (context, state) => const CalendarScreen(),
+      routes: [
+        GoRoute(
+          path: 'month',
+          builder: (context, state) => const CalendarMonthScreen(),
+        ),
+      ],
     ),
     GoRoute(
       path: Destinations.allFavorites,

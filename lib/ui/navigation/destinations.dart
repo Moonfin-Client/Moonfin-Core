@@ -75,6 +75,11 @@ class Destinations {
   static const libraryBrowse = '/library/:libraryId';
   static const allGenres = '/genres';
   static const allFavorites = '/favorites';
+
+  /// Opens the user's calendar style. The month grid sits under it.
+  static const calendar = '/calendar';
+  static const calendarMonth = '/calendar/month';
+
   static const folderBrowse = '/folder/:folderId';
   static const collectionBrowse = '/collection/:collectionId';
   static const libraryViewRoute = '/library-view/:libraryId';

@@ -134,6 +134,7 @@ part 'panel/libraries_category_screen.dart';
 part 'panel/seasonal_effects_screen.dart';
 part 'panel/loading_animation_screen.dart';
 part 'panel/services_screen.dart';
+part 'panel/calendar_settings_screen.dart';
 part 'panel/external_lists_screen.dart';
 part 'panel/plugin_screen.dart';
 part 'panel/about_category_screen.dart';
@@ -162,10 +163,12 @@ bool get _showThemeEditorEntry =>
     PlatformDetection.isWeb && webRuntimeConfig.pluginMode;
 
 /// Whether Integrations has anything to show: Seerr, which a signed-in server
-/// with the Moonfin plugin could offer, or achievements, which the active
-/// server's plugin answered for.
+/// with the Moonfin plugin could offer, or the calendar and achievements,
+/// which the active server's plugin answered for.
 bool get _integrationsOffered =>
     seerrOnAnySignedInServer() ||
+    (GetIt.instance.isRegistered<PluginSyncService>() &&
+        GetIt.instance<PluginSyncService>().calendarAvailable) ||
     (GetIt.instance.isRegistered<AchievementsService>() &&
         GetIt.instance<AchievementsService>().available);
 

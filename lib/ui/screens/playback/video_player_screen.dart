@@ -49,6 +49,8 @@ import '../../../playback/playback_info_sections.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/calendar_entry.dart';
+import '../../../data/models/upcoming_episode_info.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/models/media_segment.dart';
 import '../../../data/models/trickplay_info.dart';
@@ -61,7 +63,9 @@ import '../../../data/services/cast/native_cast_channel.dart';
 import '../../../data/services/cast/native_dlna_channel.dart';
 import '../../../data/services/media_segment_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/theme_music_service.dart';
+import '../../../data/services/upcoming_episode_service.dart';
 import '../../../platform/pip_service.dart';
 import '../../widgets/video_mini_player.dart';
 import '../../../preference/preference_constants.dart';
@@ -374,6 +378,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Timer? _skipSegmentAutoHideTimer;
   bool _showNextUp = false;
   AggregatedItem? _nextUpItem;
+
+  /// When the series' next episode airs, for the end card of an episode the
+  /// library has nothing after yet. The card shows while [_showNextUp] is set
+  /// and [_nextUpItem] is null.
+  UpcomingEpisodeInfo? _nextAirDate;
+  String _nextAirDateTitle = '';
+  CalendarEntry? _nextAirDateReminder;
+  int _nextAirDateLookup = 0;
   bool _nextUpDismissed = false;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
@@ -849,6 +861,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       windowManager.addListener(this);
     }
     _loadSegmentsForCurrentItem();
+    unawaited(_loadNextAirDate());
     unawaited(_syncAutoHdrSwitching());
     _positionSub = _state.positionStream.listen(_onPositionUpdate);
     _completedSub = _manager.sessionEndedStream.listen((_) {
@@ -912,6 +925,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _queueSub = _queue.queueChangedStream.listen((_) {
       _closeEpisodeBrowser();
       _loadSegmentsForCurrentItem();
+      unawaited(_loadNextAirDate());
       _manager.suppressAutoNext = false;
       _consecutiveEpisodes++;
       unawaited(_pushMedia3UiMetadata());
@@ -2414,7 +2428,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _checkNextUp(Duration position) {
-    if (!_shouldShowNextUpOverlay()) {
+    final showNextUp = _shouldShowNextUpOverlay();
+    if (!showNextUp && !_shouldShowNextAirDate()) {
       return;
     }
 
@@ -2435,8 +2450,83 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     if (remaining <= threshold) {
-      _presentNextUpOverlay();
+      showNextUp ? _presentNextUpOverlay() : _presentNextAirDate();
     }
+  }
+
+  /// Looks up when the series' next episode airs, for an episode the queue has
+  /// nothing after.
+  Future<void> _loadNextAirDate() async {
+    final lookup = ++_nextAirDateLookup;
+    _nextAirDate = null;
+    _nextAirDateReminder = null;
+    final item = _queue.currentItem;
+    if (item is! AggregatedItem || item.type != 'Episode') return;
+    final seriesId = item.seriesId;
+    if (seriesId == null ||
+        _hasDistinctQueueNextItem() ||
+        !_prefs.get(UserPreferences.showNextAirDate) ||
+        !GetIt.instance.isRegistered<UpcomingEpisodeService>()) {
+      return;
+    }
+    try {
+      final series = AggregatedItem(
+        id: seriesId,
+        serverId: item.serverId,
+        rawData: await _clientForItem(
+          item,
+        ).itemsApi.getItem(seriesId, fields: 'ProviderIds'),
+      );
+      final info = await GetIt.instance<UpcomingEpisodeService>()
+          .resolveUpcomingEpisode(
+            seriesId: seriesId,
+            providerIds: series.providerIds,
+          );
+      if (!mounted || lookup != _nextAirDateLookup || info == null) return;
+      if (info.hasAired ||
+          !info.follows(item.parentIndexNumber, item.indexNumber)) {
+        return;
+      }
+      final sync = GetIt.instance.isRegistered<PluginSyncService>()
+          ? GetIt.instance<PluginSyncService>()
+          : null;
+      final offerReminder =
+          PlatformDetection.useMobileUi &&
+          _prefs.get(UserPreferences.calendarReminders) &&
+          (sync?.calendarRemindersAvailable ?? false);
+      _nextAirDate = info;
+      _nextAirDateTitle = info.title == null || info.title == 'TBA'
+          ? (item.seriesName ?? series.name)
+          : info.title!;
+      _nextAirDateReminder = offerReminder
+          ? upcomingEpisodeReminder(series, info)
+          : null;
+    } catch (e) {
+      debugPrint('[VideoPlayer] Next air date lookup failed: $e');
+    }
+  }
+
+  bool _shouldShowNextAirDate() =>
+      _nextAirDate != null &&
+      !_areSeekPromptsSuppressed() &&
+      _prefs.get(UserPreferences.nextUpBehavior) != NextUpBehavior.disabled &&
+      !_nextUpDismissed &&
+      !_showNextUp &&
+      !_hasDistinctQueueNextItem();
+
+  void _presentNextAirDate() {
+    // Holds the player on the last frame so the card isn't closed with it.
+    _manager.suppressAutoNext = true;
+    _resetSkipSegmentAutoHide();
+    setState(() {
+      _showNextUp = true;
+      _nextUpItem = null;
+      _controlsVisible = false;
+      _skipSegment = null;
+      _skipTo = null;
+    });
+    _hideTimer?.cancel();
+    _focusNextUpPlay();
   }
 
   bool _shouldShowNextUpOverlay() {
@@ -4161,6 +4251,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               _prefs.get(UserPreferences.autoplayNextEpisode)
                               ? _handleNextUpPlay
                               : _handleNextUpCancel,
+                          focusNode: _tvNextUpPlayFocus,
+                          dismissFocusNode: _tvNextUpDismissFocus,
+                        )
+                      else if (_showNextUp && _nextAirDate != null)
+                        NextUpOverlay.airDate(
+                          airDate: _nextAirDate!,
+                          airDateTitle: _nextAirDateTitle,
+                          reminder: _nextAirDateReminder,
+                          isMinimal:
+                              _prefs.get(UserPreferences.nextUpBehavior) ==
+                              NextUpBehavior.minimal,
+                          timeoutMs: _prefs.get(UserPreferences.nextUpTimeout),
+                          // The episode has ended, so there's nothing to go
+                          // back to.
+                          onDismiss: _handleNextUpCancel,
+                          onTimeout: _handleNextUpCancel,
                           focusNode: _tvNextUpPlayFocus,
                           dismissFocusNode: _tvNextUpDismissFocus,
                         ),

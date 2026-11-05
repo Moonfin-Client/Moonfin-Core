@@ -5,38 +5,70 @@ import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/calendar_entry.dart';
+import '../../../data/models/upcoming_episode_info.dart';
+import '../../../data/repositories/calendar_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/calendar_days.dart';
 import '../adaptive/adaptive_glass.dart';
 import '../anime_marker_badge.dart';
 
 class NextUpOverlay extends StatefulWidget {
-  final AggregatedItem nextItem;
+  final AggregatedItem? nextItem;
   final String? imageUrl;
   final int timeoutMs;
-  final VoidCallback onPlayNext;
+  final VoidCallback? onPlayNext;
   final VoidCallback onDismiss;
   final VoidCallback? onTimeout;
   final FocusNode? focusNode;
   final FocusNode? dismissFocusNode;
   final bool isMinimal;
 
+  /// When the next episode airs, for the card shown when the library has no
+  /// next episode yet.
+  final UpcomingEpisodeInfo? airDate;
+  final String? airDateTitle;
+
+  /// Offers Remind me on the air date card.
+  final CalendarEntry? reminder;
+
   const NextUpOverlay({
     super.key,
-    required this.nextItem,
+    required AggregatedItem this.nextItem,
     this.imageUrl,
     required this.timeoutMs,
-    required this.onPlayNext,
+    required VoidCallback this.onPlayNext,
     required this.onDismiss,
     this.onTimeout,
     this.focusNode,
     this.dismissFocusNode,
     this.isMinimal = false,
-  });
+  }) : airDate = null,
+       airDateTitle = null,
+       reminder = null;
+
+  /// Says when the next episode airs. With no [reminder] the close button is
+  /// the only one and takes [focusNode].
+  const NextUpOverlay.airDate({
+    super.key,
+    required UpcomingEpisodeInfo this.airDate,
+    required String this.airDateTitle,
+    this.reminder,
+    required this.timeoutMs,
+    required this.onDismiss,
+    this.onTimeout,
+    this.focusNode,
+    this.dismissFocusNode,
+    this.isMinimal = false,
+  }) : nextItem = null,
+       imageUrl = null,
+       onPlayNext = null;
 
   @override
   State<NextUpOverlay> createState() => _NextUpOverlayState();
@@ -48,10 +80,14 @@ class _NextUpOverlayState extends State<NextUpOverlay>
   Timer? _timer;
   bool _playFocused = false;
   bool _dismissFocused = false;
+  bool _reminderSet = false;
+  bool _reminderBusy = false;
 
   @override
   void initState() {
     super.initState();
+    final reminder = widget.reminder;
+    if (reminder != null) unawaited(_readReminder(reminder));
     _countdownController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: widget.timeoutMs),
@@ -73,13 +109,53 @@ class _NextUpOverlayState extends State<NextUpOverlay>
     super.dispose();
   }
 
+  Future<void> _readReminder(CalendarEntry reminder) async {
+    if (!GetIt.instance.isRegistered<CalendarRepository>()) return;
+    try {
+      final keys = await GetIt.instance<CalendarRepository>().reminderKeys();
+      if (mounted && keys.contains(reminder.reminderKey)) {
+        setState(() => _reminderSet = true);
+      }
+    } catch (e) {
+      debugPrint('[NextUpOverlay] Reading reminders failed: $e');
+    }
+  }
+
+  Future<void> _toggleReminder() async {
+    final reminder = widget.reminder;
+    if (reminder == null || _reminderBusy) return;
+    if (!GetIt.instance.isRegistered<CalendarRepository>()) return;
+    setState(() => _reminderBusy = true);
+    try {
+      final set = await GetIt.instance<CalendarRepository>().setReminder(
+        reminder,
+        !_reminderSet,
+      );
+      if (mounted) setState(() => _reminderSet = set);
+    } catch (e) {
+      debugPrint('[NextUpOverlay] Reminder failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).calendarReminderFailed),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _reminderBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final item = widget.nextItem;
+    final airDate = widget.airDate;
     final tvFocusMode =
         widget.focusNode != null || widget.dismissFocusNode != null;
-    final epInfo = item.indexNumber != null
+    final epInfo = airDate != null
+        ? 'S${airDate.seasonNumber}:E${airDate.episodeNumber}'
+        : item!.indexNumber != null
         ? 'S${item.parentIndexNumber ?? '?'}:E${item.indexNumber}'
         : null;
 
@@ -154,7 +230,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
         : null;
 
     final title = Text(
-      item.name,
+      item?.name ?? widget.airDateTitle ?? '',
       style: TextStyle(
         color: Colors.white,
         fontSize: widget.isMinimal ? 14 : 16,
@@ -175,14 +251,34 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       children: [
         if (episodePill != null) ...[episodePill, const SizedBox(height: 6)],
         title,
-        AnimeMarkerBadge(
-          seriesId: item.seriesId,
-          episodeId: item.id,
-          scale: widget.isMinimal ? 0.8 : 0.9,
-          padding: const EdgeInsets.only(top: 6),
-        ),
+        if (airDate != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              _airsText(context, l10n, airDate),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.85),
+                fontSize: widget.isMinimal ? 12 : 13,
+              ),
+            ),
+          ),
+        if (item != null)
+          AnimeMarkerBadge(
+            seriesId: item.seriesId,
+            episodeId: item.id,
+            scale: widget.isMinimal ? 0.8 : 0.9,
+            padding: const EdgeInsets.only(top: 6),
+          ),
       ],
     );
+
+    final hasPrimary = item != null || widget.reminder != null;
+    final primaryAction = item != null ? widget.onPlayNext! : _toggleReminder;
+    // A lone close button takes the primary node, which is the one the player
+    // focuses when the card comes up.
+    final closeFocusNode = hasPrimary
+        ? widget.dismissFocusNode
+        : widget.focusNode;
 
     final cardRadius = AppColorScheme.isPixel ? 0.0 : 18.0;
     final cardBorder = ThemeRegistry.active.borders.cardBorder;
@@ -289,81 +385,95 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                           SizedBox(height: widget.isMinimal ? 10 : 14),
                         ],
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Expanded(
-                              child: Focus(
-                                focusNode: widget.focusNode,
-                                onFocusChange: (focused) {
-                                  if (_playFocused != focused) {
-                                    setState(() => _playFocused = focused);
-                                  }
-                                },
-                                onKeyEvent: (_, event) {
-                                  if (event is KeyDownEvent &&
-                                      (event.logicalKey ==
-                                              LogicalKeyboardKey.select ||
-                                          event.logicalKey ==
-                                              LogicalKeyboardKey.enter)) {
-                                    widget.onPlayNext();
-                                    return KeyEventResult.handled;
-                                  }
-                                  return KeyEventResult.ignored;
-                                },
-                                child: ElevatedButton(
-                                  autofocus: widget.focusNode == null,
-                                  onPressed: widget.onPlayNext,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: tvFocusMode
-                                        ? (_playFocused
-                                              ? AppColorScheme.accent
-                                              : AppColorScheme.surfaceVariant
-                                                    .scaleAlpha(0.9))
-                                        : AppColorScheme.accent,
-                                    foregroundColor: Colors.white,
-                                    side: _playFocused
-                                        ? ThemeRegistry
-                                              .active
-                                              .borders
-                                              .focusBorder
-                                        : BorderSide.none,
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: widget.isMinimal ? 8 : 11,
-                                      horizontal: widget.isMinimal ? 10 : 16,
+                            if (hasPrimary) ...[
+                              Expanded(
+                                child: Focus(
+                                  focusNode: widget.focusNode,
+                                  onFocusChange: (focused) {
+                                    if (_playFocused != focused) {
+                                      setState(() => _playFocused = focused);
+                                    }
+                                  },
+                                  onKeyEvent: (_, event) {
+                                    if (event is KeyDownEvent &&
+                                        (event.logicalKey ==
+                                                LogicalKeyboardKey.select ||
+                                            event.logicalKey ==
+                                                LogicalKeyboardKey.enter)) {
+                                      primaryAction();
+                                      return KeyEventResult.handled;
+                                    }
+                                    return KeyEventResult.ignored;
+                                  },
+                                  child: ElevatedButton(
+                                    autofocus: widget.focusNode == null,
+                                    onPressed: primaryAction,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: tvFocusMode
+                                          ? (_playFocused
+                                                ? AppColorScheme.accent
+                                                : AppColorScheme.surfaceVariant
+                                                      .scaleAlpha(0.9))
+                                          : AppColorScheme.accent,
+                                      foregroundColor: Colors.white,
+                                      side: _playFocused
+                                          ? ThemeRegistry
+                                                .active
+                                                .borders
+                                                .focusBorder
+                                          : BorderSide.none,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: widget.isMinimal ? 8 : 11,
+                                        horizontal: widget.isMinimal ? 10 : 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: AppRadius.circular(12),
+                                      ),
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: AppRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (showProgressBar &&
-                                          widget.timeoutMs > 0)
-                                        AnimatedBuilder(
-                                          animation: _countdownController,
-                                          builder: (context, _) =>
-                                              _PlayButtonRing(
-                                                progress:
-                                                    1.0 -
-                                                    _countdownController.value,
-                                              ),
-                                        )
-                                      else
-                                        const Icon(
-                                          Icons.play_arrow_rounded,
-                                          size: 20,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        if (showProgressBar &&
+                                            widget.timeoutMs > 0 &&
+                                            item != null)
+                                          AnimatedBuilder(
+                                            animation: _countdownController,
+                                            builder: (context, _) =>
+                                                _PlayButtonRing(
+                                                  progress:
+                                                      1.0 -
+                                                      _countdownController.value,
+                                                ),
+                                          )
+                                        else
+                                          Icon(
+                                            item != null
+                                                ? Icons.play_arrow_rounded
+                                                : _reminderSet
+                                                ? Icons.notifications_active_rounded
+                                                : Icons.notifications_none_rounded,
+                                            size: 20,
+                                          ),
+                                        const SizedBox(width: 9),
+                                        Text(
+                                          item != null
+                                              ? l10n.playNext
+                                              : _reminderSet
+                                              ? l10n.calendarReminderSet
+                                              : l10n.calendarRemindMe,
                                         ),
-                                      const SizedBox(width: 9),
-                                      Text(l10n.playNext),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
+                              const SizedBox(width: 10),
+                            ],
                             Focus(
-                              focusNode: widget.dismissFocusNode,
+                              focusNode: closeFocusNode,
                               onFocusChange: (focused) {
                                 if (_dismissFocused != focused) {
                                   setState(() => _dismissFocused = focused);
@@ -439,6 +549,19 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       ),
     );
   }
+}
+
+/// "Today (Nov 3)", "In 3 days (Nov 6)", the wording the Upcoming rows use.
+String _airsText(
+  BuildContext context,
+  AppLocalizations l10n,
+  UpcomingEpisodeInfo airDate,
+) {
+  final local = airDate.airDate.toLocal();
+  return l10n.calendarReleaseIn(
+    calendarDaysBetween(DateTime.now(), local),
+    DateFormat.MMMd(Localizations.localeOf(context).toString()).format(local),
+  );
 }
 
 class _PlayButtonRing extends StatelessWidget {

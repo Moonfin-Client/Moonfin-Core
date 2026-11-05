@@ -34,6 +34,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
       BottomNavTabGates.fromPreferences(
         prefs,
         seerrAvailable: _syncService.seerrAvailable,
+        calendarAvailable: _syncService.calendarAvailable,
       ).resolvePins(prefs.get(UserPreferences.bottomNavbarTabs));
 
   String _bottomTabsSummary(AppLocalizations l10n, UserPreferences prefs) {
@@ -255,6 +256,16 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                         width: size,
                         height: size,
                       ),
+                      onChanged: _pushPersonalizationSync,
+                    ),
+                  if (_syncService.calendarAvailable &&
+                      !onBar.contains(BottomNavTab.calendar))
+                    SwitchPreferenceTile(
+                      key: const ValueKey(BottomNavTab.calendar),
+                      preference: UserPreferences.showCalendarButton,
+                      title: l10n.showCalendarButton,
+                      subtitle: l10n.showCalendarButtonSubtitle,
+                      icon: Icons.calendar_month_rounded,
                       onChanged: _pushPersonalizationSync,
                     ),
                   // Saved downloads keep the button even after downloading is turned off

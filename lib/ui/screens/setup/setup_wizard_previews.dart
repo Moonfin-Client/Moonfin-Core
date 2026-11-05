@@ -1925,6 +1925,10 @@ bool get _seerrAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().seerrAvailable;
 
+bool get _calendarAvailable =>
+    GetIt.instance.isRegistered<PluginSyncService>() &&
+    GetIt.instance<PluginSyncService>().calendarAvailable;
+
 bool get _downloadsAvailable =>
     GetIt.instance.isRegistered<UserRepository>() &&
     DownloadsNavSlot.isAvailable();
@@ -2008,6 +2012,8 @@ List<_NavButton> _navButtons(
         icon: (size, color) => SeerrIcon(size: size, color: color),
         label: seerrLabel,
       ),
+    if (!kids && on(UserPreferences.showCalendarButton) && _calendarAvailable)
+      icon(Icons.calendar_month_rounded, l10n.calendar),
     if (libraries && on(UserPreferences.showLibrariesIndividually))
       for (final (glyph, label) in _navLibraries(
         l10n,
@@ -2345,6 +2351,8 @@ Widget _bottomNavbarPreview(
     showLiveTv: previewValue(context, UserPreferences.showLiveTvButton),
     showSeerr: previewValue(context, UserPreferences.showSeerrButton),
     seerrAvailable: _seerrAvailable,
+    showCalendar: previewValue(context, UserPreferences.showCalendarButton),
+    calendarAvailable: _calendarAvailable,
   );
   final views = [
     for (final item in resolveBarItems(

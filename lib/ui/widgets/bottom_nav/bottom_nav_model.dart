@@ -80,6 +80,7 @@ bool bottomNavTabMatchesRoute(BottomNavTab tab, String route) {
     BottomNavTab.genres => route == Destinations.allGenres,
     BottomNavTab.liveTv => under(Destinations.liveTv),
     BottomNavTab.discover => under('/seerr'),
+    BottomNavTab.calendar => under(Destinations.calendar),
   };
 }
 

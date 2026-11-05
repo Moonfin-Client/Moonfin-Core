@@ -52,6 +52,7 @@ void main() {
     final sync = _Sync();
     when(() => sync.seerrAvailable).thenReturn(false);
     when(() => sync.pluginAvailable).thenReturn(false);
+    when(() => sync.calendarAvailable).thenReturn(false);
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
     final seerr = _Seerr();
     when(() => seerr.enabled).thenReturn(false);

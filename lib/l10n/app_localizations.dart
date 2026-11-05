@@ -29180,6 +29180,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Smart Search on {seerr}'**
   String smartSearchOnSeerr(String seerr);
+
+  /// Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendar;
+
+  /// Settings toggle that adds the Calendar button to the navigation bar
+  ///
+  /// In en, this message translates to:
+  /// **'Show Calendar Button'**
+  String get showCalendarButton;
+
+  /// Subtitle of the Show Calendar Button setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show the calendar of upcoming episodes and movies in the navigation bar'**
+  String get showCalendarButtonSubtitle;
+
+  /// Button on the calendar that opens the month grid
+  ///
+  /// In en, this message translates to:
+  /// **'Full calendar'**
+  String get calendarFullCalendar;
+
+  /// Calendar tab listing episodes and movies that haven't aired yet
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get calendarUpcoming;
+
+  /// Calendar tab listing episodes and movies from the last few days
+  ///
+  /// In en, this message translates to:
+  /// **'Recently aired'**
+  String get calendarRecentlyAired;
+
+  /// Button that asks for a notification when an episode or movie lands in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me'**
+  String get calendarRemindMe;
+
+  /// Button label once a reminder is set. Pressing it again removes the reminder
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder set'**
+  String get calendarReminderSet;
+
+  /// Message when setting or removing a calendar reminder fails
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the reminder'**
+  String get calendarReminderFailed;
+
+  /// Calendar row of recent episodes and movies that are already in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to watch'**
+  String get calendarReadyToWatch;
+
+  /// Calendar row of episodes and movies airing in the next seven days
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up this week'**
+  String get calendarComingUpThisWeek;
+
+  /// Calendar message when no episodes or movies are scheduled
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing coming up'**
+  String get calendarNothingUpcoming;
+
+  /// Calendar message when nothing aired in the last few days
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing aired recently'**
+  String get calendarNothingRecent;
+
+  /// Calendar message under a day with no episodes or movies
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on this day'**
+  String get calendarEmptyDay;
+
+  /// Label over the countdown to the next episode or movie
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in'**
+  String get calendarStartsIn;
+
+  /// Unit under the days number of the calendar countdown
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get calendarUnitDays;
+
+  /// Unit under the hours number of the calendar countdown
+  ///
+  /// In en, this message translates to:
+  /// **'hr'**
+  String get calendarUnitHours;
+
+  /// Unit under the minutes number of the calendar countdown
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get calendarUnitMinutes;
+
+  /// When an episode airs, like Today at 9:00 PM
+  ///
+  /// In en, this message translates to:
+  /// **'{day} at {time}'**
+  String calendarDayAtTime(String day, String time);
+
+  /// Time column of a calendar entry with no time of day, like a movie release
+  ///
+  /// In en, this message translates to:
+  /// **'All day'**
+  String get calendarAllDay;
+
+  /// Tag on the first episode of a series
+  ///
+  /// In en, this message translates to:
+  /// **'Series premiere'**
+  String get calendarBadgeSeriesPremiere;
+
+  /// Tag on the first episode of a new season
+  ///
+  /// In en, this message translates to:
+  /// **'New season'**
+  String get calendarBadgeSeasonPremiere;
+
+  /// Tag on the last episode of a season
+  ///
+  /// In en, this message translates to:
+  /// **'Finale'**
+  String get calendarBadgeSeasonFinale;
+
+  /// Tag on the last episode before a season's mid-season break
+  ///
+  /// In en, this message translates to:
+  /// **'Midseason finale'**
+  String get calendarBadgeMidseasonFinale;
+
+  /// Tag on the last episode of a series
+  ///
+  /// In en, this message translates to:
+  /// **'Series finale'**
+  String get calendarBadgeSeriesFinale;
+
+  /// Short tag on a month grid day that has a premiere
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get calendarBadgeNew;
+
+  /// Tag on a calendar entry that is already on the server
+  ///
+  /// In en, this message translates to:
+  /// **'In library'**
+  String get calendarStatusInLibrary;
+
+  /// Tag on a calendar entry that Sonarr or Radarr won't download
+  ///
+  /// In en, this message translates to:
+  /// **'Not monitored'**
+  String get calendarNotMonitored;
+
+  /// Button that opens a movie's details page from the calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Movie details'**
+  String get calendarMovieDetails;
+
+  /// Calendar message when the server admin keeps the calendar to admins
+  ///
+  /// In en, this message translates to:
+  /// **'The calendar is limited to admins on this server.'**
+  String get calendarProblemAdminsOnly;
+
+  /// Calendar message when the server can't reach Sonarr and Radarr yet
+  ///
+  /// In en, this message translates to:
+  /// **'An admin needs to sign in to Seerr in Moonfin before the calendar can load.'**
+  String get calendarProblemNeedsSeerr;
+
+  /// Calendar message when the server has no Sonarr or Radarr
+  ///
+  /// In en, this message translates to:
+  /// **'No Sonarr or Radarr server is linked yet.'**
+  String get calendarProblemNotConfigured;
+
+  /// Calendar message when loading fails
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the calendar.'**
+  String get calendarProblemFailed;
+
+  /// Subtitle of the Calendar entry under Integrations in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Style, filters and actions for the calendar'**
+  String get calendarSettingsSubtitle;
+
+  /// Calendar settings section header for how the calendar opens and lays out weeks
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get calendarSettingsView;
+
+  /// Calendar setting that picks what the Calendar button opens
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar style'**
+  String get calendarSettingsStyle;
+
+  /// Description of the Calendar style setting
+  ///
+  /// In en, this message translates to:
+  /// **'What the Calendar button opens. The full month is one button away in both.'**
+  String get calendarSettingsStyleDescription;
+
+  /// Calendar style that lists episodes and movies day by day
+  ///
+  /// In en, this message translates to:
+  /// **'Agenda'**
+  String get calendarSettingsStyleAgenda;
+
+  /// Calendar style that counts down to the next episode or movie
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown'**
+  String get calendarSettingsStyleCountdown;
+
+  /// Calendar setting for the first day of the week in the month grid
+  ///
+  /// In en, this message translates to:
+  /// **'Week starts on'**
+  String get calendarSettingsWeekStart;
+
+  /// Calendar settings section header for which episodes and movies the calendar lists
+  ///
+  /// In en, this message translates to:
+  /// **'What shows'**
+  String get calendarSettingsWhatShows;
+
+  /// Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get calendarSettingsScope;
+
+  /// Description of the calendar Show setting
+  ///
+  /// In en, this message translates to:
+  /// **'My shows keeps the series you favorited or started watching'**
+  String get calendarSettingsScopeDescription;
+
+  /// Calendar Show choice that lists every episode and movie
+  ///
+  /// In en, this message translates to:
+  /// **'Everything'**
+  String get calendarSettingsScopeEverything;
+
+  /// Calendar Show choice that lists only series the user favorited or started watching
+  ///
+  /// In en, this message translates to:
+  /// **'My shows'**
+  String get calendarSettingsScopeMyShows;
+
+  /// Calendar setting that also lists titles Sonarr and Radarr won't download
+  ///
+  /// In en, this message translates to:
+  /// **'Include unmonitored'**
+  String get calendarSettingsUnmonitored;
+
+  /// Subtitle of the Include unmonitored calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Also list episodes and movies Sonarr and Radarr aren\'t set to download'**
+  String get calendarSettingsUnmonitoredSubtitle;
+
+  /// Calendar setting that lists special episodes, the ones in season 0
+  ///
+  /// In en, this message translates to:
+  /// **'Specials'**
+  String get calendarSettingsSpecials;
+
+  /// Subtitle of the Specials calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Season 0 episodes, like extras and holiday specials'**
+  String get calendarSettingsSpecialsSubtitle;
+
+  /// Calendar setting that marks premieres and finales on the calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere and finale tags'**
+  String get calendarSettingsBadges;
+
+  /// Subtitle of the Premiere and finale tags calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Mark premieres, finales and new seasons'**
+  String get calendarSettingsBadgesSubtitle;
+
+  /// Calendar setting for what the colors on calendar entries mean. The choices are Type and Status
+  ///
+  /// In en, this message translates to:
+  /// **'Color by'**
+  String get calendarSettingsColorBy;
+
+  /// Description of the Color by calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.'**
+  String get calendarSettingsColorByDescription;
+
+  /// Color by choice that colors episodes and movies differently
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get calendarSettingsColorByType;
+
+  /// Calendar setting for the artwork on the Countdown rows
+  ///
+  /// In en, this message translates to:
+  /// **'Card image'**
+  String get calendarSettingsImageType;
+
+  /// Description of the Card image calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'The artwork on the Countdown rows'**
+  String get calendarSettingsImageTypeDescription;
+
+  /// Calendar setting that hides episode details for shows the user hasn't caught up on
+  ///
+  /// In en, this message translates to:
+  /// **'Spoiler safe'**
+  String get calendarSettingsSpoilerSafe;
+
+  /// Subtitle of the Spoiler safe calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Hide episode titles and stills for shows you\'re behind on'**
+  String get calendarSettingsSpoilerSafeSubtitle;
+
+  /// Calendar settings section header for what buttons and selecting an entry do
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get calendarSettingsActions;
+
+  /// Calendar setting for what OK or a tap does on an entry that is in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Selecting an item'**
+  String get calendarSettingsSelectAction;
+
+  /// Description of the Selecting an item calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'What OK or a tap does on something that\'s already in your library'**
+  String get calendarSettingsSelectActionDescription;
+
+  /// Selecting an item choice that opens the details page
+  ///
+  /// In en, this message translates to:
+  /// **'Open details'**
+  String get calendarSettingsSelectDetails;
+
+  /// Selecting an item choice that starts playback when the episode or movie is in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Play when in library'**
+  String get calendarSettingsSelectPlay;
+
+  /// Calendar setting that shows the request button on missing titles
+  ///
+  /// In en, this message translates to:
+  /// **'Request button'**
+  String get calendarSettingsRequestButton;
+
+  /// Subtitle of the Request button calendar setting. Seerr is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'Show the Seerr request button on missing movies and seasons'**
+  String get calendarSettingsRequestButtonSubtitle;
+
+  /// Calendar setting that offers the Remind me button
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get calendarSettingsReminders;
+
+  /// Subtitle of the Reminders calendar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show Remind me, which sends a notification when a title lands in your library'**
+  String get calendarSettingsRemindersSubtitle;
+
+  /// Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar
+  ///
+  /// In en, this message translates to:
+  /// **'See All card'**
+  String get calendarRowSeeAll;
+
+  /// Subtitle of the See All card setting
+  ///
+  /// In en, this message translates to:
+  /// **'End the upcoming rows with a card that opens the calendar'**
+  String get calendarRowSeeAllSubtitle;
+
+  /// Playback setting that says when the next episode airs at the end of an episode
+  ///
+  /// In en, this message translates to:
+  /// **'Next air date at the end'**
+  String get showNextAirDate;
+
+  /// Subtitle of the Next air date at the end setting
+  ///
+  /// In en, this message translates to:
+  /// **'When the next episode isn\'t in your library yet, the end of episode card says when it airs'**
+  String get showNextAirDateSubtitle;
 }
 
 class _AppLocalizationsDelegate

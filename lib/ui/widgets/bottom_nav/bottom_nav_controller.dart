@@ -113,6 +113,7 @@ class BottomNavController extends ChangeNotifier {
   BottomNavTabGates get gates => BottomNavTabGates.fromPreferences(
         _prefs,
         seerrAvailable: _pluginSync?.seerrAvailable ?? false,
+        calendarAvailable: _pluginSync?.calendarAvailable ?? false,
       );
 
   bool get _hasLiveTvLibrary => _libraries.any(isLiveTvLibrary);
@@ -193,6 +194,7 @@ class BottomNavController extends ChangeNotifier {
         _prefs.get(UserPreferences.showGenresButton),
         _prefs.get(UserPreferences.showLiveTvButton),
         _prefs.get(UserPreferences.showSeerrButton),
+        _prefs.get(UserPreferences.showCalendarButton),
         _prefs.get(UserPreferences.showShuffleButton),
         _prefs.get(UserPreferences.syncPlayEnabled),
         _prefs.get(UserPreferences.showSyncPlayButton),
@@ -203,6 +205,7 @@ class BottomNavController extends ChangeNotifier {
         _prefs.get(UserPreferences.navbarColor),
         _prefs.get(UserPreferences.navbarOpacity),
         _pluginSync?.seerrAvailable ?? false,
+        _pluginSync?.calendarAvailable ?? false,
       ].join('|');
 
   void _onPrefsChanged() {
