@@ -762,6 +762,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   final itemAspectRatio = _itemAspectRatio(item);
 
                   Widget card = MediaCard(
+                    posterBadgeItemId: item.id,
                     recordingItemId: item.id,
                     title: item.name,
                     subtitle: _cardSubtitle(item),
