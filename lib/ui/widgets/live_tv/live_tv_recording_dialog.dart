@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
@@ -41,6 +42,7 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
 
   return showFocusRestoringDialog<LiveTvRecordingAction>(
     context: context,
+    closeKeys: {LogicalKeyboardKey.mediaRecord},
     builder: (dialogContext) {
       if (!closeFocusRequested) {
         closeFocusRequested = true;

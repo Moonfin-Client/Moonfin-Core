@@ -1,5 +1,6 @@
 import Flutter
 import GameController
+import TVServices
 import UIKit
 
 /// Hosts the Flutter view so a game controller can be kept away from the UI.
@@ -110,6 +111,20 @@ class AppDelegate: FlutterAppDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
         topShelfChannel?.deliverDeepLink(url, isLaunch: false)
+        return true
+    }
+
+    /// A remote's Guide button, which only the Live TV player acts on.
+    override func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        guard userActivity.activityType == TVUserActivityTypeBrowsingChannelGuide else {
+            return super.application(
+                application, continue: userActivity, restorationHandler: restorationHandler)
+        }
+        nativeApplePlayerChannel?.handleGuideButton()
         return true
     }
 }

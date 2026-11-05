@@ -1703,6 +1703,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get audioTrack => 'ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್';
 
   @override
+  String get noOtherAudioTracks => 'No other audio tracks';
+
+  @override
   String get subtitleTrack => 'ಉಪಶೀರ್ಷಿಕೆ ಟ್ರ್ಯಾಕ್';
 
   @override
@@ -13108,6 +13111,34 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get watchPartyStartForEveryone => 'Start for everyone';
+
+  @override
+  String watchPartyResumeAt(String time) {
+    return 'Resume at $time';
+  }
+
+  @override
+  String get watchPartyStartFromBeginning => 'Start from the beginning';
+
+  @override
+  String watchPartyResumeWhere(String name) {
+    return 'Where $name left off, the earliest anyone here has reached.';
+  }
+
+  @override
+  String get watchPartyResumeEarliest =>
+      'The earliest point anyone here has reached.';
+
+  @override
+  String watchPartyResumeNotStarted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people haven\'t started it yet.',
+      one: '1 person hasn\'t started it yet.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get watchPartyBackToLobby => 'Back to the lobby';

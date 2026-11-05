@@ -23,11 +23,13 @@ Future<T?> showStyledPlayerDialog<T>(
   bool barrierDismissible = true,
   ImageProvider? titleImage,
   bool sidePanel = false,
+  Set<LogicalKeyboardKey> closeKeys = const {},
 }) {
   return showFocusRestoringDialog<T>(
     context: context,
     useRootNavigator: useRootNavigator,
     barrierDismissible: barrierDismissible,
+    closeKeys: closeKeys,
     builder: (dialogContext) {
       final mediaQuery = MediaQuery.of(dialogContext);
 
@@ -217,12 +219,14 @@ class TrackSelectorDialog {
     int? dividerBefore,
     Widget? footer,
     bool useRootNavigator = true,
+    Set<LogicalKeyboardKey> closeKeys = const {},
   }) {
     return showStyledPlayerDialog<int>(
       context,
       title: title,
       showCancel: true,
       useRootNavigator: useRootNavigator,
+      closeKeys: closeKeys,
       // The footer rides along as the last row rather than sitting under the
       // list, so a long track list keeps the full height and the footer is
       // something you scroll down to instead of something in the way.

@@ -208,6 +208,7 @@ class NativeApplePlayerBackend
       case 'setBitrate':
       case 'selectChannel':
       case 'openGuide':
+      case 'guideButton':
       case 'record':
       case 'messageAction':
       case 'toggleOrientation':
