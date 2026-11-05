@@ -261,6 +261,9 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   // until their programs arrive.
   final Set<String> _programsLoadedIds = <String>{};
 
+  // Channel ids with a program request out, and the generation it belongs to.
+  final Map<String, int> _programsPendingIds = <String, int>{};
+
   bool _loadingMore = false;
 
   // Category filters walk the lineup in larger server-filtered batches so a
@@ -535,7 +538,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         ensureProgramsForChannels([
           for (final c in _channels)
             if (c.isFavorite) c.id,
-        ]),
+        ]).catchError((Object _) {
+          // The row stays unloaded; reselecting the filter or the next
+          // favorite change asks again.
+        }),
       );
     }
     if (_sortReadsFavorite && _state == GuideState.ready) {
@@ -1710,14 +1716,32 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   /// Fetches programs for one batch of channels over the current window and
   /// merges them into the cache.
   Future<bool> _loadProgramsBatch(List<GuideChannel> batch) async {
-    if (batch.isEmpty) return true;
     final generation = _programGeneration;
-    final ids = batch.map((c) => c.id).toList();
-    final response = await _fetchGuide(
-      channelIds: ids,
-      from: _windowStart,
-      to: _windowEnd,
-    );
+    // Two requests out for one channel would append its programs twice.
+    final ids = [
+      for (final c in batch)
+        if (!_programsLoadedIds.contains(c.id) &&
+            _programsPendingIds[c.id] != generation)
+          c.id,
+    ];
+    if (ids.isEmpty) return true;
+    for (final id in ids) {
+      _programsPendingIds[id] = generation;
+    }
+    final Map<String, dynamic> response;
+    try {
+      response = await _fetchGuide(
+        channelIds: ids,
+        from: _windowStart,
+        to: _windowEnd,
+      );
+    } finally {
+      for (final id in ids) {
+        if (_programsPendingIds[id] == generation) {
+          _programsPendingIds.remove(id);
+        }
+      }
+    }
     if (_disposed || generation != _programGeneration) return false;
 
     final parsed = _parsePrograms(response);
