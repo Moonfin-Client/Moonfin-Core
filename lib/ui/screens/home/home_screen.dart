@@ -5677,6 +5677,8 @@ class _ContentRowsState extends State<_ContentRows>
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(Destinations.genre(item.name, genreId: item.id));
+                    } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
+                      context.push(Destinations.studio(item.name));
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
