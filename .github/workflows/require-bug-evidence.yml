@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   check-issue:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # Don't spin up a runner to re-check a closed issue or to react to another bot.
     if: >-
       github.event.issue.state == 'open' &&
