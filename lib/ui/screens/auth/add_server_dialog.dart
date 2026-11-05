@@ -156,9 +156,10 @@ ButtonStyle _noticeButtonStyle() {
 }
 
 class AddServerButton extends StatefulWidget {
-  const AddServerButton({super.key, required this.onPressed});
+  const AddServerButton({super.key, required this.onPressed, this.focusNode});
 
   final VoidCallback? onPressed;
+  final FocusNode? focusNode;
 
   @override
   State<AddServerButton> createState() => _AddServerButtonState();
@@ -198,6 +199,7 @@ class _AddServerButtonState extends State<AddServerButton> {
           type: MaterialType.transparency,
           child: InkWell(
             onTap: widget.onPressed,
+            focusNode: widget.focusNode,
             onHover: (hovered) => setState(() => _hovered = hovered),
             onFocusChange: (focused) => setState(() => _focused = focused),
             borderRadius: BorderRadius.circular(16),

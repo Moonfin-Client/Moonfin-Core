@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moonfin/playback/hdr_output_controller.dart';
+import 'package:moonfin/playback/media_kit_player_backend.dart';
 import 'package:moonfin/ui/navigation/app_router.dart';
 import 'package:moonfin/ui/widgets/video_mini_player.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -32,6 +34,11 @@ class _TestBackend extends Fake implements PlayerBackend {
 
   @override
   Future<void> pause() async => pauseCalls++;
+}
+
+class _NativeWindowBackend extends Fake implements MediaKitPlayerBackend {
+  @override
+  final HdrOutputController hdrOutput = HdrOutputController();
 }
 
 Route<dynamic> _route(String name) => PageRouteBuilder<void>(
@@ -153,5 +160,46 @@ void main() {
       expect(controller.visible.value, isFalse);
     },
     variant: linux,
+  );
+
+  testWidgets(
+    'the backdrop paints nothing while the full player has the native window',
+    (tester) async {
+      final nativeBackend = _NativeWindowBackend();
+      GetIt.instance.registerSingleton<MediaKitPlayerBackend>(nativeBackend);
+      addTearDown(GetIt.instance.unregister<MediaKitPlayerBackend>);
+
+      await tester.pumpWidget(
+        const VideoMiniPlayerHoleClip(child: SizedBox.expand()),
+      );
+      final clipper = tester
+          .widget<ClipPath>(find.byWidgetPredicate((w) => w is ClipPath))
+          .clipper!;
+      bool paints() => clipper
+          .getClip(const Size(800, 600))
+          .contains(const Offset(400, 300));
+      var reclips = 0;
+      clipper.addListener(() => reclips++);
+
+      final window = nativeBackend.hdrOutput.window;
+      final miniPlayer = VideoMiniPlayerController.instance;
+      final screen = Object();
+      expect(paints(), isTrue);
+
+      await window.claim(screen, Rect.zero);
+      expect(paints(), isFalse);
+      expect(reclips, 1);
+
+      window.transferOwnership(from: screen, to: miniPlayer);
+      expect(paints(), isTrue);
+      expect(reclips, 2);
+
+      window.transferOwnership(from: miniPlayer, to: screen);
+      expect(paints(), isFalse);
+
+      await window.release(screen);
+      expect(paints(), isTrue);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.windows),
   );
 }

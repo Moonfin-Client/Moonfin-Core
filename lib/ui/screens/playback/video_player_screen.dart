@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
@@ -69,6 +68,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/player_edge_drag.dart';
+import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/player_surface_taps.dart';
 import '../../../playback/hdr_composition.dart';
 import '../../../playback/hdr_output_controller.dart';
@@ -384,6 +384,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
+  StreamSubscription<bool>? _reconnectingSub;
+  bool _reconnecting = false;
   StreamSubscription? _pipChangedSub;
   StreamSubscription? _pipActionSub;
   StreamSubscription? _playingSub;
@@ -395,6 +397,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<Map<String, dynamic>>? _dlnaEventsSub;
   StreamSubscription<Map<String, dynamic>>? _airPlayEventsSub;
   StreamSubscription<Map<String, dynamic>>? _media3ActivityActionSub;
+  StreamSubscription<Map<String, dynamic>>? _aetherRemoteCommandSub;
   final Map<String, List<Map<String, dynamic>>> _media3CastPeopleCache = {};
 
   TrickplayInfo? _trickplayInfo;
@@ -797,6 +800,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
+    _reconnecting = _manager.isReconnecting;
+    _reconnectingSub = _manager.reconnectingStream.listen((reconnecting) {
+      if (!mounted) return;
+      setState(() => _reconnecting = reconnecting);
+    });
     _bringupState = _manager.bringupState;
     _bringupSub = _manager.bringupStateStream.listen((state) {
       if (!mounted) return;
@@ -933,6 +941,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _onMedia3ActivityAction,
       onError: (_) {},
     );
+    // While a video plays, tvOS sends the remote's Play/Pause to Now Playing
+    // instead of as a key press. iOS already routes these through the audio
+    // handler.
+    if (!PlatformDetection.isIOS &&
+        GetIt.instance.isRegistered<AetherBackend>()) {
+      _aetherRemoteCommandSub = GetIt.instance<AetherBackend>()
+          .remoteCommandStream
+          .listen(_onAetherRemoteCommand, onError: (_) {});
+    }
 
     final isMobilePlayback =
         (PlatformDetection.isAndroid && !PlatformDetection.isTV) ||
@@ -1076,6 +1093,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
     _bringupSub?.cancel();
+    _reconnectingSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
     _pipActionSub?.cancel();
@@ -1087,6 +1105,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _dlnaEventsSub?.cancel();
     _airPlayEventsSub?.cancel();
     _media3ActivityActionSub?.cancel();
+    _aetherRemoteCommandSub?.cancel();
     _screenLockSub?.cancel();
     _completedSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
@@ -1737,6 +1756,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         resolution?.mediaSourceId ?? mediaSource?['Id']?.toString(),
       ),
       hdrOutput: _hdrOutputRange(hdrTonemapped: hdrTonemapped),
+      nativeStatus: switch (_activeBackend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 
@@ -1902,6 +1925,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       castVolume: _remoteVolume,
       selectedBitrateMbps: _manager.maxBitrateOverrideMbps,
     );
+  }
+
+  void _onAetherRemoteCommand(Map<String, dynamic> command) {
+    if (!mounted || _activeBackend is! AetherBackend) return;
+    final wantsPlay = switch (command['event']) {
+      'play' => true,
+      'pause' => false,
+      _ => null,
+    };
+    if (wantsPlay == null) return;
+    if (wantsPlay != _state.isPlaying) _togglePlayPause();
+    _revealControlsAfterTransport();
   }
 
   void _onMedia3ActivityAction(Map<String, dynamic> event) {
@@ -2170,9 +2205,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
       unawaited(
         precacheImage(
-          CachedNetworkImageProvider(
+          trickplaySheetProvider(
             url,
-            headers: headers.isEmpty ? null : headers,
+            headers,
+            sheetWidth: info.width * info.tileWidth,
+            sheetHeight: info.height * info.tileHeight,
           ),
           context,
           onError: (_, _) {
@@ -3080,10 +3117,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _isPausedScrubActive = true;
         // If an earlier still-resolving commit already paused playback for
         // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-        // already correctly true - re-reading _state.isPlaying now would see
+        // already correctly true. Re-reading the player's state now would see
         // "paused" and wrongly conclude nothing needs resuming later.
+        // isPlaying reads false while the seek from a Left or Right press with
+        // the controls hidden is still buffering, so this checks isPaused.
         if (!_wasPlayingBeforeScrubPause) {
-          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          _wasPlayingBeforeScrubPause = !_state.isPaused;
           if (_wasPlayingBeforeScrubPause) {
             _manager.pause();
           }
@@ -4314,6 +4353,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   String _bringupLabel() {
+    if (_reconnecting) {
+      return AppLocalizations.of(context).watchPartyReconnecting;
+    }
     switch (_bringupState.phase) {
       case PlaybackBringupPhase.preparing:
         return _streamLoadingLabel;
@@ -4337,31 +4379,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
 
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.45),
+    return _withDisplayMatchFps((fps) {
+      final label = fps == null
+          ? _bringupLabel()
+          : AppLocalizations.of(
+              context,
+            ).playerMatchingDisplayRate(frameRateLabel(fps));
+      return Positioned.fill(
+        child: IgnorePointer(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.45),
+            ),
+            child: pos == LoadingAnimationPosition.bouncing
+                ? BouncingPositionWrapper(
+                    speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                    safePadding: const EdgeInsets.all(40.0),
+                    builder: (context, movingLeft) => PlayerLoadingOverlay(
+                      label: label,
+                      flipHorizontal: movingLeft,
+                    ),
+                  )
+                : Align(
+                    alignment: pos.alignment,
+                    child: Padding(
+                      padding: pos.safePadding,
+                      child: PlayerLoadingOverlay(label: label),
+                    ),
+                  ),
           ),
-          child: pos == LoadingAnimationPosition.bouncing
-              ? BouncingPositionWrapper(
-                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
-                  safePadding: const EdgeInsets.all(40.0),
-                  builder: (context, movingLeft) => PlayerLoadingOverlay(
-                    label: _bringupLabel(),
-                    flipHorizontal: movingLeft,
-                  ),
-                )
-              : Align(
-                  alignment: pos.alignment,
-                  child: Padding(
-                    padding: pos.safePadding,
-                    child: PlayerLoadingOverlay(label: _bringupLabel()),
-                  ),
-                ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildBufferingIndicator() {
@@ -4369,9 +4418,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       stream: _state.bufferingStream,
       initialData: _state.isBuffering,
       builder: (context, snap) {
-        if (snap.data != true || _isBringupInProgress(_bringupState.phase)) {
+        // Between reconnect attempts the player has failed rather than
+        // buffering, and the wait still needs saying.
+        if ((snap.data != true && !_reconnecting) ||
+            _isBringupInProgress(_bringupState.phase)) {
           return const SizedBox.shrink();
         }
+        final label = _reconnecting
+            ? AppLocalizations.of(context).watchPartyReconnecting
+            : _streamLoadingLabel;
         final hasTrickplay = _trickplayInfo != null && _trickplayInfo!.isValid;
         final recentlySought =
             _lastSeekTime != null &&
@@ -4382,26 +4437,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
         final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
         return Positioned.fill(
-          child: pos == LoadingAnimationPosition.bouncing
-              ? BouncingPositionWrapper(
-                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
-                  safePadding: const EdgeInsets.all(40.0),
-                  builder: (context, movingLeft) => PlayerLoadingOverlay(
-                    label: _streamLoadingLabel,
-                    flipHorizontal: movingLeft,
-                  ),
-                )
-              : Align(
-                  alignment: pos.alignment,
-                  child: Padding(
-                    padding: pos.safePadding,
-                    child: PlayerLoadingOverlay(
-                      label: _streamLoadingLabel,
+          child: _withDisplayMatchFps((fps) {
+            // While the TV switches to the video's rate, say so instead.
+            final shown = fps == null
+                ? label
+                : AppLocalizations.of(
+                    context,
+                  ).playerMatchingDisplayRate(frameRateLabel(fps));
+            return pos == LoadingAnimationPosition.bouncing
+                ? BouncingPositionWrapper(
+                    speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                    safePadding: const EdgeInsets.all(40.0),
+                    builder: (context, movingLeft) => PlayerLoadingOverlay(
+                      label: shown,
+                      flipHorizontal: movingLeft,
                     ),
-                  ),
-                ),
+                  )
+                : Align(
+                    alignment: pos.alignment,
+                    child: Padding(
+                      padding: pos.safePadding,
+                      child: PlayerLoadingOverlay(label: shown),
+                    ),
+                  );
+          }),
         );
       },
+    );
+  }
+
+  /// Rebuilds with the rate the display is switching to, while the start
+  /// waits for the TV.
+  Widget _withDisplayMatchFps(Widget Function(double? fps) builder) {
+    final notifier = _activeMedia3Backend?.displayMatchFps;
+    if (notifier == null) return builder(null);
+    return ValueListenableBuilder<double?>(
+      valueListenable: notifier,
+      builder: (context, fps, _) => builder(fps),
     );
   }
 
@@ -5442,9 +5514,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Widget _trickplayTileImage(TrickplayTile tile) {
     return TrickplayTileImage(
-      sheet: CachedNetworkImageProvider(
+      sheet: trickplaySheetProvider(
         tile.url,
-        headers: tile.headers.isEmpty ? null : tile.headers,
+        tile.headers,
+        sheetWidth: (tile.thumbWidth * tile.tileWidth).round(),
+        sheetHeight: (tile.thumbHeight * tile.tileHeight).round(),
       ),
       sourceRect: tile.sourceRect,
       thumbWidth: tile.thumbWidth,

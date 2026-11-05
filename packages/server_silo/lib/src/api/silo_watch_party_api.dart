@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
@@ -242,6 +244,64 @@ class SiloRoomSuggestion {
   }
 }
 
+/// Where a room can pick a title up from: the earliest point any connected
+/// member stopped at, so nobody misses what they haven't seen.
+class SiloRoomResumePoint {
+  const SiloRoomResumePoint({
+    required this.seconds,
+    this.profileId,
+    this.notStarted = 0,
+  });
+
+  /// Under this a member has barely started, which isn't worth resuming.
+  static const minimumSeconds = 30;
+
+  final int seconds;
+
+  /// The member whose spot it is.
+  final String? profileId;
+
+  /// Members who haven't begun the title, whom resuming takes past the start.
+  final int notStarted;
+
+  /// From a `member-state` answer for [contentId], or null when nobody is
+  /// part way through it.
+  static SiloRoomResumePoint? fromMemberState(
+    Map<String, dynamic>? json,
+    String contentId,
+  ) {
+    Map<String, dynamic>? entry;
+    for (final raw in json?['items'] as List? ?? const []) {
+      final item = asJsonMap(raw);
+      if (item?['content_id'] == contentId) {
+        entry = item;
+        break;
+      }
+    }
+    final members = [
+      for (final raw in entry?['members'] as List? ?? const [])
+        ?asJsonMap(raw),
+    ];
+    double positionOf(Map<String, dynamic> m) =>
+        (m['position_seconds'] as num?)?.toDouble() ?? 0;
+    Map<String, dynamic>? earliest;
+    for (final m in members) {
+      if (m['state'] != 'in_progress' || positionOf(m) < minimumSeconds) {
+        continue;
+      }
+      if (earliest == null || positionOf(m) < positionOf(earliest)) {
+        earliest = m;
+      }
+    }
+    if (earliest == null) return null;
+    return SiloRoomResumePoint(
+      seconds: positionOf(earliest).floor(),
+      profileId: earliest['profile_id']?.toString(),
+      notStarted: members.where((m) => m['state'] == 'unseen').length,
+    );
+  }
+}
+
 /// A room and the proof of membership its routes and socket ticket ask for
 /// (`X-Room-Token`).
 class SiloRoomAccess {
@@ -317,6 +377,36 @@ class SiloWatchPartyApi {
   Future<SiloRoom> start(String roomId) => _room(
     _dio.post<dynamic>('/api/v2/watch-together/rooms/$roomId/playback/start'),
   );
+
+  /// Where the room could resume [contentId], from what each connected
+  /// member has watched of it (`member-state`), or null when nobody is part
+  /// way through.
+  Future<SiloRoomResumePoint?> resumePoint(
+    String roomId,
+    String roomToken,
+    String contentId,
+  ) async {
+    // The host's start buttons wait on this, so the whole request is called
+    // off after five seconds.
+    final cancel = CancelToken();
+    final deadline = Timer(const Duration(seconds: 5), cancel.cancel);
+    try {
+      final response = await _dio.post<dynamic>(
+        '/api/v2/watch-together/rooms/$roomId/member-state',
+        data: {
+          'content_ids': [contentId],
+        },
+        options: Options(headers: {'X-Room-Token': roomToken}),
+        cancelToken: cancel,
+      );
+      return SiloRoomResumePoint.fromMemberState(
+        asJsonMap(response.data),
+        contentId,
+      );
+    } finally {
+      deadline.cancel();
+    }
+  }
 
   /// Host only: back to the lobby, keeping the item staged.
   Future<SiloRoom> stop(String roomId) => _room(

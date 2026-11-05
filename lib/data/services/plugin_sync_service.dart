@@ -120,6 +120,8 @@ class PluginSyncService extends ChangeNotifier {
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
+  bool _smartSearchEnabled = false;
+  bool get smartSearchEnabled => _pluginAvailable && _smartSearchEnabled;
 
   /// Whether the server will take an uploaded diagnostic report. An older
   /// plugin, or none at all, leaves it false.
@@ -251,6 +253,7 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbReviewsSupported = false;
     _tmdbDetailsSupported = false;
     _recommendationsSupported = false;
+    _smartSearchEnabled = false;
     _clientLogSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
@@ -361,6 +364,8 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'tmdbDetailsSupported') ?? false;
       _recommendationsSupported =
           _readBool(pingResult, 'recommendationsSupported') ?? false;
+      _smartSearchEnabled =
+          _readBool(pingResult, 'smartSearchEnabled') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
@@ -1317,6 +1322,31 @@ class PluginSyncService extends ChangeNotifier {
     return null;
   }
 
+  /// Moonbase's natural-language search. Null when the admin has it off or
+  /// the plugin is older, both of which answer 404.
+  Future<Map<String, dynamic>?> fetchSmartSearch(
+    MediaServerClient client,
+    String query, {
+    int limit = 20,
+  }) async {
+    final ep = await moonbaseEndpoint(client, _dio);
+    if (ep == null) return null;
+
+    try {
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/SmartSearch',
+        queryParameters: {'query': query, 'limit': limit},
+        options: Options(headers: ep.headers),
+      );
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      }
+    } catch (e) {
+      debugPrint('[PluginSyncService] fetchSmartSearch failed: $e');
+    }
+    return null;
+  }
+
   /// The seasonal Home row Moonbase built for this user. [country] is the
   /// viewer's two letter code, ZZ for "other", or null to let the server fall
   /// back to its own.
@@ -1725,20 +1755,18 @@ class PluginSyncService extends ChangeNotifier {
               }
               continue;
             }
-            if (type == prefs.HomeSectionType.radarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableRadarrCalendar);
-              final idx = sections.indexWhere((s) => s.type == type);
-              if (idx >= 0) {
-                sections[idx] = sections[idx].copyWith(enabled: localEnabled);
-              } else {
-                sections.add(
-                  HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
-                );
-              }
-              continue;
-            }
-            if (type == prefs.HomeSectionType.sonarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableSonarrCalendar);
+            // These rows follow their own synced switch, not the row order.
+            final toggle = switch (type) {
+              prefs.HomeSectionType.radarrCalendar =>
+                UserPreferences.enableRadarrCalendar,
+              prefs.HomeSectionType.sonarrCalendar =>
+                UserPreferences.enableSonarrCalendar,
+              prefs.HomeSectionType.mdblistWatchingNow =>
+                UserPreferences.mdblistWatchingNowEnabled,
+              _ => null,
+            };
+            if (toggle != null) {
+              final localEnabled = _prefs.get(toggle);
               final idx = sections.indexWhere((s) => s.type == type);
               if (idx >= 0) {
                 sections[idx] = sections[idx].copyWith(enabled: localEnabled);
@@ -1858,6 +1886,13 @@ class PluginSyncService extends ChangeNotifier {
         );
         continue;
       }
+      if (type == prefs.HomeSectionType.mdblistWatchingNow) {
+        final localEnabled = _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
       sections.add(
         HomeSectionConfig(type: type, enabled: false, order: order++),
       );
@@ -1889,8 +1924,10 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-      final enabled = type == prefs.HomeSectionType.seasonal &&
-          _prefs.get(UserPreferences.seasonalRowEnabled);
+      final enabled = (type == prefs.HomeSectionType.seasonal &&
+              _prefs.get(UserPreferences.seasonalRowEnabled)) ||
+          (type == prefs.HomeSectionType.mdblistWatchingNow &&
+              _prefs.get(UserPreferences.mdblistWatchingNowEnabled));
       sections.add(
         HomeSectionConfig(type: type, enabled: enabled, order: order++),
       );
@@ -2352,6 +2389,8 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.enableSonarrCalendar,
       prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
       prefs.HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        UserPreferences.mdblistWatchingNowEnabled,
       prefs.HomeSectionType.sinceYouWatched1 =>
         UserPreferences.sinceYouWatched1Enabled,
       prefs.HomeSectionType.sinceYouWatched2 =>

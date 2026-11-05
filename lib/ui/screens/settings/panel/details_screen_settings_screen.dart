@@ -58,6 +58,12 @@ class _DetailsScreenSettingsScreenState
                         l10n.detailScreenStyleNouveau,
                       DetailScreenStyle.minimalist =>
                         l10n.detailScreenStyleMinimalist,
+                      DetailScreenStyle.stage => l10n.detailScreenStyleStage,
+                      DetailScreenStyle.premiere =>
+                        l10n.detailScreenStylePremiere,
+                      DetailScreenStyle.quickLook =>
+                        l10n.detailScreenStyleQuickLook,
+                      DetailScreenStyle.frost => l10n.detailScreenStyleFrost,
                     },
                   ),
                   EnumPreferenceTile<PersonalRatingStyle>(

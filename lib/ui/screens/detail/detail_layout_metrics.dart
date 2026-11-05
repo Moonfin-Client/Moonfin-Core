@@ -185,6 +185,36 @@ double nouveauHorizontalInset(Size size) => PlatformDetection.isTV
     ? 56.0
     : (size.width * 0.046).clamp(56.0, 96.0);
 
+/// The Stage poster's width. Beside the details it takes a share of the
+/// screen's height, and above them on a phone a share of its width.
+double stagePosterWidth(Size size, {required bool landscape}) => landscape
+    ? (size.height * 0.36).clamp(140.0, 300.0)
+    : (size.width * 0.46).clamp(150.0, 230.0);
+
+/// How far the Stage page sits in from the leading edge. A left sidebar takes
+/// more room than a toolbar along the top.
+double stageLeadingInset(
+  BuildContext context, {
+  required bool landscape,
+  UserPreferences? prefs,
+}) {
+  if (!landscape) return detailIsCompact(context) ? 20.0 : 36.0;
+  final sidebar =
+      _resolvePrefs(prefs)?.get(UserPreferences.navbarPosition) ==
+      NavbarPosition.left;
+  return sidebar ? 120.0 : 48.0;
+}
+
+/// Where the Stage page starts, clear of the toolbar.
+double stageTopInset(BuildContext context) =>
+    MediaQuery.paddingOf(context).top + TopToolbar.baseHeightFor(context) + 8;
+
+/// How tall the Premiere backdrop is. It fills the first screen of a TV or
+/// a desktop, and the top of a phone's.
+double premiereHeroHeight(Size size, {required bool landscape}) => landscape
+    ? size.height
+    : (size.height * 0.62).clamp(360.0, 640.0);
+
 /// The Minimalist episode rail.
 ///
 /// The rail owns the bottom of the screen, so its card is a share of the room
@@ -264,3 +294,15 @@ double minimalistEpisodeCardWidth(
 /// a modal, and Nouveau has no track list at all, which leaves the screen with
 /// nothing on it but buttons.
 bool detailFallsBackToModern(String? type) => type == 'Playlist';
+
+/// Whether Stage or Premiere draws this item type. Everything else, a person,
+/// an album or a playlist, goes to Modern, which already knows how to lay
+/// those out.
+bool detailPageDraws(String? type) => const {
+  'Movie',
+  'Series',
+  'Season',
+  'Episode',
+  'Video',
+  'MusicVideo',
+}.contains(type);

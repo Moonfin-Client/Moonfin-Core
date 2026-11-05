@@ -12,6 +12,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
@@ -201,6 +202,10 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       case 'systemVolume':
         final volume = map['value'];
         if (volume is num) _systemVolumeStream.add(volume.toDouble());
+      // The engine is holding the stream for new credentials, so playback
+      // state stands.
+      case 'credentialsRefused':
+        _errorStream.add(map.cast<String, dynamic>());
       case 'playerError':
       case 'error':
         _logPlaybackError(map);
@@ -342,6 +347,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       ),
       'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
       'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
+      ...appleTvCadenceArgs(_prefs),
     });
   }
 
@@ -362,6 +368,19 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   // No way to re-open a live source in place, so the manager escalates.
   @override
   Future<bool> resumeLiveEdge() async => false;
+
+  // The engine replaces the open stream's request headers in place (a
+  // route whose requests AVFoundation makes reloads at the playhead
+  // instead). The server reads the headers before a token in the URL, so
+  // the URL stays as it opened.
+  @override
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
+    if (credentials.requestHeaders.isEmpty) return false;
+    await _invoke<void>('updateRequestHeaders', {
+      'headers': credentials.requestHeaders,
+    });
+    return true;
+  }
 
   @override
   LiveSeekWindow? get liveSeekWindow => _liveSeekWindow;

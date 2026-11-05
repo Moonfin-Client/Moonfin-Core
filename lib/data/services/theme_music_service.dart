@@ -109,6 +109,14 @@ class ThemeMusicService implements AudioOwnable {
       fadeOutAndStop();
       return;
     }
+    if (item.serverId == 'seerr') {
+      if (_player == null) {
+        stop();
+      } else {
+        fadeOutAndStop();
+      }
+      return;
+    }
 
     final themeItemId =
         (item.type == 'Episode' || item.type == 'Season') &&
@@ -196,6 +204,9 @@ class ThemeMusicService implements AudioOwnable {
   }
 
   Future<void> _safeDispose(ThemeAudioPlayer player) async {
+    // A load dropped partway can leave its player as the current one, which a
+    // fade would otherwise keep driving.
+    if (identical(_player, player)) _player = null;
     try {
       await player.setVolume(0);
     } catch (_) {}
@@ -256,10 +267,26 @@ class ThemeMusicService implements AudioOwnable {
     return '${_client.baseUrl}/Audio/$songId/stream?static=true&audioCodec=mp3&audioBitrate=128000&${_client.serverType.tokenQueryParam}=$token';
   }
 
+  /// The fade-in step that matches the player's [current] volume. A fresh
+  /// player is silent and starts at 0, while a fade-out that gets reversed
+  /// carries on from where it is instead of dropping to silence first.
+  @visibleForTesting
+  static int fadeInStartStep({
+    required double current,
+    required double target,
+    required int steps,
+  }) => target > 0
+      ? ((current / target) * steps).clamp(0, steps - 1).floor()
+      : 0;
+
   void _fadeIn(int generation) {
     _fadeTimer?.cancel();
     final steps = _fadeDurationMs ~/ _fadeStepMs;
-    var step = 0;
+    var step = fadeInStartStep(
+      current: _player?.currentVolume ?? 0,
+      target: _targetVolume * 100,
+      steps: steps,
+    );
     _fadeTimer = Timer.periodic(Duration(milliseconds: _fadeStepMs), (timer) {
       if (generation != _playGeneration || _player == null) {
         timer.cancel();
@@ -279,7 +306,9 @@ class ThemeMusicService implements AudioOwnable {
     _fadeTimer?.cancel();
     _fadingOut = true;
     _fadeCompleter = Completer<void>();
-    final generation = _playGeneration;
+    // A fade ends whatever theme was still loading, so it can't start once
+    // the fade has begun.
+    final generation = ++_playGeneration;
     final currentVolume = player.currentVolume;
     final steps = _fadeDurationMs ~/ _fadeStepMs;
     var step = 0;

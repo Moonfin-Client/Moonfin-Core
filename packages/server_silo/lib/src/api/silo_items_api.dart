@@ -229,6 +229,7 @@ class SiloItemsApi
         return _seriesEpisodes(
           parentId,
           filters: filters,
+          minPremiereDate: minPremiereDate,
           startIndex: startIndex,
           limit: limit,
         );
@@ -1156,12 +1157,14 @@ class SiloItemsApi
 
   /// A series' episodes for an item query with the series as parent and
   /// episodes as the type: every season's, in Silo's order (season, then
-  /// episode), `IsPlayed`/`IsUnplayed` applied, then sliced. The sort asked
-  /// for is ignored: Moonfin asks this for "the first episode" or "any
-  /// unwatched one", and the natural order answers both.
+  /// episode), `IsPlayed`/`IsUnplayed` and the premiere date floor applied,
+  /// then sliced. The sort asked for is ignored: Moonfin asks this for "the
+  /// first episode", "any unwatched one" or "the ones aired lately", and the
+  /// natural order answers each once the floor is applied.
   Future<Map<String, dynamic>> _seriesEpisodes(
     String seriesId, {
     List<String>? filters,
+    DateTime? minPremiereDate,
     int? startIndex,
     int? limit,
   }) async {
@@ -1171,9 +1174,16 @@ class SiloItemsApi
     final all = (await getEpisodes(seriesId))['Items'] as List;
     final episodes = [
       for (final e in all.cast<Map<String, dynamic>>())
-        if (_matchesPlayedFilter(e, flags)) e,
+        if (_matchesPlayedFilter(e, flags) &&
+            (minPremiereDate == null || _premieredSince(e, minPremiereDate)))
+          e,
     ];
     return _slice(episodes, startIndex: startIndex, limit: limit);
+  }
+
+  static bool _premieredSince(Map<String, dynamic> item, DateTime floor) {
+    final premiered = DateTime.tryParse(item['PremiereDate'] as String? ?? '');
+    return premiered != null && !premiered.isBefore(floor);
   }
 
   static bool _matchesPlayedFilter(

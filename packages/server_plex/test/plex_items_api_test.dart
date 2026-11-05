@@ -35,6 +35,13 @@ class _FakeServer extends Interceptor {
   return (dio, requests);
 }
 
+Map<String, dynamic> _episode(String key, String title, [String? aired]) => {
+  'ratingKey': key,
+  'type': 'episode',
+  'title': title,
+  'originallyAvailableAt': ?aired,
+};
+
 void main() {
   test(
     'a library page asks Plex for the type, sort, filter and window',
@@ -944,6 +951,58 @@ void main() {
 
     expect(requests, isEmpty);
     expect(result['Items'], isEmpty);
+  });
+
+  test("a show's episodes since a date are read whole, then filtered and "
+      'paged', () async {
+    final (dio, requests) = _recordingDio({
+      'Metadata': [
+        _episode('1', 'Old', '2020-01-01'),
+        _episode('2', 'New', '2026-10-20'),
+        _episode('3', 'Newer', '2026-10-27'),
+        _episode('4', 'Undated'),
+      ],
+    });
+
+    final result = await PlexItemsApi(dio).getItems(
+      parentId: '17098',
+      includeItemTypes: ['Episode'],
+      recursive: true,
+      minPremiereDate: DateTime.utc(2026, 10, 4),
+      limit: 1,
+    );
+
+    final request = requests.single;
+    expect(request.path, '/library/metadata/17098/allLeaves');
+    expect(request.queryParameters, isNot(contains('X-Plex-Container-Size')));
+    expect((result['Items'] as List).map((item) => item['Name']), ['New']);
+    expect(result['TotalRecordCount'], 2);
+  });
+
+  test("a library's recent episodes keep Plex's paging and sort", () async {
+    final (dio, requests) = _recordingDio({
+      'totalSize': 900,
+      'Metadata': [
+        _episode('3', 'Newer', '2026-10-27'),
+        _episode('1', 'Old', '2020-01-01'),
+      ],
+    });
+
+    final result = await PlexItemsApi(dio).getItems(
+      parentId: 'section-2',
+      includeItemTypes: ['Episode'],
+      sortBy: 'PremiereDate',
+      sortOrder: 'Descending',
+      recursive: true,
+      minPremiereDate: DateTime.utc(2026, 10, 4),
+      limit: 300,
+    );
+
+    final request = requests.single;
+    expect(request.path, '/library/sections/2/all');
+    expect(request.queryParameters['sort'], 'originallyAvailableAt:desc');
+    expect(request.queryParameters['X-Plex-Container-Size'], 300);
+    expect((result['Items'] as List).map((item) => item['Name']), ['Newer']);
   });
 
   test('a season lists its episodes and a series all of them', () async {

@@ -367,13 +367,23 @@ enum VisualThemeId {
 /// sectioned grid modals. [nouveau] is the full-screen layout, with every
 /// section stacked down the page rather than behind tabs or cards.
 /// [minimalist] strips the screen back to artwork, one play button and the
-/// episodes, and is what Kids Mode always shows. Stored per server and user.
+/// episodes, and is what Kids Mode always shows. [stage] leads with the poster,
+/// with play under it and the details beside it. [premiere] centers the title
+/// over a backdrop that fills the screen, with every section down the page
+/// under it. [quickLook] opens a drawer over the screen the title was picked
+/// on, with Modern a press away for the full page. [frost] floats the title in
+/// a glass window over a blurred copy of its art, with tabs under its buttons.
+/// Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
   spotlight,
   nouveau,
-  minimalist;
+  minimalist,
+  stage,
+  premiere,
+  quickLook,
+  frost;
 }
 
 /// Selectable header layout for the library browse screen.
@@ -563,6 +573,7 @@ enum HomeSectionType {
   tmdbTrendingTvDaily('tmdb_trending_tv_daily'),
   tmdbTrendingTvWeekly('tmdb_trending_tv_weekly'),
   tmdbTrendingAllWeekly('tmdb_trending_all_weekly'),
+  mdblistWatchingNow('mdblist_watching_now'),
   radarrCalendar('radarr_calendar'),
   sonarrCalendar('sonarr_calendar'),
   sinceYouWatched1('sinceyouwatched1'),
@@ -774,6 +785,10 @@ enum SortDirection {
 
   final String apiValue;
 }
+
+/// How a poster shows its Seerr status: [badge] is Seerr's own dot in a corner
+/// and [banner] runs the status across the top. Stored per server and user.
+enum SeerrBadgeStyle { badge, banner }
 
 enum ExternalRowSortBy {
   none('Default (List Order)'),
@@ -1058,41 +1073,19 @@ enum ScreensaverTimeout {
 enum SinceYouWatchedSource {
   local,
   server,
-  online;
-
-  String get displayName => switch (this) {
-    SinceYouWatchedSource.local => 'Moonfin Recommends',
-    SinceYouWatchedSource.server => 'Jellyfin Recommends',
-    SinceYouWatchedSource.online => 'TMDb Similarity',
-  };
+  online,
 }
 
 enum SinceYouWatchedSourceType {
   movies,
   shows,
-  both;
-
-  String get displayName {
-    switch (this) {
-      case movies: return 'Movies';
-      case shows: return 'Shows';
-      case both: return 'Both';
-    }
-  }
+  both,
 }
 
 enum SinceYouWatchedSourceItem {
   recentlyWatched,
   favorites,
-  random;
-
-  String get displayName {
-    switch (this) {
-      case recentlyWatched: return 'Recently Watched';
-      case favorites: return 'Favorites';
-      case random: return 'Random';
-    }
-  }
+  random,
 }
 
 enum SinceYouWatchedNumRows {

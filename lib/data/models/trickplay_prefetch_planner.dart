@@ -34,6 +34,19 @@ class TrickplayPrefetchPlanner {
     for (var step = 1; step <= _stepsBehind; step++) {
       addPosition(step * (directionForward ? -backward : forward));
     }
+    // A held key crosses a whole sheet faster than the steps look ahead, so
+    // the next sheet is asked for as soon as the scrub enters one.
+    if (info.tilesPerImage > 1) {
+      indexes.addAll(
+        planImageIndexes(
+          info: info,
+          position: position,
+          totalDuration: totalDuration,
+          directionForward: directionForward,
+          sheetsAhead: 1,
+        ),
+      );
+    }
     return indexes.toList();
   }
 

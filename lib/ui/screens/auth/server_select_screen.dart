@@ -51,6 +51,10 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   final _authPrefs = GetIt.instance<AuthenticationPreferences>();
   final _deviceInfo = GetIt.instance<DeviceInfo>();
   final _discoveryService = ServerDiscoveryService();
+  // Separate nodes, because a node handed from a tile to the button keeps the
+  // tile's key handler, which the button has none of its own to replace
+  final _firstServerFocus = FocusNode(debugLabel: 'serverSelectFirstServer');
+  final _addServerFocus = FocusNode(debugLabel: 'serverSelectAddServer');
   StreamSubscription<ServerAdditionState>? _additionSub;
   StreamSubscription<DiscoveredServer>? _discoverySub;
 
@@ -142,8 +146,24 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     _startDiscovery();
   }
 
+  /// A remote's select key does nothing until something holds focus, so the
+  /// first entry takes it. Autofocus isn't used because a rebuilt autofocus
+  /// node pulls focus back from a dialog or sheet open over the page.
+  void _focusFirstIfIdle() {
+    if (!mounted) return;
+    final first = _serverRepo.servers.isEmpty
+        ? _addServerFocus
+        : _firstServerFocus;
+    final current = FocusManager.instance.primaryFocus;
+    if (current == null || first.ancestors.contains(current)) {
+      first.requestFocus();
+    }
+  }
+
   @override
   void dispose() {
+    _firstServerFocus.dispose();
+    _addServerFocus.dispose();
     _addressController.dispose();
     _additionSub?.cancel();
     _discoverySub?.cancel();
@@ -154,6 +174,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     await _serverRepo.loadStoredServers();
     if (mounted) {
       setState(() {});
+      // Waits for the saved servers so the first one can take focus
+      if (PlatformDetection.isTV) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _focusFirstIfIdle(),
+        );
+      }
     }
     await _autoConnectConfiguredServer();
   }
@@ -438,6 +464,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
 
   Future<void> _deleteServer(Server server) async {
     final l10n = AppLocalizations.of(context);
+    // Read before the dialog takes focus and hands it back a microtask later
+    final tileHadFocus = _firstServerFocus.hasFocus;
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
@@ -451,7 +479,14 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     );
     if (confirmed == true) {
       await _serverRepo.deleteServer(server.id);
-      if (mounted) setState(() {});
+      if (!mounted) return;
+      setState(() {});
+      // Removing the last tile drops its focus, so hand it to Add Server
+      if (tileHadFocus && _serverRepo.servers.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _addServerFocus.requestFocus();
+        });
+      }
     }
   }
 
@@ -524,7 +559,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
               ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            ...servers.map((server) => _buildSavedServerTile(server)),
+            for (var i = 0; i < servers.length; i++)
+              _buildSavedServerTile(
+                servers[i],
+                focusNode: i == 0 ? _firstServerFocus : null,
+              ),
             const SizedBox(height: 20),
           ],
           Text(
@@ -596,6 +635,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                 actions.add(
                   AddServerButton(
                     onPressed: _isConnecting ? null : _showAddServerDialog,
+                    focusNode: _addServerFocus,
                   ),
                 );
               }
@@ -641,10 +681,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     );
   }
 
-  Widget _buildSavedServerTile(Server server) {
+  Widget _buildSavedServerTile(Server server, {FocusNode? focusNode}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: _FocusableTile(
+        focusNode: focusNode,
         onTap: () => context.go('${Destinations.server}?serverId=${server.id}'),
         onLongPress: () => _deleteServer(server),
         child: Row(
@@ -767,11 +808,13 @@ class _FocusableTile extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final FocusNode? focusNode;
 
   const _FocusableTile({
     required this.child,
     required this.onTap,
     this.onLongPress,
+    this.focusNode,
   });
 
   @override
@@ -859,6 +902,7 @@ class _FocusableTileState extends State<_FocusableTile> {
       color: _focused ? _kAccent.withValues(alpha: 0.18) : _tileIdleColor(),
       borderRadius: radius,
       child: Focus(
+        focusNode: widget.focusNode,
         onFocusChange: (f) {
           if (!f) {
             _clearSelectKeyState();
