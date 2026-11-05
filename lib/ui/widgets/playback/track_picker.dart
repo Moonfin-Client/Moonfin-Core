@@ -73,6 +73,7 @@ abstract final class TrackPicker {
     PlayerMutation? runMutation,
     VoidCallback? onSubtitlesChanged,
     ValueChanged<bool>? onDialogOpenChanged,
+    ValueChanged<bool>? onSubtitleDelayBarOpenChanged,
   }) async {
     final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
@@ -292,10 +293,14 @@ abstract final class TrackPicker {
     if (result == null || !context.mounted) return;
     if (delayLimits != null && result == options.length - 1) {
       await _whileOpen(
-        onDialogOpenChanged,
+        (open) {
+          onDialogOpenChanged?.call(open);
+          if (!audio) onSubtitleDelayBarOpenChanged?.call(open);
+        },
         () => _showDelayBar(
           context,
           useRootNavigator: useRootNavigator,
+          top: !audio,
           bar: DelayFooter(
             initialDelay: delay,
             label: secondary ? l10n.secondaryDelayAdjustment : delayLabel,
@@ -322,6 +327,7 @@ abstract final class TrackPicker {
         runMutation: runMutation,
         onSubtitlesChanged: onSubtitlesChanged,
         onDialogOpenChanged: onDialogOpenChanged,
+        onSubtitleDelayBarOpenChanged: onSubtitleDelayBarOpenChanged,
       );
       return;
     }
@@ -402,19 +408,24 @@ abstract final class TrackPicker {
     }
   }
 
-  /// The delay on its own, in a slim bar at the bottom with nothing dimming
-  /// the picture, so the effect of each step can be seen while it's made.
+  /// The delay on its own, in a slim bar with nothing dimming the picture,
+  /// so the effect of each step can be seen while it's made. [top] puts it
+  /// at the top of the screen so a subtitle delay bar doesn't cover the
+  /// subtitles it's adjusting.
   static Future<void> _showDelayBar(
     BuildContext context, {
     required Widget bar,
     required bool useRootNavigator,
+    bool top = false,
   }) => showFocusRestoringDialog<void>(
     context: context,
     useRootNavigator: useRootNavigator,
     barrierColor: Colors.transparent,
     builder: (_) => Dialog(
-      alignment: Alignment.bottomCenter,
-      insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      alignment: top ? Alignment.topCenter : Alignment.bottomCenter,
+      insetPadding: top
+          ? const EdgeInsets.fromLTRB(24, 24, 24, 0)
+          : const EdgeInsets.fromLTRB(24, 0, 24, 24),
       backgroundColor: Colors.transparent,
       child: playerDialogPanel(
         constraints: const BoxConstraints(maxWidth: 480),
