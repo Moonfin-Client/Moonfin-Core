@@ -62,6 +62,9 @@ abstract final class TrackPicker {
   /// [onSubtitlesChanged] runs after a subtitle change lands.
   /// [onDialogOpenChanged] reports each dialog opening and closing, for an
   /// opener outside the navigator that the dialog's barrier doesn't cover.
+  /// [onSubtitleDelayBarOpenChanged] reports only the primary or secondary
+  /// subtitle delay bar opening and closing, so the player can clear its
+  /// controls off the subtitles meanwhile.
   static Future<void> show(
     BuildContext context, {
     required PlaybackManager manager,
@@ -292,15 +295,16 @@ abstract final class TrackPicker {
     );
     if (result == null || !context.mounted) return;
     if (delayLimits != null && result == options.length - 1) {
+      final subtitleBar = !audio;
       await _whileOpen(
         (open) {
           onDialogOpenChanged?.call(open);
-          if (!audio) onSubtitleDelayBarOpenChanged?.call(open);
+          if (subtitleBar) onSubtitleDelayBarOpenChanged?.call(open);
         },
         () => _showDelayBar(
           context,
           useRootNavigator: useRootNavigator,
-          top: !audio,
+          top: subtitleBar,
           bar: DelayFooter(
             initialDelay: delay,
             label: secondary ? l10n.secondaryDelayAdjustment : delayLabel,

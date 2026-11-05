@@ -4053,36 +4053,37 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         // bar is open, so closing it can hand focus back to
                         // the button that opened it.
                         Positioned.fill(
-                          child: IgnorePointer(
-                            ignoring: _subtitleDelayBarOpen,
-                            child: Opacity(
-                              opacity: _subtitleDelayBarOpen ? 0.0 : 1.0,
-                              child: Stack(
-                                children: [
-                                  const Positioned.fill(
-                                    child: IgnorePointer(
-                                      child: ColoredBox(
-                                        color: Color(0x4D000000),
-                                      ),
+                          child: Visibility(
+                            visible: !_subtitleDelayBarOpen,
+                            maintainState: true,
+                            maintainAnimation: true,
+                            maintainSize: true,
+                            maintainFocusability: true,
+                            child: Stack(
+                              children: [
+                                const Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: ColoredBox(
+                                      color: Color(0x4D000000),
                                     ),
                                   ),
-                                  // The chrome stays in the tree while mpv
-                                  // owns its own window: both native windows
-                                  // are WS_EX_TRANSPARENT, so these widgets
-                                  // are still what gets hit-tested - only
-                                  // their pixels are re-sent by
-                                  // HdrOverlayCapture.
-                                  _buildTopOverlay(context),
-                                  if (!PlatformDetection.useLeanbackUi &&
-                                      !_transportDocked)
-                                    Positioned.fill(
-                                      child: Center(
-                                        child: _buildCenterTransportControls(),
-                                      ),
+                                ),
+                                // The chrome stays in the tree while mpv
+                                // owns its own window: both native windows
+                                // are WS_EX_TRANSPARENT, so these widgets
+                                // are still what gets hit-tested - only
+                                // their pixels are re-sent by
+                                // HdrOverlayCapture.
+                                _buildTopOverlay(context),
+                                if (!PlatformDetection.useLeanbackUi &&
+                                    !_transportDocked)
+                                  Positioned.fill(
+                                    child: Center(
+                                      child: _buildCenterTransportControls(),
                                     ),
-                                  _buildBottomOverlay(context),
-                                ],
-                              ),
+                                  ),
+                                _buildBottomOverlay(context),
+                              ],
                             ),
                           ),
                         ),
@@ -7337,7 +7338,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         onSubtitleDelayBarOpenChanged: (open) {
           if (!mounted) return;
           setState(() => _subtitleDelayBarOpen = open);
-          if (!open) _showControls();
+          // Next Up or a skip prompt may have taken the controls down while
+          // the bar was up; only restart the hide countdown if they're still
+          // meant to show.
+          if (!open && _controlsVisible) _scheduleHide();
         },
       ),
     );

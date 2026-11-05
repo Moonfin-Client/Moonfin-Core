@@ -109,6 +109,7 @@ void main() {
     bool secondary = false,
     bool audio = true,
     ValueChanged<bool>? onDialogOpenChanged,
+    ValueChanged<bool>? onSubtitleDelayBarOpenChanged,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -123,6 +124,7 @@ void main() {
               secondary: secondary,
               clientFor: (_) => throw UnimplementedError(),
               onDialogOpenChanged: onDialogOpenChanged,
+              onSubtitleDelayBarOpenChanged: onSubtitleDelayBarOpenChanged,
             ),
             child: const Text('open'),
           ),
@@ -185,6 +187,55 @@ void main() {
     await tester.tap(find.byTooltip(l10n.delayPlusMs(100)));
     await tester.pump();
     expect(manager.secondarySubtitleDelaySeconds, 0.1);
+  });
+
+  // Issue #2128: the subtitle delay bar sits at the top, clear of the
+  // subtitles it's adjusting, and tells the player while it's open.
+  testWidgets('the subtitle delay bar opens at the top and reports itself', (
+    tester,
+  ) async {
+    final manager = _Manager(_Backend());
+    addTearDown(manager.dispose);
+    final events = <bool>[];
+    await openPicker(
+      tester,
+      manager,
+      secondary: true,
+      onSubtitleDelayBarOpenChanged: events.add,
+    );
+    expect(events, isEmpty);
+
+    await tester.tap(find.text(l10n.subtitleDelay));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Dialog>(find.byType(Dialog)).alignment,
+      Alignment.topCenter,
+    );
+    expect(events, [true]);
+
+    Navigator.of(tester.element(find.byType(Dialog))).pop();
+    await tester.pumpAndSettle();
+    expect(events, [true, false]);
+  });
+
+  testWidgets('the audio delay bar stays at the bottom', (tester) async {
+    final events = <bool>[];
+    await openPicker(
+      tester,
+      _Manager(_Backend()),
+      onSubtitleDelayBarOpenChanged: events.add,
+    );
+
+    await tester.tap(find.text(l10n.audioDelay));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Dialog>(find.byType(Dialog)).alignment,
+      Alignment.bottomCenter,
+    );
+
+    Navigator.of(tester.element(find.byType(Dialog))).pop();
+    await tester.pumpAndSettle();
+    expect(events, isEmpty);
   });
 
   testWidgets('secondary size can be exposed without a color override', (
