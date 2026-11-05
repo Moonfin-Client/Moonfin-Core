@@ -3151,6 +3151,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get watchedIndicators => 'প্রেক্ষিত সূচক';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'সর্বদা';
 
   @override

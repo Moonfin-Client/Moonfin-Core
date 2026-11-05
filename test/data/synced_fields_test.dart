@@ -297,6 +297,7 @@ void main() {
     'showLiveTvButton',
     'showLoadingAnimationText',
     'showMediaDetailsOnLibraryPage',
+    'showPosterLabels',
     'showSeerrAvailabilityBadges',
     'showSeerrButton',
     'showServerMessagesButton',

@@ -3109,6 +3109,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get watchedIndicators => '觀察指標';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => '總是';
 
   @override

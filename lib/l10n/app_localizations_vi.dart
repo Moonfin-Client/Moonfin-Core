@@ -3159,6 +3159,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get watchedIndicators => 'Các chỉ số đã xem';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'Luôn luôn';
 
   @override

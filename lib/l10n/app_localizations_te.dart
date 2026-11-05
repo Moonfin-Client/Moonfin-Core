@@ -3165,6 +3165,13 @@ class AppLocalizationsTe extends AppLocalizations {
   String get watchedIndicators => 'సూచికలను వీక్షించారు';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'ఎల్లప్పుడూ';
 
   @override

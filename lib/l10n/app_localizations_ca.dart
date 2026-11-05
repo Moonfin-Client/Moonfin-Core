@@ -3187,6 +3187,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get watchedIndicators => 'Indicadors de contingut vist';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'Sempre';
 
   @override

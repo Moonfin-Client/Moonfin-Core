@@ -3170,6 +3170,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchedIndicators => 'Katsotut indikaattorit';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'Aina';
 
   @override

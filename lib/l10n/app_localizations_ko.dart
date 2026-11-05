@@ -3097,6 +3097,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get watchedIndicators => '시청 표시';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => '항상';
 
   @override

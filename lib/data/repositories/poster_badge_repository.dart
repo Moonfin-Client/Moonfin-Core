@@ -1,18 +1,49 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/platform_detection.dart';
 import '../../util/signed_in_server_features.dart';
 
-/// One label the admin's rules put on an item's poster.
+enum PosterBadgeCorner { topLeft, topRight, bottomLeft, bottomRight }
+
+/// One label the admin's rules put on an item's poster. The server fills in every
+/// default, so what arrives is what gets drawn.
 class PosterBadge {
   final String label;
 
   /// As the admin picked it, #RRGGBB.
   final String color;
 
-  const PosterBadge({required this.label, required this.color});
+  /// #RRGGBB, or empty to pick it from the style.
+  final String textColor;
+
+  /// solid, glass, outline, dark or light.
+  final String style;
+
+  /// From 10 to 100. Fades the fill, never the text.
+  final int opacity;
+
+  /// small, medium, large or xlarge.
+  final String size;
+
+  final PosterBadgeCorner corner;
+
+  /// rounded, pill or square.
+  final String shape;
+
+  const PosterBadge({
+    required this.label,
+    required this.color,
+    this.textColor = '',
+    this.style = 'solid',
+    this.opacity = 100,
+    this.size = 'medium',
+    this.corner = PosterBadgeCorner.topLeft,
+    this.shape = 'rounded',
+  });
 }
 
 /// Poster badges fetched from the Moonbase plugin, kept in memory for the session.
@@ -25,8 +56,8 @@ class PosterBadgeRepository {
 
   /// Set when the route is missing, meaning no Moonbase or one older than this feature,
   /// and when the admin has no rules. Nothing would resolve, so nothing asks until the
-  /// window is up.
-  static const _unavailableRetryWindow = Duration(minutes: 10);
+  /// window is up. Short enough that a first rule reaches people without a restart.
+  static const _unavailableRetryWindow = Duration(minutes: 5);
 
   final MediaServerClient _client;
   final _dio = Dio(
@@ -43,7 +74,62 @@ class PosterBadgeRepository {
   Timer? _batchTimer;
   DateTime? _unavailableSince;
 
+  /// How many labels a corner holds, as the admin set it.
+  int maxPerCorner = 2;
+
+  /// Whether this person gets any label on this device, null until known.
+  /// Settings hide what would do nothing while it isn't true.
+  final available = ValueNotifier<bool?>(null);
+
+  bool _checking = false;
+  bool _disposed = false;
+
+  /// The server's fingerprint of the admin's rules, null until the first answer.
+  String? _version;
+
+  /// Goes up when the admin changes the rules, so posters on screen ask again.
+  final rulesChanged = ValueNotifier<int>(0);
+
+  /// A request can still be on its way when the user signs out.
+  void _setAvailable(bool value) {
+    if (!_disposed) available.value = value;
+  }
+
   PosterBadgeRepository(this._client);
+
+  /// Asks the server once whether this person gets any label here. Rows of posters
+  /// answer it too, so this only costs a request when settings open first.
+  Future<void> checkAvailable() async {
+    if (available.value != null || _checking) return;
+    _checking = true;
+    try {
+      final token = _client.accessToken;
+      final baseUrl = _client.baseUrl;
+      if (token == null ||
+          baseUrl.isEmpty ||
+          !serverHasMoonfinPlugin(_client)) {
+        _setAvailable(false);
+        return;
+      }
+
+      final response = await _dio.get(
+        '$baseUrl/Moonfin/PosterBadges/Items',
+        queryParameters: {'profile': _profile},
+        options: Options(
+          headers: {'Authorization': 'MediaBrowser Token="$token"'},
+        ),
+      );
+      final data = response.data;
+      _setAvailable(data is Map && data['enabled'] == true);
+    } on DioException catch (e) {
+      // An older Moonbase has no such route.
+      if (e.response?.statusCode == 404) _setAvailable(false);
+    } catch (_) {
+      // Stays unknown, so the next visit asks again.
+    } finally {
+      _checking = false;
+    }
+  }
 
   /// The badges for an item already asked about, or null when it hasnt been.
   List<PosterBadge>? peek(String itemId) => _badges[itemId];
@@ -102,16 +188,25 @@ class PosterBadgeRepository {
 
       final response = await _dio.get(
         '$baseUrl/Moonfin/PosterBadges/Items',
-        queryParameters: {'ids': ids.join(',')},
+        // The server shows each label only on the devices the admin picked.
+        queryParameters: {'ids': ids.join(','), 'profile': _profile},
         options: Options(
           headers: {'Authorization': 'MediaBrowser Token="$token"'},
         ),
       );
 
       final data = response.data;
+      final version = data is Map ? data['version'] : null;
+      if (version is String) {
+        if (_version != null && _version != version) _forgetLabels();
+        _version = version;
+      }
       if (data is Map && data['enabled'] == false) {
         _unavailableSince = DateTime.now();
       }
+      if (data is Map) _setAvailable(data['enabled'] == true);
+      final max = data is Map ? data['maxPerCorner'] : null;
+      if (max is int && max > 0) maxPerCorner = max;
 
       final items = data is Map ? data['items'] : null;
       for (final id in ids) {
@@ -119,7 +214,10 @@ class PosterBadgeRepository {
         _failedAt.remove(id);
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) _unavailableSince = DateTime.now();
+      if (e.response?.statusCode == 404) {
+        _unavailableSince = DateTime.now();
+        _setAvailable(false);
+      }
       _markFailed(ids);
     } catch (_) {
       _markFailed(ids);
@@ -130,11 +228,25 @@ class PosterBadgeRepository {
     }
   }
 
+  /// The labels kept so far were worked out from the old rules. Posters keep showing
+  /// them until the new ones arrive, so nothing blinks.
+  void _forgetLabels() {
+    _badges.clear();
+    _failedAt.clear();
+    if (!_disposed) rulesChanged.value++;
+  }
+
   void _markFailed(List<String> ids) {
     final now = DateTime.now();
     for (final id in ids) {
       _failedAt[id] = now;
     }
+  }
+
+  static String get _profile {
+    if (PlatformDetection.isTV) return 'tv';
+    if (PlatformDetection.useMobileUi) return 'mobile';
+    return 'desktop';
   }
 
   static List<PosterBadge> _parseBadges(Object? raw) {
@@ -146,11 +258,21 @@ class PosterBadgeRepository {
           PosterBadge(
             label: entry['label'] as String,
             color: entry['color'] as String? ?? '',
+            textColor: entry['textColor'] as String? ?? '',
+            style: entry['style'] as String? ?? 'solid',
+            opacity: (entry['opacity'] as num?)?.toInt() ?? 100,
+            size: entry['size'] as String? ?? 'medium',
+            corner: PosterBadgeCorner.values.firstWhere(
+              (corner) => corner.name == entry['corner'],
+              orElse: () => PosterBadgeCorner.topLeft,
+            ),
+            shape: entry['shape'] as String? ?? 'rounded',
           ),
     ];
   }
 
   void dispose() {
+    _disposed = true;
     _batchTimer?.cancel();
 
     // The timer is what would have released these, so they have to be let go by hand
@@ -163,5 +285,7 @@ class PosterBadgeRepository {
     _badges.clear();
     _failedAt.clear();
     _dio.close(force: true);
+    available.dispose();
+    rulesChanged.dispose();
   }
 }

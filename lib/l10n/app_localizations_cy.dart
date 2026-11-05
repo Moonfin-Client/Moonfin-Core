@@ -3181,6 +3181,13 @@ class AppLocalizationsCy extends AppLocalizations {
   String get watchedIndicators => 'Dangosyddion Gwylio';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'Bob amser';
 
   @override

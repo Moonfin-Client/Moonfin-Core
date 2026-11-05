@@ -102,6 +102,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('bottomNavbarTabs', UserPreferences.bottomNavbarTabs, SyncCodec.csvList),
   SyncedField('focusColor', UserPreferences.focusColor, SyncCodec.enumName, enumValues: prefs.AppTheme.values),
   SyncedField('watchedIndicator', UserPreferences.watchedIndicatorBehavior, SyncCodec.enumName, enumValues: prefs.WatchedIndicatorBehavior.values),
+  SyncedField('showPosterLabels', UserPreferences.showPosterLabels, SyncCodec.boolean),
   SyncedField('cardFocusExpansion', UserPreferences.cardFocusExpansion, SyncCodec.boolean),
   SyncedField('homeRowsStyle', UserPreferences.homeRowsStyle, SyncCodec.enumName, enumValues: prefs.HomeRowsStyle.values),
   SyncedField('modernHomeRowsPadding', UserPreferences.modernHomeRowsPadding, SyncCodec.integer),

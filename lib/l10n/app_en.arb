@@ -4287,6 +4287,14 @@
   "@watchedIndicators": {
     "description": "Setting for watched indicator display"
   },
+  "showPosterLabels": "Poster Labels",
+  "@showPosterLabels": {
+    "description": "Setting that shows or hides the labels the server admin adds to posters"
+  },
+  "showPosterLabelsSubtitle": "Show the labels on posters, such as 4K or HDR.",
+  "@showPosterLabelsSubtitle": {
+    "description": "Subtitle of the Poster Labels setting"
+  },
   "always": "Always",
   "@always": {
     "description": "Option: always"

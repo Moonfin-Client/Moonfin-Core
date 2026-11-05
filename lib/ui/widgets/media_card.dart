@@ -998,6 +998,21 @@ class _CardImage extends StatelessWidget {
                       ),
                     ),
                   ),
+                // The other corners, clear of the Seerr banner, the watched tick and
+                // the progress bar.
+                if (posterBadgeItemId != null)
+                  Positioned.fill(
+                    child: PosterBadgeCorners(
+                      itemId: posterBadgeItemId!,
+                      scale: 0.85,
+                      top:
+                          bannerInset +
+                          (showSeerrDot || _showWatchedIndicator ? 34 : 6),
+                      bottom: playedPercentage != null && playedPercentage! > 0
+                          ? 18
+                          : 6,
+                    ),
+                  ),
                 ...imageOverlays,
               ],
             ),

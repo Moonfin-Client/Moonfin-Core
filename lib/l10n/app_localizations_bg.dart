@@ -3163,6 +3163,13 @@ class AppLocalizationsBg extends AppLocalizations {
   String get watchedIndicators => 'Наблюдавани индикатори';
 
   @override
+  String get showPosterLabels => 'Poster Labels';
+
+  @override
+  String get showPosterLabelsSubtitle =>
+      'Show the labels on posters, such as 4K or HDR.';
+
+  @override
   String get always => 'Винаги';
 
   @override

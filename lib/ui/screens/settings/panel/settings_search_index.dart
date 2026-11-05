@@ -664,6 +664,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.watchedIndicators,
       keywords: ['checkmark', 'seen', 'badge'],
     ),
+    if (_posterLabelsAvailable)
+      style.leaf(
+        'pref_show_poster_labels',
+        l10n.showPosterLabels,
+        subtitle: l10n.showPosterLabelsSubtitle,
+        keywords: ['badge', 'tag', 'quality', '4k', 'hdr'],
+      ),
     if (!PlatformDetection.useMobileUi) ...[
       style.leaf(
         'pref_page_transition_speed',
