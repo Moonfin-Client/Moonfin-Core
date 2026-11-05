@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -905,33 +907,66 @@ Future<List<AdminAnalyticsItem>> _loadLibraryItems(
   ];
 }
 
+/// Item pages read at once across every library. Jellyfin only starts its
+/// answer once a whole page of MediaSources is built. With every library
+/// reading big pages together, that start slipped past the client's 8s
+/// connect timeout, which on web aborts the request.
+final _itemPages = _Slots(4);
+
+/// Runs tasks with at most [_free] of them in flight, the rest in order.
+class _Slots {
+  _Slots(this._free);
+
+  int _free;
+  final _waiting = Queue<Completer<void>>();
+
+  Future<T> run<T>(Future<T> Function() task) async {
+    if (_free > 0) {
+      _free--;
+    } else {
+      final turn = Completer<void>();
+      _waiting.add(turn);
+      await turn.future;
+    }
+    try {
+      return await task();
+    } finally {
+      if (_waiting.isEmpty) {
+        _free++;
+      } else {
+        _waiting.removeFirst().complete();
+      }
+    }
+  }
+}
+
 /// Every matching item, the first page alone to learn the total and the rest
-/// a few at a time.
+/// queued behind the shared page limit.
 Future<List<Map<String, dynamic>>> _fetchAllItems(
   MediaServerClient client, {
   required String parentId,
   required List<String> includeItemTypes,
   String? fields,
 }) async {
-  const pageSize = 1000;
-  const parallelPages = 4;
+  const pageSize = 300;
 
-  Future<Map<String, dynamic>> page(int startIndex) =>
-      // GET /Items takes the user from the token, /Users/{id}/Items is obsolete.
-      client.itemsApi.getItems(
-        serverWide: true,
-        parentId: parentId,
-        includeItemTypes: includeItemTypes,
-        recursive: true,
-        fields: fields,
-        sortBy: 'SortName',
-        sortOrder: 'Ascending',
-        startIndex: startIndex,
-        limit: pageSize,
-        enableTotalRecordCount: true,
-        enableImageTypes: 'Primary',
-        imageTypeLimit: 1,
-      );
+  Future<Map<String, dynamic>> page(int startIndex) => _itemPages.run(
+    // GET /Items takes the user from the token, /Users/{id}/Items is obsolete.
+    () => client.itemsApi.getItems(
+      serverWide: true,
+      parentId: parentId,
+      includeItemTypes: includeItemTypes,
+      recursive: true,
+      fields: fields,
+      sortBy: 'SortName',
+      sortOrder: 'Ascending',
+      startIndex: startIndex,
+      limit: pageSize,
+      enableTotalRecordCount: true,
+      enableImageTypes: 'Primary',
+      imageTypeLimit: 1,
+    ),
+  );
 
   final first = await page(0);
   final items = _mapList(first['Items']);
@@ -945,13 +980,9 @@ Future<List<Map<String, dynamic>>> _fetchAllItems(
   final starts = [
     for (var start = pageSize; start < total; start += pageSize) start,
   ];
-  for (var i = 0; i < starts.length; i += parallelPages) {
-    final pages = await Future.wait(
-      starts.skip(i).take(parallelPages).map(page),
-    );
-    for (final response in pages) {
-      items.addAll(_mapList(response['Items']));
-    }
+  final pages = await Future.wait(starts.map(page));
+  for (final response in pages) {
+    items.addAll(_mapList(response['Items']));
   }
   return items;
 }

@@ -62,6 +62,45 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   }
 }
 
+/// Pages through big libraries slowly and records how many reads overlap.
+class _PagingItemsApi extends Fake implements ItemsApi {
+  _PagingItemsApi(this.totals);
+
+  final Map<String, int> totals;
+  final limits = <int>{};
+  final starts = <String, List<int>>{};
+  var inFlight = 0;
+  var maxInFlight = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName != #getItems) {
+      return super.noSuchMethod(invocation);
+    }
+    final args = invocation.namedArguments;
+    final parentId = args[#parentId] as String;
+    final start = args[#startIndex] as int;
+    final limit = args[#limit] as int;
+    final total = totals[parentId]!;
+    return () async {
+      inFlight++;
+      maxInFlight = inFlight > maxInFlight ? inFlight : maxInFlight;
+      limits.add(limit);
+      (starts[parentId] ??= []).add(start);
+      await Future<void>.delayed(const Duration(milliseconds: 2));
+      inFlight--;
+      final end = start + limit < total ? start + limit : total;
+      return <String, dynamic>{
+        'Items': [
+          for (var i = start; i < end; i++)
+            {'Id': '$parentId-$i', 'Name': 'Item $i', 'Type': 'Episode'},
+        ],
+        'TotalRecordCount': total,
+      };
+    }();
+  }
+}
+
 void main() {
   late _FakeItemsApi items;
   late _MockMediaServerClient client;
@@ -229,6 +268,27 @@ void main() {
 
     final items = await container.read(adminAnalyticsItemsProvider(query).future);
     expect(items.map((item) => item.id), ['s1', 'a1', 'b2', 'b3']);
+  });
+
+  test('big libraries read small pages, a few at a time across all of them', () async {
+    final paging = _PagingItemsApi({'t1': 1300, 't2': 950});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final lists = await Future.wait([
+      for (final id in ['t1', 't2'])
+        container.read(
+          adminLibraryItemsProvider((itemId: id, collectionType: 'tvshows')).future,
+        ),
+    ]);
+
+    expect(paging.maxInFlight, 4);
+    expect(paging.limits, {300});
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600, 900, 1200]));
+    expect(paging.starts['t2'], unorderedEquals([0, 300, 600, 900]));
+    expect(lists[0].map((item) => item.id), [for (var i = 0; i < 1300; i++) 't1-$i']);
+    expect(lists[1], hasLength(950));
   });
 
   testWidgets('home videos count videos and photos, collections need no /Items', (
