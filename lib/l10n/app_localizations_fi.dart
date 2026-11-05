@@ -245,7 +245,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä yksityiskohdat. Premiere keskittää otsikon näytön täyttävän taustakuvan päälle, ja kaikki sivun osiot sijaitsevat sen alapuolella.';
+      'Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä tiedot. Premiere keskittää otsikon koko näytön täyttävälle taustalle, ja kaikki osiot sijaitsevat sen alla sivua alaspäin. Quick Look avaa laatikon sen näytön päälle, jolla olit, ja koko sivu avautuu yhdellä painalluksella. Frost sijoittaa otsikon kelluvaan lasi-ikkunaan sen taideteoksen sumennetun kopion päälle, ja sen osat ovat välilehdissä painikkeiden alla.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassinen';
@@ -474,16 +474,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailScreenStylePremiere => 'Premiere';
 
   @override
-  String get detailScreenStyleQuickLook => 'Quick Look';
+  String get detailScreenStyleQuickLook => 'Pikakatsaus';
 
   @override
-  String get detailScreenStyleFrost => 'Frost';
+  String get detailScreenStyleFrost => 'Pakkanen';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Avaa koko sivu';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Takaisin sulkemiseen';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
@@ -5667,17 +5667,17 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Näytä kauden saatavuustiedot mediatietosivuilla';
+      'Näytä Seerr tila julisteissa ja kausissa kaikkialla sovelluksessa';
 
   @override
-  String get seerrBadgeStyle => 'Badge Style';
+  String get seerrBadgeStyle => 'Tunnuksen tyyli';
 
   @override
   String get seerrBadgeStyleDescription =>
-      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+      'Badge sijoittaa Seerrin pisteen kulmaan. Bannerissa tilatiedot näkyvät julisteen yläreunassa.';
 
   @override
-  String get seerrBadgeStyleBadge => 'Badge';
+  String get seerrBadgeStyleBadge => 'Merkki';
 
   @override
   String get seerrNotificationsSection => 'Ilmoitukset';
@@ -15237,18 +15237,18 @@ class AppLocalizationsFi extends AppLocalizations {
       'Otsikko oli keskitetty koko näytön kokoisen taustakuvan päälle, ja kaikki muu oli sijoitettu sivun alaosaan.';
 
   @override
-  String get setupStyleQuickLook => 'Quick Look';
+  String get setupStyleQuickLook => 'Pikakatsaus';
 
   @override
   String get setupDetailQuickLookHint =>
-      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+      'Auki avautuva valikko, jossa näkyy se näyttö, jolla olit, sekä toistopainike ja perustoiminnot, ja koko sivu avautuu yhdellä painalluksella.';
 
   @override
-  String get setupStyleFrost => 'Frost';
+  String get setupStyleFrost => 'Pakkanen';
 
   @override
   String get setupDetailFrostHint =>
-      'The title in a glass window over its blurred art, with tabs under the buttons.';
+      'Lasiruudussa oleva otsikko sumennetun taiteen yläpuolella, ja painikkeiden alla olevat välilehdet.';
 
   @override
   String get setupNavbarStyleQuestion =>
@@ -17013,11 +17013,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsPreviewSaved => 'Tallennettu';
 
   @override
-  String get smartSearch => 'Smart Search';
+  String get smartSearch => 'Älykäs haku';
 
   @override
   String smartSearchOnSeerr(String seerr) {
-    return 'Smart Search on $seerr';
+    return 'Älykäs haku päällä $seerr';
   }
 
   @override

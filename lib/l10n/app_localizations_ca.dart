@@ -242,7 +242,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis. Escenari posa el pòster al davant, amb el botó de reproducció a sota i els detalls al costat. Estrena centra el títol sobre un teló de fons que omple la pantalla, amb totes les seccions a sota al llarg de la pàgina.';
+      'Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis. Escenari posa el pòster al davant, amb el botó de reproducció a sota i els detalls al costat. Estrena centra el títol sobre un teló de fons que omple la pantalla, amb totes les seccions a sota al llarg de la pàgina. Vista ràpida obre un calaix sobre la pantalla on eres, amb la pàgina completa a només una pulsació. Esmerilat fa surar el títol en una finestra de vidre sobre una còpia difuminada de la seva il·lustració, amb les seves parts en pestanyes sota els botons.';
 
   @override
   String get detailScreenStyleMoonfin => 'Clàssic';
@@ -470,20 +470,20 @@ class AppLocalizationsCa extends AppLocalizations {
   String get detailScreenStylePremiere => 'Estrena';
 
   @override
-  String get detailScreenStyleQuickLook => 'Quick Look';
+  String get detailScreenStyleQuickLook => 'Vista ràpida';
 
   @override
-  String get detailScreenStyleFrost => 'Frost';
+  String get detailScreenStyleFrost => 'Esmerilat';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Obre la pàgina completa';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Prem Enrere per tancar';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
-    return '$played of $total';
+    return '$played de $total';
   }
 
   @override
@@ -5699,17 +5699,17 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Mostra les insígnies de disponibilitat de temporades a les pàgines de detalls dels mitjans';
+      'Mostra l\'estat de Seerr als pòsters i a les temporades de tota l\'aplicació';
 
   @override
-  String get seerrBadgeStyle => 'Badge Style';
+  String get seerrBadgeStyle => 'Estil de la insígnia';
 
   @override
   String get seerrBadgeStyleDescription =>
-      'Badge puts Seerr\'s dot in a corner. Banner runs the status across the top of the poster.';
+      '«Insígnia» posa el punt de Seerr en una cantonada. «Bàner» mostra l\'estat a la part superior del pòster.';
 
   @override
-  String get seerrBadgeStyleBadge => 'Badge';
+  String get seerrBadgeStyleBadge => 'Insígnia';
 
   @override
   String get seerrNotificationsSection => 'Notificacions';
@@ -15382,18 +15382,18 @@ class AppLocalizationsCa extends AppLocalizations {
       'El títol centrat sobre un teló de fons a pantalla completa, amb tota la resta a sota al llarg de la pàgina.';
 
   @override
-  String get setupStyleQuickLook => 'Quick Look';
+  String get setupStyleQuickLook => 'Vista ràpida';
 
   @override
   String get setupDetailQuickLookHint =>
-      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+      'Un calaix sobre la pantalla on eres, amb el botó de reproducció i el més bàsic, i la pàgina completa a només una pulsació.';
 
   @override
-  String get setupStyleFrost => 'Frost';
+  String get setupStyleFrost => 'Esmerilat';
 
   @override
   String get setupDetailFrostHint =>
-      'The title in a glass window over its blurred art, with tabs under the buttons.';
+      'El títol en una finestra de vidre sobre la seva il·lustració difuminada, amb pestanyes sota els botons.';
 
   @override
   String get setupNavbarStyleQuestion =>
@@ -17174,11 +17174,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsPreviewSaved => 'Desat';
 
   @override
-  String get smartSearch => 'Smart Search';
+  String get smartSearch => 'Cerca intel·ligent';
 
   @override
   String smartSearchOnSeerr(String seerr) {
-    return 'Smart Search on $seerr';
+    return 'Cerca intel·ligent a $seerr';
   }
 
   @override
