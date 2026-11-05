@@ -823,8 +823,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  List<GuideChannel> get _channels => _syncedChannels;
-
   GuideChannel get _currentChannel => _syncedChannels[_currentIndex];
 
   @override
@@ -853,7 +851,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).failedToUpdateFavoriteChannel)),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).failedToUpdateFavoriteChannel,
+            ),
+          ),
         );
       }
     }
@@ -1344,7 +1346,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _warmChannelCarousel() {
     if (!PlatformDetection.isTV || widget.channels.length < 2) return;
     final prewarm = _carouselPrewarm ??= ChannelCarouselPrewarm(_client);
-    prewarm.tuned(_channels, _currentChannel.id);
+    prewarm.tuned(_syncedChannels, _currentChannel.id);
   }
 
   void _showChannelCarousel() {
@@ -1957,13 +1959,15 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           final delta = event.logicalKey == LogicalKeyboardKey.channelUp
               ? 1
               : -1;
-          // The guide's order, as the carousel and arrow zapping use; wraps.
+          // Follows the guide's order, like the carousel, and wraps around.
           final next = (_currentIndex + delta) % widget.channels.length;
           if (next != _currentIndex) unawaited(_switchChannel(next));
         }
         return KeyEventResult.handled;
       case LogicalKeyboardKey.mediaRecord:
-        if (event is KeyDownEvent) unawaited(_showRecordingDialog());
+        if (event is KeyDownEvent && _canRecordCurrentProgram) {
+          unawaited(_showRecordingDialog());
+        }
         return KeyEventResult.handled;
       case LogicalKeyboardKey.arrowUp:
         if (PlatformDetection.isTV) {
@@ -2262,7 +2266,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     return Positioned.fill(
       child: ChannelCarouselOverlay(
         client: _client,
-        channels: _channels,
+        channels: _syncedChannels,
         currentChannelId: _currentChannel.id,
         selectionRevision: _carouselSelectionRevision,
         onChannelSelected: _onCarouselChannelSelected,
@@ -2691,8 +2695,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
             focusNode: PlatformDetection.isTV ? _tvFavoriteFocus : null,
-            icon: Icons.favorite,
-            iconColor: _currentChannel.isFavorite ? Colors.red : Colors.grey,
+            icon: _currentChannel.isFavorite
+                ? Icons.favorite
+                : Icons.favorite_border,
+            iconColor: _currentChannel.isFavorite
+                ? Theme.of(context).colorScheme.error
+                : Colors.white,
             tooltip: _currentChannel.isFavorite
                 ? l10n.unfavoriteChannel
                 : l10n.favoriteChannel,

@@ -242,8 +242,8 @@ void main() {
     final favorite = find.byTooltip(l10n.favoriteChannel);
     expect(favorite, findsOneWidget);
     expect(tester.widget<Icon>(find.descendant(
-      of: favorite, matching: find.byIcon(Icons.favorite),
-    )).color, Colors.grey);
+      of: favorite, matching: find.byIcon(Icons.favorite_border),
+    )).color, Colors.white);
 
     await tester.tap(favorite);
     await tester.pump();
@@ -252,7 +252,7 @@ void main() {
     expect(unfavorite, findsOneWidget);
     expect(tester.widget<Icon>(find.descendant(
       of: unfavorite, matching: find.byIcon(Icons.favorite),
-    )).color, Colors.red);
+    )).color, Theme.of(tester.element(unfavorite)).colorScheme.error);
 
     await press(tester, LogicalKeyboardKey.channelUp);
     await tester.pump(const Duration(milliseconds: 100));
