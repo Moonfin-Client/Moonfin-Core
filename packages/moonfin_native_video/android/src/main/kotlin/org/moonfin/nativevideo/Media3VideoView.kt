@@ -2808,6 +2808,7 @@ class Media3VideoView(
             AssHandlerConfig(cacheSize = assCacheSizeMb()),
         )
         registerAssFonts(assHandler)
+        val assDialogue = AssDialogueQueue()
         // Tie extractor callbacks to this player, not a later replacement.
         val associatedAssOverlay = AtomicReference<MoonfinAssOverlayView?>()
         // Serializes track creation and dialogue reads against the overlay's
@@ -2821,7 +2822,7 @@ class Media3VideoView(
         val doviExtractorsFactory = DoviCompatExtractorsFactory(
             LiveFmp4ExtractorsFactory(
                 extractorsFactory.withMoonfinMkvSupport(
-                    assParserFactory, assHandler,
+                    assParserFactory, assHandler, assDialogue,
                     onAssDialogueLoaded = { associatedAssOverlay.get()?.onAssDialogueLoaded() },
                 ),
                 assParserFactory,
@@ -2860,14 +2861,16 @@ class Media3VideoView(
             .setPauseAtEndOfMediaItems(false)
             .build()
             .also {
-                attachAssOverlay(assHandler)
+                attachAssOverlay(assHandler, assDialogue)
                 associatedAssOverlay.set(requireNotNull(assOverlayView))
                 // init() sets up the handler's looper and registers it as a
                 // listener. Its callbacks reach libass unlocked, so the
                 // forwarder takes that seat instead.
                 assHandler.init(it)
                 it.removeListener(assHandler)
-                it.addListener(MoonfinAssPlayerListener(assHandler, requireNotNull(assOverlayView)))
+                it.addListener(
+                    MoonfinAssPlayerListener(assHandler, assDialogue, requireNotNull(assOverlayView)),
+                )
                 if (currentMediaType != "audio") {
                     if (useSurfaceView) {
                         it.setVideoSurfaceView(videoView as SurfaceView)
@@ -2946,9 +2949,9 @@ class Media3VideoView(
         })
     }
 
-    private fun attachAssOverlay(assHandler: AssHandler) {
+    private fun attachAssOverlay(assHandler: AssHandler, assDialogue: AssDialogueQueue) {
         releaseAssOverlay()
-        val overlay = MoonfinAssOverlayView(context, assHandler)
+        val overlay = MoonfinAssOverlayView(context, assHandler, assDialogue)
         overlay.onInkChanged = { ink ->
             assInk = ink
             pushAssInk()
