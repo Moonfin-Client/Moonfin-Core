@@ -4,6 +4,9 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/focus/input_mode_tracker.dart';
+import '../bounded_network_image.dart';
+import '../focus/focusable_wrapper.dart';
 import 'seerr_advanced_request_options.dart';
 import 'seerr_quota_row.dart';
 import 'seerr_request_action.dart';
@@ -92,6 +95,20 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   late final Set<int> _selectedSeasons = {?widget.season};
   late final SeerrAdvancedRequestController _advanced;
 
+  /// Whether the sheet is on its first step, picking which of Sonarr's series
+  /// this is. Only a series TMDB has no TVDB id for starts there.
+  late bool _matching = widget.isTv && widget.vm.needsSeriesMatch;
+
+  /// Sonarr's matches for the series, null while they load. Empty means
+  /// Sonarr has nothing to match it with, which leaves nothing to request.
+  List<SeerrSonarrSeries>? _matches;
+  int? _tvdbId;
+
+  /// The card a remote lands on in the match step: the first match, or the
+  /// one already picked when coming back from the request.
+  final FocusNode _matchFocus = FocusNode(debugLabel: 'seerrSeriesMatch');
+  final FocusNode _nextFocus = FocusNode(debugLabel: 'seerrSeriesMatchNext');
+
   /// The track being asked for, so flipping the switch redraws the sheet
   /// against the one the request will actually go out on.
   SeerrQualityStatus get _quality => widget.vm.state.quality(is4k: _is4k);
@@ -110,12 +127,66 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
     }
     widget.vm.loadQuota();
     widget.vm.addListener(_onVmChanged);
+    if (_matching) _loadMatches();
+  }
+
+  /// When no lookup could be made, the sheet goes on to the request as it
+  /// would without the step. That covers Silo, a Seerr with no Sonarr, and a
+  /// lookup that failed. A lookup that found nothing stays on the step, since
+  /// Seerr would drop the request the moment it tried to send it to Sonarr.
+  Future<void> _loadMatches() async {
+    final matches = await widget.vm.lookupSeriesMatches();
+    if (!mounted) return;
+    setState(() {
+      if (matches == null) {
+        _matching = false;
+      } else {
+        // Seerr's own modal shows the first six, which is where the right one
+        // lands.
+        _matches = matches.take(6).toList();
+      }
+    });
+    _focusMatch();
+  }
+
+  /// Cancel is the only control while the matches load, so the dialog has
+  /// already put a remote's focus there and autofocus on a card would come too
+  /// late. The card is focused by hand instead. A touch leaves focus alone, so
+  /// no card looks picked before anything was.
+  void _focusMatch() {
+    if (!_matching || InputModeTracker.of(context) != InputMode.keyboard) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_matching) return;
+      // With no match the only control left is Close, which holds the node
+      // Next would.
+      final noMatch = _matches?.isEmpty ?? false;
+      (noMatch ? _nextFocus : _matchFocus).requestFocus();
+    });
+  }
+
+  /// Picks a match. A remote then moves on to Next, which otherwise sits a
+  /// press below every card left in the list.
+  void _pickMatch(int tvdbId) {
+    setState(() => _tvdbId = tvdbId);
+    if (InputModeTracker.of(context) != InputMode.keyboard) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _matching) _nextFocus.requestFocus();
+    });
+  }
+
+  void _backToMatches() {
+    setState(() => _matching = true);
+    _focusMatch();
   }
 
   @override
   void dispose() {
     widget.vm.removeListener(_onVmChanged);
     _advanced.dispose();
+    _matchFocus.dispose();
+    _nextFocus.dispose();
     super.dispose();
   }
 
@@ -189,6 +260,7 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
       profileId: _advanced.effectiveProfileId,
       rootFolder: _advanced.effectiveRootFolderPath,
       serverId: _advanced.effectiveServerId,
+      tvdbId: _tvdbId,
     );
 
     Navigator.of(context).pop();
@@ -197,10 +269,11 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_matching) return _buildMatchStep(l10n);
     final quotaRow = _buildQuotaRow(l10n);
 
     final showToggle = _hasQualityToggle(widget.vm, widget.qualityToggle);
-    final children = <Widget>[];
+    final children = <Widget>[?_buildChosenMatch()];
     if (widget.isTv && widget.isContinuing && _quality.isFullyAvailable) {
       final green = seerrStatusColor(SeerrMediaStatus.available);
       children.add(
@@ -261,9 +334,15 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
       Row(
         children: [
           Expanded(
+            // After a match was picked this steps back to the picker, the way
+            // Seerr's own modal does.
             child: SeerrDialogButton(
-              label: l10n.cancel,
-              onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+              label: _tvdbId != null ? l10n.back : l10n.cancel,
+              onPressed: _submitting
+                  ? null
+                  : _tvdbId != null
+                  ? _backToMatches
+                  : () => Navigator.of(context).pop(),
             ),
           ),
           const SizedBox(width: 12),
@@ -286,6 +365,107 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: children,
+      ),
+    );
+  }
+
+  /// The match step: Sonarr's series above, with Cancel and Next pinned below
+  /// them so Next stays in reach however long the list runs.
+  Widget _buildMatchStep(AppLocalizations l10n) {
+    final matches = _matches;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Flexible(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (matches == null)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (matches.isEmpty)
+                  Text(
+                    l10n.seerrSeriesNoMatch,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  )
+                else ...[
+                  Text(
+                    l10n.seerrSeriesMatchDescription,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  for (final (i, match) in matches.indexed)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: _SeerrSeriesMatchCard(
+                        match: match,
+                        selected: match.tvdbId == _tvdbId,
+                        focusNode:
+                            (_tvdbId == null ? i == 0 : match.tvdbId == _tvdbId)
+                            ? _matchFocus
+                            : null,
+                        onSelect: () => _pickMatch(match.tvdbId),
+                      ),
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+          child: matches != null && matches.isEmpty
+              ? SeerrDialogButton(
+                  label: l10n.close,
+                  focusNode: _nextFocus,
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: SeerrDialogButton(
+                        label: l10n.cancel,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SeerrDialogButton(
+                        label: l10n.next,
+                        focusNode: _nextFocus,
+                        primary: true,
+                        primaryColor: const Color(0xFF6366F1),
+                        onPressed: _tvdbId == null
+                            ? null
+                            : () => setState(() => _matching = false),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+
+  /// The series picked in the match step, so the request says which one it is
+  /// for. Selecting it goes back to the picker.
+  Widget? _buildChosenMatch() {
+    final tvdbId = _tvdbId;
+    if (tvdbId == null) return null;
+    final match = _matches?.where((m) => m.tvdbId == tvdbId).firstOrNull;
+    if (match == null) return null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: _SeerrSeriesMatchCard(
+        match: match,
+        selected: true,
+        onSelect: _submitting ? null : _backToMatches,
       ),
     );
   }
@@ -350,6 +530,128 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// One of Sonarr's series in the match step: poster, year, title and the start
+/// of the overview, as Seerr's own picker shows them.
+class _SeerrSeriesMatchCard extends StatelessWidget {
+  final SeerrSonarrSeries match;
+  final bool selected;
+  final FocusNode? focusNode;
+  final VoidCallback? onSelect;
+
+  const _SeerrSeriesMatchCard({
+    required this.match,
+    required this.selected,
+    this.focusNode,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final poster = match.remotePoster;
+    final overview = match.overview;
+    final year = match.year;
+    return Semantics(
+      selected: selected,
+      child: FocusableWrapper(
+        semanticLabel: year != null && year > 0
+            ? '${match.title}, $year'
+            : match.title,
+        focusNode: focusNode,
+        onSelect: onSelect,
+        borderRadius: 10,
+        disableScale: true,
+        // Keeps a remote's focus in view as it moves down the list above the
+        // pinned buttons.
+        autoScroll: true,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            // A pick shows as the fill and the check, never as an accent
+            // border. The focus ring is drawn in the accent, and a remote has
+            // to be able to tell the two apart.
+            color: selected
+                ? AppColorScheme.accent.withValues(alpha: 0.18)
+                : Colors.white.withValues(alpha: 0.06),
+            borderRadius: AppRadius.circular(10),
+            border: Border.all(color: Colors.white12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: AppRadius.circular(6),
+                child: SizedBox(
+                  width: 56,
+                  height: 84,
+                  child: poster == null
+                      ? const ColoredBox(
+                          color: Colors.white10,
+                          child: Icon(Icons.tv, color: Colors.white38),
+                        )
+                      : BoundedNetworkImage(
+                          imageUrl: poster,
+                          errorBuilder: (_, _, _) => const ColoredBox(
+                            color: Colors.white10,
+                            child: Icon(Icons.tv, color: Colors.white38),
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (year != null && year > 0)
+                      Text(
+                        '$year',
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    Text(
+                      match.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (overview != null && overview.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          overview,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (selected) ...[
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.check_circle,
+                  color: AppColorScheme.accent,
+                  size: 22,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

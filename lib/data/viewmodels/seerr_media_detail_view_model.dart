@@ -660,6 +660,30 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     }
   }
 
+  /// Whether a series request first needs the viewer to pick Sonarr's match.
+  /// Sonarr can't add a series without a TVDB id, and when TMDB has none for
+  /// it Seerr drops the request once it tries to send it on. Seerr's own
+  /// request modal asks for the match in that case, so this does too. A series
+  /// already on Seerr with a TVDB id from an earlier request has one to use.
+  bool get needsSeriesMatch =>
+      _state.isTv &&
+      _state.externalIds?.tvdbId == null &&
+      _state.mediaInfo?.tvdbId == null;
+
+  /// The series Sonarr offers for this title, empty when it has none.
+  ///
+  /// Null when no lookup could be made: a Seerr with no Sonarr set up answers
+  /// 404, Silo has no Sonarr to ask, and the call can just fail. Seerr only
+  /// drops a series without a TVDB id when it has a Sonarr to send it to, so
+  /// the request can still go out in those cases.
+  Future<List<SeerrSonarrSeries>?> lookupSeriesMatches() async {
+    try {
+      return await _repo.lookupSonarrSeries(_state.tmdbId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> submitRequest({
     bool is4k = false,
     List<int>? seasons,
@@ -667,6 +691,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     int? profileId,
     String? rootFolder,
     int? serverId,
+    int? tvdbId,
   }) async {
     if (_state.isRequesting) {
       return;
@@ -686,6 +711,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         profileId: profileId,
         rootFolder: rootFolder,
         serverId: serverId,
+        tvdbId: tvdbId,
       );
 
       await _reloadDetails('Request submitted');

@@ -7883,6 +7883,14 @@
   "@seerrSeriesContinuing": {
     "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
   },
+  "seerrSeriesMatchDescription": "We couldn't match this series automatically. Pick the right one below.",
+  "@seerrSeriesMatchDescription": {
+    "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+  },
+  "seerrSeriesNoMatch": "We couldn't find a match for this series, so it can't be requested.",
+  "@seerrSeriesNoMatch": {
+    "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+  },
   "advancedOptions": "Advanced Options",
   "@advancedOptions": {
     "description": "Expansion tile for advanced request options"
