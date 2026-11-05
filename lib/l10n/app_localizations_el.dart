@@ -11494,6 +11494,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get addToPlaylist => 'Προσθήκη στη λίστα αναπαραγωγής';
 
   @override
+  String get removeFromPlaylist => 'Remove from Playlist';
+
+  @override
+  String removeFromPlaylistConfirm(String item, String playlist) {
+    return 'Remove $item from $playlist?';
+  }
+
+  @override
+  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+
+  @override
   String get lyricsNotAvailable => 'Δεν υπάρχουν διαθέσιμοι στίχοι';
 
   @override
@@ -13195,6 +13206,34 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get watchPartyStartForEveryone => 'Start for everyone';
+
+  @override
+  String watchPartyResumeAt(String time) {
+    return 'Resume at $time';
+  }
+
+  @override
+  String get watchPartyStartFromBeginning => 'Start from the beginning';
+
+  @override
+  String watchPartyResumeWhere(String name) {
+    return 'Where $name left off, the earliest anyone here has reached.';
+  }
+
+  @override
+  String get watchPartyResumeEarliest =>
+      'The earliest point anyone here has reached.';
+
+  @override
+  String watchPartyResumeNotStarted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people haven\'t started it yet.',
+      one: '1 person hasn\'t started it yet.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get watchPartyBackToLobby => 'Back to the lobby';

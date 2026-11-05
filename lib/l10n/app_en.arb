@@ -10574,6 +10574,22 @@
   "playlistCreateNew": "Create New Playlist",
   "playlistNoneFound": "No playlists found",
   "addToPlaylist": "Add to Playlist",
+  "removeFromPlaylist": "Remove from Playlist",
+  "@removeFromPlaylist": {
+    "description": "Context menu action to remove an item from a playlist"
+  },
+  "removeFromPlaylistConfirm": "Remove {item} from {playlist}?",
+  "@removeFromPlaylistConfirm": {
+    "description": "Confirmation shown before removing an item from a playlist",
+    "placeholders": {
+      "item": {"type": "String"},
+      "playlist": {"type": "String"}
+    }
+  },
+  "removeFromPlaylistFailed": "Failed to remove from playlist",
+  "@removeFromPlaylistFailed": {
+    "description": "Error shown when removing an item from a playlist fails"
+  },
 
   "lyricsNotAvailable": "No lyrics available",
   "upNext": "Up Next",
