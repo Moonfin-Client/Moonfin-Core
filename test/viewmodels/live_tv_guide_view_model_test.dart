@@ -1085,6 +1085,74 @@ void main() {
     vm.dispose();
   });
 
+  test('a lazy batch waits on a request already out and retries it', () async {
+    _stubChannels(liveTv, [
+      for (var i = 0; i < 120; i++) _channel('c$i', number: '$i'),
+    ]);
+    final vm = LiveTvGuideViewModel(client);
+    await vm.load();
+    expect(vm.programsHighWater, 50);
+
+    final calls =
+        <({List<String> ids, Completer<Map<String, dynamic>> reply})>[];
+    when(() => _guide(liveTv)).thenAnswer((inv) {
+      final reply = Completer<Map<String, dynamic>>();
+      calls.add((ids: _requestedIds(inv), reply: reply));
+      return reply.future;
+    });
+    final favorite = vm.ensureProgramsForChannels(['c60']);
+    final lazy = vm.loadMorePrograms();
+    await pumpEventQueue();
+    expect(calls, hasLength(2));
+    expect(calls[1].ids, isNot(contains('c60')));
+
+    calls[1].reply.complete({'Items': <dynamic>[]});
+    calls[0].reply.completeError(Exception('offline'));
+    await expectLater(favorite, throwsException);
+    await lazy;
+    expect(vm.hasProgramsFor('c60'), isFalse);
+    expect(vm.programsHighWater, 50);
+
+    final retry = vm.loadMorePrograms();
+    await pumpEventQueue();
+    expect(calls.last.ids, ['c60']);
+    calls.last.reply.complete({'Items': <dynamic>[]});
+    await retry;
+    expect(vm.hasProgramsFor('c60'), isTrue);
+    expect(vm.programsHighWater, 100);
+    vm.dispose();
+  });
+
+  test('a lineup from before a user switch is dropped', () async {
+    final reply = Completer<Map<String, dynamic>>();
+    when(
+      () => liveTv.getChannels(
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
+        fields: any(named: 'fields'),
+        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        userId: any(named: 'userId'),
+      ),
+    ).thenAnswer((_) => reply.future);
+    final vm = LiveTvGuideViewModel(client);
+    final loading = vm.load();
+    await pumpEventQueue();
+
+    userDataSync.reset();
+    reply.complete({
+      'Items': [
+        {
+          ..._channel('c1'),
+          'UserData': {'IsFavorite': true},
+        },
+      ],
+    });
+    await loading;
+
+    expect(userDataSync.favoriteFor('c1'), isNull);
+    vm.dispose();
+  });
+
   group('category filters', () {
     test('a category chip walks the lineup in flagged batches', () async {
       final channels = List.generate(120, (i) => _channel('c$i', number: '$i'));

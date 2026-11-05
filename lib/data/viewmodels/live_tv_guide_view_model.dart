@@ -261,8 +261,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   // until their programs arrive.
   final Set<String> _programsLoadedIds = <String>{};
 
-  // Channel ids with a program request out, and the generation it belongs to.
-  final Map<String, int> _programsPendingIds = <String, int>{};
+  // Channel ids with a program request out, the generation it belongs to and
+  // when it's done.
+  final Map<String, ({int generation, Future<void> done})> _programsPending =
+      {};
 
   bool _loadingMore = false;
 
@@ -952,6 +954,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
 
   Future<bool> _fetchChannels(int loadGeneration) async {
     final revision = userDataSync.revision;
+    final session = userDataSync.session;
     final response = await _client.liveTvApi.getChannels(
       sortBy: 'SortName',
       sortOrder: 'Ascending',
@@ -959,7 +962,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       enableTotalRecordCount: false,
       userId: _client.userId,
     );
-    if (_disposed || loadGeneration != _loadGeneration) return false;
+    // A user switch while this was out would publish the old user's favorites.
+    if (_disposed ||
+        loadGeneration != _loadGeneration ||
+        session != userDataSync.session) {
+      return false;
+    }
     final items = (response['Items'] as List?) ?? [];
     final fresh = <String, Map<String, dynamic>>{};
     for (final item in items.cast<Map<String, dynamic>>()) {
@@ -1040,7 +1048,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         .sublist(_programsHighWater, end)
         .where((c) => !_programsLoadedIds.contains(c.id))
         .toList();
-    if (await _loadProgramsBatch(batch)) {
+    // A channel whose earlier request failed stays below the mark, so the
+    // next pass asks for it again.
+    if (await _loadProgramsBatch(batch) &&
+        batch.every((c) => _programsLoadedIds.contains(c.id))) {
       _programsHighWater = end;
     }
   }
@@ -1717,49 +1728,58 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   /// merges them into the cache.
   Future<bool> _loadProgramsBatch(List<GuideChannel> batch) async {
     final generation = _programGeneration;
-    // Two requests out for one channel would append its programs twice.
-    final ids = [
-      for (final c in batch)
-        if (!_programsLoadedIds.contains(c.id) &&
-            _programsPendingIds[c.id] != generation)
-          c.id,
-    ];
-    if (ids.isEmpty) return true;
-    for (final id in ids) {
-      _programsPendingIds[id] = generation;
-    }
-    final Map<String, dynamic> response;
-    try {
-      response = await _fetchGuide(
-        channelIds: ids,
-        from: _windowStart,
-        to: _windowEnd,
-      );
-    } finally {
-      for (final id in ids) {
-        if (_programsPendingIds[id] == generation) {
-          _programsPendingIds.remove(id);
-        }
-      }
-    }
-    if (_disposed || generation != _programGeneration) return false;
-
-    final parsed = _parsePrograms(response);
-    for (final id in ids) {
-      final programs = parsed[id] ?? <GuideProgram>[];
-      final existing = _programsByChannel[id];
-      if (existing == null) {
-        _programsByChannel[id] = programs;
+    // Two requests out for one channel would append its programs twice, so a
+    // channel already asked for waits on that request instead.
+    final ids = <String>[];
+    final inFlight = <Future<void>>[];
+    for (final c in batch) {
+      if (_programsLoadedIds.contains(c.id)) continue;
+      final pending = _programsPending[c.id];
+      if (pending != null && pending.generation == generation) {
+        inFlight.add(pending.done);
       } else {
-        existing
-          ..addAll(programs)
-          ..sort((a, b) => a.startDate.compareTo(b.startDate));
+        ids.add(c.id);
       }
     }
+    if (ids.isNotEmpty) {
+      final done = Completer<void>();
+      for (final id in ids) {
+        _programsPending[id] = (generation: generation, done: done.future);
+      }
+      try {
+        final response = await _fetchGuide(
+          channelIds: ids,
+          from: _windowStart,
+          to: _windowEnd,
+        );
+        if (_disposed || generation != _programGeneration) return false;
 
-    // Mark every requested channel as loaded, even those with no programs, so
-    // their rows stop showing the placeholder.
-    _programsLoadedIds.addAll(ids);
+        final parsed = _parsePrograms(response);
+        for (final id in ids) {
+          final programs = parsed[id] ?? <GuideProgram>[];
+          final existing = _programsByChannel[id];
+          if (existing == null) {
+            _programsByChannel[id] = programs;
+          } else {
+            existing
+              ..addAll(programs)
+              ..sort((a, b) => a.startDate.compareTo(b.startDate));
+          }
+        }
+
+        // Mark every requested channel as loaded, even those with no
+        // programs, so their rows stop showing the placeholder.
+        _programsLoadedIds.addAll(ids);
+      } finally {
+        for (final id in ids) {
+          if (_programsPending[id]?.done == done.future) {
+            _programsPending.remove(id);
+          }
+        }
+        done.complete();
+      }
+    }
+    await Future.wait(inFlight);
     return true;
   }
 

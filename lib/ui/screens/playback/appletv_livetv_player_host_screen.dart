@@ -18,6 +18,7 @@ import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
 import '../../../playback/appletv_subtitles.dart';
 import '../../../playback/playback_info_sections.dart';
+import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/clock_format.dart';
@@ -948,6 +949,15 @@ class _AppleTvLiveTvPlayerHostScreenState
     if (!mounted) return;
     final updated = GuideChannel.withSyncedUserDataAll(_syncedChannels);
     if (updated == null) return;
+    // The native carousel and channel buttons follow this order, so it sorts
+    // the way the guide and the Flutter carousel do.
+    if (_carouselPrewarm?.viewModel.sortBy == ChannelSortBy.favoritesFirst) {
+      final currentId = _currentChannel.id;
+      updated.sort(
+        LiveTvGuideViewModel.comparatorFor(ChannelSortBy.favoritesFirst),
+      );
+      _currentIndex = updated.indexWhere((c) => c.id == currentId);
+    }
     _syncedChannels = updated;
     _pushMetadata();
   }
