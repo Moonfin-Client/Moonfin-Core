@@ -363,6 +363,15 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('Record with nothing airing says so', (tester) async {
+    await pumpPlayer(tester);
+    await pressUnmapped(tester, LogicalKeyboardKey.mediaRecord);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text(l10n.noProgramData), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('failed favorite request leaves the channel unchanged', (
     tester,
   ) async {

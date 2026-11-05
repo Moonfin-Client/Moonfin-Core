@@ -458,14 +458,18 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   bool _checkingLiveTvShortcut = false;
 
   /// Whether Home can take a Live TV shortcut now. Nothing focused (focus
-  /// back at the root after a pop) counts as Home. Focus in a dialog, popup
-  /// or overlay sheet doesn't.
+  /// back at the root after a pop, or parked on this scope by a desktop mouse
+  /// scroll) counts as Home. Focus in a dialog, popup or overlay sheet doesn't.
   bool _canTakeLiveTvShortcut() {
     if (!_isHomeRoute()) return false;
     // A sheet takes focus a couple of frames after it opens.
     if (OverlaySheetController.hasOpenSheet) return false;
     final focus = FocusManager.instance.primaryFocus;
-    if (focus == null || focus == FocusManager.instance.rootScope) return true;
+    if (focus == null ||
+        focus == FocusManager.instance.rootScope ||
+        focus == _focusNode) {
+      return true;
+    }
     final focusContext = focus.context;
     final focusRoute = focusContext == null || !focusContext.mounted
         ? null

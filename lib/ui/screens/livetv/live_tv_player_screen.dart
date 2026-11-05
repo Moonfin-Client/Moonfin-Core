@@ -1163,7 +1163,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       final refreshed = await _fetchCurrentProgram();
       if (!mounted || _isStopping) return;
       if (!refreshed || !_canRecordCurrentProgram || _recordingState == null) {
-        message = l10n.failedToLoadRecordings;
+        // An empty guide clears the program. A failed refresh leaves the old
+        // one in place.
+        message = refreshed || _currentProgram == null
+            ? l10n.noProgramData
+            : l10n.failedToLoadRecordings;
         return;
       }
       final program = _currentProgram!;
@@ -1965,9 +1969,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         }
         return KeyEventResult.handled;
       case LogicalKeyboardKey.mediaRecord:
-        if (event is KeyDownEvent && _canRecordCurrentProgram) {
-          unawaited(_showRecordingDialog());
-        }
+        if (event is KeyDownEvent) unawaited(_showRecordingDialog());
         return KeyEventResult.handled;
       case LogicalKeyboardKey.arrowUp:
         if (PlatformDetection.isTV) {
