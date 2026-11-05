@@ -24,6 +24,7 @@ import '../../../util/clock_format.dart';
 import '../../../util/platform_detection.dart';
 import '../livetv/channel_tune_observer.dart';
 import '../livetv/live_tv_guide_screen.dart';
+import '../../navigation/destinations.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
@@ -892,6 +893,9 @@ class _AppleTvLiveTvPlayerHostScreenState
       case 'openGuide':
         unawaited(_enterGuideMode());
         return;
+      case 'guideButton':
+        _onGuideButton();
+        return;
       case 'record':
         unawaited(_showRecordingDialog());
         return;
@@ -966,6 +970,30 @@ class _AppleTvLiveTvPlayerHostScreenState
           closeLabel: l10n.close,
         ),
       );
+    }
+  }
+
+  /// The remote's Guide button closes the player's own guide, or else leaves
+  /// the player for the full guide.
+  void _onGuideButton() {
+    if (!mounted || _exiting || _recordingFlow || _switching) return;
+    final navigator = Navigator.of(context);
+    if (_inGuide) {
+      final hostRoute = ModalRoute.of(context);
+      navigator.popUntil((route) => route == hostRoute);
+      return;
+    }
+    _exiting = true;
+    unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
+    final router = GoRouter.of(context);
+    final matches = router.routerDelegate.currentConfiguration.matches;
+    final below = matches.length < 2
+        ? null
+        : matches[matches.length - 2].matchedLocation;
+    navigator.pop();
+    // A player opened from the guide is already back there once it closes.
+    if (below != Destinations.liveTvGuide) {
+      unawaited(router.push(Destinations.liveTvGuide));
     }
   }
 
