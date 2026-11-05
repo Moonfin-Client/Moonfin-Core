@@ -20068,24 +20068,6 @@ abstract class AppLocalizations {
   /// **'Add to Playlist'**
   String get addToPlaylist;
 
-  /// Context menu action to remove an item from a playlist
-  ///
-  /// In en, this message translates to:
-  /// **'Remove from Playlist'**
-  String get removeFromPlaylist;
-
-  /// Confirmation shown before removing an item from a playlist
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {item} from {playlist}?'**
-  String removeFromPlaylistConfirm(String item, String playlist);
-
-  /// Error shown when removing an item from a playlist fails
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to remove from playlist'**
-  String get removeFromPlaylistFailed;
-
   /// No description provided for @lyricsNotAvailable.
   ///
   /// In en, this message translates to:
@@ -22983,36 +22965,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start for everyone'**
   String get watchPartyStartForEveryone;
-
-  /// Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10
-  ///
-  /// In en, this message translates to:
-  /// **'Resume at {time}'**
-  String watchPartyResumeAt(String time);
-
-  /// Host button beside Resume at that starts the staged item for the whole Watch Party from the start
-  ///
-  /// In en, this message translates to:
-  /// **'Start from the beginning'**
-  String get watchPartyStartFromBeginning;
-
-  /// Note under the Watch Party resume button naming the member whose position it resumes from
-  ///
-  /// In en, this message translates to:
-  /// **'Where {name} left off, the earliest anyone here has reached.'**
-  String watchPartyResumeWhere(String name);
-
-  /// Note under the Watch Party resume button when the member it resumes from isn't named
-  ///
-  /// In en, this message translates to:
-  /// **'The earliest point anyone here has reached.'**
-  String get watchPartyResumeEarliest;
-
-  /// Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 person hasn\'t started it yet.} other{{count} people haven\'t started it yet.}}'**
-  String watchPartyResumeNotStarted(int count);
 
   /// Host button that stops Watch Party playback
   ///

@@ -100,6 +100,16 @@ Future<void> _hideFromResumeOrReset(
   } catch (_) {}
 }
 
+/// The types that get the play, watched, playlist and collection actions.
+bool isContextMediaType(String? type) =>
+    type == 'Movie' ||
+    type == 'Episode' ||
+    type == 'Series' ||
+    type == 'Season' ||
+    type == 'Audio' ||
+    type == 'MusicAlbum' ||
+    type == 'BoxSet';
+
 List<ItemContextAction> contextActionsFor(
   BuildContext context,
   AggregatedItem item, {
@@ -139,14 +149,7 @@ List<ItemContextAction> contextActionsFor(
   final actions = <ItemContextAction>[];
   final type = item.type;
 
-  final isMediaType =
-      type == 'Movie' ||
-      type == 'Episode' ||
-      type == 'Series' ||
-      type == 'Season' ||
-      type == 'Audio' ||
-      type == 'MusicAlbum' ||
-      type == 'BoxSet';
+  final isMediaType = isContextMediaType(type);
 
   if (isMediaType) {
     final prefs = GetIt.instance<UserPreferences>();

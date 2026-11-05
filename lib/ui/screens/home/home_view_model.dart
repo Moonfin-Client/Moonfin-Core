@@ -32,7 +32,6 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
-import '../../../data/services/item_membership_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
@@ -382,7 +381,6 @@ class HomeViewModel extends ChangeNotifier {
     bool newSectionsOnly = false,
   }) async {
     _checkAndTriggerDailyExternalRowsRefresh();
-    ItemMembershipService.instance.warmCache(serverId: _client.baseUrl);
     if (_isLoading) {
       _reloadRequestedWhileLoading = true;
       _pendingReloadPreserveExisting =

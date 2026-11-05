@@ -68,7 +68,9 @@ void main() {
         },
       );
 
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-1', 'PlaylistItemId': 'entry-100'},
@@ -76,7 +78,9 @@ void main() {
         },
       );
 
-      when(() => itemsApi.getPlaylistItems('pl-2')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-2', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-2', 'PlaylistItemId': 'entry-200'},
@@ -106,6 +110,34 @@ void main() {
       expect(noPlaylists, isEmpty);
     });
 
+    test('scans playlists a few at a time for their entry ids only', () async {
+      when(() => itemsApi.getPlaylists()).thenAnswer(
+        (_) async => {
+          'Items': [
+            for (var i = 0; i < 20; i++) {'Id': 'pl-$i', 'Name': 'List $i'},
+          ],
+        },
+      );
+      var running = 0;
+      var mostAtOnce = 0;
+      when(
+        () => itemsApi.getPlaylistItems(any(), fields: 'PlaylistItemId'),
+      ).thenAnswer((_) async {
+        running++;
+        if (running > mostAtOnce) mostAtOnce = running;
+        await Future<void>.delayed(Duration.zero);
+        running--;
+        return {'Items': <dynamic>[]};
+      });
+
+      await ItemMembershipService.instance.getPlaylistsContaining(_movie());
+
+      verify(
+        () => itemsApi.getPlaylistItems(any(), fields: 'PlaylistItemId'),
+      ).called(20);
+      expect(mostAtOnce, 8);
+    });
+
     test('updates playlist cache on removal notification', () async {
       when(() => itemsApi.getPlaylists()).thenAnswer(
         (_) async => {
@@ -115,7 +147,9 @@ void main() {
         },
       );
 
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-1', 'PlaylistItemId': 'entry-100'},
@@ -192,7 +226,9 @@ void main() {
       when(() => itemsApi.getPlaylists()).thenAnswer(
         (_) async => {'Items': playlistsResponse},
       );
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-1', 'PlaylistItemId': 'entry-100'},
@@ -276,7 +312,9 @@ void main() {
           ],
         },
       );
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-1', 'PlaylistItemId': 'server-entry-999'},
@@ -352,7 +390,9 @@ void main() {
         });
       });
 
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+      when(
+        () => itemsApi.getPlaylistItems('pl-1', fields: any(named: 'fields')),
+      ).thenAnswer(
         (_) async => {
           'Items': [
             {'Id': 'movie-1', 'PlaylistItemId': 'entry-after-add'},

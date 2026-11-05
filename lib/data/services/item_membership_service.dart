@@ -109,6 +109,9 @@ class ItemMembershipService {
     return serverId;
   }
 
+  static bool _isExternal(AggregatedItem item) =>
+      item.serverId == 'seerr' || item.id.startsWith('tt');
+
   MediaServerClient _getClient(String? serverId) {
     if (GetIt.instance.isRegistered<MediaServerClientFactory>()) {
       final factory = GetIt.instance<MediaServerClientFactory>();
@@ -120,16 +123,14 @@ class ItemMembershipService {
     return GetIt.instance<MediaServerClient>();
   }
 
-  bool _canManageCollections(AggregatedItem item) =>
-      _canUserManageCollections(serverId: item.serverId);
-
-  bool _canUserManageCollections({String? serverId}) {
+  bool _canManageCollections(AggregatedItem item) {
     if (!GetIt.instance.isRegistered<UserRepository>()) return false;
+    final serverId = item.serverId;
     final client = _getClient(serverId);
     final currentUser = GetIt.instance<UserRepository>().currentUser;
     final isAdminUser = currentUser?.isAdministrator ?? false;
     final isSameServerItem =
-        serverId == null || serverId.isEmpty || currentUser?.serverId == serverId;
+        serverId.isEmpty || currentUser?.serverId == serverId;
     final requiresCollectionPermission =
         client.serverType == ServerType.jellyfin && isSameServerItem;
     return !requiresCollectionPermission ||
@@ -137,74 +138,10 @@ class ItemMembershipService {
         isAdminUser;
   }
 
-  /// Returns whether [item] belongs to any playlists and/or collections.
-  /// Resolves playlists and collections with independent timeouts so slower
-  /// collection scanning never blocks playlist answers.
-  Future<
-      ({
-        List<ItemPlaylistMembership> playlists,
-        List<ItemCollectionMembership> collections,
-      })> getMemberships(
-    AggregatedItem item, {
-    Duration timeout = const Duration(milliseconds: 1500),
-  }) async {
-    if (item.serverId == 'seerr' || item.id.startsWith('tt')) {
-      return (
-        playlists: const <ItemPlaylistMembership>[],
-        collections: const <ItemCollectionMembership>[],
-      );
-    }
-
-    final serverKey = _canonicalServerKey(item.serverId);
-    final cachedPlaylists = getCachedPlaylistsContaining(item);
-    final cachedCollections = getCachedCollectionsContaining(item);
-
-    final isPlaylistsFresh = _playlistLastFetched.containsKey(serverKey) &&
-        DateTime.now().difference(_playlistLastFetched[serverKey]!) < _cacheTtl;
-    final isCollectionsFresh = _collectionLastFetched.containsKey(serverKey) &&
-        DateTime.now().difference(_collectionLastFetched[serverKey]!) <
-            _cacheTtl;
-
-    if (isPlaylistsFresh && isCollectionsFresh) {
-      return (
-        playlists: cachedPlaylists,
-        collections: cachedCollections,
-      );
-    }
-
-    try {
-      final playlistsFuture = isPlaylistsFresh
-          ? Future.value(cachedPlaylists)
-          : getPlaylistsContaining(item).timeout(
-              const Duration(milliseconds: 1000),
-              onTimeout: () => getCachedPlaylistsContaining(item),
-            );
-      final collectionsFuture = isCollectionsFresh
-          ? Future.value(cachedCollections)
-          : getCollectionsContaining(item).timeout(
-              timeout,
-              onTimeout: () => getCachedCollectionsContaining(item),
-            );
-
-      final results = await Future.wait([playlistsFuture, collectionsFuture]);
-      return (
-        playlists: results[0] as List<ItemPlaylistMembership>,
-        collections: results[1] as List<ItemCollectionMembership>,
-      );
-    } catch (_) {
-      return (
-        playlists: getCachedPlaylistsContaining(item),
-        collections: getCachedCollectionsContaining(item),
-      );
-    }
-  }
-
   /// Immediately returns whatever playlist memberships are currently cached.
   List<ItemPlaylistMembership> getCachedPlaylistsContaining(
       AggregatedItem item) {
-    if (item.serverId == 'seerr' || item.id.startsWith('tt')) {
-      return const [];
-    }
+    if (_isExternal(item)) return const [];
     final serverKey = _canonicalServerKey(item.serverId);
     final pItems = _playlistItems[serverKey] ?? const {};
     final pNames = _playlistNames[serverKey] ?? const {};
@@ -230,9 +167,7 @@ class ItemMembershipService {
   /// Immediately returns whatever collection memberships are currently cached.
   List<ItemCollectionMembership> getCachedCollectionsContaining(
       AggregatedItem item) {
-    if (item.serverId == 'seerr' || item.id.startsWith('tt')) {
-      return const [];
-    }
+    if (_isExternal(item)) return const [];
     final serverKey = _canonicalServerKey(item.serverId);
     final cMembers = _collectionMembers[serverKey] ?? const {};
     final cNames = _collectionNames[serverKey] ?? const {};
@@ -256,9 +191,7 @@ class ItemMembershipService {
     AggregatedItem item, {
     bool forceRefresh = false,
   }) async {
-    if (item.serverId == 'seerr' || item.id.startsWith('tt')) {
-      return const [];
-    }
+    if (_isExternal(item)) return const [];
     final serverKey = _canonicalServerKey(item.serverId);
     if (!itemServerSupports(item.serverId, (f) => f.supportsPlaylists)) {
       return const [];
@@ -278,6 +211,20 @@ class ItemMembershipService {
     }
 
     return getCachedPlaylistsContaining(item);
+  }
+
+  // Scanning a large library at once would flood the server and the device.
+  static const _maxConcurrent = 8;
+
+  static Future<void> _inBatches<T>(
+    List<T> items,
+    bool Function() isStale,
+    Future<void> Function(T item) fetch,
+  ) async {
+    for (var i = 0; i < items.length; i += _maxConcurrent) {
+      if (isStale()) return;
+      await Future.wait(items.skip(i).take(_maxConcurrent).map(fetch));
+    }
   }
 
   Future<void> _syncPlaylists(String serverKey) async {
@@ -304,44 +251,46 @@ class ItemMembershipService {
       final nameMap = <String, String>{};
       final itemMap = <String, List<({String itemId, String entryId})>>{};
 
-      final futures = <Future<void>>[];
+      final ids = <String>[];
       for (final raw in items.whereType<Map>()) {
         final pl = raw.cast<String, dynamic>();
         final id = pl['Id']?.toString();
         final name = pl['Name']?.toString();
         if (id == null || id.isEmpty || name == null) continue;
         nameMap[id] = name;
-
-        futures.add(() async {
-          try {
-            Map<String, dynamic> res;
-            try {
-              res = await client.itemsApi.getPlaylistItems(id);
-            } catch (_) {
-              res = await client.itemsApi.getItems(
-                parentId: id,
-                fields: 'BasicSyncInfo,PlaylistItemId',
-              );
-            }
-            final memberList = (res['Items'] as List?) ?? const [];
-            final members = <({String itemId, String entryId})>[];
-            for (final m in memberList.whereType<Map>()) {
-              final map = m.cast<String, dynamic>();
-              final itemId = map['Id']?.toString();
-              final entryId = map['PlaylistItemId']?.toString() ?? itemId;
-              if (itemId != null && entryId != null) {
-                members.add((itemId: itemId, entryId: entryId));
-              }
-            }
-            itemMap[id] = members;
-          } catch (_) {
-            final old = previous[id];
-            if (old != null) itemMap[id] = old;
-          }
-        }());
+        ids.add(id);
       }
 
-      await Future.wait(futures);
+      await _inBatches(ids, isStale, (id) async {
+        try {
+          Map<String, dynamic> res;
+          try {
+            res = await client.itemsApi.getPlaylistItems(
+              id,
+              fields: 'PlaylistItemId',
+            );
+          } catch (_) {
+            res = await client.itemsApi.getItems(
+              parentId: id,
+              fields: 'BasicSyncInfo,PlaylistItemId',
+            );
+          }
+          final memberList = (res['Items'] as List?) ?? const [];
+          final members = <({String itemId, String entryId})>[];
+          for (final m in memberList.whereType<Map>()) {
+            final map = m.cast<String, dynamic>();
+            final itemId = map['Id']?.toString();
+            final entryId = map['PlaylistItemId']?.toString() ?? itemId;
+            if (itemId != null && entryId != null) {
+              members.add((itemId: itemId, entryId: entryId));
+            }
+          }
+          itemMap[id] = members;
+        } catch (_) {
+          final old = previous[id];
+          if (old != null) itemMap[id] = old;
+        }
+      });
       if (isStale()) return;
 
       _playlistNames[serverKey] = nameMap;
@@ -361,9 +310,7 @@ class ItemMembershipService {
     AggregatedItem item, {
     bool forceRefresh = false,
   }) async {
-    if (item.serverId == 'seerr' || item.id.startsWith('tt')) {
-      return const [];
-    }
+    if (_isExternal(item)) return const [];
     if (!_canManageCollections(item)) {
       return const [];
     }
@@ -478,31 +425,25 @@ class ItemMembershipService {
         candidates.add((id: id, name: name));
       }
 
-      // Batch membership lookups with maxConcurrent = 24
-      const maxConcurrent = 24;
-      for (var i = 0; i < candidates.length; i += maxConcurrent) {
-        if (isStale()) return;
-        final batch = candidates.skip(i).take(maxConcurrent);
-        await Future.wait(batch.map((candidate) async {
-          try {
-            final res = await api.getItems(
-              parentId: candidate.id,
-              fields: 'BasicSyncInfo',
-            );
-            final membersList = (res['Items'] as List?) ?? const [];
-            final memberIds = <String>{};
-            for (final m in membersList.whereType<Map>()) {
-              final map = m.cast<String, dynamic>();
-              final id = map['Id']?.toString();
-              if (id != null) memberIds.add(id);
-            }
-            memberMap[candidate.id] = memberIds;
-          } catch (_) {
-            final old = previous[candidate.id];
-            if (old != null) memberMap[candidate.id] = old;
+      await _inBatches(candidates, isStale, (candidate) async {
+        try {
+          final res = await api.getItems(
+            parentId: candidate.id,
+            fields: 'BasicSyncInfo',
+          );
+          final membersList = (res['Items'] as List?) ?? const [];
+          final memberIds = <String>{};
+          for (final m in membersList.whereType<Map>()) {
+            final map = m.cast<String, dynamic>();
+            final id = map['Id']?.toString();
+            if (id != null) memberIds.add(id);
           }
-        }));
-      }
+          memberMap[candidate.id] = memberIds;
+        } catch (_) {
+          final old = previous[candidate.id];
+          if (old != null) memberMap[candidate.id] = old;
+        }
+      });
       if (isStale()) return;
 
       _collectionNames[serverKey] = nameMap;
@@ -517,11 +458,8 @@ class ItemMembershipService {
     }
   }
 
-  /// Updates cache when an item is added to a playlist.
-  ///
-  /// Do not synthesize `entryId` from `itemId`: server APIs require the
-  /// server-assigned `PlaylistItemId` when removing an entry. Instead,
-  /// invalidate the playlist cache TTL and trigger a background refresh.
+  /// Updates cache when an item is added to a playlist. The server assigns the
+  /// entry id a removal needs, so the next lookup fetches it.
   void notifyItemAddedToPlaylist(
     String serverId,
     String playlistId,
@@ -531,23 +469,6 @@ class ItemMembershipService {
     _playlistMutationGenerations[serverKey] =
         (_playlistMutationGenerations[serverKey] ?? 0) + 1;
     _playlistLastFetched.remove(serverKey);
-    if (itemServerSupports(serverId, (f) => f.supportsPlaylists)) {
-      final generation = _sessionGeneration;
-      final inFlight = _playlistInFlight[serverKey];
-      if (inFlight != null) {
-        unawaited(
-          inFlight.future.whenComplete(() {
-            if (generation == _sessionGeneration &&
-                !_playlistInFlight.containsKey(serverKey) &&
-                !_playlistLastFetched.containsKey(serverKey)) {
-              unawaited(_syncPlaylists(serverKey));
-            }
-          }),
-        );
-      } else {
-        unawaited(_syncPlaylists(serverKey));
-      }
-    }
   }
 
   /// Updates cache when an item is removed from a playlist.
@@ -619,20 +540,5 @@ class ItemMembershipService {
       if (!c.isCompleted) c.complete();
     }
     _collectionInFlight.clear();
-  }
-
-  /// Pre-warms caches in the background.
-  void warmCache({String? serverId}) {
-    final key = _canonicalServerKey(serverId);
-    bool fresh(Map<String, DateTime> m) =>
-        m[key] != null && DateTime.now().difference(m[key]!) < _cacheTtl;
-    if (!fresh(_playlistLastFetched) &&
-        itemServerSupports(serverId, (f) => f.supportsPlaylists)) {
-      unawaited(_syncPlaylists(key));
-    }
-    if (!fresh(_collectionLastFetched) &&
-        _canUserManageCollections(serverId: serverId)) {
-      unawaited(_syncCollections(key));
-    }
   }
 }

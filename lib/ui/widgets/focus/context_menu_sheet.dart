@@ -19,32 +19,20 @@ Future<void> showContextMenu(
   VoidCallback? onChanged,
   CollectionRemovalContext? collectionRemoval,
   bool isContinueWatchingOrNextUp = false,
-  List<ItemPlaylistMembership>? playlistMemberships,
-  List<ItemCollectionMembership>? collectionMemberships,
-}) async {
-  final isExternalItem = item.serverId == 'seerr' || item.id.startsWith('tt');
-  List<ItemPlaylistMembership>? resolvedPlaylists =
-      isExternalItem ? const [] : playlistMemberships;
-  List<ItemCollectionMembership>? resolvedCollections =
-      isExternalItem ? const [] : collectionMemberships;
-
-  if (!isExternalItem) {
-    final service = ItemMembershipService.instance;
-    resolvedPlaylists ??= service.getCachedPlaylistsContaining(item);
-    resolvedCollections ??= service.getCachedCollectionsContaining(item);
-  }
-
-  if (!context.mounted) return;
+}) {
+  final service = ItemMembershipService.instance;
+  final playlists = service.getCachedPlaylistsContaining(item);
+  final collections = service.getCachedCollectionsContaining(item);
   final hasActions = contextActionsFor(
     context,
     item,
     onChanged: onChanged,
     collectionRemoval: collectionRemoval,
     isContinueWatchingOrNextUp: isContinueWatchingOrNextUp,
-    playlistMemberships: resolvedPlaylists,
-    collectionMemberships: resolvedCollections,
+    playlistMemberships: playlists,
+    collectionMemberships: collections,
   ).isNotEmpty;
-  if (!hasActions) return;
+  if (!hasActions) return Future<void>.value();
 
   final anchor = PlatformDetection.useDesktopUi
       ? InputModeTracker.lastPointerDownPosition
@@ -58,8 +46,8 @@ Future<void> showContextMenu(
       onChanged: onChanged,
       collectionRemoval: collectionRemoval,
       isContinueWatchingOrNextUp: isContinueWatchingOrNextUp,
-      initialPlaylists: resolvedPlaylists,
-      initialCollections: resolvedCollections,
+      initialPlaylists: playlists,
+      initialCollections: collections,
     ),
   );
 }
@@ -70,8 +58,8 @@ class _ContextMenu extends StatefulWidget {
   final VoidCallback? onChanged;
   final CollectionRemovalContext? collectionRemoval;
   final bool isContinueWatchingOrNextUp;
-  final List<ItemPlaylistMembership>? initialPlaylists;
-  final List<ItemCollectionMembership>? initialCollections;
+  final List<ItemPlaylistMembership> initialPlaylists;
+  final List<ItemCollectionMembership> initialCollections;
 
   const _ContextMenu({
     required this.parentContext,
@@ -79,8 +67,8 @@ class _ContextMenu extends StatefulWidget {
     this.onChanged,
     this.collectionRemoval,
     this.isContinueWatchingOrNextUp = false,
-    this.initialPlaylists,
-    this.initialCollections,
+    required this.initialPlaylists,
+    required this.initialCollections,
   });
 
   @override
@@ -89,8 +77,8 @@ class _ContextMenu extends StatefulWidget {
 
 class _ContextMenuState extends State<_ContextMenu> {
   late AggregatedItem _item;
-  late List<ItemPlaylistMembership>? _playlists;
-  late List<ItemCollectionMembership>? _collections;
+  late List<ItemPlaylistMembership> _playlists;
+  late List<ItemCollectionMembership> _collections;
 
   @override
   void initState() {
@@ -100,9 +88,8 @@ class _ContextMenuState extends State<_ContextMenu> {
     _collections = widget.initialCollections;
     FocusManager.instance.addListener(_onFocusChanged);
 
-    if (!(_item.serverId == 'seerr' || _item.id.startsWith('tt'))) {
-      _pollMemberships();
-    }
+    // Only these types get the remove actions, so nothing else starts a scan.
+    if (isContextMediaType(_item.type)) _pollMemberships();
   }
 
   @override
@@ -132,7 +119,7 @@ class _ContextMenuState extends State<_ContextMenu> {
     unawaited(
       service.getPlaylistsContaining(_item).then((newPl) {
         if (!mounted) return;
-        if (!listEquals(newPl, _playlists ?? const [])) {
+        if (!listEquals(newPl, _playlists)) {
           setState(() => _playlists = newPl);
         }
       }).catchError((_) {}),
@@ -140,7 +127,7 @@ class _ContextMenuState extends State<_ContextMenu> {
     unawaited(
       service.getCollectionsContaining(_item).then((newCol) {
         if (!mounted) return;
-        if (!listEquals(newCol, _collections ?? const [])) {
+        if (!listEquals(newCol, _collections)) {
           setState(() => _collections = newCol);
         }
       }).catchError((_) {}),

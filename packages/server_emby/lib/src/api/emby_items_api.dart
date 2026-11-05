@@ -485,12 +485,13 @@ class EmbyItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async {
     final response = await _dio.get(
       '/Playlists/$playlistId/Items',
       queryParameters: {
-        'UserId': _getUserId(),
         'Fields':
+            fields ??
             'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,Artists,AlbumArtist,IndexNumber,MediaType,PlaylistItemId,BackdropImageTags,ParentBackdropImageTags,ParentBackdropItemId,SeriesName,ParentIndexNumber,Genres,Chapters,Overview,UserData,MediaStreams,DateCreated,SortName',
         'EnableImageTypes': 'Primary,Backdrop,Logo,Thumb',
         'ImageTypeLimit': 1,
@@ -609,13 +610,9 @@ class EmbyItemsApi implements ItemsApi {
     String collectionId,
     List<String> itemIds,
   ) async {
-    final ids = itemIds.join(',');
     await _dio.delete(
       '/Collections/$collectionId/Items',
-      queryParameters: {
-        'Ids': ids,
-        'ids': ids,
-      },
+      queryParameters: {'Ids': itemIds.join(',')},
     );
   }
 
@@ -624,16 +621,9 @@ class EmbyItemsApi implements ItemsApi {
     String playlistId,
     List<String> entryIds,
   ) async {
-    final ids = entryIds.join(',');
-    final userId = _getUserId();
     await _dio.delete(
       '/Playlists/$playlistId/Items',
-      queryParameters: {
-        'EntryIds': ids,
-        'entryIds': ids,
-        if (userId.isNotEmpty) 'UserId': userId,
-        if (userId.isNotEmpty) 'userId': userId,
-      },
+      queryParameters: {'EntryIds': entryIds.join(',')},
     );
   }
 
