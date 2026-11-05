@@ -107,8 +107,8 @@ class MoonfinAssOverlayView(
 
     // libass reports differences from its last actual render, not from the
     // selected track. Retain that image and its owner across unrendered switches.
-    // [frame]'s bitmaps are recycled once flattened; draw [composite], which is
-    // null when the frame had no pixels.
+    // [frame]'s bitmaps are recycled once flattened, so draw [composite], which
+    // is null when the frame had no pixels.
     private data class CachedFrame(
         val track: Any,
         val frame: AssFrame,
@@ -203,9 +203,6 @@ class MoonfinAssOverlayView(
         val cached = cachedFrame ?: return null
         return cached.takeIf { it.visible && it.track === primaryNativeTrack }
     }
-
-    // For the ownership checks in tests.
-    private fun visibleFrame(): AssFrame? = visibleCachedFrame()?.frame
 
     private val renderTask = Runnable {
         // Clear before sampling the time so a request arriving mid-render is
@@ -501,7 +498,7 @@ class MoonfinAssOverlayView(
  * second hardware draw after its last one. Buffers are never recycled, only
  * reused or dropped, so even a mistimed read can't hit freed pixels.
  *
- * [acquire] calls must not overlap; only the overlay's render thread makes them.
+ * [acquire] calls must not overlap. Only the overlay's render thread makes them.
  */
 internal class AssCompositeBuffers {
 

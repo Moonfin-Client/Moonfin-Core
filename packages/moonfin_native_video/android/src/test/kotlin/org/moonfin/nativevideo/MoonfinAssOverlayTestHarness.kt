@@ -31,8 +31,7 @@ internal class MoonfinAssOverlayTestHarness(
     private val flatten = method("flattenFrame")
     private val publish = method("publishFrame")
     private val retainUnconfirmed = method("retainUnconfirmedFrame")
-    private val visible = overlay.javaClass.getDeclaredMethod("visibleFrame")
-        .apply { isAccessible = true }
+    private val visible = method("visibleCachedFrame")
 
     val generation: Int get() = generationField.getInt(overlay)
     val lastPresentationTimeUs: Long get() = lastPresentationField.get(overlay) as Long
@@ -69,13 +68,13 @@ internal class MoonfinAssOverlayTestHarness(
         return AssFrame(arrayOf(AssTex(x, y, 2, 2, 0, bitmap)), changed = changed)
     }
 
-    fun cachedFrame(): AssFrame? {
-        val cached = field("cachedFrame").get(overlay) ?: return null
-        return cached.javaClass.getDeclaredField("frame")
-            .apply { isAccessible = true }.get(cached) as AssFrame
-    }
+    fun cachedFrame(): AssFrame? = frameOf(field("cachedFrame").get(overlay))
 
-    fun visibleFrame(): AssFrame? = visible.invoke(overlay) as AssFrame?
+    fun visibleFrame(): AssFrame? = frameOf(visible.invoke(overlay))
+
+    private fun frameOf(cached: Any?): AssFrame? = cached?.let {
+        it.javaClass.getDeclaredField("frame").apply { isAccessible = true }.get(it) as AssFrame
+    }
 
     val buffers: AssCompositeBuffers
         get() = field("buffers").get(overlay) as AssCompositeBuffers
