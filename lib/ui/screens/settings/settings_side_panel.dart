@@ -218,7 +218,16 @@ class _SettingsCategory {
   final String subtitle;
   final Widget Function() screen;
 
-  const _SettingsCategory(this.title, this.subtitle, this.screen);
+  /// Off for a category whose settings never change the live preview, so the
+  /// phone gives that room to the list.
+  final bool preview;
+
+  const _SettingsCategory(
+    this.title,
+    this.subtitle,
+    this.screen, {
+    this.preview = true,
+  });
 }
 
 /// A category page that is a short list of entries rather than settings:
@@ -276,6 +285,10 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   List<_SettingsCategory> _categories = const [];
   int _categoryIndex = 0;
   String? _shownCategory;
+
+  /// The category a search result belongs to while its screen is open, since
+  /// that screen sits on top of whichever tab the search started from.
+  _SettingsCategory? _searchedCategory;
 
   /// On a TV the list can't take focus while the pill or search has it, so a
   /// category screen's own initial focus doesn't pull the D-pad off the pill
@@ -570,6 +583,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               ),
             ],
           ),
+          preview: false,
         ),
       ];
     }
@@ -592,11 +606,13 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               ),
             ],
           ),
+          preview: false,
         ),
       _SettingsCategory(
         l10n.account,
         l10n.settingsAccountSubtitle,
         () => const _AccountScreen(),
+        preview: false,
       ),
       _SettingsCategory(
         l10n.general,
@@ -620,6 +636,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           l10n.storage,
           l10n.settingsStorageSubtitle,
           () => const DownloadSettingsScreen(),
+          preview: false,
         ),
       // Seerr and achievements both come from the Moonfin plugin. With
       // neither on offer (only Silo signed in) the screen would be empty.
@@ -628,11 +645,13 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           l10n.integrations,
           seerrBrand(l10n.settingsServicesSubtitle),
           () => const _ServicesScreen(),
+          preview: false,
         ),
       _SettingsCategory(
         l10n.aboutTitle,
         l10n.settingsAboutSubtitle,
         () => const _AboutCategoryScreen(),
+        preview: false,
       ),
     ];
   }
@@ -894,6 +913,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   ) {
     final prefs = GetIt.instance<UserPreferences>();
     final previewHidden = prefs.get(UserPreferences.settingsPreviewHidden);
+    final category = _searchedCategory ?? _categories[_categoryIndex];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -912,7 +932,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: pill,
             ),
-          if (!searching)
+          if (!searching && category.preview)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: _PhoneLivePreview(
@@ -948,12 +968,24 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
         final navigatorContext = _listNavKey.currentContext;
         _searchController.clear();
         if (navigatorContext == null) return;
+        final before = _searchedCategory;
+        final title = openingPath?.firstOrNull;
+        setState(() {
+          _searchedCategory = _categories
+              .where((c) => c.title == title)
+              .firstOrNull;
+        });
+        // Switching tabs removes the screen, which also completes this future.
         unawaited(
-          navigatorContext.pushSettingsScreen(
-            screen,
-            returnFocus: _phone ? null : _pillFocus,
-            previewPath: openingPath,
-          ),
+          navigatorContext
+              .pushSettingsScreen(
+                screen,
+                returnFocus: _phone ? null : _pillFocus,
+                previewPath: openingPath,
+              )
+              .then((_) {
+                if (mounted) setState(() => _searchedCategory = before);
+              }),
         );
       },
       openAdmin: () {
