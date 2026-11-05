@@ -19,9 +19,12 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/home_refresh_helper.dart';
 import '../../../util/item_watch_state.dart';
+import '../../../data/services/item_membership_service.dart';
 import '../../navigation/destinations.dart';
 import '../add_to_collection_dialog.dart';
 import '../add_to_playlist_dialog.dart';
+import '../remove_from_collection_dialog.dart';
+import '../remove_from_playlist_dialog.dart';
 import '../adaptive/adaptive_dialog.dart';
 import '../change_artwork_dialog.dart';
 import '../identify_dialog.dart';
@@ -97,12 +100,24 @@ Future<void> _hideFromResumeOrReset(
   } catch (_) {}
 }
 
+/// The types that get the play, watched, playlist and collection actions.
+bool isContextMediaType(String? type) =>
+    type == 'Movie' ||
+    type == 'Episode' ||
+    type == 'Series' ||
+    type == 'Season' ||
+    type == 'Audio' ||
+    type == 'MusicAlbum' ||
+    type == 'BoxSet';
+
 List<ItemContextAction> contextActionsFor(
   BuildContext context,
   AggregatedItem item, {
   VoidCallback? onChanged,
   CollectionRemovalContext? collectionRemoval,
   bool isContinueWatchingOrNextUp = false,
+  List<ItemPlaylistMembership>? playlistMemberships,
+  List<ItemCollectionMembership>? collectionMemberships,
 }) {
   final l10n = AppLocalizations.of(context);
   final mutations = GetIt.instance<ItemMutationRepository>();
@@ -134,14 +149,7 @@ List<ItemContextAction> contextActionsFor(
   final actions = <ItemContextAction>[];
   final type = item.type;
 
-  final isMediaType =
-      type == 'Movie' ||
-      type == 'Episode' ||
-      type == 'Series' ||
-      type == 'Season' ||
-      type == 'Audio' ||
-      type == 'MusicAlbum' ||
-      type == 'BoxSet';
+  final isMediaType = isContextMediaType(type);
 
   if (isMediaType) {
     final prefs = GetIt.instance<UserPreferences>();
@@ -304,6 +312,24 @@ List<ItemContextAction> contextActionsFor(
             onChanged: onChanged,
           ),
         ));
+      } else if (collectionMemberships != null &&
+          collectionMemberships.isNotEmpty) {
+        actions.add(ItemContextAction(
+          icon: Icons.playlist_remove,
+          label: l10n.contextMenuRemoveFromCollection,
+          onSelect: () async {
+            if (!context.mounted) return;
+            final removed = await RemoveFromCollectionDialog.show(
+              context,
+              item: item,
+              collections: collectionMemberships,
+              serverId: item.serverId,
+            );
+            if (removed == true) {
+              onChanged?.call();
+            }
+          },
+        ));
       }
     }
 
@@ -324,6 +350,25 @@ List<ItemContextAction> contextActionsFor(
           }
         },
       ));
+
+      if (playlistMemberships != null && playlistMemberships.isNotEmpty) {
+        actions.add(ItemContextAction(
+          icon: Icons.playlist_remove,
+          label: l10n.removeFromPlaylist,
+          onSelect: () async {
+            if (!context.mounted) return;
+            final removed = await RemoveFromPlaylistDialog.show(
+              context,
+              item: item,
+              playlists: playlistMemberships,
+              serverId: item.serverId,
+            );
+            if (removed == true) {
+              onChanged?.call();
+            }
+          },
+        ));
+      }
     }
 
     if (isAdminUser) {

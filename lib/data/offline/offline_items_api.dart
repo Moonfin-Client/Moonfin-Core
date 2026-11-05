@@ -869,6 +869,7 @@ class OfflineItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async =>
       _envelope(const []);
 

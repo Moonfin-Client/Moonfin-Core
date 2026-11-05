@@ -2547,6 +2547,7 @@ class SiloItemsApi
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async => _emptyList;
 
   @override
