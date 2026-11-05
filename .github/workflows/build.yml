@@ -500,6 +500,21 @@ jobs:
         shell: pwsh
         run: choco install innosetup -y --no-progress
 
+      # vcpkg builds libarchive and its dependencies from source, OpenSSL
+      # included, which took about 13 minutes of every run. Its binary cache
+      # skips that once a run on main or an earlier run of the same PR saved it.
+      - name: Find the runner's vcpkg version
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
+
       - name: Build installer
         shell: pwsh
         run: .\build-windows.ps1
@@ -601,6 +616,21 @@ jobs:
       - name: Install Inno Setup
         shell: pwsh
         run: choco install innosetup -y --no-progress
+
+      # vcpkg builds libarchive and its dependencies from source, OpenSSL
+      # included, which took about 13 minutes of every run. Its binary cache
+      # skips that once a run on main or an earlier run of the same PR saved it.
+      - name: Find the runner's vcpkg version
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
 
       - name: Build ARM64 installer
         shell: pwsh
