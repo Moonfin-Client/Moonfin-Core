@@ -335,6 +335,50 @@ void main() {
         isEmpty,
       );
     });
+
+    test('concurrent playlist and collection mutations invalidate in-flight scans and queue replacement playlist sync', () async {
+      final firstPlaylistScan = Completer<Map<String, dynamic>>();
+      var playlistScanCount = 0;
+
+      when(() => itemsApi.getPlaylists()).thenAnswer((_) {
+        playlistScanCount++;
+        if (playlistScanCount == 1) {
+          return firstPlaylistScan.future;
+        }
+        return Future.value({
+          'Items': [
+            {'Id': 'pl-1', 'Name': 'The Hux List'},
+          ],
+        });
+      });
+
+      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
+        (_) async => {
+          'Items': [
+            {'Id': 'movie-1', 'PlaylistItemId': 'entry-after-add'},
+          ],
+        },
+      );
+
+      final movie = _movie(id: 'movie-1');
+      final lookupFuture =
+          ItemMembershipService.instance.getPlaylistsContaining(movie);
+
+      // While scan 1 is in flight, item is added to playlist
+      ItemMembershipService.instance.notifyItemAddedToPlaylist(
+        'server-1',
+        'pl-1',
+        ['movie-1'],
+      );
+
+      // Scan 1 completes with stale empty playlists; should be discarded and replaced by scan 2
+      firstPlaylistScan.complete({'Items': []});
+
+      final playlists = await lookupFuture;
+      expect(playlistScanCount, equals(2));
+      expect(playlists.length, equals(1));
+      expect(playlists.first.entryId, equals('entry-after-add'));
+    });
   });
 }
 

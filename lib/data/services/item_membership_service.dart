@@ -77,6 +77,7 @@ class ItemMembershipService {
   final Map<String, Map<String, String>> _playlistNames = {};
   final Map<String, DateTime> _playlistLastFetched = {};
   final Map<String, Completer<void>> _playlistInFlight = {};
+  final Map<String, int> _playlistMutationGenerations = {};
 
   // canonicalServerKey -> (collectionId -> set of itemIds)
   final Map<String, Map<String, Set<String>>> _collectionMembers = {};
@@ -84,6 +85,7 @@ class ItemMembershipService {
   final Map<String, Map<String, String>> _collectionNames = {};
   final Map<String, DateTime> _collectionLastFetched = {};
   final Map<String, Completer<void>> _collectionInFlight = {};
+  final Map<String, int> _collectionMutationGenerations = {};
 
   String _canonicalServerKey(String? serverId) {
     if (serverId == null || serverId.isEmpty || serverId == 'seerr') {
@@ -269,6 +271,10 @@ class ItemMembershipService {
     if (forceRefresh || !isCached) {
       await _syncPlaylists(serverKey);
       if (generation != _sessionGeneration) return const [];
+      if (!_playlistLastFetched.containsKey(serverKey)) {
+        await _syncPlaylists(serverKey);
+        if (generation != _sessionGeneration) return const [];
+      }
     }
 
     return getCachedPlaylistsContaining(item);
@@ -280,13 +286,18 @@ class ItemMembershipService {
     }
 
     final generation = _sessionGeneration;
+    final mutationGeneration = _playlistMutationGenerations[serverKey] ?? 0;
+    bool isStale() =>
+        generation != _sessionGeneration ||
+        mutationGeneration != (_playlistMutationGenerations[serverKey] ?? 0);
+
     final completer = Completer<void>();
     _playlistInFlight[serverKey] = completer;
 
     try {
       final client = _getClient(serverKey);
       final data = await client.itemsApi.getPlaylists();
-      if (generation != _sessionGeneration) return;
+      if (isStale()) return;
       final items = (data['Items'] as List?) ?? const [];
 
       final previous = _playlistItems[serverKey] ?? const {};
@@ -331,7 +342,7 @@ class ItemMembershipService {
       }
 
       await Future.wait(futures);
-      if (generation != _sessionGeneration) return;
+      if (isStale()) return;
 
       _playlistNames[serverKey] = nameMap;
       _playlistItems[serverKey] = itemMap;
@@ -384,6 +395,10 @@ class ItemMembershipService {
     if (forceRefresh || !isCached) {
       await _syncCollections(serverKey);
       if (generation != _sessionGeneration) return const [];
+      if (!_collectionLastFetched.containsKey(serverKey)) {
+        await _syncCollections(serverKey);
+        if (generation != _sessionGeneration) return const [];
+      }
     }
 
     final results = <ItemCollectionMembership>[
@@ -424,6 +439,11 @@ class ItemMembershipService {
     }
 
     final generation = _sessionGeneration;
+    final mutationGeneration = _collectionMutationGenerations[serverKey] ?? 0;
+    bool isStale() =>
+        generation != _sessionGeneration ||
+        mutationGeneration != (_collectionMutationGenerations[serverKey] ?? 0);
+
     final completer = Completer<void>();
     _collectionInFlight[serverKey] = completer;
 
@@ -442,7 +462,7 @@ class ItemMembershipService {
         );
         items = (data['Items'] as List?) ?? const [];
       }
-      if (generation != _sessionGeneration) return;
+      if (isStale()) return;
 
       final previous = _collectionMembers[serverKey] ?? const {};
       final nameMap = <String, String>{};
@@ -461,7 +481,7 @@ class ItemMembershipService {
       // Batch membership lookups with maxConcurrent = 24
       const maxConcurrent = 24;
       for (var i = 0; i < candidates.length; i += maxConcurrent) {
-        if (generation != _sessionGeneration) return;
+        if (isStale()) return;
         final batch = candidates.skip(i).take(maxConcurrent);
         await Future.wait(batch.map((candidate) async {
           try {
@@ -483,7 +503,7 @@ class ItemMembershipService {
           }
         }));
       }
-      if (generation != _sessionGeneration) return;
+      if (isStale()) return;
 
       _collectionNames[serverKey] = nameMap;
       _collectionMembers[serverKey] = memberMap;
@@ -508,9 +528,25 @@ class ItemMembershipService {
     List<String> itemIds,
   ) {
     final serverKey = _canonicalServerKey(serverId);
+    _playlistMutationGenerations[serverKey] =
+        (_playlistMutationGenerations[serverKey] ?? 0) + 1;
     _playlistLastFetched.remove(serverKey);
     if (itemServerSupports(serverId, (f) => f.supportsPlaylists)) {
-      unawaited(_syncPlaylists(serverKey));
+      final generation = _sessionGeneration;
+      final inFlight = _playlistInFlight[serverKey];
+      if (inFlight != null) {
+        unawaited(
+          inFlight.future.whenComplete(() {
+            if (generation == _sessionGeneration &&
+                !_playlistInFlight.containsKey(serverKey) &&
+                !_playlistLastFetched.containsKey(serverKey)) {
+              unawaited(_syncPlaylists(serverKey));
+            }
+          }),
+        );
+      } else {
+        unawaited(_syncPlaylists(serverKey));
+      }
     }
   }
 
@@ -521,6 +557,8 @@ class ItemMembershipService {
     String itemId,
   ) {
     final serverKey = _canonicalServerKey(serverId);
+    _playlistMutationGenerations[serverKey] =
+        (_playlistMutationGenerations[serverKey] ?? 0) + 1;
     final serverPlaylists = _playlistItems[serverKey];
     if (serverPlaylists != null && serverPlaylists.containsKey(playlistId)) {
       serverPlaylists[playlistId]?.removeWhere((m) => m.itemId == itemId);
@@ -535,6 +573,8 @@ class ItemMembershipService {
     List<String> itemIds,
   ) {
     final serverKey = _canonicalServerKey(serverId);
+    _collectionMutationGenerations[serverKey] =
+        (_collectionMutationGenerations[serverKey] ?? 0) + 1;
     final serverCollections = _collectionMembers[serverKey];
     if (serverCollections != null &&
         serverCollections.containsKey(collectionId)) {
@@ -550,6 +590,8 @@ class ItemMembershipService {
     String itemId,
   ) {
     final serverKey = _canonicalServerKey(serverId);
+    _collectionMutationGenerations[serverKey] =
+        (_collectionMutationGenerations[serverKey] ?? 0) + 1;
     final serverCollections = _collectionMembers[serverKey];
     if (serverCollections != null &&
         serverCollections.containsKey(collectionId)) {
@@ -564,6 +606,7 @@ class ItemMembershipService {
     _playlistItems.clear();
     _playlistNames.clear();
     _playlistLastFetched.clear();
+    _playlistMutationGenerations.clear();
     for (final c in _playlistInFlight.values) {
       if (!c.isCompleted) c.complete();
     }
@@ -571,6 +614,7 @@ class ItemMembershipService {
     _collectionMembers.clear();
     _collectionNames.clear();
     _collectionLastFetched.clear();
+    _collectionMutationGenerations.clear();
     for (final c in _collectionInFlight.values) {
       if (!c.isCompleted) c.complete();
     }
