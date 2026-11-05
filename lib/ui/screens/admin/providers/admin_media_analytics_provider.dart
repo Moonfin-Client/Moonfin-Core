@@ -911,7 +911,8 @@ Future<List<AdminAnalyticsItem>> _loadLibraryItems(
 /// answer once a whole page of MediaSources is built. With every library
 /// reading big pages together, that start slipped past the client's 8s
 /// connect timeout, which on web aborts the request.
-final _itemPages = _Slots(4);
+const _maxItemPages = 4;
+final _itemPages = _Slots(_maxItemPages);
 
 /// Runs tasks with at most [_free] of them in flight, the rest in order.
 class _Slots {
@@ -941,7 +942,7 @@ class _Slots {
 }
 
 /// Every matching item, the first page alone to learn the total and the rest
-/// queued behind the shared page limit.
+/// in batches behind the shared page limit.
 Future<List<Map<String, dynamic>>> _fetchAllItems(
   MediaServerClient client, {
   required String parentId,
@@ -980,9 +981,15 @@ Future<List<Map<String, dynamic>>> _fetchAllItems(
   final starts = [
     for (var start = pageSize; start < total; start += pageSize) start,
   ];
-  final pages = await Future.wait(starts.map(page));
-  for (final response in pages) {
-    items.addAll(_mapList(response['Items']));
+  // A batch at a time, so a failed read stops the library instead of leaving
+  // the rest of its pages queued in the shared slots.
+  for (var i = 0; i < starts.length; i += _maxItemPages) {
+    final pages = await Future.wait(
+      starts.skip(i).take(_maxItemPages).map(page),
+    );
+    for (final response in pages) {
+      items.addAll(_mapList(response['Items']));
+    }
   }
   return items;
 }
