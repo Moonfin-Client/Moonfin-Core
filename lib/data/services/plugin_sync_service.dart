@@ -173,7 +173,7 @@ class PluginSyncService extends ChangeNotifier {
   int _notificationPrefsVersion = 0;
   Future<void>? _activeNotificationPrefsFetch;
   String? _activeNotificationPrefsUserKey;
-  bool _hasUnsyncedNotificationPrefs = false;
+  final Set<String> _unsyncedNotificationUserKeys = {};
   Future<bool>? _activeNotificationPush;
   bool _notificationPushQueued = false;
   Timer? _notificationPushRetryTimer;
@@ -185,7 +185,7 @@ class PluginSyncService extends ChangeNotifier {
       'pref_unsynced_notifications_$userKey';
 
   bool hasUnsyncedNotificationPrefsFor(String userKey) =>
-      _hasUnsyncedNotificationPrefs ||
+      _unsyncedNotificationUserKeys.contains(userKey) ||
       (_store.getBool(_unsyncedNotificationStoreKey(userKey)) ?? false);
 
   /// Whether notification preferences for [client]'s user were successfully
@@ -201,8 +201,12 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   void _setUnsyncedNotificationPrefs(String? userKey, bool value) {
-    _hasUnsyncedNotificationPrefs = value;
     if (userKey != null && userKey.isNotEmpty) {
+      if (value) {
+        _unsyncedNotificationUserKeys.add(userKey);
+      } else {
+        _unsyncedNotificationUserKeys.remove(userKey);
+      }
       _store.setBool(_unsyncedNotificationStoreKey(userKey), value);
     }
   }
@@ -308,7 +312,7 @@ class PluginSyncService extends ChangeNotifier {
       _activeNotificationPrefsUserKey = null;
       _activeNotificationPush = null;
       _notificationPushQueued = false;
-      _hasUnsyncedNotificationPrefs = false;
+      _unsyncedNotificationUserKeys.clear();
       _notificationPrefsFetchedUserKeys.clear();
       if (clearPersistedNotificationEdits) {
         final userKey = _resolveCurrentUserKey();
@@ -543,6 +547,10 @@ class PluginSyncService extends ChangeNotifier {
 
   String _userSyncKey(MediaServerClient client, {String? serverId}) =>
       '${_serverSyncKey(client, serverId: serverId)}/${client.userId ?? ''}';
+
+  @visibleForTesting
+  String userSyncKey(MediaServerClient client, {String? serverId}) =>
+      _userSyncKey(client, serverId: serverId);
 
   /// Whether this sign-in's settings for [client]'s user have been read.
   bool hasReadSignInSettings(MediaServerClient client, {String? serverId}) =>
