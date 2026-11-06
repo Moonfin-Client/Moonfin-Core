@@ -28,6 +28,7 @@ import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/current_app_localizations.dart';
 import '../../../preference/home_section_config.dart';
+import '../../../util/date_format_util.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../data/repositories/mdblist_repository.dart';
@@ -4294,12 +4295,15 @@ class HomeViewModel extends ChangeNotifier {
 
   static String _formatDateHuman(DateTime date) {
     try {
-      return DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
+      return formatShortDate(
+        date,
+        locale: currentAppLocalizations().localeName,
+      );
     } catch (_) {
       // The app loads the date data for its language at startup. Without it,
       // in tests or for a language intl has no data for, fall back to English
       // rather than failing the whole row.
-      return DateFormat.MMMd('en_US').format(date);
+      return formatShortDate(date, locale: 'en_US');
     }
   }
 

@@ -11673,6 +11673,22 @@ class AppLocalizationsId extends AppLocalizations {
       'Gunakan format waktu 24 jam di mana pun jam ditampilkan';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'Tampilkan tombol acak di bilah navigasi';
 

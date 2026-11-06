@@ -11334,6 +11334,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '시계가 표시되는 모든 곳에 24시간 형식을 사용합니다';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation => '탐색 바에 셔플 버튼 표시';
 
   @override
