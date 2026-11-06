@@ -960,7 +960,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             fit: BoxFit.scaleDown,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 10,
+              spacing: 14,
               children: [
                 for (final (index, tab) in tabs.indexed)
                   _barTab(tab, index, tabs, l10n),
@@ -1025,13 +1025,19 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             children: [
               _tabIcon(tab),
               const SizedBox(width: 10),
-              Text(
-                _tabLabel(tab, l10n),
-                maxLines: 1,
-                style: TextStyle(
-                  color: _ink(),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 220),
+                  child: Text(
+                    _tabLabel(tab, l10n),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: _ink(),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
