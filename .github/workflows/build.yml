@@ -503,19 +503,22 @@ jobs:
       # vcpkg builds libarchive and its dependencies from source, OpenSSL
       # included, which took about 13 minutes of every run. Its binary cache
       # skips that once a run on main or an earlier run of the same PR saved it.
-      - name: Find the runner's vcpkg version
+      - name: Find the runner's vcpkg and image versions
         id: vcpkg
         shell: pwsh
         run: |
           $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
           "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
 
       - uses: actions/cache@v5
         with:
           path: ~\AppData\Local\vcpkg\archives
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
-          # After a runner image update brings a new vcpkg, start from the last
-          # cache. vcpkg checks each package's ABI hash, so stale ones rebuild.
+          # The image version is in the key because an image update can bring
+          # a new compiler with the same vcpkg, and a cache that matched the key
+          # exactly would never be saved again. On a new image this starts from
+          # the last cache, and vcpkg's ABI hashes rebuild whatever went stale.
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
           restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Build installer
@@ -623,19 +626,22 @@ jobs:
       # vcpkg builds libarchive and its dependencies from source, OpenSSL
       # included, which took about 13 minutes of every run. Its binary cache
       # skips that once a run on main or an earlier run of the same PR saved it.
-      - name: Find the runner's vcpkg version
+      - name: Find the runner's vcpkg and image versions
         id: vcpkg
         shell: pwsh
         run: |
           $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
           "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
 
       - uses: actions/cache@v5
         with:
           path: ~\AppData\Local\vcpkg\archives
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
-          # After a runner image update brings a new vcpkg, start from the last
-          # cache. vcpkg checks each package's ABI hash, so stale ones rebuild.
+          # The image version is in the key because an image update can bring
+          # a new compiler with the same vcpkg, and a cache that matched the key
+          # exactly would never be saved again. On a new image this starts from
+          # the last cache, and vcpkg's ABI hashes rebuild whatever went stale.
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
           restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Build ARM64 installer
@@ -998,7 +1004,7 @@ jobs:
   # Merges the per-suite results into the one test-results.json the PR comment
   # reads. A suite that died before uploading counts as a failed run.
   tests-summary:
-    if: ${{ always() && needs.tests.result != 'skipped' }}
+    if: ${{ !cancelled() && needs.tests.result != 'skipped' }}
     needs: tests
     runs-on: ubuntu-26.04
     steps:
