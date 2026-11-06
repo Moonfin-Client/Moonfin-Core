@@ -53,6 +53,9 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// Optional completer to delay notification GET responses.
   Completer<void>? notificationGetCompleter;
 
+  /// Optional completer to delay notification POST responses.
+  Completer<void>? notificationPostCompleter;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -68,6 +71,9 @@ class _RecordingAdapter implements HttpClientAdapter {
     if (path.endsWith('/Moonfin/Notifications/Prefs')) {
       if (options.method == 'POST') {
         lastNotificationPostPayload = options.data;
+        if (notificationPostCompleter != null) {
+          await notificationPostCompleter!.future;
+        }
         return ResponseBody.fromString('', failNotificationPush ? 500 : 200);
       }
       if (notificationGetCompleter != null) {
@@ -439,5 +445,50 @@ void main() {
     final results = await Future.wait([push1, push2]);
     expect(results, [true, true]);
     expect(adapter.lastNotificationPostPayload['notifyOnLibraryAdded'], isTrue);
+  });
+
+  test(
+      'older POST completion does not clear unsynced flag when newer edit is queued and subsequent failed POST retries',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+
+    // Hold the first POST
+    adapter.notificationPostCompleter = Completer<void>();
+    adapter.failNotificationPush = false;
+    final push1 = service.pushNotificationPrefs(client);
+
+    // Queue a second edit while first POST is in-flight
+    service.markNotificationPrefsModified(client: client);
+    await seerr.setNotifyOnLibraryAdded(true);
+    final push2 = service.pushNotificationPrefs(client);
+
+    // Release first POST so it succeeds
+    adapter.notificationPostCompleter!.complete();
+    adapter.notificationPostCompleter = null;
+    final result1 = await push1;
+    expect(result1, isTrue);
+
+    // Make second POST fail
+    adapter.failNotificationPush = true;
+    final result2 = await push2;
+    expect(result2, isFalse);
+
+    // Verify edit remains pending
+    expect(service.hasUnsyncedNotificationPrefsFor('http_plugin_test/'), isTrue);
+
+    // Stale fetch cannot overwrite it
+    adapter.notificationPrefs = {
+      'notifyOnNewRequests': false,
+      'notifyOnLibraryAdded': false,
+    };
+    adapter.requests.clear();
+    await service.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
+    expect(seerr.notifyOnNewRequests, isTrue);
+    expect(seerr.notifyOnLibraryAdded, isTrue);
   });
 }
