@@ -172,6 +172,9 @@ class PluginSyncService extends ChangeNotifier {
   /// newer local user edits, and to deduplicate concurrent fetch requests.
   int _notificationPrefsVersion = 0;
   Future<void>? _activeNotificationPrefsFetch;
+  String? _activeNotificationPrefsUserKey;
+  bool _hasUnsyncedNotificationPrefs = false;
+  Timer? _notificationPushRetryTimer;
 
   PluginSyncService(this._prefs, this._store, {@visibleForTesting Dio? dio})
     : _dio = dio ?? Dio(pluginRequestOptions()) {
@@ -255,6 +258,7 @@ class PluginSyncService extends ChangeNotifier {
     bool keepIncompleteRecordings = false,
   }) {
     _syncRetryTimer?.cancel();
+    _notificationPushRetryTimer?.cancel();
     _signInSettingsRead.clear();
     if (stopStream) {
       _stopSettingsStream();
@@ -262,6 +266,10 @@ class PluginSyncService extends ChangeNotifier {
     // A snapshot describes the server state of the session being torn down, so
     // keeping it could wrongly suppress the next user's first push.
     _lastSyncedProfileJson.clear();
+    _notificationPrefsVersion++;
+    _activeNotificationPrefsFetch = null;
+    _activeNotificationPrefsUserKey = null;
+    _hasUnsyncedNotificationPrefs = false;
     _pluginAvailable = false;
     _pluginVersion = null;
     _seerrUrl = null;
@@ -956,23 +964,31 @@ class PluginSyncService extends ChangeNotifier {
 
   Future<void> fetchNotificationPrefs(MediaServerClient client) async {
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+    if (_hasUnsyncedNotificationPrefs) return;
 
-    if (_activeNotificationPrefsFetch != null) {
+    final userKey = _userSyncKey(client);
+    if (_activeNotificationPrefsFetch != null &&
+        _activeNotificationPrefsUserKey == userKey) {
       return _activeNotificationPrefsFetch;
     }
 
-    final future = _doFetchNotificationPrefs(client);
+    final future = _doFetchNotificationPrefs(client, userKey);
     _activeNotificationPrefsFetch = future;
+    _activeNotificationPrefsUserKey = userKey;
     try {
       await future;
     } finally {
       if (_activeNotificationPrefsFetch == future) {
         _activeNotificationPrefsFetch = null;
+        _activeNotificationPrefsUserKey = null;
       }
     }
   }
 
-  Future<void> _doFetchNotificationPrefs(MediaServerClient client) async {
+  Future<void> _doFetchNotificationPrefs(
+    MediaServerClient client,
+    String expectedUserKey,
+  ) async {
     final versionAtStart = _notificationPrefsVersion;
     try {
       final ep = await moonbaseEndpoint(client, _dio);
@@ -983,43 +999,64 @@ class PluginSyncService extends ChangeNotifier {
         options: Options(headers: ep.headers),
       );
 
-      // If a local edit occurred while the request was in flight, discard the stale fetch response.
-      if (_notificationPrefsVersion != versionAtStart) return;
+      // Discard if session changed, local edits occurred, or unsynced edits are pending.
+      if (_hasUnsyncedNotificationPrefs ||
+          _notificationPrefsVersion != versionAtStart ||
+          _userSyncKey(client) != expectedUserKey) {
+        return;
+      }
 
       final data = response.data;
       if (data is Map<String, dynamic>) {
         final newRequests = _readBool(data, 'notifyOnNewRequests');
-        if (newRequests != null && _notificationPrefsVersion == versionAtStart) {
+        if (newRequests != null &&
+            _notificationPrefsVersion == versionAtStart &&
+            _userSyncKey(client) == expectedUserKey &&
+            !_hasUnsyncedNotificationPrefs) {
           await _seerrPrefs.setNotifyOnNewRequests(newRequests);
         }
         final libAdded = _readBool(data, 'notifyOnLibraryAdded');
-        if (libAdded != null && _notificationPrefsVersion == versionAtStart) {
+        if (libAdded != null &&
+            _notificationPrefsVersion == versionAtStart &&
+            _userSyncKey(client) == expectedUserKey &&
+            !_hasUnsyncedNotificationPrefs) {
           await _seerrPrefs.setNotifyOnLibraryAdded(libAdded);
         }
         final issues = _readBool(data, 'notifyOnIssues');
-        if (issues != null && _notificationPrefsVersion == versionAtStart) {
+        if (issues != null &&
+            _notificationPrefsVersion == versionAtStart &&
+            _userSyncKey(client) == expectedUserKey &&
+            !_hasUnsyncedNotificationPrefs) {
           await _seerrPrefs.setNotifyOnIssues(issues);
         }
         final newMedia = _readBool(data, 'notifyOnNewMedia');
-        if (newMedia != null && _notificationPrefsVersion == versionAtStart) {
+        if (newMedia != null &&
+            _notificationPrefsVersion == versionAtStart &&
+            _userSyncKey(client) == expectedUserKey &&
+            !_hasUnsyncedNotificationPrefs) {
           await _seerrPrefs.setNotifyOnNewMedia(newMedia);
         }
       }
     } catch (_) {}
   }
 
-  Future<void> pushNotificationPrefs(MediaServerClient client) async {
+  Future<bool> pushNotificationPrefs(MediaServerClient client) async {
     _notificationPrefsVersion++;
+    _hasUnsyncedNotificationPrefs = true;
+    _notificationPushRetryTimer?.cancel();
+
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
-      return;
+      _scheduleNotificationPushRetry(client);
+      return false;
     }
 
     try {
       final ep = await moonbaseEndpoint(client, _dio);
       if (ep == null) {
         debugPrint('PluginSync: skip pushNotificationPrefs, no auth headers');
-        return;
+        _scheduleNotificationPushRetry(client);
+        return false;
       }
       final headers = ep.headers;
 
@@ -1035,7 +1072,21 @@ class PluginSyncService extends ChangeNotifier {
           headers: {...headers, 'Content-Type': 'application/json'},
         ),
       );
-    } catch (_) {}
+      _hasUnsyncedNotificationPrefs = false;
+      return true;
+    } catch (_) {
+      _scheduleNotificationPushRetry(client);
+      return false;
+    }
+  }
+
+  void _scheduleNotificationPushRetry(MediaServerClient client) {
+    _notificationPushRetryTimer?.cancel();
+    _notificationPushRetryTimer = Timer(const Duration(seconds: 5), () {
+      if (_hasUnsyncedNotificationPrefs && _pluginAvailable) {
+        unawaited(pushNotificationPrefs(client));
+      }
+    });
   }
 
   /// Returns true when the registration POST succeeded and false when it was
