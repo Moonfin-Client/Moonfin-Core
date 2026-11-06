@@ -514,6 +514,9 @@ jobs:
         with:
           path: ~\AppData\Local\vcpkg\archives
           key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
+          # After a runner image update brings a new vcpkg, start from the last
+          # cache. vcpkg checks each package's ABI hash, so stale ones rebuild.
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Build installer
         shell: pwsh
@@ -631,6 +634,9 @@ jobs:
         with:
           path: ~\AppData\Local\vcpkg\archives
           key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}
+          # After a runner image update brings a new vcpkg, start from the last
+          # cache. vcpkg checks each package's ABI hash, so stale ones rebuild.
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Build ARM64 installer
         shell: pwsh
