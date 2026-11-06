@@ -407,9 +407,16 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     final subtitleStyle = baseTextStyle.copyWith(
       color: subtitleColor,
       fontSize: classic ? tvPx(20) : null,
-      fontWeight: classic ? FontWeight.w400 : null,
+      fontWeight: isNeon
+          ? FontWeight.w600
+          : (classic ? FontWeight.w400 : null),
       height: classic ? 28 / 20 : null,
-      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+      shadows: isNeon
+          ? const [
+              Shadow(blurRadius: 4, color: Colors.black),
+              Shadow(blurRadius: 6, color: Colors.black87),
+            ]
+          : const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
     final textScaler = MediaQuery.textScalerOf(context);
     // The classic home label takes its line heights straight from the canvas.

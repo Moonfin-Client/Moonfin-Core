@@ -960,7 +960,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             fit: BoxFit.scaleDown,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 4,
+              spacing: 10,
               children: [
                 for (final (index, tab) in tabs.indexed)
                   _barTab(tab, index, tabs, l10n),
