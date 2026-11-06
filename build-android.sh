@@ -50,6 +50,17 @@ esac
 
 FLUTTER="$(resolve_flutter)"
 
+# On CI, the Gradle and Kotlin daemons left over from the APK build still hold
+# their memory when the App Bundle build starts its own Dart AOT compiles, and
+# together they run the 16 GB runner out of memory. Locally the warm daemons
+# just make the second build faster, so they're only stopped on CI.
+stop_gradle_daemons_on_ci() {
+  [ -n "${CI:-}" ] || return 0
+  echo "Stopping Gradle and Kotlin daemons before the App Bundle build..."
+  (cd "$REPO_ROOT/android" && ./gradlew --stop) || true
+  pkill -f KotlinCompileDaemon || true
+}
+
 VERSION_LINE=$(grep '^version:' "$REPO_ROOT/pubspec.yaml" | sed 's/version:[[:space:]]*//' | tr -d '[:space:]')
 APP_VERSION=$(printf '%s' "$VERSION_LINE" | cut -d'+' -f1)
 APP_BUILD_NUMBER=$(printf '%s' "$VERSION_LINE" | cut -d'+' -f2)
@@ -105,6 +116,7 @@ if [ "$TARGET" != tv ]; then
   echo "APK created: $APK_SOURCE"
   echo "APK copied to root: $APK_OUTPUT"
 
+  stop_gradle_daemons_on_ci
   echo "Building Android App Bundle..."
   if ! "$FLUTTER" build appbundle --release \
     --flavor mobile \
@@ -158,6 +170,7 @@ if [ "$TARGET" != mobile ]; then
   echo "TV APK created: $TV_APK_SOURCE"
   echo "TV APK copied to root: $TV_APK_OUTPUT"
 
+  stop_gradle_daemons_on_ci
   echo "Building Android TV App Bundle..."
   if ! "$FLUTTER" build appbundle --release \
     --flavor androidTv \

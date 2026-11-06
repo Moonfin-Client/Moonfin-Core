@@ -45,6 +45,9 @@ class _FakePluginSyncService extends ChangeNotifier
   bool get seerrAvailable => false;
 
   @override
+  bool get calendarAvailable => false;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

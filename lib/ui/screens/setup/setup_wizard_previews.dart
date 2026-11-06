@@ -13,6 +13,7 @@ import '../../../data/models/media_bar_slide_item.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/repositories/media_bar_repository.dart';
 import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/repositories/poster_badge_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
 import '../../../data/services/library_scope_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -42,6 +43,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
+import '../../widgets/poster_badges.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
 import '../../widgets/mediabar/media_bar_new_release_label.dart';
 import '../../widgets/rating_display.dart';
@@ -1925,6 +1927,10 @@ bool get _seerrAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().seerrAvailable;
 
+bool get _calendarAvailable =>
+    GetIt.instance.isRegistered<PluginSyncService>() &&
+    GetIt.instance<PluginSyncService>().calendarAvailable;
+
 bool get _downloadsAvailable =>
     GetIt.instance.isRegistered<UserRepository>() &&
     DownloadsNavSlot.isAvailable();
@@ -2008,6 +2014,8 @@ List<_NavButton> _navButtons(
         icon: (size, color) => SeerrIcon(size: size, color: color),
         label: seerrLabel,
       ),
+    if (!kids && on(UserPreferences.showCalendarButton) && _calendarAvailable)
+      icon(Icons.calendar_month_rounded, l10n.calendar),
     if (libraries && on(UserPreferences.showLibrariesIndividually))
       for (final (glyph, label) in _navLibraries(
         l10n,
@@ -2345,6 +2353,8 @@ Widget _bottomNavbarPreview(
     showLiveTv: previewValue(context, UserPreferences.showLiveTvButton),
     showSeerr: previewValue(context, UserPreferences.showSeerrButton),
     seerrAvailable: _seerrAvailable,
+    showCalendar: previewValue(context, UserPreferences.showCalendarButton),
+    calendarAvailable: _calendarAvailable,
   );
   final views = [
     for (final item in resolveBarItems(
@@ -2578,6 +2588,22 @@ Widget _homeRowsScreen(
   );
 }
 
+/// The colours of the 4K and HDR10 built-in labels.
+const _sampleLabels = [
+  PosterBadge(label: '4K', color: '#7C3AED'),
+  PosterBadge(label: 'HDR', color: '#CA8A04'),
+];
+
+/// Sample labels on the preview's posters, only for someone whose server gives
+/// them labels, so the preview never shows what the app never will.
+bool _showSampleLabels(BuildContext context) {
+  if (!GetIt.instance.isRegistered<PosterBadgeRepository>() ||
+      GetIt.instance<PosterBadgeRepository>().available.value != true) {
+    return false;
+  }
+  return previewValue(context, UserPreferences.showPosterLabels);
+}
+
 Widget _homeRowsColumn(
   BuildContext context,
   List<MediaBarSlideItem> items, {
@@ -2608,6 +2634,7 @@ Widget _homeRowsColumn(
     required double aspect,
     String? imageUrl,
     double? progress,
+    List<PosterBadge> labels = const [],
   }) {
     final width = height * aspect;
     return Column(
@@ -2623,6 +2650,12 @@ Widget _homeRowsColumn(
               fit: StackFit.expand,
               children: [
                 _artwork(imageUrl ?? item.posterUrl),
+                if (labels.isNotEmpty)
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    child: PosterBadgeSample(badges: labels, scale: 0.85 * scale),
+                  ),
                 if (progress != null)
                   Positioned(
                     left: 6,
@@ -2834,6 +2867,7 @@ Widget _homeRowsColumn(
     int offset = 0,
     bool withFocus = false,
   }) {
+    final showLabels = _showSampleLabels(context);
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
         if (withFocus && i == 0)
@@ -2845,6 +2879,10 @@ Widget _homeRowsColumn(
             aspect: thumbs ? 16 / 9 : 2 / 3,
             imageUrl: thumbs ? _itemAt(items, i + offset).backdropUrl : null,
             progress: thumbs && i == 0 ? 0.35 : (thumbs && i == 1 ? 0.7 : null),
+            // Not every file has both, as in a real library.
+            labels: !showLabels || i % 3 == 2
+                ? const []
+                : (i % 3 == 0 ? _sampleLabels : _sampleLabels.sublist(0, 1)),
           ),
     ];
     return Column(

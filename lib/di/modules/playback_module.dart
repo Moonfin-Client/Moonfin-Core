@@ -443,9 +443,10 @@ void registerPlaybackModule() {
           : LogLevel.debug,
     );
   });
-  manager.autoBitrateProvider = AutoBitrateService(
-    _getIt<MediaServerClientFactory>(),
-  ).measuredBpsForActiveServer;
+  final autoBitrate = AutoBitrateService(_getIt<MediaServerClientFactory>());
+  manager
+    ..autoBitrateProvider = autoBitrate.measuredBpsForActiveServer
+    ..savedAutoBitrateProvider = autoBitrate.savedBpsForActiveServer;
 
   // The streams of one kind belonging to whatever is playing, or null when
   // that isn't an episode and so has no series to remember a choice for.

@@ -294,6 +294,8 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/ratings/
+    # Country flags for poster labels, from flag-icons (MIT, see the LICENSE beside them).
+    - assets/icons/flags/
     - assets/icons/social/
     - assets/fonts/
     - assets/subtitle_fonts/

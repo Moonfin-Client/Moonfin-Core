@@ -1089,6 +1089,18 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       enabled: calendarsCanMerge,
                       onChanged: () => setState(() {}),
                     ),
+                    if (GetIt.instance<PluginSyncService>().calendarAvailable)
+                      SwitchPreferenceTile(
+                        key: const ValueKey('calendarRowSeeAll'),
+                        preference: UserPreferences.calendarRowSeeAll,
+                        title: l10n.calendarRowSeeAll,
+                        subtitle: l10n.calendarRowSeeAllSubtitle,
+                        icon: Icons.calendar_view_month,
+                        onChanged: () {
+                          _pushPersonalizationSync();
+                          _reloadHomeRows();
+                        },
+                      ),
                   ],
                 ),
               ],

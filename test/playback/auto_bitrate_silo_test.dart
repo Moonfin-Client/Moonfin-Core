@@ -20,6 +20,7 @@ const _device = DeviceInfo(
 void main() {
   late HttpServer server;
   late int requests;
+  late bool answerProbes;
 
   // No TestWidgetsFlutterBinding here: it would replace dart:io's HttpClient
   // with one that answers 400 without connecting, and the point of this test
@@ -36,10 +37,16 @@ void main() {
       ),
     );
     requests = 0;
+    answerProbes = false;
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
       requests++;
-      request.response.statusCode = 404;
+      final size = int.tryParse(request.uri.queryParameters['size'] ?? '');
+      if (answerProbes && size != null) {
+        request.response.add(List<int>.filled(size, 0));
+      } else {
+        request.response.statusCode = 404;
+      }
       await request.response.close();
     });
   });
@@ -49,7 +56,7 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<int?> measureFor(ServerType type) {
+  MediaServerClientFactory signInTo(ServerType type) {
     final factory = MediaServerClientFactory(deviceInfo: _device);
     // The service measures the signed in server's client.
     GetIt.instance.registerSingleton<MediaServerClient>(
@@ -59,8 +66,11 @@ void main() {
         baseUrl: 'http://127.0.0.1:${server.port}',
       ),
     );
-    return AutoBitrateService(factory).measuredBpsForActiveServer();
+    return factory;
   }
+
+  Future<int?> measureFor(ServerType type) =>
+      AutoBitrateService(signInTo(type)).measuredBpsForActiveServer();
 
   test('Silo gets no measurement and no probe request', () async {
     expect(await measureFor(ServerType.silo), isNull);
@@ -72,5 +82,25 @@ void main() {
     // default ceiling). What matters is that the request reached it.
     await measureFor(ServerType.jellyfin);
     expect(requests, greaterThan(0));
+  });
+
+  test('a measurement is saved and reused by the next launch', () async {
+    answerProbes = true;
+    final factory = signInTo(ServerType.jellyfin);
+    final firstLaunch = AutoBitrateService(factory);
+    final measured = await firstLaunch.measuredBpsForActiveServer();
+    expect(measured, isNotNull);
+    final probes = requests;
+
+    final nextLaunch = AutoBitrateService(factory);
+    expect(await nextLaunch.savedBpsForActiveServer(), measured);
+    expect(await nextLaunch.measuredBpsForActiveServer(), measured);
+    expect(requests, probes);
+  });
+
+  test('before the first measurement the starting ceiling is used', () async {
+    final service = AutoBitrateService(signInTo(ServerType.jellyfin));
+    expect(await service.savedBpsForActiveServer(), 120000000);
+    expect(requests, 0);
   });
 }

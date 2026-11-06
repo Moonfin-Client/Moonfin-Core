@@ -21,6 +21,7 @@ import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/screens/detail/premiere/premiere_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_track_chips.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
@@ -274,6 +275,34 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.pump(const Duration(milliseconds: 400));
     expect(play.hasPrimaryFocus, isTrue);
+  });
+
+  testWidgets('the ratings sit on the first screen over the arrow', (
+    tester,
+  ) async {
+    final vm = viewModel(
+      'Movie',
+      data: {...movieWithTracks(), 'CommunityRating': 7.8},
+    );
+    await pumpContent(tester, vm);
+    await tester.pump();
+
+    final ratings = find.byType(RatingsRow);
+    final arrow = find.byIcon(Icons.keyboard_arrow_down);
+    expect(ratings, findsOneWidget);
+    expect(
+      tester.getBottomLeft(ratings).dy,
+      lessThan(tester.getTopLeft(arrow).dy),
+    );
+    expect(tester.getBottomLeft(arrow).dy, lessThanOrEqualTo(1080));
+
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byType(SingleChildScrollView).first,
+    );
+    await tester.tap(arrow);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(scroll.controller!.offset, greaterThan(0));
   });
 
   testWidgets('a TV shows the whole overview unless there is no room', (

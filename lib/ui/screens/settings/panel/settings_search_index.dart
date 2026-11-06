@@ -124,6 +124,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
+  final calendarAvailable =
+      GetIt.instance<PluginSyncService>().calendarAvailable;
+  final calendarRemindersAvailable =
+      GetIt.instance<PluginSyncService>().calendarRemindersAvailable;
   final liveTvOnAnyServer = liveTvOnAnySignedInServer();
   final musicOnAnyServer = musicOnAnySignedInServer();
   final playlistsOnAnyServer = playlistsOnAnySignedInServer();
@@ -430,6 +434,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.hub,
     open: () => push(const _ServicesScreen()),
   );
+  final calendarSettings = _SearchSection(
+    slug: 'calendar-settings',
+    path: [l10n.integrations, l10n.calendar],
+    icon: Icons.calendar_month,
+    open: () => push(const _CalendarSettingsScreen()),
+  );
   final seerr = _SearchSection(
     slug: 'seerr',
     path: [l10n.integrations, seerrBrand(l10n.seerr)],
@@ -654,6 +664,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.watchedIndicators,
       keywords: ['checkmark', 'seen', 'badge'],
     ),
+    if (_posterLabelsAvailable)
+      style.leaf(
+        'pref_show_poster_labels',
+        l10n.showPosterLabels,
+        subtitle: l10n.showPosterLabelsSubtitle,
+        keywords: ['badge', 'tag', 'quality', '4k', 'hdr'],
+      ),
     if (!PlatformDetection.useMobileUi) ...[
       style.leaf(
         'pref_page_transition_speed',
@@ -900,6 +917,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         seerrBrand(l10n.showSeerrButton),
         subtitle: seerrBrand(l10n.settingsShowSeerrButtonInNavigation),
         keywords: ['requests'],
+      ),
+    if (calendarAvailable)
+      navigation.leaf(
+        'pref_show_calendar_button',
+        l10n.showCalendarButton,
+        subtitle: l10n.showCalendarButtonSubtitle,
+        keywords: ['sonarr', 'radarr'],
       ),
     if (friendsAvailable)
       navigation.leaf(
@@ -1250,6 +1274,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
           l10n.sonarrCalendarHideDownloaded,
           header: 'Sonarr',
         ),
+        if (calendarAvailable)
+          calendars.leaf(
+            'pref_calendar_row_see_all',
+            l10n.calendarRowSeeAll,
+            subtitle: l10n.calendarRowSeeAllSubtitle,
+          ),
         seerrLists.screen(keywords: ['discovery rows', 'watchlist', 'trending']),
         seerrLists.leaf('seerr_rows_sort_by', seerrBrand(l10n.seerrRowsSorting)),
         seerrLists.leaf('seerr_rows_sort_order', l10n.sortOrder),
@@ -1949,6 +1979,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.replaceSkipOutroWithNextUpDisplaySubtitle,
     ),
     automation.leaf(
+      'pref_show_next_air_date',
+      l10n.showNextAirDate,
+      subtitle: l10n.showNextAirDateSubtitle,
+      keywords: ['next episode', 'upcoming', 'sonarr'],
+    ),
+    automation.leaf(
       'enable_still_watching',
       l10n.stillWatchingPrompt,
       subtitle: 'Prompt to Continue Watching after X consecutive episodes.',
@@ -2106,7 +2142,118 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       ),
 
     if (_integrationsOffered)
-      services.screen(keywords: ['seerr', 'achievements', 'services']),
+      services.screen(
+        keywords: ['seerr', 'calendar', 'achievements', 'services'],
+      ),
+    if (calendarAvailable) ...[
+      calendarSettings.screen(
+        keywords: ['sonarr', 'radarr', 'upcoming', 'schedule'],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_style',
+        l10n.calendarSettingsStyle,
+        subtitle: l10n.calendarSettingsStyleDescription,
+        keywords: [
+          l10n.calendarSettingsStyleAgenda,
+          l10n.calendarSettingsStyleCountdown,
+        ],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_week_start',
+        l10n.calendarSettingsWeekStart,
+        keywords: [l10n.adminDaySunday, l10n.adminDayMonday],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_scope',
+        l10n.calendarSettingsScope,
+        subtitle: l10n.calendarSettingsScopeDescription,
+        keywords: [l10n.calendarSettingsScopeMyShows, 'favorites'],
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_show_episodes',
+        l10n.episodes,
+        keywords: ['sonarr'],
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_show_movies',
+        l10n.movies,
+        keywords: ['radarr'],
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'radarr_calendar_show_cinema',
+        l10n.radarrCalendarShowCinema,
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'radarr_calendar_show_digital',
+        l10n.radarrCalendarShowDigital,
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'radarr_calendar_show_physical',
+        l10n.radarrCalendarShowPhysical,
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_libraries',
+        l10n.libraries,
+        header: l10n.calendarSettingsWhatShows,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_unmonitored',
+        l10n.calendarSettingsUnmonitored,
+        subtitle: l10n.calendarSettingsUnmonitoredSubtitle,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_specials',
+        l10n.calendarSettingsSpecials,
+        subtitle: l10n.calendarSettingsSpecialsSubtitle,
+        keywords: ['season 0'],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_badges',
+        l10n.calendarSettingsBadges,
+        subtitle: l10n.calendarSettingsBadgesSubtitle,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_color_by',
+        l10n.calendarSettingsColorBy,
+        subtitle: l10n.calendarSettingsColorByDescription,
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_image_type',
+        l10n.calendarSettingsImageType,
+        subtitle: l10n.calendarSettingsImageTypeDescription,
+        keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_spoiler_safe',
+        l10n.calendarSettingsSpoilerSafe,
+        subtitle: l10n.calendarSettingsSpoilerSafeSubtitle,
+        keywords: ['spoilers'],
+      ),
+      calendarSettings.leaf(
+        'pref_calendar_select_action',
+        l10n.calendarSettingsSelectAction,
+        subtitle: l10n.calendarSettingsSelectActionDescription,
+      ),
+      if (seerrAvailable)
+        calendarSettings.leaf(
+          'pref_calendar_request_button',
+          l10n.calendarSettingsRequestButton,
+          subtitle: seerrBrand(l10n.calendarSettingsRequestButtonSubtitle),
+        ),
+      if (PlatformDetection.useMobileUi && calendarRemindersAvailable)
+        calendarSettings.leaf(
+          'pref_calendar_reminders',
+          l10n.calendarSettingsReminders,
+          subtitle: l10n.calendarSettingsRemindersSubtitle,
+          keywords: [l10n.calendarRemindMe, 'notifications'],
+        ),
+    ],
     if (moonfinPluginOnAnyServer)
       settingsSync.screen(
         keywords: ['moonbase', 'plugin', 'server sync', 'status', 'profile'],

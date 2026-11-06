@@ -75,6 +75,11 @@ class Destinations {
   static const libraryBrowse = '/library/:libraryId';
   static const allGenres = '/genres';
   static const allFavorites = '/favorites';
+
+  /// Opens the user's calendar style. The month grid sits under it.
+  static const calendar = '/calendar';
+  static const calendarMonth = '/calendar/month';
+
   static const folderBrowse = '/folder/:folderId';
   static const collectionBrowse = '/collection/:collectionId';
   static const libraryViewRoute = '/library-view/:libraryId';
@@ -271,16 +276,24 @@ class Destinations {
     required String genreId,
     String? parentId,
     String? includeType,
+    String? serverId,
   }) {
     final base = '/genre/${Uri.encodeComponent(genreName)}';
     final params = <String>['genreId=$genreId'];
     if (parentId != null) params.add('parentId=$parentId');
     if (includeType != null) params.add('includeType=$includeType');
+    if (serverId != null && serverId.isNotEmpty) {
+      params.add('serverId=${Uri.encodeComponent(serverId)}');
+    }
     return '$base?${params.join('&')}';
   }
 
-  static String studio(String studioName) =>
-      '/studio/${Uri.encodeComponent(studioName)}';
+  static String studio(String studioName, {String? serverId}) {
+    final base = '/studio/${Uri.encodeComponent(studioName)}';
+    return serverId != null && serverId.isNotEmpty
+        ? '$base?serverId=${Uri.encodeComponent(serverId)}'
+        : base;
+  }
 
   static String folder(String folderId, {String? serverId}) {
     final base = '/folder/$folderId';

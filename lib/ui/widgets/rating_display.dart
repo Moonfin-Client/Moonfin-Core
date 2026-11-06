@@ -50,6 +50,9 @@ class RatingsRow extends StatelessWidget {
   /// Grows the strip's text, for a TV where it's read from across the room.
   final double columnTextScale;
 
+  /// Centers each line of a wrapping row under a centered title.
+  final bool centered;
+
   const RatingsRow({
     super.key,
     required this.ratings,
@@ -64,6 +67,7 @@ class RatingsRow extends StatelessWidget {
     this.inlineChips = false,
     this.columns = false,
     this.columnTextScale = 1,
+    this.centered = false,
   });
 
   /// Null when there is nothing to draw, so the caller skips its spacing too.
@@ -78,6 +82,7 @@ class RatingsRow extends StatelessWidget {
     bool labels = true,
     bool columns = false,
     double columnTextScale = 1,
+    bool centered = false,
   }) {
     if (!prefs.effectiveShowDetailRatings) return null;
 
@@ -104,6 +109,7 @@ class RatingsRow extends StatelessWidget {
       showBadges: prefs.get(UserPreferences.showRatingBadges),
       columns: columns,
       columnTextScale: columnTextScale,
+      centered: centered,
     );
   }
 
@@ -219,6 +225,7 @@ class RatingsRow extends StatelessWidget {
     }
 
     return Wrap(
+      alignment: centered ? WrapAlignment.center : WrapAlignment.start,
       spacing: 6,
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,

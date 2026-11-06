@@ -1135,6 +1135,25 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       context.navigateTopLevel(Destinations.seerrDiscover);
                     },
                   ),
+                if (!kidsMode &&
+                    _prefs.get(UserPreferences.showCalendarButton) &&
+                    GetIt.instance<PluginSyncService>().calendarAvailable)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-calendar'),
+                    baseColor: nextMainSidebarColor(),
+                    icon: Icons.calendar_month_rounded,
+                    label: l10n.calendar,
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      if (_isActive(Destinations.calendar)) {
+                        _exitSidebarToContent();
+                        return;
+                      }
+                      _markNavigationAwayFromSidebar();
+                      context.navigateTopLevel(Destinations.calendar);
+                    },
+                  ),
                 if (showLibraries && showLibrariesIndividually)
                   for (final lib in navLibraries)
                     _SidebarItem(

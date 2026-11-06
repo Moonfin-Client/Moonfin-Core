@@ -32,6 +32,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
@@ -1606,22 +1607,23 @@ class HomeViewModel extends ChangeNotifier {
         final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
         final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedStudios(
-                  sortBy: studiosSortBy,
-                  sortOrder: studiosSortOrder,
-                  selectedIds: selectedIds,
-                  title: l10n.studios,
-                )
-              : await _dataSource.loadStudios(
-                  _serverId,
-                  sortBy: studiosSortBy,
-                  sortOrder: studiosSortOrder,
-                  selectedIds: selectedIds,
-                  title: l10n.studios,
-                ),
-        ];
+        final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();
+        final studiosRow = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedStudios(
+                sortBy: studiosSortBy,
+                sortOrder: studiosSortOrder,
+                selectedIds: selectedIds,
+                title: l10n.studios,
+              )
+            : await _dataSource.loadStudios(
+                _serverId,
+                sortBy: studiosSortBy,
+                sortOrder: studiosSortOrder,
+                selectedIds: selectedIds,
+                title: l10n.studios,
+              );
+        attachStudioLogoUrls(studiosRow.items, await logoUrls);
+        return [studiosRow];
       case HomeSectionType.libraryTilesSmall:
         return [
           _multiServerEnabled

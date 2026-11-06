@@ -23,9 +23,9 @@ import '../detail_page.dart';
 import '../item_detail_screen.dart';
 
 /// The title centered over its backdrop, filling the first screen, with the
-/// buttons under it. Every other part of the page is a section further down,
-/// each its own stop for the D-pad, and a TV hints at them with an arrow at
-/// the foot of the backdrop.
+/// buttons and ratings under it. Every other part of the page is a section
+/// further down, each its own stop for the D-pad, and an arrow at the foot of
+/// the backdrop hints at them.
 ///
 /// A title that's only in Seerr gets the same page with Request in place of
 /// play, its seasons as request cards and Seerr's own sections.
@@ -156,6 +156,16 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
     });
   }
 
+  /// Clicking the arrow brings the first section up, like Down on a remote.
+  void _scrollPast(double heroHeight) {
+    if (!pageScroll.hasClients) return;
+    pageScroll.animateTo(
+      math.min(heroHeight, pageScroll.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = _vm.item;
@@ -172,6 +182,13 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
 
     final heroHeight = premiereHeroHeight(size, landscape: landscape);
     final side = _sideInsets(landscape, size);
+    final ratings = RatingsRow.forDetailScreen(
+      item: item,
+      extraRatings: _vm.ratings,
+      prefs: widget.prefs,
+      centered: true,
+    );
+    final moreBelow = landscape && parts.isNotEmpty;
 
     final hero = Stack(
       children: [
@@ -197,19 +214,30 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
                       ),
                       const SizedBox(height: 22),
                       _buildActions(landscape),
-                      // Only a remote needs telling there's more below.
-                      if (PlatformDetection.isTV && parts.isNotEmpty)
+                      if (ratings != null) ...[
+                        const SizedBox(height: 16),
+                        ratings,
+                      ],
+                      if (moreBelow)
                         Padding(
                           padding: const EdgeInsets.only(top: 12),
-                          child: Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 30,
-                            color: AppColorScheme.onBackground.withValues(
-                              alpha: 0.65,
+                          child: GestureDetector(
+                            onTap: () => _scrollPast(heroHeight),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 30,
+                                color: AppColorScheme.onBackground.withValues(
+                                  alpha: 0.65,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      SizedBox(height: PlatformDetection.isTV ? 12 : 40),
+                      SizedBox(
+                        height: moreBelow || PlatformDetection.isTV ? 12 : 40,
+                      ),
                     ],
                   ),
                 )
@@ -218,6 +246,10 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
                     _buildHeroText(item, sections, landscape, size),
                     const SizedBox(height: 18),
                     _buildActions(landscape),
+                    if (ratings != null) ...[
+                      const SizedBox(height: 16),
+                      ratings,
+                    ],
                     ..._portraitOverview(item),
                   ],
                 ),
@@ -600,17 +632,6 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
           tracks.child,
           title: l10n.settingsAudioAndSubtitlesSection,
         ),
-      );
-    }
-
-    final ratings = RatingsRow.forDetailScreen(
-      item: item,
-      extraRatings: _vm.ratings,
-      prefs: widget.prefs,
-    );
-    if (ratings != null) {
-      out.add(
-        framed(pageNode('ratings'), ratings, title: l10n.ratings, whole: true),
       );
     }
 

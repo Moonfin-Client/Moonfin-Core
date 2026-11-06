@@ -12,6 +12,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../../data/models/media_segment.dart';
 import '../../../../data/models/trickplay_preview_layout.dart';
+import '../../../../data/repositories/poster_badge_repository.dart';
 import '../../../../data/services/voice_search_controller.dart';
 import '../../../../data/utils/media_segment_actions.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -76,7 +77,13 @@ double settingsPreviewAspect(SettingsPreviewScene scene) =>
     : setupPreviewAspect();
 
 Listenable _previewListenable(SettingsPreviewController controller) =>
-    Listenable.merge([controller, ?SetupPreviewData.listenable]);
+    Listenable.merge([
+      controller,
+      ?SetupPreviewData.listenable,
+      // The sample labels wait on the server saying this person gets labels.
+      if (GetIt.instance.isRegistered<PosterBadgeRepository>())
+        GetIt.instance<PosterBadgeRepository>().available,
+    ]);
 
 /// The live preview: scene chips over a mock of the screen the focused setting
 /// changes, drawn with the saved values or the option a picker is trying.
@@ -102,6 +109,9 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
   void initState() {
     super.initState();
     unawaited(SetupPreviewData.ensureLoaded());
+    if (GetIt.instance.isRegistered<PosterBadgeRepository>()) {
+      unawaited(GetIt.instance<PosterBadgeRepository>().checkAvailable());
+    }
   }
 
   @override

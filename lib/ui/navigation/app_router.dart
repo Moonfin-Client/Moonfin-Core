@@ -28,6 +28,7 @@ import '../screens/auth/server_select_screen.dart';
 import '../screens/auth/startup_screen.dart';
 import '../screens/web_diagnostics_screen.dart';
 import '../screens/browse/all_genres_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 import '../screens/browse/collection_screen.dart';
 import '../screens/browse/favorites_screen.dart';
 import '../screens/browse/folder_browse_screen.dart';
@@ -387,6 +388,16 @@ final appRouter = GoRouter(
       builder: (context, state) => const AllGenresScreen(),
     ),
     GoRoute(
+      path: Destinations.calendar,
+      builder: (context, state) => const CalendarScreen(),
+      routes: [
+        GoRoute(
+          path: 'month',
+          builder: (context, state) => const CalendarMonthScreen(),
+        ),
+      ],
+    ),
+    GoRoute(
       path: Destinations.allFavorites,
       builder: (context, state) => const FavoritesScreen(),
     ),
@@ -456,8 +467,10 @@ final appRouter = GoRouter(
         final genreId = state.uri.queryParameters['genreId']!;
         final parentId = state.uri.queryParameters['parentId'];
         final includeType = state.uri.queryParameters['includeType'];
+        final serverId = state.uri.queryParameters['serverId'];
         return LibraryBrowseScreen(
           libraryId: parentId ?? '',
+          serverId: serverId,
           genreId: genreId,
           genreName: genreName,
           includeItemTypes: includeType != null ? [includeType] : null,
@@ -468,7 +481,12 @@ final appRouter = GoRouter(
       path: Destinations.studioBrowse,
       builder: (context, state) {
         final studioName = state.pathParameters['studioName']!;
-        return LibraryBrowseScreen(libraryId: '', studioName: studioName);
+        final serverId = state.uri.queryParameters['serverId'];
+        return LibraryBrowseScreen(
+          libraryId: '',
+          serverId: serverId,
+          studioName: studioName,
+        );
       },
     ),
 

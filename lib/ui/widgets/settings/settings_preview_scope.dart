@@ -70,6 +70,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_home_rows_style': SettingsPreviewScene.home,
     'pref_home_rows_fullscreen': SettingsPreviewScene.home,
     'poster_size': SettingsPreviewScene.home,
+    'pref_show_poster_labels': SettingsPreviewScene.home,
     'mediaBarMode': SettingsPreviewScene.home,
     'mediaBarOverlayColor': SettingsPreviewScene.home,
     'mediaBarOverlayOpacity': SettingsPreviewScene.home,

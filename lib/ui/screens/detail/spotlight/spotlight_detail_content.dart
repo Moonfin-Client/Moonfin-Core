@@ -419,7 +419,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         () => context.push(Destinations.seerrCollection(collectionId)),
       ),
       openStudio: (name) =>
-          _closeModalThen(() => context.push(Destinations.studio(name))),
+          _closeModalThen(
+            () => context.push(
+              Destinations.studio(name, serverId: item.serverId),
+            ),
+          ),
       playFromChapter: (position) =>
           _closeModalThen(() => widget.onPlayFromChapter?.call(position)),
       playExtra: (extra) => _closeModalThen(() => _playItems([extra], 0)),

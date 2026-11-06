@@ -41,6 +41,7 @@ import '../../data/services/media_server_client_factory.dart';
 import '../services/silo_household.dart';
 import '../services/silo_token_storage.dart';
 import '../../data/services/achievements_service.dart';
+import '../../data/services/item_membership_service.dart';
 import '../../data/services/plex_tv_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
@@ -253,6 +254,7 @@ class SessionRepository {
     _remoteNavigationGeneration++;
     _remoteSearch?.close();
     _pluginSyncService.resetState();
+    ItemMembershipService.instance.clearCache();
     if (GetIt.instance.isRegistered<AchievementsService>()) {
       GetIt.instance<AchievementsService>().reset();
     }
@@ -765,6 +767,7 @@ class SessionRepository {
     }
 
     _pluginSyncService.resetState();
+    ItemMembershipService.instance.clearCache();
     if (GetIt.instance.isRegistered<SiloWatchPartyManager>()) {
       GetIt.instance<SiloWatchPartyManager>().onSessionChanged(
         signedOut: true,

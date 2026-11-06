@@ -148,6 +148,24 @@ class HomeScreen extends StatelessWidget {
       _ContentRowsState._homeRowImageTypeForRow(row, prefs);
 
   @visibleForTesting
+  static String? resolveRowImageUrl(
+    AggregatedItem item,
+    ImageApi imageApi,
+    ImageType imageType,
+  ) => _ContentRowsState._resolveRowImageUrl(
+    item,
+    imageApi,
+    200,
+    imageType,
+    false,
+    1,
+  );
+
+  @visibleForTesting
+  static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
+      _ContentRowsState._showsCalendarSeeAll(row, prefs);
+
+  @visibleForTesting
   static Widget topBackdrop(Widget backdrop) =>
       const _Backdrop(blurAmount: 0)._top(backdrop);
 
@@ -5434,6 +5452,10 @@ class _ContentRowsState extends State<_ContentRows>
         ? (_rowGlide(rowIndex)..growth = v2FocusedWidth - v2PortraitWidth)
         : null;
 
+    final rowItems = _showsCalendarSeeAll(row, prefs)
+        ? [...row.items, _calendarSeeAllItem]
+        : row.items;
+
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
@@ -5444,7 +5466,7 @@ class _ContentRowsState extends State<_ContentRows>
       height: rowTotalHeight,
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
-        items: row.items,
+        items: rowItems,
           itemKey: _rowItemIdentity,
           hubKey: _hubKeyForRow(row),
           controller: _rowHorizontalController(rowIndex),
@@ -5468,6 +5490,10 @@ class _ContentRowsState extends State<_ContentRows>
           ),
           onLeftEdge: _onRowLeftEdge,
           onIndexChanged: (index, item) {
+          if (identical(item, _calendarSeeAllItem)) {
+            _finishSharedPreview();
+            return;
+          }
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
@@ -5506,21 +5532,34 @@ class _ContentRowsState extends State<_ContentRows>
             widget.viewModel.loadMoreForRow(rowIndex);
           }
         },
-        onLongPress: (_, item) => showContextMenu(
-          context,
-          item,
-          onChanged: () => setState(() {}),
-          isContinueWatchingOrNextUp: _isContinueWatchingOrNextUp(row),
-        ),
+        onLongPress: (_, item) {
+          if (identical(item, _calendarSeeAllItem)) return;
+          showContextMenu(
+            context,
+            item,
+            onChanged: () => setState(() {}),
+            isContinueWatchingOrNextUp: _isContinueWatchingOrNextUp(row),
+          );
+        },
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
+          if (identical(item, _calendarSeeAllItem)) {
+            _openCalendarFromRow();
+            return;
+          }
           if (_playedOnSelect(row, item)) return;
           if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-            context.push(Destinations.genre(item.name, genreId: item.id));
+            context.push(
+              Destinations.genre(
+                item.name,
+                genreId: item.id,
+                serverId: item.serverId,
+              ),
+            );
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
-            context.push(Destinations.studio(item.name));
+            context.push(Destinations.studio(item.name, serverId: item.serverId));
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
@@ -5535,6 +5574,20 @@ class _ContentRowsState extends State<_ContentRows>
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
+          if (identical(item, _calendarSeeAllItem)) {
+            return _buildCalendarSeeAllCard(
+              l10n: l10n,
+              width: firstCardWidth,
+              aspectRatio: isRowsV2
+                  ? v2PortraitAspect
+                  : _aspectRatioForRowItem(row.items.first, row, rowImageType),
+              isFocused: isFocused,
+              isRowsV2: isRowsV2,
+              focusColor: focusColor,
+              cardExpansion: cardExpansion,
+              suppressFocusGlow: suppressFocusGlow,
+            );
+          }
           final requestScale = MediaQuery.devicePixelRatioOf(
             context,
           ).clamp(1.0, 2.0);
@@ -5629,7 +5682,15 @@ class _ContentRowsState extends State<_ContentRows>
                     if (row.rowType == HomeRowType.libraryTiles) {
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-                      context.push(Destinations.genre(item.name, genreId: item.id));
+                      context.push(
+                        Destinations.genre(
+                          item.name,
+                          genreId: item.id,
+                          serverId: item.serverId,
+                        ),
+                      );
+                    } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
+                      context.push(Destinations.studio(item.name, serverId: item.serverId));
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
@@ -5733,6 +5794,10 @@ class _ContentRowsState extends State<_ContentRows>
                   final isWatchingNow = row.id == 'mdblist_watching_now';
                   final card = MediaCard(
                     animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    posterBadgeItemId:
+                        isSeerrGenreCard || isWatchingNow || item.serverId == 'seerr'
+                        ? null
+                        : item.id,
                     recordingItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
                     title: isWatchingNow ? item.name : cardTitle,
                     showLabel: !isWatchingNow,
@@ -6356,6 +6421,73 @@ class _ContentRowsState extends State<_ContentRows>
       row.id == 'mdblist_watching_now' ||
       (row.rowType == HomeRowType.studios && row.id == 'studios');
 
+  static const _calendarRowIds = {
+    'radarr_calendar',
+    'sonarr_calendar',
+    'merged_calendar',
+  };
+
+  /// The last card of an Upcoming row, which opens the full calendar.
+  static const _calendarSeeAllItem = AggregatedItem(
+    id: 'calendar_see_all',
+    serverId: 'calendar',
+    rawData: {},
+  );
+
+  static bool _showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
+      row.items.isNotEmpty &&
+      _calendarRowIds.contains(row.id) &&
+      prefs.get(UserPreferences.calendarRowSeeAll) &&
+      GetIt.instance.isRegistered<PluginSyncService>() &&
+      GetIt.instance<PluginSyncService>().calendarAvailable;
+
+  void _openCalendarFromRow() => context.push(Destinations.calendarMonth);
+
+  Widget _buildCalendarSeeAllCard({
+    required AppLocalizations l10n,
+    required double width,
+    required double aspectRatio,
+    required bool isFocused,
+    required bool isRowsV2,
+    required Color focusColor,
+    required bool cardExpansion,
+    required bool suppressFocusGlow,
+  }) {
+    return MediaCard(
+      title: l10n.seeAll,
+      showLabel: false,
+      width: width,
+      aspectRatio: aspectRatio,
+      classicHomeLabel: !isRowsV2,
+      focusColor: focusColor,
+      cardFocusExpansion: isRowsV2 ? false : cardExpansion,
+      externalIsFocused: isFocused,
+      suppressFocusGlow: suppressFocusGlow,
+      imageOverlays: [
+        // MediaCard centers the title as placeholder text, so the icon sits
+        // a fixed distance above the middle to stay clear of it on short cards.
+        Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 64),
+            child: Center(
+              child: Icon(
+                Icons.calendar_month,
+                size: 32,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+        ),
+      ],
+      onTap: () {
+        _finishSharedPreview(releaseResources: true);
+        _openCalendarFromRow();
+      },
+    );
+  }
+
   static bool _isRowModern(HomeRow row, UserPreferences prefs) {
     if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
       return false;
@@ -6948,7 +7080,15 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
+    final studioLogo = item.rawData[studioLogoUrlKey];
+    if (studioLogo is String) return studioLogo;
+
     if (item.type == 'Studio' || item.type == 'Network') {
+      final maxW = artworkRequestWidth(
+        height * (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9),
+        requestScale,
+        ArtworkShape.landscape,
+      );
       final primaryUrl = _resolvePrimaryImageUrl(
         item,
         imageApi,
@@ -6957,13 +7097,21 @@ class _ContentRowsState extends State<_ContentRows>
           requestScale,
           ArtworkShape.poster,
         ),
-        maxWidth: artworkRequestWidth(
-          height * 16 / 9,
-          requestScale,
-          ArtworkShape.landscape,
-        ),
+        maxWidth: maxW,
       );
       if (primaryUrl != null) return primaryUrl;
+      // Jellyfin studios usually have only a Thumb, so a poster row would
+      // otherwise have nothing to show. Thumb and banner rows reach it below.
+      if (imageType == ImageType.poster) {
+        final thumbTag = _tagForType(item, 'Thumb');
+        if (thumbTag != null) {
+          return imageApi.getThumbImageUrl(
+            item.id,
+            maxWidth: maxW,
+            tag: thumbTag,
+          );
+        }
+      }
     }
 
     if (item.serverId == 'seerr') {

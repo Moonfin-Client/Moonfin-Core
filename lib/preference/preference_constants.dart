@@ -1187,3 +1187,17 @@ enum ModernCardTransitionSpeed {
   const ModernCardTransitionSpeed(this.duration);
   final Duration duration;
 }
+
+/// What the Calendar button opens. The month grid sits behind both styles.
+enum CalendarStyle { agenda, countdown }
+
+enum CalendarWeekStart { locale, sunday, monday }
+
+/// [myShows] keeps episodes of series the user favorited or has watched.
+enum CalendarScope { everything, myShows }
+
+enum CalendarColorBy { type, status }
+
+enum CalendarImageType { poster, thumb }
+
+enum CalendarSelectAction { details, play }

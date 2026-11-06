@@ -217,9 +217,15 @@ class PlaybackManager implements AudioOwnable {
 
   /// Host supplied measurement of the link to the active server, in bits per
   /// second. Consulted when nothing else caps the stream, so Auto means a
-  /// measured ceiling rather than no ceiling. Null answers keep the request
-  /// uncapped.
+  /// measured ceiling rather than no ceiling. It can run a speed test, so a
+  /// start only waits on it for a stream that will transcode. Null answers
+  /// keep the request uncapped.
   Future<int?> Function()? autoBitrateProvider;
+
+  /// The host's last saved measurement for the active server, or a starting
+  /// ceiling before the first. It never runs a test, so any start can use it
+  /// without waiting.
+  Future<int?> Function()? savedAutoBitrateProvider;
   DateTime? _playbackStartTime;
   bool _waitingForMedia = false;
   SubtitleRendererMode _subtitleRendererMode = SubtitleRendererMode.native;
@@ -3222,14 +3228,22 @@ class PlaybackManager implements AudioOwnable {
       profile['MaxStreamingBitrate'] = _maxBitrateOverrideMbps! * 1000000;
     }
     var maxBitrate = profile['MaxStreamingBitrate'] as int?;
+    final autoBitrate = maxBitrate == null && autoBitrateProvider != null;
     int? measuredBitrate;
-    if (maxBitrate == null && autoBitrateProvider != null) {
-      final measured = await autoBitrateProvider!();
+    if (autoBitrate) {
+      // Only a stream that has to transcode, or a live one that can't be asked
+      // for again, waits on a measurement here. Anything else starts on the
+      // saved one and measures only if the server answers with a transcode.
+      final int? startingBitrate;
+      if (!enableDirectPlay || _isLiveTvItem(item)) {
+        startingBitrate = measuredBitrate = await autoBitrateProvider!();
+      } else {
+        startingBitrate = await savedAutoBitrateProvider?.call();
+      }
       if (sessionToken != _playbackSessionToken) return;
-      if (measured != null && measured > 0) {
-        measuredBitrate = measured;
+      if (startingBitrate != null && startingBitrate > 0) {
         maxBitrate = _autoBitrateCap(
-          measured,
+          startingBitrate,
           _sourceBitrate(item),
           enableDirectPlay,
         );
@@ -3373,18 +3387,26 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    // An item that came without its sources only learns the source bitrate
-    // from the server, so the ceiling is weighed again once it's known. A live
-    // stream is left as is, since asking again would open a second one.
-    if (measuredBitrate != null &&
+    // Auto measures once the server says it will transcode, and weighs the
+    // ceiling with the source bitrate the server names, since an item that
+    // came without its sources only learns it here. A live stream is left as
+    // is, since asking again would open a second one.
+    if (autoBitrate &&
         resolution.liveStreamId == null &&
         resolution.playMethod == StreamPlayMethod.transcode) {
-      final cap = _autoBitrateCap(
-        measuredBitrate,
-        resolution.sourceBitrate,
-        enableDirectPlay,
-      );
-      if (cap > maxBitrate!) {
+      measuredBitrate ??= await autoBitrateProvider!();
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
+      final cap = measuredBitrate == null || measuredBitrate <= 0
+          ? maxBitrate
+          : _autoBitrateCap(
+              measuredBitrate,
+              resolution.sourceBitrate ?? _sourceBitrate(item),
+              enableDirectPlay,
+            );
+      if (cap != maxBitrate) {
         maxBitrate = cap;
         profile['MaxStreamingBitrate'] = cap;
         resolution = await resolve(cap);

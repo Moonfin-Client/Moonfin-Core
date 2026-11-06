@@ -1185,6 +1185,31 @@ class SeerrLanguageProfile {
   Map<String, dynamic> toJson() => _$SeerrLanguageProfileToJson(this);
 }
 
+/// One series Sonarr offers for a TMDB id, from Seerr's
+/// `service/sonarr/lookup`. Seerr's own request modal lists these when TMDB
+/// has no TVDB id for a series, because Sonarr can't add a series without one.
+@JsonSerializable()
+class SeerrSonarrSeries {
+  final int tvdbId;
+  final String title;
+  final int? year;
+  final String? overview;
+  final String? remotePoster;
+
+  const SeerrSonarrSeries({
+    required this.tvdbId,
+    required this.title,
+    this.year,
+    this.overview,
+    this.remotePoster,
+  });
+
+  factory SeerrSonarrSeries.fromJson(Map<String, dynamic> json) =>
+      _$SeerrSonarrSeriesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrSonarrSeriesToJson(this);
+}
+
 @JsonSerializable()
 class SeerrSeason {
   final int? id;

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
@@ -25,6 +26,9 @@ class _FakeClient implements MediaServerClient {
   String? get userId => 'user';
 
   @override
+  ServerType get serverType => ServerType.jellyfin;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -38,6 +42,23 @@ class _FakeClientFactory extends Fake implements MediaServerClientFactory {
 
   @override
   Map<String, MediaServerClient> get clients => {'server': client};
+}
+
+class _FakeSync extends Fake implements PluginSyncService {
+  _FakeSync({required this.pluginAvailable});
+
+  @override
+  final bool pluginAvailable;
+
+  @override
+  bool get seerrAvailable => false;
+
+  @override
+  bool get calendarAvailable => false;
+
+  @override
+  bool hasReadSignInSettings(MediaServerClient client, {String? serverId}) =>
+      true;
 }
 
 /// Items with no artwork, so the previews lay out for real without touching
@@ -126,6 +147,14 @@ void main() {
   Future<void> press(WidgetTester tester, LogicalKeyboardKey key) async {
     await tester.sendKeyEvent(key);
     await settle(tester);
+  }
+
+  Future<void> toLastStep(WidgetTester tester) async {
+    for (var step = 1; step < 5; step++) {
+      await press(tester, LogicalKeyboardKey.arrowRight);
+      await press(tester, LogicalKeyboardKey.enter);
+    }
+    expect(find.text('Step 5 of 5'), findsOneWidget);
   }
 
   // TV runs first: the media bar's default is read once per test run, and on
@@ -241,6 +270,38 @@ void main() {
       );
       // A question nobody answered stays unanswered for the next device.
       expect(prefs.containsPreference(UserPreferences.homeRowsStyle), isFalse);
+    });
+
+    testWidgets('the last step offers Moonbase when the server lacks it', (
+      tester,
+    ) async {
+      GetIt.instance.registerSingleton<PluginSyncService>(
+        _FakeSync(pluginAvailable: false),
+      );
+      await pumpWizard(tester);
+      await toLastStep(tester);
+
+      // Down the themes, past the playback languages, onto the Moonbase row.
+      for (var i = 0; i < 5; i++) {
+        await press(tester, LogicalKeyboardKey.arrowDown);
+      }
+      await press(tester, LogicalKeyboardKey.enter);
+      expect(find.text('Moonbase'), findsOneWidget);
+      expect(
+        find.text('Only a server admin can install it. Send them this link.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the last step leaves Moonbase out once it is installed', (
+      tester,
+    ) async {
+      GetIt.instance.registerSingleton<PluginSyncService>(
+        _FakeSync(pluginAvailable: true),
+      );
+      await pumpWizard(tester);
+      await toLastStep(tester);
+      expect(find.text('Add Moonbase to your server'), findsNothing);
     });
 
     testWidgets('BACK moves to Skip first and leaves on the second press', (

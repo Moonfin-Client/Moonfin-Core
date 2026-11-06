@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-um" viewBox="0 0 640 480">
+  <!-- From flag-icons (MIT). The stars are placed one by one instead of with an SVG marker, which flutter_svg does not draw. -->
+  <defs>
+    <path id="um-s" fill="#fff" d="m14 0 9 27L0 10h28L5 27z"/>
+  </defs>
+  <path fill="#bd3d44" d="M0 0h640v480H0"/>
+  <path stroke="#fff" stroke-width="37" d="M0 55.3h640M0 129h640M0 203h640M0 277h640M0 351h640M0 425h640"/>
+  <path fill="#192f5d" d="M0 0h364.8v258.5H0"/>
+  <use href="#um-s" transform="translate(16 11)"/>
+  <use href="#um-s" transform="translate(77 11)"/>
+  <use href="#um-s" transform="translate(138 11)"/>
+  <use href="#um-s" transform="translate(199 11)"/>
+  <use href="#um-s" transform="translate(260 11)"/>
+  <use href="#um-s" transform="translate(320 11)"/>
+  <use href="#um-s" transform="translate(47 37)"/>
+  <use href="#um-s" transform="translate(108 37)"/>
+  <use href="#um-s" transform="translate(169 37)"/>
+  <use href="#um-s" transform="translate(229 37)"/>
+  <use href="#um-s" transform="translate(290 37)"/>
+  <use href="#um-s" transform="translate(16 63)"/>
+  <use href="#um-s" transform="translate(77 63)"/>
+  <use href="#um-s" transform="translate(138 63)"/>
+  <use href="#um-s" transform="translate(199 63)"/>
+  <use href="#um-s" transform="translate(260 63)"/>
+  <use href="#um-s" transform="translate(320 63)"/>
+  <use href="#um-s" transform="translate(47 89)"/>
+  <use href="#um-s" transform="translate(108 89)"/>
+  <use href="#um-s" transform="translate(169 89)"/>
+  <use href="#um-s" transform="translate(229 89)"/>
+  <use href="#um-s" transform="translate(290 89)"/>
+  <use href="#um-s" transform="translate(16 115)"/>
+  <use href="#um-s" transform="translate(77 115)"/>
+  <use href="#um-s" transform="translate(138 115)"/>
+  <use href="#um-s" transform="translate(199 115)"/>
+  <use href="#um-s" transform="translate(260 115)"/>
+  <use href="#um-s" transform="translate(320 115)"/>
+  <use href="#um-s" transform="translate(47 141)"/>
+  <use href="#um-s" transform="translate(108 141)"/>
+  <use href="#um-s" transform="translate(169 141)"/>
+  <use href="#um-s" transform="translate(229 141)"/>
+  <use href="#um-s" transform="translate(290 141)"/>
+  <use href="#um-s" transform="translate(16 166)"/>
+  <use href="#um-s" transform="translate(77 166)"/>
+  <use href="#um-s" transform="translate(138 166)"/>
+  <use href="#um-s" transform="translate(199 166)"/>
+  <use href="#um-s" transform="translate(260 166)"/>
+  <use href="#um-s" transform="translate(320 166)"/>
+  <use href="#um-s" transform="translate(47 192)"/>
+  <use href="#um-s" transform="translate(108 192)"/>
+  <use href="#um-s" transform="translate(169 192)"/>
+  <use href="#um-s" transform="translate(229 192)"/>
+  <use href="#um-s" transform="translate(290 192)"/>
+  <use href="#um-s" transform="translate(16 218)"/>
+  <use href="#um-s" transform="translate(77 218)"/>
+  <use href="#um-s" transform="translate(138 218)"/>
+  <use href="#um-s" transform="translate(199 218)"/>
+  <use href="#um-s" transform="translate(260 218)"/>
+  <use href="#um-s" transform="translate(320 218)"/>
+</svg>

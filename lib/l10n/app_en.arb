@@ -336,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away. Frost floats the title in a glass window over a blurred copy of its art, with its parts in tabs under the buttons.",
+  "detailScreenStyleSubtitle": "How a movie or show looks when you open it.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -4287,6 +4287,14 @@
   "@watchedIndicators": {
     "description": "Setting for watched indicator display"
   },
+  "showPosterLabels": "Poster Labels",
+  "@showPosterLabels": {
+    "description": "Setting that shows or hides the labels the server admin adds to posters"
+  },
+  "showPosterLabelsSubtitle": "Show the labels on posters, such as 4K or HDR.",
+  "@showPosterLabelsSubtitle": {
+    "description": "Subtitle of the Poster Labels setting"
+  },
   "always": "Always",
   "@always": {
     "description": "Option: always"
@@ -7883,6 +7891,18 @@
   "@seerrSeriesContinuing": {
     "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
   },
+  "seerrSeriesMatchDescription": "We couldn't match this series automatically. Pick the right one below.",
+  "@seerrSeriesMatchDescription": {
+    "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+  },
+  "seerrSeriesNoMatch": "We couldn't find a match for this series, so it can't be requested.",
+  "@seerrSeriesNoMatch": {
+    "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+  },
+  "seerrSeriesMatchFailed": "Sonarr couldn't find a match for this series, or couldn't be reached. Try again, or check the series on Seerr.",
+  "@seerrSeriesMatchFailed": {
+    "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+  },
   "advancedOptions": "Advanced Options",
   "@advancedOptions": {
     "description": "Expansion tile for advanced request options"
@@ -10578,6 +10598,22 @@
   "playlistCreateNew": "Create New Playlist",
   "playlistNoneFound": "No playlists found",
   "addToPlaylist": "Add to Playlist",
+  "removeFromPlaylist": "Remove from Playlist",
+  "@removeFromPlaylist": {
+    "description": "Context menu action to remove an item from a playlist"
+  },
+  "removeFromPlaylistConfirm": "Remove {item} from {playlist}?",
+  "@removeFromPlaylistConfirm": {
+    "description": "Confirmation shown before removing an item from a playlist",
+    "placeholders": {
+      "item": {"type": "String"},
+      "playlist": {"type": "String"}
+    }
+  },
+  "removeFromPlaylistFailed": "Failed to remove from playlist",
+  "@removeFromPlaylistFailed": {
+    "description": "Error shown when removing an item from a playlist fails"
+  },
 
   "lyricsNotAvailable": "No lyrics available",
   "upNext": "Up Next",
@@ -13812,6 +13848,75 @@
   "@setupCurrent": {
     "description": "Tag beside the option that is chosen right now in a setup wizard list"
   },
+  "setupMoonbaseTitle": "Add Moonbase to your server",
+  "@setupMoonbaseTitle": {
+    "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+  },
+  "setupMoonbaseHint": "A free server plugin that unlocks more of Moonfin",
+  "@setupMoonbaseHint": {
+    "description": "Line under the Moonbase row on the last setup wizard step"
+  },
+  "setupMoonbaseIntro": "Moonbase is free and runs on your server. With it, Moonfin gets:",
+  "@setupMoonbaseIntro": {
+    "description": "First line of the Moonbase dialog, followed by a list of features"
+  },
+  "setupMoonbaseAskAdmin": "Only a server admin can install it. Send them this link.",
+  "@setupMoonbaseAskAdmin": {
+    "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseManualSteps": "It takes a few steps on your server to install. They're all at this link.",
+  "@setupMoonbaseManualSteps": {
+    "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseInstalling": "Installing Moonbase...",
+  "@setupMoonbaseInstalling": {
+    "description": "Shown in the Moonbase dialog while the plugin installs"
+  },
+  "setupMoonbaseInstalled": "Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.",
+  "@setupMoonbaseInstalled": {
+    "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+  },
+  "setupMoonbaseRestarting": "The server is restarting. Moonbase turns on once it's back.",
+  "@setupMoonbaseRestarting": {
+    "description": "Shown while the server restarts after Moonbase was installed"
+  },
+  "moonbaseFeatureSync": "Settings synced across your devices",
+  "@moonbaseFeatureSync": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRatings": "Extra ratings and TMDB reviews",
+  "@moonbaseFeatureRatings": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRows": "Custom rows from your favorite lists",
+  "@moonbaseFeatureRows": {
+    "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+  },
+  "moonbaseFeatureGames": "Retro games with synced saves",
+  "@moonbaseFeatureGames": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureCalendar": "A calendar of what's coming up",
+  "@moonbaseFeatureCalendar": {
+    "description": "Moonbase dialog feature, upcoming episodes and movies"
+  },
+  "moonbaseFeatureCollections": "Your own order for each collection",
+  "@moonbaseFeatureCollections": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureMessages": "Messages from your server admin",
+  "@moonbaseFeatureMessages": {
+    "description": "Moonbase dialog feature"
+  },
+  "setupMoonbaseInstallFailed": "Moonbase couldn't be installed. {error}",
+  "@setupMoonbaseInstallFailed": {
+    "description": "Shown in the Moonbase dialog when installing or restarting failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "setupTvHint": "Up and down to preview · OK to choose · Back twice to skip",
   "@setupTvHint": {
     "description": "Remote control hint at the bottom of the setup wizard on TVs"
@@ -15962,5 +16067,299 @@
         "example": "Seerr"
       }
     }
+  },
+  "calendar": "Calendar",
+  "@calendar": {
+    "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+  },
+  "showCalendarButton": "Show Calendar Button",
+  "@showCalendarButton": {
+    "description": "Settings toggle that adds the Calendar button to the navigation bar"
+  },
+  "showCalendarButtonSubtitle": "Show the calendar of upcoming episodes and movies in the navigation bar",
+  "@showCalendarButtonSubtitle": {
+    "description": "Subtitle of the Show Calendar Button setting"
+  },
+  "calendarFullCalendar": "Full calendar",
+  "@calendarFullCalendar": {
+    "description": "Button on the calendar that opens the month grid"
+  },
+  "calendarUpcoming": "Upcoming",
+  "@calendarUpcoming": {
+    "description": "Calendar tab listing episodes and movies that haven't aired yet"
+  },
+  "calendarRecentlyAired": "Recently aired",
+  "@calendarRecentlyAired": {
+    "description": "Calendar tab listing episodes and movies from the last few days"
+  },
+  "calendarRemindMe": "Remind me",
+  "@calendarRemindMe": {
+    "description": "Button that asks for a notification when an episode or movie lands in the library"
+  },
+  "calendarReminderSet": "Reminder set",
+  "@calendarReminderSet": {
+    "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+  },
+  "calendarReminderFailed": "Couldn't save the reminder",
+  "@calendarReminderFailed": {
+    "description": "Message when setting or removing a calendar reminder fails"
+  },
+  "calendarReadyToWatch": "Ready to watch",
+  "@calendarReadyToWatch": {
+    "description": "Calendar row of recent episodes and movies that are already in the library"
+  },
+  "calendarComingUpThisWeek": "Coming up this week",
+  "@calendarComingUpThisWeek": {
+    "description": "Calendar row of episodes and movies airing in the next seven days"
+  },
+  "calendarNothingUpcoming": "Nothing coming up",
+  "@calendarNothingUpcoming": {
+    "description": "Calendar message when no episodes or movies are scheduled"
+  },
+  "calendarNothingRecent": "Nothing aired recently",
+  "@calendarNothingRecent": {
+    "description": "Calendar message when nothing aired in the last few days"
+  },
+  "calendarEmptyDay": "Nothing on this day",
+  "@calendarEmptyDay": {
+    "description": "Calendar message under a day with no episodes or movies"
+  },
+  "calendarStartsIn": "Starts in",
+  "@calendarStartsIn": {
+    "description": "Label over the countdown to the next episode or movie"
+  },
+  "calendarUnitDays": "days",
+  "@calendarUnitDays": {
+    "description": "Unit under the days number of the calendar countdown"
+  },
+  "calendarUnitHours": "hr",
+  "@calendarUnitHours": {
+    "description": "Unit under the hours number of the calendar countdown"
+  },
+  "calendarUnitMinutes": "min",
+  "@calendarUnitMinutes": {
+    "description": "Unit under the minutes number of the calendar countdown"
+  },
+  "calendarDayAtTime": "{day} at {time}",
+  "@calendarDayAtTime": {
+    "description": "When an episode airs, like Today at 9:00 PM",
+    "placeholders": {
+      "day": {
+        "type": "String",
+        "example": "Today"
+      },
+      "time": {
+        "type": "String",
+        "example": "9:00 PM"
+      }
+    }
+  },
+  "calendarAllDay": "All day",
+  "@calendarAllDay": {
+    "description": "Time column of a calendar entry with no time of day, like a movie release"
+  },
+  "calendarBadgeSeriesPremiere": "Series premiere",
+  "@calendarBadgeSeriesPremiere": {
+    "description": "Tag on the first episode of a series"
+  },
+  "calendarBadgeSeasonPremiere": "New season",
+  "@calendarBadgeSeasonPremiere": {
+    "description": "Tag on the first episode of a new season"
+  },
+  "calendarBadgeSeasonFinale": "Finale",
+  "@calendarBadgeSeasonFinale": {
+    "description": "Tag on the last episode of a season"
+  },
+  "calendarBadgeMidseasonFinale": "Midseason finale",
+  "@calendarBadgeMidseasonFinale": {
+    "description": "Tag on the last episode before a season's mid-season break"
+  },
+  "calendarBadgeSeriesFinale": "Series finale",
+  "@calendarBadgeSeriesFinale": {
+    "description": "Tag on the last episode of a series"
+  },
+  "calendarBadgeNew": "NEW",
+  "@calendarBadgeNew": {
+    "description": "Short tag on a month grid day that has a premiere"
+  },
+  "calendarStatusInLibrary": "In library",
+  "@calendarStatusInLibrary": {
+    "description": "Tag on a calendar entry that is already on the server"
+  },
+  "calendarNotMonitored": "Not monitored",
+  "@calendarNotMonitored": {
+    "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+  },
+  "calendarMovieDetails": "Movie details",
+  "@calendarMovieDetails": {
+    "description": "Button that opens a movie's details page from the calendar"
+  },
+  "calendarProblemAdminsOnly": "The calendar is limited to admins on this server.",
+  "@calendarProblemAdminsOnly": {
+    "description": "Calendar message when the server admin keeps the calendar to admins"
+  },
+  "calendarProblemNeedsSeerr": "An admin needs to sign in to Seerr in Moonfin before the calendar can load.",
+  "@calendarProblemNeedsSeerr": {
+    "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+  },
+  "calendarProblemNotConfigured": "No Sonarr or Radarr server is linked yet.",
+  "@calendarProblemNotConfigured": {
+    "description": "Calendar message when the server has no Sonarr or Radarr"
+  },
+  "calendarProblemFailed": "Couldn't load the calendar.",
+  "@calendarProblemFailed": {
+    "description": "Calendar message when loading fails"
+  },
+  "calendarSettingsSubtitle": "Style, filters and actions for the calendar",
+  "@calendarSettingsSubtitle": {
+    "description": "Subtitle of the Calendar entry under Integrations in settings"
+  },
+  "calendarSettingsView": "View",
+  "@calendarSettingsView": {
+    "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+  },
+  "calendarSettingsStyle": "Calendar style",
+  "@calendarSettingsStyle": {
+    "description": "Calendar setting that picks what the Calendar button opens"
+  },
+  "calendarSettingsStyleDescription": "What the Calendar button opens. The full month is one button away in both.",
+  "@calendarSettingsStyleDescription": {
+    "description": "Description of the Calendar style setting"
+  },
+  "calendarSettingsStyleAgenda": "Agenda",
+  "@calendarSettingsStyleAgenda": {
+    "description": "Calendar style that lists episodes and movies day by day"
+  },
+  "calendarSettingsStyleCountdown": "Countdown",
+  "@calendarSettingsStyleCountdown": {
+    "description": "Calendar style that counts down to the next episode or movie"
+  },
+  "calendarSettingsWeekStart": "Week starts on",
+  "@calendarSettingsWeekStart": {
+    "description": "Calendar setting for the first day of the week in the month grid"
+  },
+  "calendarSettingsWhatShows": "What shows",
+  "@calendarSettingsWhatShows": {
+    "description": "Calendar settings section header for which episodes and movies the calendar lists"
+  },
+  "calendarSettingsScope": "Show",
+  "@calendarSettingsScope": {
+    "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+  },
+  "calendarSettingsScopeDescription": "My shows keeps the series you favorited or started watching",
+  "@calendarSettingsScopeDescription": {
+    "description": "Description of the calendar Show setting"
+  },
+  "calendarSettingsScopeEverything": "Everything",
+  "@calendarSettingsScopeEverything": {
+    "description": "Calendar Show choice that lists every episode and movie"
+  },
+  "calendarSettingsScopeMyShows": "My shows",
+  "@calendarSettingsScopeMyShows": {
+    "description": "Calendar Show choice that lists only series the user favorited or started watching"
+  },
+  "calendarSettingsUnmonitored": "Include unmonitored",
+  "@calendarSettingsUnmonitored": {
+    "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+  },
+  "calendarSettingsUnmonitoredSubtitle": "Also list episodes and movies Sonarr and Radarr aren't set to download",
+  "@calendarSettingsUnmonitoredSubtitle": {
+    "description": "Subtitle of the Include unmonitored calendar setting"
+  },
+  "calendarSettingsSpecials": "Specials",
+  "@calendarSettingsSpecials": {
+    "description": "Calendar setting that lists special episodes, the ones in season 0"
+  },
+  "calendarSettingsSpecialsSubtitle": "Season 0 episodes, like extras and holiday specials",
+  "@calendarSettingsSpecialsSubtitle": {
+    "description": "Subtitle of the Specials calendar setting"
+  },
+  "calendarSettingsBadges": "Premiere and finale tags",
+  "@calendarSettingsBadges": {
+    "description": "Calendar setting that marks premieres and finales on the calendar"
+  },
+  "calendarSettingsBadgesSubtitle": "Mark premieres, finales and new seasons",
+  "@calendarSettingsBadgesSubtitle": {
+    "description": "Subtitle of the Premiere and finale tags calendar setting"
+  },
+  "calendarSettingsColorBy": "Color by",
+  "@calendarSettingsColorBy": {
+    "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+  },
+  "calendarSettingsColorByDescription": "Type tells episodes from movies. Status shows what's in your library, coming up or missing.",
+  "@calendarSettingsColorByDescription": {
+    "description": "Description of the Color by calendar setting"
+  },
+  "calendarSettingsColorByType": "Type",
+  "@calendarSettingsColorByType": {
+    "description": "Color by choice that colors episodes and movies differently"
+  },
+  "calendarSettingsImageType": "Card image",
+  "@calendarSettingsImageType": {
+    "description": "Calendar setting for the artwork on the Countdown rows"
+  },
+  "calendarSettingsImageTypeDescription": "The artwork on the Countdown rows",
+  "@calendarSettingsImageTypeDescription": {
+    "description": "Description of the Card image calendar setting"
+  },
+  "calendarSettingsSpoilerSafe": "Spoiler safe",
+  "@calendarSettingsSpoilerSafe": {
+    "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+  },
+  "calendarSettingsSpoilerSafeSubtitle": "Hide episode titles and stills for shows you're behind on",
+  "@calendarSettingsSpoilerSafeSubtitle": {
+    "description": "Subtitle of the Spoiler safe calendar setting"
+  },
+  "calendarSettingsActions": "Actions",
+  "@calendarSettingsActions": {
+    "description": "Calendar settings section header for what buttons and selecting an entry do"
+  },
+  "calendarSettingsSelectAction": "Selecting an item",
+  "@calendarSettingsSelectAction": {
+    "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+  },
+  "calendarSettingsSelectActionDescription": "What OK or a tap does on something that's already in your library",
+  "@calendarSettingsSelectActionDescription": {
+    "description": "Description of the Selecting an item calendar setting"
+  },
+  "calendarSettingsSelectDetails": "Open details",
+  "@calendarSettingsSelectDetails": {
+    "description": "Selecting an item choice that opens the details page"
+  },
+  "calendarSettingsSelectPlay": "Play when in library",
+  "@calendarSettingsSelectPlay": {
+    "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+  },
+  "calendarSettingsRequestButton": "Request button",
+  "@calendarSettingsRequestButton": {
+    "description": "Calendar setting that shows the request button on missing titles"
+  },
+  "calendarSettingsRequestButtonSubtitle": "Show the Seerr request button on missing movies and seasons",
+  "@calendarSettingsRequestButtonSubtitle": {
+    "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+  },
+  "calendarSettingsReminders": "Reminders",
+  "@calendarSettingsReminders": {
+    "description": "Calendar setting that offers the Remind me button"
+  },
+  "calendarSettingsRemindersSubtitle": "Show Remind me, which sends a notification when a title lands in your library",
+  "@calendarSettingsRemindersSubtitle": {
+    "description": "Subtitle of the Reminders calendar setting"
+  },
+  "calendarRowSeeAll": "See All card",
+  "@calendarRowSeeAll": {
+    "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+  },
+  "calendarRowSeeAllSubtitle": "End the upcoming rows with a card that opens the calendar",
+  "@calendarRowSeeAllSubtitle": {
+    "description": "Subtitle of the See All card setting"
+  },
+  "showNextAirDate": "Next air date at the end",
+  "@showNextAirDate": {
+    "description": "Playback setting that says when the next episode airs at the end of an episode"
+  },
+  "showNextAirDateSubtitle": "When the next episode isn't in your library yet, the end of episode card says when it airs",
+  "@showNextAirDateSubtitle": {
+    "description": "Subtitle of the Next air date at the end setting"
   }
 }

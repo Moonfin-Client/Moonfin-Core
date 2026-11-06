@@ -482,28 +482,28 @@ class MultiServerRepository {
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
 
-    final results = await Future.wait(
-      sessions.map(
-        (session) => _withTimeout(() async {
-          final response = await session.client.itemsApi.getGenres(
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            recursive: true,
-            limit: perServer,
-            fields: 'ItemCounts,PrimaryImageAspectRatio',
-            includeItemTypes: browseItemTypes,
-          );
-          final items = await _buildBrowsableGenresForSession(
-            session,
-            response,
-            includeItemTypes: browseItemTypes,
-          );
-          _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
-              response['TotalRecordCount'] as int? ?? items.length;
-          return items;
-        }, label: '$cacheKeyPrefix from ${session.server.name}'),
-      ),
-    );
+    final results = await _gatherPerServer(sessions, (session) async {
+      final response = await session.client.itemsApi.getGenres(
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: perServer,
+        fields: 'ItemCounts,PrimaryImageAspectRatio',
+        includeItemTypes: browseItemTypes,
+      );
+      // No server can put more than [limit] genres into the row, and each one
+      // costs a request for its artwork, so a big library would otherwise run
+      // past the per-server timeout.
+      final items = await _buildBrowsableGenresForSession(
+        session,
+        response,
+        includeItemTypes: browseItemTypes,
+        maxGenres: limit,
+      );
+      _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
+          response['TotalRecordCount'] as int? ?? items.length;
+      return items;
+    }, label: cacheKeyPrefix);
 
     final all = _sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
@@ -1305,9 +1305,10 @@ class MultiServerRepository {
     ServerUserSession session,
     Map<String, dynamic> response, {
     required List<String> includeItemTypes,
+    int? maxGenres,
   }) async {
     final rawItems = response['Items'] as List? ?? const [];
-    final genres = rawItems
+    final browsable = rawItems
         .whereType<Map>()
         .map((item) => item.cast<String, dynamic>())
         .where(
@@ -1315,7 +1316,8 @@ class MultiServerRepository {
             genre,
             normalizedItemTypes: includeItemTypes,
           ),
-        )
+        );
+    final genres = (maxGenres == null ? browsable : browsable.take(maxGenres))
         .toList(growable: false);
 
     if (genres.isEmpty) {

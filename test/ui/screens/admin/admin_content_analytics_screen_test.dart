@@ -62,6 +62,51 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   }
 }
 
+/// Pages through big libraries slowly and records how many reads overlap.
+class _PagingItemsApi extends Fake implements ItemsApi {
+  _PagingItemsApi(this.totals, {this.failAt = const {}});
+
+  final Map<String, int> totals;
+
+  /// Pages that throw, by library and start index.
+  final Set<(String, int)> failAt;
+  final limits = <int>{};
+  final starts = <String, List<int>>{};
+  var inFlight = 0;
+  var maxInFlight = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName != #getItems) {
+      return super.noSuchMethod(invocation);
+    }
+    final args = invocation.namedArguments;
+    final parentId = args[#parentId] as String;
+    final start = args[#startIndex] as int;
+    final limit = args[#limit] as int;
+    final total = totals[parentId]!;
+    return () async {
+      inFlight++;
+      maxInFlight = inFlight > maxInFlight ? inFlight : maxInFlight;
+      limits.add(limit);
+      (starts[parentId] ??= []).add(start);
+      await Future<void>.delayed(const Duration(milliseconds: 2));
+      inFlight--;
+      if (failAt.contains((parentId, start))) {
+        throw Exception('page $start of $parentId failed');
+      }
+      final end = start + limit < total ? start + limit : total;
+      return <String, dynamic>{
+        'Items': [
+          for (var i = start; i < end; i++)
+            {'Id': '$parentId-$i', 'Name': 'Item $i', 'Type': 'Episode'},
+        ],
+        'TotalRecordCount': total,
+      };
+    }();
+  }
+}
+
 void main() {
   late _FakeItemsApi items;
   late _MockMediaServerClient client;
@@ -229,6 +274,98 @@ void main() {
 
     final items = await container.read(adminAnalyticsItemsProvider(query).future);
     expect(items.map((item) => item.id), ['s1', 'a1', 'b2', 'b3']);
+  });
+
+  test('big libraries read small pages, a few at a time across all of them', () async {
+    final paging = _PagingItemsApi({'t1': 1300, 't2': 950});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final lists = await Future.wait([
+      for (final id in ['t1', 't2'])
+        container.read(
+          adminLibraryItemsProvider((itemId: id, collectionType: 'tvshows')).future,
+        ),
+    ]);
+
+    expect(paging.maxInFlight, 4);
+    expect(paging.limits, {300});
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600, 900, 1200]));
+    expect(paging.starts['t2'], unorderedEquals([0, 300, 600, 900]));
+    expect(lists[0].map((item) => item.id), [for (var i = 0; i < 1300; i++) 't1-$i']);
+    expect(lists[1], hasLength(950));
+  });
+
+  test('a failed page stops the library from asking for more', () async {
+    final paging = _PagingItemsApi({'t1': 3000}, failAt: {('t1', 300)});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await expectLater(
+      container.read(
+        adminLibraryItemsProvider((itemId: 't1', collectionType: 'tvshows')).future,
+      ),
+      throwsException,
+    );
+    // The first page, then the batch holding the failure, and nothing after.
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600, 900, 1200]));
+  });
+
+  test('an invalidated read stops asking for pages', () async {
+    final paging = _PagingItemsApi({'t1': 3000});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    const library = (itemId: 't1', collectionType: 'tvshows');
+    final sub = container.listen(adminLibraryItemsProvider(library), (_, _) {});
+    addTearDown(sub.close);
+
+    // Invalidate while the first batch after page 0 is in flight.
+    while ((paging.starts['t1']?.length ?? 0) < 2) {
+      await Future<void>.delayed(Duration.zero);
+    }
+    container.invalidate(adminLibraryItemsProvider(library));
+    final fresh = await container.read(adminLibraryItemsProvider(library).future);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(fresh, hasLength(3000));
+    // Each page once for the fresh read, plus the stale read's page 0 and the
+    // one batch it already had going.
+    final counts = <int, int>{};
+    for (final start in paging.starts['t1']!) {
+      counts[start] = (counts[start] ?? 0) + 1;
+    }
+    expect(counts, {
+      for (var start = 0; start < 3000; start += 300)
+        start: start <= 1200 ? 2 : 1,
+    });
+  });
+
+  test('an invalidated read drops pages still waiting for a slot', () async {
+    final paging = _PagingItemsApi({'big': 3000, 't1': 900});
+    when(() => client.itemsApi).thenReturn(paging);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    const big = (itemId: 'big', collectionType: 'tvshows');
+    const t1 = (itemId: 't1', collectionType: 'tvshows');
+    final bigSub = container.listen(adminLibraryItemsProvider(big), (_, _) {});
+    addTearDown(bigSub.close);
+
+    // Once the big library holds all four slots, t1's first page waits.
+    while ((paging.starts['big']?.length ?? 0) < 2) {
+      await Future<void>.delayed(Duration.zero);
+    }
+    final t1Sub = container.listen(adminLibraryItemsProvider(t1), (_, _) {});
+    addTearDown(t1Sub.close);
+    container.invalidate(adminLibraryItemsProvider(t1));
+    final fresh = await container.read(adminLibraryItemsProvider(t1).future);
+    await container.read(adminLibraryItemsProvider(big).future);
+
+    expect(fresh, hasLength(900));
+    // Only the fresh read reached the server.
+    expect(paging.starts['t1'], unorderedEquals([0, 300, 600]));
   });
 
   testWidgets('home videos count videos and photos, collections need no /Items', (

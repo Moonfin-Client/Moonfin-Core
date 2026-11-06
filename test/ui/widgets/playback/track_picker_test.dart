@@ -6,6 +6,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/playback/media_kit_player_backend.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/widgets/playback/subtitle_delay_panel.dart';
 import 'package:moonfin/ui/widgets/playback/track_picker.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +23,7 @@ class _Backend extends Fake implements MediaKitPlayerBackend {
   final bool secondarySize;
   final bool secondaryColor;
   final audioDelays = <double>[];
+  final subtitleDelays = <double>[];
   final primaryOffsets = <double>[];
 
   @override
@@ -56,6 +58,12 @@ class _Backend extends Fake implements MediaKitPlayerBackend {
 
   @override
   Future<void> setAudioDelay(double seconds) async => audioDelays.add(seconds);
+
+  @override
+  Future<void> setSubtitleDelay(double seconds) async {
+    subtitleDelaySeconds = seconds;
+    subtitleDelays.add(seconds);
+  }
 }
 
 class _Manager extends PlaybackManager {
@@ -109,6 +117,7 @@ void main() {
     bool secondary = false,
     bool audio = true,
     ValueChanged<bool>? onDialogOpenChanged,
+    ValueChanged<bool>? onSubtitleDelayOpenChanged,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -123,6 +132,7 @@ void main() {
               secondary: secondary,
               clientFor: (_) => throw UnimplementedError(),
               onDialogOpenChanged: onDialogOpenChanged,
+              onSubtitleDelayOpenChanged: onSubtitleDelayOpenChanged,
             ),
             child: const Text('open'),
           ),
@@ -172,7 +182,7 @@ void main() {
     expect(events, [true, false, true, false]);
   });
 
-  testWidgets('the secondary subtitle delay opens in the same bar', (
+  testWidgets('the secondary subtitle delay opens in the subtitle delay panel', (
     tester,
   ) async {
     final manager = _Manager(_Backend());
@@ -182,9 +192,64 @@ void main() {
     await tester.tap(find.text(l10n.subtitleDelay));
     await tester.pumpAndSettle();
     expect(find.text(l10n.secondarySubtitleTrack), findsNothing);
+    expect(find.byType(SubtitleDelayPanel), findsOneWidget);
     await tester.tap(find.byTooltip(l10n.delayPlusMs(100)));
     await tester.pump();
     expect(manager.secondarySubtitleDelaySeconds, 0.1);
+  });
+
+  // Issue #2128: the subtitle delay sits at the top, clear of the subtitles it
+  // moves, and the player hears when it opens and closes.
+  testWidgets('the subtitle delay opens at the top and reports itself', (
+    tester,
+  ) async {
+    final backend = _Backend();
+    final manager = _Manager(backend, primaryIndex: 3);
+    addTearDown(manager.dispose);
+    final opened = <bool>[];
+    await openPicker(
+      tester,
+      manager,
+      audio: false,
+      onSubtitleDelayOpenChanged: opened.add,
+    );
+
+    await tester.tap(find.text(l10n.subtitleDelay));
+    await tester.pumpAndSettle();
+    expect(opened, [true]);
+    expect(tester.widget<Dialog>(find.byType(Dialog)).alignment, Alignment.topCenter);
+
+    await tester.tap(find.byTooltip(l10n.delayPlusMs(100)));
+    await tester.pump();
+    expect(backend.subtitleDelays, [0.1]);
+
+    Navigator.of(tester.element(find.byType(Dialog))).pop();
+    await tester.pumpAndSettle();
+    expect(opened, [true, false]);
+  });
+
+  testWidgets('an image subtitle track gets the delay without a timeline', (
+    tester,
+  ) async {
+    final manager = _Manager(
+      _Backend(),
+      primaryIndex: 2,
+      resolution: const StreamResolutionResult(
+        streamUrl: 'http://server/movie.mkv',
+        mediaSourceId: 'pgs',
+        playMethod: StreamPlayMethod.directPlay,
+        mediaStreams: [
+          {'Type': 'Subtitle', 'Index': 2, 'Codec': 'pgssub'},
+        ],
+      ),
+    );
+    addTearDown(manager.dispose);
+    await openPicker(tester, manager, audio: false);
+
+    await tester.tap(find.text(l10n.subtitleDelay));
+    await tester.pumpAndSettle();
+    expect(find.byType(SubtitleDelayPanel), findsOneWidget);
+    expect(find.text('0:05'), findsNothing);
   });
 
   testWidgets('secondary size can be exposed without a color override', (

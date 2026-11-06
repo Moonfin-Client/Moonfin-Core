@@ -30,6 +30,16 @@ class UpcomingEpisodeInfo {
     ).isBefore(DateTime(now.year, now.month, now.day));
   }
 
+  /// Whether this is the episode right after episode [episode] of season
+  /// [season]. A next season that is already in the library is only queued
+  /// once the finale ends, so anything further along means the viewer has
+  /// more to watch first.
+  bool follows(int? season, int? episode) {
+    if (season == null || episode == null) return false;
+    return (seasonNumber == season && episodeNumber == episode + 1) ||
+        (seasonNumber == season + 1 && episodeNumber == 1);
+  }
+
   /// Formats the upcoming episode string according to relative date rules:
   /// - Today -> "Next: Today (S2:E1)"
   /// - Tomorrow -> "Next: Tomorrow (S2:E1)"

@@ -2369,7 +2369,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 return FocusableWrapper(
                   focusNode: index == 0 ? _studiosFirstFocusNode : null,
                   onSelect: name.isNotEmpty
-                      ? () => context.push(Destinations.studio(name))
+                      ? () => context.push(
+                          Destinations.studio(name, serverId: item.serverId),
+                        )
                       : null,
                   borderRadius: 12,
                   suppressFocusGlow: true,
