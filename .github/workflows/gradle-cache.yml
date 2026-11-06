@@ -1,0 +1,62 @@
+name: Warm the Gradle cache
+
+# Build All Platforms runs only on PRs and tags, and a cache saved there can't
+# be read by any other PR. Maven Central refuses the shared runner IPs often
+# enough (429/403) to fail PR runs, so this saves the Gradle cache on main,
+# where every PR can restore it. The setup-java step must match the android
+# and tests jobs in build.yml exactly, or the keys stop matching.
+on:
+  workflow_dispatch:
+  schedule:
+    # Recreates the entry if the cache was evicted. With the entry in place
+    # the run stops after the restore.
+    - cron: '17 4 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.gradle*'
+      - '**/gradle-wrapper.properties'
+      - 'pubspec.lock'
+      - '.github/workflows/gradle-cache.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gradle-cache
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: '3.47.2'
+
+jobs:
+  warm:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        id: java
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            **/*.gradle*
+            **/gradle-wrapper.properties
+            pubspec.lock
+
+      - uses: subosito/flutter-action@v2
+        if: steps.java.outputs.cache-hit != 'true'
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      # The same Gradle invocation as the kotlin test suite, so the cache holds
+      # what it resolves. setup-java saves the cache when the job ends.
+      - name: Resolve dependencies
+        if: steps.java.outputs.cache-hit != 'true'
+        run: |
+          flutter pub get
+          flutter build apk --config-only
+          cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest
