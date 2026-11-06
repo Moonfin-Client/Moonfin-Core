@@ -25,12 +25,14 @@ import '../../../../playback/subtitle_view_config.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/focus/input_mode_tracker.dart';
+import '../../../../util/game_library.dart' show isGameLibrary;
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../screensaver/bouncing_box.dart';
 import '../../../screensaver/screensaver_gradient_backdrops.dart';
 import '../../../screensaver/screensaver_view.dart';
 import '../../../widgets/adaptive/sf_symbol.dart';
+import '../../../widgets/book/book_navigation.dart' show BookCategoryKind;
 import '../../../widgets/bounded_network_image.dart';
 import '../../../widgets/image_source.dart';
 import '../../../widgets/playback/chapter_marker_track.dart';
@@ -43,10 +45,13 @@ import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../../widgets/video_mini_player.dart';
+import '../../browse/book_category_screen.dart';
+import '../../browse/classic_book_browse_screen.dart';
 import '../../browse/immersive_music_screen.dart';
 import '../../browse/library_browse_screen.dart';
 import '../../browse/music_browse_screen.dart';
 import '../../browse/quick_access_music_screen.dart';
+import '../../browse/reading_room_book_screen.dart';
 import '../../calendar/calendar_agenda_view.dart';
 import '../../calendar/calendar_controller.dart';
 import '../../calendar/calendar_countdown_view.dart';
@@ -67,7 +72,8 @@ String settingsPreviewSceneName(
 
 /// The scenes this device has settings for. Keyboard Style is a TV setting,
 /// so only a TV gets the search keyboard, the calendar only shows for someone
-/// the server offers it to, and the library waits on a video or music one.
+/// the server offers it to, and the library waits on a video, music or book
+/// one.
 List<SettingsPreviewScene> get settingsPreviewScenes => [
   SettingsPreviewScene.home,
   SettingsPreviewScene.details,
@@ -76,20 +82,28 @@ List<SettingsPreviewScene> get settingsPreviewScenes => [
   if (GetIt.instance.isRegistered<PluginSyncService>() &&
       GetIt.instance<PluginSyncService>().calendarAvailable)
     SettingsPreviewScene.calendar,
-  if (_videoLibrary != null || _musicLibrary != null)
+  if (_videoLibrary != null || _musicLibrary != null || _bookLibrary != null)
     SettingsPreviewScene.library,
 ];
 
-/// The first library of one of [types] in the user's order.
+/// The first library of one of [types] in the user's order. A games library
+/// can carry any of them, and opens the games screen instead.
 AggregatedLibrary? _firstLibrary(Set<String> types) => SetupPreviewData
     .libraries
     .value
-    .where((l) => types.contains(l.collectionType))
+    .where(
+      (l) =>
+          types.contains(l.collectionType) &&
+          !isGameLibrary(l.id, l.collectionType, l.name),
+    )
     .firstOrNull;
 
 AggregatedLibrary? get _videoLibrary => _firstLibrary(const {'movies', 'tvshows'});
 
 AggregatedLibrary? get _musicLibrary => _firstLibrary(const {'music'});
+
+AggregatedLibrary? get _bookLibrary =>
+    _firstLibrary(const {'books', 'audiobooks'});
 
 /// [screen] laid out by the canvas's size, with no system bars or keyboard.
 Widget _onCanvas(BuildContext context, Widget screen) => MediaQuery(
@@ -102,12 +116,40 @@ Widget _onCanvas(BuildContext context, Widget screen) => MediaQuery(
   child: screen,
 );
 
-/// The video library in the style being looked at, or the music library while
-/// its style has focus or there's no video library.
+/// The video library in the style being looked at, or the music or book
+/// library while its style has focus. Without a video library it falls back to
+/// music, then books.
 Widget _libraryScene(String? focusedKey) => Builder(
   builder: (context) {
     final video = _videoLibrary;
     final music = _musicLibrary;
+    final books = _bookLibrary;
+    if (books != null &&
+        (focusedKey == UserPreferences.bookLibraryStyle.key ||
+            (video == null && music == null))) {
+      final type = books.collectionType;
+      return settingsNavbarPreviewOver(
+        _onCanvas(
+          context,
+          switch (previewValue(context, UserPreferences.bookLibraryStyle)) {
+            BookLibraryStyle.classic => ClassicBookBrowseScreen(
+              libraryId: books.id,
+              collectionType: type,
+            ),
+            BookLibraryStyle.readingRoom => ReadingRoomBookScreen(
+              libraryId: books.id,
+              collectionType: type,
+            ),
+            BookLibraryStyle.bookstore => BookCategoryScreen(
+              libraryId: books.id,
+              kind: BookCategoryKind.titles,
+              collectionType: type,
+              root: true,
+            ),
+          },
+        ),
+      );
+    }
     if (music != null &&
         (focusedKey == UserPreferences.musicLibraryStyle.key || video == null)) {
       final style = previewValue(context, UserPreferences.musicLibraryStyle);

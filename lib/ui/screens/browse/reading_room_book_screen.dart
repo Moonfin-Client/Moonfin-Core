@@ -32,10 +32,11 @@ import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/left_sidebar.dart';
 import '../../widgets/media_card.dart';
-import '../../widgets/navigation_layout.dart';
 import '../../widgets/offline_aware_image.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../widgets/top_toolbar.dart';
+import 'library_page_state.dart';
 
 /// The Reading Room book library: what's being read on large Continue cards
 /// over shelves of recent titles and series, then authors and genres.
@@ -122,7 +123,9 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
   void _onChanged() {
     if (!mounted) return;
     setState(() {});
-    if (!PlatformDetection.useMobileUi && !_vm.isLoading) {
+    if (!PlatformDetection.useMobileUi &&
+        !_vm.isLoading &&
+        !inSettingsPreview(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted ||
             _vm.isLoading ||
@@ -183,9 +186,9 @@ class _ReadingRoomBookScreenState extends State<ReadingRoomBookScreen> {
     targetNode: _initialFocusNode,
     child: Scaffold(
       backgroundColor: AppColorScheme.background,
-      body: NavigationLayout(
+      body: libraryNavigation(
+        context,
         activeRoute: '/books/${widget.libraryId}',
-        showBackButton: true,
         child: _vm.isLoading
             ? const SkeletonLibraryGrid(cardWidth: 160, aspectRatio: 2 / 3)
             : RefreshIndicator(

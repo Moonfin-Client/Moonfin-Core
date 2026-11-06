@@ -23,10 +23,13 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/browse/book_category_screen.dart';
+import 'package:moonfin/ui/screens/browse/classic_book_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/immersive_music_screen.dart';
 import 'package:moonfin/ui/screens/browse/library_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
+import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
@@ -2508,7 +2511,7 @@ void main() {
         ..registerSingleton<BackgroundService>(backdrops);
     });
 
-    test('its settings show on it, and the book style stays put', () {
+    test('its settings show on it', () {
       for (final key in [
         UserPreferences.libraryStyle.key,
         UserPreferences.groupItemsIntoCollections.key,
@@ -2517,6 +2520,7 @@ void main() {
         UserPreferences.useDetailedSubHeadings.key,
         UserPreferences.hideBackdropsInLibraries.key,
         UserPreferences.musicLibraryStyle.key,
+        UserPreferences.bookLibraryStyle.key,
       ]) {
         expect(
           SettingsPreviewController.sceneForKey(key),
@@ -2524,17 +2528,13 @@ void main() {
           reason: key,
         );
       }
-      expect(
-        SettingsPreviewController.sceneForKey(
-          UserPreferences.bookLibraryStyle.key,
-        ),
-        isNull,
-      );
     });
 
-    test('the chip waits on a video or music library', () {
-      SetupPreviewData.libraries.value = [library('books', 'books')];
+    test('the chip waits on a video, music or book library', () {
+      SetupPreviewData.libraries.value = [library('photos', 'homevideos')];
       expect(settingsPreviewScenes, isNot(contains(SettingsPreviewScene.library)));
+      SetupPreviewData.libraries.value = [library('books', 'books')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
       SetupPreviewData.libraries.value = [library('music', 'music')];
       expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
       SetupPreviewData.libraries.value = [
@@ -2544,14 +2544,18 @@ void main() {
       expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
     });
 
-    testWidgets('Music Library Style draws the music library in the style a '
-        'picker tries and leaves the app backdrop alone', (tester) async {
+    /// Focuses [prefKey] beside a Movies library and [other], with the
+    /// services the music and book screens read, and checks each tried style
+    /// draws its own screen in place of the video library.
+    Future<SettingsPreviewController> expectStylesDrawn(
+      WidgetTester tester,
+      AggregatedLibrary other,
+      String prefKey,
+      List<(Object, Type)> styles,
+    ) async {
       PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
-      SetupPreviewData.libraries.value = [
-        library('films', 'movies'),
-        library('tunes', 'music'),
-      ];
+      SetupPreviewData.libraries.value = [library('films', 'movies'), other];
       final playback = _Playback();
       when(() => playback.queueService).thenReturn(QueueService());
       GetIt.instance
@@ -2569,24 +2573,45 @@ void main() {
           const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
         ),
       );
-      controller.focus(
-        const SettingsPreviewEntry(
-          title: 'Music Library Style',
-          prefKey: 'pref_music_library_style',
-        ),
-      );
-      for (final (style, screen) in [
-        (MusicLibraryStyle.classic, MusicBrowseScreen),
-        (MusicLibraryStyle.quickAccess, QuickAccessMusicScreen),
-        (MusicLibraryStyle.immersive, ImmersiveMusicScreen),
-      ]) {
-        controller.tryValue('pref_music_library_style', style);
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      for (final (style, screen) in styles) {
+        controller.tryValue(prefKey, style);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
         expect(find.byType(screen), findsOneWidget, reason: '$style');
         expect(find.byType(LibraryBrowseScreen), findsNothing);
         expect(tester.takeException(), isNull);
       }
+      return controller;
+    }
+
+    testWidgets('Book Library Style draws the book library in the style a '
+        'picker tries', (tester) async {
+      await expectStylesDrawn(
+        tester,
+        library('shelf', 'books'),
+        'pref_book_library_style',
+        [
+          (BookLibraryStyle.classic, ClassicBookBrowseScreen),
+          (BookLibraryStyle.readingRoom, ReadingRoomBookScreen),
+          (BookLibraryStyle.bookstore, BookCategoryScreen),
+        ],
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('Music Library Style draws the music library in the style a '
+        'picker tries and leaves the app backdrop alone', (tester) async {
+      final controller = await expectStylesDrawn(
+        tester,
+        library('tunes', 'music'),
+        'pref_music_library_style',
+        [
+          (MusicLibraryStyle.classic, MusicBrowseScreen),
+          (MusicLibraryStyle.quickAccess, QuickAccessMusicScreen),
+          (MusicLibraryStyle.immersive, ImmersiveMusicScreen),
+        ],
+      );
       verifyNever(
         () => backdrops.setBackground(any(), context: any(named: 'context')),
       );

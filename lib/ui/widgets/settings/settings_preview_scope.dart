@@ -177,6 +177,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_use_detailed_sub_headings': SettingsPreviewScene.library,
     'pref_hide_backdrops_in_libraries': SettingsPreviewScene.library,
     'pref_music_library_style': SettingsPreviewScene.library,
+    'pref_book_library_style': SettingsPreviewScene.library,
   };
 
   /// The screensaver comes on over Home, so every one of its settings shows
