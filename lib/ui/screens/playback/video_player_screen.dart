@@ -291,6 +291,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   bool _controlsVisible = true;
+  bool _subtitleDelayOpen = false;
   Timer? _hideTimer;
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
@@ -4137,26 +4138,42 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       _buildPausedDescriptionOverlay(),
                       if (_controlsVisible &&
                           !_isOsdLocked &&
-                          !hideOsdForPreroll) ...[
-                        const Positioned.fill(
-                          child: IgnorePointer(
-                            child: ColoredBox(color: Color(0x4D000000)),
-                          ),
-                        ),
-                        // The chrome stays in the tree while mpv owns its own
-                        // window: both native windows are WS_EX_TRANSPARENT, so
-                        // these widgets are still what gets hit-tested - only
-                        // their pixels are re-sent by HdrOverlayCapture.
-                        _buildTopOverlay(context),
-                        if (!PlatformDetection.useLeanbackUi &&
-                            !_transportDocked)
-                          Positioned.fill(
-                            child: Center(
-                              child: _buildCenterTransportControls(),
+                          !hideOsdForPreroll)
+                        // Hidden rather than removed while the subtitle delay
+                        // is open, so closing it can hand focus back to the
+                        // button that opened it.
+                        Positioned.fill(
+                          child: Visibility(
+                            visible: !_subtitleDelayOpen,
+                            maintainState: true,
+                            maintainAnimation: true,
+                            maintainSize: true,
+                            maintainFocusability: true,
+                            child: Stack(
+                              children: [
+                                const Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: ColoredBox(color: Color(0x4D000000)),
+                                  ),
+                                ),
+                                // The chrome stays in the tree while mpv owns
+                                // its own window: both native windows are
+                                // WS_EX_TRANSPARENT, so these widgets are still
+                                // what gets hit-tested. Only their pixels are
+                                // re-sent by HdrOverlayCapture.
+                                _buildTopOverlay(context),
+                                if (!PlatformDetection.useLeanbackUi &&
+                                    !_transportDocked)
+                                  Positioned.fill(
+                                    child: Center(
+                                      child: _buildCenterTransportControls(),
+                                    ),
+                                  ),
+                                _buildBottomOverlay(context),
+                              ],
                             ),
                           ),
-                        _buildBottomOverlay(context),
-                      ],
+                        ),
                       // The controls carry the indicator while they're up.
                       // Once they hide it stays in the corner, since the wait
                       // can outlast the controls by minutes.
@@ -7418,6 +7435,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         runMutation: _runSinglePlayerMutation,
         onSubtitlesChanged: () {
           if (mounted) _syncSubtitleActive();
+        },
+        // The controls sit over the subtitles, so they step aside while the
+        // delay is set and come back when it closes.
+        onSubtitleDelayOpenChanged: (open) {
+          if (!mounted) return;
+          setState(() => _subtitleDelayOpen = open);
+          if (!open && _controlsVisible) _scheduleHide();
         },
       ),
     );

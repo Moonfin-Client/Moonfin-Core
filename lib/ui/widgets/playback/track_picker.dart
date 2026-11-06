@@ -11,6 +11,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/services/log_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/delay_limits.dart';
+import '../../../playback/subtitle_cue_loader.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/remote_subtitle_labels.dart';
@@ -21,6 +22,7 @@ import '../progress_snack_bar.dart';
 import '../track_selector_dialog.dart';
 import 'delay_footer.dart';
 import 'subtitle_appearance_footer.dart';
+import 'subtitle_delay_panel.dart';
 import 'track_choices.dart';
 
 /// Runs a change to the player, returning false when it was refused.
@@ -62,6 +64,8 @@ abstract final class TrackPicker {
   /// [onSubtitlesChanged] runs after a subtitle change lands.
   /// [onDialogOpenChanged] reports each dialog opening and closing, for an
   /// opener outside the navigator that the dialog's barrier doesn't cover.
+  /// [onSubtitleDelayOpenChanged] reports only the subtitle delay opening and
+  /// closing, so the player can clear its controls off the subtitles meanwhile.
   static Future<void> show(
     BuildContext context, {
     required PlaybackManager manager,
@@ -73,6 +77,7 @@ abstract final class TrackPicker {
     PlayerMutation? runMutation,
     VoidCallback? onSubtitlesChanged,
     ValueChanged<bool>? onDialogOpenChanged,
+    ValueChanged<bool>? onSubtitleDelayOpenChanged,
   }) async {
     final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
@@ -291,21 +296,49 @@ abstract final class TrackPicker {
     );
     if (result == null || !context.mounted) return;
     if (delayLimits != null && result == options.length - 1) {
+      final label = secondary ? l10n.secondaryDelayAdjustment : delayLabel;
+      void onDelayChanged(double d) => secondary
+          ? unawaited(manager.setSecondarySubtitleDelay(d))
+          : _applyDelay(manager, audio: audio, delay: d);
+      final cues = audio
+          ? null
+          : SubtitleCueLoader.load(
+              manager,
+              secondary
+                  ? manager.secondarySubtitleStreamIndex
+                  : manager.subtitleStreamIndex,
+              client: item is AggregatedItem ? clientFor(item) : null,
+              itemId: item is AggregatedItem ? item.id : null,
+            );
       await _whileOpen(
-        onDialogOpenChanged,
+        (open) {
+          onDialogOpenChanged?.call(open);
+          if (!audio) onSubtitleDelayOpenChanged?.call(open);
+        },
         () => _showDelayBar(
           context,
           useRootNavigator: useRootNavigator,
-          bar: DelayFooter(
-            initialDelay: delay,
-            label: secondary ? l10n.secondaryDelayAdjustment : delayLabel,
-            minDelay: delayLimits.$1,
-            maxDelay: delayLimits.$2,
-            onDelayChanged: (d) => secondary
-                ? unawaited(manager.setSecondarySubtitleDelay(d))
-                : _applyDelay(manager, audio: audio, delay: d),
-            formatDelay: formatDelay,
-          ),
+          top: !audio,
+          wide: cues != null,
+          bar: audio
+              ? DelayFooter(
+                  initialDelay: delay,
+                  label: label,
+                  minDelay: delayLimits.$1,
+                  maxDelay: delayLimits.$2,
+                  onDelayChanged: onDelayChanged,
+                  formatDelay: formatDelay,
+                )
+              : SubtitleDelayPanel(
+                  initialDelay: delay,
+                  label: label,
+                  minDelay: delayLimits.$1,
+                  maxDelay: delayLimits.$2,
+                  onDelayChanged: onDelayChanged,
+                  formatDelay: formatDelay,
+                  state: manager.state,
+                  cues: cues,
+                ),
         ),
       );
       return;
@@ -322,6 +355,7 @@ abstract final class TrackPicker {
         runMutation: runMutation,
         onSubtitlesChanged: onSubtitlesChanged,
         onDialogOpenChanged: onDialogOpenChanged,
+        onSubtitleDelayOpenChanged: onSubtitleDelayOpenChanged,
       );
       return;
     }
@@ -402,22 +436,28 @@ abstract final class TrackPicker {
     }
   }
 
-  /// The delay on its own, in a slim bar at the bottom with nothing dimming
-  /// the picture, so the effect of each step can be seen while it's made.
+  /// The delay on its own, in a slim bar with nothing dimming the picture, so
+  /// the effect of each step can be seen while it's made. The subtitle delay
+  /// sits at the top, clear of the subtitles it moves, and is [wide] when it
+  /// carries the timeline.
   static Future<void> _showDelayBar(
     BuildContext context, {
     required Widget bar,
     required bool useRootNavigator,
+    bool top = false,
+    bool wide = false,
   }) => showFocusRestoringDialog<void>(
     context: context,
     useRootNavigator: useRootNavigator,
     barrierColor: Colors.transparent,
     builder: (_) => Dialog(
-      alignment: Alignment.bottomCenter,
-      insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      alignment: top ? Alignment.topCenter : Alignment.bottomCenter,
+      insetPadding: top
+          ? const EdgeInsets.fromLTRB(24, 24, 24, 0)
+          : const EdgeInsets.fromLTRB(24, 0, 24, 24),
       backgroundColor: Colors.transparent,
       child: playerDialogPanel(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: BoxConstraints(maxWidth: wide ? 640 : 480),
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: bar,
       ),
