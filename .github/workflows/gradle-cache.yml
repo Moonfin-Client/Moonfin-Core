@@ -3,8 +3,10 @@ name: Warm the Gradle cache
 # Build All Platforms runs only on PRs and tags, and a cache saved there can't
 # be read by any other PR. Maven Central refuses the shared runner IPs often
 # enough (429/403) to fail PR runs, so this saves the Gradle cache on main,
-# where every PR can restore it. The setup-java step must match the android
-# and tests jobs in build.yml exactly, or the keys stop matching.
+# where every PR can restore it. The cache path, key and restore-keys must
+# match the android and tests jobs in build.yml exactly, or the keys stop
+# matching. Those jobs only restore, so this workflow is the one writer and an
+# exact hit here is always an entry it resolved in full.
 on:
   workflow_dispatch:
   schedule:
@@ -35,22 +37,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-java@v5
-        id: java
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
-          cache-dependency-path: |
-            **/*.gradle*
-            **/gradle-wrapper.properties
-            pubspec.lock
-            .github/workflows/build.yml
 
       # Read from build.yml rather than kept here too, so a Flutter upgrade
       # there can't leave this cache built with the old one.
       - name: Read the Flutter version build.yml uses
         id: flutter
-        if: steps.java.outputs.cache-hit != 'true'
         run: |
           version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
           if [ -z "$version" ]; then
@@ -59,16 +53,33 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+      - uses: actions/cache/restore@v5
+        id: cache
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-flutter-${{ steps.flutter.outputs.version }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: gradle-${{ runner.os }}-flutter-${{ steps.flutter.outputs.version }}-
+
       - uses: subosito/flutter-action@v2
-        if: steps.java.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         with:
           flutter-version: ${{ steps.flutter.outputs.version }}
 
       # The same Gradle invocation as the kotlin test suite, so the cache holds
-      # what it resolves. setup-java saves the cache when the job ends.
+      # what it resolves. A partial restore from restore-keys is topped up here.
       - name: Resolve dependencies
-        if: steps.java.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           flutter pub get
           flutter build apk --config-only
           cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest
+
+      - uses: actions/cache/save@v5
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ steps.cache.outputs.cache-primary-key }}

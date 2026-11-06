@@ -76,20 +76,25 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # Restores the Gradle cache gradle-cache.yml saves on main, so a PR run
-      # doesn't download every dependency from Maven Central, which refuses
-      # the shared runner IPs (429/403). Keep cache-dependency-path the same
-      # in all three places, or the keys stop matching.
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
-          cache-dependency-path: |
-            **/*.gradle*
-            **/gradle-wrapper.properties
-            pubspec.lock
-            .github/workflows/build.yml
+
+      # Restores the Gradle cache gradle-cache.yml saves on main, so a PR run
+      # doesn't download every dependency from Maven Central, which refuses
+      # the shared runner IPs (429/403). Restore only: the warmer is the one
+      # writer, so an entry under its key always holds the test dependencies.
+      # When a PR changes a hashed file, restore-keys falls back to main's
+      # entry for the same Flutter version. Keep path, key and restore-keys
+      # the same in all three places, or the keys stop matching.
+      - uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
 
       - uses: subosito/flutter-action@v2
         with:
@@ -880,18 +885,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # The same Gradle cache as the android job, see there.
       - uses: actions/setup-java@v5
         if: matrix.suite == 'kotlin'
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
-          cache-dependency-path: |
-            **/*.gradle*
-            **/gradle-wrapper.properties
-            pubspec.lock
-            .github/workflows/build.yml
+
+      # The same Gradle cache as the android job, see there.
+      - uses: actions/cache/restore@v5
+        if: matrix.suite == 'kotlin'
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
 
       - uses: subosito/flutter-action@v2
         with:
