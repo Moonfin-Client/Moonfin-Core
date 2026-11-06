@@ -3052,20 +3052,26 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
   }
 
+  // media_kit lists its 'auto' and 'no' entries before mpv has read the
+  // file. A track picked that early is undone when mpv finds a different
+  // layout than the last file and resets to the default track.
+  static bool _fileTracksLoaded(Tracks tracks) =>
+      tracks.video.any((t) => t.id != 'auto' && t.id != 'no') ||
+      tracks.audio.any((t) => t.id != 'auto' && t.id != 'no');
+
   @override
   Future<void> waitForTracksReady() async {
     _updateStaleState();
-    if (!_isStale && _player.state.tracks.audio.isNotEmpty) {
+    if (!_isStale && _fileTracksLoaded(_player.state.tracks)) {
       return;
     }
     try {
-      final tracks = await _player.stream.tracks
+      await _player.stream.tracks
           .firstWhere((t) {
             _updateStaleState();
-            return !_isStale && t.audio.isNotEmpty;
+            return !_isStale && _fileTracksLoaded(t);
           })
           .timeout(const Duration(seconds: 5));
-      if (tracks.audio.isEmpty) return;
     } catch (_) {}
   }
 
