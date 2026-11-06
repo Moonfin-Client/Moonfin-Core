@@ -719,4 +719,45 @@ void main() {
       );
     });
   });
+
+  test(
+      'pending notification edit for one user does not block another user fetch or trigger push',
+      () async {
+    final clientA = client;
+    final userKeyA = service.userSyncKey(clientA);
+
+    final clientB = _MockClient();
+    when(() => clientB.baseUrl).thenReturn('http://plugin.test');
+    when(() => clientB.accessToken).thenReturn('token_b');
+    when(() => clientB.serverType).thenReturn(ServerType.jellyfin);
+    when(() => clientB.userId).thenReturn('user2');
+    when(() => clientB.deviceInfo).thenReturn(
+      const DeviceInfo(id: 'dev1', name: 'test', appName: 'moonfin', appVersion: '0.0.0'),
+    );
+    final userKeyB = service.userSyncKey(clientB);
+
+    // User A marks edits modified
+    service.markNotificationPrefsModified(client: clientA);
+    expect(service.hasUnsyncedNotificationPrefsFor(userKeyA), isTrue);
+    expect(service.hasUnsyncedNotificationPrefsFor(userKeyB), isFalse);
+
+    // Prepare response for user B's fetch
+    adapter.notificationPrefs = {'notifyOnNewRequests': true};
+    adapter.requests.clear();
+
+    // User B fetches notification prefs
+    await service.fetchNotificationPrefs(clientB);
+
+    // Assert that User B issued a GET, did not POST, and did not clear User A's pending state
+    expect(
+      adapter.requests.where((r) => r.startsWith('GET /Moonfin/Notifications/Prefs')).length,
+      1,
+    );
+    expect(
+      adapter.requests.where((r) => r.startsWith('POST')),
+      isEmpty,
+    );
+    expect(service.hasUnsyncedNotificationPrefsFor(userKeyA), isTrue);
+    expect(service.hasUnsyncedNotificationPrefsFor(userKeyB), isFalse);
+  });
 }
