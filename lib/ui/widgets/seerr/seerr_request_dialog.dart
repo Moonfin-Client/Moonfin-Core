@@ -99,10 +99,15 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   /// this is. Only a series TMDB has no TVDB id for starts there.
   late bool _matching = widget.isTv && widget.vm.needsSeriesMatch;
 
-  /// Sonarr's matches for the series, null while they load. Empty means
-  /// Sonarr has nothing to match it with, which leaves nothing to request.
+  /// Sonarr's matches for the series, null while they load. Empty means none
+  /// of Sonarr's results had a TVDB id, which leaves nothing to request.
   List<SeerrSonarrSeries>? _matches;
   int? _tvdbId;
+
+  /// Sonarr is there but the lookup failed, so the step offers a retry rather
+  /// than a request Seerr would drop. Seerr also fails the lookup when Sonarr
+  /// finds no series at all, so this is the usual no-match case too.
+  bool _lookupFailed = false;
 
   /// The card a remote lands on in the match step: the first match, or the
   /// one already picked when coming back from the request.
@@ -130,12 +135,21 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
     if (_matching) _loadMatches();
   }
 
-  /// When no lookup could be made, the sheet goes on to the request as it
-  /// would without the step. That covers Silo, a Seerr with no Sonarr, and a
-  /// lookup that failed. A lookup that found nothing stays on the step, since
-  /// Seerr would drop the request the moment it tried to send it to Sonarr.
+  /// When there is no Sonarr to ask, the sheet goes on to the request as it
+  /// would without the step. That covers Silo and a Seerr with no Sonarr. A
+  /// lookup that found nothing or failed stays on the step, since Seerr would
+  /// drop the request the moment it tried to send it to Sonarr.
   Future<void> _loadMatches() async {
-    final matches = await widget.vm.lookupSeriesMatches();
+    if (_lookupFailed) setState(() => _lookupFailed = false);
+    final List<SeerrSonarrSeries>? matches;
+    try {
+      matches = await widget.vm.lookupSeriesMatches();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _lookupFailed = true);
+      _focusMatch();
+      return;
+    }
     if (!mounted) return;
     setState(() {
       if (matches == null) {
@@ -159,9 +173,9 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_matching) return;
-      // With no match the only control left is Close, which holds the node
-      // Next would.
-      final noMatch = _matches?.isEmpty ?? false;
+      // With no match the only control left is Close, and after a failed
+      // lookup it is Retry. Either holds the node Next would.
+      final noMatch = _lookupFailed || (_matches?.isEmpty ?? false);
       (noMatch ? _nextFocus : _matchFocus).requestFocus();
     });
   }
@@ -384,7 +398,12 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (matches == null)
+                if (_lookupFailed)
+                  Text(
+                    l10n.seerrSeriesMatchFailed,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  )
+                else if (matches == null)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: Center(child: CircularProgressIndicator()),
@@ -420,7 +439,28 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-          child: matches != null && matches.isEmpty
+          child: _lookupFailed
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: SeerrDialogButton(
+                        label: l10n.close,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SeerrDialogButton(
+                        label: l10n.retry,
+                        focusNode: _nextFocus,
+                        primary: true,
+                        primaryColor: const Color(0xFF6366F1),
+                        onPressed: _loadMatches,
+                      ),
+                    ),
+                  ],
+                )
+              : matches != null && matches.isEmpty
               ? SeerrDialogButton(
                   label: l10n.close,
                   focusNode: _nextFocus,

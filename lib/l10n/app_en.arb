@@ -7899,6 +7899,10 @@
   "@seerrSeriesNoMatch": {
     "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
   },
+  "seerrSeriesMatchFailed": "Sonarr couldn't find a match for this series, or couldn't be reached. Try again, or check the series on Seerr.",
+  "@seerrSeriesMatchFailed": {
+    "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+  },
   "advancedOptions": "Advanced Options",
   "@advancedOptions": {
     "description": "Expansion tile for advanced request options"

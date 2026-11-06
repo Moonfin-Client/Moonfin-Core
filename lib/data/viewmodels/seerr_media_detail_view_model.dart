@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 
@@ -672,15 +673,19 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
 
   /// The series Sonarr offers for this title, empty when it has none.
   ///
-  /// Null when no lookup could be made: a Seerr with no Sonarr set up answers
-  /// 404, Silo has no Sonarr to ask, and the call can just fail. Seerr only
-  /// drops a series without a TVDB id when it has a Sonarr to send it to, so
-  /// the request can still go out in those cases.
+  /// Null when there is no Sonarr to ask: a Seerr with none set up answers
+  /// 404, and Silo has none at all. Seerr only drops a series without a TVDB
+  /// id when it has a Sonarr to send it to, so the request can still go out
+  /// then. Any other failure is thrown, since Sonarr is there and would drop
+  /// a request sent without the match.
   Future<List<SeerrSonarrSeries>?> lookupSeriesMatches() async {
     try {
       return await _repo.lookupSonarrSeries(_state.tmdbId);
-    } catch (_) {
+    } on UnsupportedError {
       return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
     }
   }
 
