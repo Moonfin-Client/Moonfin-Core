@@ -115,6 +115,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late _RecordingAdapter adapter;
+  late PreferenceStore store;
   late UserPreferences prefs;
   late PluginSyncService service;
   late _MockClient client;
@@ -129,7 +130,7 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({'pref_last_server_id': 'srv1'});
-    final store = PreferenceStore();
+    store = PreferenceStore();
     await store.init();
     prefs = UserPreferences(store);
 
@@ -288,17 +289,27 @@ void main() {
     // Same-session refresh preserves pending changes
     await service.refreshAvailability(client);
 
+    adapter.requests.clear();
     // Stale fetch should be ignored because edits are pending sync
     await service.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
     expect(seerr.notifyOnNewRequests, isTrue);
 
     // Session teardown clears pending notification changes
-    service.resetState();
+    service.resetState(clearPersistedNotificationEdits: true);
     adapter.failNotificationPush = false;
+    adapter.requests.clear();
     await service.refreshAvailability(client);
 
     // Now fetch applies server preferences
     await service.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      contains('GET /Moonfin/Notifications/Prefs'),
+    );
     expect(seerr.notifyOnNewRequests, isFalse);
   });
 
@@ -342,5 +353,91 @@ void main() {
       adapter.lastNotificationPostPayload['notifyOnNewRequests'],
       isTrue,
     );
+  });
+
+  test(
+      'pending notification edit survives restart and blocks stale startup fetch',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+    adapter.failNotificationPush = true;
+    final pushed = await service.pushNotificationPrefs(client);
+    expect(pushed, isFalse);
+
+    // Simulate restart with fresh service instance sharing the store
+    final dio = Dio()..httpClientAdapter = adapter;
+    final restartedService = PluginSyncService(prefs, store, dio: dio);
+    adapter.failNotificationPush = false;
+    adapter.notificationPrefs = {'notifyOnNewRequests': false};
+    expect(await restartedService.refreshAvailability(client), isTrue);
+
+    adapter.requests.clear();
+    await restartedService.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
+    expect(seerr.notifyOnNewRequests, isTrue);
+  });
+
+  test(
+      'availability gap retries pending edits when plugin availability returns',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+
+    adapter.failNotificationPush = true;
+    expect(await service.pushNotificationPrefs(client), isFalse);
+
+    // Plugin becomes unavailable
+    service.resetState(keepPendingNotificationChanges: true);
+    adapter.failNotificationPush = false;
+
+    // Availability returns
+    await service.refreshAvailability(client);
+    await pumpEventQueue();
+
+    expect(adapter.requests, contains('POST /Moonfin/Notifications/Prefs'));
+  });
+
+  test(
+      'availability refresh catch branch preserves pending notification edits',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+
+    adapter.failNotificationPush = true;
+    expect(await service.pushNotificationPrefs(client), isFalse);
+
+    // Re-ping fails with error
+    when(() => client.baseUrl).thenThrow(Exception('network error'));
+    expect(await service.refreshAvailability(client), isFalse);
+
+    // When client recovers, pending edit is still unsynced and not wiped
+    when(() => client.baseUrl).thenReturn('http://plugin.test');
+    adapter.failNotificationPush = false;
+    adapter.notificationPrefs = {'notifyOnNewRequests': false};
+    await service.refreshAvailability(client);
+
+    adapter.requests.clear();
+    await service.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
+    expect(seerr.notifyOnNewRequests, isTrue);
+  });
+
+  test('concurrent notification preference pushes are serialized', () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+
+    final push1 = service.pushNotificationPrefs(client);
+    await seerr.setNotifyOnLibraryAdded(true);
+    final push2 = service.pushNotificationPrefs(client);
+
+    final results = await Future.wait([push1, push2]);
+    expect(results, [true, true]);
+    expect(adapter.lastNotificationPostPayload['notifyOnLibraryAdded'], isTrue);
   });
 }

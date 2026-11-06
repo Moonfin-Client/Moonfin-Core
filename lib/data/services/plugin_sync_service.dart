@@ -174,7 +174,31 @@ class PluginSyncService extends ChangeNotifier {
   Future<void>? _activeNotificationPrefsFetch;
   String? _activeNotificationPrefsUserKey;
   bool _hasUnsyncedNotificationPrefs = false;
+  Future<bool>? _activeNotificationPush;
+  bool _notificationPushQueued = false;
   Timer? _notificationPushRetryTimer;
+
+  String _unsyncedNotificationStoreKey(String userKey) =>
+      'pref_unsynced_notifications_$userKey';
+
+  bool hasUnsyncedNotificationPrefsFor(String userKey) =>
+      _hasUnsyncedNotificationPrefs ||
+      (_store.getBool(_unsyncedNotificationStoreKey(userKey)) ?? false);
+
+  void _setUnsyncedNotificationPrefs(String? userKey, bool value) {
+    _hasUnsyncedNotificationPrefs = value;
+    if (userKey != null && userKey.isNotEmpty) {
+      _store.setBool(_unsyncedNotificationStoreKey(userKey), value);
+    }
+  }
+
+  String? _resolveCurrentUserKey({MediaServerClient? client}) {
+    if (client != null) return _userSyncKey(client);
+    if (GetIt.instance.isRegistered<MediaServerClient>()) {
+      return _userSyncKey(GetIt.instance<MediaServerClient>());
+    }
+    return null;
+  }
 
   PluginSyncService(this._prefs, this._store, {@visibleForTesting Dio? dio})
     : _dio = dio ?? Dio(pluginRequestOptions()) {
@@ -257,6 +281,7 @@ class PluginSyncService extends ChangeNotifier {
     bool stopStream = true,
     bool keepIncompleteRecordings = false,
     bool keepPendingNotificationChanges = false,
+    bool clearPersistedNotificationEdits = false,
   }) {
     _syncRetryTimer?.cancel();
     if (!keepPendingNotificationChanges) {
@@ -265,7 +290,15 @@ class PluginSyncService extends ChangeNotifier {
       _notificationPrefsVersion++;
       _activeNotificationPrefsFetch = null;
       _activeNotificationPrefsUserKey = null;
+      _activeNotificationPush = null;
+      _notificationPushQueued = false;
       _hasUnsyncedNotificationPrefs = false;
+      if (clearPersistedNotificationEdits) {
+        final userKey = _resolveCurrentUserKey();
+        if (userKey != null) {
+          _store.setBool(_unsyncedNotificationStoreKey(userKey), false);
+        }
+      }
     }
     _signInSettingsRead.clear();
     if (stopStream) {
@@ -450,6 +483,10 @@ class PluginSyncService extends ChangeNotifier {
       }
 
       notifyListeners();
+      final userKey = _userSyncKey(client);
+      if (hasUnsyncedNotificationPrefsFor(userKey)) {
+        unawaited(pushNotificationPrefs(client, isUserEdit: false));
+      }
       return _PluginAvailabilityStatus.available;
     } catch (_) {
       resetState(
@@ -973,17 +1010,22 @@ class PluginSyncService extends ChangeNotifier {
   /// Signals that local notification preferences are being modified,
   /// invalidating any in-flight fetch and preventing incoming fetches from
   /// overwriting local choices before or during the push.
-  void markNotificationPrefsModified() {
+  void markNotificationPrefsModified({MediaServerClient? client}) {
     _notificationPrefsVersion++;
-    _hasUnsyncedNotificationPrefs = true;
+    final userKey = _resolveCurrentUserKey(client: client);
+    _setUnsyncedNotificationPrefs(userKey, true);
     _notificationPushRetryTimer?.cancel();
   }
 
   Future<void> fetchNotificationPrefs(MediaServerClient client) async {
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
-    if (_hasUnsyncedNotificationPrefs) return;
-
     final userKey = _userSyncKey(client);
+    if (hasUnsyncedNotificationPrefsFor(userKey)) {
+      // Reconcile pending local edits by pushing them before fetching from server.
+      unawaited(pushNotificationPrefs(client, isUserEdit: false));
+      return;
+    }
+
     if (_activeNotificationPrefsFetch != null &&
         _activeNotificationPrefsUserKey == userKey) {
       return _activeNotificationPrefsFetch;
@@ -1017,7 +1059,7 @@ class PluginSyncService extends ChangeNotifier {
       );
 
       // Discard if session changed, local edits occurred, or unsynced edits are pending.
-      if (_hasUnsyncedNotificationPrefs ||
+      if (hasUnsyncedNotificationPrefsFor(expectedUserKey) ||
           _notificationPrefsVersion != versionAtStart ||
           _userSyncKey(client) != expectedUserKey) {
         return;
@@ -1029,42 +1071,72 @@ class PluginSyncService extends ChangeNotifier {
         if (newRequests != null &&
             _notificationPrefsVersion == versionAtStart &&
             _userSyncKey(client) == expectedUserKey &&
-            !_hasUnsyncedNotificationPrefs) {
+            !hasUnsyncedNotificationPrefsFor(expectedUserKey)) {
           await _seerrPrefs.setNotifyOnNewRequests(newRequests);
         }
         final libAdded = _readBool(data, 'notifyOnLibraryAdded');
         if (libAdded != null &&
             _notificationPrefsVersion == versionAtStart &&
             _userSyncKey(client) == expectedUserKey &&
-            !_hasUnsyncedNotificationPrefs) {
+            !hasUnsyncedNotificationPrefsFor(expectedUserKey)) {
           await _seerrPrefs.setNotifyOnLibraryAdded(libAdded);
         }
         final issues = _readBool(data, 'notifyOnIssues');
         if (issues != null &&
             _notificationPrefsVersion == versionAtStart &&
             _userSyncKey(client) == expectedUserKey &&
-            !_hasUnsyncedNotificationPrefs) {
+            !hasUnsyncedNotificationPrefsFor(expectedUserKey)) {
           await _seerrPrefs.setNotifyOnIssues(issues);
         }
         final newMedia = _readBool(data, 'notifyOnNewMedia');
         if (newMedia != null &&
             _notificationPrefsVersion == versionAtStart &&
             _userSyncKey(client) == expectedUserKey &&
-            !_hasUnsyncedNotificationPrefs) {
+            !hasUnsyncedNotificationPrefsFor(expectedUserKey)) {
           await _seerrPrefs.setNotifyOnNewMedia(newMedia);
         }
       }
     } catch (_) {}
   }
 
-  Future<bool> pushNotificationPrefs(MediaServerClient client) async {
-    _notificationPrefsVersion++;
-    _hasUnsyncedNotificationPrefs = true;
+  Future<bool> pushNotificationPrefs(
+    MediaServerClient client, {
+    bool isUserEdit = true,
+  }) async {
+    final userKey = _userSyncKey(client);
+    if (isUserEdit) {
+      markNotificationPrefsModified(client: client);
+    }
     _notificationPushRetryTimer?.cancel();
 
+    if (_activeNotificationPush != null) {
+      _notificationPushQueued = true;
+      await _activeNotificationPush;
+      if (_notificationPushQueued) {
+        _notificationPushQueued = false;
+        return pushNotificationPrefs(client, isUserEdit: false);
+      }
+      return !hasUnsyncedNotificationPrefsFor(userKey);
+    }
+
+    final pushFuture = _doPushNotificationPrefs(client, userKey);
+    _activeNotificationPush = pushFuture;
+    try {
+      return await pushFuture;
+    } finally {
+      _activeNotificationPush = null;
+    }
+  }
+
+  Future<bool> _doPushNotificationPrefs(
+    MediaServerClient client,
+    String userKey,
+  ) async {
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
-      _scheduleNotificationPushRetry(client);
+      if (hasUnsyncedNotificationPrefsFor(userKey)) {
+        _scheduleNotificationPushRetry(client);
+      }
       return false;
     }
 
@@ -1072,7 +1144,9 @@ class PluginSyncService extends ChangeNotifier {
       final ep = await moonbaseEndpoint(client, _dio);
       if (ep == null) {
         debugPrint('PluginSync: skip pushNotificationPrefs, no auth headers');
-        _scheduleNotificationPushRetry(client);
+        if (hasUnsyncedNotificationPrefsFor(userKey)) {
+          _scheduleNotificationPushRetry(client);
+        }
         return false;
       }
       final headers = ep.headers;
@@ -1089,10 +1163,12 @@ class PluginSyncService extends ChangeNotifier {
           headers: {...headers, 'Content-Type': 'application/json'},
         ),
       );
-      _hasUnsyncedNotificationPrefs = false;
+      _setUnsyncedNotificationPrefs(userKey, false);
       return true;
     } catch (_) {
-      _scheduleNotificationPushRetry(client);
+      if (hasUnsyncedNotificationPrefsFor(userKey)) {
+        _scheduleNotificationPushRetry(client);
+      }
       return false;
     }
   }
@@ -1100,8 +1176,13 @@ class PluginSyncService extends ChangeNotifier {
   void _scheduleNotificationPushRetry(MediaServerClient client) {
     _notificationPushRetryTimer?.cancel();
     _notificationPushRetryTimer = Timer(const Duration(seconds: 5), () {
-      if (_hasUnsyncedNotificationPrefs && _pluginAvailable) {
-        unawaited(pushNotificationPrefs(client));
+      final userKey = _userSyncKey(client);
+      if (hasUnsyncedNotificationPrefsFor(userKey)) {
+        if (_pluginAvailable) {
+          unawaited(pushNotificationPrefs(client, isUserEdit: false));
+        } else {
+          _scheduleNotificationPushRetry(client);
+        }
       }
     });
   }

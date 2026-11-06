@@ -473,7 +473,10 @@ class SessionRepository {
           await GetIt.instance<PushMessagingService>()
               .registerWithCurrentToken();
         }
-        await _pluginSyncService.pushNotificationPrefs(client);
+        await _pluginSyncService.pushNotificationPrefs(
+          client,
+          isUserEdit: false,
+        );
       } catch (_) {}
     }
 
