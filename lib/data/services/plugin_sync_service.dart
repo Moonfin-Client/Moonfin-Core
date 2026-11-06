@@ -1132,6 +1132,7 @@ class PluginSyncService extends ChangeNotifier {
     MediaServerClient client,
     String userKey,
   ) async {
+    final versionAtStart = _notificationPrefsVersion;
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
       if (hasUnsyncedNotificationPrefsFor(userKey)) {
@@ -1163,7 +1164,10 @@ class PluginSyncService extends ChangeNotifier {
           headers: {...headers, 'Content-Type': 'application/json'},
         ),
       );
-      _setUnsyncedNotificationPrefs(userKey, false);
+      // Only clear unsynced state if no newer edits occurred while this POST was in flight.
+      if (_notificationPrefsVersion == versionAtStart) {
+        _setUnsyncedNotificationPrefs(userKey, false);
+      }
       return true;
     } catch (_) {
       if (hasUnsyncedNotificationPrefsFor(userKey)) {
