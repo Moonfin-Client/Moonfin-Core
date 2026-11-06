@@ -18,6 +18,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.text.Cue
 import androidx.media3.extractor.text.SubtitleParser
 import androidx.media3.extractor.text.subrip.SubripParser
+import androidx.media3.extractor.text.tx3g.Tx3gParser
 import androidx.media3.extractor.text.webvtt.WebvttParser
 import androidx.media3.ui.SubtitleView
 import org.junit.Assert.assertEquals
@@ -172,6 +173,25 @@ class SecondarySubtitleRenderingTest {
         }
         val custom = cue("Custom", 0.17f)
         assertTrue(custom === primaryCueWithoutDefaultMargin(custom, srt))
+    }
+
+    @Test
+    fun movTextWithoutPlacementSitsAtTheBottomLikeSrt() {
+        val tx3g = Format.Builder().setSampleMimeType(MimeTypes.APPLICATION_TX3G).build()
+        val extracted = tx3g.buildUpon().setSampleMimeType(MimeTypes.APPLICATION_MEDIA3_CUES)
+            .setCodecs(MimeTypes.APPLICATION_TX3G).build()
+        // A tx3g sample is the text's length followed by the text.
+        val parsed = decode(Tx3gParser(emptyList()), "\u0000\u0007Primary").single()
+        assertEquals(0.85f, parsed.line, 0f)
+        val srt = decode(SubripParser(), "1\n00:00:00,000 --> 00:00:05,000\nPrimary\n")
+        val expected = Scene().configurePrimary().apply { show(srt) }.bounds().first
+        for (format in listOf(tx3g, extracted)) {
+            val f = Scene().configurePrimary()
+            f.show(listOf(primaryCueWithoutDefaultMargin(parsed, format)))
+            assertEquals(expected.bottom.toFloat(), f.bounds().first.bottom.toFloat(), 2f)
+        }
+        val custom = cue("Custom", 0.4f)
+        assertTrue(custom === primaryCueWithoutDefaultMargin(custom, tx3g))
     }
 
     @Test
