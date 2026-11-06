@@ -168,6 +168,11 @@ class PluginSyncService extends ChangeNotifier {
   /// Set while sign-in is still working out what the server holds.
   bool _readingProfileOnSignIn = false;
 
+  /// Generation counter to ensure pending notification fetches do not overwrite
+  /// newer local user edits, and to deduplicate concurrent fetch requests.
+  int _notificationPrefsVersion = 0;
+  Future<void>? _activeNotificationPrefsFetch;
+
   PluginSyncService(this._prefs, this._store, {@visibleForTesting Dio? dio})
     : _dio = dio ?? Dio(pluginRequestOptions()) {
     // An injected Dio brings its own adapter, so only the one built here needs
@@ -952,6 +957,23 @@ class PluginSyncService extends ChangeNotifier {
   Future<void> fetchNotificationPrefs(MediaServerClient client) async {
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
 
+    if (_activeNotificationPrefsFetch != null) {
+      return _activeNotificationPrefsFetch;
+    }
+
+    final future = _doFetchNotificationPrefs(client);
+    _activeNotificationPrefsFetch = future;
+    try {
+      await future;
+    } finally {
+      if (_activeNotificationPrefsFetch == future) {
+        _activeNotificationPrefsFetch = null;
+      }
+    }
+  }
+
+  Future<void> _doFetchNotificationPrefs(MediaServerClient client) async {
+    final versionAtStart = _notificationPrefsVersion;
     try {
       final ep = await moonbaseEndpoint(client, _dio);
       if (ep == null) return;
@@ -961,22 +983,25 @@ class PluginSyncService extends ChangeNotifier {
         options: Options(headers: ep.headers),
       );
 
+      // If a local edit occurred while the request was in flight, discard the stale fetch response.
+      if (_notificationPrefsVersion != versionAtStart) return;
+
       final data = response.data;
       if (data is Map<String, dynamic>) {
         final newRequests = _readBool(data, 'notifyOnNewRequests');
-        if (newRequests != null) {
+        if (newRequests != null && _notificationPrefsVersion == versionAtStart) {
           await _seerrPrefs.setNotifyOnNewRequests(newRequests);
         }
         final libAdded = _readBool(data, 'notifyOnLibraryAdded');
-        if (libAdded != null) {
+        if (libAdded != null && _notificationPrefsVersion == versionAtStart) {
           await _seerrPrefs.setNotifyOnLibraryAdded(libAdded);
         }
         final issues = _readBool(data, 'notifyOnIssues');
-        if (issues != null) {
+        if (issues != null && _notificationPrefsVersion == versionAtStart) {
           await _seerrPrefs.setNotifyOnIssues(issues);
         }
         final newMedia = _readBool(data, 'notifyOnNewMedia');
-        if (newMedia != null) {
+        if (newMedia != null && _notificationPrefsVersion == versionAtStart) {
           await _seerrPrefs.setNotifyOnNewMedia(newMedia);
         }
       }
@@ -984,6 +1009,7 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   Future<void> pushNotificationPrefs(MediaServerClient client) async {
+    _notificationPrefsVersion++;
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
       return;

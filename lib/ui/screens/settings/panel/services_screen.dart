@@ -50,6 +50,7 @@ class _ServicesScreenState extends State<_ServicesScreen> {
             listenable: Listenable.merge([
               achievementsService,
               GetIt.instance<PluginSyncService>(),
+              GetIt.instance<UserPreferences>(),
             ]),
             builder: (context, _) => _buildList(l10n, achievementsService),
           ),

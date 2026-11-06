@@ -635,6 +635,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    ref.watch(userPreferencesProvider);
     final kidsMode = ref.watch(kidsModeProvider);
     // Not for a server Moonfin can't administer (Silo has its own web app).
     final showAdmin =
