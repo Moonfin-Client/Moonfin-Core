@@ -1025,7 +1025,7 @@
             }
         }
     },
-    "view": "Näytä",
+    "view": "Näkymä",
     "@view": {
         "description": "Action button label for viewing a photo"
     },
@@ -4513,7 +4513,7 @@
     "select": "Valitse",
     "send": "Lähetä",
     "sessions": "Istunnot",
-    "set": "Sarja",
+    "set": "Aseta",
     "status": "Tila",
     "stop": "Pysäytä",
     "streaming": "Suoratoisto",
@@ -7303,7 +7303,7 @@
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. \tPoista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.",
+    "expandedTabsSubtitle": "Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. Poista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
@@ -9797,7 +9797,7 @@
     "@personalRatingMine": {
         "description": "Label under the viewer's own rating in the ratings row."
     },
-    "increase": "Lisää",
+    "increase": "Lisäys",
     "@increase": {
         "description": "Action that increases a numeric personal rating."
     },
@@ -12127,7 +12127,7 @@
     "@achievementsStatsServer": {
         "description": "Section of figures covering every user"
     },
-    "achievementsStatsClock": "Koska katsoit",
+    "achievementsStatsClock": "Kun katsot",
     "@achievementsStatsClock": {
         "description": "Header above the hour of day chart"
     },
@@ -16629,5 +16629,673 @@
                 "example": "Seerr"
             }
         }
+    },
+    "noOtherAudioTracks": "Ei muita ääniraitoja",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "playerMatchingDisplayRate": "Näytön sovittaminen {fps} fps:ään…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "radarrCalendarRow": "Tulevat elokuvat (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Tulevat TV-ohjelmat (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Tulevat julkaisut",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Radarr ja Sonarr kalenterit",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Radarr kalenteri",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Sonarr kalenteri",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Elokuvateatteri",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Digitaalinen",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Fyysinen",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Tulevat tapahtumakalenteri",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Näytä Radarrin/Sonarrin tulevat kalenterit.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "enableRadarrCalendar": "Ota Radarrin tulevien tapahtumien kalenteri käyttöön",
+    "@enableRadarrCalendar": {
+        "description": "Turns on the Radarr calendar home row"
+    },
+    "radarrCalendarShowCinema": "Näytä tulevat elokuvajulkaisut",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Näytä tulevat digitaaliset julkaisut",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Näytä tulevat fyysiset julkaisut",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "calendarShowReleaseDate": "Näytä julkaisupäivä aloitusnäytössä",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Piilota palvelimella jo olevat elokuvat",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "enableSonarrCalendar": "Ota Sonarrin tulevien tapahtumien kalenteri käyttöön",
+    "@enableSonarrCalendar": {
+        "description": "Turns on the Sonarr calendar home row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Näytä jakson tiedot",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Piilota palvelimella jo olevat jaksot",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Yhdistä Sonarr- ja Radarr-kalenterit",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "mediaBarSourceNewReleases": "Uudet kaudet ja jaksot",
+    "@mediaBarSourceNewReleases": {
+        "description": "Media bar source: series with episodes that aired recently"
+    },
+    "mediaBarNewReleaseBanner": "Uuden julkaisun banneri",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags series in the media bar when new episodes aired recently"
+    },
+    "mediaBarNewReleaseBannerDescription": "Merkitse sarjat, joiden uusi kausi tai uudet jaksot on äskettäin alkanut.",
+    "mediaBarNewReleaseDays": "Uuden julkaisun aikataulu",
+    "@mediaBarNewReleaseDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Kuinka kauan jakson esittämisen jälkeen sitä pidetään vielä uutena.",
+    "mediaBarNewSeries": "Uusi sarja",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Uusi kausi",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Uudet jaksot",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "mdblistWatchingNow": "Katsomassa MDBListissä",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "mdblistWatchingNowDescription": "Näytä, mitä MDBList-käyttäjät katsovat parhaillaan",
+    "@mdblistWatchingNowDescription": {
+        "description": "Description for the Watching on MDBList setting"
+    },
+    "watchingNowWatchersCount": "{count} katselee",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchingNowLiveSummary": "{users} katsomassa juuri nyt · {movies} elokuvaa · {shows} sarjaa",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} katsoi tänään · {movies} elokuvaa · {shows} sarjaa",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatched": "Sen jälkeen, kun katsoit",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "Koska katsoit",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "Koska katsoit \"{title}\"",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Koska katsoit rivi {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Näytä rivit, jotka olet katsonut",
+    "displaySinceYouWatchedRowsSubtitle": "Näytä ja muokkaa katsomiasi rivejä Etusivun osioissa.",
+    "sinceYouWatchedSource": "Suosituksen lähde",
+    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
+    "sinceYouWatchedSourceLocal": "Moonfin suosittelee",
+    "sinceYouWatchedSourceServer": "Jellyfin suosittelee",
+    "sinceYouWatchedSourceOnline": "TMDb:n samankaltaisuus",
+    "sinceYouWatchedSourceType": "Lähdetyyppi",
+    "sinceYouWatchedSourceTypeDescription": "Valitse suositeltavien tuotteiden tyyppi",
+    "sinceYouWatchedSourceItem": "Lähdekohde",
+    "sinceYouWatchedSourceItemDescription": "Valitse, mihin lähde-eriin suositukset perustuvat",
+    "sinceYouWatchedRecentlyWatched": "Viimeksi katsotut",
+    "sinceYouWatchedNumRows": "Lisättävien rivien määrä",
+    "sinceYouWatchedNumRowsDescription": "Valitse, kuinka monta Siitä lähtien, kun katsoit -riviä haluat näyttää (1–5)",
+    "sinceYouWatchedIncludeWatched": "Sisällytä aiemmin katsotut",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Sisällytä katsotut kohteet suosituksiin",
+    "cadenceSlowdown": "Tasainen 24 fps 60 Hz:n televisiossa",
+    "cadenceSlowdownSubtitle": "Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.",
+    "cadenceTipTitle": "Ota käyttöön kuvataajuuden täsmäys",
+    "cadenceTipMessage": "Tätä videota ei voi toistaa sujuvasti televisiosi nykyisellä virkistystaajuudella. Avaa Apple TV:ssä Asetukset > Video ja ääni > Sovita sisältö ja ota käyttöön Sovita kuvataajuus.",
+    "cadenceTipSlowdownHint": "Tai ota Moonfin-ohjelmassa käyttöön ”Smooth 24 fps on a 60 Hz TV” -asetus kohdassa Playback > Quality & Decoding.",
+    "watchPartyResumeAt": "Jatka {time}",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartFromBeginning": "Aloita alusta",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeWhere": "Siitä, mihin {name} jäi, on pisimmälle päässyt kukaan täällä.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeEarliest": "Aikaisin piste, johon kukaan täällä on päässyt.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "watchPartyResumeNotStarted": "{count, plural, =1{1 kukaan ei ole vielä aloittanut sitä.} other{{count} ihmiset eivät ole vielä aloittaneet sitä.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoServerCompatibilityCheck": "Palvelimen yhteensopivuustarkistus",
+    "@playbackInfoServerCompatibilityCheck": {
+        "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+    },
+    "playbackInfoBitrateUnavailable": "Bittinopeutta ei saatavilla",
+    "@playbackInfoBitrateUnavailable": {
+        "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+    },
+    "playbackInfoNoteLiveRelay": "Palvelin välittää kanavan muuntamatta sitä.",
+    "@playbackInfoNoteLiveRelay": {
+        "description": "Playback information note under the play method for a live TV channel the server passes through"
+    },
+    "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+    "@playbackInfoFrameRateFrom": {
+        "description": "Playback information frame rate with where the player got it",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateSourceHeader": "stream header",
+    "@playbackInfoRateSourceHeader": {
+        "description": "Playback information: the frame rate came from the video stream's own header"
+    },
+    "playbackInfoRateSourceMeasured": "mitattu",
+    "@playbackInfoRateSourceMeasured": {
+        "description": "Playback information: the frame rate was measured from the video's frame timing"
+    },
+    "playbackInfoRateSourceServer": "palvelin",
+    "@playbackInfoRateSourceServer": {
+        "description": "Playback information: the frame rate came from the server's description of the media"
+    },
+    "playbackInfoServerFrameRate": "Palvelimen kuvanpäivitysnopeus",
+    "@playbackInfoServerFrameRate": {
+        "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+    },
+    "playbackInfoScan": "Skannaa",
+    "@playbackInfoScan": {
+        "description": "Playback information row: whether the video is progressive or interlaced"
+    },
+    "playbackInfoProgressive": "Progressiivinen",
+    "@playbackInfoProgressive": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoInterlaced": "Lomitettu",
+    "@playbackInfoInterlaced": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoRepeatedFields": "Telecined (toistuvat kentät)",
+    "@playbackInfoRepeatedFields": {
+        "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+    },
+    "playbackInfoHdmiOutput": "HDMI-lähtö",
+    "@playbackInfoHdmiOutput": {
+        "description": "Playback information row: the display mode the device is sending"
+    },
+    "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+    "@playbackInfoDisplayMode": {
+        "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+        "placeholders": {
+            "width": {
+                "type": "String"
+            },
+            "height": {
+                "type": "String"
+            },
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateCorrections": "Säätökorjaukset",
+    "@playbackInfoRateCorrections": {
+        "description": "Playback information row: how many times live TV changed the display rate after it started"
+    },
+    "playbackInfoAudioOutput": "Lähtö",
+    "@playbackInfoAudioOutput": {
+        "description": "Playback information row in the Audio section: how the audio leaves the device"
+    },
+    "playbackInfoPassthroughOf": "Läpivienti ({codec})",
+    "@playbackInfoPassthroughOf": {
+        "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDecodedTo": "Koodattu ({channels})",
+    "@playbackInfoDecodedTo": {
+        "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfileUnknown": "Palvelin ei pystynyt vahvistamaan tämän lähetyksen {codec}-profiilia.",
+    "@playbackInfoWhyVideoProfileUnknown": {
+        "description": "Playback information reason when the server could not determine the video profile",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "calendar": "Kalenteri",
+    "@calendar": {
+        "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+    },
+    "showCalendarButton": "Näytä kalenteri painike",
+    "@showCalendarButton": {
+        "description": "Settings toggle that adds the Calendar button to the navigation bar"
+    },
+    "showCalendarButtonSubtitle": "Näytä tulevien jaksojen ja elokuvien kalenteri navigointipalkissa",
+    "@showCalendarButtonSubtitle": {
+        "description": "Subtitle of the Show Calendar Button setting"
+    },
+    "calendarFullCalendar": "Koko kalenteri",
+    "@calendarFullCalendar": {
+        "description": "Button on the calendar that opens the month grid"
+    },
+    "calendarUpcoming": "Tulevat tapahtumat",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarRecentlyAired": "Äskettäin esitetty",
+    "@calendarRecentlyAired": {
+        "description": "Calendar tab listing episodes and movies from the last few days"
+    },
+    "calendarRemindMe": "Muistuta minua",
+    "@calendarRemindMe": {
+        "description": "Button that asks for a notification when an episode or movie lands in the library"
+    },
+    "calendarReminderSet": "Muistutus asetukset",
+    "@calendarReminderSet": {
+        "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+    },
+    "calendarReminderFailed": "Muistutusta ei voitu tallentaa",
+    "@calendarReminderFailed": {
+        "description": "Message when setting or removing a calendar reminder fails"
+    },
+    "calendarReadyToWatch": "Valmista katsottavaksi",
+    "@calendarReadyToWatch": {
+        "description": "Calendar row of recent episodes and movies that are already in the library"
+    },
+    "calendarComingUpThisWeek": "Tällä viikolla ohjelmassa",
+    "@calendarComingUpThisWeek": {
+        "description": "Calendar row of episodes and movies airing in the next seven days"
+    },
+    "calendarNothingUpcoming": "Ei tulossa mitään",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarNothingRecent": "Viime aikoina ei ole lähetetty mitään",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarEmptyDay": "Tänään ei ole mitään",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarStartsIn": "Aloittaa",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarUnitDays": "päivää",
+    "@calendarUnitDays": {
+        "description": "Unit under the days number of the calendar countdown"
+    },
+    "calendarUnitHours": "hr",
+    "@calendarUnitHours": {
+        "description": "Unit under the hours number of the calendar countdown"
+    },
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarDayAtTime": "{day} at {time}",
+    "@calendarDayAtTime": {
+        "description": "When an episode airs, like Today at 9:00 PM",
+        "placeholders": {
+            "day": {
+                "type": "String",
+                "example": "Today"
+            },
+            "time": {
+                "type": "String",
+                "example": "9:00 PM"
+            }
+        }
+    },
+    "calendarAllDay": "Koko päivän",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "calendarBadgeSeriesPremiere": "Sarjan ensiesitys",
+    "@calendarBadgeSeriesPremiere": {
+        "description": "Tag on the first episode of a series"
+    },
+    "calendarBadgeSeasonPremiere": "Uusi kausi",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "calendarBadgeSeasonFinale": "Finaali",
+    "@calendarBadgeSeasonFinale": {
+        "description": "Tag on the last episode of a season"
+    },
+    "calendarBadgeMidseasonFinale": "Kauden puolivälin finaali",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarBadgeSeriesFinale": "Sarjan finaali",
+    "@calendarBadgeSeriesFinale": {
+        "description": "Tag on the last episode of a series"
+    },
+    "calendarBadgeNew": "UUTTA",
+    "@calendarBadgeNew": {
+        "description": "Short tag on a month grid day that has a premiere"
+    },
+    "calendarStatusInLibrary": "Kirjastossa",
+    "@calendarStatusInLibrary": {
+        "description": "Tag on a calendar entry that is already on the server"
+    },
+    "calendarNotMonitored": "Ei seurata",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarMovieDetails": "Elokuvan tiedot",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarProblemAdminsOnly": "Kalenteri on rajoitettu tämän palvelimen järjestelmänvalvojille.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "calendarProblemNeedsSeerr": "Järjestelmänvalvojan on kirjauduttava Seerr-palveluun Moonfinissä, ennen kuin kalenteri voidaan ladata.",
+    "@calendarProblemNeedsSeerr": {
+        "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+    },
+    "calendarProblemNotConfigured": "Sonarr- tai Radarr-palvelinta ei ole vielä liitetty.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarProblemFailed": "Kalenteria ei voitu ladata.",
+    "@calendarProblemFailed": {
+        "description": "Calendar message when loading fails"
+    },
+    "calendarSettingsSubtitle": "Kalenterin tyylit, suodattimet ja toiminnot",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "calendarSettingsView": "Näkymä",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsStyle": "Kalenterin tyyli",
+    "@calendarSettingsStyle": {
+        "description": "Calendar setting that picks what the Calendar button opens"
+    },
+    "calendarSettingsStyleDescription": "Mitä ”Kalenteri”-painike avaa. Kummassakin koko kuukausi avautuu yhdellä painalluksella.",
+    "@calendarSettingsStyleDescription": {
+        "description": "Description of the Calendar style setting"
+    },
+    "calendarSettingsStyleAgenda": "Esityslista",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "calendarSettingsStyleCountdown": "Lähtölaskenta",
+    "@calendarSettingsStyleCountdown": {
+        "description": "Calendar style that counts down to the next episode or movie"
+    },
+    "calendarSettingsWeekStart": "Viikko alkaa",
+    "@calendarSettingsWeekStart": {
+        "description": "Calendar setting for the first day of the week in the month grid"
+    },
+    "calendarSettingsWhatShows": "Mitä ohjelmia",
+    "@calendarSettingsWhatShows": {
+        "description": "Calendar settings section header for which episodes and movies the calendar lists"
+    },
+    "calendarSettingsScope": "Sarja",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsScopeDescription": "My Shows palvelu tallentaa sarjat, jotka olet merkinnyt suosikeiksi tai joiden katsomisen olet aloittanut",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "calendarSettingsScopeEverything": "Kaikki",
+    "@calendarSettingsScopeEverything": {
+        "description": "Calendar Show choice that lists every episode and movie"
+    },
+    "calendarSettingsScopeMyShows": "Minun sarjat",
+    "@calendarSettingsScopeMyShows": {
+        "description": "Calendar Show choice that lists only series the user favorited or started watching"
+    },
+    "calendarSettingsUnmonitored": "Sisällytä ei seuratut",
+    "@calendarSettingsUnmonitored": {
+        "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+    },
+    "calendarSettingsUnmonitoredSubtitle": "Luettele myös ne jaksot ja elokuvat, joita Sonarr ja Radarr eivät ole asetettuja lataamaan",
+    "@calendarSettingsUnmonitoredSubtitle": {
+        "description": "Subtitle of the Include unmonitored calendar setting"
+    },
+    "calendarSettingsSpecials": "Erikoisjaksot",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsSpecialsSubtitle": "Kauden 0 jaksot, kuten lisämateriaalia ja juhlapyhäerikoisjaksot",
+    "@calendarSettingsSpecialsSubtitle": {
+        "description": "Subtitle of the Specials calendar setting"
+    },
+    "calendarSettingsBadges": "”Premiere”- ja ”finale” tunnisteet",
+    "@calendarSettingsBadges": {
+        "description": "Calendar setting that marks premieres and finales on the calendar"
+    },
+    "calendarSettingsBadgesSubtitle": "Sarjojen ensiesitykset, finaalit ja uudet kaudet",
+    "@calendarSettingsBadgesSubtitle": {
+        "description": "Subtitle of the Premiere and finale tags calendar setting"
+    },
+    "calendarSettingsColorBy": "Väritä",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+    },
+    "calendarSettingsColorByDescription": "Tyyppi kertoo, ovatko kyseessä sarjan jaksot vai elokuvat. Tila kertoo, mitä kirjastossasi on, mitä on tulossa tai mitä puuttuu.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "calendarSettingsColorByType": "Tyyppi",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "calendarSettingsImageType": "Kortin kuva",
+    "@calendarSettingsImageType": {
+        "description": "Calendar setting for the artwork on the Countdown rows"
+    },
+    "calendarSettingsImageTypeDescription": "Countdown rivien kuvitus",
+    "@calendarSettingsImageTypeDescription": {
+        "description": "Description of the Card image calendar setting"
+    },
+    "calendarSettingsSpoilerSafe": "Ei sisällä spoilereita",
+    "@calendarSettingsSpoilerSafe": {
+        "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Piilota niiden sarjojen jaksonimikkeet ja kuvat, joiden katsomisessa olet jäljessä",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "calendarSettingsActions": "Toimenpiteet",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "calendarSettingsSelectAction": "Kohteen valitseminen",
+    "@calendarSettingsSelectAction": {
+        "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+    },
+    "calendarSettingsSelectActionDescription": "Mitä ”OK” painike tai napautus tekee kohteelle, joka on jo kirjastossasi",
+    "@calendarSettingsSelectActionDescription": {
+        "description": "Description of the Selecting an item calendar setting"
+    },
+    "calendarSettingsSelectDetails": "Avaa tiedot",
+    "@calendarSettingsSelectDetails": {
+        "description": "Selecting an item choice that opens the details page"
+    },
+    "calendarSettingsSelectPlay": "Toista kirjastossa ollessa",
+    "@calendarSettingsSelectPlay": {
+        "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+    },
+    "calendarSettingsRequestButton": "Pyydä painike",
+    "@calendarSettingsRequestButton": {
+        "description": "Calendar setting that shows the request button on missing titles"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Näytä ”Pyydä Seerriltä” painike puuttuvien elokuvien ja kausien kohdalla",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "calendarSettingsReminders": "Muistutukset",
+    "@calendarSettingsReminders": {
+        "description": "Calendar setting that offers the Remind me button"
+    },
+    "calendarSettingsRemindersSubtitle": "Näytä ”Muistuta minua” toiminto, joka lähettää ilmoituksen, kun teos lisätään kirjastoosi",
+    "@calendarSettingsRemindersSubtitle": {
+        "description": "Subtitle of the Reminders calendar setting"
+    },
+    "calendarRowSeeAll": "Katso kaikki kortti",
+    "@calendarRowSeeAll": {
+        "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+    },
+    "calendarRowSeeAllSubtitle": "Lopeta seuraavat rivit kortilla, joka avaa kalenterin",
+    "@calendarRowSeeAllSubtitle": {
+        "description": "Subtitle of the See All card setting"
+    },
+    "showNextAirDate": "Seuraava lähetyspäivä lopussa",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "showNextAirDateSubtitle": "Jos seuraava jakso ei ole vielä kirjastossasi, jakson lopussa näkyvässä kortissa kerrotaan, milloin se lähetetään",
+    "@showNextAirDateSubtitle": {
+        "description": "Subtitle of the Next air date at the end setting"
     }
 }
