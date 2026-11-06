@@ -922,13 +922,23 @@ jobs:
           import glob
           import json
           import os
+          import secrets
           import xml.etree.ElementTree as ET
 
           passed = failed = 0
           failures = []
+          # What each failure said, for the log. The JSON only keeps names.
+          details = []
+
+          def head(text, lines):
+              text = (text or '').strip().splitlines()
+              return '\n'.join(text[:lines] + ([f'... {len(text) - lines} more lines'] if len(text) > lines else []))
+
           for path in sorted(glob.glob('/tmp/test-results/*.jsonl')):
               suite = os.path.basename(path)[:-6]
               names = {}
+              errors = {}
+              outcomes = {}
               for line in open(path):
                   line = line.strip()
                   if not line.startswith('{'):
@@ -939,12 +949,31 @@ jobs:
                       continue
                   if event.get('type') == 'testStart':
                       names[event['test']['id']] = event['test'].get('name', '?')
-                  elif event.get('type') == 'testDone' and not event.get('hidden'):
-                      if event.get('result') == 'success':
-                          passed += 1
+                  elif event.get('type') == 'error':
+                      errors.setdefault(event.get('testID'), []).append(
+                          head(event.get('error'), 40) + '\n' + head(event.get('stackTrace'), 15))
+                  elif event.get('type') == 'testDone':
+                      if event.get('result') != 'success':
+                          outcomes[event.get('testID')] = 'failed'
                       else:
-                          failed += 1
-                          failures.append(f"{suite}: {names.get(event.get('testID'), '?')}")
+                          outcomes[event.get('testID')] = 'hidden' if event.get('hidden') else 'passed'
+              # A test can still fail after it reported success, from a timer
+              # or its teardown. That only shows as error events, and it fails
+              # the run, so it counts as a failure here too.
+              for test_id in list(outcomes) + [t for t in errors if t not in outcomes]:
+                  outcome = outcomes.get(test_id)
+                  if test_id not in errors and outcome != 'failed':
+                      if outcome == 'passed':
+                          passed += 1
+                      continue
+                  failed += 1
+                  label = f"{suite}: {names.get(test_id, '?')}"
+                  if outcome is None:
+                      label += ' (did not finish)'
+                  elif outcome != 'failed':
+                      label += ' (failed after it completed)'
+                  failures.append(label)
+                  details.append((label, '\n\n'.join(errors.get(test_id, ['No error was reported.']))))
 
           # Gradle writes its results under the repo root build directory.
           for path in sorted(glob.glob('build/*/test-results/*/TEST-*.xml')):
@@ -952,11 +981,28 @@ jobs:
               for case in ET.parse(path).getroot().iter('testcase'):
                   if case.find('skipped') is not None:
                       continue
-                  if case.find('failure') is None and case.find('error') is None:
+                  problem = case.find('failure')
+                  if problem is None:
+                      problem = case.find('error')
+                  if problem is None:
                       passed += 1
                   else:
                       failed += 1
-                      failures.append(f"{suite}: {case.get('classname', '?').rsplit('.', 1)[-1]}.{case.get('name', '?')}")
+                      label = f"{suite}: {case.get('classname', '?').rsplit('.', 1)[-1]}.{case.get('name', '?')}"
+                      failures.append(label)
+                      details.append((label, head(problem.get('message'), 40) + '\n' + head(problem.text, 15)))
+
+          # Test output can contain lines that read as workflow commands
+          # (an early ::endgroup:: for one), so commands are off while it prints.
+          token = secrets.token_hex(16)
+          for label, text in details[:50]:
+              print(f'::group::{label}')
+              print(f'::stop-commands::{token}')
+              print(text)
+              print(f'::{token}::')
+              print('::endgroup::')
+          if len(details) > 50:
+              print(f'{len(details) - 50} more failures, see the raw-test-output artifact')
 
           analyzer = []
           try:
@@ -1000,6 +1046,19 @@ jobs:
           bad = results['failed'] or results['analyzer_errors'] or results['run_status']
           sys.exit(1 if bad else 0)
           EOF
+
+      # Everything the reporters wrote, for a failure the log doesn't explain.
+      # After the gate, since the steps before it don't fail on a test failure.
+      - name: Upload raw test output
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: raw-test-output-${{ matrix.suite }}
+          path: |
+            /tmp/test-results/*.jsonl
+            build/*/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
 
   # Merges the per-suite results into the one test-results.json the PR comment
   # reads. A suite that died before uploading counts as a failed run.
@@ -1107,11 +1166,20 @@ jobs:
           import glob
           import json
           import os
+          import secrets
           import subprocess
 
           root = os.environ['RUNNER_TEMP'] + '/apple-tests'
           passed = failed = 0
           failures = []
+          # What each failure said, for the log. The JSON only keeps names.
+          details = []
+
+          def messages(node):
+              found = [node.get('name', '')] if node.get('nodeType') == 'Failure Message' else []
+              for child in node.get('children', []):
+                  found += messages(child)
+              return found
 
           def walk(node, suite, platform):
               global passed, failed
@@ -1122,7 +1190,9 @@ jobs:
                       passed += 1
                   elif node.get('result') == 'Failed':
                       failed += 1
-                      failures.append(f"{platform}: {suite}.{node.get('name', '?')}")
+                      label = f"{platform}: {suite}.{node.get('name', '?')}"
+                      failures.append(label)
+                      details.append((label, '\n'.join(messages(node)) or 'No failure message was reported.'))
               for child in node.get('children', []):
                   walk(child, suite, platform)
 
@@ -1134,6 +1204,18 @@ jobs:
               if report.returncode == 0:
                   for node in json.loads(report.stdout).get('testNodes', []):
                       walk(node, '?', platform)
+
+          # Test output can contain lines that read as workflow commands
+          # (an early ::endgroup:: for one), so commands are off while it prints.
+          token = secrets.token_hex(16)
+          for label, text in details[:50]:
+              print(f'::group::{label}')
+              print(f'::stop-commands::{token}')
+              print(text)
+              print(f'::{token}::')
+              print('::endgroup::')
+          if len(details) > 50:
+              print(f'{len(details) - 50} more failures, see the raw-test-output-apple artifact')
 
           try:
               run_status = int(open(root + '/run-status').read().strip())
@@ -1169,6 +1251,17 @@ jobs:
           results = json.load(open(os.environ['RUNNER_TEMP'] + '/apple-tests/test-results.json'))
           sys.exit(1 if results['failed'] or results['run_status'] else 0)
           EOF
+
+      # The result bundles, which hold the full logs and attachments. After the
+      # gate, since the steps before it don't fail on a test failure.
+      - name: Upload raw test output
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: raw-test-output-apple
+          path: ${{ runner.temp }}/apple-tests/*.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
 
   # What the PR Comment workflow reads to build its comment. always() keeps this
   # running when a platform job fails, which is the case the comment most needs
