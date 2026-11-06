@@ -20584,6 +20584,36 @@ abstract class AppLocalizations {
   /// **'Use 24-hour time formatting wherever the clock is shown'**
   String get settingsTwentyFourHourClockSubtitle;
 
+  /// No description provided for @settingsDateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Format'**
+  String get settingsDateFormat;
+
+  /// No description provided for @settingsDateFormatDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose between month-day, day-month, or locale default for calendar and release dates'**
+  String get settingsDateFormatDescription;
+
+  /// No description provided for @dateFormatSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Locale Default'**
+  String get dateFormatSystem;
+
+  /// No description provided for @dateFormatMonthDay.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/DD (Nov 10)'**
+  String get dateFormatMonthDay;
+
+  /// No description provided for @dateFormatDayMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'DD/MM (10 Nov)'**
+  String get dateFormatDayMonth;
+
   /// No description provided for @settingsShowShuffleButtonInNavigation.
   ///
   /// In en, this message translates to:

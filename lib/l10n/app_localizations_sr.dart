@@ -11779,6 +11779,22 @@ class AppLocalizationsSr extends AppLocalizations {
       'Користи 24-часовни формат времена свуда где се приказује сат';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'Прикажи дугме за насумичну репродукцију у траци за навигацију';
 

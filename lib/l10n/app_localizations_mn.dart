@@ -11686,6 +11686,22 @@ class AppLocalizationsMn extends AppLocalizations {
       'Цаг харагдаж байгаа газар бүрт 24 цагийн форматыг ашиглана уу';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'Навигацийн талбарт холих товчлуурыг харуул';
 

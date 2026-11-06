@@ -5,7 +5,6 @@ import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/aggregated_item.dart';
@@ -16,6 +15,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/calendar_days.dart';
+import '../../../util/date_format_util.dart';
 import '../adaptive/adaptive_glass.dart';
 import '../anime_marker_badge.dart';
 
@@ -560,7 +560,7 @@ String _airsText(
   final local = airDate.airDate.toLocal();
   return l10n.calendarReleaseIn(
     calendarDaysBetween(DateTime.now(), local),
-    DateFormat.MMMd(Localizations.localeOf(context).toString()).format(local),
+    formatShortDate(local, locale: Localizations.localeOf(context).toString()),
   );
 }
 

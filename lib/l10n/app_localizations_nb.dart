@@ -11665,6 +11665,22 @@ class AppLocalizationsNb extends AppLocalizations {
       'Bruk 24-timers tidsformatering uansett hvor klokken vises';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'Vis tilfeldig rekkefølge-knappen i navigasjonslinjen';
 

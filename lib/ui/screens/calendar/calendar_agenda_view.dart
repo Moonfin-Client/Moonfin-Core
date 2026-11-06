@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/calendar_entry.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -337,7 +338,7 @@ class _DayHeader extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (name != DateFormat.MMMEd(l10n.localeName).format(day)) ...[
+          if (name != formatShortDayName(day, locale: l10n.localeName)) ...[
             const SizedBox(width: 8),
             Text(
               date,

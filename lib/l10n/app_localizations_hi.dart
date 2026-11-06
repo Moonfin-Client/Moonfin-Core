@@ -11650,6 +11650,22 @@ class AppLocalizationsHi extends AppLocalizations {
       'जहां भी घड़ी दिखाई दे, वहां 24-घंटे के समय स्वरूपण का उपयोग करें';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'नेविगेशन बार में शफ़ल बटन दिखाएँ';
 

@@ -7,6 +7,7 @@ import '../../../data/models/calendar_entry.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -360,21 +361,45 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  calendarDayName(context, _selected, _c.today),
-                  style: TextStyle(
-                    color: AppColorScheme.onSurface,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  DateFormat.yMMMMd(l10n.localeName).format(_selected),
-                  style: TextStyle(
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                    fontSize: 14,
-                  ),
-                ),
+                () {
+                  final diff = DateTime(
+                    _selected.year,
+                    _selected.month,
+                    _selected.day,
+                  ).difference(_c.today).inDays;
+                  final isRelative = diff >= -1 && diff <= 1;
+                  final fullDate = formatFullCalendarDate(
+                    _selected,
+                    locale: l10n.localeName,
+                  );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        isRelative
+                            ? calendarDayName(context, _selected, _c.today)
+                            : fullDate,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (isRelative) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          fullDate,
+                          style: TextStyle(
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.55,
+                            ),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                }(),
                 const SizedBox(height: 12),
                 Expanded(
                   child: dayEntries.isEmpty
