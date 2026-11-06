@@ -44,6 +44,7 @@ import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/trickplay.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seasonal/seasonal_effects.dart';
 import 'package:moonfin/ui/widgets/settings/preference_tiles.dart';
 import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
@@ -2673,5 +2674,79 @@ void main() {
       );
       await tester.pumpWidget(const SizedBox());
     });
+  });
+
+  testWidgets('the seasonal settings draw their effect over Home and pause '
+      'the one behind Settings meanwhile', (tester) async {
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalSurprise.key),
+      SettingsPreviewScene.home,
+    );
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalDensity.key),
+      SettingsPreviewScene.home,
+    );
+    // The follower follows focus, which the preview doesn't have.
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalFollower.key),
+      isNull,
+    );
+
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController();
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+      ),
+    );
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+
+    controller
+      ..focus(
+        SettingsPreviewEntry(
+          title: 'Seasonal Effect',
+          prefKey: UserPreferences.seasonalSurprise.key,
+        ),
+      )
+      ..tryValue(UserPreferences.seasonalSurprise.key, UserPreferences.seasonalSnow)
+      ..tryValue(
+        UserPreferences.seasonalDensity.key,
+        UserPreferences.seasonalDensityHeavy,
+      );
+    await tester.pump(const Duration(milliseconds: 300));
+    final effect = tester.widget<SeasonalEffectsHost>(
+      find.byType(SeasonalEffectsHost),
+    );
+    expect(effect.effect, UserPreferences.seasonalSnow);
+    expect(effect.density, UserPreferences.seasonalDensityHeavy);
+    expect(seasonalPreviewsRunning.value, 1);
+
+    // It holds still while keys are pressed, and runs again after.
+    bool running() => tester
+        .widget<TickerMode>(
+          find
+              .ancestor(
+                of: find.byType(SeasonalEffectsHost),
+                matching: find.byType(TickerMode),
+              )
+              .first,
+        )
+        .enabled;
+    expect(running(), isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(running(), isFalse);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(running(), isTrue);
+
+    // Any other setting takes the effect away and lets Home's run again.
+    controller.focus(
+      const SettingsPreviewEntry(title: 'Clock', prefKey: 'pref_clock_behavior'),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+    expect(seasonalPreviewsRunning.value, 0);
+    await tester.pumpWidget(const SizedBox());
   });
 }

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HardwareKeyboard, KeyUpEvent;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -24,6 +25,7 @@ import '../../../../playback/subtitle_style.dart';
 import '../../../../playback/subtitle_view_config.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../../util/device_performance.dart';
 import '../../../../util/focus/input_mode_tracker.dart';
 import '../../../../util/game_library.dart' show isGameLibrary;
 import '../../../../util/platform_detection.dart';
@@ -43,6 +45,7 @@ import '../../../widgets/playback/player_logo.dart';
 import '../../../widgets/playback/seek_icons.dart';
 import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
+import '../../../widgets/seasonal/seasonal_effects.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../../widgets/video_mini_player.dart';
 import '../../browse/book_category_screen.dart';
@@ -323,6 +326,8 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
             previewValue(context, UserPreferences.bottomNavbarStyle),
           ),
         ),
+        'seasonal_surprise' || 'seasonal_density' =>
+          const SettingsSeasonalPreview(),
         final key? when key.startsWith('pref_screensaver_') => Builder(
           builder: (context) =>
               previewValue(context, UserPreferences.screensaverEnabled)
@@ -1749,6 +1754,75 @@ class SettingsScreensaverPreview extends StatelessWidget {
                   ),
         ],
       ),
+    );
+  }
+}
+
+/// Home with the seasonal effect and density being looked at over it. Home's
+/// own effect pauses meanwhile, and this one holds still while keys are
+/// pressed, since each frame it animates redraws all of Settings.
+class SettingsSeasonalPreview extends StatefulWidget {
+  const SettingsSeasonalPreview({super.key});
+
+  @override
+  State<SettingsSeasonalPreview> createState() =>
+      _SettingsSeasonalPreviewState();
+}
+
+class _SettingsSeasonalPreviewState extends State<SettingsSeasonalPreview> {
+  static const _holdAfterKey = Duration(milliseconds: 700);
+
+  Timer? _hold;
+
+  // Home rebuilds on the count, which mustn't happen mid build.
+  @override
+  void initState() {
+    super.initState();
+    scheduleMicrotask(() => seasonalPreviewsRunning.value++);
+    HardwareKeyboard.instance.addHandler(_onKey);
+  }
+
+  @override
+  void dispose() {
+    HardwareKeyboard.instance.removeHandler(_onKey);
+    _hold?.cancel();
+    scheduleMicrotask(() => seasonalPreviewsRunning.value--);
+    super.dispose();
+  }
+
+  bool _onKey(KeyEvent event) {
+    if (event is KeyUpEvent) return false;
+    final wasHeld = _hold != null;
+    _hold?.cancel();
+    _hold = Timer(_holdAfterKey, () {
+      if (mounted) setState(() => _hold = null);
+    });
+    if (!wasHeld) setState(() {});
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final prefs = GetIt.instance<UserPreferences>();
+    return Stack(
+      children: [
+        settingsHomePreview(),
+        Positioned.fill(
+          child: _designCanvas(
+            setupPreviewSize(),
+            TickerMode(
+              enabled: _hold == null,
+              child: SeasonalEffectsHost(
+                effect: previewValue(context, UserPreferences.seasonalSurprise),
+                density: previewValue(context, UserPreferences.seasonalDensity),
+                reducedFrameRate:
+                    prefs.resolveDevicePerformanceTier() ==
+                    DevicePerformanceTier.reduced,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

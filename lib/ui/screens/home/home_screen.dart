@@ -636,13 +636,23 @@ class _HomeShellState extends State<_HomeShell>
                   ),
                   if (seasonalEffect != UserPreferences.seasonalNone)
                     Positioned.fill(
-                      child: SeasonalEffectsHost(
-                        followFocus: PlatformDetection.isTV && seasonalFollower,
-                        effect: seasonalEffect,
-                        density: _userPrefs.get(UserPreferences.seasonalDensity),
-                        reducedFrameRate:
-                            _userPrefs.resolveDevicePerformanceTier() ==
-                            DevicePerformanceTier.reduced,
+                      child: ValueListenableBuilder<int>(
+                        valueListenable: seasonalPreviewsRunning,
+                        builder: (context, previews, child) => TickerMode(
+                          enabled: previews == 0,
+                          child: child!,
+                        ),
+                        child: SeasonalEffectsHost(
+                          followFocus:
+                              PlatformDetection.isTV && seasonalFollower,
+                          effect: seasonalEffect,
+                          density: _userPrefs.get(
+                            UserPreferences.seasonalDensity,
+                          ),
+                          reducedFrameRate:
+                              _userPrefs.resolveDevicePerformanceTier() ==
+                              DevicePerformanceTier.reduced,
+                        ),
                       ),
                     ),
                 ],
