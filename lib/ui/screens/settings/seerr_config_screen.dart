@@ -292,36 +292,30 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     setState(() {});
   }
 
-  Future<void> _setNotifyOnNewRequests(bool value) async {
-    await _seerrPrefs.setNotifyOnNewRequests(value);
+  Future<void> _updateNotificationPref(
+    Future<void> Function(bool) setter,
+    bool value,
+  ) async {
+    _syncService.markNotificationPrefsModified();
+    await setter(value);
     if (mounted) setState(() {});
     if (value) await _requestNotificationPermission();
     await _pushNotificationPrefs();
   }
 
-  Future<void> _setNotifyOnLibraryAdded(bool value) async {
-    await _seerrPrefs.setNotifyOnLibraryAdded(value);
-    if (mounted) setState(() {});
-    if (value) await _requestNotificationPermission();
-    await _pushNotificationPrefs();
-  }
+  Future<void> _setNotifyOnNewRequests(bool value) =>
+      _updateNotificationPref(_seerrPrefs.setNotifyOnNewRequests, value);
 
-  Future<void> _setNotifyOnIssues(bool value) async {
-    await _seerrPrefs.setNotifyOnIssues(value);
-    if (mounted) setState(() {});
-    if (value) await _requestNotificationPermission();
-    await _pushNotificationPrefs();
-  }
+  Future<void> _setNotifyOnLibraryAdded(bool value) =>
+      _updateNotificationPref(_seerrPrefs.setNotifyOnLibraryAdded, value);
 
-  Future<void> _setNotifyOnNewMedia(bool value) async {
-    await _seerrPrefs.setNotifyOnNewMedia(value);
-    if (mounted) setState(() {});
-    if (value) await _requestNotificationPermission();
-    await _pushNotificationPrefs();
-  }
+  Future<void> _setNotifyOnIssues(bool value) =>
+      _updateNotificationPref(_seerrPrefs.setNotifyOnIssues, value);
+
+  Future<void> _setNotifyOnNewMedia(bool value) =>
+      _updateNotificationPref(_seerrPrefs.setNotifyOnNewMedia, value);
 
   Future<void> _pushNotificationPrefs() async {
-    if (!_syncService.pluginAvailable) return;
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
     await _syncService.pushNotificationPrefs(client);

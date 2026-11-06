@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -46,6 +47,12 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// Set when notification preference POST should fail.
   bool failNotificationPush = false;
 
+  /// Holds the payload from the most recent notification POST.
+  dynamic lastNotificationPostPayload;
+
+  /// Optional completer to delay notification GET responses.
+  Completer<void>? notificationGetCompleter;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -60,7 +67,11 @@ class _RecordingAdapter implements HttpClientAdapter {
     }
     if (path.endsWith('/Moonfin/Notifications/Prefs')) {
       if (options.method == 'POST') {
+        lastNotificationPostPayload = options.data;
         return ResponseBody.fromString('', failNotificationPush ? 500 : 200);
+      }
+      if (notificationGetCompleter != null) {
+        await notificationGetCompleter!.future;
       }
       return ResponseBody.fromString(
         jsonEncode(notificationPrefs),
@@ -289,5 +300,47 @@ void main() {
     // Now fetch applies server preferences
     await service.fetchNotificationPrefs(client);
     expect(seerr.notifyOnNewRequests, isFalse);
+  });
+
+  test(
+      'in-flight notification fetch does not overwrite local toggle changed before push and push sends new value',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(false);
+    expect(seerr.notifyOnNewRequests, isFalse);
+
+    // Server has false
+    adapter.notificationPrefs = {'notifyOnNewRequests': false};
+    adapter.notificationGetCompleter = Completer<void>();
+
+    // Start fetch in background
+    final fetchFuture = service.fetchNotificationPrefs(client);
+
+    // User toggles setting in UI: mark modified, update local preference,
+    // and simulate permission request delay before push
+    service.markNotificationPrefsModified();
+    await seerr.setNotifyOnNewRequests(true);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    // GET completes while permission / push is pending
+    adapter.notificationGetCompleter!.complete();
+    await fetchFuture;
+
+    // Verify local preference was NOT overwritten by the GET response
+    expect(seerr.notifyOnNewRequests, isTrue);
+
+    // Push local preferences to server
+    final pushed = await service.pushNotificationPrefs(client);
+    expect(pushed, isTrue);
+
+    // Verify POST payload contains the new value
+    expect(
+      adapter.lastNotificationPostPayload,
+      isA<Map<String, dynamic>>(),
+    );
+    expect(
+      adapter.lastNotificationPostPayload['notifyOnNewRequests'],
+      isTrue,
+    );
   });
 }

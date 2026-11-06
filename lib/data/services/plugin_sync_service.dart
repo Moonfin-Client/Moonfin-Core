@@ -970,6 +970,15 @@ class PluginSyncService extends ChangeNotifier {
     } catch (_) {}
   }
 
+  /// Signals that local notification preferences are being modified,
+  /// invalidating any in-flight fetch and preventing incoming fetches from
+  /// overwriting local choices before or during the push.
+  void markNotificationPrefsModified() {
+    _notificationPrefsVersion++;
+    _hasUnsyncedNotificationPrefs = true;
+    _notificationPushRetryTimer?.cancel();
+  }
+
   Future<void> fetchNotificationPrefs(MediaServerClient client) async {
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
     if (_hasUnsyncedNotificationPrefs) return;
