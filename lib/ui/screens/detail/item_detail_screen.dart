@@ -13310,13 +13310,17 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     text: widget.label,
                     style:
                         Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: labelColor,
+                          color: (accentPrimary && !showHighlight)
+                              ? AppColorScheme.onAccent
+                              : labelColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
                         ) ??
                         TextStyle(
-                          color: labelColor,
+                          color: (accentPrimary && !showHighlight)
+                              ? AppColorScheme.onAccent
+                              : labelColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
