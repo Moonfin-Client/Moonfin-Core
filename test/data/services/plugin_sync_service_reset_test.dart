@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -388,22 +389,44 @@ void main() {
 
   test(
       'availability gap retries pending edits when plugin availability returns',
-      () async {
-    final seerr = GetIt.instance<SeerrPreferences>();
-    await seerr.setNotifyOnNewRequests(true);
+      () {
+    fakeAsync((async) {
+      final seerr = GetIt.instance<SeerrPreferences>();
+      seerr.setNotifyOnNewRequests(true);
+      async.flushMicrotasks();
 
-    adapter.failNotificationPush = true;
-    expect(await service.pushNotificationPrefs(client), isFalse);
+      adapter.failNotificationPush = true;
+      service.pushNotificationPrefs(client);
+      async.elapse(const Duration(milliseconds: 100));
 
-    // Plugin becomes unavailable
-    service.resetState(keepPendingNotificationChanges: true);
-    adapter.failNotificationPush = false;
+      // Plugin becomes unavailable while retry timer is ticking
+      service.resetState(keepPendingNotificationChanges: true);
+      adapter.failNotificationPush = false;
+      adapter.requests.clear();
 
-    // Availability returns
-    await service.refreshAvailability(client);
-    await pumpEventQueue();
+      // Fire the 5-second retry timer while plugin is still unavailable
+      async.elapse(const Duration(seconds: 6));
 
-    expect(adapter.requests, contains('POST /Moonfin/Notifications/Prefs'));
+      // Assert that no POST succeeded while unavailable
+      expect(
+        adapter.requests.where((r) => r.startsWith('POST /Moonfin/Notifications/Prefs')),
+        isEmpty,
+      );
+
+      // Now plugin availability returns
+      service.refreshAvailability(client);
+      async.elapse(const Duration(milliseconds: 100));
+
+      // Assert that new POST was sent upon recovery with local value
+      expect(
+        adapter.requests,
+        contains('POST /Moonfin/Notifications/Prefs'),
+      );
+      expect(
+        adapter.lastNotificationPostPayload['notifyOnNewRequests'],
+        isTrue,
+      );
+    });
   });
 
   test(
@@ -484,6 +507,22 @@ void main() {
     };
     adapter.requests.clear();
     await service.fetchNotificationPrefs(client);
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
+    expect(seerr.notifyOnNewRequests, isTrue);
+    expect(seerr.notifyOnLibraryAdded, isTrue);
+
+    // Simulate restart with fresh service instance sharing the store
+    final dio = Dio()..httpClientAdapter = adapter;
+    final restartedService = PluginSyncService(prefs, store, dio: dio);
+    adapter.failNotificationPush = true;
+    expect(await restartedService.refreshAvailability(client), isTrue);
+
+    // Assert that after restart, stale fetch is still suppressed
+    adapter.requests.clear();
+    await restartedService.fetchNotificationPrefs(client);
     expect(
       adapter.requests,
       isNot(contains('GET /Moonfin/Notifications/Prefs')),
