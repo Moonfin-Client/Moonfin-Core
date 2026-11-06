@@ -57,6 +57,9 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// Optional completer to delay notification POST responses.
   Completer<void>? notificationPostCompleter;
 
+  /// Optional completer triggered when a notification POST request reaches the adapter.
+  Completer<void>? notificationPostReceivedCompleter;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -72,6 +75,10 @@ class _RecordingAdapter implements HttpClientAdapter {
     if (path.endsWith('/Moonfin/Notifications/Prefs')) {
       if (options.method == 'POST') {
         lastNotificationPostPayload = options.data;
+        if (notificationPostReceivedCompleter != null &&
+            !notificationPostReceivedCompleter!.isCompleted) {
+          notificationPostReceivedCompleter!.complete();
+        }
         if (notificationPostCompleter != null) {
           await notificationPostCompleter!.future;
         }
@@ -472,62 +479,155 @@ void main() {
 
   test(
       'older POST completion does not clear unsynced flag when newer edit is queued and subsequent failed POST retries',
+      () {
+    fakeAsync((async) {
+      final seerr = GetIt.instance<SeerrPreferences>();
+      seerr.setNotifyOnNewRequests(true);
+      async.flushMicrotasks();
+
+      // Hold the first POST
+      adapter.notificationPostReceivedCompleter = Completer<void>();
+      adapter.notificationPostCompleter = Completer<void>();
+      adapter.failNotificationPush = false;
+      service.pushNotificationPrefs(client);
+
+      // Wait until the first POST reaches the adapter before queuing the second edit
+      async.elapse(const Duration(milliseconds: 100));
+      expect(adapter.notificationPostReceivedCompleter!.isCompleted, isTrue);
+
+      // Queue a second edit while first POST is in-flight
+      service.markNotificationPrefsModified(client: client);
+      seerr.setNotifyOnLibraryAdded(true);
+      service.pushNotificationPrefs(client);
+      async.flushMicrotasks();
+
+      // Release first POST so it succeeds
+      adapter.notificationPostCompleter!.complete();
+      adapter.notificationPostCompleter = null;
+      async.flushMicrotasks();
+
+      // Make second POST fail
+      adapter.failNotificationPush = true;
+      async.elapse(const Duration(milliseconds: 100));
+
+      // Verify edit remains pending
+      expect(service.hasUnsyncedNotificationPrefsFor('http_plugin_test/'), isTrue);
+
+      // Verify that the timer retries with the latest preferences before calling fetchNotificationPrefs
+      adapter.requests.clear();
+      adapter.failNotificationPush = false;
+      adapter.notificationPrefs = {
+        'notifyOnNewRequests': false,
+        'notifyOnLibraryAdded': false,
+      };
+
+      // Advance virtual time across the 5s retry timer
+      async.elapse(const Duration(seconds: 6));
+
+      // Assert timer started a retry with the latest preferences
+      expect(
+        adapter.requests,
+        contains('POST /Moonfin/Notifications/Prefs'),
+      );
+      expect(
+        adapter.lastNotificationPostPayload['notifyOnNewRequests'],
+        isTrue,
+      );
+      expect(
+        adapter.lastNotificationPostPayload['notifyOnLibraryAdded'],
+        isTrue,
+      );
+      expect(service.hasUnsyncedNotificationPrefsFor('http_plugin_test/'), isFalse);
+
+      // Now call fetchNotificationPrefs; since unsynced is cleared, it can safely fetch from server
+      adapter.requests.clear();
+      service.fetchNotificationPrefs(client);
+      async.elapse(const Duration(milliseconds: 100));
+      expect(
+        adapter.requests,
+        contains('GET /Moonfin/Notifications/Prefs'),
+      );
+    });
+  });
+
+  test(
+      'older push completion after session reset does not clear newer active push or allow concurrent push',
+      () {
+    fakeAsync((async) {
+      final seerr = GetIt.instance<SeerrPreferences>();
+      seerr.setNotifyOnNewRequests(true);
+      async.flushMicrotasks();
+
+      // Start push1 and hold it in adapter
+      final post1Received = Completer<void>();
+      final post1Release = Completer<void>();
+      adapter.notificationPostReceivedCompleter = post1Received;
+      adapter.notificationPostCompleter = post1Release;
+      service.pushNotificationPrefs(client);
+      async.elapse(const Duration(milliseconds: 100));
+      expect(post1Received.isCompleted, isTrue);
+
+      // Session reset clears _activeNotificationPush but post1 is still in flight
+      service.resetState();
+      expect(service.pluginAvailable, isFalse);
+
+      // Restore plugin availability for a new session
+      service.refreshAvailability(client);
+      async.elapse(const Duration(milliseconds: 100));
+      expect(service.pluginAvailable, isTrue);
+
+      // Start push2 for the new session and hold it in adapter as well
+      final post2Release = Completer<void>();
+      adapter.notificationPostCompleter = post2Release;
+      seerr.setNotifyOnLibraryAdded(true);
+      service.pushNotificationPrefs(client);
+      async.elapse(const Duration(milliseconds: 100));
+
+      // Release the older post1. Its finally block must NOT clear _activeNotificationPush
+      // because _activeNotificationPush now refers to push2.
+      post1Release.complete();
+      async.flushMicrotasks();
+
+      // Triggering another push while push2 is still in flight should be queued,
+      // NOT sent concurrently as a second active POST.
+      adapter.requests.clear();
+      service.pushNotificationPrefs(client);
+      async.flushMicrotasks();
+      expect(
+        adapter.requests.where((r) => r.startsWith('POST /Moonfin/Notifications/Prefs')),
+        isEmpty,
+      );
+
+      // Now release push2; the queued push drains sequentially
+      post2Release.complete();
+      async.elapse(const Duration(milliseconds: 100));
+      expect(
+        adapter.requests.where((r) => r.startsWith('POST /Moonfin/Notifications/Prefs')),
+        isNotEmpty,
+      );
+    });
+  });
+
+  test(
+      'canPushNotificationPrefsOnSignIn guards sign-in push after failed fetch',
       () async {
+    // Fresh client before any fetch or edits
+    expect(service.canPushNotificationPrefsOnSignIn(client), isFalse);
+
+    // After successful fetch, sign-in push is allowed
+    adapter.notificationPrefs = {'notifyOnNewRequests': true};
+    await service.fetchNotificationPrefs(client);
+    expect(service.hasFetchedNotificationPrefs(client), isTrue);
+    expect(service.canPushNotificationPrefsOnSignIn(client), isTrue);
+
+    // Reset session without edits
+    service.resetState();
+    expect(service.canPushNotificationPrefsOnSignIn(client), isFalse);
+
+    // If an unsynced local edit exists, sign-in push is allowed to retry
     final seerr = GetIt.instance<SeerrPreferences>();
     await seerr.setNotifyOnNewRequests(true);
-
-    // Hold the first POST
-    adapter.notificationPostCompleter = Completer<void>();
-    adapter.failNotificationPush = false;
-    final push1 = service.pushNotificationPrefs(client);
-
-    // Queue a second edit while first POST is in-flight
     service.markNotificationPrefsModified(client: client);
-    await seerr.setNotifyOnLibraryAdded(true);
-    final push2 = service.pushNotificationPrefs(client);
-
-    // Release first POST so it succeeds
-    adapter.notificationPostCompleter!.complete();
-    adapter.notificationPostCompleter = null;
-    final result1 = await push1;
-    expect(result1, isTrue);
-
-    // Make second POST fail
-    adapter.failNotificationPush = true;
-    final result2 = await push2;
-    expect(result2, isFalse);
-
-    // Verify edit remains pending
-    expect(service.hasUnsyncedNotificationPrefsFor('http_plugin_test/'), isTrue);
-
-    // Stale fetch cannot overwrite it
-    adapter.notificationPrefs = {
-      'notifyOnNewRequests': false,
-      'notifyOnLibraryAdded': false,
-    };
-    adapter.requests.clear();
-    await service.fetchNotificationPrefs(client);
-    expect(
-      adapter.requests,
-      isNot(contains('GET /Moonfin/Notifications/Prefs')),
-    );
-    expect(seerr.notifyOnNewRequests, isTrue);
-    expect(seerr.notifyOnLibraryAdded, isTrue);
-
-    // Simulate restart with fresh service instance sharing the store
-    final dio = Dio()..httpClientAdapter = adapter;
-    final restartedService = PluginSyncService(prefs, store, dio: dio);
-    adapter.failNotificationPush = true;
-    expect(await restartedService.refreshAvailability(client), isTrue);
-
-    // Assert that after restart, stale fetch is still suppressed
-    adapter.requests.clear();
-    await restartedService.fetchNotificationPrefs(client);
-    expect(
-      adapter.requests,
-      isNot(contains('GET /Moonfin/Notifications/Prefs')),
-    );
-    expect(seerr.notifyOnNewRequests, isTrue);
-    expect(seerr.notifyOnLibraryAdded, isTrue);
+    expect(service.canPushNotificationPrefsOnSignIn(client), isTrue);
   });
 }

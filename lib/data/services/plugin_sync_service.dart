@@ -177,6 +177,7 @@ class PluginSyncService extends ChangeNotifier {
   Future<bool>? _activeNotificationPush;
   bool _notificationPushQueued = false;
   Timer? _notificationPushRetryTimer;
+  final Set<String> _notificationPrefsFetchedUserKeys = {};
 
   String _unsyncedNotificationStoreKey(String userKey) =>
       'pref_unsynced_notifications_$userKey';
@@ -184,6 +185,18 @@ class PluginSyncService extends ChangeNotifier {
   bool hasUnsyncedNotificationPrefsFor(String userKey) =>
       _hasUnsyncedNotificationPrefs ||
       (_store.getBool(_unsyncedNotificationStoreKey(userKey)) ?? false);
+
+  /// Whether notification preferences for [client]'s user were successfully
+  /// fetched from the server.
+  bool hasFetchedNotificationPrefs(MediaServerClient client, {String? serverId}) =>
+      _notificationPrefsFetchedUserKeys.contains(_userSyncKey(client, serverId: serverId));
+
+  /// Whether a sign-in push should proceed: only after server preferences were
+  /// successfully fetched, or when unsynced local edits are pending.
+  bool canPushNotificationPrefsOnSignIn(MediaServerClient client) {
+    final userKey = _userSyncKey(client);
+    return hasFetchedNotificationPrefs(client) || hasUnsyncedNotificationPrefsFor(userKey);
+  }
 
   void _setUnsyncedNotificationPrefs(String? userKey, bool value) {
     _hasUnsyncedNotificationPrefs = value;
@@ -293,6 +306,7 @@ class PluginSyncService extends ChangeNotifier {
       _activeNotificationPush = null;
       _notificationPushQueued = false;
       _hasUnsyncedNotificationPrefs = false;
+      _notificationPrefsFetchedUserKeys.clear();
       if (clearPersistedNotificationEdits) {
         final userKey = _resolveCurrentUserKey();
         if (userKey != null) {
@@ -1067,6 +1081,7 @@ class PluginSyncService extends ChangeNotifier {
 
       final data = response.data;
       if (data is Map<String, dynamic>) {
+        _notificationPrefsFetchedUserKeys.add(expectedUserKey);
         final newRequests = _readBool(data, 'notifyOnNewRequests');
         if (newRequests != null &&
             _notificationPrefsVersion == versionAtStart &&
@@ -1124,7 +1139,9 @@ class PluginSyncService extends ChangeNotifier {
     try {
       return await pushFuture;
     } finally {
-      _activeNotificationPush = null;
+      if (_activeNotificationPush == pushFuture) {
+        _activeNotificationPush = null;
+      }
     }
   }
 
