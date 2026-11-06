@@ -60,6 +60,9 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// Optional completer triggered when a notification POST request reaches the adapter.
   Completer<void>? notificationPostReceivedCompleter;
 
+  /// Optional completer to delay ping responses during endpoint resolution.
+  Completer<void>? pingCompleter;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -94,6 +97,10 @@ class _RecordingAdapter implements HttpClientAdapter {
           Headers.contentTypeHeader: [Headers.jsonContentType],
         },
       );
+    }
+
+    if (path.endsWith('/Moonfin/Ping') && pingCompleter != null) {
+      await pingCompleter!.future;
     }
 
     Map<String, dynamic>? body;
@@ -629,5 +636,87 @@ void main() {
     await seerr.setNotifyOnNewRequests(true);
     service.markNotificationPrefsModified(client: client);
     expect(service.canPushNotificationPrefsOnSignIn(client), isTrue);
+  });
+
+  test(
+      'syncOnLogin skips duplicate notification preference GET when first fetch succeeds',
+      () async {
+    // Unset sync initialized so the initial configuration branch runs
+    await prefs.set(
+      UserPreferences.pluginSyncInitializedForServer('http_plugin_test/'),
+      false,
+    );
+    adapter.requests.clear();
+    await service.syncOnLogin(client);
+    final getPrefsRequests = adapter.requests
+        .where((r) => r.startsWith('GET /Moonfin/Notifications/Prefs'))
+        .toList();
+    expect(getPrefsRequests.length, 1);
+  });
+
+  test(
+      'pushNotificationPrefs aborts POST if session is reset while awaiting endpoint resolution',
+      () {
+    fakeAsync((async) {
+      final seerr = GetIt.instance<SeerrPreferences>();
+      seerr.setNotifyOnNewRequests(true);
+      async.flushMicrotasks();
+
+      final plexClient = _MockClient();
+      when(() => plexClient.baseUrl).thenReturn('http://plex.test');
+      when(() => plexClient.accessToken).thenReturn('token');
+      when(() => plexClient.serverType).thenReturn(ServerType.plex);
+      when(() => plexClient.userId).thenReturn('user1');
+      when(() => plexClient.deviceInfo).thenReturn(
+        const DeviceInfo(id: 'dev1', name: 'test', appName: 'moonfin', appVersion: '0.0.0'),
+      );
+
+      adapter.pingCompleter = Completer<void>();
+      adapter.requests.clear();
+
+      service.pushNotificationPrefs(plexClient);
+      async.elapse(const Duration(milliseconds: 50));
+
+      // Reset session while ping is still pending
+      service.resetState();
+
+      // Release ping
+      adapter.pingCompleter!.complete();
+      adapter.pingCompleter = null;
+      async.elapse(const Duration(milliseconds: 100));
+
+      // Assert that POST was aborted and never sent
+      expect(
+        adapter.requests.where((r) => r.startsWith('POST')),
+        isEmpty,
+      );
+    });
+  });
+
+  test(
+      'dispose cancels notification push retry timer and prevents rescheduling',
+      () {
+    fakeAsync((async) {
+      final seerr = GetIt.instance<SeerrPreferences>();
+      seerr.setNotifyOnNewRequests(true);
+      async.flushMicrotasks();
+
+      // Failed push schedules retry
+      adapter.failNotificationPush = true;
+      service.pushNotificationPrefs(client);
+      async.elapse(const Duration(milliseconds: 100));
+
+      // Dispose service
+      service.dispose();
+      adapter.failNotificationPush = false;
+      adapter.requests.clear();
+
+      // Advancing virtual time should NOT trigger a retry POST
+      async.elapse(const Duration(seconds: 10));
+      expect(
+        adapter.requests.where((r) => r.startsWith('POST /Moonfin/Notifications/Prefs')),
+        isEmpty,
+      );
+    });
   });
 }
