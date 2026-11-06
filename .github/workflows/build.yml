@@ -53,6 +53,12 @@ permissions:
   contents: write
   actions: read
 
+# A new push to a pull request replaces its running build. Tags and manual
+# runs are never cancelled; their group is their ref.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   FLUTTER_VERSION: '3.47.2'
   FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
