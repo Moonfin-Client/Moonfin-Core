@@ -219,7 +219,7 @@ void main() {
       addTearDown(sub.cancel);
 
       await socket.connect();
-      await _until(() => silo.sockets.length == 2);
+      await _until(() => silo.sockets.length == 2 && connections == 2);
 
       expect(silo.tickets, 2);
       expect(silo.offeredProtocols.last.last, 'silo.ticket.ticket2');
