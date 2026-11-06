@@ -51,4 +51,40 @@ void main() {
       expect(uri.pathSegments, ['studio', name]);
     });
   });
+
+  group('Destinations.genre', () {
+    test('leaves serverId out without a server', () {
+      expect(
+        Destinations.genre('Drama', genreId: 'g1'),
+        '/genre/Drama?genreId=g1',
+      );
+      expect(
+        Destinations.genre('Drama', genreId: 'g1', serverId: ''),
+        '/genre/Drama?genreId=g1',
+      );
+    });
+
+    test('carries the owning server so the genre opens on it', () {
+      const serverId = 'https://host:8096/jf?x=1&y';
+      final uri = Uri.parse(
+        Destinations.genre(
+          'Drama',
+          genreId: 'g1',
+          parentId: 'lib',
+          serverId: serverId,
+        ),
+      );
+      expect(uri.path, '/genre/Drama');
+      expect(uri.queryParameters['genreId'], 'g1');
+      expect(uri.queryParameters['parentId'], 'lib');
+      expect(uri.queryParameters['serverId'], serverId);
+    });
+
+    test('appends serverId after the existing query', () {
+      expect(
+        Destinations.genre('Drama', genreId: 'g1', serverId: 's1'),
+        '/genre/Drama?genreId=g1&serverId=s1',
+      );
+    });
+  });
 }

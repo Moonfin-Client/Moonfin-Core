@@ -1522,7 +1522,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     final key = _studioKey(index, name);
 
     void openStudio() {
-      context.push(Destinations.studio(name));
+      context.push(Destinations.studio(name, serverId: widget.item.serverId));
     }
 
     final focusNode = _studioFocusNode(
