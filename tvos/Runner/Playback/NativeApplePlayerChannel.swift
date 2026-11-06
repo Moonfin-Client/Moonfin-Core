@@ -191,6 +191,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         case "showRemoteSubtitles":
             let results = (args["results"] as? [[String: Any]]) ?? []
             playerVC?.presentRemoteSubtitleResults(results)
+        case "showSubtitleCues":
+            playerVC?.showSubtitleCues(args)
         case "showSubtitleProgress":
             playerVC?.showSubtitleProgress((args["message"] as? String) ?? "Working\u{2026}")
         case "hideSubtitleProgress":

@@ -20,6 +20,7 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_cues.dart';
 
 class NativeApplePlayerBackend
     with SubtitleDelayState, AppleSecondarySubtitleControls
@@ -203,6 +204,7 @@ class NativeApplePlayerBackend
       case 'setSubtitlePosition':
       case 'selectSecondarySubtitle':
       case 'setSecondarySubtitleDelay':
+      case 'loadSubtitleCues':
       case 'configureSecondarySubtitleStyle':
       case 'setSpeed':
       case 'setBitrate':
@@ -772,6 +774,19 @@ class NativeApplePlayerBackend
 
   Future<void> showRemoteSubtitles(List<Map<String, dynamic>> results) async {
     await _invoke<void>('showRemoteSubtitles', {'results': results});
+  }
+
+  /// The lines of the subtitle track the delay panel moves, for its timeline.
+  Future<void> showSubtitleCues(
+    List<SubtitleCue> cues, {
+    required bool secondary,
+  }) async {
+    await _invoke<void>('showSubtitleCues', {
+      'secondary': secondary,
+      'cues': [
+        for (final cue in cues) [cue.start, cue.end, cue.text],
+      ],
+    });
   }
 
   Future<void> showSubtitleProgress(String message) async {
