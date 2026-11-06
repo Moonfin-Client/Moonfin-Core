@@ -84,15 +84,18 @@ jobs:
       # Restores the Gradle cache gradle-cache.yml saves on main, so a PR run
       # doesn't download every dependency from Maven Central, which refuses
       # the shared runner IPs (429/403). Restore only: the warmer is the one
-      # writer, so an entry under its key always holds the test dependencies.
-      # When a PR changes a hashed file, restore-keys falls back to main's
-      # entry for the same Flutter version. Keep path, key and restore-keys
-      # the same in all three places, or the keys stop matching.
+      # writer, so an entry under its key always holds what this release build
+      # and the kotlin tests resolve. When a PR changes a hashed file,
+      # restore-keys falls back to main's entry for the same Flutter version.
+      # Robolectric fetches its android-all jars into ~/.m2, not through
+      # Gradle, so that is cached too. Keep path, key and restore-keys the
+      # same in all three places, or the keys stop matching.
       - uses: actions/cache/restore@v5
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            ~/.m2/repository/org/robolectric
           key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
           restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
 
@@ -898,6 +901,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            ~/.m2/repository/org/robolectric
           key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
           restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
 
