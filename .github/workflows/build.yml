@@ -89,6 +89,7 @@ jobs:
             **/*.gradle*
             **/gradle-wrapper.properties
             pubspec.lock
+            .github/workflows/build.yml
 
       - uses: subosito/flutter-action@v2
         with:
@@ -890,6 +891,7 @@ jobs:
             **/*.gradle*
             **/gradle-wrapper.properties
             pubspec.lock
+            .github/workflows/build.yml
 
       - uses: subosito/flutter-action@v2
         with:

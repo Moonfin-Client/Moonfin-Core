@@ -18,6 +18,7 @@ on:
       - '**/*.gradle*'
       - '**/gradle-wrapper.properties'
       - 'pubspec.lock'
+      - '.github/workflows/build.yml'
       - '.github/workflows/gradle-cache.yml'
 
 permissions:
@@ -43,6 +44,7 @@ jobs:
             **/*.gradle*
             **/gradle-wrapper.properties
             pubspec.lock
+            .github/workflows/build.yml
 
       # Read from build.yml rather than kept here too, so a Flutter upgrade
       # there can't leave this cache built with the old one.
