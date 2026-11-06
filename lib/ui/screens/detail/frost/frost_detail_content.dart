@@ -554,9 +554,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       final versions = _names(item.mediaSources);
       final video = streams.where((stream) => stream['Type'] == 'Video');
       final size = formatMediaSourceSize(source['Size'] as int? ?? 0);
+      final path = source['Path'] as String? ?? '';
+      final fileName = path.split('/').last.split('\\').last;
       media.addAll([
         if (item.mediaSources.length > 1 && versions != null)
           _Row(l10n.version, versions),
+        if (fileName.isNotEmpty) _Row(l10n.playbackInfoFile, fileName),
         if (video.isNotEmpty)
           _Row(
             l10n.video,
