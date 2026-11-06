@@ -2420,13 +2420,23 @@ class MediaKitPlayerBackend extends PlayerBackend
     try {
       final native = _player.platform as NativePlayer;
       final assEnabled = _prefs.get(UserPreferences.assDirectPlay);
+      // Scale keeps the authored ASS styling and only applies sub-scale. At
+      // the default size the track stays exactly as authored.
       await _nativeSetProperty(
         native,
         'sub-ass-override',
-        assEnabled ? 'no' : 'force',
+        !assEnabled ? 'force' : (_assSubtitleScale == 1 ? 'no' : 'scale'),
       );
+      await _writeSubtitleFontSize(native);
     } catch (_) {}
   }
+
+  // The size setting as a multiple of an ASS track's own sizes. Both subtitle
+  // profiles default to 20, which leaves the track as authored.
+  double get _assSubtitleScale =>
+      _primaryIsAssSubtitle && _prefs.get(UserPreferences.assDirectPlay)
+      ? (_lastFontSize ?? 20) / 20
+      : 1;
 
   Future<void> _notifyNativeHandleReady() async {
     final onNativeHandleReady = _onNativeHandleReady;
@@ -3021,6 +3031,8 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-ass', 'yes');
     if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyAssOverrideMode();
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _applyPendingSecondarySubtitle();
     if (_isLatestSubtitleSelection(generation)) {
       await _refreshStackedSecondaryPosition(force: true);
@@ -3045,6 +3057,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (!_isLatestSubtitleSelection(generation)) return;
       await _nativeSetProperty(native, 'sub-visibility', 'no');
     } catch (_) {}
+    if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyAssOverrideMode();
     if (!_isLatestSubtitleSelection(generation)) return;
     await _applyPendingSecondarySubtitle();
     if (_isLatestSubtitleSelection(generation)) {
@@ -3418,7 +3432,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
       final secondaryHeight = _subtitleHeight(
         secondaryMeasurementText,
-        fontSize * secondaryScale,
+        fontSize * primaryScale * secondaryScale,
         availableWidth,
       );
       final primaryAnchor = mpvPrimaryStackingAnchor(alignment, margin: margin);
@@ -3529,6 +3543,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   double? _lastFontSize;
   int? _lastFontWeight;
   double? _lastVerticalOffset;
+  bool _assScaleWritten = false;
 
   @override
   Future<void> configureSubtitleStyle({
@@ -3575,7 +3590,6 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
       await _nativeSetProperty(native, 'sub-border-size', '2');
     }
-    await _writeSubtitleFontSize(native);
     final fontWeight = _lastFontWeight;
     if (fontWeight != null) {
       // mpv holds this across titles, so it has to be written either way or a
@@ -3592,15 +3606,25 @@ class MediaKitPlayerBackend extends PlayerBackend
       await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
     }
     // Last, because it decides whether the colors above reach an ASS subtitle
-    // at all.
+    // at all, and it writes the size.
     await _applyAssOverrideMode();
     await _refreshStackedSecondaryPosition(force: true);
   }
 
   Future<void> _writeSubtitleFontSize(NativePlayer native) async {
+    final assScale = _assSubtitleScale;
+    // Left alone until an ASS track needs it, so a custom mpv.conf keeps its
+    // own value.
+    if (assScale != 1 || _assScaleWritten) {
+      await _nativeSetProperty(native, 'sub-scale', assScale.toString());
+      _assScaleWritten = assScale != 1;
+    }
     final fontSize = _lastFontSize;
     if (fontSize == null) return;
-    final mpvSize = mpvSubtitleFontSize(fontSize) * _textSubtitleScale;
+    // sub-scale reaches plain text too, a secondary SRT included, so its base
+    // size is divided back down.
+    final mpvSize =
+        mpvSubtitleFontSize(fontSize) * _textSubtitleScale / assScale;
     await _nativeSetProperty(
       native,
       'sub-font-size',

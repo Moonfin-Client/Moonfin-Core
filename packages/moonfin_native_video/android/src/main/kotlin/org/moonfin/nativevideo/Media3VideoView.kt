@@ -1031,6 +1031,10 @@ class Media3VideoView(
     // outlives the native objects it reads.
     private var assOverlayView: MoonfinAssOverlayView? = null
 
+    // Both subtitle profiles default to a size of 20, which leaves ASS as
+    // authored.
+    private var assFontScale = 1f
+
     // True once a source has been loaded into the current player. Reusing the
     // same ExoPlayer instance + surface for a second source hangs in buffering
     // on some Android TVs (e.g. Sony BRAVIA after a cinema-mode intro), so the
@@ -2953,6 +2957,7 @@ class Media3VideoView(
     private fun attachAssOverlay(assHandler: AssHandler, assDialogue: AssDialogueQueue) {
         releaseAssOverlay()
         val overlay = MoonfinAssOverlayView(context, assHandler, assDialogue)
+        overlay.setFontScale(assFontScale)
         overlay.onInkChanged = { ink ->
             assInk = ink
             pushAssInk()
@@ -5165,6 +5170,8 @@ class Media3VideoView(
         if (fontSize != null) {
             val fractionalTextSize = (fontSize / 24f) * 0.06f
             subtitleView.setFractionalTextSize(fractionalTextSize.coerceAtLeast(0.01f))
+            assFontScale = fontSize / 20f
+            assOverlayView?.setFontScale(assFontScale)
         }
 
         if (verticalOffset != null) {
