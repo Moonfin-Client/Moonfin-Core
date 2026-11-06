@@ -10,11 +10,16 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
+import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
+import 'package:moonfin/data/repositories/calendar_repository.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
@@ -42,6 +47,10 @@ class _Users extends Mock implements UserRepository {}
 class _Client extends Mock implements MediaServerClient {}
 
 class _Images extends Mock implements ImageApi {}
+
+class _Sync extends Mock implements PluginSyncService {}
+
+class _Calendar extends Mock implements CalendarRepository {}
 
 /// Items with no artwork URLs, so images fall back to drawn placeholders and
 /// nothing touches the network.
@@ -2259,5 +2268,171 @@ void main() {
       expect(prefs.get(UserPreferences.subtitlesTextColor), 0xFFFFFFFF);
       debugDefaultTargetPlatformOverride = null;
     });
+  });
+
+  group('the calendar scene', () {
+    late _Sync sync;
+
+    setUp(() {
+      registerFallbackValue(DateTime(2026));
+      sync = _Sync();
+      when(() => sync.pluginAvailable).thenReturn(true);
+      when(() => sync.seerrAvailable).thenReturn(false);
+      when(() => sync.calendarAvailable).thenReturn(true);
+      when(() => sync.calendarRemindersAvailable).thenReturn(false);
+      when(() => sync.calendarDaysBack).thenReturn(14);
+      when(() => sync.calendarDaysAhead).thenReturn(90);
+      GetIt.instance.registerSingleton<PluginSyncService>(sync);
+
+      final now = DateTime.now();
+      final calendar = _Calendar();
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'aired',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.subtract(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Aired Show',
+            seasonNumber: 1,
+            episodeNumber: 4,
+            hasFile: true,
+            itemId: 'series',
+            episodeId: 'episode',
+          ),
+          CalendarEntry(
+            key: 'next',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Upcoming Show',
+            episodeTitle: 'The Next One',
+            seasonNumber: 2,
+            episodeNumber: 1,
+          ),
+        ]),
+      );
+      GetIt.instance.registerSingleton<CalendarRepository>(calendar);
+    });
+
+    test('its settings show on it, and ones it never draws stay put', () {
+      for (final key in [
+        UserPreferences.calendarStyle.key,
+        UserPreferences.calendarScope.key,
+        UserPreferences.calendarShowBadges.key,
+        UserPreferences.calendarColorBy.key,
+        UserPreferences.calendarImageType.key,
+        UserPreferences.calendarSpoilerSafe.key,
+        UserPreferences.calendarReminders.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.calendar,
+          reason: key,
+        );
+      }
+      // The release types are shared with the Upcoming Movies row, week start
+      // only changes the month grid, and the select action only acts on a press.
+      for (final key in [
+        UserPreferences.radarrCalendarShowCinema.key,
+        UserPreferences.calendarWeekStart.key,
+        UserPreferences.calendarSelectAction.key,
+      ]) {
+        expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
+      }
+      expect(
+        SettingsPreviewController.sceneForKey(
+          UserPreferences.showCalendarButton.key,
+        ),
+        SettingsPreviewScene.home,
+      );
+    });
+
+    test('the chip waits on the server offering the calendar', () {
+      expect(settingsPreviewScenes, contains(SettingsPreviewScene.calendar));
+      when(() => sync.calendarAvailable).thenReturn(false);
+      expect(
+        settingsPreviewScenes,
+        isNot(contains(SettingsPreviewScene.calendar)),
+      );
+    });
+
+    for (final layout in [
+      InterfaceLayout.tv,
+      InterfaceLayout.desktop,
+      InterfaceLayout.phone,
+    ]) {
+      testWidgets('draws the style a picker tries on $layout', (tester) async {
+        debugDefaultTargetPlatformOverride = layout == InterfaceLayout.desktop
+            ? TargetPlatform.linux
+            : TargetPlatform.android;
+        PlatformDetection.setInterfaceLayout(layout);
+        // A phone's top bar asks the player for its height, so the bottom bar
+        // keeps that out of the test.
+        if (layout == InterfaceLayout.phone) {
+          await GetIt.instance<UserPreferences>().set(
+            UserPreferences.navbarPosition,
+            NavbarPosition.bottom,
+          );
+        }
+        SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+        // The test font's glyphs are a full em wide, so the calendar's header
+        // chips only run out of room here. Anything else still fails.
+        final onError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (!details.exceptionAsString().contains('overflowed')) {
+            onError?.call(details);
+          }
+        };
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        // One frame starts the load and the next draws what it found.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        for (final position in NavbarPosition.values) {
+          controller
+            ..tryValue('pref_navbar_position', position)
+            ..tryValue('pref_calendar_style', CalendarStyle.countdown);
+          await tester.pump(const Duration(milliseconds: 300));
+          expect(find.byType(CalendarCountdownView), findsOneWidget);
+          expect(find.byType(CalendarAgendaView), findsNothing);
+          expect(tester.takeException(), isNull);
+        }
+
+        controller.clearTry('pref_calendar_style');
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        await tester.pumpWidget(const SizedBox());
+        FlutterError.onError = onError;
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
   });
 }

@@ -6,7 +6,7 @@ import '../../../preference/user_preferences.dart';
 import 'settings_section_header.dart';
 
 /// The mock screen the settings live preview draws.
-enum SettingsPreviewScene { home, details, player, search }
+enum SettingsPreviewScene { home, details, player, search, calendar }
 
 /// What the focused settings tile tells the preview about itself.
 class SettingsPreviewEntry {
@@ -60,6 +60,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_live_tv_button': SettingsPreviewScene.home,
     'pref_show_syncplay_button': SettingsPreviewScene.home,
     'pref_show_seerr_button': SettingsPreviewScene.home,
+    'pref_show_calendar_button': SettingsPreviewScene.home,
     'pref_show_libraries_in_toolbar': SettingsPreviewScene.home,
     'pref_show_libraries_individually': SettingsPreviewScene.home,
     'pref_show_downloads_button': SettingsPreviewScene.home,
@@ -156,6 +157,19 @@ class SettingsPreviewController extends ChangeNotifier {
     'trickplay_follow_scrub_position': SettingsPreviewScene.player,
     'trickplay_pause_while_scrubbing': SettingsPreviewScene.player,
     'pref_keyboard_style': SettingsPreviewScene.search,
+    'pref_calendar_style': SettingsPreviewScene.calendar,
+    'pref_calendar_scope': SettingsPreviewScene.calendar,
+    'pref_calendar_show_episodes': SettingsPreviewScene.calendar,
+    'pref_calendar_show_movies': SettingsPreviewScene.calendar,
+    'pref_calendar_libraries': SettingsPreviewScene.calendar,
+    'pref_calendar_unmonitored': SettingsPreviewScene.calendar,
+    'pref_calendar_specials': SettingsPreviewScene.calendar,
+    'pref_calendar_badges': SettingsPreviewScene.calendar,
+    'pref_calendar_color_by': SettingsPreviewScene.calendar,
+    'pref_calendar_image_type': SettingsPreviewScene.calendar,
+    'pref_calendar_spoiler_safe': SettingsPreviewScene.calendar,
+    'pref_calendar_request_button': SettingsPreviewScene.calendar,
+    'pref_calendar_reminders': SettingsPreviewScene.calendar,
   };
 
   /// The screensaver comes on over Home, so every one of its settings shows

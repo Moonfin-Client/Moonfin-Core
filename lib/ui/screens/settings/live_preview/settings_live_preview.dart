@@ -13,6 +13,7 @@ import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../../data/models/media_segment.dart';
 import '../../../../data/models/trickplay_preview_layout.dart';
 import '../../../../data/repositories/poster_badge_repository.dart';
+import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/voice_search_controller.dart';
 import '../../../../data/utils/media_segment_actions.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -41,6 +42,9 @@ import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../../widgets/video_mini_player.dart';
+import '../../calendar/calendar_agenda_view.dart';
+import '../../calendar/calendar_controller.dart';
+import '../../calendar/calendar_countdown_view.dart';
 import '../../playback/osd_buttons.dart';
 import '../../setup/setup_wizard_previews.dart';
 
@@ -52,15 +56,20 @@ String settingsPreviewSceneName(
   SettingsPreviewScene.details => l10n.detailsPage,
   SettingsPreviewScene.player => l10n.player,
   SettingsPreviewScene.search => l10n.search,
+  SettingsPreviewScene.calendar => l10n.calendar,
 };
 
 /// The scenes this device has settings for. Keyboard Style is a TV setting,
-/// so only a TV gets the search keyboard.
+/// so only a TV gets the search keyboard, and the calendar only shows for
+/// someone the server offers it to.
 List<SettingsPreviewScene> get settingsPreviewScenes => [
   SettingsPreviewScene.home,
   SettingsPreviewScene.details,
   SettingsPreviewScene.player,
   if (PlatformDetection.useLeanbackUi) SettingsPreviewScene.search,
+  if (GetIt.instance.isRegistered<PluginSyncService>() &&
+      GetIt.instance<PluginSyncService>().calendarAvailable)
+    SettingsPreviewScene.calendar,
 ];
 
 /// The player lays out landscape even on a phone, where playback rotates. A TV
@@ -221,6 +230,7 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
       ),
       SettingsPreviewScene.player => SettingsPlayerPreview(focusedKey: key),
       SettingsPreviewScene.search => const SettingsSearchPreview(),
+      SettingsPreviewScene.calendar => const SettingsCalendarPreview(),
     };
   }
 }
@@ -1626,6 +1636,54 @@ class SettingsScreensaverPreview extends StatelessWidget {
                     ),
                   ),
         ],
+      ),
+    );
+  }
+}
+
+/// The Calendar screen in the style being looked at, showing the user's own
+/// calendar.
+class SettingsCalendarPreview extends StatefulWidget {
+  const SettingsCalendarPreview({super.key});
+
+  @override
+  State<SettingsCalendarPreview> createState() =>
+      _SettingsCalendarPreviewState();
+}
+
+class _SettingsCalendarPreviewState extends State<SettingsCalendarPreview> {
+  final _controller = CalendarController();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_controller.load());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = previewValue(context, UserPreferences.calendarStyle);
+    return settingsNavbarPreviewOver(
+      // The preview draws its own bars, so the device's insets stay out.
+      MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        removeBottom: true,
+        child: ListenableBuilder(
+          listenable: _controller,
+          builder: (context, _) => switch (style) {
+            CalendarStyle.agenda => CalendarAgendaView(controller: _controller),
+            CalendarStyle.countdown => CalendarCountdownView(
+              controller: _controller,
+            ),
+          },
+        ),
       ),
     );
   }
