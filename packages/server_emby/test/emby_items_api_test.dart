@@ -83,6 +83,18 @@ void main() {
     expect(request()?.queryParameters['Fields'], 'PrimaryImageTag,ImageTags');
   });
 
+  test('grouping into collections uses the name Emby reads', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(dio, () => 'user-1').getItems(collapseBoxSetItems: true);
+
+    expect(request()?.queryParameters['GroupItemsIntoCollections'], isTrue);
+    expect(
+      request()?.queryParameters.containsKey('CollapseBoxSetItems'),
+      isFalse,
+    );
+  });
+
   // Emby serves the same remote subtitle routes as Jellyfin. It ignores
   // MediaSourceId, so sending one buys nothing.
   group('remote subtitles', () {

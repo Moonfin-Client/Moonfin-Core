@@ -123,7 +123,7 @@ class EmbyItemsApi implements ItemsApi {
       'Is4K': ?is4K,
       'Is3D': ?is3D,
       'IsFavorite': ?isFavorite,
-      'CollapseBoxSetItems': ?collapseBoxSetItems,
+      'GroupItemsIntoCollections': ?collapseBoxSetItems,
       'EnableTotalRecordCount': ?enableTotalRecordCount,
       'EnableImageTypes': ?enableImageTypes,
       'ImageTypeLimit': ?imageTypeLimit,
