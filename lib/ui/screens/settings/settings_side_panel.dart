@@ -277,14 +277,11 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   final _searchController = TextEditingController();
   final _searchFieldFocus = FocusNode(debugLabel: 'SettingsSearchField');
   final _searchTvFieldKey = GlobalKey<CustomTVTextFieldState>();
-  final _chipFocus = {
-    for (final scene in SettingsPreviewScene.values)
-      scene: FocusNode(debugLabel: 'SettingsPreviewChip_${scene.name}'),
-  };
+  final _scenesFocus = FocusNode(debugLabel: 'SettingsPreviewScenes');
 
-  /// The setting Right crossed to the chips from, for Left and Back to return
-  /// to.
-  FocusNode? _chipsReturnFocus;
+  /// The setting Right crossed to the scenes from, for Left and Back to
+  /// return to.
+  FocusNode? _scenesReturnFocus;
   String _query = '';
   List<_SettingsCategory> _categories = const [];
   int _categoryIndex = 0;
@@ -359,20 +356,18 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     _preview.dispose();
     _listScope.dispose();
     _pillFocus.dispose();
-    for (final node in _chipFocus.values) {
-      node.dispose();
-    }
+    _scenesFocus.dispose();
     _searchController.dispose();
     _searchFieldFocus.dispose();
     super.dispose();
   }
 
-  /// Back leaves the scene chips for the setting they were reached from, then
+  /// Back leaves the scenes for the setting they were reached from, then
   /// pops the list column, then (on a TV or desktop) returns to the category
   /// pill, and only then lets the panel close.
   bool _handleBack() {
-    if (_chipFocus.values.any((node) => node.hasFocus)) {
-      _leaveChips();
+    if (_scenesFocus.hasFocus) {
+      _leaveScenes();
       return true;
     }
     final navigator = _listNavKey.currentState;
@@ -432,7 +427,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   }
 
   /// Up past the top of a settings page climbs to the pill, and Right past a
-  /// setting's own controls crosses to the preview's scene chips. Pickers
+  /// setting's own controls crosses to the preview's scenes. Pickers
   /// open over the list keep their own keys.
   KeyEventResult _onListKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
@@ -440,7 +435,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     }
     final up = event.logicalKey.isUpKey;
     // Only a fresh press crosses, so holding Right along a row stops at its
-    // end instead of running on into the chips.
+    // end instead of running on into the scenes.
     final right = event.logicalKey.isRightKey && event is KeyDownEvent;
     if (!up && !right) return KeyEventResult.ignored;
     final primary = FocusManager.instance.primaryFocus;
@@ -459,40 +454,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     if (up) {
       _pillFocus.requestFocus();
     } else {
-      _chipsReturnFocus = primary;
-      _chipFocus[_preview.scene]!.requestFocus();
+      _scenesReturnFocus = primary;
+      _scenesFocus.requestFocus();
     }
     return KeyEventResult.handled;
   }
 
-  /// Left and Right walk the chips, Left off the first one returns to the
-  /// setting they were reached from and Up climbs to the category pill.
-  KeyEventResult _onChipKey(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final scenes = settingsPreviewScenes;
-    final at = scenes.indexWhere((scene) => _chipFocus[scene]!.hasFocus);
-    if (at < 0) return KeyEventResult.ignored;
-    final key = event.logicalKey;
-    if (key.isLeftKey) {
-      if (at == 0) {
-        _leaveChips();
-      } else {
-        _chipFocus[scenes[at - 1]]!.requestFocus();
-      }
-    } else if (key.isRightKey) {
-      if (at < scenes.length - 1) _chipFocus[scenes[at + 1]]!.requestFocus();
-    } else if (key.isUpKey) {
-      _pillFocus.requestFocus();
-    } else if (!key.isDownKey) {
-      return KeyEventResult.ignored;
-    }
-    return KeyEventResult.handled;
-  }
-
-  void _leaveChips() {
-    final back = _chipsReturnFocus;
+  void _leaveScenes() {
+    final back = _scenesReturnFocus;
     if (back != null && back.context?.mounted == true) {
       back.requestFocus();
     } else {
@@ -866,13 +835,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
-                            child: Focus(
-                              canRequestFocus: false,
-                              skipTraversal: true,
-                              onKeyEvent: _onChipKey,
-                              child: SettingsLivePreview(
-                                chipFocus: _tv ? _chipFocus : null,
-                              ),
+                            child: SettingsLivePreview(
+                              sceneFocus: _tv ? _scenesFocus : null,
+                              onLeaveScenes: _leaveScenes,
+                              // Up climbs to the category pill and Down stays.
+                              onScenesVertical: (isUp) {
+                                if (isUp) _pillFocus.requestFocus();
+                                return true;
+                              },
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -1034,9 +1004,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   }
 }
 
-/// The phone's preview strip: the scene chips with the show/hide toggle, the
+/// The phone's preview strip: the show/hide toggle ahead of the scenes, the
 /// mock screen at the phone's own proportions, and the touched setting spelled
-/// out beside it. Hidden leaves only the chips row, so the toggle stays put.
+/// out beside it. Hidden leaves only the scenes row, so the toggle stays put.
 class _PhoneLivePreview extends StatelessWidget {
   final bool hidden;
   final VoidCallback onToggle;
@@ -1049,10 +1019,10 @@ class _PhoneLivePreview extends StatelessWidget {
         .dependOnInheritedWidgetOfExactType<SettingsPreviewScope>()
         ?.notifier;
     if (controller == null) return const SizedBox.shrink();
-    final chips = SettingsPreviewSceneChips(
+    final scenes = SettingsPreviewScenes(
       controller: controller,
       onSceneTap: hidden ? onToggle : null,
-      trailing: IconButton(
+      leading: IconButton(
         tooltip: AppLocalizations.of(context).settingsLivePreview,
         isSelected: !hidden,
         visualDensity: VisualDensity.compact,
@@ -1062,12 +1032,12 @@ class _PhoneLivePreview extends StatelessWidget {
         onPressed: onToggle,
       ),
     );
-    if (hidden) return chips;
+    if (hidden) return scenes;
     final landscape = controller.scene == SettingsPreviewScene.player;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        chips,
+        scenes,
         const SizedBox(height: 10),
         AnimatedSize(
           duration: const Duration(milliseconds: 200),

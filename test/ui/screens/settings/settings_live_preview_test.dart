@@ -49,6 +49,7 @@ import 'package:moonfin/ui/widgets/settings/preference_tiles.dart';
 import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
+import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -423,7 +424,7 @@ void main() {
     });
   });
 
-  group('the scene chips on a TV', () {
+  group('the scene pills on a TV', () {
     late AppLocalizations l10n;
 
     setUp(() {
@@ -432,20 +433,15 @@ void main() {
       l10n = lookupAppLocalizations(const Locale('en'));
     });
 
-    Future<Map<SettingsPreviewScene, FocusNode>> pumpChips(
+    Future<FocusNode> pumpScenes(
       WidgetTester tester,
       SettingsPreviewController controller, {
       required double width,
       required double scale,
+      VoidCallback? onExitLeft,
     }) async {
-      final nodes = {
-        for (final scene in SettingsPreviewScene.values) scene: FocusNode(),
-      };
-      addTearDown(() {
-        for (final node in nodes.values) {
-          node.dispose();
-        }
-      });
+      final node = FocusNode();
+      addTearDown(node.dispose);
       await tester.pumpWidget(
         host(
           controller,
@@ -458,9 +454,14 @@ void main() {
                 alignment: Alignment.topLeft,
                 child: SizedBox(
                   width: width,
-                  child: SettingsPreviewSceneChips(
-                    controller: controller,
-                    focusNodes: nodes,
+                  // The preview rebuilds the strip as the scene changes.
+                  child: ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) => SettingsPreviewScenes(
+                      controller: controller,
+                      focusNode: node,
+                      onExitLeft: onExitLeft,
+                    ),
                   ),
                 ),
               ),
@@ -468,80 +469,85 @@ void main() {
           ),
         ),
       );
+      // The strip measures its labels a frame after it's built.
+      await tester.pump();
       await tester.pump();
       expect(tester.takeException(), isNull);
-      return nodes;
+      return node;
     }
 
-    Rect chip(WidgetTester tester, SettingsPreviewScene scene) =>
+    Rect scene(WidgetTester tester, SettingsPreviewScene scene) =>
         tester.getRect(find.text(settingsPreviewSceneName(l10n, scene)));
 
     // 622 is what the TV layout leaves the preview column.
     for (final scale in DesktopUiScale.values) {
-      testWidgets('the chips get their room first at UI scale ${scale.name}', (
-        tester,
-      ) async {
-        await pumpChips(
+      testWidgets('the strip stays in its row beside the label at UI scale '
+          '${scale.name}', (tester) async {
+        await pumpScenes(
           tester,
           SettingsPreviewController(),
           width: 622,
           scale: scale.scaleFactor,
         );
+        final strip = tester.getRect(find.byType(SlidingPillTabs));
         final row = tester.getRect(find.byType(SingleChildScrollView));
-        final label = tester.getSize(
+        final label = tester.getRect(
           find.text(l10n.settingsLivePreview.toUpperCase()),
         );
-        final first = chip(tester, SettingsPreviewScene.home);
-        expect(first.left, greaterThanOrEqualTo(row.left));
-        expect(first.right, lessThanOrEqualTo(row.right));
-        // Either every chip fits, or the label gave up all of its room
-        // before any chip went past the edge.
-        final last = chip(tester, settingsPreviewScenes.last);
-        expect(
-          last.right <= row.right || label.width == 0,
-          isTrue,
-          reason: 'label ${label.width}, chips end ${last.right} of ${row.right}',
-        );
-        if (scale.scaleFactor <= DesktopUiScale.large.scaleFactor) {
-          expect(last.right, lessThanOrEqualTo(row.right));
-        }
+        expect(label.right, lessThanOrEqualTo(strip.left));
+        expect(strip.right, lessThanOrEqualTo(622));
+        expect(scene(tester, SettingsPreviewScene.home).left,
+            greaterThanOrEqualTo(row.left));
         debugDefaultTargetPlatformOverride = null;
       });
     }
 
-    testWidgets('chips too wide for the row scroll with the first in view', (
+    testWidgets('scenes too wide for the row scroll with the first in view', (
       tester,
     ) async {
-      await pumpChips(
+      await pumpScenes(
         tester,
         SettingsPreviewController(),
-        width: 260,
-        scale: DesktopUiScale.greatGrandparents.scaleFactor,
+        width: 300,
+        scale: 1,
       );
       final row = tester.getRect(find.byType(SingleChildScrollView));
-      final first = chip(tester, SettingsPreviewScene.home);
+      final first = scene(tester, SettingsPreviewScene.home);
       expect(first.left, greaterThanOrEqualTo(row.left));
       expect(first.right, lessThanOrEqualTo(row.right));
       expect(
-        chip(tester, SettingsPreviewScene.search).right,
+        scene(tester, SettingsPreviewScene.search).right,
         greaterThan(row.right),
       );
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('focusing a chip shows its scene', (tester) async {
+    testWidgets('Left and Right switch scenes and Left off the first leaves', (
+      tester,
+    ) async {
       final controller = SettingsPreviewController();
-      final nodes = await pumpChips(
+      var left = 0;
+      final node = await pumpScenes(
         tester,
         controller,
         width: 622,
         scale: 1,
+        onExitLeft: () => left++,
       );
-      nodes[SettingsPreviewScene.player]!.requestFocus();
+      node.requestFocus();
       await tester.pump();
-      expect(controller.scene, SettingsPreviewScene.player);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.details);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(left, 0);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      expect(left, 1);
 
       // Focus back on a setting hands the preview back to it.
+      controller.showScene(SettingsPreviewScene.player);
       controller.focus(
         const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
       );

@@ -26,7 +26,6 @@ import '../../../../playback/subtitle_view_config.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/device_performance.dart';
-import '../../../../util/focus/input_mode_tracker.dart';
 import '../../../../util/game_library.dart' show isGameLibrary;
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
@@ -47,6 +46,7 @@ import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/seasonal/seasonal_effects.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
+import '../../../widgets/sliding_pill_tabs.dart';
 import '../../../widgets/video_mini_player.dart';
 import '../../browse/book_category_screen.dart';
 import '../../browse/classic_book_browse_screen.dart';
@@ -208,19 +208,27 @@ Listenable _previewListenable(SettingsPreviewController controller) =>
         GetIt.instance<PosterBadgeRepository>().available,
     ]);
 
-/// The live preview: scene chips over a mock of the screen the focused setting
+/// The live preview: the scenes over a mock of the screen the focused setting
 /// changes, drawn with the saved values or the option a picker is trying.
 class SettingsLivePreview extends StatefulWidget {
-  /// Hides the header so a phone can lay the chips out itself.
+  /// Hides the header so a phone can lay the scenes out itself.
   final bool showHeader;
 
-  /// Lets the D-pad reach the chips, see [SettingsPreviewSceneChips].
-  final Map<SettingsPreviewScene, FocusNode>? chipFocus;
+  /// Lets the D-pad reach the scenes, see [SettingsPreviewScenes].
+  final FocusNode? sceneFocus;
+
+  /// Left off the first scene.
+  final VoidCallback? onLeaveScenes;
+
+  /// Up or Down off the scenes, true when it was used.
+  final bool Function(bool isUp)? onScenesVertical;
 
   const SettingsLivePreview({
     super.key,
     this.showHeader = true,
-    this.chipFocus,
+    this.sceneFocus,
+    this.onLeaveScenes,
+    this.onScenesVertical,
   });
 
   @override
@@ -277,9 +285,11 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SettingsPreviewSceneChips(
+            SettingsPreviewScenes(
               controller: controller,
-              focusNodes: widget.chipFocus,
+              focusNode: widget.sceneFocus,
+              onExitLeft: widget.onLeaveScenes,
+              onVerticalNavigation: widget.onScenesVertical,
             ),
             const SizedBox(height: 10),
             Flexible(child: Center(child: frame)),
@@ -352,25 +362,35 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
   }
 }
 
-/// The "Live preview" label and the chips that switch scenes by hand.
-class SettingsPreviewSceneChips extends StatelessWidget {
+/// The "Live preview" label and the scenes, in the same pill strip as the
+/// categories, to switch scenes by hand.
+class SettingsPreviewScenes extends StatelessWidget {
   final SettingsPreviewController controller;
 
-  /// A node per chip where the D-pad can reach them. Without them a TV keeps
-  /// the chips out of focus and the preview just follows the focused setting.
-  final Map<SettingsPreviewScene, FocusNode>? focusNodes;
+  /// Where the D-pad reaches the scenes. Without it a TV keeps them out of
+  /// focus and the preview just follows the focused setting.
+  final FocusNode? focusNode;
 
-  /// Sits right after the last chip, like the phone's show/hide toggle.
-  final Widget? trailing;
+  /// Left off the first scene.
+  final VoidCallback? onExitLeft;
 
-  /// Runs after a chip switches the scene, so a hidden phone preview can open.
+  /// Up or Down off the scenes, true when it was used.
+  final bool Function(bool isUp)? onVerticalNavigation;
+
+  /// Sits before the scenes in place of the label, like the phone's show/hide
+  /// toggle, so it's in reach however many scenes there are.
+  final Widget? leading;
+
+  /// Runs after a scene is picked, so a hidden phone preview can open.
   final VoidCallback? onSceneTap;
 
-  const SettingsPreviewSceneChips({
+  const SettingsPreviewScenes({
     super.key,
     required this.controller,
-    this.focusNodes,
-    this.trailing,
+    this.focusNode,
+    this.onExitLeft,
+    this.onVerticalNavigation,
+    this.leading,
     this.onSceneTap,
   });
 
@@ -378,162 +398,61 @@ class SettingsPreviewSceneChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scenes = settingsPreviewScenes;
-    Widget chips = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < scenes.length; i++) ...[
-          if (i > 0) const SizedBox(width: 6),
-          _SceneChip(
-            label: settingsPreviewSceneName(l10n, scenes[i]),
-            selected: controller.scene == scenes[i],
-            focusNode: focusNodes?[scenes[i]],
-            onTap: () {
-              controller.showScene(scenes[i]);
-              onSceneTap?.call();
-            },
-          ),
+    // The strip keeps a fixed height and measures its labels once, so the
+    // scale is capped the way the category strip's is and a new one gets a
+    // fresh strip.
+    Widget pills = MediaQuery.withClampedTextScaling(
+      maxScaleFactor: DesktopUiScale.large.scaleFactor,
+      child: SlidingPillTabs(
+        key: ValueKey(MediaQuery.textScalerOf(context)),
+        labels: [
+          for (final scene in scenes) settingsPreviewSceneName(l10n, scene),
         ],
-        if (trailing case final trailing?) ...[
-          const SizedBox(width: 6),
-          trailing,
-        ],
-      ],
-    );
-    if (PlatformDetection.useLeanbackUi && focusNodes == null) {
-      chips = ExcludeFocus(child: chips);
-    }
-    // A phone has room for the chips or the label, and the chips matter more.
-    final phone = PlatformDetection.useMobileUi;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // The chips take the width they need and the label gets what's left,
-        // so only chips that outgrow the whole row scroll.
-        final chipsRoom = constraints.maxWidth - 16 - (phone ? 0 : 12);
-        return Row(
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColorScheme.accent,
-              ),
-            ),
-            const SizedBox(width: 8),
-            if (!phone) ...[
-              // Clipped so a label squeezed to nothing leaves no stray
-              // ellipsis behind.
-              Expanded(
-                child: ClipRect(
-                  child: Text(
-                    l10n.settingsLivePreview.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: math.max(0, chipsRoom)),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                // Room for the focus ring and glow, which the scroll view
-                // would otherwise clip.
-                padding: focusNodes == null
-                    ? null
-                    : const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                child: chips,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _SceneChip extends StatefulWidget {
-  final String label;
-  final bool selected;
-  final FocusNode? focusNode;
-  final VoidCallback onTap;
-
-  const _SceneChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    this.focusNode,
-  });
-
-  @override
-  State<_SceneChip> createState() => _SceneChipState();
-}
-
-class _SceneChipState extends State<_SceneChip> {
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = widget.selected;
-    final focused = InputModeTracker.showFocusVisuals(context, _focused);
-    final borders = ThemeRegistry.active.borders;
-    return AnimatedScale(
-      scale: focused ? 1.08 : 1.0,
-      duration: const Duration(milliseconds: 120),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.circular(999),
-          boxShadow: focused ? borders.focusGlow : null,
-        ),
-        child: Material(
-          color: selected ? Colors.white : Colors.transparent,
-          shape: StadiumBorder(
-            side: focused
-                ? borders.focusBorder.copyWith(width: 2)
-                : BorderSide(
-                    color: selected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.22),
-                  ),
-          ),
-          child: InkWell(
-            customBorder: const StadiumBorder(),
-            focusNode: widget.focusNode,
-            focusColor: Colors.transparent,
-            onFocusChange: (value) {
-              setState(() => _focused = value);
-              if (!value) return;
-              // Focusing a chip shows its scene, the way clicking it does.
-              widget.onTap();
-              Scrollable.ensureVisible(
-                context,
-                duration: const Duration(milliseconds: 120),
-              );
-            },
-            onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              child: Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: selected
-                      ? AppColors.black
-                      : AppColorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
-          ),
-        ),
+        selectedIndex: scenes.indexOf(controller.scene),
+        onChanged: (index) {
+          controller.showScene(scenes[index]);
+          onSceneTap?.call();
+        },
+        focusNode: focusNode,
+        onExitLeft: onExitLeft,
+        onVerticalNavigation: onVerticalNavigation,
+        alignment: leading == null
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
       ),
+    );
+    if (PlatformDetection.useLeanbackUi && focusNode == null) {
+      pills = ExcludeFocus(child: pills);
+    }
+    return Row(
+      children: [
+        if (leading case final leading?) ...[
+          leading,
+          const SizedBox(width: 6),
+        ] else ...[
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColorScheme.accent,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            l10n.settingsLivePreview.toUpperCase(),
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+        Expanded(child: pills),
+      ],
     );
   }
 }
