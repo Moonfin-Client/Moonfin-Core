@@ -27,9 +27,6 @@ concurrency:
   group: gradle-cache
   cancel-in-progress: false
 
-env:
-  FLUTTER_VERSION: '3.47.2'
-
 jobs:
   warm:
     runs-on: ubuntu-26.04
@@ -47,10 +44,23 @@ jobs:
             **/gradle-wrapper.properties
             pubspec.lock
 
+      # Read from build.yml rather than kept here too, so a Flutter upgrade
+      # there can't leave this cache built with the old one.
+      - name: Read the Flutter version build.yml uses
+        id: flutter
+        if: steps.java.outputs.cache-hit != 'true'
+        run: |
+          version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
+          if [ -z "$version" ]; then
+            echo "::error file=.github/workflows/build.yml::Couldn't find FLUTTER_VERSION in build.yml"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - uses: subosito/flutter-action@v2
         if: steps.java.outputs.cache-hit != 'true'
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version: ${{ steps.flutter.outputs.version }}
 
       # The same Gradle invocation as the kotlin test suite, so the cache holds
       # what it resolves. setup-java saves the cache when the job ends.
