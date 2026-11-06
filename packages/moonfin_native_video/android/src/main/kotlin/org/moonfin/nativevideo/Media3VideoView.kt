@@ -90,6 +90,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.text.TextOutput
 import androidx.media3.exoplayer.text.TextRenderer
+import androidx.media3.exoplayer.upstream.Loader
 import androidx.media3.exoplayer.video.MediaCodecVideoRenderer
 import androidx.media3.exoplayer.video.VideoRendererEventListener
 import androidx.media3.extractor.DefaultExtractorsFactory
@@ -6301,25 +6302,12 @@ class Media3VideoView(
             ?.startsWith("audio/") == true
     }
 
-    private fun errorIsNoValidVarintLengthMaskFound(error: PlaybackException): Boolean {
+    // Media3 wraps anything a container reader throws, other than an I/O
+    // error, in an UnexpectedLoaderException.
+    private fun errorIsContainerReaderCrash(error: PlaybackException): Boolean {
         val exo = error as? ExoPlaybackException ?: return false
-        if (exo.type != ExoPlaybackException.TYPE_SOURCE) return false
-
-        var cause: Throwable? = exo.sourceException
-        var depth = 0
-
-        while (cause != null && depth < 3) {
-            if (cause is IllegalStateException &&
-                cause.message == "No valid varint length mask found"
-            ) {
-                return true
-            }
-
-            cause = cause.cause
-            depth++
-        }
-
-        return false
+        return exo.type == ExoPlaybackException.TYPE_SOURCE &&
+            exo.sourceException is Loader.UnexpectedLoaderException
     }
 
     // Every data source the factory makes reads its request properties when
@@ -6370,15 +6358,11 @@ class Media3VideoView(
             PlaybackException.ERROR_CODE_DECODING_FAILED ->
                 if (errorIsFromAudioRenderer(error)) "unsupported_audio" else null
 
-            // Some MKVs carry zero padding after the last real cluster while
-            // the Segment size runs to EOF. Media3 reads a 0x00 there as an
-            // EBML length byte, which has no leading 1-bit and so no valid
-            // varint length mask. The container is the malformed part, and any
-            // server transcode rewrites it without the tail.
+            // A container reader crashed on the file, like an MKV with zero
+            // padding after its last cluster or an AVI with an odd-sized
+            // chunk. Any server transcode rewrites the container.
             PlaybackException.ERROR_CODE_IO_UNSPECIFIED ->
-                if (!containerFallbackAttempted &&
-                    errorIsNoValidVarintLengthMaskFound(error)
-                ) {
+                if (!containerFallbackAttempted && errorIsContainerReaderCrash(error)) {
                     "unsupported_container"
                 } else {
                     null
