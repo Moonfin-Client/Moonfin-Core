@@ -160,11 +160,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       } catch (_) {
         canManageRequests = false;
       }
-      if (_syncService.pluginAvailable &&
-          GetIt.instance.isRegistered<MediaServerClient>()) {
-        final client = GetIt.instance<MediaServerClient>();
-        await _syncService.fetchNotificationPrefs(client);
-      }
     } catch (_) {}
 
     if (!mounted) return;
@@ -173,6 +168,17 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       _canManageRequests = canManageRequests;
       _statusLoading = false;
     });
+
+    if (_syncService.pluginAvailable &&
+        GetIt.instance.isRegistered<MediaServerClient>()) {
+      try {
+        final client = GetIt.instance<MediaServerClient>();
+        await _syncService.fetchNotificationPrefs(client);
+        if (mounted) {
+          setState(() {});
+        }
+      } catch (_) {}
+    }
   }
 
   String? _extractSeerrError(DioException error) {

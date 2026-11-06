@@ -213,6 +213,9 @@ class BottomNavController extends ChangeNotifier {
         _prefs.get(UserPreferences.navbarOpacity),
         _pluginSync?.seerrAvailable ?? false,
         _pluginSync?.calendarAvailable ?? false,
+        GetIt.instance.isRegistered<SeerrPreferences>()
+            ? GetIt.instance<SeerrPreferences>().enabled
+            : false,
       ].join('|');
 
   void _onPrefsChanged() {
