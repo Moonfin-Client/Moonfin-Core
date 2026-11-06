@@ -978,7 +978,7 @@ jobs:
               'analyzer_sample': analyzer[:10],
               'run_status': run_status,
           }
-          with open('/tmp/test-results/test-results.json', 'w') as f:
+          with open('/tmp/test-results/test-results-${{ matrix.suite }}.json', 'w') as f:
               json.dump(out, f)
           print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
           EOF
@@ -988,7 +988,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.suite }}
-          path: /tmp/test-results/test-results.json
+          path: /tmp/test-results/test-results-${{ matrix.suite }}.json
 
       - name: Gate on failures
         if: always()
@@ -996,7 +996,7 @@ jobs:
           python3 - <<'EOF'
           import json
           import sys
-          results = json.load(open('/tmp/test-results/test-results.json'))
+          results = json.load(open('/tmp/test-results/test-results-${{ matrix.suite }}.json'))
           bad = results['failed'] or results['analyzer_errors'] or results['run_status']
           sys.exit(1 if bad else 0)
           EOF
@@ -1012,6 +1012,7 @@ jobs:
         with:
           pattern: test-results-*
           path: parts
+          merge-multiple: true
 
       - name: Merge results
         run: |
@@ -1030,7 +1031,7 @@ jobs:
               'run_status': 0,
           }
           for suite in suites:
-              path = f'parts/test-results-{suite}/test-results.json'
+              path = f'parts/test-results-{suite}.json'
               if not os.path.exists(path):
                   print(f'No results from {suite}')
                   out['run_status'] = 1
