@@ -5551,7 +5551,13 @@ class _ContentRowsState extends State<_ContentRows>
           if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-            context.push(Destinations.genre(item.name, genreId: item.id));
+            context.push(
+              Destinations.genre(
+                item.name,
+                genreId: item.id,
+                serverId: item.serverId,
+              ),
+            );
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
             context.push(Destinations.studio(item.name, serverId: item.serverId));
           } else if (item.serverId == 'seerr') {
@@ -5676,7 +5682,13 @@ class _ContentRowsState extends State<_ContentRows>
                     if (row.rowType == HomeRowType.libraryTiles) {
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-                      context.push(Destinations.genre(item.name, genreId: item.id));
+                      context.push(
+                        Destinations.genre(
+                          item.name,
+                          genreId: item.id,
+                          serverId: item.serverId,
+                        ),
+                      );
                     } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
                       context.push(Destinations.studio(item.name, serverId: item.serverId));
                     } else if (item.serverId == 'seerr') {

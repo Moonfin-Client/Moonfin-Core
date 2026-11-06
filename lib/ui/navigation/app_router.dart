@@ -467,8 +467,10 @@ final appRouter = GoRouter(
         final genreId = state.uri.queryParameters['genreId']!;
         final parentId = state.uri.queryParameters['parentId'];
         final includeType = state.uri.queryParameters['includeType'];
+        final serverId = state.uri.queryParameters['serverId'];
         return LibraryBrowseScreen(
           libraryId: parentId ?? '',
+          serverId: serverId,
           genreId: genreId,
           genreName: genreName,
           includeItemTypes: includeType != null ? [includeType] : null,
