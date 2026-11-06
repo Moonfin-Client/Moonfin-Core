@@ -3267,15 +3267,22 @@ class _ContentRowsState extends State<_ContentRows>
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
-        final imageHeight = (row.id == 'mdblist_watching_now')
+        final baseImageHeight = (row.id == 'mdblist_watching_now')
             ? posterSize.landscapeHeight.toDouble() * platformScale
             : modernImageHeight(posterSize, platformScale);
+        final imageHeight =
+            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final budget = _v2MetadataBudgetFor(row, prefs);
         childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
-        final imageHeight = (row.id == 'mdblist_watching_now'
+        final baseImageHeight = (row.id == 'mdblist_watching_now'
             ? posterSize.landscapeHeight.toDouble()
             : posterSize.portraitHeight.toDouble()) * platformScale;
+        // LibraryRow displays a loading placeholder with a 220 base height.
+        // Clamp to at least 220 * desktopScale so smaller poster sizes on mobile
+        // don't cause the spinner to overflow into the next row.
+        final imageHeight =
+            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final headroom = _focusHeadroom(
           imageHeight,
           prefs.get(UserPreferences.cardFocusExpansion),
@@ -4298,20 +4305,28 @@ class _ContentRowsState extends State<_ContentRows>
       final rowHeight = squarePosterSide + (56 * metadataScale);
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
+      final isWatchingNow = row.id == 'mdblist_watching_now';
       final maxImageHeight = _rowImageHeight(row, posterSize, prefs);
       final maxCardHeight = _isRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
-                (_classicCardMetadataHeight * metadataScale) +
+                (isWatchingNow
+                    ? 0.0
+                    : (_classicCardMetadataHeight * metadataScale)) +
                 _classicRowPadding(row, prefs);
       final headroom = _focusHeadroom(
         maxImageHeight,
         prefs.get(UserPreferences.cardFocusExpansion),
       );
+      final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
+      final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+      final subtitleHeight = hasSubtitle
+          ? (isWatchingNow ? 26.0 : 18.0) * metadataScale
+          : 0.0;
       return _libraryRowExtent(
         maxCardHeight + headroom,
         metadataScale: metadataScale,
-      );
+      ) + subtitleHeight;
     }
   }
 
