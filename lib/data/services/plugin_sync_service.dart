@@ -177,6 +177,8 @@ class PluginSyncService extends ChangeNotifier {
   Future<bool>? _activeNotificationPush;
   bool _notificationPushQueued = false;
   Timer? _notificationPushRetryTimer;
+  int _notificationPushRetryCount = 0;
+  bool _isDisposed = false;
   final Set<String> _notificationPrefsFetchedUserKeys = {};
 
   String _unsyncedNotificationStoreKey(String userKey) =>
@@ -300,6 +302,7 @@ class PluginSyncService extends ChangeNotifier {
     if (!keepPendingNotificationChanges) {
       _notificationPushRetryTimer?.cancel();
       _notificationPushRetryTimer = null;
+      _notificationPushRetryCount = 0;
       _notificationPrefsVersion++;
       _activeNotificationPrefsFetch = null;
       _activeNotificationPrefsUserKey = null;
@@ -644,7 +647,9 @@ class PluginSyncService extends ChangeNotifier {
         return;
       }
 
-      await fetchNotificationPrefs(client);
+      if (!hasFetchedNotificationPrefs(client, serverId: serverId)) {
+        await fetchNotificationPrefs(client);
+      }
       await _refreshCustomThemes(client, serverId: serverId);
 
       final profile = syncProfile;
@@ -1167,6 +1172,14 @@ class PluginSyncService extends ChangeNotifier {
         }
         return false;
       }
+
+      // Check whether session was reset or user changed while awaiting endpoint
+      if (_notificationPrefsVersion != versionAtStart ||
+          _userSyncKey(client) != userKey ||
+          !_pluginAvailable) {
+        return false;
+      }
+
       final headers = ep.headers;
 
       await _dio.post(
@@ -1185,6 +1198,7 @@ class PluginSyncService extends ChangeNotifier {
       if (_notificationPrefsVersion == versionAtStart) {
         _setUnsyncedNotificationPrefs(userKey, false);
       }
+      _notificationPushRetryCount = 0;
       return true;
     } catch (_) {
       if (hasUnsyncedNotificationPrefsFor(userKey)) {
@@ -1195,8 +1209,14 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   void _scheduleNotificationPushRetry(MediaServerClient client) {
+    if (_isDisposed) return;
     _notificationPushRetryTimer?.cancel();
-    _notificationPushRetryTimer = Timer(const Duration(seconds: 5), () {
+    final delaySeconds = (5 * (1 << _notificationPushRetryCount.clamp(0, 3))).clamp(5, 60);
+    if (_notificationPushRetryCount < 6) {
+      _notificationPushRetryCount++;
+    }
+    _notificationPushRetryTimer = Timer(Duration(seconds: delaySeconds), () {
+      if (_isDisposed) return;
       final userKey = _userSyncKey(client);
       if (hasUnsyncedNotificationPrefsFor(userKey)) {
         if (_pluginAvailable) {
@@ -2665,6 +2685,9 @@ class PluginSyncService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _isDisposed = true;
+    _notificationPushRetryTimer?.cancel();
+    _notificationPushRetryTimer = null;
     _prefs.removeListener(_onPrefsChanged);
     _pushDebounceTimer?.cancel();
     _syncRetryTimer?.cancel();
