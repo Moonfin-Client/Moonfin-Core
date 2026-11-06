@@ -256,9 +256,17 @@ class PluginSyncService extends ChangeNotifier {
     bool notify = true,
     bool stopStream = true,
     bool keepIncompleteRecordings = false,
+    bool keepPendingNotificationChanges = false,
   }) {
     _syncRetryTimer?.cancel();
-    _notificationPushRetryTimer?.cancel();
+    if (!keepPendingNotificationChanges) {
+      _notificationPushRetryTimer?.cancel();
+      _notificationPushRetryTimer = null;
+      _notificationPrefsVersion++;
+      _activeNotificationPrefsFetch = null;
+      _activeNotificationPrefsUserKey = null;
+      _hasUnsyncedNotificationPrefs = false;
+    }
     _signInSettingsRead.clear();
     if (stopStream) {
       _stopSettingsStream();
@@ -266,10 +274,6 @@ class PluginSyncService extends ChangeNotifier {
     // A snapshot describes the server state of the session being torn down, so
     // keeping it could wrongly suppress the next user's first push.
     _lastSyncedProfileJson.clear();
-    _notificationPrefsVersion++;
-    _activeNotificationPrefsFetch = null;
-    _activeNotificationPrefsUserKey = null;
-    _hasUnsyncedNotificationPrefs = false;
     _pluginAvailable = false;
     _pluginVersion = null;
     _seerrUrl = null;
@@ -327,6 +331,7 @@ class PluginSyncService extends ChangeNotifier {
       notify: false,
       stopStream: false,
       keepIncompleteRecordings: true,
+      keepPendingNotificationChanges: true,
     );
 
     // A server that can't have the plugin has nothing to ping. Every caller
@@ -447,7 +452,10 @@ class PluginSyncService extends ChangeNotifier {
       notifyListeners();
       return _PluginAvailabilityStatus.available;
     } catch (_) {
-      resetState(notify: false);
+      resetState(
+        notify: false,
+        keepPendingNotificationChanges: true,
+      );
       return _PluginAvailabilityStatus.unknown;
     }
   }

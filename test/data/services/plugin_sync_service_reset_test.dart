@@ -35,6 +35,17 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// What the ping says about incomplete recordings.
   bool incompleteRecordingsSupported = false;
 
+  /// Notification preferences returned by the server.
+  Map<String, dynamic> notificationPrefs = {
+    'notifyOnNewRequests': false,
+    'notifyOnLibraryAdded': false,
+    'notifyOnIssues': false,
+    'notifyOnNewMedia': false,
+  };
+
+  /// Set when notification preference POST should fail.
+  bool failNotificationPush = false;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -46,6 +57,18 @@ class _RecordingAdapter implements HttpClientAdapter {
 
     if (options.method == 'DELETE') {
       return ResponseBody.fromString('', failDeletes ? 500 : 200);
+    }
+    if (path.endsWith('/Moonfin/Notifications/Prefs')) {
+      if (options.method == 'POST') {
+        return ResponseBody.fromString('', failNotificationPush ? 500 : 200);
+      }
+      return ResponseBody.fromString(
+        jsonEncode(notificationPrefs),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
     }
 
     Map<String, dynamic>? body;
@@ -235,5 +258,36 @@ void main() {
 
     expect(incomplete.supported, isFalse);
     incomplete.dispose();
+  });
+
+  test(
+      'failed notification push followed by same-session refresh preserves unsynced edits and blocks stale fetch',
+      () async {
+    final seerr = GetIt.instance<SeerrPreferences>();
+    await seerr.setNotifyOnNewRequests(true);
+    expect(seerr.notifyOnNewRequests, isTrue);
+
+    adapter.failNotificationPush = true;
+    final pushed = await service.pushNotificationPrefs(client);
+    expect(pushed, isFalse);
+
+    // Stale server values have false
+    adapter.notificationPrefs = {'notifyOnNewRequests': false};
+
+    // Same-session refresh preserves pending changes
+    await service.refreshAvailability(client);
+
+    // Stale fetch should be ignored because edits are pending sync
+    await service.fetchNotificationPrefs(client);
+    expect(seerr.notifyOnNewRequests, isTrue);
+
+    // Session teardown clears pending notification changes
+    service.resetState();
+    adapter.failNotificationPush = false;
+    await service.refreshAvailability(client);
+
+    // Now fetch applies server preferences
+    await service.fetchNotificationPrefs(client);
+    expect(seerr.notifyOnNewRequests, isFalse);
   });
 }
