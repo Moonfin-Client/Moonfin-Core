@@ -76,10 +76,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Restores the Gradle cache gradle-cache.yml saves on main, so a PR run
+      # doesn't download every dependency from Maven Central, which refuses
+      # the shared runner IPs (429/403). Keep cache-dependency-path the same
+      # in all three places, or the keys stop matching.
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            **/*.gradle*
+            **/gradle-wrapper.properties
+            pubspec.lock
 
       - uses: subosito/flutter-action@v2
         with:
@@ -870,11 +879,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # The same Gradle cache as the android job, see there.
       - uses: actions/setup-java@v5
         if: matrix.suite == 'kotlin'
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            **/*.gradle*
+            **/gradle-wrapper.properties
+            pubspec.lock
 
       - uses: subosito/flutter-action@v2
         with:
