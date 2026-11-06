@@ -14105,6 +14105,7 @@ class DetailSimilarRow extends StatelessWidget {
           final isSeerrItem =
               item.id.startsWith('tmdb:') || item.serverId == 'seerr';
           return MediaCard(
+            posterBadgeItemId: isSeerrItem ? null : item.id,
             title: item.name,
             titleColor: isNeon ? AppColorScheme.accent : null,
             imageUrl: item.primaryImageTag != null
@@ -14236,6 +14237,7 @@ class DetailFeaturesRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = items[index];
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: item.name,
             subtitle: item.subtitle,
             titleColor: isNeon ? AppColorScheme.onSurface : null,
@@ -17026,6 +17028,7 @@ class FilmographyRow extends StatelessWidget {
           }
 
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: title,
             subtitle: subtitle,
             imageUrl: item.primaryImageTag != null
