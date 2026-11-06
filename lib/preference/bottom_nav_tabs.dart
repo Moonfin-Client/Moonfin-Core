@@ -92,7 +92,7 @@ class BottomNavTabGates {
       showSeerr: prefs.get(UserPreferences.showSeerrButton),
       seerrAvailable: seerrAvailable,
       showCalendar: prefs.get(UserPreferences.showCalendarButton),
-      calendarAvailable: calendarAvailable,
+      calendarAvailable: calendarAvailable && seerrAvailable,
     );
   }
 

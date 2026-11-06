@@ -169,7 +169,10 @@ bool get _showThemeEditorEntry =>
 bool get _integrationsOffered =>
     seerrOnAnySignedInServer() ||
     (GetIt.instance.isRegistered<PluginSyncService>() &&
-        GetIt.instance<PluginSyncService>().calendarAvailable) ||
+        GetIt.instance<PluginSyncService>().calendarAvailable &&
+        GetIt.instance<PluginSyncService>().seerrAvailable &&
+        (GetIt.instance.isRegistered<SeerrPreferences>() &&
+            GetIt.instance<SeerrPreferences>().enabled)) ||
     (GetIt.instance.isRegistered<AchievementsService>() &&
         GetIt.instance<AchievementsService>().available);
 
