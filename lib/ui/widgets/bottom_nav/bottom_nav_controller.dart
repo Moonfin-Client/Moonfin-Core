@@ -17,6 +17,7 @@ import '../../../data/services/saved_media_presence.dart';
 import '../../../data/services/server_messages_service.dart';
 import '../../../preference/bottom_nav_tabs.dart';
 import '../../../preference/preference_constants.dart';
+import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/game_library.dart';
 import '../../../util/live_tv_library.dart';
@@ -110,11 +111,17 @@ class BottomNavController extends ChangeNotifier {
   BottomNavbarStyle get style => _prefs.get(UserPreferences.bottomNavbarStyle);
   bool get kidsMode => _prefs.get(UserPreferences.kidsModeEnabled);
 
-  BottomNavTabGates get gates => BottomNavTabGates.fromPreferences(
-        _prefs,
-        seerrAvailable: _pluginSync?.seerrAvailable ?? false,
-        calendarAvailable: _pluginSync?.calendarAvailable ?? false,
-      );
+  BottomNavTabGates get gates {
+    final seerrEnabled = (_pluginSync?.seerrAvailable ?? false) &&
+        (GetIt.instance.isRegistered<SeerrPreferences>() &&
+            GetIt.instance<SeerrPreferences>().enabled);
+    return BottomNavTabGates.fromPreferences(
+      _prefs,
+      seerrAvailable: seerrEnabled,
+      calendarAvailable:
+          (_pluginSync?.calendarAvailable ?? false) && seerrEnabled,
+    );
+  }
 
   bool get _hasLiveTvLibrary => _libraries.any(isLiveTvLibrary);
 

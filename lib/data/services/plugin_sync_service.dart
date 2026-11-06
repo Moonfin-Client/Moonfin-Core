@@ -533,6 +533,9 @@ class PluginSyncService extends ChangeNotifier {
 
       // Reads the cache first, so messages are there even with no connection.
       await _messages?.refresh(client, serverId: serverId);
+      if (availability == _PluginAvailabilityStatus.available) {
+        await fetchNotificationPrefs(client);
+      }
 
       final syncInitializedPref =
           UserPreferences.pluginSyncInitializedForServer(
@@ -569,6 +572,7 @@ class PluginSyncService extends ChangeNotifier {
         return;
       }
 
+      await fetchNotificationPrefs(client);
       await _refreshCustomThemes(client, serverId: serverId);
 
       final profile = syncProfile;
@@ -942,6 +946,40 @@ class PluginSyncService extends ChangeNotifier {
       );
       // Only after the POST lands, so a failed push retries on the next change.
       _lastSyncedProfileJson[snapshotKey] = payloadJson;
+    } catch (_) {}
+  }
+
+  Future<void> fetchNotificationPrefs(MediaServerClient client) async {
+    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+
+    try {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep == null) return;
+
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/Notifications/Prefs',
+        options: Options(headers: ep.headers),
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        final newRequests = _readBool(data, 'notifyOnNewRequests');
+        if (newRequests != null) {
+          await _seerrPrefs.setNotifyOnNewRequests(newRequests);
+        }
+        final libAdded = _readBool(data, 'notifyOnLibraryAdded');
+        if (libAdded != null) {
+          await _seerrPrefs.setNotifyOnLibraryAdded(libAdded);
+        }
+        final issues = _readBool(data, 'notifyOnIssues');
+        if (issues != null) {
+          await _seerrPrefs.setNotifyOnIssues(issues);
+        }
+        final newMedia = _readBool(data, 'notifyOnNewMedia');
+        if (newMedia != null) {
+          await _seerrPrefs.setNotifyOnNewMedia(newMedia);
+        }
+      }
     } catch (_) {}
   }
 

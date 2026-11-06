@@ -63,7 +63,12 @@ class _ServicesScreenState extends State<_ServicesScreen> {
       l10n.seerr,
     );
     final seerrShown = seerrOnAnySignedInServer();
-    final calendarShown = GetIt.instance<PluginSyncService>().calendarAvailable;
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
+    final calendarShown =
+        GetIt.instance<PluginSyncService>().calendarAvailable &&
+        seerrAvailable &&
+        seerrPrefs.enabled;
     return ListView(
       children: [
         adaptiveListSection(

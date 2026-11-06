@@ -53,6 +53,12 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
     if (current != normalized) {
       _prefs.set(UserPreferences.mediaBarMode, normalized);
     }
+    final currentSource = _prefs.get(UserPreferences.mediaBarSourceType);
+    final normalizedSource =
+        UserPreferences.normalizeMediaBarSourceType(currentSource);
+    if (currentSource != normalizedSource) {
+      _prefs.set(UserPreferences.mediaBarSourceType, normalizedSource);
+    }
     final currentInterval = _prefs.get(UserPreferences.mediaBarIntervalMs);
     if (!_validAutoAdvanceIntervals.contains(currentInterval)) {
       _prefs.set(UserPreferences.mediaBarIntervalMs, 10000);

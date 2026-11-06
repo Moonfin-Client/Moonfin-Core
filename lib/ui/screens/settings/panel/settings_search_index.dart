@@ -121,11 +121,15 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   required VoidCallback openAdmin,
   required VoidCallback openThemeEditor,
 }) {
+  final prefs = GetIt.instance<UserPreferences>();
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
+  final seerrPrefs = GetIt.instance<SeerrPreferences>();
   final calendarAvailable =
-      GetIt.instance<PluginSyncService>().calendarAvailable;
+      GetIt.instance<PluginSyncService>().calendarAvailable &&
+      seerrAvailable &&
+      seerrPrefs.enabled;
   final calendarRemindersAvailable =
       GetIt.instance<PluginSyncService>().calendarRemindersAvailable;
   final liveTvOnAnyServer = liveTvOnAnySignedInServer();
@@ -2223,12 +2227,14 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.calendarSettingsColorBy,
         subtitle: l10n.calendarSettingsColorByDescription,
       ),
-      calendarSettings.leaf(
-        'pref_calendar_image_type',
-        l10n.calendarSettingsImageType,
-        subtitle: l10n.calendarSettingsImageTypeDescription,
-        keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
-      ),
+      if (prefs.get(UserPreferences.calendarStyle) ==
+          CalendarStyle.countdown)
+        calendarSettings.leaf(
+          'pref_calendar_image_type',
+          l10n.calendarSettingsImageType,
+          subtitle: l10n.calendarSettingsImageTypeDescription,
+          keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
+        ),
       calendarSettings.leaf(
         'pref_calendar_spoiler_safe',
         l10n.calendarSettingsSpoilerSafe,

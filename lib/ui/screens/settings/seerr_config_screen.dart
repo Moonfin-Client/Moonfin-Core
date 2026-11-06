@@ -160,6 +160,11 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       } catch (_) {
         canManageRequests = false;
       }
+      if (_syncService.pluginAvailable &&
+          GetIt.instance.isRegistered<MediaServerClient>()) {
+        final client = GetIt.instance<MediaServerClient>();
+        await _syncService.fetchNotificationPrefs(client);
+      }
     } catch (_) {}
 
     if (!mounted) return;

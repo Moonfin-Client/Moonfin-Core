@@ -997,7 +997,9 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final showCalendar =
         !kidsMode &&
         _prefs.get(UserPreferences.showCalendarButton) &&
-        GetIt.instance<PluginSyncService>().calendarAvailable;
+        GetIt.instance<PluginSyncService>().calendarAvailable &&
+        GetIt.instance<PluginSyncService>().seerrAvailable &&
+        seerrPrefs.enabled;
     final l10n = AppLocalizations.of(context);
     final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
     // Desktop/macOS keeps the dropdown; inline fan-out is only used where

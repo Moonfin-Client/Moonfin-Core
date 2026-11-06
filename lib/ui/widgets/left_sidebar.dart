@@ -1137,7 +1137,9 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                   ),
                 if (!kidsMode &&
                     _prefs.get(UserPreferences.showCalendarButton) &&
-                    GetIt.instance<PluginSyncService>().calendarAvailable)
+                    GetIt.instance<PluginSyncService>().calendarAvailable &&
+                    GetIt.instance<PluginSyncService>().seerrAvailable &&
+                    seerrPrefs.enabled)
                   _SidebarItem(
                     key: const ValueKey('sidebar-calendar'),
                     baseColor: nextMainSidebarColor(),
