@@ -340,6 +340,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     SettingsPanel.backHandlers.add(_handleBack);
     _searchController.addListener(_onSearchChanged);
     _pillFocus.addListener(_onPillFocusChanged);
+    if (GetIt.instance.isRegistered<PluginSyncService>()) {
+      GetIt.instance<PluginSyncService>().addListener(_onPluginSyncChanged);
+    }
     if (PlatformDetection.useDesktopUi) {
       // Attached to the node so it runs before the text field consumes the
       // key. Down leaves the field for the list, left and right stay caret
@@ -355,6 +358,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
 
   @override
   void dispose() {
+    if (GetIt.instance.isRegistered<PluginSyncService>()) {
+      GetIt.instance<PluginSyncService>().removeListener(_onPluginSyncChanged);
+    }
     SettingsPanel.backHandlers.remove(_handleBack);
     _preview.dispose();
     _listScope.dispose();
@@ -363,6 +369,10 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     _searchController.dispose();
     _searchFieldFocus.dispose();
     super.dispose();
+  }
+
+  void _onPluginSyncChanged() {
+    if (mounted) setState(() {});
   }
 
   /// Back leaves the scenes for the setting they were reached from, then
