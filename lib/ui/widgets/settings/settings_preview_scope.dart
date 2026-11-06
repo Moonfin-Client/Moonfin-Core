@@ -176,6 +176,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_library_card_titles': SettingsPreviewScene.library,
     'pref_use_detailed_sub_headings': SettingsPreviewScene.library,
     'pref_hide_backdrops_in_libraries': SettingsPreviewScene.library,
+    'pref_music_library_style': SettingsPreviewScene.library,
   };
 
   /// The screensaver comes on over Home, so every one of its settings shows
@@ -238,6 +239,11 @@ class SettingsPreviewController extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// Whether [context] is a screen drawn inside the settings live preview,
+/// which leaves focus, the navbar and the app's backdrop to the real one.
+bool inSettingsPreview(BuildContext context) =>
+    SettingsPreviewScope.maybeOf(context) != null;
 
 class SettingsPreviewScope
     extends InheritedNotifier<SettingsPreviewController> {

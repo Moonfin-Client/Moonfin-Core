@@ -43,7 +43,10 @@ import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../../widgets/video_mini_player.dart';
+import '../../browse/immersive_music_screen.dart';
 import '../../browse/library_browse_screen.dart';
+import '../../browse/music_browse_screen.dart';
+import '../../browse/quick_access_music_screen.dart';
 import '../../calendar/calendar_agenda_view.dart';
 import '../../calendar/calendar_controller.dart';
 import '../../calendar/calendar_countdown_view.dart';
@@ -64,7 +67,7 @@ String settingsPreviewSceneName(
 
 /// The scenes this device has settings for. Keyboard Style is a TV setting,
 /// so only a TV gets the search keyboard, the calendar only shows for someone
-/// the server offers it to, and the library waits on a Movies or Shows one.
+/// the server offers it to, and the library waits on a video or music one.
 List<SettingsPreviewScene> get settingsPreviewScenes => [
   SettingsPreviewScene.home,
   SettingsPreviewScene.details,
@@ -73,13 +76,70 @@ List<SettingsPreviewScene> get settingsPreviewScenes => [
   if (GetIt.instance.isRegistered<PluginSyncService>() &&
       GetIt.instance<PluginSyncService>().calendarAvailable)
     SettingsPreviewScene.calendar,
-  if (_previewLibrary != null) SettingsPreviewScene.library,
+  if (_videoLibrary != null || _musicLibrary != null)
+    SettingsPreviewScene.library,
 ];
 
-/// The first Movies or Shows library in the user's order.
-AggregatedLibrary? get _previewLibrary => SetupPreviewData.libraries.value
-    .where((l) => l.collectionType == 'movies' || l.collectionType == 'tvshows')
+/// The first library of one of [types] in the user's order.
+AggregatedLibrary? _firstLibrary(Set<String> types) => SetupPreviewData
+    .libraries
+    .value
+    .where((l) => types.contains(l.collectionType))
     .firstOrNull;
+
+AggregatedLibrary? get _videoLibrary => _firstLibrary(const {'movies', 'tvshows'});
+
+AggregatedLibrary? get _musicLibrary => _firstLibrary(const {'music'});
+
+/// [screen] laid out by the canvas's size, with no system bars or keyboard.
+Widget _onCanvas(BuildContext context, Widget screen) => MediaQuery(
+  data: MediaQuery.of(context).copyWith(
+    size: setupPreviewSize(),
+    padding: EdgeInsets.zero,
+    viewPadding: EdgeInsets.zero,
+    viewInsets: EdgeInsets.zero,
+  ),
+  child: screen,
+);
+
+/// The video library in the style being looked at, or the music library while
+/// its style has focus or there's no video library.
+Widget _libraryScene(String? focusedKey) => Builder(
+  builder: (context) {
+    final video = _videoLibrary;
+    final music = _musicLibrary;
+    if (music != null &&
+        (focusedKey == UserPreferences.musicLibraryStyle.key || video == null)) {
+      final style = previewValue(context, UserPreferences.musicLibraryStyle);
+      final screen = _onCanvas(context, switch (style) {
+        MusicLibraryStyle.classic => MusicBrowseScreen(libraryId: music.id),
+        MusicLibraryStyle.quickAccess => QuickAccessMusicScreen(
+          libraryId: music.id,
+        ),
+        MusicLibraryStyle.immersive => ImmersiveMusicScreen(
+          libraryId: music.id,
+        ),
+      });
+      // Classic has no navbar of its own, the others sit in the app's.
+      return style == MusicLibraryStyle.classic
+          ? _designCanvas(setupPreviewSize(), screen)
+          : settingsNavbarPreviewOver(screen);
+    }
+    if (video == null) return const SizedBox.shrink();
+    return _designCanvas(
+      setupPreviewSize(),
+      _onCanvas(
+        context,
+        LibraryBrowseScreen(
+          key: ValueKey(video.id),
+          libraryId: video.id,
+          serverId: video.serverId,
+          previewStyle: previewValue(context, UserPreferences.libraryStyle),
+        ),
+      ),
+    );
+  },
+);
 
 /// The player lays out landscape even on a phone, where playback rotates. A TV
 /// is landscape already, so it shares the other scenes' canvas.
@@ -240,33 +300,7 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
       SettingsPreviewScene.player => SettingsPlayerPreview(focusedKey: key),
       SettingsPreviewScene.search => const SettingsSearchPreview(),
       SettingsPreviewScene.calendar => const SettingsCalendarPreview(),
-      SettingsPreviewScene.library => switch (_previewLibrary) {
-        final library? => Builder(
-          builder: (context) => _designCanvas(
-            setupPreviewSize(),
-            // The library lays itself out by the screen's size, which here is
-            // the canvas, with no system bars or keyboard.
-            MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                size: setupPreviewSize(),
-                padding: EdgeInsets.zero,
-                viewPadding: EdgeInsets.zero,
-                viewInsets: EdgeInsets.zero,
-              ),
-              child: LibraryBrowseScreen(
-                key: ValueKey(library.id),
-                libraryId: library.id,
-                serverId: library.serverId,
-                previewStyle: previewValue(
-                  context,
-                  UserPreferences.libraryStyle,
-                ),
-              ),
-            ),
-          ),
-        ),
-        null => const SizedBox.shrink(),
-      },
+      SettingsPreviewScene.library => _libraryScene(key),
     };
   }
 }

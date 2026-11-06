@@ -17,12 +17,16 @@ import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/browse/immersive_music_screen.dart';
 import 'package:moonfin/ui/screens/browse/library_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
@@ -44,6 +48,8 @@ import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:playback_core/playback_core.dart'
+    show PlaybackManager, QueueService;
 import 'package:server_core/server_core.dart'
     show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,6 +71,10 @@ class _MdbList extends Mock implements MdbListRepository {}
 class _Backdrops extends Mock implements BackgroundService {}
 
 class _Item extends Fake implements AggregatedItem {}
+
+class _Rows extends Mock implements RowDataSource {}
+
+class _Playback extends Mock implements PlaybackManager {}
 
 /// Two films in a library called Films, whatever the call asks for.
 class _Items implements ItemsApi {
@@ -2498,7 +2508,7 @@ void main() {
         ..registerSingleton<BackgroundService>(backdrops);
     });
 
-    test('its settings show on it, and the book and music styles stay put', () {
+    test('its settings show on it, and the book style stays put', () {
       for (final key in [
         UserPreferences.libraryStyle.key,
         UserPreferences.groupItemsIntoCollections.key,
@@ -2506,6 +2516,7 @@ void main() {
         UserPreferences.libraryCardTitles.key,
         UserPreferences.useDetailedSubHeadings.key,
         UserPreferences.hideBackdropsInLibraries.key,
+        UserPreferences.musicLibraryStyle.key,
       ]) {
         expect(
           SettingsPreviewController.sceneForKey(key),
@@ -2513,22 +2524,83 @@ void main() {
           reason: key,
         );
       }
-      for (final key in [
-        UserPreferences.bookLibraryStyle.key,
-        UserPreferences.musicLibraryStyle.key,
-      ]) {
-        expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
-      }
+      expect(
+        SettingsPreviewController.sceneForKey(
+          UserPreferences.bookLibraryStyle.key,
+        ),
+        isNull,
+      );
     });
 
-    test('the chip waits on a Movies or Shows library', () {
-      SetupPreviewData.libraries.value = [library('music', 'music')];
+    test('the chip waits on a video or music library', () {
+      SetupPreviewData.libraries.value = [library('books', 'books')];
       expect(settingsPreviewScenes, isNot(contains(SettingsPreviewScene.library)));
+      SetupPreviewData.libraries.value = [library('music', 'music')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
       SetupPreviewData.libraries.value = [
         library('music', 'music'),
         library('shows', 'tvshows'),
       ];
       expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+    });
+
+    testWidgets('Music Library Style draws the music library in the style a '
+        'picker tries and leaves the app backdrop alone', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [
+        library('films', 'movies'),
+        library('tunes', 'music'),
+      ];
+      final playback = _Playback();
+      when(() => playback.queueService).thenReturn(QueueService());
+      GetIt.instance
+        ..registerSingleton<PlaybackManager>(playback)
+        ..registerSingleton<RowDataSource>(_Rows())
+        ..registerSingleton<MediaServerClient>(
+          GetIt.instance<MediaServerClientFactory>().clientForServerOrActive(
+            null,
+          ),
+        );
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Music Library Style',
+          prefKey: 'pref_music_library_style',
+        ),
+      );
+      for (final (style, screen) in [
+        (MusicLibraryStyle.classic, MusicBrowseScreen),
+        (MusicLibraryStyle.quickAccess, QuickAccessMusicScreen),
+        (MusicLibraryStyle.immersive, ImmersiveMusicScreen),
+      ]) {
+        controller.tryValue('pref_music_library_style', style);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(screen), findsOneWidget, reason: '$style');
+        expect(find.byType(LibraryBrowseScreen), findsNothing);
+        expect(tester.takeException(), isNull);
+      }
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+
+      // Any other library setting goes back to the video library.
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(LibraryBrowseScreen), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
     });
 
     testWidgets('draws the first video library in the style a picker tries', (

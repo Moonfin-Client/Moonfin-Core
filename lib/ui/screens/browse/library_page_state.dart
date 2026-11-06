@@ -16,6 +16,7 @@ import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/left_sidebar.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/top_toolbar.dart';
 
 /// What every library page built from D-pad stops shares: the stops, the
@@ -100,7 +101,7 @@ abstract class LibraryPageState<T extends StatefulWidget> extends State<T> {
   void contentChanged() {
     if (!mounted) return;
     setState(() {});
-    if (!wide || isLoading) return;
+    if (!wide || isLoading || inSettingsPreview(context)) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted ||
           isLoading ||
@@ -137,20 +138,26 @@ abstract class LibraryPageState<T extends StatefulWidget> extends State<T> {
       moveBookFocus(coordinator, fromIndex, isUp);
 
   /// The page in the app's chrome, behind [loadingPlaceholder] until its
-  /// content arrives.
-  Widget buildPage(Widget Function() content) => RequestInitialFocus(
-    targetNode: initialFocusNode,
-    child: Scaffold(
-      backgroundColor: AppColorScheme.background,
-      body: NavigationLayout(
-        activeRoute: activeRoute,
-        showBackButton: true,
-        child: isLoading && loadingPlaceholder != null
-            ? loadingPlaceholder!
-            : content(),
+  /// content arrives. The settings preview draws its own chrome.
+  Widget buildPage(Widget Function() content) {
+    final page = isLoading && loadingPlaceholder != null
+        ? loadingPlaceholder!
+        : content();
+    if (inSettingsPreview(context)) {
+      return Scaffold(backgroundColor: AppColorScheme.background, body: page);
+    }
+    return RequestInitialFocus(
+      targetNode: initialFocusNode,
+      child: Scaffold(
+        backgroundColor: AppColorScheme.background,
+        body: NavigationLayout(
+          activeRoute: activeRoute,
+          showBackButton: true,
+          child: page,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   /// The sections [addSections] adds, in a list that pulls to refresh. A
   /// [header] stays above the list, and adds its stops before the list's.
