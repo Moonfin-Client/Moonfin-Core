@@ -9,6 +9,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit_video/media_kit_video.dart' show SubtitleViewState;
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../data/models/aggregated_library.dart';
 import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../../data/models/media_segment.dart';
 import '../../../../data/models/trickplay_preview_layout.dart';
@@ -42,6 +43,7 @@ import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../../widgets/video_mini_player.dart';
+import '../../browse/library_browse_screen.dart';
 import '../../calendar/calendar_agenda_view.dart';
 import '../../calendar/calendar_controller.dart';
 import '../../calendar/calendar_countdown_view.dart';
@@ -57,11 +59,12 @@ String settingsPreviewSceneName(
   SettingsPreviewScene.player => l10n.player,
   SettingsPreviewScene.search => l10n.search,
   SettingsPreviewScene.calendar => l10n.calendar,
+  SettingsPreviewScene.library => l10n.library,
 };
 
 /// The scenes this device has settings for. Keyboard Style is a TV setting,
-/// so only a TV gets the search keyboard, and the calendar only shows for
-/// someone the server offers it to.
+/// so only a TV gets the search keyboard, the calendar only shows for someone
+/// the server offers it to, and the library waits on a Movies or Shows one.
 List<SettingsPreviewScene> get settingsPreviewScenes => [
   SettingsPreviewScene.home,
   SettingsPreviewScene.details,
@@ -70,7 +73,13 @@ List<SettingsPreviewScene> get settingsPreviewScenes => [
   if (GetIt.instance.isRegistered<PluginSyncService>() &&
       GetIt.instance<PluginSyncService>().calendarAvailable)
     SettingsPreviewScene.calendar,
+  if (_previewLibrary != null) SettingsPreviewScene.library,
 ];
+
+/// The first Movies or Shows library in the user's order.
+AggregatedLibrary? get _previewLibrary => SetupPreviewData.libraries.value
+    .where((l) => l.collectionType == 'movies' || l.collectionType == 'tvshows')
+    .firstOrNull;
 
 /// The player lays out landscape even on a phone, where playback rotates. A TV
 /// is landscape already, so it shares the other scenes' canvas.
@@ -231,6 +240,33 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
       SettingsPreviewScene.player => SettingsPlayerPreview(focusedKey: key),
       SettingsPreviewScene.search => const SettingsSearchPreview(),
       SettingsPreviewScene.calendar => const SettingsCalendarPreview(),
+      SettingsPreviewScene.library => switch (_previewLibrary) {
+        final library? => Builder(
+          builder: (context) => _designCanvas(
+            setupPreviewSize(),
+            // The library lays itself out by the screen's size, which here is
+            // the canvas, with no system bars or keyboard.
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                size: setupPreviewSize(),
+                padding: EdgeInsets.zero,
+                viewPadding: EdgeInsets.zero,
+                viewInsets: EdgeInsets.zero,
+              ),
+              child: LibraryBrowseScreen(
+                key: ValueKey(library.id),
+                libraryId: library.id,
+                serverId: library.serverId,
+                previewStyle: previewValue(
+                  context,
+                  UserPreferences.libraryStyle,
+                ),
+              ),
+            ),
+          ),
+        ),
+        null => const SizedBox.shrink(),
+      },
     };
   }
 }

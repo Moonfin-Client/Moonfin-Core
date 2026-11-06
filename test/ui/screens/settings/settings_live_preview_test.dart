@@ -9,15 +9,20 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
+import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/services/background_service.dart';
+import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/browse/library_browse_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
@@ -39,7 +44,8 @@ import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
 import 'package:moonfin/util/platform_detection.dart';
-import 'package:server_core/server_core.dart' show ImageApi, MediaServerClient;
+import 'package:server_core/server_core.dart'
+    show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Users extends Mock implements UserRepository {}
@@ -51,6 +57,33 @@ class _Images extends Mock implements ImageApi {}
 class _Sync extends Mock implements PluginSyncService {}
 
 class _Calendar extends Mock implements CalendarRepository {}
+
+class _Factory extends Mock implements MediaServerClientFactory {}
+
+class _MdbList extends Mock implements MdbListRepository {}
+
+class _Backdrops extends Mock implements BackgroundService {}
+
+class _Item extends Fake implements AggregatedItem {}
+
+/// Two films in a library called Films, whatever the call asks for.
+class _Items implements ItemsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => switch (invocation.memberName) {
+    #getItems => Future.value(<String, dynamic>{
+      'Items': [
+        for (final name in ['First Film', 'Second Film'])
+          {'Id': name, 'Name': name, 'Type': 'Movie', 'ServerId': 'server'},
+      ],
+      'TotalRecordCount': 2,
+    }),
+    #getItem => Future.value(<String, dynamic>{
+      'Name': 'Films',
+      'CollectionType': 'movies',
+    }),
+    _ => super.noSuchMethod(invocation),
+  };
+}
 
 /// Items with no artwork URLs, so images fall back to drawn placeholders and
 /// nothing touches the network.
@@ -2434,5 +2467,114 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
+  });
+
+  group('the library scene', () {
+    AggregatedLibrary library(String id, String type) => AggregatedLibrary(
+      id: id,
+      name: id,
+      collectionType: type,
+      serverId: 'server',
+    );
+
+    late _Backdrops backdrops;
+
+    setUp(() {
+      registerFallbackValue(BlurContext.browsing);
+      registerFallbackValue(_Item());
+      final client = _Client();
+      when(() => client.itemsApi).thenReturn(_Items());
+      when(() => client.imageApi).thenReturn(_Images());
+      when(() => client.baseUrl).thenReturn('http://server');
+      when(() => client.userId).thenReturn('user');
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      final factory = _Factory();
+      when(() => factory.clientForServerOrActive(any())).thenReturn(client);
+      backdrops = _Backdrops();
+      when(() => backdrops.backdropUrlsFor(any())).thenReturn(const []);
+      GetIt.instance
+        ..registerSingleton<MediaServerClientFactory>(factory)
+        ..registerSingleton<MdbListRepository>(_MdbList())
+        ..registerSingleton<BackgroundService>(backdrops);
+    });
+
+    test('its settings show on it, and the book and music styles stay put', () {
+      for (final key in [
+        UserPreferences.libraryStyle.key,
+        UserPreferences.groupItemsIntoCollections.key,
+        UserPreferences.showMediaDetailsOnLibraryPage.key,
+        UserPreferences.libraryCardTitles.key,
+        UserPreferences.useDetailedSubHeadings.key,
+        UserPreferences.hideBackdropsInLibraries.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.library,
+          reason: key,
+        );
+      }
+      for (final key in [
+        UserPreferences.bookLibraryStyle.key,
+        UserPreferences.musicLibraryStyle.key,
+      ]) {
+        expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
+      }
+    });
+
+    test('the chip waits on a Movies or Shows library', () {
+      SetupPreviewData.libraries.value = [library('music', 'music')];
+      expect(settingsPreviewScenes, isNot(contains(SettingsPreviewScene.library)));
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('shows', 'tvshows'),
+      ];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+    });
+
+    testWidgets('draws the first video library in the style a picker tries', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('films', 'movies'),
+        library('shows', 'tvshows'),
+      ];
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      LibraryBrowseScreen screen() =>
+          tester.widget<LibraryBrowseScreen>(find.byType(LibraryBrowseScreen));
+      expect(screen().libraryId, 'films');
+      expect(screen().previewStyle, LibraryStyle.classic);
+
+      for (final style in LibraryStyle.values) {
+        controller.tryValue('pref_library_style', style);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(screen().previewStyle, style);
+        expect(tester.takeException(), isNull);
+      }
+      // The first film stands in for the focused card, and its backdrop is
+      // worked out without setting the app's own.
+      expect(find.text('First Film'), findsWidgets);
+      verify(() => backdrops.backdropUrlsFor(any())).called(greaterThan(0));
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 }

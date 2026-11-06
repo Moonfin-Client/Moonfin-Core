@@ -6,7 +6,7 @@ import '../../../preference/user_preferences.dart';
 import 'settings_section_header.dart';
 
 /// The mock screen the settings live preview draws.
-enum SettingsPreviewScene { home, details, player, search, calendar }
+enum SettingsPreviewScene { home, details, player, search, calendar, library }
 
 /// What the focused settings tile tells the preview about itself.
 class SettingsPreviewEntry {
@@ -170,6 +170,12 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_calendar_spoiler_safe': SettingsPreviewScene.calendar,
     'pref_calendar_request_button': SettingsPreviewScene.calendar,
     'pref_calendar_reminders': SettingsPreviewScene.calendar,
+    'pref_library_style': SettingsPreviewScene.library,
+    'pref_group_items_into_collections': SettingsPreviewScene.library,
+    'pref_show_media_details_on_library_page': SettingsPreviewScene.library,
+    'pref_library_card_titles': SettingsPreviewScene.library,
+    'pref_use_detailed_sub_headings': SettingsPreviewScene.library,
+    'pref_hide_backdrops_in_libraries': SettingsPreviewScene.library,
   };
 
   /// The screensaver comes on over Home, so every one of its settings shows
