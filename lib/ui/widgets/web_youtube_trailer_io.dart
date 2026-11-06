@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+
+import '../../util/platform_detection.dart';
 
 enum _EmbeddedPlayerMode {
   manualIframe,
@@ -57,16 +58,17 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   static const _origin = 'https://www.youtube-nocookie.com';
   static const _playerElementId = 'moonfin-player';
   static const _stageElementId = 'moonfin-stage';
-  // Rendered at this fixed size and CSS-scaled to the box; YouTube picks quality
-  // from the player's pixel size, so a 1080p stage yields 1080p trailers.
+  // YouTube picks the quality from the player's pixel size, so a 1080p stage
+  // gets 1080p trailers.
   static const _stageWidth = 1920;
   static const _stageHeight = 1080;
   // Amazon WebView's hardware video overlay follows the element's layout box
-  // but not CSS transforms, so on Android the stage is sized to cover the box
-  // instead of being scaled. The WebView's density still gives YouTube a
-  // 1080p-sized player on a 1080p TV.
+  // but not CSS transforms, so on Android TV the stage is sized to cover the
+  // box instead of being scaled. The WebView's density still gives YouTube a
+  // 1080p-sized player on a 1080p TV. Phones keep the scaled stage, since
+  // their smaller box would get a lower quality.
   static bool get _layoutSizedStage =>
-      defaultTargetPlatform == TargetPlatform.android;
+      PlatformDetection.isAndroid && !PlatformDetection.isMobile;
   static const _startupChromeMaskDuration = Duration(milliseconds: 700);
 
   WebViewController? _controller;

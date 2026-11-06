@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/web_youtube_trailer.dart';
+import 'package:moonfin/util/platform_detection.dart';
 // ignore: depend_on_referenced_packages
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -139,14 +140,20 @@ void main() {
     <TargetPlatform>{TargetPlatform.iOS, TargetPlatform.android},
   ));
 
-  testWidgets('sizes the stage to the box on Android instead of scaling it', (
-    tester,
-  ) async {
-    await pumpTrailer(tester);
+  testWidgets('sizes the stage to the box only on Android TV', (tester) async {
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    Future<bool> layoutSizedStage({required bool tv}) async {
+      PlatformDetection.setTvMode(tv);
+      await tester.pumpWidget(const SizedBox());
+      await pumpTrailer(tester);
+      return platform.controller!.loadedPages.single.html.contains(
+        'const layoutSizedStage = true;',
+      );
+    }
 
-    final html = platform.controller!.loadedPages.single.html;
-    final expected = defaultTargetPlatform == TargetPlatform.android;
-    expect(html, contains('const layoutSizedStage = $expected;'));
+    final android = defaultTargetPlatform == TargetPlatform.android;
+    expect(await layoutSizedStage(tv: true), android);
+    expect(await layoutSizedStage(tv: false), isFalse);
   }, variant: TargetPlatformVariant(
     <TargetPlatform>{TargetPlatform.android, TargetPlatform.iOS},
   ));
