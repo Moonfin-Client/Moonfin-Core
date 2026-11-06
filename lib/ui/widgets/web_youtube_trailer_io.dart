@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -59,6 +61,12 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   // from the player's pixel size, so a 1080p stage yields 1080p trailers.
   static const _stageWidth = 1920;
   static const _stageHeight = 1080;
+  // Amazon WebView's hardware video overlay follows the element's layout box
+  // but not CSS transforms, so on Android the stage is sized to cover the box
+  // instead of being scaled. The WebView's density still gives YouTube a
+  // 1080p-sized player on a 1080p TV.
+  static bool get _layoutSizedStage =>
+      defaultTargetPlatform == TargetPlatform.android;
   static const _startupChromeMaskDuration = Duration(milliseconds: 700);
 
   WebViewController? _controller;
@@ -487,6 +495,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     final playerVarsJson = jsonEncode(playerVars);
     final stageWidth = _stageWidth;
     final stageHeight = _stageHeight;
+    final layoutSizedStage = _layoutSizedStage;
 
     return '''
 <!DOCTYPE html>
@@ -532,6 +541,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   const playerVars = $playerVarsJson;
   const stageWidth = $stageWidth;
   const stageHeight = $stageHeight;
+  const layoutSizedStage = $layoutSizedStage;
 
   let player = null;
   let currentVideoId = $initialVideoId;
@@ -613,6 +623,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     );
     const tx = (window.innerWidth - stageWidth * scale) / 2;
     const ty = (window.innerHeight - stageHeight * scale) / 2;
+    if (layoutSizedStage) {
+      stage.style.width = (stageWidth * scale) + 'px';
+      stage.style.height = (stageHeight * scale) + 'px';
+      stage.style.left = tx + 'px';
+      stage.style.top = ty + 'px';
+      return;
+    }
     stage.style.transform =
         'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
   };
@@ -726,7 +743,12 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
         // The chrome mask only ever shows when the player is interactive, so
         // skip the wrapping Stack for the muted background preview.
-        final view = WebViewWidget(controller: controller);
+        // Sized in the view's own points: a WebView that plays on a hardware
+        // video overlay (Amazon WebView on Fire TV) draws the video at the
+        // native view's size, so under TvUiScale it came out zoomed.
+        final view = UnscaledPlatformView(
+          child: WebViewWidget(controller: controller),
+        );
         return IgnorePointer(
           ignoring: widget.ignorePointer,
           child:

@@ -49,7 +49,8 @@ class _FakeWebViewWidget extends PlatformWebViewWidget {
   _FakeWebViewWidget(super.params) : super.implementation();
 
   @override
-  Widget build(BuildContext context) => const SizedBox.expand();
+  Widget build(BuildContext context) =>
+      const SizedBox.expand(key: ValueKey('fake-webview'));
 }
 
 class _FakeWebViewPlatform extends WebViewPlatform {
@@ -137,6 +138,46 @@ void main() {
   }, variant: TargetPlatformVariant(
     <TargetPlatform>{TargetPlatform.iOS, TargetPlatform.android},
   ));
+
+  testWidgets('sizes the stage to the box on Android instead of scaling it', (
+    tester,
+  ) async {
+    await pumpTrailer(tester);
+
+    final html = platform.controller!.loadedPages.single.html;
+    final expected = defaultTargetPlatform == TargetPlatform.android;
+    expect(html, contains('const layoutSizedStage = $expected;'));
+  }, variant: TargetPlatformVariant(
+    <TargetPlatform>{TargetPlatform.android, TargetPlatform.iOS},
+  ));
+
+  testWidgets('lays the WebView out in the view\'s own points under a '
+      'scaled host', (tester) async {
+    // TvUiScale lays a 1080p density-two TV out on a 1150 wide canvas, so the
+    // density it reports is scaled by 960 / 1150.
+    const scale = 960 / 1150;
+    final viewDpr = tester.view.devicePixelRatio;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MediaQuery(
+          data: MediaQueryData(devicePixelRatio: viewDpr * scale),
+          child: const Center(
+            child: SizedBox(
+              width: 400,
+              height: 225,
+              child: WebYouTubeTrailer(videoId: 'Way9Dexny3w'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final size = tester.getSize(find.byKey(const ValueKey('fake-webview')));
+    expect(size.width, moreOrLessEquals(400 * scale));
+    expect(size.height, moreOrLessEquals(225 * scale));
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
 
   testWidgets('still reports the embed unavailable when the page cannot load', (
     tester,
