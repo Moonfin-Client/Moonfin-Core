@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../util/platform_detection.dart';
-import '../../util/signed_in_server_features.dart';
+import '../services/moonbase_endpoint.dart';
 
 enum PosterBadgeCorner { topLeft, topRight, bottomLeft, bottomRight }
 
@@ -51,7 +51,7 @@ class PosterBadge {
   });
 }
 
-/// Poster badges fetched from the Moonbase plugin, kept in memory for the session.
+/// Poster badges fetched from Moonbase, kept in memory for the session.
 class PosterBadgeRepository {
   /// The plugin ignores anything past 200 ids in one request.
   static const _batchMax = 200;
@@ -108,21 +108,16 @@ class PosterBadgeRepository {
     if (available.value != null || _checking) return;
     _checking = true;
     try {
-      final token = _client.accessToken;
-      final baseUrl = _client.baseUrl;
-      if (token == null ||
-          baseUrl.isEmpty ||
-          !serverHasMoonfinPlugin(_client)) {
+      final ep = await moonbaseEndpoint(_client, _dio);
+      if (ep == null) {
         _setAvailable(false);
         return;
       }
 
       final response = await _dio.get(
-        '$baseUrl/Moonfin/PosterBadges/Items',
+        '${ep.base}/Moonfin/PosterBadges/Items',
         queryParameters: {'profile': _profile},
-        options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
-        ),
+        options: Options(headers: ep.headers),
       );
       final data = response.data;
       _setAvailable(data is Map && data['enabled'] == true);
@@ -183,21 +178,18 @@ class PosterBadgeRepository {
     }
 
     try {
-      final token = _client.accessToken;
-      final baseUrl = _client.baseUrl;
-      if (token == null ||
-          baseUrl.isEmpty ||
-          !serverHasMoonfinPlugin(_client)) {
+      final ep = await moonbaseEndpoint(_client, _dio);
+      if (ep == null) {
+        _unavailableSince = DateTime.now();
+        _setAvailable(false);
         return;
       }
 
       final response = await _dio.get(
-        '$baseUrl/Moonfin/PosterBadges/Items',
+        '${ep.base}/Moonfin/PosterBadges/Items',
         // The server shows each label only on the devices the admin picked.
         queryParameters: {'ids': ids.join(','), 'profile': _profile},
-        options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
-        ),
+        options: Options(headers: ep.headers),
       );
 
       final data = response.data;
