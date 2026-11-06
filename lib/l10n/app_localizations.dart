@@ -10576,6 +10576,24 @@ abstract class AppLocalizations {
   /// **'Series Continuing · Future Seasons Can Be Requested'**
   String get seerrSeriesContinuing;
 
+  /// Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t match this series automatically. Pick the right one below.'**
+  String get seerrSeriesMatchDescription;
+
+  /// Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find a match for this series, so it can\'t be requested.'**
+  String get seerrSeriesNoMatch;
+
+  /// Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both
+  ///
+  /// In en, this message translates to:
+  /// **'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.'**
+  String get seerrSeriesMatchFailed;
+
   /// Expansion tile for advanced request options
   ///
   /// In en, this message translates to:

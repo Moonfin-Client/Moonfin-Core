@@ -5848,6 +5848,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrSeriesContinuing => '시리즈 계속 방영 중 · 후속 시즌을 요청할 수 있습니다';
 
   @override
+  String get seerrSeriesMatchDescription =>
+      'We couldn\'t match this series automatically. Pick the right one below.';
+
+  @override
+  String get seerrSeriesNoMatch =>
+      'We couldn\'t find a match for this series, so it can\'t be requested.';
+
+  @override
+  String get seerrSeriesMatchFailed =>
+      'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.';
+
+  @override
   String get advancedOptions => '고급 옵션';
 
   @override

@@ -6002,6 +6002,18 @@ class AppLocalizationsNl extends AppLocalizations {
       'Serie gaat verder - Toekomstige seizoenen kunnen aangevraagd worden';
 
   @override
+  String get seerrSeriesMatchDescription =>
+      'We couldn\'t match this series automatically. Pick the right one below.';
+
+  @override
+  String get seerrSeriesNoMatch =>
+      'We couldn\'t find a match for this series, so it can\'t be requested.';
+
+  @override
+  String get seerrSeriesMatchFailed =>
+      'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.';
+
+  @override
   String get advancedOptions => 'Geavanceerde opties';
 
   @override

@@ -6016,6 +6016,18 @@ class AppLocalizationsTa extends AppLocalizations {
       'Series Continuing · Future Seasons Can Be Requested';
 
   @override
+  String get seerrSeriesMatchDescription =>
+      'We couldn\'t match this series automatically. Pick the right one below.';
+
+  @override
+  String get seerrSeriesNoMatch =>
+      'We couldn\'t find a match for this series, so it can\'t be requested.';
+
+  @override
+  String get seerrSeriesMatchFailed =>
+      'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.';
+
+  @override
   String get advancedOptions => 'மேம்பட்ட விருப்பங்கள்';
 
   @override
