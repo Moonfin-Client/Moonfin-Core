@@ -1648,6 +1648,7 @@ class Media3PlayerBackend extends PlayerBackend
           ),
       directPlayVideoContainers: media3DirectPlayVideoContainers,
       hlsCopyPlaysAsPlainHevc: true,
+      mpegTsSplitsEac3Substreams: true,
     );
   }
 
