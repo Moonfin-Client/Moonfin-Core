@@ -89,5 +89,24 @@ void main() {
       expect(formatShortDayName(testDate), 'Thu, Nov 19');
       expect(formatFullCalendarDate(testDate), 'Thursday, November 19, 2026');
     });
+
+    test('falls back gracefully to en_US for locales lacking intl symbols', () {
+      expect(
+        formatShortDate(testDate, locale: 'ug', setting: DateFormatSetting.monthDay),
+        'Nov 19',
+      );
+      expect(
+        formatShortDate(testDate, locale: 'ug', setting: DateFormatSetting.dayMonth),
+        '19 Nov',
+      );
+      expect(
+        formatShortDayName(testDate, locale: 'ug', setting: DateFormatSetting.monthDay),
+        'Thu, Nov 19',
+      );
+      expect(
+        formatFullCalendarDate(testDate, locale: 'ug', setting: DateFormatSetting.monthDay),
+        'Thursday, November 19, 2026',
+      );
+    });
   });
 }

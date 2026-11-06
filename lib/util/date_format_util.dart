@@ -4,6 +4,14 @@ import 'package:intl/intl.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 
+String _formatExplicitDate(String pattern, DateTime date, String? locale) {
+  try {
+    return DateFormat(pattern, locale).format(date);
+  } catch (_) {
+    return DateFormat(pattern, 'en_US').format(date);
+  }
+}
+
 /// Formats a short month/day date (e.g. for upcoming episode rows, media bar, next-up).
 /// Respects the user's DateFormatSetting preference (system, monthDay, dayMonth).
 String formatShortDate(
@@ -19,9 +27,9 @@ String formatShortDate(
 
   switch (effectiveSetting) {
     case DateFormatSetting.monthDay:
-      return DateFormat('MMM d', locale).format(date);
+      return _formatExplicitDate('MMM d', date, locale);
     case DateFormatSetting.dayMonth:
-      return DateFormat('d MMM', locale).format(date);
+      return _formatExplicitDate('d MMM', date, locale);
     case DateFormatSetting.system:
       try {
         return DateFormat.MMMd(locale).format(date);
@@ -45,9 +53,9 @@ String formatShortDayName(
 
   switch (effectiveSetting) {
     case DateFormatSetting.monthDay:
-      return DateFormat('EEE, MMM d', locale).format(date);
+      return _formatExplicitDate('EEE, MMM d', date, locale);
     case DateFormatSetting.dayMonth:
-      return DateFormat('EEE d MMM', locale).format(date);
+      return _formatExplicitDate('EEE d MMM', date, locale);
     case DateFormatSetting.system:
       try {
         return DateFormat.MMMEd(locale).format(date);
@@ -73,12 +81,12 @@ String formatFullCalendarDate(
   switch (effectiveSetting) {
     case DateFormatSetting.monthDay:
       return includeYear
-          ? DateFormat('EEEE, MMMM d, y', locale).format(date)
-          : DateFormat('EEEE, MMMM d', locale).format(date);
+          ? _formatExplicitDate('EEEE, MMMM d, y', date, locale)
+          : _formatExplicitDate('EEEE, MMMM d', date, locale);
     case DateFormatSetting.dayMonth:
       return includeYear
-          ? DateFormat('EEEE, d MMMM y', locale).format(date)
-          : DateFormat('EEEE, d MMMM', locale).format(date);
+          ? _formatExplicitDate('EEEE, d MMMM y', date, locale)
+          : _formatExplicitDate('EEEE, d MMMM', date, locale);
     case DateFormatSetting.system:
       try {
         return includeYear
