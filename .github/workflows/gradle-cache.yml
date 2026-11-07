@@ -4,10 +4,11 @@ name: Warm the Gradle cache
 # be read by any other PR. Maven Central refuses the shared runner IPs often
 # enough (429/403) to fail PR runs, so this saves the Gradle cache on main,
 # where every PR can restore it. The cache path, key and restore-keys must
-# match the android and tests jobs in build.yml exactly, or the keys stop
-# matching. Those jobs only restore, so this workflow is the one writer, and
-# it saves under the exact key only when every step succeeded. An exact hit
-# here is therefore always an entry it resolved in full.
+# match the android job in build.yml and the kotlin suite in checks.yml
+# exactly, or the keys stop matching. Those only restore, so this workflow is
+# the one writer, and it saves under the exact key only when every step
+# succeeded. An exact hit here is therefore always an entry it resolved in
+# full.
 on:
   workflow_dispatch:
   schedule:
