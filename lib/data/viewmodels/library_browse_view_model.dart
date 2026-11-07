@@ -261,6 +261,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String? get selectedCategoryTab => _selectedCategoryTab;
 
   int _pageWalkGeneration = 0;
+
+  /// Bumped by every [load], so a page still in flight for the list it drops
+  /// (a scroll page, or the first page of a filter changed again before it
+  /// came back) leaves the new list alone.
+  int _listGeneration = 0;
   bool _disposed = false;
 
   // Grouping walks every item and sorts the keys, and the grid asks for it
@@ -549,6 +554,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Future<void> load() async {
     // Any page walk still running belongs to the list we are about to drop.
     _pageWalkGeneration++;
+    final generation = ++_listGeneration;
+    // A scroll page still on its way belongs to the old list, so it must not
+    // hold up paging of the new one.
+    _loadingMore = false;
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
@@ -622,8 +631,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
       await imageTypeSync;
       await _fetchPage(0);
+      if (generation != _listGeneration) return;
       _state = LibraryBrowseState.ready;
     } catch (e) {
+      if (generation != _listGeneration) return;
       _error = e;
       _isNetworkError = isNetworkException(e);
       _state = LibraryBrowseState.error;
@@ -721,21 +732,28 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
 
     final previouslyFetched = _fetchedCount;
+    final generation = _listGeneration;
     try {
       await _fetchPage(_fetchedCount, pageSizeOverride: pageSizeOverride);
       // Stop on a page the server had nothing left for, not on one that only
       // repeated what is already shown, which a random sort does by chance.
-      if (_fetchedCount <= previouslyFetched) {
+      // A reload in the meantime reset the count, so it says nothing here.
+      if (generation == _listGeneration &&
+          _fetchedCount <= previouslyFetched) {
         _totalCount = _items.length;
         _hasMoreFromPageSize = false;
       }
     } catch (_) {}
 
+    // After a reload the flag belongs to the new list, which may already
+    // have a page of its own in flight.
+    if (generation != _listGeneration) return;
     _loadingMore = false;
     if (notify) notifyListeners();
   }
 
   Future<void> _fetchPage(int startIndex, {int? pageSizeOverride}) async {
+    final generation = _listGeneration;
     final pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
     final filters = <String>[];
     if (_playedFilter == PlayedStatusFilter.watched) {
@@ -987,7 +1005,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         directories = (results.last['Items'] as List?) ?? const [];
       }
     }
-    if (startIndex == 0) _directoryCount = directories.length;
 
     final rawItems = (response['Items'] as List?) ?? [];
     var mapped = [...directories, ...rawItems]
@@ -1006,6 +1023,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         .toList();
 
     var filtered = await _filterLibraryItems(mapped);
+
+    // A reload while this page was on its way owns the list now. Taking the
+    // page would mark its ids rendered, hiding them from the new list, and
+    // move the paging offset off it.
+    if (generation != _listGeneration) return;
+    if (startIndex == 0) _directoryCount = directories.length;
 
     // Counted for every browse, not just playlists. A dropped item is gone for
     // good, so the total has to shrink with it or the grid keeps asking for
