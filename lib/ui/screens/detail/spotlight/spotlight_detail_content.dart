@@ -1126,7 +1126,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
       .firstOrNull ??
       seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook != null) item = firstBook;
+      if (firstBook == null) {
+        item = seriesBooks[0];
+      } else {
+        item = firstBook;
+      }
     }
     final overview = cleanOverview(item.overview?.trim());
     final isPerson = item.type == 'Person';

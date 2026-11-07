@@ -2021,7 +2021,11 @@ class _DetailContentState extends State<_DetailContent> {
           .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
           .firstOrNull ??
         seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook != null) item = firstBook;
+        if (firstBook == null) {
+          item = seriesBooks[0];
+        } else {
+          item = firstBook;
+        }
     }
     final booksInSeries = seriesBooks ?? const [];
     final l10n = AppLocalizations.of(context);
@@ -6973,7 +6977,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
           .firstOrNull ??
         seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook != null) item = firstBook;
+      if (firstBook == null) {
+        item = seriesBooks[0];
+      } else {
+        item = firstBook;
+      }
     }
     final l10n = AppLocalizations.of(context);
     // Only grab initial focus when this screen is actually in front. A settings

@@ -4147,7 +4147,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
           .firstOrNull ??
         seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook != null) item = firstBook;
+        if (firstBook == null) {
+          item = seriesBooks[0];
+        } else {
+          item = firstBook;
+        }
     }
 
     final textTheme = Theme.of(context).textTheme;
