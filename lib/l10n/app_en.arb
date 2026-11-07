@@ -14006,6 +14006,14 @@
   "@showBookDiscoverTabDescription": {
     "description": "Explains the setting that shows or hides the discovery tab in book libraries"
   },
+  "bookFoldersAsSeries": "Treat book folders as series",
+  "@bookFoldersAsSeries" : {
+    "description": "Setting to determine book series based on folders instead of item metadata"
+  },
+  "bookFoldersAsSeriesDescription": "Treat folders containing books as series instead of relying on the individual books' metadata",
+  "@bookFoldersAsSeriesDescription": {
+    "description": "Explains the setting to determine book series based on folders instead of item metadata"
+  },
   "autoDownloadNewEpisodes": "Auto-download new episodes",
   "@autoDownloadNewEpisodes": {
     "description": "Row in the download sheet of a series that subscribes it to automatic downloads"

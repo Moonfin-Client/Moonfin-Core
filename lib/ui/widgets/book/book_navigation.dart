@@ -58,8 +58,7 @@ void openBookLibraryItem(
   final isFolder = item.rawData['IsFolder'] as bool? ?? false;
   // A series named only by metadata has no folder to open, and an author known
   // only by name has no item.
-  if ((type == 'BookSeries' && !isFolder) ||
-      (type == 'Person' && item.id == item.name)) {
+  if (type == 'Person' && item.id == item.name) {
     context.push(Destinations.searchInLibrary(libraryId, query: item.name));
     return;
   }
@@ -77,7 +76,7 @@ void openBookLibraryItem(
     context.push(Destinations.folder(item.id, serverId: item.serverId));
     return;
   }
-  context.push(Destinations.item(item.id, serverId: item.serverId));
+  context.push(Destinations.item(item.id, serverId: item.serverId, libraryId: libraryId));
 }
 
 /// Opens the reader for a book or comic, and resumes an audiobook through

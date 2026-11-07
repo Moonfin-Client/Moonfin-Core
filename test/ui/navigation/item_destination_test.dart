@@ -26,6 +26,14 @@ void main() {
       expect(Destinations.item('abc', seasonContext: ''), '/item/abc');
     });
 
+    test('escapes a book series name so it stays one path segment', () {
+      expect(
+        Destinations.item('bookSeries:Fate/Zero?', libraryId: 'lib-1'),
+        '/item/bookSeries:Fate%2FZero%3F?libraryId=lib-1',
+      );
+      expect(Destinations.item('tmdb:movie:1'), '/item/tmdb:movie:1');
+    });
+
     test('escapes a season context so it survives the query string', () {
       final uri = Uri.parse(Destinations.item('abc', seasonContext: 'a b&c'));
       expect(uri.queryParameters['seasonContext'], 'a b&c');

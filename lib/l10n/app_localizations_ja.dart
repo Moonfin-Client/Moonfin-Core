@@ -15088,6 +15088,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Browse titles from Open Library and LibriVox in your book and audiobook libraries';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes => 'Auto-download new episodes';
 
   @override

@@ -288,6 +288,7 @@ void main() {
     'seerrRowsSortBy',
     'seerrRowsSortOrder',
     'showBookDiscoverTab',
+    'bookFoldersAsSeries',
     'showChapterMarkers',
     'showDescriptionOnPause',
     'showDownloadsButton',

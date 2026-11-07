@@ -29,6 +29,7 @@ import '../services/user_data_sync.dart';
 import '../services/seerr/seerr_api_models.dart';
 import 'seerr_discover_view_model.dart';
 import 'seerr_media_detail_view_model.dart';
+import 'book_browse_view_model.dart';
 import '../models/upcoming_episode_info.dart';
 import '../services/upcoming_episode_service.dart';
 
@@ -268,6 +269,44 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   AggregatedItem? _item;
   AggregatedItem? get item => _item;
+
+  List<AggregatedItem> _seriesBooks = const [];
+  List<AggregatedItem> get seriesBooks => _seriesBooks;
+
+  /// The book a series page shows and acts on: the one being read, else the
+  /// first unread one, else the first.
+  AggregatedItem? get seriesFeaturedBook {
+    if (_item?.type != 'BookSeries') return null;
+    return _seriesBooks
+            .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+            .firstOrNull ??
+        _seriesBooks.where((book) => !book.isPlayed).firstOrNull ??
+        _seriesBooks.firstOrNull;
+  }
+
+  /// A book series is put together from the library's books, so the server
+  /// has nothing under its id.
+  bool get _isBookSeries => itemId.startsWith('bookSeries:');
+
+  /// What favorite, played and rating changes go to. A series page shows its
+  /// featured book, so that's what they change.
+  String get _mutationId => seriesFeaturedBook?.id ?? itemId;
+
+  /// The library [book] is filed in, so its series page knows where to look.
+  /// The route carries it when the book was opened from its library,
+  /// otherwise the book's ancestors do.
+  Future<String?> libraryIdOf(AggregatedItem book) async {
+    if (_libraryId != null) return _libraryId;
+    try {
+      final ancestors = await _client.itemsApi.getAncestors(book.id);
+      final library = ancestors
+          .where((ancestor) => ancestor['Type'] == 'CollectionFolder')
+          .firstOrNull;
+      return library?['Id']?.toString() ?? book.parentId;
+    } catch (_) {
+      return book.parentId;
+    }
+  }
 
   String? _localPersonId;
   String? get localPersonId => _localPersonId;
@@ -548,6 +587,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       _tracks.every(hasPlaylistEntryId);
 
   final String? _serverId;
+  final String? _libraryId;
   bool _isDisposed = false;
 
   /// What the server probed in place of the item's placeholder source, kept so
@@ -683,7 +723,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     required ItemMutationRepository mutations,
     required MdbListRepository mdbListRepository,
     required TmdbRepository tmdbRepository,
+    String? libraryId,
   }) : _serverId = serverId,
+       _libraryId = libraryId,
        _client = client,
        _mutations = mutations,
        _mdbListRepository = mdbListRepository,
@@ -728,6 +770,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionItems = patch(_collectionItems);
     _playlistItems = patch(_playlistItems);
     _features = patch(_features);
+    _seriesBooks = patch(_seriesBooks);
     final collections = [..._parentCollections];
     var collectionsChanged = false;
     for (var i = 0; i < collections.length; i++) {
@@ -747,7 +790,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> syncUserDataIfStale() async {
     if (_isDisposed || _syncingUserData || !_userDataStale) return;
     final ids = <String>{
-      itemId,
+      if (!_isBookSeries) itemId,
       if (_nextUp != null) _nextUp!.id,
       for (final list in [
         _episodes,
@@ -760,6 +803,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         _collectionItems,
         _playlistItems,
         _features,
+        _seriesBooks,
       ])
         for (final item in list) item.id,
       for (final collection in _parentCollections)
@@ -970,6 +1014,17 @@ class ItemDetailViewModel extends ChangeNotifier {
             );
           } catch (_) {}
         }
+      } else if (_isBookSeries && _libraryId != null) {
+        final series = await BookBrowseViewModel(
+          libraryId: _libraryId,
+          dataSource: GetIt.instance<RowDataSource>(),
+          client: _client,
+        ).loadSeries(itemId.substring('bookSeries:'.length));
+        if (series == null) {
+          throw Exception(currentAppLocalizations().seriesNotFound);
+        }
+        _seriesBooks = series.books;
+        _item = series.series;
       } else {
         final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
         final candidate = AggregatedItem(
@@ -2620,12 +2675,12 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleFavorite() async {
-    final item = _item;
+    final item = seriesFeaturedBook ?? _item;
     if (item == null) return;
     final newState = !item.isFavorite;
     _applyOptimisticUpdate({'IsFavorite': newState});
     try {
-      await _mutations.setFavorite(itemId, isFavorite: newState);
+      await _mutations.setFavorite(_mutationId, isFavorite: newState);
       await _reload();
     } catch (_) {
       _applyOptimisticUpdate({'IsFavorite': !newState});
@@ -2633,12 +2688,12 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> togglePlayed() async {
-    final item = _item;
+    final item = seriesFeaturedBook ?? _item;
     if (item == null) return;
     final newState = !item.isPlayed;
     _applyOptimisticUpdate({'Played': newState});
     try {
-      await _mutations.setPlayed(itemId, isPlayed: newState);
+      await _mutations.setPlayed(_mutationId, isPlayed: newState);
       await _reload();
     } catch (_) {
       _applyOptimisticUpdate({'Played': !newState});
@@ -2648,7 +2703,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> setThumbRating(bool likes) async {
     return _mutateRating(
       {'Likes': likes},
-      () => _mutations.setRating(itemId, likes: likes),
+      () => _mutations.setRating(_mutationId, likes: likes),
     );
   }
 
@@ -2661,14 +2716,14 @@ class ItemDetailViewModel extends ChangeNotifier {
         'Rating': rating,
         'Likes': rating >= AggregatedItem.likedRatingThreshold,
       },
-      () => _mutations.setNumericRating(itemId, rating: rating),
+      () => _mutations.setNumericRating(_mutationId, rating: rating),
     );
   }
 
   Future<void> clearRating() async {
     return _mutateRating(
       {'Rating': null, 'Likes': null},
-      () => _mutations.clearRating(itemId),
+      () => _mutations.clearRating(_mutationId),
     );
   }
 
@@ -2732,6 +2787,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> _reload() async {
+    if (_isBookSeries) return;
     try {
       final data = await _client.itemsApi.getItem(itemId);
       _item = AggregatedItem(

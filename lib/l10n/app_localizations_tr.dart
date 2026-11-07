@@ -15411,6 +15411,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kitap ve sesli kitap kütüphanelerinizde Open Library ve LibriVox başlıklarına göz atın';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes => 'Yeni bölümleri otomatik indir';
 
   @override

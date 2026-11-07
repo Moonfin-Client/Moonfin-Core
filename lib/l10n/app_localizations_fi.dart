@@ -15478,6 +15478,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Selaa Open Libraryn ja LibriVoxin teoksia kirja- ja äänikirjastoissasi';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes =>
       'Uusien jaksojen automaattinen lataaminen';
 

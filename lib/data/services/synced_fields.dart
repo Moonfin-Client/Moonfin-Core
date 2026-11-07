@@ -394,6 +394,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('seerrRowsSortBy', UserPreferences.seerrRowsSortBy, SyncCodec.enumName, enumValues: prefs.ExternalRowSortBy.values),
   SyncedField('seerrRowsSortOrder', UserPreferences.seerrRowsSortOrder, SyncCodec.enumName, enumValues: prefs.SortDirection.values),
   SyncedField('showBookDiscoverTab', UserPreferences.showBookDiscoverTab, SyncCodec.boolean),
+  SyncedField('bookFoldersAsSeries', UserPreferences.bookFoldersAsSeries, SyncCodec.boolean),
   SyncedField('showDescriptionOnPause', UserPreferences.showDescriptionOnPause, SyncCodec.boolean),
   SyncedField('showLoadingAnimationText', UserPreferences.showLoadingAnimationText, SyncCodec.boolean),
   SyncedField('showMediaDetailsOnLibraryPage', UserPreferences.showMediaDetailsOnLibraryPage, SyncCodec.boolean),
