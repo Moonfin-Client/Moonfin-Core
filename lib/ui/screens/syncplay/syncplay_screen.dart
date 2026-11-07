@@ -122,7 +122,9 @@ class _SyncPlayScreenState extends ConsumerState<SyncPlayScreen> {
         return KeyEventResult.ignored;
       }
       final target = targets[event.logicalKey]?.call();
-      if (target == null || !target.canRequestFocus) {
+      if (target == null ||
+          !target.canRequestFocus ||
+          target.context?.mounted != true) {
         return KeyEventResult.ignored;
       }
       target.requestFocus();
@@ -138,7 +140,7 @@ class _SyncPlayScreenState extends ConsumerState<SyncPlayScreen> {
     // step through it instead of skipping past it.
     _refreshFocusNode.onKeyEvent = _moveFocusOn({
       LogicalKeyboardKey.arrowDown: () =>
-          _leaveFocus.context != null ? _leaveFocus : _ignoreWaitFocus,
+          _leaveFocus.context?.mounted == true ? _leaveFocus : _ignoreWaitFocus,
     });
     _leaveFocus.onKeyEvent = _moveFocusOn({
       LogicalKeyboardKey.arrowUp: () => _refreshFocusNode,
@@ -146,7 +148,9 @@ class _SyncPlayScreenState extends ConsumerState<SyncPlayScreen> {
     });
     _ignoreWaitFocus.onKeyEvent = _moveFocusOn({
       LogicalKeyboardKey.arrowUp: () =>
-          _leaveFocus.context != null ? _leaveFocus : _refreshFocusNode,
+          _leaveFocus.context?.mounted == true
+              ? _leaveFocus
+              : _refreshFocusNode,
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(syncPlayManagerProvider).fetchGroups();
@@ -1251,7 +1255,8 @@ class _CreateGroupSection extends StatelessWidget {
         : controller.text.trim();
     await _confirmIfNeeded(context, manager, () async {
       await manager.createGroup(name);
-      await manager.fetchGroups();
+      // fetchGroups clears the error, so keep a failed create's banner up.
+      if (manager.errorMessage == null) await manager.fetchGroups();
     });
   }
 
@@ -1474,7 +1479,7 @@ class _AvailableGroupsSection extends StatelessWidget {
         : '${_syncPlayServerStateLabel(g.state?.serverValue, l10n)} • $who';
     Future<void> join() => _confirmIfNeeded(context, manager, () async {
       await manager.joinGroup(g.groupId);
-      await manager.fetchGroups();
+      if (manager.errorMessage == null) await manager.fetchGroups();
     });
     return _syncPlayTile(
       enabled: !manager.isLoading,
