@@ -1,0 +1,477 @@
+name: Checks
+
+# The fast tier: the analyzer and every test suite, on Ubuntu only. It reports
+# on a pull request in about 15 minutes, while Build All Platforms is still
+# building. The PR Comment workflow reads its results from here.
+#
+# On main it also keeps the Gradle and vcpkg caches warm. A cache saved by a
+# pull request can't be read by any other pull request, but one saved on main
+# can be read by all of them, so this is where Build All Platforms' android and
+# Windows jobs, and the kotlin suite below, get theirs.
+on:
+  workflow_dispatch:
+    inputs:
+      warm_caches:
+        description: Also save the Gradle and vcpkg caches, as a push to main does
+        type: boolean
+        default: false
+  pull_request:
+    branches:
+      - main
+  merge_group:
+  # Main, to warm the caches below. Release tags, as in build.yml, so a tagged
+  # commit still gets the analyzer and tests like it did when they were a job
+  # in Build All Platforms. A tag doesn't save any caches.
+  push:
+    branches:
+      - main
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+  schedule:
+    # Recreates the caches if they were evicted, which happens to an entry
+    # nothing read for a week. With the entries in place the warming steps
+    # stop after the restore.
+    - cron: '17 4 * * *'
+
+permissions:
+  contents: read
+
+# A new push to a pull request replaces its running checks. Every other run
+# gets a group of its own, so pushes to main, tags, manual runs and merge
+# groups never queue or cancel.
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Analyzer and every test suite, the app plus each package that has one.
+  # The platform builds compile only reachable code, so a broken file nothing
+  # imports and a failing test are invisible to them. This job is what the PR
+  # comment reads its Tests line from.
+  # The suites are split across parallel runners because one after the other
+  # they took over half an hour, and summary merges the results back. The app
+  # suite alone took about 20 minutes, so it runs as three shards.
+  tests:
+    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # Three app shards. Keep in step with the % 3 below and the suite
+        # list in summary.
+        suite: [analyze-packages, app-0, app-1, app-2, kotlin]
+    name: tests (${{ matrix.suite }})
+    steps:
+      - uses: actions/checkout@v5
+
+      # Read from build.yml rather than kept here too, so a Flutter upgrade
+      # there can't leave the tests on the old one.
+      - name: Read the Flutter version build.yml uses
+        run: |
+          version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
+          if [ -z "$version" ]; then
+            echo "::error file=.github/workflows/build.yml::Couldn't find FLUTTER_VERSION in build.yml"
+            exit 1
+          fi
+          echo "FLUTTER_VERSION=$version" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v5
+        if: matrix.suite == 'kotlin'
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # The same Gradle cache as the android job in build.yml, see there.
+      # Pull requests only restore it. On main the save step further down
+      # writes it.
+      - uses: actions/cache/restore@v5
+        id: gradle-cache
+        if: matrix.suite == 'kotlin'
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.m2/repository/org/robolectric
+          key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Run analyzer and tests
+        run: |
+          mkdir -p /tmp/test-results
+          status=0
+          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
+
+          flutter pub get
+
+          case "${{ matrix.suite }}" in
+            analyze-packages)
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter pub get >/dev/null)
+              done
+
+              # Only error lines gate the job, the tree carries longstanding
+              # infos and warnings. The exit code still counts, since an
+              # analyzer that crashes (exit 4) or gets killed prints no error
+              # lines and would pass as clean otherwise.
+              analyze() {
+                (cd "$1" && dart analyze --no-fatal-warnings) > /tmp/test-results/analyzer-output.txt 2>&1 || {
+                  rc=$?
+                  status=1
+                  echo "dart analyze in $1 exited with $rc"
+                  grep -vE "^ *(info|warning) - " /tmp/test-results/analyzer-output.txt || true
+                }
+                grep -E " error - " /tmp/test-results/analyzer-output.txt >> /tmp/test-results/analyzer.txt || true
+              }
+              analyze .
+              for pkg in $packages; do
+                analyze "packages/$pkg"
+              done
+
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
+              done
+              ;;
+            app-*)
+              # Every third test file, so the shards split the files between
+              # them. flutter test's --total-shards splits the tests inside
+              # each file instead, so every shard would still compile every
+              # file, and that is most of the time.
+              suite="${{ matrix.suite }}"
+              mapfile -t files < <(find test -name '*_test.dart' | LC_ALL=C sort | awk -v shard="${suite#app-}" '(NR - 1) % 3 == shard')
+              flutter test "${files[@]}" --reporter json > "/tmp/test-results/$suite.jsonl" || status=1
+              ;;
+            kotlin)
+              # gradlew is gitignored, and only a Flutter build writes it.
+              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              ;;
+          esac
+
+          echo "$status" > /tmp/test-results/run-status
+
+      - name: Summarize results
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob
+          import json
+          import os
+          import secrets
+          import xml.etree.ElementTree as ET
+
+          passed = failed = 0
+          failures = []
+          # What each failure said, for the log. The JSON only keeps names.
+          details = []
+
+          def head(text, lines):
+              text = (text or '').strip().splitlines()
+              return '\n'.join(text[:lines] + ([f'... {len(text) - lines} more lines'] if len(text) > lines else []))
+
+          for path in sorted(glob.glob('/tmp/test-results/*.jsonl')):
+              suite = os.path.basename(path)[:-6]
+              names = {}
+              errors = {}
+              outcomes = {}
+              for line in open(path):
+                  line = line.strip()
+                  if not line.startswith('{'):
+                      continue
+                  try:
+                      event = json.loads(line)
+                  except ValueError:
+                      continue
+                  if event.get('type') == 'testStart':
+                      names[event['test']['id']] = event['test'].get('name', '?')
+                  elif event.get('type') == 'error':
+                      errors.setdefault(event.get('testID'), []).append(
+                          head(event.get('error'), 40) + '\n' + head(event.get('stackTrace'), 15))
+                  elif event.get('type') == 'testDone':
+                      if event.get('result') != 'success':
+                          outcomes[event.get('testID')] = 'failed'
+                      else:
+                          outcomes[event.get('testID')] = 'hidden' if event.get('hidden') else 'passed'
+              # A test can still fail after it reported success, from a timer
+              # or its teardown. That only shows as error events, and it fails
+              # the run, so it counts as a failure here too.
+              for test_id in list(outcomes) + [t for t in errors if t not in outcomes]:
+                  outcome = outcomes.get(test_id)
+                  if test_id not in errors and outcome != 'failed':
+                      if outcome == 'passed':
+                          passed += 1
+                      continue
+                  failed += 1
+                  label = f"{suite}: {names.get(test_id, '?')}"
+                  if outcome is None:
+                      label += ' (did not finish)'
+                  elif outcome != 'failed':
+                      label += ' (failed after it completed)'
+                  failures.append(label)
+                  details.append((label, '\n\n'.join(errors.get(test_id, ['No error was reported.']))))
+
+          # Gradle writes its results under the repo root build directory.
+          for path in sorted(glob.glob('build/*/test-results/*/TEST-*.xml')):
+              suite = 'kotlin-' + path.split('/')[1]
+              for case in ET.parse(path).getroot().iter('testcase'):
+                  if case.find('skipped') is not None:
+                      continue
+                  problem = case.find('failure')
+                  if problem is None:
+                      problem = case.find('error')
+                  if problem is None:
+                      passed += 1
+                  else:
+                      failed += 1
+                      label = f"{suite}: {case.get('classname', '?').rsplit('.', 1)[-1]}.{case.get('name', '?')}"
+                      failures.append(label)
+                      details.append((label, head(problem.get('message'), 40) + '\n' + head(problem.text, 15)))
+
+          # Test output can contain lines that read as workflow commands
+          # (an early ::endgroup:: for one), so commands are off while it prints.
+          token = secrets.token_hex(16)
+          for label, text in details[:50]:
+              print(f'::group::{label}')
+              print(f'::stop-commands::{token}')
+              print(text)
+              print(f'::{token}::')
+              print('::endgroup::')
+          if len(details) > 50:
+              print(f'{len(details) - 50} more failures, see the raw-test-output artifact')
+
+          analyzer = []
+          try:
+              analyzer = [l.rstrip() for l in open('/tmp/test-results/analyzer.txt') if l.strip()]
+          except FileNotFoundError:
+              pass
+
+          try:
+              run_status = int(open('/tmp/test-results/run-status').read().strip())
+          except (FileNotFoundError, ValueError):
+              run_status = 1
+
+          out = {
+              'passed': passed,
+              'failed': failed,
+              'failures': failures[:50],
+              'more_failures': max(0, len(failures) - 50),
+              'analyzer_errors': len(analyzer),
+              'analyzer_sample': analyzer[:10],
+              'run_status': run_status,
+          }
+          with open('/tmp/test-results/test-results-${{ matrix.suite }}.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
+          EOF
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ matrix.suite }}
+          path: /tmp/test-results/test-results-${{ matrix.suite }}.json
+          overwrite: true
+
+      - name: Gate on failures
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import json
+          import sys
+          results = json.load(open('/tmp/test-results/test-results-${{ matrix.suite }}.json'))
+          bad = results['failed'] or results['analyzer_errors'] or results['run_status']
+          sys.exit(1 if bad else 0)
+          EOF
+
+      # Everything the reporters wrote, for a failure the log doesn't explain.
+      # After the gate, since the steps before it don't fail on a test failure.
+      - name: Upload raw test output
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: raw-test-output-${{ matrix.suite }}
+          path: |
+            /tmp/test-results/*.jsonl
+            build/*/test-results/
+          overwrite: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # The android job in build.yml builds release, which needs dependencies
+      # and release Flutter engine artifacts the debug unit tests don't. Both
+      # flavors have the same dependencies, so one APK covers them. Runs after
+      # a test failure too, so a red main still warms everything it can. The
+      # daemons are stopped so the new one picks up the memory limit, which is
+      # the same as the android job's, for the 16 GB runner.
+      - name: Resolve the release build's dependencies
+        if: >-
+          !cancelled() && matrix.suite == 'kotlin' &&
+          (github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          steps.gradle-cache.outputs.cache-hit != 'true'
+        run: |
+          (cd android && ./gradlew --stop) || true
+          pkill -f KotlinCompileDaemon || true
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError
+          kotlin.daemon.jvmargs=-Xmx2G
+          EOF
+          flutter build apk --release --flavor mobile --dart-define=DISTRIBUTION_CHANNEL=apk
+
+      # This is the one writer of the Gradle cache, so an entry under the exact
+      # key always holds what the kotlin tests and the release build resolve.
+      # A failed run (a test failure, or Maven Central refusing a download)
+      # still saves what it resolved, but under a key of its own: pull requests
+      # can fall back to it, and the next run misses the exact key and tries
+      # again rather than taking an incomplete entry as done. Path and key are
+      # the restore step's.
+      - uses: actions/cache/save@v5
+        if: >-
+          !cancelled() && matrix.suite == 'kotlin' &&
+          (github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          steps.gradle-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.m2/repository/org/robolectric
+          key: ${{ steps.gradle-cache.outputs.cache-primary-key }}${{ job.status == 'failure' && format('-partial-{0}', github.run_id) || '' }}
+
+  # Merges the per-suite results into the one test-results.json the PR comment
+  # reads. A suite that died before uploading counts as a failed run.
+  summary:
+    if: ${{ !cancelled() }}
+    needs: tests
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: test-results-*
+          path: parts
+          merge-multiple: true
+
+      # The PR number and commit go in the JSON too. A workflow_run event from
+      # a fork's pull request doesn't name the pull request, so the PR Comment
+      # workflow reads them from here or from build.yml's outcomes.json.
+      - name: Merge results
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 - <<'EOF'
+          import json
+          import os
+
+          suites = ['analyze-packages', 'app-0', 'app-1', 'app-2', 'kotlin']
+          out = {
+              'pr_number': int(os.environ['PR_NUMBER']) if os.environ['PR_NUMBER'] else None,
+              'sha': os.environ['SHA'],
+              'passed': 0,
+              'failed': 0,
+              'failures': [],
+              'more_failures': 0,
+              'analyzer_errors': 0,
+              'analyzer_sample': [],
+              'run_status': 0,
+          }
+          for suite in suites:
+              path = f'parts/test-results-{suite}.json'
+              if not os.path.exists(path):
+                  print(f'No results from {suite}')
+                  out['run_status'] = 1
+                  continue
+              part = json.load(open(path))
+              for key in ('passed', 'failed', 'more_failures', 'analyzer_errors'):
+                  out[key] += part[key]
+              out['failures'] += part['failures']
+              out['analyzer_sample'] += part['analyzer_sample']
+              out['run_status'] = max(out['run_status'], part['run_status'])
+
+          out['more_failures'] += max(0, len(out['failures']) - 50)
+          out['failures'] = out['failures'][:50]
+          out['analyzer_sample'] = out['analyzer_sample'][:10]
+          with open('test-results.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
+          EOF
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: test-results
+          path: test-results.json
+          overwrite: true
+
+  # The one status check a ruleset needs to require, "Checks / checks". It
+  # reports even when a job above fails or is skipped, and fails if any did.
+  checks:
+    name: checks
+    if: always()
+    needs: [tests, summary]
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Fail if any suite failed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+          results = {k: v['result'] for k, v in json.loads(os.environ['NEEDS']).items()}
+          print(results)
+          sys.exit(1 if any(r in ('failure', 'cancelled') for r in results.values()) else 0)
+          EOF
+
+  # Saves vcpkg's binary cache on main for the Windows jobs in build.yml, which
+  # build libarchive and its dependencies, OpenSSL included, from source for
+  # about 13 minutes without it. The version step, path, key and restore-keys
+  # are copied from those jobs and must stay identical to them, or the build
+  # looks up a key this never saves. With an exact hit actions/cache doesn't
+  # save, so a warm run is a restore and a no-op install. Not part of the
+  # checks gate: a cold cache only makes the next build slower.
+  warm-vcpkg:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches
+    name: warm-vcpkg (${{ matrix.triplet }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            triplet: x64-windows
+          - runner: windows-11-arm
+            triplet: arm64-windows
+    runs-on: ${{ matrix.runner }}
+    steps:
+      # vcpkg runs in the checkout like in the build, so a manifest added to
+      # the repo later would apply here too.
+      - uses: actions/checkout@v5
+
+      - name: Find the runner's vcpkg and image versions
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
+
+      # The same classic-mode install build-windows.ps1 runs, with the vcpkg
+      # it finds first on a runner (C:\vcpkg), so the ABI hashes are the ones
+      # the build looks up. There is no manifest or overlay port to match.
+      - name: Build libarchive into the binary cache
+        shell: pwsh
+        env:
+          VCPKG_TRIPLET: ${{ matrix.triplet }}
+        run: |
+          $vcpkg = 'C:\vcpkg\vcpkg.exe'
+          if (-not (Test-Path $vcpkg)) {
+            $vcpkg = (Get-Command vcpkg -ErrorAction Stop).Source
+          }
+          & $vcpkg install "libarchive:$env:VCPKG_TRIPLET"
+          if ($LASTEXITCODE -ne 0) {
+            throw "vcpkg install libarchive:$env:VCPKG_TRIPLET failed with exit code $LASTEXITCODE"
+          }
