@@ -233,6 +233,7 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastSonarrCalendarShowDate = true;
   bool _lastRadarrCalendarHideDownloaded = true;
   bool _lastSonarrCalendarHideDownloaded = true;
+  DateFormatSetting? _lastDateFormat;
 
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
@@ -278,6 +279,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
     _lastRadarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
     _lastSonarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
+    _lastDateFormat = _userPrefs.get(UserPreferences.dateFormat);
 
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
@@ -400,6 +402,7 @@ class _HomeShellState extends State<_HomeShell>
     final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
     final currentRadarrHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
     final currentSonarrHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
+    final currentDateFormat = _userPrefs.get(UserPreferences.dateFormat);
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
@@ -417,7 +420,8 @@ class _HomeShellState extends State<_HomeShell>
         currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
         currentShowSonarrDate != _lastSonarrCalendarShowDate ||
         currentRadarrHideDownloaded != _lastRadarrCalendarHideDownloaded ||
-        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded) {
+        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded ||
+        currentDateFormat != _lastDateFormat) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
@@ -435,6 +439,7 @@ class _HomeShellState extends State<_HomeShell>
       _lastSonarrCalendarShowDate = currentShowSonarrDate;
       _lastRadarrCalendarHideDownloaded = currentRadarrHideDownloaded;
       _lastSonarrCalendarHideDownloaded = currentSonarrHideDownloaded;
+      _lastDateFormat = currentDateFormat;
 
       _viewModel.refresh();
     }

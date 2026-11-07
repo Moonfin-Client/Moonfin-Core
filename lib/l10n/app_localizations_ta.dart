@@ -11731,6 +11731,22 @@ class AppLocalizationsTa extends AppLocalizations {
       'கடிகாரம் எங்கு காட்டப்பட்டாலும் 24-மணி நேர வடிவமைப்பைப் பயன்படுத்தவும்';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'வழிசெலுத்தல் பட்டியில் ஷஃபிள் பட்டனைக் காட்டு';
 
