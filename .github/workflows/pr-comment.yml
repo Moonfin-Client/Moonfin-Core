@@ -196,14 +196,16 @@ jobs:
             // Android builds both flavors and Linux both architectures in one matrix
             // job each, so a failure on either leg fails the job as a whole. An
             // artifact only uploads when its own leg got that far, so its presence
-            // is what tells the two apart.
+            // is what tells the two apart. Without outcomes.json, an artifact
+            // still proves its build passed, but a missing one proves nothing.
             const statusOf = (row) => {
               if (!buildRunId) return 'running';
               const result = outcomes?.[row.job];
-              return result === 'success' || artifacts.has(row.artifact) ? 'success' : result;
+              if (result === 'success' || artifacts.has(row.artifact)) return 'success';
+              return outcomes ? result : 'unknown';
             };
 
-            const badge = { success: '✅ Passed', failure: '❌ Failed', running: '⏳ Running' };
+            const badge = { success: '✅ Passed', failure: '❌ Failed', running: '⏳ Running', unknown: '⚠️ No result' };
 
             const artifactCell = (row) => {
               const artifact = artifacts.get(row.artifact);
@@ -215,6 +217,8 @@ jobs:
             const checks = checksRunId ? process.env.CHECKS_CONCLUSION : 'running';
             const statuses = rows.map(statusOf);
             const buildsPassed = Boolean(buildRunId) && statuses.every(s => s === 'success');
+            // Without outcomes.json the Apple XCTests are unaccounted for too.
+            const buildResultsMissing = Boolean(buildRunId) && !outcomes;
             const appleTestsPassed = !buildRunId || outcomes?.apple_tests === 'success';
             const testsPassed = checks === 'success' && Boolean(tests) && appleTestsPassed;
             const passed = buildsPassed && testsPassed;
@@ -238,6 +242,8 @@ jobs:
                 const names = listed.map(name => `- \`${escapeText(name)}\``);
                 if (more > 0) names.push(`- and ${more} more, see the workflow log`);
                 testLines.push('', '<details><summary>Failing tests</summary>', '', ...names, '', '</details>');
+              } else if (checks === 'success' && buildResultsMissing) {
+                testLines.push(`**Tests** ⚠️ ${passedCount} passed, analyzer clean, Apple tests unaccounted for`);
               } else if (analyzerErrors === 0) {
                 testLines.push('**Tests** ❌ the run crashed before reporting, see the workflow log');
               } else {
@@ -268,6 +274,11 @@ jobs:
             } else if (passed) {
               headline = '## ✅ Build Successful';
               summary = 'All platform builds and tests passed. You can download the test artifacts below.';
+            } else if (buildResultsMissing) {
+              const checksPassed = checks === 'success' && Boolean(tests);
+              headline = checksPassed ? '## ⚠️ Build Results Missing' : '## ❌ Checks Failed';
+              summary = (checksPassed ? '' : 'The analyzer or tests failed. ') +
+                'Build All Platforms finished without reporting its results. Any platform without an artifact and the Apple tests are unaccounted for. Check the build run.';
             } else if (buildsPassed) {
               headline = '## ❌ Checks Failed';
               summary = 'All platform builds passed, but the test run did not.';
