@@ -103,6 +103,10 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
+/// Watching Now prints its titles on the artwork, so nothing sits under it.
+double _classicCardMetadataFor(HomeRow row) =>
+    row.id == 'mdblist_watching_now' ? 0.0 : _classicCardMetadataHeight;
+
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
     isRowsV2 || !PlatformDetection.useMobileUi ? 6.0 : 16.0;
@@ -3274,18 +3278,25 @@ class _ContentRowsState extends State<_ContentRows>
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
-        final imageHeight = modernImageHeight(posterSize, platformScale);
+        final imageHeight = modernImageHeight(posterSize, platformScale)
+            .clamp(220.0 * desktopScale, double.infinity);
         final budget = _v2MetadataBudgetFor(row, prefs);
         childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
-        final imageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+        final baseImageHeight = (row.id == 'mdblist_watching_now'
+            ? posterSize.landscapeHeight.toDouble()
+            : posterSize.portraitHeight.toDouble()) * platformScale;
+        // A loading row is LibraryRow's spinner at its 220 default height,
+        // which can be taller than the posters.
+        final imageHeight =
+            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final headroom = _focusHeadroom(
           imageHeight,
           prefs.get(UserPreferences.cardFocusExpansion),
         );
         childHeight =
             imageHeight +
-            (_classicCardMetadataHeight * metadataScale) +
+            (_classicCardMetadataFor(row) * metadataScale) +
             (10 * metadataScale) +
             headroom;
       }
@@ -3316,7 +3327,8 @@ class _ContentRowsState extends State<_ContentRows>
               ? posterSize.landscapeHeight.toDouble()
               : posterSize.portraitHeight.toDouble()) * platformScale;
           if (imageHeight > maxImageHeight) maxImageHeight = imageHeight;
-          final cardHeight = imageHeight + (_classicCardMetadataHeight * metadataScale);
+          final cardHeight =
+              imageHeight + (_classicCardMetadataFor(row) * metadataScale);
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
@@ -4292,16 +4304,21 @@ class _ContentRowsState extends State<_ContentRows>
       final maxCardHeight = _isRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
-                (_classicCardMetadataHeight * metadataScale) +
+                (_classicCardMetadataFor(row) * metadataScale) +
                 _classicRowPadding(row, prefs);
       final headroom = _focusHeadroom(
         maxImageHeight,
         prefs.get(UserPreferences.cardFocusExpansion),
       );
+      final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
+      final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+      final subtitleHeight = hasSubtitle
+          ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale
+          : 0.0;
       return _libraryRowExtent(
         maxCardHeight + headroom,
         metadataScale: metadataScale,
-      );
+      ) + subtitleHeight;
     }
   }
 
@@ -5402,7 +5419,8 @@ class _ContentRowsState extends State<_ContentRows>
                 : posterSize.portraitHeight.toDouble()) *
             platformScale;
         if (height > maxImageHeight) maxImageHeight = height;
-        final cardHeight = height + (_classicCardMetadataHeight * metadataScale);
+        final cardHeight =
+            height + (_classicCardMetadataFor(row) * metadataScale);
         if (cardHeight > maxCardHeight) maxCardHeight = cardHeight;
         if (firstCardWidth == 0) firstCardWidth = height * ar;
       }
@@ -5742,7 +5760,13 @@ class _ContentRowsState extends State<_ContentRows>
                   : Theme.of(context).colorScheme.onSurface.withAlpha(180);
               final subtitleStyle = baseTextStyle.copyWith(
                 color: subtitleColor,
-                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+                fontWeight: isNeon ? FontWeight.w600 : null,
+                shadows: isNeon
+                    ? const [
+                        Shadow(blurRadius: 4, color: Colors.black),
+                        Shadow(blurRadius: 6, color: Colors.black87),
+                      ]
+                    : const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
 
               cardSubtitleWidget = Column(
@@ -6358,8 +6382,12 @@ class _ContentRowsState extends State<_ContentRows>
                                       subtitle,
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: AppColorScheme.onSurface.withValues(
-                                          alpha: 0.8,
+                                          alpha: 0.95,
                                         ),
+                                        fontWeight: FontWeight.w600,
+                                        shadows: const [
+                                          Shadow(blurRadius: 4, color: Colors.black54),
+                                        ],
                                       ),
                                     ),
                             ),

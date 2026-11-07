@@ -310,7 +310,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   }
 
   Future<void> _pushNotificationPrefs() async {
-    if (!_syncService.pluginAvailable) return;
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
     await _syncService.pushNotificationPrefs(client);
