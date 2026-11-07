@@ -50,7 +50,6 @@ class _ServicesScreenState extends State<_ServicesScreen> {
             listenable: Listenable.merge([
               achievementsService,
               GetIt.instance<PluginSyncService>(),
-              GetIt.instance<UserPreferences>(),
             ]),
             builder: (context, _) => _buildList(l10n, achievementsService),
           ),
@@ -64,12 +63,7 @@ class _ServicesScreenState extends State<_ServicesScreen> {
       l10n.seerr,
     );
     final seerrShown = seerrOnAnySignedInServer();
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
-    final calendarShown =
-        GetIt.instance<PluginSyncService>().calendarAvailable &&
-        seerrAvailable &&
-        seerrPrefs.enabled;
+    final calendarShown = GetIt.instance<PluginSyncService>().calendarAvailable;
     return ListView(
       children: [
         adaptiveListSection(

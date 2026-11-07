@@ -125,11 +125,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
-  final seerrPrefs = GetIt.instance<SeerrPreferences>();
   final calendarAvailable =
-      GetIt.instance<PluginSyncService>().calendarAvailable &&
-      seerrAvailable &&
-      seerrPrefs.enabled;
+      GetIt.instance<PluginSyncService>().calendarAvailable;
   final calendarRemindersAvailable =
       GetIt.instance<PluginSyncService>().calendarRemindersAvailable;
   final liveTvOnAnyServer = liveTvOnAnySignedInServer();

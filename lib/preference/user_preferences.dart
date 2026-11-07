@@ -273,9 +273,7 @@ class UserPreferences extends ChangeNotifier {
     }
   }
 
-  // Other clients store "library" for mediaBarSourceType, which Moonfin-Core
-  // doesn't support as a source (it supports random, recentlyAdded,
-  // recentlyReleased, newReleases). Normalize "library" and any invalid values.
+  // The library and collection sources saved before draw like random here.
   void _repairMediaBarSourceType() {
     for (final key in _store.keys.toList()) {
       if (key != mediaBarSourceType.key &&
@@ -1270,16 +1268,11 @@ class UserPreferences extends ChangeNotifier {
   }
 
   static String normalizeMediaBarSourceType(String? sourceType) {
-    final normalized = (sourceType ?? '').trim();
-    if (normalized.toLowerCase() == 'library') {
-      return mediaBarSourceRandom;
-    }
-    for (final value in mediaBarSourceTypeValues) {
-      if (value.toLowerCase() == normalized.toLowerCase()) {
-        return value;
-      }
-    }
-    return mediaBarSourceRandom;
+    final normalized = (sourceType ?? '').trim().toLowerCase();
+    return mediaBarSourceTypeValues.firstWhere(
+      (value) => value.toLowerCase() == normalized,
+      orElse: () => mediaBarSourceRandom,
+    );
   }
 
   static final posterSize = EnumPreference(
