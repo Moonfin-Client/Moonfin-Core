@@ -60,7 +60,11 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+  # checks.yml and gradle-cache.yml read this line with sed, so keep it on
+  # one line in this form.
   FLUTTER_VERSION: '3.47.2'
+  # A tag on the tvOS Flutter fork, built on the version above. Bump it with
+  # FLUTTER_VERSION.
   FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
 jobs:
@@ -95,7 +99,8 @@ jobs:
       # restore-keys falls back to main's entry for the same Flutter version.
       # Robolectric fetches its android-all jars into ~/.m2, not through
       # Gradle, so that is cached too. Keep path, key and restore-keys the
-      # same in all three places, or the keys stop matching.
+      # same here, in the kotlin suite in checks.yml and in gradle-cache.yml,
+      # or the keys stop matching.
       - uses: actions/cache/restore@v5
         with:
           path: |
@@ -877,279 +882,6 @@ jobs:
           path: build/web
           if-no-files-found: error
 
-  # Analyzer and every test suite, the app plus each package that has one.
-  # The platform builds above compile only reachable code, so a broken file
-  # nothing imports and a failing test are invisible to them. This job is
-  # what the PR comment reads its Tests line from.
-  # The suites are split across parallel runners because one after the other
-  # they took over half an hour, and tests-summary merges the results back.
-  tests:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
-    runs-on: ubuntu-26.04
-    strategy:
-      fail-fast: false
-      matrix:
-        suite: [analyze-packages, app, kotlin]
-    name: tests (${{ matrix.suite }})
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-java@v5
-        if: matrix.suite == 'kotlin'
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      # The same Gradle cache as the android job, see there.
-      - uses: actions/cache/restore@v5
-        if: matrix.suite == 'kotlin'
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.m2/repository/org/robolectric
-          key: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'pubspec.lock') }}
-          restore-keys: gradle-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Run analyzer and tests
-        run: |
-          mkdir -p /tmp/test-results
-          status=0
-          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
-
-          flutter pub get
-
-          case "${{ matrix.suite }}" in
-            analyze-packages)
-              for pkg in $packages; do
-                (cd "packages/$pkg" && flutter pub get >/dev/null)
-              done
-
-              # Only error lines gate the job, the tree carries longstanding infos.
-              dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-              for pkg in $packages; do
-                (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-              done
-
-              for pkg in $packages; do
-                (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
-              done
-              ;;
-            app)
-              flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
-              ;;
-            kotlin)
-              # gradlew is gitignored, and only a Flutter build writes it.
-              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
-              ;;
-          esac
-
-          echo "$status" > /tmp/test-results/run-status
-
-      - name: Summarize results
-        if: always()
-        run: |
-          python3 - <<'EOF'
-          import glob
-          import json
-          import os
-          import secrets
-          import xml.etree.ElementTree as ET
-
-          passed = failed = 0
-          failures = []
-          # What each failure said, for the log. The JSON only keeps names.
-          details = []
-
-          def head(text, lines):
-              text = (text or '').strip().splitlines()
-              return '\n'.join(text[:lines] + ([f'... {len(text) - lines} more lines'] if len(text) > lines else []))
-
-          for path in sorted(glob.glob('/tmp/test-results/*.jsonl')):
-              suite = os.path.basename(path)[:-6]
-              names = {}
-              errors = {}
-              outcomes = {}
-              for line in open(path):
-                  line = line.strip()
-                  if not line.startswith('{'):
-                      continue
-                  try:
-                      event = json.loads(line)
-                  except ValueError:
-                      continue
-                  if event.get('type') == 'testStart':
-                      names[event['test']['id']] = event['test'].get('name', '?')
-                  elif event.get('type') == 'error':
-                      errors.setdefault(event.get('testID'), []).append(
-                          head(event.get('error'), 40) + '\n' + head(event.get('stackTrace'), 15))
-                  elif event.get('type') == 'testDone':
-                      if event.get('result') != 'success':
-                          outcomes[event.get('testID')] = 'failed'
-                      else:
-                          outcomes[event.get('testID')] = 'hidden' if event.get('hidden') else 'passed'
-              # A test can still fail after it reported success, from a timer
-              # or its teardown. That only shows as error events, and it fails
-              # the run, so it counts as a failure here too.
-              for test_id in list(outcomes) + [t for t in errors if t not in outcomes]:
-                  outcome = outcomes.get(test_id)
-                  if test_id not in errors and outcome != 'failed':
-                      if outcome == 'passed':
-                          passed += 1
-                      continue
-                  failed += 1
-                  label = f"{suite}: {names.get(test_id, '?')}"
-                  if outcome is None:
-                      label += ' (did not finish)'
-                  elif outcome != 'failed':
-                      label += ' (failed after it completed)'
-                  failures.append(label)
-                  details.append((label, '\n\n'.join(errors.get(test_id, ['No error was reported.']))))
-
-          # Gradle writes its results under the repo root build directory.
-          for path in sorted(glob.glob('build/*/test-results/*/TEST-*.xml')):
-              suite = 'kotlin-' + path.split('/')[1]
-              for case in ET.parse(path).getroot().iter('testcase'):
-                  if case.find('skipped') is not None:
-                      continue
-                  problem = case.find('failure')
-                  if problem is None:
-                      problem = case.find('error')
-                  if problem is None:
-                      passed += 1
-                  else:
-                      failed += 1
-                      label = f"{suite}: {case.get('classname', '?').rsplit('.', 1)[-1]}.{case.get('name', '?')}"
-                      failures.append(label)
-                      details.append((label, head(problem.get('message'), 40) + '\n' + head(problem.text, 15)))
-
-          # Test output can contain lines that read as workflow commands
-          # (an early ::endgroup:: for one), so commands are off while it prints.
-          token = secrets.token_hex(16)
-          for label, text in details[:50]:
-              print(f'::group::{label}')
-              print(f'::stop-commands::{token}')
-              print(text)
-              print(f'::{token}::')
-              print('::endgroup::')
-          if len(details) > 50:
-              print(f'{len(details) - 50} more failures, see the raw-test-output artifact')
-
-          analyzer = []
-          try:
-              analyzer = [l.rstrip() for l in open('/tmp/test-results/analyzer.txt') if l.strip()]
-          except FileNotFoundError:
-              pass
-
-          try:
-              run_status = int(open('/tmp/test-results/run-status').read().strip())
-          except (FileNotFoundError, ValueError):
-              run_status = 1
-
-          out = {
-              'passed': passed,
-              'failed': failed,
-              'failures': failures[:50],
-              'more_failures': max(0, len(failures) - 50),
-              'analyzer_errors': len(analyzer),
-              'analyzer_sample': analyzer[:10],
-              'run_status': run_status,
-          }
-          with open('/tmp/test-results/test-results-${{ matrix.suite }}.json', 'w') as f:
-              json.dump(out, f)
-          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
-          EOF
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: test-results-${{ matrix.suite }}
-          path: /tmp/test-results/test-results-${{ matrix.suite }}.json
-
-      - name: Gate on failures
-        if: always()
-        run: |
-          python3 - <<'EOF'
-          import json
-          import sys
-          results = json.load(open('/tmp/test-results/test-results-${{ matrix.suite }}.json'))
-          bad = results['failed'] or results['analyzer_errors'] or results['run_status']
-          sys.exit(1 if bad else 0)
-          EOF
-
-      # Everything the reporters wrote, for a failure the log doesn't explain.
-      # After the gate, since the steps before it don't fail on a test failure.
-      - name: Upload raw test output
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: raw-test-output-${{ matrix.suite }}
-          path: |
-            /tmp/test-results/*.jsonl
-            build/*/test-results/
-          if-no-files-found: ignore
-          retention-days: 7
-
-  # Merges the per-suite results into the one test-results.json the PR comment
-  # reads. A suite that died before uploading counts as a failed run.
-  tests-summary:
-    if: ${{ !cancelled() && needs.tests.result != 'skipped' }}
-    needs: tests
-    runs-on: ubuntu-26.04
-    steps:
-      - uses: actions/download-artifact@v7
-        with:
-          pattern: test-results-*
-          path: parts
-          merge-multiple: true
-
-      - name: Merge results
-        run: |
-          python3 - <<'EOF'
-          import json
-          import os
-
-          suites = ['analyze-packages', 'app', 'kotlin']
-          out = {
-              'passed': 0,
-              'failed': 0,
-              'failures': [],
-              'more_failures': 0,
-              'analyzer_errors': 0,
-              'analyzer_sample': [],
-              'run_status': 0,
-          }
-          for suite in suites:
-              path = f'parts/test-results-{suite}.json'
-              if not os.path.exists(path):
-                  print(f'No results from {suite}')
-                  out['run_status'] = 1
-                  continue
-              part = json.load(open(path))
-              for key in ('passed', 'failed', 'more_failures', 'analyzer_errors'):
-                  out[key] += part[key]
-              out['failures'] += part['failures']
-              out['analyzer_sample'] += part['analyzer_sample']
-              out['run_status'] = max(out['run_status'], part['run_status'])
-
-          out['more_failures'] += max(0, len(out['failures']) - 50)
-          out['failures'] = out['failures'][:50]
-          out['analyzer_sample'] = out['analyzer_sample'][:10]
-          with open('test-results.json', 'w') as f:
-              json.dump(out, f)
-          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
-          EOF
-
-      - uses: actions/upload-artifact@v6
-        with:
-          name: test-results
-          path: test-results.json
-
   # The XCTest targets for the native iOS and macOS code, which flutter test
   # can't reach. tvOS has no test target of its own.
   apple-tests:
@@ -1305,7 +1037,7 @@ jobs:
   # to report.
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
-    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests, apple-tests]
+    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, apple-tests]
     runs-on: ubuntu-26.04
     steps:
       - name: Write outcomes.json
@@ -1322,7 +1054,6 @@ jobs:
             "windows_arm64": "${{ needs.windows-arm64.result }}",
             "linux": "${{ needs.linux.result }}",
             "web": "${{ needs.web.result }}",
-            "tests": "${{ needs.tests.result }}",
             "apple_tests": "${{ needs.apple-tests.result }}"
           }
           EOF
