@@ -7273,7 +7273,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final seerr = overlay != null && overlay.state.tmdbId != 0 ? overlay : null;
     final onWatchlist = seerr?.state.onUserWatchlist ?? false;
     final seerrTrailer = seerr?.state.bestTrailer;
-    final seriesName = item.seriesName!.trim();
+    final seriesName = item.seriesName?.trim() ?? "";
     final seriesId = 'bookSeries:$seriesName';
 
     final byButton = <DetailButton, Widget>{
