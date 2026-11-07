@@ -111,9 +111,12 @@ def analyze(cwd):
             'code': fields[2].lower(),
             'message': '|'.join(fields[7:]),
         })
-    if not found and proc.returncode not in (0, 1, 2, 3):
-        print(f'warning: dart analyze in {cwd} exited {proc.returncode}: {proc.stderr.strip()[:500]}',
-              file=sys.stderr)
+    # 1 to 3 mean it found infos, warnings or errors. Anything else is a
+    # crash, and whatever it printed first is incomplete: stop before the
+    # result is written, so the PR comment says the check didn't run rather
+    # than passing a partial list off as the whole of it.
+    if proc.returncode not in (0, 1, 2, 3):
+        sys.exit(f'error: dart analyze in {cwd} exited {proc.returncode}: {proc.stderr.strip()[:500]}')
     return found
 
 

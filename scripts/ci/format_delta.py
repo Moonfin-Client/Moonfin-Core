@@ -4,8 +4,9 @@
 The repo isn't format-clean, so running the formatter over a whole file would
 flag lines nobody in the PR touched. This formats each changed .dart file as it
 is at HEAD, diffs that against the file, and keeps only the hunks that overlap
-lines the diff between BASE and HEAD added or changed. It never rewrites
-anything and exits 0 whatever it finds.
+lines the diff between BASE and HEAD added or changed. A file the formatter
+can't parse is reported as unchecked. It never rewrites anything and exits 0
+whatever it finds.
 
 Example: scripts/ci/format_delta.py upstream/main HEAD --out format.json
 """
@@ -61,14 +62,18 @@ def main():
     root = repo_root()
     ranges = {p: r for p, r in changed_ranges(args.base, args.head, cwd=root).items() if r}
 
-    items, files = [], set()
+    items, files, unchecked = [], set(), []
     for path, touched in sorted(ranges.items()):
         try:
             source = git('show', f'{args.head}:{path}', cwd=root)
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
+            print(f'warning: could not read {path} at {args.head}: {(e.stderr or "").strip()[:300]}',
+                  file=sys.stderr)
+            unchecked.append(path)
             continue
         result = formatted(root, path, source)
         if result is None:
+            unchecked.append(path)
             continue
         for first, last in format_hunks(source, result):
             # A formatter hunk can start on an untouched line, so point at the
@@ -78,17 +83,23 @@ def main():
                 files.add(path)
                 items.append({'file': path, 'line': min(hits)})
 
-    result = {'files': len(files), 'hunks': len(items), 'items': items[:MAX_ITEMS]}
+    # A file the formatter rejected wasn't checked, so it's listed rather
+    # than passed off as formatted.
+    result = {'files': len(files), 'hunks': len(items), 'unchecked': unchecked, 'items': items[:MAX_ITEMS]}
     if args.out:
         with open(args.out, 'w') as f:
             json.dump(result, f, indent=2)
 
     print(f'{len(items)} dart format hunks on lines changed since {args.base}, in {len(files)} files '
-          f'({len(ranges)} changed .dart files checked)')
+          f'({len(ranges) - len(unchecked)} of {len(ranges)} changed .dart files checked)')
     for item in items:
         print(f"  {item['file']}:{item['line']}")
     if items:
         print('Run `dart format <file>` and keep only the hunks on your own lines.')
+    if unchecked:
+        print(f'{len(unchecked)} changed files dart format could not check, see the warnings above:')
+        for path in unchecked:
+            print(f'  {path}')
 
 
 if __name__ == '__main__':
