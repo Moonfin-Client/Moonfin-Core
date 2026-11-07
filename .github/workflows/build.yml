@@ -57,6 +57,8 @@ env:
   # checks.yml reads this line with sed, so keep it on one line in this
   # form.
   FLUTTER_VERSION: '3.47.2'
+  # A tag on the tvOS Flutter fork, built on the version above. Bump it with
+  # FLUTTER_VERSION.
   FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
 jobs:
