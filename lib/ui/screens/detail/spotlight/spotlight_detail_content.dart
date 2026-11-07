@@ -1116,22 +1116,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     AggregatedItem item,
     List<SpotlightCardSpec> cards,
   ) {
-    AggregatedItem? series;
-    List<AggregatedItem>? seriesBooks;
-    if (item.type == 'BookSeries') {
-      series = item;
-      seriesBooks = _vm.seriesBooks;
-      final firstBook =
-      seriesBooks
-      .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
-      .firstOrNull ??
-      seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook == null) {
-        item = seriesBooks[0];
-      } else {
-        item = firstBook;
-      }
-    }
+    final series = item.type == 'BookSeries' ? item : null;
+    item = _vm.seriesFeaturedBook ?? item;
     final overview = cleanOverview(item.overview?.trim());
     final isPerson = item.type == 'Person';
     final visibility = DetailSectionVisibility.of(widget.prefs);
@@ -1162,9 +1148,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final tagline = isPerson || !visibility.shows(DetailSection.tagline)
         ? null
         : _buildTagline(context, item);
-    final itemName = series == null
-        ? item.name
-        : series.rawData["Name"] ?? '';
+    final itemName = series?.name ?? item.name;
     final realItem = series ?? item;
 
     return Column(

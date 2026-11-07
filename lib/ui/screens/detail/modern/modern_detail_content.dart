@@ -4137,22 +4137,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     AggregatedItem item,
     List<_ModernTab> tabs,
   ) {
-    AggregatedItem? series;
-    List<AggregatedItem>? seriesBooks;
-    if (item.type == 'BookSeries') {
-      series = item;
-      seriesBooks = _vm.seriesBooks;
-      final firstBook =
-        seriesBooks
-          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
-          .firstOrNull ??
-        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-        if (firstBook == null) {
-          item = seriesBooks[0];
-        } else {
-          item = firstBook;
-        }
-    }
+    final series = item.type == 'BookSeries' ? item : null;
+    item = _vm.seriesFeaturedBook ?? item;
 
     final textTheme = Theme.of(context).textTheme;
     final isEpisode = item.type == 'Episode';
@@ -4331,9 +4317,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               : item.albumArtist
           : item.name;
 
-      final itemName = series == null
-          ? item.name
-          : series.rawData["Name"] ?? '';
+      final itemName = series?.name ?? item.name;
 
       final playlistInfo = Column(
         crossAxisAlignment: CrossAxisAlignment.start,

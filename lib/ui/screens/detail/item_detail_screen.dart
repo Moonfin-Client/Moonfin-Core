@@ -2011,23 +2011,11 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   List<Widget> _buildBookContent(BuildContext context, AggregatedItem item) {
-    AggregatedItem? series;
-    List<AggregatedItem>? seriesBooks;
-    if (item.type == 'BookSeries') {
-      series = item;
-      seriesBooks = viewModel.seriesBooks;
-      final firstBook =
-        seriesBooks
-          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
-          .firstOrNull ??
-        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-        if (firstBook == null) {
-          item = seriesBooks[0];
-        } else {
-          item = firstBook;
-        }
-    }
-    final booksInSeries = seriesBooks ?? const [];
+    final isSeries = item.type == 'BookSeries';
+    final booksInSeries = isSeries
+        ? viewModel.seriesBooks
+        : const <AggregatedItem>[];
+    item = viewModel.seriesFeaturedBook ?? item;
     final l10n = AppLocalizations.of(context);
     final author = _bookAuthorName(item);
     final authorDisplay = author ?? l10n.unknownAuthor;
@@ -2044,7 +2032,7 @@ class _DetailContentState extends State<_DetailContent> {
     final similarFocusNode = showSimilar
         ? _sectionFocusNode('detailBookSimilar')
         : null;
-    final bookFocusNode = (series != null)
+    final bookFocusNode = isSeries
         ? _sectionFocusNode('detailSeriesBook')
         : null;
     final coverTag = item.primaryImageTag;
@@ -6969,20 +6957,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   @override
   Widget build(BuildContext context) {
-    var item = viewModel.item!;
-    if (item.type == 'BookSeries') {
-      final seriesBooks = viewModel.seriesBooks;
-      final firstBook =
-        seriesBooks
-          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
-          .firstOrNull ??
-        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-      if (firstBook == null) {
-        item = seriesBooks[0];
-      } else {
-        item = firstBook;
-      }
-    }
+    final featuredBook = viewModel.seriesFeaturedBook;
+    final item = featuredBook ?? viewModel.item!;
     final l10n = AppLocalizations.of(context);
     // Only grab initial focus when this screen is actually in front. A settings
     // panel change (detail style or theme) rebuilds the details underneath the
@@ -7273,8 +7249,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final seerr = overlay != null && overlay.state.tmdbId != 0 ? overlay : null;
     final onWatchlist = seerr?.state.onUserWatchlist ?? false;
     final seerrTrailer = seerr?.state.bestTrailer;
-    final seriesName = item.seriesName?.trim() ?? "";
-    final seriesId = 'bookSeries:$seriesName';
+    final seriesName = item.seriesName?.trim() ?? '';
 
     final byButton = <DetailButton, Widget>{
       if (_supportsShuffle(item) && shows(DetailButton.shuffle))
@@ -7453,14 +7428,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             Destinations.item(item.seriesId!, serverId: item.serverId),
           ),
         ),
-      if (item.type == 'Book' && shows(DetailButton.goToSeries)
-          && seriesName != null && seriesName.isNotEmpty)
+      // A series page features one of its own books, which mustn't link back.
+      if (item.type == 'Book' &&
+          featuredBook == null &&
+          seriesName.isNotEmpty &&
+          shows(DetailButton.goToSeries))
         DetailButton.goToSeries: _DetailActionButton(
           label: l10n.goToSeries,
           icon: Icons.book,
-          onPressed: () => context.push(
-            Destinations.item(seriesId, serverId: item.serverId, libraryId: item.parentId),
-          ),
+          onPressed: () async {
+            final libraryId = await viewModel.libraryIdOf(item);
+            if (!context.mounted) return;
+            context.push(
+              Destinations.item(
+                'bookSeries:$seriesName',
+                serverId: item.serverId,
+                libraryId: libraryId,
+              ),
+            );
+          },
         ),
       if (shows(DetailButton.seerrRequest))
         DetailButton.seerrRequest: ?_seerrRequestButton(

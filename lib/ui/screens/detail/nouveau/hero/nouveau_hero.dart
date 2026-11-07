@@ -244,22 +244,8 @@ class NouveauHeroState extends State<NouveauHero> {
         ? item.id
         : item.seriesId;
 
-    AggregatedItem? series;
-    List<AggregatedItem>? seriesBooks;
-    if (item.type == 'BookSeries') {
-      series = item;
-      seriesBooks = widget.viewModel.seriesBooks;
-      final firstBook =
-        seriesBooks
-          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
-          .firstOrNull ??
-        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
-        if (firstBook == null) {
-          item = seriesBooks[0];
-        } else {
-          item = firstBook;
-        }
-    }
+    final series = item.type == 'BookSeries' ? item : null;
+    item = viewModel.seriesFeaturedBook ?? item;
 
     final overview = cleanOverview(item.overview?.trim());
 
@@ -392,9 +378,7 @@ class NouveauHeroState extends State<NouveauHero> {
           )
         : null;
 
-    final itemName = series == null
-        ? item.name
-        : series.rawData["Name"] ?? '';
+    final itemName = series?.name ?? item.name;
 
     final branding = _NouveauBranding(
       title: itemName,

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/viewmodels/book_browse_view_model.dart';
-import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -81,7 +80,6 @@ void main() {
         book('Standalone', 'root'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries.map((e) => e.name), ['Berserk', 'One Piece']);
@@ -103,7 +101,6 @@ void main() {
         book('Endless Night', 'Agatha Christie', extension: 'epub'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries, isEmpty);
@@ -113,7 +110,6 @@ void main() {
     final entries = bookSeriesEntries(
       books: [book('a', 'Comics'), book('b', 'Comics'), book('c', 'Comics')],
       folders: [folder('Comics', 'hidden'), folder('Books', 'hidden')],
-      libraryId: "lib-1",
     );
 
     expect(entries, isEmpty);
@@ -126,7 +122,6 @@ void main() {
         book('ch2', 'One Piece', extension: 'mp3', type: 'AudioBook'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries, isEmpty);
@@ -151,7 +146,6 @@ void main() {
         ),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries.single.id, 'bookSeries:Foundation');
@@ -168,7 +162,6 @@ void main() {
         book('op2', 'One Piece', series: 'One Piece'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries.single.id, 'One Piece');
@@ -186,7 +179,6 @@ void main() {
         book('gl4', 'Green Lantern (2005)', series: 'Green Lantern'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries.map((e) => e.id), [
@@ -204,7 +196,6 @@ void main() {
           book('vol$i', 'One Piece', imageTag: i == 2 ? null : 'tag$i'),
       ],
       folders: folders,
-      libraryId: "lib-1",
     );
 
     expect(entries.single.rawData['StackCovers'], [

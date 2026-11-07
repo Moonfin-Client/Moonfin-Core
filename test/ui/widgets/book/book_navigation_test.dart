@@ -62,6 +62,29 @@ void main() {
     });
   }
 
+  testWidgets('a series named with a slash still opens its details', (
+    tester,
+  ) async {
+    await pumpRouter(tester);
+    await open(
+      tester,
+      AggregatedItem(
+        id: 'bookSeries:Fate/Zero',
+        serverId: 'server',
+        rawData: {
+          'Id': 'bookSeries:Fate/Zero',
+          'Name': 'Fate/Zero',
+          'Type': 'BookSeries',
+        },
+      ),
+    );
+
+    expect(
+      find.text('/item/bookSeries:Fate%2FZero?serverId=server&libraryId=lib-1'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('a series folder opens the folder', (tester) async {
     await pumpRouter(tester);
     await open(tester, _item('BookSeries', isFolder: true));
