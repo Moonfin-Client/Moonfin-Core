@@ -271,8 +271,8 @@ jobs:
             }
 
             // The delta job's advisory findings on the lines this pull request
-            // touched. Each file is missing when its script crashed, and the
-            // whole section when Checks hasn't finished. Nothing here changes
+            // touched. Each file is missing when its script crashed, and all of
+            // them when the job never got to run them. Nothing here changes
             // the headline.
             const listOf = (part) => (part && Array.isArray(part.items) ? part.items : [])
               .filter(item => item && typeof item === 'object');
@@ -281,6 +281,11 @@ jobs:
             const format = readJson('delta-results/format.json');
             const l10n = readJson('delta-results/l10n.json');
             const deltaLines = [];
+            // Checks finished but the delta job left nothing: say so, as the
+            // tests line does, rather than look like a clean run.
+            if (checksRunId && !diagnostics && !format) {
+              deltaLines.push('**Touched lines** ⚠️ did not run, see the delta job log');
+            }
             if (diagnostics || format) {
               const diagCount = clamp(diagnostics?.count);
               const hunkCount = clamp(format?.hunks);
@@ -315,7 +320,12 @@ jobs:
               }
             }
             const l10nItems = listOf(l10n).slice(0, 30);
-            if (l10nItems.length > 0) {
+            if (!l10n && (diagnostics || format)) {
+              // The line only shows findings, so a crashed script would
+              // otherwise read as none.
+              if (deltaLines.length > 0) deltaLines.push('');
+              deltaLines.push('**Localization** ⚠️ check did not run, see the delta job log');
+            } else if (l10nItems.length > 0) {
               if (deltaLines.length > 0) deltaLines.push('');
               deltaLines.push(`**Localization** ⚠️ ${plural(clamp(l10n.count), 'finding', 'findings')}`);
               // The message is outside a code span, so markdown and HTML

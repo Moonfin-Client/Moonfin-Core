@@ -38,11 +38,20 @@ def formatted(root, path, source):
     return proc.stdout
 
 
+def git_lines(text):
+    """The lines as git numbers them. splitlines() would also break on
+    U+2028 and the like and put the hunks off by a line."""
+    lines = text.split('\n')
+    if lines and lines[-1] == '':  # what follows the final \n isn't a line
+        lines.pop()
+    return lines
+
+
 def format_hunks(original, result):
     """(first, last) original-side line ranges of each formatter change. An
     insertion with no original lines is placed on the line before it."""
     hunks = []
-    diff = difflib.unified_diff(original.splitlines(), result.splitlines(), n=0, lineterm='')
+    diff = difflib.unified_diff(git_lines(original), git_lines(result), n=0, lineterm='')
     for line in diff:
         m = HUNK.match(line)
         if m:
