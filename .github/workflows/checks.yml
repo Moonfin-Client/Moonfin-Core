@@ -13,10 +13,6 @@ on:
 permissions:
   contents: read
 
-env:
-  # Keep equal to FLUTTER_VERSION in build.yml.
-  FLUTTER_VERSION: '3.47.2'
-
 # A new push to a pull request replaces its running checks. Every other run
 # gets a group of its own, so manual runs and merge groups never queue or
 # cancel.
@@ -43,6 +39,17 @@ jobs:
     name: tests (${{ matrix.suite }})
     steps:
       - uses: actions/checkout@v5
+
+      # Read from build.yml rather than kept here too, so a Flutter upgrade
+      # there can't leave the tests on the old one.
+      - name: Read the Flutter version build.yml uses
+        run: |
+          version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
+          if [ -z "$version" ]; then
+            echo "::error file=.github/workflows/build.yml::Couldn't find FLUTTER_VERSION in build.yml"
+            exit 1
+          fi
+          echo "FLUTTER_VERSION=$version" >> "$GITHUB_ENV"
 
       - uses: actions/setup-java@v5
         if: matrix.suite == 'kotlin'
