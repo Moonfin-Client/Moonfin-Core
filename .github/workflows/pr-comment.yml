@@ -203,6 +203,7 @@ jobs:
               { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
               { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
               { platform: 'tvOS',          job: 'tvos',          artifact: 'tvos-ipa',             files: 'Moonfin_tvOS_v*_unsigned.ipa' },
+              { platform: 'Apple tests',   job: 'apple_tests',   artifact: 'apple-test-results',   files: 'test-results.json', tests: true },
               { platform: 'Windows x64',   job: 'windows',       artifact: 'windows-exe',          files: 'Moonfin_Windows_v*.exe' },
               { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
               { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
@@ -215,10 +216,12 @@ jobs:
             // artifact only uploads when its own leg got that far, so its presence
             // is what tells the two apart. Without outcomes.json, an artifact
             // still proves its build passed, but a missing one proves nothing.
+            // The Apple tests row is a job, not a build, and uploads its results
+            // file whether the tests passed or not, so there it proves nothing.
             const statusOf = (row) => {
               if (!buildRunId) return 'running';
               const result = outcomes?.[row.job];
-              if (result === 'success' || artifacts.has(row.artifact)) return 'success';
+              if (result === 'success' || (!row.tests && artifacts.has(row.artifact))) return 'success';
               return outcomes ? result : 'unknown';
             };
 
@@ -249,9 +252,11 @@ jobs:
             // The Apple XCTests still run in Build All Platforms.
             const checks = checksRunId ? process.env.CHECKS_CONCLUSION : 'running';
             const statuses = rows.map(statusOf);
-            const buildsPassed = Boolean(buildRunId) && rows.every((row, i) => notRun(row.job) || statuses[i] === 'success');
-            const nothingBuilt = Boolean(buildRunId) && rows.every(row => notRun(row.job));
-            const someNotRun = rows.some(row => notRun(row.job));
+            // The Apple tests row counts with the tests below, not the builds.
+            const builds = rows.filter(row => !row.tests);
+            const buildsPassed = Boolean(buildRunId) && builds.every(row => notRun(row.job) || statusOf(row) === 'success');
+            const nothingBuilt = Boolean(buildRunId) && builds.every(row => notRun(row.job));
+            const someNotRun = builds.some(row => notRun(row.job));
             // Without outcomes.json the Apple XCTests are unaccounted for too.
             const buildResultsMissing = Boolean(buildRunId) && !outcomes;
             const appleTestsPassed = !buildRunId || outcomes?.apple_tests === 'success' || notRun('apple_tests');
@@ -293,9 +298,6 @@ jobs:
                   testLines.push('', '<details><summary>Analyzer errors</summary>', '', ...sample, '', '</details>');
                 }
               }
-            }
-            if (notRun('apple_tests')) {
-              testLines.push('', `**Apple tests** ${notRunText('apple_tests')}`);
             }
 
             // Checks usually reports first, Build All Platforms takes longer.
