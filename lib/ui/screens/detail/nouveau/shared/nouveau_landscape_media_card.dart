@@ -10,6 +10,7 @@ import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/media_badge.dart';
 import '../../../../widgets/offline_aware_image.dart';
+import '../../../../widgets/poster_badges.dart';
 
 class NouveauLandscapeMediaCard extends StatefulWidget {
   final AggregatedItem item;
@@ -560,6 +561,26 @@ class NouveauLandscapeMediaCardState
                               width: 26,
                               height: 26,
                             ),
+                    ),
+                  ),
+
+                  // Labels start past the favourite heart, the watched tick
+                  // and the episode number. The play button draws over them.
+                  Positioned(
+                    top: _showFavoriteIndicator ? 40 : 10,
+                    left: 10,
+                    child: IgnorePointer(
+                      child: PosterBadges(itemId: item.id, scale: 0.8),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: PosterBadgeCorners(
+                      itemId: item.id,
+                      scale: 0.8,
+                      top: _showWatchedIndicator || _showNextUpIndicator
+                          ? 40
+                          : 10,
+                      bottom: 44,
                     ),
                   ),
 

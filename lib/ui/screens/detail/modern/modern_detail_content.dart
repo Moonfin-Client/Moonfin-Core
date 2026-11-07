@@ -3514,6 +3514,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             itemBuilder: (context, i) {
               final entry = items[i];
               return MediaCard(
+                posterBadgeItemId: entry.id,
                 title: entry.name,
                 titleColor: titleColor,
                 focusNode: i == 0 ? (focusNode ?? _gridFirstFocusNode) : null,
@@ -3632,6 +3633,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         entry.id.startsWith('tmdb:') || entry.serverId == 'seerr';
                     final topRow = i < columns;
                     return MediaCard(
+                      posterBadgeItemId: isSeerrItem ? null : entry.id,
                       title: entry.name,
                       titleColor: titleColor,
                       imageUrl: _imageUrl(entry),

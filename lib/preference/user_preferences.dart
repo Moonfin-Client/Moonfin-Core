@@ -123,6 +123,12 @@ class UserPreferences extends ChangeNotifier {
   // Series with episodes that aired lately, found from the episodes rather than
   // the series, whose own date is its first season's.
   static const mediaBarSourceNewReleases = 'newReleases';
+  static const mediaBarSourceTypeValues = <String>{
+    mediaBarSourceRandom,
+    mediaBarSourceRecentlyAdded,
+    mediaBarSourceRecentlyReleased,
+    mediaBarSourceNewReleases,
+  };
 
   // What a focused home card plays. episodePreviewEnabled says whether it
   // plays anything, which older apps also read, and mediaPreviewMode says
@@ -149,6 +155,7 @@ class UserPreferences extends ChangeNotifier {
   UserPreferences(this._store) {
     _adoptNewlyScopedPreferences();
     _repairMediaBarContentType();
+    _repairMediaBarSourceType();
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _migrateSeerrRowsVisibility();
@@ -263,6 +270,21 @@ class UserPreferences extends ChangeNotifier {
         continue;
       }
       _store.setString(key, normalizeMediaBarContentType(stored));
+    }
+  }
+
+  // The library and collection sources saved before draw like random here.
+  void _repairMediaBarSourceType() {
+    for (final key in _store.keys.toList()) {
+      if (key != mediaBarSourceType.key &&
+          !key.startsWith('${mediaBarSourceType.key}_')) {
+        continue;
+      }
+      final stored = _store.getString(key);
+      if (stored == null || mediaBarSourceTypeValues.contains(stored)) {
+        continue;
+      }
+      _store.setString(key, normalizeMediaBarSourceType(stored));
     }
   }
 
@@ -1243,6 +1265,14 @@ class UserPreferences extends ChangeNotifier {
       return normalized;
     }
     return mediaBarContentTypeBoth;
+  }
+
+  static String normalizeMediaBarSourceType(String? sourceType) {
+    final normalized = (sourceType ?? '').trim().toLowerCase();
+    return mediaBarSourceTypeValues.firstWhere(
+      (value) => value.toLowerCase() == normalized,
+      orElse: () => mediaBarSourceRandom,
+    );
   }
 
   static final posterSize = EnumPreference(
