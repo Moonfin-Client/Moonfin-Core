@@ -691,6 +691,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     Map<String, dynamic>? selectedSource, {
     required bool showLogo,
     required bool showVersionBadge,
+    String? realName,
   }) {
     final textTheme = Theme.of(context).textTheme;
     final logoScaleFactor = _desktopScale > 1.1 ? 0.70 : 1.0;
@@ -701,9 +702,10 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final logoId = logoTag != null
         ? (item.logoImageTag != null ? item.id : item.seriesId)
         : null;
+    final itemName = realName ?? item.name;
 
     final titleText = Text(
-      item.name,
+      itemName,
       style: (_landscape ? textTheme.displaySmall : textTheme.headlineMedium)
           ?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
     );
@@ -1114,6 +1116,18 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     AggregatedItem item,
     List<SpotlightCardSpec> cards,
   ) {
+    AggregatedItem? series;
+    List<AggregatedItem>? seriesBooks;
+    if (item.type == 'BookSeries') {
+      series = item;
+      seriesBooks = _vm.seriesBooks;
+      final firstBook =
+      seriesBooks
+      .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+      .firstOrNull ??
+      seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook != null) item = firstBook;
+    }
     final overview = cleanOverview(item.overview?.trim());
     final isPerson = item.type == 'Person';
     final visibility = DetailSectionVisibility.of(widget.prefs);
@@ -1144,6 +1158,10 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final tagline = isPerson || !visibility.shows(DetailSection.tagline)
         ? null
         : _buildTagline(context, item);
+    final itemName = series == null
+        ? item.name
+        : series.rawData["Name"];
+    final realItem = series ?? item;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1159,6 +1177,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             selectedSource,
             showLogo: visibility.shows(DetailSection.logo),
             showVersionBadge: visibility.shows(DetailSection.versionBadge),
+            realName: itemName,
           ),
         const SizedBox(height: 8),
         if (!isPerson) ...[
@@ -1186,7 +1205,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           _buildOverview(context, overview),
         ],
         const SizedBox(height: 16),
-        _buildActions(context, item, cards),
+        _buildActions(context, realItem, cards),
       ],
     );
   }
