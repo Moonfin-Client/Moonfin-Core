@@ -57,5 +57,53 @@ void main() {
 
       expect(reopened.get(UserPreferences.mediaBarCollectionIds), 'c1,c2');
     });
+
+    test('normalizeMediaBarSourceType converts library and invalid keys to random', () {
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('library'),
+        UserPreferences.mediaBarSourceRandom,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('collection'),
+        UserPreferences.mediaBarSourceRandom,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('LIBRARY'),
+        UserPreferences.mediaBarSourceRandom,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('recentlyAdded'),
+        UserPreferences.mediaBarSourceRecentlyAdded,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('recentlyReleased'),
+        UserPreferences.mediaBarSourceRecentlyReleased,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('newReleases'),
+        UserPreferences.mediaBarSourceNewReleases,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType('unknown_value'),
+        UserPreferences.mediaBarSourceRandom,
+      );
+      expect(
+        UserPreferences.normalizeMediaBarSourceType(null),
+        UserPreferences.mediaBarSourceRandom,
+      );
+    });
+
+    test('stored source of library is repaired to random across scopes', () async {
+      final store = await _store({
+        'mediaBarSourceType': 'library',
+        'mediaBarSourceType_server1_user1': 'library',
+      });
+
+      final prefs = UserPreferences(store);
+
+      expect(store.getString('mediaBarSourceType'), UserPreferences.mediaBarSourceRandom);
+      expect(store.getString('mediaBarSourceType_server1_user1'), UserPreferences.mediaBarSourceRandom);
+      expect(prefs.get(UserPreferences.mediaBarSourceType), UserPreferences.mediaBarSourceRandom);
+    });
   });
 }

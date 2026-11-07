@@ -172,7 +172,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('seasonalRowCountry', UserPreferences.seasonalRowCountry, SyncCodec.text, normalize: UserPreferences.parseSeasonalRowCountry),
   SyncedField('seasonalRowHiddenHolidays', UserPreferences.seasonalRowHiddenHolidays, SyncCodec.csvList),
   SyncedField('mediaBarItemCount', UserPreferences.mediaBarItemCount, SyncCodec.textAsInt, fallbackInt: 10),
-  SyncedField('mediaBarSourceType', UserPreferences.mediaBarSourceType, SyncCodec.text),
+  SyncedField('mediaBarSourceType', UserPreferences.mediaBarSourceType, SyncCodec.text, normalize: UserPreferences.normalizeMediaBarSourceType),
   SyncedField('mediaBarNewReleaseBanner', UserPreferences.mediaBarNewReleaseBanner, SyncCodec.boolean),
   SyncedField('mediaBarNewReleaseDays', UserPreferences.mediaBarNewReleaseDays, SyncCodec.integer),
   SyncedField('mediaBarOpacity', UserPreferences.mediaBarOverlayOpacity, SyncCodec.integer),
@@ -458,6 +458,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('unpauseRewindDuration', UserPreferences.unpauseRewindDuration, SyncCodec.integer),
   SyncedField('updateNotificationsEnabled', UserPreferences.updateNotificationsEnabled, SyncCodec.boolean),
   SyncedField('use24HourClock', UserPreferences.use24HourClock, SyncCodec.boolean),
+  SyncedField('dateFormat', UserPreferences.dateFormat, SyncCodec.enumName, enumValues: prefs.DateFormatSetting.values),
   SyncedField('videoStartDelay', UserPreferences.videoStartDelay, SyncCodec.integer),
 ];
 

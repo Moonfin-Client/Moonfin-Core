@@ -7,6 +7,7 @@ import '../../../data/models/calendar_entry.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -292,6 +293,12 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     final insets = calendarChromeInsets(context);
     final days = _gridDays(context);
     final dayEntries = _c.on(_selected);
+    final dayName = calendarDayName(context, _selected, _c.today);
+    final fullDate = formatFullCalendarDate(_selected, locale: l10n.localeName);
+    // Today, tomorrow and yesterday keep their word above the date. Any other
+    // day's name would only repeat the date.
+    final relativeDay =
+        dayName != formatShortDayName(_selected, locale: l10n.localeName);
     final state = calendarStateView(context, _c, empty: false, emptyText: '');
     final rows = days.length ~/ 7;
     final selectedNode =
@@ -361,20 +368,23 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  calendarDayName(context, _selected, _c.today),
+                  relativeDay ? dayName : fullDate,
                   style: TextStyle(
                     color: AppColorScheme.onSurface,
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Text(
-                  DateFormat.yMMMMd(l10n.localeName).format(_selected),
-                  style: TextStyle(
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                    fontSize: 14,
+                if (relativeDay) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    fullDate,
+                    style: TextStyle(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.55),
+                      fontSize: 14,
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 12),
                 Expanded(
                   child: dayEntries.isEmpty

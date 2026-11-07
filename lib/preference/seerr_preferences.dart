@@ -111,6 +111,12 @@ class SeerrPreferences {
   Future<void> setNotifyOnNewMedia(bool value) =>
       _store.setBool(_userKey('notify_new_media'), value);
 
+  // Set while a change to the notification choices hasn't reached the server.
+  bool get notificationPrefsUnsynced =>
+      _store.getBool(_userKey('notify_prefs_unsynced')) ?? false;
+  Future<void> setNotificationPrefsUnsynced(bool value) =>
+      _store.setBool(_userKey('notify_prefs_unsynced'), value);
+
   SeerrFetchLimit get fetchLimit {
     final stored = _store.getString(_userKey('fetch_limit'));
     if (stored == null || stored.isEmpty) return SeerrFetchLimit.medium;

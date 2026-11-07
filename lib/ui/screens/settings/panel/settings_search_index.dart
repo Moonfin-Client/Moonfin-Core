@@ -121,6 +121,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   required VoidCallback openAdmin,
   required VoidCallback openThemeEditor,
 }) {
+  final prefs = GetIt.instance<UserPreferences>();
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
@@ -552,6 +553,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.settingsTwentyFourHourClock,
       subtitle: l10n.settingsTwentyFourHourClockSubtitle,
       keywords: ['time format', 'am pm'],
+    ),
+    general.leaf(
+      'pref_date_format',
+      l10n.settingsDateFormat,
+      subtitle: l10n.settingsDateFormatDescription,
+      keywords: ['date format', 'calendar date'],
     ),
     if (PlatformDetection.isTV)
       general.leaf(
@@ -2223,12 +2230,14 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.calendarSettingsColorBy,
         subtitle: l10n.calendarSettingsColorByDescription,
       ),
-      calendarSettings.leaf(
-        'pref_calendar_image_type',
-        l10n.calendarSettingsImageType,
-        subtitle: l10n.calendarSettingsImageTypeDescription,
-        keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
-      ),
+      if (prefs.get(UserPreferences.calendarStyle) ==
+          CalendarStyle.countdown)
+        calendarSettings.leaf(
+          'pref_calendar_image_type',
+          l10n.calendarSettingsImageType,
+          subtitle: l10n.calendarSettingsImageTypeDescription,
+          keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
+        ),
       calendarSettings.leaf(
         'pref_calendar_spoiler_safe',
         l10n.calendarSettingsSpoilerSafe,

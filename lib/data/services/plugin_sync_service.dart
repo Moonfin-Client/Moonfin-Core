@@ -946,6 +946,9 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   Future<void> pushNotificationPrefs(MediaServerClient client) async {
+    // Cleared once the server has them, so a change that never got there goes
+    // up at the next sign-in instead of being replaced by the server's copy.
+    await _seerrPrefs.setNotificationPrefsUnsynced(true);
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
       return;
@@ -971,6 +974,36 @@ class PluginSyncService extends ChangeNotifier {
           headers: {...headers, 'Content-Type': 'application/json'},
         ),
       );
+      await _seerrPrefs.setNotificationPrefsUnsynced(false);
+    } catch (_) {}
+  }
+
+  /// Takes the notification choices the server keeps for this user, so a new
+  /// install shows them instead of pushing its defaults over them.
+  Future<void> syncNotificationPrefs(MediaServerClient client) async {
+    if (_seerrPrefs.notificationPrefsUnsynced) {
+      return pushNotificationPrefs(client);
+    }
+    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+
+    try {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep == null) return;
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/Notifications/Prefs',
+        options: Options(headers: ep.headers),
+      );
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return;
+      for (final (key, save) in <(String, Future<void> Function(bool))>[
+        ('notifyOnNewRequests', _seerrPrefs.setNotifyOnNewRequests),
+        ('notifyOnLibraryAdded', _seerrPrefs.setNotifyOnLibraryAdded),
+        ('notifyOnIssues', _seerrPrefs.setNotifyOnIssues),
+        ('notifyOnNewMedia', _seerrPrefs.setNotifyOnNewMedia),
+      ]) {
+        final value = _readBool(data, key);
+        if (value != null) await save(value);
+      }
     } catch (_) {}
   }
 
