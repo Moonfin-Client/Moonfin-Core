@@ -210,6 +210,7 @@ class SpotlightMediaGridSection extends StatelessWidget {
 
                     return MediaCard(
                       key: ValueKey(cellKeys[i]),
+                      posterBadgeItemId: isSeerrItem ? null : entry.id,
                       title: entry.name,
                       subtitle: entry.personRole,
                       titleColor: titleColor,

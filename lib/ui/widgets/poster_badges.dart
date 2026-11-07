@@ -101,7 +101,8 @@ class _PosterBadgesState extends State<PosterBadges> {
 
   @override
   Widget build(BuildContext context) {
-    if (!GetIt.instance<UserPreferences>().get(UserPreferences.showPosterLabels)) {
+    if (!GetIt.instance.isRegistered<UserPreferences>() ||
+        !GetIt.instance<UserPreferences>().get(UserPreferences.showPosterLabels)) {
       return const SizedBox.shrink();
     }
 

@@ -345,9 +345,9 @@ class MediaBarRepository {
     return value?.toString().trim().toLowerCase() ?? '';
   }
 
-  /// How many titles each source hands the selector. The random source reads
-  /// this many from a random place in the library, and the dated ones read
-  /// this many of the newest.
+  /// How many titles each source hands the selector. The random source asks
+  /// the server for this many in a random order, and the dated ones read this
+  /// many of the newest.
   static const _poolSize = 40;
 
   /// How many libraries and collections are read at once.
@@ -375,56 +375,28 @@ class MediaBarRepository {
       return _fetchDatedItems(sourceType, itemTypes, limit, parentId: parentId);
     }
     try {
-      // Get the total count for this parent so we can pick a random window.
-      // Asking for a single item keeps it cheap.
-      final countResponse = await _client.itemsApi
+      final response = await _client.itemsApi
           .getItems(
             includeItemTypes: itemTypes,
-            sortBy: 'SortName',
+            sortBy: 'Random',
             sortOrder: 'Ascending',
             // A library the user has grouped with others holds those libraries
             // rather than the titles, so only a recursive walk reaches anything.
             // The type filter keeps the walk to movies and series either way.
             recursive: true,
             parentId: parentId,
-            limit: 1,
-            enableTotalRecordCount: true,
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final total = countResponse['TotalRecordCount'] as int? ?? 0;
-
-      if (total <= 0) {
-        return const <Map<String, dynamic>>[];
-      }
-
-      // Fetch a random window with the fields and backdrop tags the selector
-      // needs. A small library takes its whole set starting from the first item.
-      final windowSize = math.min(total, _poolSize);
-      final maxStartIndex = total - windowSize;
-      final startIndex = maxStartIndex > 0
-          ? _random.nextInt(maxStartIndex + 1)
-          : 0;
-
-      final windowResponse = await _client.itemsApi
-          .getItems(
-            includeItemTypes: itemTypes,
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
-            recursive: true,
-            parentId: parentId,
-            startIndex: startIndex,
-            limit: windowSize,
+            limit: _poolSize,
             fields: _fields,
             enableTotalRecordCount: false,
             enableImageTypes: 'Backdrop,Logo,Banner',
           )
           .timeout(const Duration(seconds: 15));
 
-      final windowItems = windowResponse['Items'] as List? ?? [];
-      final rawItems = windowItems.cast<Map<String, dynamic>>().toList();
-
-      // Shuffle locally to provide a fresh random feel on every launch
+      final rawItems = (response['Items'] as List? ?? [])
+          .cast<Map<String, dynamic>>()
+          .toList();
+      // A server that ignores Random hands back its own order, so the pool is
+      // shuffled again before the selector takes its slides.
       rawItems.shuffle(_random);
       return rawItems;
     } on TimeoutException {
