@@ -73,6 +73,14 @@ enum ApplePlayerUi {
   native,
 }
 
+/// When the Apple TV clickpad may seek. Protected modes reveal hidden controls
+/// first; pausedOnly additionally requires the viewer to pause playback.
+enum AppleTvClickpadSeekMode {
+  always,
+  controlsVisible,
+  pausedOnly,
+}
+
 /// Where the play, skip and seek buttons sit on phones, tablets and desktop.
 /// TVs always dock them, since the remote walks the bottom row.
 enum PlayerTransportPosition {
