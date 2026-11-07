@@ -11658,6 +11658,22 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඔරලෝසුව පෙන්වන ඕනෑම තැනක පැය 24 කාල හැඩතල ගැන්වීම භාවිතා කරන්න';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'සංචාලන තීරුවේ කලවම් බොත්තම පෙන්වන්න';
 

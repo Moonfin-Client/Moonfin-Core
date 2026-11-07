@@ -11769,6 +11769,22 @@ class AppLocalizationsMl extends AppLocalizations {
       'ക്ലോക്ക് കാണിക്കുന്നിടത്തെല്ലാം 24 മണിക്കൂർ സമയ ഫോർമാറ്റിംഗ് ഉപയോഗിക്കുക';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'നാവിഗേഷൻ ബാറിൽ ഷഫിൾ ബട്ടൺ കാണിക്കുക';
 
