@@ -20605,13 +20605,13 @@ abstract class AppLocalizations {
   /// No description provided for @dateFormatMonthDay.
   ///
   /// In en, this message translates to:
-  /// **'MM/DD (Nov 10)'**
+  /// **'Month / Day (Nov 10)'**
   String get dateFormatMonthDay;
 
   /// No description provided for @dateFormatDayMonth.
   ///
   /// In en, this message translates to:
-  /// **'DD/MM (10 Nov)'**
+  /// **'Day / Month (10 Nov)'**
   String get dateFormatDayMonth;
 
   /// No description provided for @settingsShowShuffleButtonInNavigation.

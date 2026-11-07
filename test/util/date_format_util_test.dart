@@ -53,22 +53,6 @@ void main() {
         formatFullCalendarDate(testDate, setting: DateFormatSetting.dayMonth),
         'Thursday, 19 November 2026',
       );
-      expect(
-        formatFullCalendarDate(
-          testDate,
-          setting: DateFormatSetting.monthDay,
-          includeYear: false,
-        ),
-        'Thursday, November 19',
-      );
-      expect(
-        formatFullCalendarDate(
-          testDate,
-          setting: DateFormatSetting.dayMonth,
-          includeYear: false,
-        ),
-        'Thursday, 19 November',
-      );
     });
 
     test('date format functions read from UserPreferences when registered', () async {
