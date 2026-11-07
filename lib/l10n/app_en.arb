@@ -10356,9 +10356,37 @@
   "syncPlayIgnoreWaitSubtitle": "Don't hold the group up while this device buffers",
   "syncPlayContinueLocallyNoWait": "Continue locally without waiting for slow members",
   "syncPlayRepeat": "Repeat",
+  "syncPlayRepeatSubtitle": "Replay one item or the whole queue",
+  "@syncPlayRepeatSubtitle": {
+    "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+  },
   "syncPlayRepeatOne": "One",
+  "syncPlayShuffleSubtitle": "Play the queue in order or shuffled",
+  "@syncPlayShuffleSubtitle": {
+    "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+  },
   "syncPlayShuffleModeShuffled": "Shuffled",
   "syncPlayShuffleModeSorted": "Sorted",
+  "syncPlayParticipantYou": "You",
+  "@syncPlayParticipantYou": {
+    "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+  },
+  "syncPlayGroupSubtitle": "{participants} · {detail}",
+  "@syncPlayGroupSubtitle": {
+    "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+    "placeholders": {
+      "participants": {"type": "String", "example": "3 participants"},
+      "detail": {"type": "String", "example": "nothing queued yet"}
+    }
+  },
+  "syncPlayNothingQueued": "nothing queued yet",
+  "@syncPlayNothingQueued": {
+    "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+  },
+  "syncPlayOthersCanJoinHint": "Others can join from their SyncPlay screen while this group exists.",
+  "@syncPlayOthersCanJoinHint": {
+    "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+  },
   "syncPlaySyncCurrentQueue": "Sync current playback queue",
   "syncPlaySyncCurrentQueueSubtitle": "Replace the group queue with what is playing locally",
   "syncPlayLeaveGroup": "Leave group",
@@ -10372,13 +10400,32 @@
   },
   "syncPlayPlayNow": "Play now",
   "syncPlayCreateNewGroup": "Create a new group",
+  "syncPlayCreateGroupSubtitle": "Watch together with everyone who joins",
+  "@syncPlayCreateGroupSubtitle": {
+    "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+  },
   "syncPlayGroupName": "Group name",
   "syncPlayDefaultGroupName": "My SyncPlay Group",
   "syncPlayCreateGroup": "Create group",
   "syncPlayAvailableGroups": "Available groups",
+  "syncPlayAvailableGroupsCount": "Available groups · {count}",
+  "@syncPlayAvailableGroupsCount": {
+    "description": "Heading of the SyncPlay available groups list with how many there are",
+    "placeholders": {
+      "count": {"type": "int", "example": "2"}
+    }
+  },
   "syncPlayNoGroupsAvailable": "No groups available",
+  "syncPlayNoGroupsAvailableHint": "Groups other people create on this server will show up here.",
+  "@syncPlayNoGroupsAvailableHint": {
+    "description": "Second line of the empty state in the SyncPlay available groups list"
+  },
   "syncPlayJoinGroupQuestion": "Join SyncPlay group?",
   "syncPlayJoinGroupWarning": "Joining a SyncPlay group may replace your current playback queue. Continue?",
+  "syncPlayJoinReplacesQueueNote": "Joining a group may replace your current playback queue.",
+  "@syncPlayJoinReplacesQueueNote": {
+    "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+  },
   "syncPlayJoin": "Join",
   "syncPlayStateIdle": "Idle",
   "syncPlayStateWaiting": "Waiting",
