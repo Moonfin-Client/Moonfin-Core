@@ -21,6 +21,7 @@ class NouveauBooksSection extends StatefulWidget {
     required this.items,
     required this.imageApi,
     required this.prefs,
+    this.libraryId,
     this.onNavigateUp,
     this.onNavigateDown,
   });
@@ -28,6 +29,7 @@ class NouveauBooksSection extends StatefulWidget {
   final List<AggregatedItem> items;
   final ImageApi imageApi;
   final UserPreferences prefs;
+  final String? libraryId;
   final bool Function()? onNavigateUp;
   final bool Function()? onNavigateDown;
 
@@ -51,8 +53,8 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
     return !PlatformDetection.isTV && size.shortestSide < 600;
   }
 
-  void _openItem(AggregatedItem item) {
-    context.push(Destinations.item(item.id, serverId: item.serverId));
+  void _openItem(AggregatedItem item, String? libraryId) {
+    context.push(Destinations.item(item.id, serverId: item.serverId, libraryId: libraryId));
   }
 
   @override
@@ -121,13 +123,10 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
 
       final cardWidth = metrics.itemWidth(availableWidth);
 
-      final artworkHeight = cardWidth * 3 / 2;
-
-      final cardHeight = artworkHeight + 98;
+      final cardHeight = cardWidth * 3 / 2;
 
       return _BooksLayout(
         cardWidth: cardWidth,
-        artworkHeight: artworkHeight,
         cardHeight: cardHeight,
         cardSpacing: metrics.gap,
         compact: true,
@@ -142,13 +141,10 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
         (availableWidth - visibleItemCount.floor() * cardSpacing) /
         visibleItemCount;
 
-    final artworkHeight = cardWidth * 3 / 2;
-
-    final cardHeight = artworkHeight + 98;
+    final cardHeight = cardWidth * 3 / 2;
 
     return _BooksLayout(
       cardWidth: cardWidth,
-      artworkHeight: artworkHeight,
       cardHeight: cardHeight,
       cardSpacing: cardSpacing,
       compact: false,
@@ -225,7 +221,7 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
                             ?.call() ??
                         false,
                     onTap: (_, item) {
-                      _openItem(item);
+                      _openItem(item, widget.libraryId);
                     },
                     onLeftEdge: _navbarIsLeft ? _handleLeftEdge : null,
                     itemBuilder: (context, item, index, isFocused) {
@@ -251,7 +247,7 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
                             progress: _progress(item),
                             topRightOverlay: null,
                             onTap: () {
-                              _openItem(item);
+                              _openItem(item, widget.libraryId);
                             },
                           ),
                         ),
@@ -270,14 +266,12 @@ class NouveauBooksSectionState extends State<NouveauBooksSection> {
 
 class _BooksLayout {
   final double cardWidth;
-  final double artworkHeight;
   final double cardHeight;
   final double cardSpacing;
   final bool compact;
 
   const _BooksLayout({
     required this.cardWidth,
-    required this.artworkHeight,
     required this.cardHeight,
     required this.cardSpacing,
     required this.compact,
