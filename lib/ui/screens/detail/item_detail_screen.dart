@@ -2208,7 +2208,7 @@ class _DetailContentState extends State<_DetailContent> {
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: bookFocusNode,
               upTarget: overviewFocusNode ?? actionButtonsFocusNode,
-              itemCount: viewModel.similar.length,
+              itemCount: booksInSeries.length,
               consumeDownWhenNoTarget: true,
             ),
           )
