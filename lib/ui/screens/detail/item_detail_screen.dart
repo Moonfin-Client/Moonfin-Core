@@ -7265,6 +7265,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final seerr = overlay != null && overlay.state.tmdbId != 0 ? overlay : null;
     final onWatchlist = seerr?.state.onUserWatchlist ?? false;
     final seerrTrailer = seerr?.state.bestTrailer;
+    final seriesName = item.seriesName!.trim();
+    final seriesId = 'bookSeries:$seriesName';
 
     final byButton = <DetailButton, Widget>{
       if (_supportsShuffle(item) && shows(DetailButton.shuffle))
@@ -7441,6 +7443,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.tv,
           onPressed: () => context.push(
             Destinations.item(item.seriesId!, serverId: item.serverId),
+          ),
+        ),
+      if (item.type == 'Book' && shows(DetailButton.goToSeries)
+          && seriesName != null && seriesName.isNotEmpty)
+        DetailButton.goToSeries: _DetailActionButton(
+          label: l10n.goToSeries,
+          icon: Icons.book,
+          onPressed: () => context.push(
+            Destinations.item(seriesId, serverId: item.serverId, libraryId: item.parentId),
           ),
         ),
       if (shows(DetailButton.seerrRequest))
