@@ -11642,6 +11642,22 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਜਿੱਥੇ ਵੀ ਘੜੀ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ ਉੱਥੇ 24-ਘੰਟੇ ਦੇ ਸਮੇਂ ਦੀ ਫਾਰਮੈਟਿੰਗ ਦੀ ਵਰਤੋਂ ਕਰੋ';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'ਨੈਵੀਗੇਸ਼ਨ ਪੱਟੀ ਵਿੱਚ ਸ਼ਫਲ ਬਟਨ ਦਿਖਾਓ';
 

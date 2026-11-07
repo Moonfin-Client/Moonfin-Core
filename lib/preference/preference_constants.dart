@@ -1201,3 +1201,9 @@ enum CalendarColorBy { type, status }
 enum CalendarImageType { poster, thumb }
 
 enum CalendarSelectAction { details, play }
+
+enum DateFormatSetting {
+  system,
+  monthDay,
+  dayMonth,
+}
