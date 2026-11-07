@@ -13126,11 +13126,9 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final fullWidth = widget.isPrimary && (host?.fullWidthPrimary ?? false);
 
     if (fullWidth) {
-      final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-      final accentFg = isNeon ? const Color(0xFF0F0B15) : AppColorScheme.onAccent;
       final fg = showHighlight
           ? AppColorScheme.onButtonFocused
-          : accentFg;
+          : AppColorScheme.onAccent;
       final heartColor = (widget.icon == Icons.favorite && widget.isActive)
           ? const Color(0xFFE50914)
           : fg;
@@ -13180,8 +13178,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     // accent. Everywhere else it looks like the buttons beside it until it
     // has focus.
     final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    final accentFg = isNeon ? const Color(0xFF0F0B15) : AppColorScheme.onAccent;
+    // On the accent fill the label takes the accent's text color like the
+    // icon does, since Neon Pulse's label color is the accent itself.
+    final labelOnPill = accentPrimary && !showHighlight
+        ? AppColorScheme.onAccent
+        : labelColor;
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -13205,7 +13206,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
             color: (widget.icon == Icons.favorite && widget.isActive)
                 ? const Color(0xFFE50914)
                 : (accentPrimary && !showHighlight
-                      ? accentFg
+                      ? AppColorScheme.onAccent
                       : iconColor),
             size: 24 * scale,
           )
@@ -13314,17 +13315,13 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     text: widget.label,
                     style:
                         Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: (accentPrimary && !showHighlight)
-                              ? accentFg
-                              : labelColor,
+                          color: labelOnPill,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
                         ) ??
                         TextStyle(
-                          color: (accentPrimary && !showHighlight)
-                              ? accentFg
-                              : labelColor,
+                          color: labelOnPill,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
