@@ -354,6 +354,7 @@ jobs:
           # The scripts diff against the merge base with the base branch.
           fetch-depth: 0
 
+      # The same as in tests, so build.yml stays the one place it's set.
       - name: Read the Flutter version build.yml uses
         run: |
           version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
