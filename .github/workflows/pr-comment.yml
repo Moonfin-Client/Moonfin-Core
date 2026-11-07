@@ -284,21 +284,30 @@ jobs:
             if (diagnostics || format) {
               const diagCount = clamp(diagnostics?.count);
               const hunkCount = clamp(format?.hunks);
-              if (diagnostics && format && diagCount === 0 && hunkCount === 0) {
+              // A file dart format rejected wasn't checked, so it can't count
+              // as formatted.
+              const uncheckedAll = (Array.isArray(format?.unchecked) ? format.unchecked : [])
+                .filter(path => typeof path === 'string' && path);
+              const unchecked = uncheckedAll.slice(0, 30);
+              if (diagnostics && format && diagCount === 0 && hunkCount === 0 && uncheckedAll.length === 0) {
                 deltaLines.push('**Touched lines** ✅ no new diagnostics, formatted');
               } else {
                 const counts = [
                   diagnostics ? plural(diagCount, 'new diagnostic', 'new diagnostics') : 'analyzer check did not run',
                   format ? plural(hunkCount, 'format hunk', 'format hunks') : 'format check did not run',
                 ];
+                if (uncheckedAll.length > 0) {
+                  counts.push(plural(uncheckedAll.length, 'file dart format could not check', 'files dart format could not check'));
+                }
                 deltaLines.push(`**Touched lines** ⚠️ ${counts.join(', ')}`);
                 const shown = [
                   ...listOf(diagnostics).slice(0, 30).map(d =>
                     `- \`${escapeText(`${d.file}:${clamp(d.line)} ${d.code} ${d.message}`)}\``),
                   ...listOf(format).slice(0, 30).map(f =>
                     `- \`${escapeText(`${f.file}:${clamp(f.line)}`)}\` dart format would change this`),
+                  ...unchecked.map(path => `- \`${escapeText(path)}\` dart format could not check this file`),
                 ];
-                const hidden = diagCount + hunkCount - shown.length;
+                const hidden = diagCount + hunkCount + uncheckedAll.length - shown.length;
                 if (hidden > 0) shown.push(`- and ${hidden} more, see the delta job log`);
                 if (shown.length > 0) {
                   deltaLines.push('', '<details><summary>Touched lines</summary>', '', ...shown, '', '</details>');
