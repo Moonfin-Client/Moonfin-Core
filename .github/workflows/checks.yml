@@ -241,6 +241,7 @@ jobs:
         with:
           name: test-results-${{ matrix.suite }}
           path: /tmp/test-results/test-results-${{ matrix.suite }}.json
+          overwrite: true
 
       - name: Gate on failures
         if: always()
@@ -263,6 +264,7 @@ jobs:
           path: |
             /tmp/test-results/*.jsonl
             build/*/test-results/
+          overwrite: true
           if-no-files-found: ignore
           retention-days: 7
 
@@ -328,6 +330,7 @@ jobs:
         with:
           name: test-results
           path: test-results.json
+          overwrite: true
 
   # Advisory only: analyzer diagnostics, dart format changes and localization
   # slips on the lines this pull request added or changed. The PR comment
