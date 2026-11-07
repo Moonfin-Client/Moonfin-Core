@@ -284,7 +284,7 @@ jobs:
             // Checks finished but the delta job left nothing: say so, as the
             // tests line does, rather than look like a clean run.
             if (checksRunId && !diagnostics && !format) {
-              deltaLines.push('**Touched lines** ⚠️ did not run, see the delta job log');
+              deltaLines.push(`**Touched lines**${l10n ? '' : ' and **Localization**'} ⚠️ did not run, see the delta job log`);
             }
             if (diagnostics || format) {
               const diagCount = clamp(diagnostics?.count);
