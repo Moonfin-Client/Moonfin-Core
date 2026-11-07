@@ -293,6 +293,12 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     final insets = calendarChromeInsets(context);
     final days = _gridDays(context);
     final dayEntries = _c.on(_selected);
+    final dayName = calendarDayName(context, _selected, _c.today);
+    final fullDate = formatFullCalendarDate(_selected, locale: l10n.localeName);
+    // Today, tomorrow and yesterday keep their word above the date. Any other
+    // day's name would only repeat the date.
+    final relativeDay =
+        dayName != formatShortDayName(_selected, locale: l10n.localeName);
     final state = calendarStateView(context, _c, empty: false, emptyText: '');
     final rows = days.length ~/ 7;
     final selectedNode =
@@ -361,45 +367,24 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                () {
-                  final diff = DateTime(
-                    _selected.year,
-                    _selected.month,
-                    _selected.day,
-                  ).difference(_c.today).inDays;
-                  final isRelative = diff >= -1 && diff <= 1;
-                  final fullDate = formatFullCalendarDate(
-                    _selected,
-                    locale: l10n.localeName,
-                  );
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        isRelative
-                            ? calendarDayName(context, _selected, _c.today)
-                            : fullDate,
-                        style: TextStyle(
-                          color: AppColorScheme.onSurface,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (isRelative) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          fullDate,
-                          style: TextStyle(
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.55,
-                            ),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ],
-                  );
-                }(),
+                Text(
+                  relativeDay ? dayName : fullDate,
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (relativeDay) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    fullDate,
+                    style: TextStyle(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.55),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 Expanded(
                   child: dayEntries.isEmpty

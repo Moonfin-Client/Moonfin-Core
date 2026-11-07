@@ -11660,10 +11660,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get dateFormatSystem => 'Locale Default';
 
   @override
-  String get dateFormatMonthDay => 'MM/DD (Nov 10)';
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
 
   @override
-  String get dateFormatDayMonth => 'DD/MM (10 Nov)';
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
 
   @override
   String get settingsShowShuffleButtonInNavigation =>
