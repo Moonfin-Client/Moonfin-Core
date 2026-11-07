@@ -238,6 +238,7 @@ jobs:
         with:
           name: test-results-${{ matrix.suite }}
           path: /tmp/test-results/test-results-${{ matrix.suite }}.json
+          overwrite: true
 
       - name: Gate on failures
         if: always()
@@ -260,6 +261,7 @@ jobs:
           path: |
             /tmp/test-results/*.jsonl
             build/*/test-results/
+          overwrite: true
           if-no-files-found: ignore
           retention-days: 7
 
@@ -325,6 +327,7 @@ jobs:
         with:
           name: test-results
           path: test-results.json
+          overwrite: true
 
   # The one status check a ruleset needs to require, "Checks / checks". It
   # reports even when a job above fails or is skipped, and fails if any did.

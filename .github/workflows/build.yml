@@ -1087,6 +1087,7 @@ jobs:
         with:
           name: apple-test-results
           path: ${{ runner.temp }}/apple-tests/test-results.json
+          overwrite: true
 
       - name: Gate on failures
         if: always()
@@ -1107,6 +1108,7 @@ jobs:
         with:
           name: raw-test-output-apple
           path: ${{ runner.temp }}/apple-tests/*.xcresult
+          overwrite: true
           if-no-files-found: ignore
           retention-days: 7
 
