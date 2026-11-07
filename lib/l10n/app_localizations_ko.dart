@@ -14888,6 +14888,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '도서 및 오디오북 라이브러리에서 Open Library와 LibriVox의 작품을 둘러봅니다';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes => '새 에피소드 자동 다운로드';
 
   @override

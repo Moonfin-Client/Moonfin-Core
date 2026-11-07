@@ -242,7 +242,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klasik, orijinal ortalanmış Moonfin düzenidir. Modern, duyarlı sinematik bir düzendir. Spotlight, açılır içerik kartlarına sahip, ana görsel odaklı bir düzendir. Nouveau, bölümlerin sayfa boyunca alt alta sıralandığı tam ekran bir düzendir. Minimalist ise sadece kapak görselinden, tek bir oynatma butonundan ve bölümlerden oluşur. Sahne, solda afiş (poster), altında oyun/oynatma düğmesi ve yanında detaylar ile başlar. Premiere, başlığı tüm ekranı kaplayan bir arka planın üzerine ortalar ve sayfa boyunca her bir bölüm bunun altında yer alır.';
+      'Klasik, orijinal ortalanmış Moonfin düzenidir. Modern, duyarlı sinematik bir düzendir. Spotlight, açılır içerik kartlarına sahip, ana görsel odaklı bir düzendir. Nouveau, bölümlerin sayfa boyunca alt alta sıralandığı tam ekran bir düzendir. Minimalist ise sadece kapak görselinden, tek bir oynatma butonundan ve bölümlerden oluşur. Sahne, solda afiş (poster), altında oyun/oynatma düğmesi ve yanında detaylar ile başlar. Premiere, başlığı tüm ekranı kaplayan bir arka planın üzerine ortalar ve sayfa boyunca her bir bölüm bunun altında yer alır. Stage: Afişi öne çıkarır; oynatma düğmesi afişin altında, detaylar ise yanında yer alır. Premiere: Başlığı ekranı kaplayan arka plan görselinin üzerine ortalar; kalan tüm bölümler sayfa boyunca bunun altında sıralanır. Quick Look: Bulunduğunuz ekranın üzerine bir çekmece (drawer) açar; tam sayfaya geçmek için tek bir basış yeterlidir. Frost: Başlığı, kapak görselinin bulanık bir kopyası üzerinde cam efektli bir pencerede gösterir; bölümleri ise düğmelerin altındaki sekmelerde sunar.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klasik';
@@ -464,7 +464,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalist';
 
   @override
-  String get detailScreenStyleStage => 'Sahne';
+  String get detailScreenStyleStage => 'Stage';
 
   @override
   String get detailScreenStylePremiere => 'Premiere';
@@ -476,14 +476,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get detailScreenStyleFrost => 'Frost';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Tam sayfayı aç';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Geri ile çık';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
-    return '$played of $total';
+    return '$played/$total';
   }
 
   @override
@@ -1699,7 +1699,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get audioTrack => 'Ses Parçası';
 
   @override
-  String get noOtherAudioTracks => 'No other audio tracks';
+  String get noOtherAudioTracks => 'Başka ses izi yok';
 
   @override
   String get subtitleTrack => 'Altyazı Parçası';
@@ -2721,7 +2721,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String playerMatchingDisplayRate(String fps) {
-    return 'Matching display to $fps fps…';
+    return 'Ekran $fps fps ile eşleştiriliyor…';
   }
 
   @override
@@ -3855,62 +3855,62 @@ class AppLocalizationsTr extends AppLocalizations {
   String get upcomingEpisodeTomorrow => 'Yarın';
 
   @override
-  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+  String get radarrCalendarRow => 'Gelecek Filmler (Radarr)';
 
   @override
-  String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
+  String get sonarrCalendarRow => 'Gelecek Diziler (Sonarr)';
 
   @override
-  String get mergedCalendarRow => 'Upcoming Releases';
+  String get mergedCalendarRow => 'Gelecek Yayınlar';
 
   @override
-  String get arrCalendarsRowSubtitle => 'Radarr and Sonarr Calendars';
+  String get arrCalendarsRowSubtitle => 'Radarr ve Sonarr Takvimleri';
 
   @override
-  String get radarrCalendarRowSubtitle => 'Radarr Calendar';
+  String get radarrCalendarRowSubtitle => 'Radarr Takvimi';
 
   @override
-  String get sonarrCalendarRowSubtitle => 'Sonarr Calendar';
+  String get sonarrCalendarRowSubtitle => 'Sonarr Takvimi';
 
   @override
   String calendarReleaseIn(int days, String date) {
     String _temp0 = intl.Intl.pluralLogic(
       days,
       locale: localeName,
-      other: 'In $days days',
-      one: 'Tomorrow',
-      zero: 'Today',
+      other: '$days gün sonra',
+      one: 'Yarın',
+      zero: 'Bugün',
     );
     return '$_temp0 ($date)';
   }
 
   @override
-  String get calendarReleaseCinema => 'Cinema';
+  String get calendarReleaseCinema => 'Sinema';
 
   @override
-  String get calendarReleaseDigital => 'Digital';
+  String get calendarReleaseDigital => 'Dijital';
 
   @override
-  String get calendarReleasePhysical => 'Physical';
+  String get calendarReleasePhysical => 'Fiziksel';
 
   @override
-  String get upcomingCalendars => 'Upcoming Calendars';
+  String get upcomingCalendars => 'Gelecek Takvimler';
 
   @override
   String get upcomingCalendarsDescription =>
-      'Toggle Upcoming Calendars from Radarr/Sonarr.';
+      'Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.';
 
   @override
-  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+  String get enableRadarrCalendar => 'Radarr Gelecek Takvimini Etkinleştir';
 
   @override
-  String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
+  String get radarrCalendarShowCinema => 'Gelecek Sinema Vizyonlarını Göster';
 
   @override
-  String get radarrCalendarShowDigital => 'Show Upcoming Digital Releases';
+  String get radarrCalendarShowDigital => 'Gelecek Dijital Yayınları Göster';
 
   @override
-  String get radarrCalendarShowPhysical => 'Show Upcoming Physical Releases';
+  String get radarrCalendarShowPhysical => 'Gelecek Fiziksel Yayınları Göster';
 
   @override
   String get calendarShowReleaseDate => 'Show Release Date on Home Screen';
@@ -5656,7 +5656,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Medya detay sayfalarında sezon durum rozetlerini göster';
+      'Seerr durumunu uygulama genelinde afişlerde ve sezonlarda göster';
 
   @override
   String get seerrBadgeStyle => 'Badge Style';
@@ -15402,6 +15402,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get showBookDiscoverTabDescription =>
       'Kitap ve sesli kitap kütüphanelerinizde Open Library ve LibriVox başlıklarına göz atın';
+
+  @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
 
   @override
   String get autoDownloadNewEpisodes => 'Yeni bölümleri otomatik indir';

@@ -1317,6 +1317,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showBookDiscoverTabDescription,
       keywords: ['books', 'audiobooks', 'open library', 'librivox'],
     ),
+    libraries.leaf(
+      'pref_book_folders_as_series',
+      l10n.bookFoldersAsSeries,
+      subtitle: l10n.bookFoldersAsSeriesDescription,
+      keywords: ['books', 'series', 'folder'],
+    ),
     libraries.leaf('pref_library_style', l10n.libraryStyle, keywords: [
       'classic',
       'modern',

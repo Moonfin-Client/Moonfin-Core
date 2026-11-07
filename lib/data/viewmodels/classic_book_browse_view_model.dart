@@ -705,6 +705,7 @@ class ClassicBookBrowseViewModel extends ChangeNotifier
           if (matchesScope(item)) item,
       ],
       folders: _folders,
+      libraryId: libraryId,
     );
     if (entries.isEmpty) return null;
 

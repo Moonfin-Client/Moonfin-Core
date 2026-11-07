@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../services/row_data_source.dart';
@@ -256,7 +258,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       _bookCount = titles.where(isBookItem).length;
       _audiobookCount = titles.where(isAudiobookItem).length;
       _comicCount = titles.where(isComicItem).length;
-      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF);
+      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF, libraryId: libraryId);
 
       _authorTitles = _tallyAuthorTitles(titles);
       final artists = await artistsF;
@@ -357,7 +359,8 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   }
 
   /// The books of [series] in reading order, by number and then by name.
-  List<AggregatedItem> seriesBooks(AggregatedItem series) {
+  List<AggregatedItem> seriesBooks(AggregatedItem? series) {
+    if (series == null) return const [];
     final ids = {...?(series.rawData['MemberIds'] as List?)};
     return _titles.where((title) => ids.contains(title.id)).toList()
       ..sort((a, b) {
@@ -605,7 +608,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
           sortOrder: 'Ascending',
           fields:
               'SeriesName,ParentId,Path,People,AlbumArtist,Artists,Genres,'
-              'DateCreated,ProductionYear,RunTimeTicks',
+              'DateCreated,ProductionYear,RunTimeTicks,Overview',
           enableImageTypes: 'Primary',
           imageTypeLimit: 1,
           enableTotalRecordCount: false,
@@ -989,6 +992,7 @@ mixin BookLibraryHelpers {
 List<AggregatedItem> bookSeriesEntries({
   required List<AggregatedItem> books,
   required List<AggregatedItem> folders,
+  required String libraryId,
 }) {
   final folderIds = {for (final folder in folders) folder.id};
   final seriesFolders = {
@@ -997,9 +1001,10 @@ List<AggregatedItem> bookSeriesEntries({
   };
   final byFolder = <String, List<AggregatedItem>>{};
   final byName = <String, List<AggregatedItem>>{};
+  final bookFoldersAsSeries = GetIt.instance<UserPreferences>().get(UserPreferences.bookFoldersAsSeries);
   for (final book in books) {
     final parent = book.parentId;
-    if (book.isComic && seriesFolders.containsKey(parent)) {
+    if (bookFoldersAsSeries && seriesFolders.containsKey(parent)) {
       byFolder.putIfAbsent(parent!, () => []).add(book);
     }
     final name = book.seriesName?.trim();
@@ -1011,11 +1016,11 @@ List<AggregatedItem> bookSeriesEntries({
 
   return [
     for (final MapEntry(key: id, value: members) in byFolder.entries)
-      _seriesEntry(id, seriesFolders[id]!.name, members, seriesFolders[id]),
+      _seriesEntry(id, seriesFolders[id]!.name, members, seriesFolders[id], libraryId),
     for (final MapEntry(key: name, value: members) in byName.entries)
       if (members.length >= 2 &&
           !members.every((m) => byFolder.containsKey(m.parentId)))
-        _seriesEntry('bookSeries:$name', name, members, null),
+        _seriesEntry('bookSeries:$name', name, members, null, libraryId),
   ]..sort((a, b) => a.name.compareTo(b.name));
 }
 
@@ -1024,6 +1029,7 @@ AggregatedItem _seriesEntry(
   String name,
   List<AggregatedItem> members,
   AggregatedItem? folder,
+  String libraryId,
 ) {
   final folderTag = folder?.primaryImageTag;
   final cover = members.firstWhere(

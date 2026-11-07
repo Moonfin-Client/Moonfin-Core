@@ -287,6 +287,7 @@ class ItemDetailScreen extends StatefulWidget {
   final String itemId;
   final String? serverId;
   final bool autoPlay;
+  final String? libraryId;
 
   /// Only used to resolve an IMDb-keyed Seerr id by searching for it.
   final String? seerrTitle;
@@ -307,6 +308,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.seerrTitle,
     this.contextSeasonId,
     this.quickLook = false,
+    this.libraryId,
   });
 
   @override
@@ -362,6 +364,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       mutations: ItemMutationRepository(client),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       tmdbRepository: GetIt.instance<TmdbRepository>(),
+      libraryId: widget.libraryId,
     );
     _viewModel.seerrOnlyTitle = widget.seerrTitle;
     _viewModel.addListener(_onChanged);
@@ -1882,6 +1885,7 @@ class _DetailContentState extends State<_DetailContent> {
       'MusicAlbum' || 'Playlist' => _buildAlbumContent(context, item),
       'BoxSet' => _buildBoxSetContent(context, item),
       'Photo' => _buildPhotoContent(item),
+      'BookSeries' => _buildBookContent(context, item),
       _ =>
         _isReadableBookItem(item)
             ? _buildBookContent(context, item)
@@ -2007,6 +2011,23 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   List<Widget> _buildBookContent(BuildContext context, AggregatedItem item) {
+    AggregatedItem? series;
+    List<AggregatedItem>? seriesBooks;
+    if (item.type == 'BookSeries') {
+      series = item;
+      seriesBooks = viewModel.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+        if (firstBook == null) {
+          item = seriesBooks[0];
+        } else {
+          item = firstBook;
+        }
+    }
+    final booksInSeries = seriesBooks ?? const [];
     final l10n = AppLocalizations.of(context);
     final author = _bookAuthorName(item);
     final authorDisplay = author ?? l10n.unknownAuthor;
@@ -2022,6 +2043,9 @@ class _DetailContentState extends State<_DetailContent> {
         _visibility.shows(DetailSection.moreLikeThis);
     final similarFocusNode = showSimilar
         ? _sectionFocusNode('detailBookSimilar')
+        : null;
+    final bookFocusNode = (series != null)
+        ? _sectionFocusNode('detailSeriesBook')
         : null;
     final coverTag = item.primaryImageTag;
     const coverWidth = 132.0;
@@ -2146,9 +2170,11 @@ class _DetailContentState extends State<_DetailContent> {
           text: overview,
           focusNode: overviewFocusNode,
           onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
-          onArrowDown: similarFocusNode != null
-              ? () => _requestSectionFocus(similarFocusNode)
-              : null,
+          onArrowDown: bookFocusNode != null
+              ? () => _requestSectionFocus(bookFocusNode)
+              : similarFocusNode != null
+                  ? () => _requestSectionFocus(similarFocusNode)
+                  : null,
           onArrowLeft: () => _tryFocusSidebar(),
           onCollapse: () => setState(() {}),
           style: const TextStyle(
@@ -2166,6 +2192,32 @@ class _DetailContentState extends State<_DetailContent> {
             height: 1.5,
           ),
         ),
+      if (booksInSeries.isNotEmpty) ...[
+        const SizedBox(height: 32),
+        HorizontalScrollSection(
+          title: l10n.books,
+          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+            ? AppColorScheme.onSurface
+            : Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+          builder: (_, ctrl) => DetailSimilarRow(
+            items: booksInSeries,
+            imageApi: viewModel.imageApi,
+            prefs: prefs,
+            firstItemFocusNode: bookFocusNode,
+            onItemLongPress: _showItemContextMenu,
+            scrollController: ctrl,
+            onItemKeyEvent: _buildVerticalRowHandler(
+              sourceFocusNode: bookFocusNode,
+              upTarget: overviewFocusNode ?? actionButtonsFocusNode,
+              itemCount: booksInSeries.length,
+              consumeDownWhenNoTarget: true,
+            ),
+          )
+        )
+      ],
       if (item.genres.isNotEmpty &&
           _visibility.shows(DetailSection.bookGenres)) ...[
         const SizedBox(height: 20),
@@ -6917,7 +6969,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   @override
   Widget build(BuildContext context) {
-    final item = viewModel.item!;
+    var item = viewModel.item!;
+    if (item.type == 'BookSeries') {
+      final seriesBooks = viewModel.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook == null) {
+        item = seriesBooks[0];
+      } else {
+        item = firstBook;
+      }
+    }
     final l10n = AppLocalizations.of(context);
     // Only grab initial focus when this screen is actually in front. A settings
     // panel change (detail style or theme) rebuilds the details underneath the
@@ -7208,6 +7273,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final seerr = overlay != null && overlay.state.tmdbId != 0 ? overlay : null;
     final onWatchlist = seerr?.state.onUserWatchlist ?? false;
     final seerrTrailer = seerr?.state.bestTrailer;
+    final seriesName = item.seriesName?.trim() ?? "";
+    final seriesId = 'bookSeries:$seriesName';
 
     final byButton = <DetailButton, Widget>{
       if (_supportsShuffle(item) && shows(DetailButton.shuffle))
@@ -7384,6 +7451,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.tv,
           onPressed: () => context.push(
             Destinations.item(item.seriesId!, serverId: item.serverId),
+          ),
+        ),
+      if (item.type == 'Book' && shows(DetailButton.goToSeries)
+          && seriesName != null && seriesName.isNotEmpty)
+        DetailButton.goToSeries: _DetailActionButton(
+          label: l10n.goToSeries,
+          icon: Icons.book,
+          onPressed: () => context.push(
+            Destinations.item(seriesId, serverId: item.serverId, libraryId: item.parentId),
           ),
         ),
       if (shows(DetailButton.seerrRequest))

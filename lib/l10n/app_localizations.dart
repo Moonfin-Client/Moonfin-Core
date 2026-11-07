@@ -26911,6 +26911,18 @@ abstract class AppLocalizations {
   /// **'Browse titles from Open Library and LibriVox in your book and audiobook libraries'**
   String get showBookDiscoverTabDescription;
 
+  /// Setting to determine book series based on folders instead of item metadata
+  ///
+  /// In en, this message translates to:
+  /// **'Treat book folders as series'**
+  String get bookFoldersAsSeries;
+
+  /// Explains the setting to determine book series based on folders instead of item metadata
+  ///
+  /// In en, this message translates to:
+  /// **'Treat folders containing books as series instead of relying on the individual books\' metadata'**
+  String get bookFoldersAsSeriesDescription;
+
   /// Row in the download sheet of a series that subscribes it to automatic downloads
   ///
   /// In en, this message translates to:

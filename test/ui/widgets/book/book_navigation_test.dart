@@ -53,23 +53,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  for (final type in ['Book', 'AudioBook']) {
+  for (final type in ['Book', 'AudioBook', 'BookSeries']) {
     testWidgets('a $type opens its details', (tester) async {
       await pumpRouter(tester);
       await open(tester, _item(type));
 
-      expect(find.text('/item/id-1?serverId=server'), findsOneWidget);
+      expect(find.text('/item/id-1?serverId=server&libraryId=lib-1'), findsOneWidget);
     });
   }
-
-  testWidgets('a series named only by metadata searches the library', (
-    tester,
-  ) async {
-    await pumpRouter(tester);
-    await open(tester, _item('BookSeries'));
-
-    expect(find.text('/search?libraryId=lib-1&query=Dune'), findsOneWidget);
-  });
 
   testWidgets('a series folder opens the folder', (tester) async {
     await pumpRouter(tester);
