@@ -13178,6 +13178,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     // accent. Everywhere else it looks like the buttons beside it until it
     // has focus.
     final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
+    // On the accent fill the label takes the accent's text color like the
+    // icon does, since Neon Pulse's label color is the accent itself.
+    final labelOnPill = accentPrimary && !showHighlight
+        ? AppColorScheme.onAccent
+        : labelColor;
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -13310,13 +13315,13 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     text: widget.label,
                     style:
                         Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: labelColor,
+                          color: labelOnPill,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
                         ) ??
                         TextStyle(
-                          color: labelColor,
+                          color: labelOnPill,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
@@ -14105,6 +14110,7 @@ class DetailSimilarRow extends StatelessWidget {
           final isSeerrItem =
               item.id.startsWith('tmdb:') || item.serverId == 'seerr';
           return MediaCard(
+            posterBadgeItemId: isSeerrItem ? null : item.id,
             title: item.name,
             titleColor: isNeon ? AppColorScheme.accent : null,
             imageUrl: item.primaryImageTag != null
@@ -14236,6 +14242,7 @@ class DetailFeaturesRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = items[index];
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: item.name,
             subtitle: item.subtitle,
             titleColor: isNeon ? AppColorScheme.onSurface : null,
@@ -17026,6 +17033,7 @@ class FilmographyRow extends StatelessWidget {
           }
 
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: title,
             subtitle: subtitle,
             imageUrl: item.primaryImageTag != null

@@ -35,6 +35,12 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// What the ping says about incomplete recordings.
   bool incompleteRecordingsSupported = false;
 
+  /// The notification choices the server keeps for the user.
+  Map<String, dynamic> notificationPrefs = {};
+
+  /// Set when the server should refuse to save notification choices.
+  bool failNotificationPosts = false;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -49,7 +55,12 @@ class _RecordingAdapter implements HttpClientAdapter {
     }
 
     Map<String, dynamic>? body;
-    if (path.endsWith('/Moonfin/Ping')) {
+    if (path.endsWith('/Moonfin/Notifications/Prefs')) {
+      if (options.method == 'POST') {
+        return ResponseBody.fromString('', failNotificationPosts ? 500 : 204);
+      }
+      body = notificationPrefs;
+    } else if (path.endsWith('/Moonfin/Ping')) {
       body = {
         'installed': true,
         'settingsSyncEnabled': true,
@@ -235,5 +246,43 @@ void main() {
 
     expect(incomplete.supported, isFalse);
     incomplete.dispose();
+  });
+
+  test('signing in takes the notification choices the server keeps', () async {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    adapter.notificationPrefs = {
+      'notifyOnNewMedia': true,
+      'notifyOnIssues': false,
+    };
+
+    await service.syncNotificationPrefs(client);
+
+    expect(seerrPrefs.notifyOnNewMedia, isTrue);
+    expect(seerrPrefs.notifyOnIssues, isFalse);
+    expect(
+      adapter.requests,
+      isNot(contains('POST /Moonfin/Notifications/Prefs')),
+    );
+  });
+
+  test('a change the server never got goes up at the next sign-in', () async {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    adapter.failNotificationPosts = true;
+    await seerrPrefs.setNotifyOnNewMedia(true);
+    await service.pushNotificationPrefs(client);
+    expect(seerrPrefs.notificationPrefsUnsynced, isTrue);
+
+    adapter.failNotificationPosts = false;
+    adapter.notificationPrefs = {'notifyOnNewMedia': false};
+    adapter.requests.clear();
+    await service.syncNotificationPrefs(client);
+
+    expect(seerrPrefs.notifyOnNewMedia, isTrue);
+    expect(seerrPrefs.notificationPrefsUnsynced, isFalse);
+    expect(adapter.requests, contains('POST /Moonfin/Notifications/Prefs'));
+    expect(
+      adapter.requests,
+      isNot(contains('GET /Moonfin/Notifications/Prefs')),
+    );
   });
 }
