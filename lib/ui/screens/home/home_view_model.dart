@@ -38,6 +38,7 @@ import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../util/calendar_days.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -4292,16 +4293,8 @@ class HomeViewModel extends ChangeNotifier {
   static String sonarrAirDay(DateTime airDateUtc) =>
       _formatDateHuman(airDateUtc.toLocal());
 
-  static String _formatDateHuman(DateTime date) {
-    try {
-      return DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
-    } catch (_) {
-      // The app loads the date data for its language at startup. Without it,
-      // in tests or for a language intl has no data for, fall back to English
-      // rather than failing the whole row.
-      return DateFormat.MMMd('en_US').format(date);
-    }
-  }
+  static String _formatDateHuman(DateTime date) =>
+      formatShortDate(date, locale: currentAppLocalizations().localeName);
 
   Future<List<HomeRow>> _loadMergedCalendarRow({bool forceRefresh = false}) async {
     try {

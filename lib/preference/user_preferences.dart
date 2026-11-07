@@ -123,6 +123,12 @@ class UserPreferences extends ChangeNotifier {
   // Series with episodes that aired lately, found from the episodes rather than
   // the series, whose own date is its first season's.
   static const mediaBarSourceNewReleases = 'newReleases';
+  static const mediaBarSourceTypeValues = <String>{
+    mediaBarSourceRandom,
+    mediaBarSourceRecentlyAdded,
+    mediaBarSourceRecentlyReleased,
+    mediaBarSourceNewReleases,
+  };
 
   // What a focused home card plays. episodePreviewEnabled says whether it
   // plays anything, which older apps also read, and mediaPreviewMode says
@@ -149,6 +155,7 @@ class UserPreferences extends ChangeNotifier {
   UserPreferences(this._store) {
     _adoptNewlyScopedPreferences();
     _repairMediaBarContentType();
+    _repairMediaBarSourceType();
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _migrateSeerrRowsVisibility();
@@ -263,6 +270,21 @@ class UserPreferences extends ChangeNotifier {
         continue;
       }
       _store.setString(key, normalizeMediaBarContentType(stored));
+    }
+  }
+
+  // The library and collection sources saved before draw like random here.
+  void _repairMediaBarSourceType() {
+    for (final key in _store.keys.toList()) {
+      if (key != mediaBarSourceType.key &&
+          !key.startsWith('${mediaBarSourceType.key}_')) {
+        continue;
+      }
+      final stored = _store.getString(key);
+      if (stored == null || mediaBarSourceTypeValues.contains(stored)) {
+        continue;
+      }
+      _store.setString(key, normalizeMediaBarSourceType(stored));
     }
   }
 
@@ -592,6 +614,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_hide_backdrops_in_libraries',
     'pref_show_clock',
     'pref_use_24_hour_clock',
+    'pref_date_format',
     'pref_clock_behavior',
     'pref_prefer_system_ime_keyboard',
     'pref_keyboard_style',
@@ -1244,6 +1267,14 @@ class UserPreferences extends ChangeNotifier {
       return normalized;
     }
     return mediaBarContentTypeBoth;
+  }
+
+  static String normalizeMediaBarSourceType(String? sourceType) {
+    final normalized = (sourceType ?? '').trim().toLowerCase();
+    return mediaBarSourceTypeValues.firstWhere(
+      (value) => value.toLowerCase() == normalized,
+      orElse: () => mediaBarSourceRandom,
+    );
   }
 
   static final posterSize = EnumPreference(
@@ -1985,6 +2016,12 @@ class UserPreferences extends ChangeNotifier {
   static final use24HourClock = Preference(
     key: 'pref_use_24_hour_clock',
     defaultValue: false,
+  );
+
+  static final dateFormat = EnumPreference(
+    key: 'pref_date_format',
+    defaultValue: DateFormatSetting.system,
+    values: DateFormatSetting.values,
   );
 
   // Opt-in: trust self-signed / private-CA TLS certificates. Off by default so

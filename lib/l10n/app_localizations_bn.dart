@@ -11659,6 +11659,22 @@ class AppLocalizationsBn extends AppLocalizations {
       'যেখানে ঘড়ি দেখানো হয় সেখানে 24-ঘন্টা সময় বিন্যাস ব্যবহার করুন';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'নেভিগেশন বারে শাফেল বোতামটি দেখান';
 
