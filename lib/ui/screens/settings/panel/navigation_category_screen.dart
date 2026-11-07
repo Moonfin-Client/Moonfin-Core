@@ -258,9 +258,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       ),
                       onChanged: _pushPersonalizationSync,
                     ),
-                  if (seerrEnabledOnAccount &&
-                      _syncService.seerrAvailable &&
-                      _syncService.calendarAvailable &&
+                  if (_syncService.calendarAvailable &&
                       !onBar.contains(BottomNavTab.calendar))
                     SwitchPreferenceTile(
                       key: const ValueKey(BottomNavTab.calendar),

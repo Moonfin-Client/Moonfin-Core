@@ -64,6 +64,10 @@ void main() {
         UserPreferences.mediaBarSourceRandom,
       );
       expect(
+        UserPreferences.normalizeMediaBarSourceType('collection'),
+        UserPreferences.mediaBarSourceRandom,
+      );
+      expect(
         UserPreferences.normalizeMediaBarSourceType('LIBRARY'),
         UserPreferences.mediaBarSourceRandom,
       );
