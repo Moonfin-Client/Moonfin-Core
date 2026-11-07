@@ -3562,6 +3562,13 @@ class AppLocalizationsPl extends AppLocalizations {
       'Odznacz święto, aby ukryć jego wiersz.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'Nowy Rok';
 
   @override

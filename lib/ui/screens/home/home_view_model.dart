@@ -114,6 +114,7 @@ class HomeViewModel extends ChangeNotifier {
   /// ask Moonbase again. The daily refresh clears it, which is when the server's
   /// shuffle changes too.
   Map<String, dynamic>? _seasonalMemo;
+  String? _seasonalMemoKey;
 
   String get _serverId => _client.baseUrl;
   MediaBarViewModel get mediaBarViewModel => _mediaBarViewModel;
@@ -3537,17 +3538,20 @@ class HomeViewModel extends ChangeNotifier {
       if (api is ServerHomeSectionsApi) {
         return await _loadServerSeasonalRow(api as ServerHomeSectionsApi);
       }
-      if (forceRefresh) _seasonalMemo = null;
       final sync = GetIt.instance<PluginSyncService>();
+      final country = seasonalCountryParam(
+        _prefs.get(UserPreferences.seasonalRowCountry),
+        deviceCountry: deviceCountryCode(),
+      );
+      final allYear = _prefs.get(UserPreferences.seasonalRowAllYear);
+      final memoKey = '$country|$allYear';
+      if (forceRefresh || memoKey != _seasonalMemoKey) _seasonalMemo = null;
       var body = _seasonalMemo;
       if (body == null) {
-        final country = seasonalCountryParam(
-          _prefs.get(UserPreferences.seasonalRowCountry),
-          deviceCountry: deviceCountryCode(),
-        );
-        body = await sync.fetchSeasonalRow(_client, country: country);
+        body = await sync.fetchSeasonalRow(_client, country: country, allYear: allYear);
         if (body == null) return const [];
         _seasonalMemo = body;
+        _seasonalMemoKey = memoKey;
       }
 
       final mapped = mapSeasonalResponse(

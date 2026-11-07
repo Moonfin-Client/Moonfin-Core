@@ -276,6 +276,7 @@ void main() {
     'screensaverTimeout',
     'seasonalDensity',
     'seasonalFollower',
+    'seasonalRowAllYear',
     'seasonalRowCountry',
     'seasonalRowEnabled',
     'seasonalRowHiddenHolidays',

@@ -3438,6 +3438,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'New Year\'s';
 
   @override

@@ -699,6 +699,7 @@ class UserPreferences extends ChangeNotifier {
     'seasonal_row_enabled',
     'seasonal_row_country',
     'seasonal_row_hidden_holidays',
+    'seasonal_row_all_year',
     'mediaBarEnabled',
     'mediaBarMode',
     'mediaBarContentType',
@@ -3953,6 +3954,11 @@ class UserPreferences extends ChangeNotifier {
   static final seasonalRowHiddenHolidays = Preference(
     key: 'seasonal_row_hidden_holidays',
     defaultValue: '',
+  );
+
+  static final seasonalRowAllYear = Preference(
+    key: 'seasonal_row_all_year',
+    defaultValue: false,
   );
 
   static final loadingAnimationImage = EnumPreference(

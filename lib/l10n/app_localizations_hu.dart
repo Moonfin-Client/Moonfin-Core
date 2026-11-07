@@ -3413,6 +3413,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Vedd ki a pipát az ünnep mellől a hozzá tartozó sor elrejtéséhez.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'Újév';
 
   @override

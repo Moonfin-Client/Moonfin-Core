@@ -4595,6 +4595,14 @@
   "@seasonalRowHolidaysHint": {
     "description": "Hint under the holiday checklist"
   },
+  "seasonalRowAllYear": "Show All Year",
+  "@seasonalRowAllYear": {
+    "description": "Setting that shows the seasonal row outside the holiday dates"
+  },
+  "seasonalRowAllYearDescription": "Show a holiday row outside the holiday dates too, a different ticked holiday each day.",
+  "@seasonalRowAllYearDescription": {
+    "description": "Explains the Show All Year setting for the seasonal row"
+  },
   "holidayNewYear": "New Year's",
   "@holidayNewYear": {
     "description": "Seasonal row title for New Year's"

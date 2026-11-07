@@ -3430,6 +3430,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Desmarca una festivitat per amagar-ne la fila.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'Any nou';
 
   @override

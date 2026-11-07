@@ -1406,10 +1406,11 @@ class PluginSyncService extends ChangeNotifier {
 
   /// The seasonal Home row Moonbase built for this user. [country] is the
   /// viewer's two letter code, ZZ for "other", or null to let the server fall
-  /// back to its own.
+  /// back to its own. [allYear] asks for a row outside the holiday dates too.
   Future<Map<String, dynamic>?> fetchSeasonalRow(
     MediaServerClient client, {
     String? country,
+    bool allYear = false,
   }) async {
     final ep = await moonbaseEndpoint(client, _dio);
     if (ep == null) return null;
@@ -1418,7 +1419,7 @@ class PluginSyncService extends ChangeNotifier {
     try {
       final response = await _dio.get(
         '${ep.base}/Moonfin/Seasonal/Row',
-        queryParameters: {'country': ?country},
+        queryParameters: {'country': ?country, if (allYear) 'allYear': true},
         options: Options(headers: headers),
       );
       if (response.data is Map<String, dynamic>) {

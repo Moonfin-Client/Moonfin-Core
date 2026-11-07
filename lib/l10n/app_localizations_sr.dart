@@ -3432,6 +3432,13 @@ class AppLocalizationsSr extends AppLocalizations {
       'Поништите избор празника да бисте сакрили његов ред.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'Нова година';
 
   @override

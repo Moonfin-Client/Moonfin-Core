@@ -1172,6 +1172,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
       seasonalRow.leaf('seasonal_row_hidden_holidays', l10n.seasonalRowHolidays),
+      if (GetIt.instance<MediaServerClient>().itemsApi is! ServerHomeSectionsApi)
+        seasonalRow.leaf('seasonal_row_all_year', l10n.seasonalRowAllYear, subtitle: l10n.seasonalRowAllYearDescription),
     ],
     if (pluginAvailable) ...[
       imdbLists.screen(keywords: ['top 250', 'popular', 'charts']),

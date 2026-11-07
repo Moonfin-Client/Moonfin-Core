@@ -171,6 +171,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('seasonalRowEnabled', UserPreferences.seasonalRowEnabled, SyncCodec.boolean),
   SyncedField('seasonalRowCountry', UserPreferences.seasonalRowCountry, SyncCodec.text, normalize: UserPreferences.parseSeasonalRowCountry),
   SyncedField('seasonalRowHiddenHolidays', UserPreferences.seasonalRowHiddenHolidays, SyncCodec.csvList),
+  SyncedField('seasonalRowAllYear', UserPreferences.seasonalRowAllYear, SyncCodec.boolean),
   SyncedField('mediaBarItemCount', UserPreferences.mediaBarItemCount, SyncCodec.textAsInt, fallbackInt: 10),
   SyncedField('mediaBarSourceType', UserPreferences.mediaBarSourceType, SyncCodec.text, normalize: UserPreferences.normalizeMediaBarSourceType),
   SyncedField('mediaBarNewReleaseBanner', UserPreferences.mediaBarNewReleaseBanner, SyncCodec.boolean),

@@ -5926,6 +5926,18 @@ abstract class AppLocalizations {
   /// **'Untick a holiday to hide its row.'**
   String get seasonalRowHolidaysHint;
 
+  /// Setting that shows the seasonal row outside the holiday dates
+  ///
+  /// In en, this message translates to:
+  /// **'Show All Year'**
+  String get seasonalRowAllYear;
+
+  /// Explains the Show All Year setting for the seasonal row
+  ///
+  /// In en, this message translates to:
+  /// **'Show a holiday row outside the holiday dates too, a different ticked holiday each day.'**
+  String get seasonalRowAllYearDescription;
+
   /// Seasonal row title for New Year's
   ///
   /// In en, this message translates to:

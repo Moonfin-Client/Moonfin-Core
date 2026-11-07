@@ -3429,6 +3429,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Décochez une fête pour masquer sa rangée.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => 'Nouvel An';
 
   @override

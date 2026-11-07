@@ -3334,6 +3334,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seasonalRowHolidaysHint => '기념일 체크를 해제하면 해당 행이 숨겨집니다.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => '새해';
 
   @override
