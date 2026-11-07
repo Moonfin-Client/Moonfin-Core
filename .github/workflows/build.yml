@@ -67,7 +67,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  # Keep equal to FLUTTER_VERSION in checks.yml, the Gradle cache key uses it.
+  # checks.yml and gradle-cache.yml read this line with sed, so keep it on
+  # one line in this form.
   FLUTTER_VERSION: '3.47.2'
   FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
