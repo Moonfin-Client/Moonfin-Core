@@ -103,9 +103,10 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
-/// Watching Now prints its titles on the artwork, so nothing sits under it.
+/// Watching Now prints its titles on the artwork, so it only needs room for
+/// the focus ring and a gap before the next row.
 double _classicCardMetadataFor(HomeRow row) =>
-    row.id == 'mdblist_watching_now' ? 0.0 : _classicCardMetadataHeight;
+    row.id == 'mdblist_watching_now' ? 24.0 : _classicCardMetadataHeight;
 
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
@@ -3358,7 +3359,7 @@ class _ContentRowsState extends State<_ContentRows>
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
-    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 24.0 : 18.0) * metadataScale) : 0.0;
+    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
     var totalHeight = childHeight + headerHeight;
