@@ -103,9 +103,15 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
-/// Watching Now prints its titles on the artwork, so nothing sits under it.
+/// Watching Now prints its titles on the artwork, but needs breathing room
+/// for row separation and focus glow so it matches standard row spacing.
+const _watchingNowCardMetadataHeight = 24.0;
+
+/// Metadata height allowance under classic cards.
 double _classicCardMetadataFor(HomeRow row) =>
-    row.id == 'mdblist_watching_now' ? 0.0 : _classicCardMetadataHeight;
+    row.id == 'mdblist_watching_now'
+        ? _watchingNowCardMetadataHeight
+        : _classicCardMetadataHeight;
 
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
@@ -168,6 +174,10 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._showsCalendarSeeAll(row, prefs);
+
+  @visibleForTesting
+  static double classicCardMetadataFor(HomeRow row) =>
+      _classicCardMetadataFor(row);
 
   @visibleForTesting
   static Widget topBackdrop(Widget backdrop) =>
@@ -2840,6 +2850,9 @@ class _ContentRowsState extends State<_ContentRows>
     UserPreferences prefs,
   ) {
     final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
+    if (row.id == 'mdblist_watching_now') {
+      return posterSize.landscapeHeight.toDouble() * platformScale;
+    }
     if (_isRowModern(row, prefs)) {
       return modernImageHeight(posterSize, platformScale);
     }
@@ -3339,8 +3352,12 @@ class _ContentRowsState extends State<_ContentRows>
           }
         }
         if (maxCardHeight == 0.0) {
-          maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
-          maxCardHeight = maxImageHeight + (_classicCardMetadataHeight * metadataScale);
+          maxImageHeight = (row.id == 'mdblist_watching_now'
+                  ? posterSize.landscapeHeight.toDouble()
+                  : posterSize.portraitHeight.toDouble()) *
+              platformScale;
+          maxCardHeight =
+              maxImageHeight + (_classicCardMetadataFor(row) * metadataScale);
         }
         maxCardHeight += _classicRowPadding(row, prefs);
       }
@@ -3358,7 +3375,7 @@ class _ContentRowsState extends State<_ContentRows>
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
-    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 24.0 : 18.0) * metadataScale) : 0.0;
+    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
     var totalHeight = childHeight + headerHeight;
@@ -5433,15 +5450,23 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (firstCardWidth == 0) {
-      final defaultAspect = row.isAudio ? 1.0 : 2 / 3;
+      final defaultAspect =
+          row.isAudio ? 1.0 : (row.id == 'mdblist_watching_now' ? 16 / 9 : 2 / 3);
       firstCardWidth =
-          posterSize.portraitHeight.toDouble() * platformScale * defaultAspect;
+          (row.id == 'mdblist_watching_now'
+                  ? posterSize.landscapeHeight.toDouble()
+                  : posterSize.portraitHeight.toDouble()) *
+              platformScale *
+              defaultAspect;
     }
     if (maxCardHeight == 0) {
-      maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+      maxImageHeight = (row.id == 'mdblist_watching_now'
+              ? posterSize.landscapeHeight.toDouble()
+              : posterSize.portraitHeight.toDouble()) *
+          platformScale;
       maxCardHeight =
           maxImageHeight +
-          (_classicCardMetadataHeight * metadataScale);
+          (_classicCardMetadataFor(row) * metadataScale);
     }
 
     final rowPadding = 5.0 * metadataScale;
