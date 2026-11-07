@@ -98,9 +98,10 @@ jobs:
     steps:
       - id: plan
         env:
-          # Flipped to 'false' the day the merge queue goes on. Until then every
-          # pull request push builds every platform, as before.
-          PLATFORM_BUILDS_ON_PUSH: 'true'
+          # Platforms build in the merge queue, so a pull request push only
+          # builds the ones its ci:<platform> labels ask for. Set back to 'true'
+          # to build every platform on every push again.
+          PLATFORM_BUILDS_ON_PUSH: 'false'
           EVENT: ${{ github.event_name }}
           REF: ${{ github.ref }}
           LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
