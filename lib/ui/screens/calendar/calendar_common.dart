@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bounded_network_image.dart';
@@ -62,7 +63,7 @@ String calendarDayName(BuildContext context, DateTime day, DateTime today) {
   if (diff == 0) return l10n.upcomingEpisodeToday;
   if (diff == 1) return l10n.upcomingEpisodeTomorrow;
   if (diff == -1) return l10n.adminActivityYesterday;
-  return DateFormat.MMMEd(l10n.localeName).format(day);
+  return formatShortDayName(day, locale: l10n.localeName);
 }
 
 /// When it airs, like "Today at 9:00 PM", or the day alone for a movie.

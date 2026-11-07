@@ -613,6 +613,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_hide_backdrops_in_libraries',
     'pref_show_clock',
     'pref_use_24_hour_clock',
+    'pref_date_format',
     'pref_clock_behavior',
     'pref_prefer_system_ime_keyboard',
     'pref_keyboard_style',
@@ -2014,6 +2015,12 @@ class UserPreferences extends ChangeNotifier {
   static final use24HourClock = Preference(
     key: 'pref_use_24_hour_clock',
     defaultValue: false,
+  );
+
+  static final dateFormat = EnumPreference(
+    key: 'pref_date_format',
+    defaultValue: DateFormatSetting.system,
+    values: DateFormatSetting.values,
   );
 
   // Opt-in: trust self-signed / private-CA TLS certificates. Off by default so

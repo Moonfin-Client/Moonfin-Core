@@ -11745,6 +11745,22 @@ class AppLocalizationsBg extends AppLocalizations {
       'Използвайте 24-часово форматиране на времето навсякъде, където се показва часовникът';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation =>
       'Показване на бутона за разбъркване в лентата за навигация';
 

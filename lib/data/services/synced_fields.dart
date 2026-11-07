@@ -457,6 +457,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('unpauseRewindDuration', UserPreferences.unpauseRewindDuration, SyncCodec.integer),
   SyncedField('updateNotificationsEnabled', UserPreferences.updateNotificationsEnabled, SyncCodec.boolean),
   SyncedField('use24HourClock', UserPreferences.use24HourClock, SyncCodec.boolean),
+  SyncedField('dateFormat', UserPreferences.dateFormat, SyncCodec.enumName, enumValues: prefs.DateFormatSetting.values),
   SyncedField('videoStartDelay', UserPreferences.videoStartDelay, SyncCodec.integer),
 ];
 

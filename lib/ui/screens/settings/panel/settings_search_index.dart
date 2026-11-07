@@ -554,6 +554,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.settingsTwentyFourHourClockSubtitle,
       keywords: ['time format', 'am pm'],
     ),
+    general.leaf(
+      'pref_date_format',
+      l10n.settingsDateFormat,
+      subtitle: l10n.settingsDateFormatDescription,
+      keywords: ['date format', 'calendar date'],
+    ),
     if (PlatformDetection.isTV)
       general.leaf(
         'pref_keyboard_style',
