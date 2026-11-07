@@ -197,8 +197,11 @@ jobs:
 
           # Test output can contain lines that read as workflow commands
           # (an early ::endgroup:: for one), so commands are off while it prints.
+          # The group header goes out before that, so the label (a test name)
+          # is squashed onto one line in case it carries a newline.
           token = secrets.token_hex(16)
           for label, text in details[:50]:
+              label = ' '.join(label.split())
               print(f'::group::{label}')
               print(f'::stop-commands::{token}')
               print(text)
