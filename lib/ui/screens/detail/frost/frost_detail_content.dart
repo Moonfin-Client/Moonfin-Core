@@ -1025,18 +1025,16 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             children: [
               _tabIcon(tab),
               const SizedBox(width: 10),
-              Flexible(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 220),
-                  child: Text(
-                    _tabLabel(tab, l10n),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: _ink(),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                child: Text(
+                  _tabLabel(tab, l10n),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: _ink(),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

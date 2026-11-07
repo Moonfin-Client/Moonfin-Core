@@ -103,6 +103,10 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
+/// Watching Now prints its titles on the artwork, so nothing sits under it.
+double _classicCardMetadataFor(HomeRow row) =>
+    row.id == 'mdblist_watching_now' ? 0.0 : _classicCardMetadataHeight;
+
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
     isRowsV2 || !PlatformDetection.useMobileUi ? 6.0 : 16.0;
@@ -2821,9 +2825,6 @@ class _ContentRowsState extends State<_ContentRows>
     UserPreferences prefs,
   ) {
     final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
-    if (row.id == 'mdblist_watching_now') {
-      return posterSize.landscapeHeight.toDouble() * platformScale;
-    }
     if (_isRowModern(row, prefs)) {
       return modernImageHeight(posterSize, platformScale);
     }
@@ -3267,32 +3268,25 @@ class _ContentRowsState extends State<_ContentRows>
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
-        final baseImageHeight = (row.id == 'mdblist_watching_now')
-            ? posterSize.landscapeHeight.toDouble() * platformScale
-            : modernImageHeight(posterSize, platformScale);
-        final imageHeight =
-            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
+        final imageHeight = modernImageHeight(posterSize, platformScale)
+            .clamp(220.0 * desktopScale, double.infinity);
         final budget = _v2MetadataBudgetFor(row, prefs);
         childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
         final baseImageHeight = (row.id == 'mdblist_watching_now'
             ? posterSize.landscapeHeight.toDouble()
             : posterSize.portraitHeight.toDouble()) * platformScale;
-        // LibraryRow displays a loading placeholder with a 220 base height.
-        // Clamp to at least 220 * desktopScale so smaller poster sizes on mobile
-        // don't cause the spinner to overflow into the next row.
+        // A loading row is LibraryRow's spinner at its 220 default height,
+        // which can be taller than the posters.
         final imageHeight =
             baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final headroom = _focusHeadroom(
           imageHeight,
           prefs.get(UserPreferences.cardFocusExpansion),
         );
-        final cardMetadata = (row.id == 'mdblist_watching_now')
-            ? 0.0
-            : (_classicCardMetadataHeight * metadataScale);
         childHeight =
             imageHeight +
-            cardMetadata +
+            (_classicCardMetadataFor(row) * metadataScale) +
             (10 * metadataScale) +
             headroom;
       }
@@ -3312,9 +3306,7 @@ class _ContentRowsState extends State<_ContentRows>
       var maxCardHeight = 0.0;
       var maxImageHeight = 0.0;
       if (isRowsV2) {
-        final imageHeight = (row.id == 'mdblist_watching_now')
-            ? posterSize.landscapeHeight.toDouble() * platformScale
-            : modernImageHeight(posterSize, platformScale);
+        final imageHeight = modernImageHeight(posterSize, platformScale);
         maxImageHeight = imageHeight;
         final budget = _v2MetadataBudgetFor(row, prefs);
         maxCardHeight = imageHeight + (budget * metadataScale);
@@ -3325,22 +3317,15 @@ class _ContentRowsState extends State<_ContentRows>
               ? posterSize.landscapeHeight.toDouble()
               : posterSize.portraitHeight.toDouble()) * platformScale;
           if (imageHeight > maxImageHeight) maxImageHeight = imageHeight;
-          final cardMetadata = (row.id == 'mdblist_watching_now')
-              ? 0.0
-              : (_classicCardMetadataHeight * metadataScale);
-          final cardHeight = imageHeight + cardMetadata;
+          final cardHeight =
+              imageHeight + (_classicCardMetadataFor(row) * metadataScale);
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
         }
         if (maxCardHeight == 0.0) {
-          maxImageHeight = (row.id == 'mdblist_watching_now'
-              ? posterSize.landscapeHeight.toDouble()
-              : posterSize.portraitHeight.toDouble()) * platformScale;
-          final cardMetadata = (row.id == 'mdblist_watching_now')
-              ? 0.0
-              : (_classicCardMetadataHeight * metadataScale);
-          maxCardHeight = maxImageHeight + cardMetadata;
+          maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+          maxCardHeight = maxImageHeight + (_classicCardMetadataHeight * metadataScale);
         }
         maxCardHeight += _classicRowPadding(row, prefs);
       }
@@ -4305,14 +4290,11 @@ class _ContentRowsState extends State<_ContentRows>
       final rowHeight = squarePosterSide + (56 * metadataScale);
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
-      final isWatchingNow = row.id == 'mdblist_watching_now';
       final maxImageHeight = _rowImageHeight(row, posterSize, prefs);
       final maxCardHeight = _isRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
-                (isWatchingNow
-                    ? 0.0
-                    : (_classicCardMetadataHeight * metadataScale)) +
+                (_classicCardMetadataFor(row) * metadataScale) +
                 _classicRowPadding(row, prefs);
       final headroom = _focusHeadroom(
         maxImageHeight,
@@ -4321,7 +4303,7 @@ class _ContentRowsState extends State<_ContentRows>
       final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
       final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
       final subtitleHeight = hasSubtitle
-          ? (isWatchingNow ? 26.0 : 18.0) * metadataScale
+          ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale
           : 0.0;
       return _libraryRowExtent(
         maxCardHeight + headroom,
@@ -4475,12 +4457,10 @@ class _ContentRowsState extends State<_ContentRows>
       !PlatformDetection.useMobileUi &&
       prefs.get(UserPreferences.fullScreenRows);
 
-  double _v2MetadataBudgetFor(HomeRow row, UserPreferences prefs) {
-    if (row.id == 'mdblist_watching_now') return 0.0;
-    return row.rowType == HomeRowType.libraryTiles
-        ? _libraryTilesMetadataBudget
-        : modernMetadataBudget(prefs, UserPreferences.homeRowsRatings);
-  }
+  double _v2MetadataBudgetFor(HomeRow row, UserPreferences prefs) =>
+      row.rowType == HomeRowType.libraryTiles
+      ? _libraryTilesMetadataBudget
+      : modernMetadataBudget(prefs, UserPreferences.homeRowsRatings);
 
   /// Extra room the classic rows setting asks for. Library rows are left out,
   /// since their grid sizes itself and padding there overlaps the next row.
@@ -5369,12 +5349,10 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final platformScale = _rowPlatformScale(desktopScale);
-    final isWatchingNow = row.id == 'mdblist_watching_now';
-    final v2ImageHeight = isWatchingNow
-        ? posterSize.landscapeHeight.toDouble() * platformScale
-        : modernImageHeight(posterSize, platformScale);
+    final v2ImageHeight =
+        modernImageHeight(posterSize, platformScale);
     final v2MetadataHeightBudget = _v2MetadataBudgetFor(row, prefs);
-    final v2PortraitAspect = row.isAudio ? 1.0 : (isWatchingNow ? 16 / 9 : 2 / 3);
+    final v2PortraitAspect = row.isAudio ? 1.0 : 2 / 3;
     final v2FocusedAspect = row.isAudio ? 1.0 : 16 / 9;
     final v2PortraitWidth = v2ImageHeight * v2PortraitAspect;
     final v2FocusedWidth = v2ImageHeight * v2FocusedAspect;
@@ -5431,10 +5409,8 @@ class _ContentRowsState extends State<_ContentRows>
                 : posterSize.portraitHeight.toDouble()) *
             platformScale;
         if (height > maxImageHeight) maxImageHeight = height;
-        final cardMetadata = isWatchingNow
-            ? 0.0
-            : (_classicCardMetadataHeight * metadataScale);
-        final cardHeight = height + cardMetadata;
+        final cardHeight =
+            height + (_classicCardMetadataFor(row) * metadataScale);
         if (cardHeight > maxCardHeight) maxCardHeight = cardHeight;
         if (firstCardWidth == 0) firstCardWidth = height * ar;
       }
@@ -5442,23 +5418,15 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (firstCardWidth == 0) {
-      final defaultAspect = row.isAudio ? 1.0 : (isWatchingNow ? 16 / 9 : 2 / 3);
+      final defaultAspect = row.isAudio ? 1.0 : 2 / 3;
       firstCardWidth =
-          (isWatchingNow
-                  ? posterSize.landscapeHeight.toDouble()
-                  : posterSize.portraitHeight.toDouble()) *
-              platformScale *
-              defaultAspect;
+          posterSize.portraitHeight.toDouble() * platformScale * defaultAspect;
     }
     if (maxCardHeight == 0) {
-      maxImageHeight = (isWatchingNow
-              ? posterSize.landscapeHeight.toDouble()
-              : posterSize.portraitHeight.toDouble()) *
-          platformScale;
-      final cardMetadata = isWatchingNow
-          ? 0.0
-          : (_classicCardMetadataHeight * metadataScale);
-      maxCardHeight = maxImageHeight + cardMetadata;
+      maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+      maxCardHeight =
+          maxImageHeight +
+          (_classicCardMetadataHeight * metadataScale);
     }
 
     final rowPadding = 5.0 * metadataScale;

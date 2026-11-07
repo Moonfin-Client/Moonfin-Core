@@ -12,7 +12,9 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
+import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -67,11 +69,10 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  testWidgets('Play keeps its label under it on a phone in landscape', (
-    tester,
-  ) async {
-    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
-
+  Future<void> pumpButtons(
+    WidgetTester tester, {
+    bool labelsUnderCircles = false,
+  }) async {
     final vm = _ViewModel();
     when(() => vm.item).thenReturn(
       AggregatedItem(
@@ -96,11 +97,19 @@ void main() {
               itemId: 'movie-1',
               onSelectedMediaSourceChanged: (_) {},
               modernStyle: true,
+              labelsUnderCircles: labelsUnderCircles,
             ),
           ),
         ),
       ),
     );
+  }
+
+  testWidgets('Play keeps its label under it on a phone in landscape', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await pumpButtons(tester);
 
     final play = find.byIcon(Icons.play_arrow);
     expect(play, findsOneWidget);
@@ -109,5 +118,23 @@ void main() {
       tester.getTopLeft(find.text('Play')).dy,
       greaterThan(tester.getBottomLeft(play).dy),
     );
+  });
+
+  // Neon Pulse colors labels with its accent, which is also the pill's fill.
+  testWidgets('Play inside its accent pill uses the accent text color', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    ThemeRegistry.setActiveById(ThemeRegistry.neonPulseId);
+    addTearDown(() => ThemeRegistry.setActiveById(ThemeRegistry.moonfinId));
+    await pumpButtons(tester, labelsUnderCircles: true);
+
+    final label = tester.widget<Text>(
+      find.descendant(
+        of: find.byType(MarqueeText),
+        matching: find.text('Play'),
+      ),
+    );
+    expect(label.style?.color, AppColorScheme.onAccent);
   });
 }
