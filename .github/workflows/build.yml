@@ -48,6 +48,10 @@ on:
   pull_request:
     branches:
       - main
+    # labeled so adding a ci:<platform> label builds that platform right away.
+    types: [opened, synchronize, reopened, labeled]
+  # Fires only once a merge queue is enabled on main.
+  merge_group:
 
 permissions:
   contents: write
@@ -55,8 +59,11 @@ permissions:
 
 # A new push to a pull request replaces its running build. Every other run
 # gets a group of its own, so tags and manual runs never queue or cancel.
+# So does a run started by adding a label that isn't ci:<platform>, such as
+# bug: it builds nothing (see plan), so it mustn't cancel the build that is
+# running for the same commit.
 concurrency:
-  group: build-${{ github.event.pull_request.number || github.run_id }}
+  group: build-${{ (github.event.action == 'labeled' && !startsWith(github.event.label.name, 'ci:')) && github.run_id || github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -68,9 +75,77 @@ env:
   FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
 jobs:
+  # Decides which platform jobs run. Job-level if can't read env, so this one
+  # job decides and the platform jobs need it. A manual run follows its inputs
+  # exactly as before. Tags and the merge queue build everything. A pull
+  # request builds everything while PLATFORM_BUILDS_ON_PUSH is 'true', and
+  # otherwise only the platforms named by its ci:<platform> or ci:full labels.
+  # Adding any other label skips plan, and with it every job below, so that
+  # run leaves no build check and no results behind.
+  plan:
+    if: ${{ !(github.event.action == 'labeled' && !startsWith(github.event.label.name, 'ci:')) }}
+    runs-on: ubuntu-26.04
+    outputs:
+      android: ${{ steps.plan.outputs.android }}
+      ios: ${{ steps.plan.outputs.ios }}
+      macos: ${{ steps.plan.outputs.macos }}
+      tvos: ${{ steps.plan.outputs.tvos }}
+      windows: ${{ steps.plan.outputs.windows }}
+      windows_arm64: ${{ steps.plan.outputs.windows_arm64 }}
+      linux: ${{ steps.plan.outputs.linux }}
+      web: ${{ steps.plan.outputs.web }}
+      apple_tests: ${{ steps.plan.outputs.apple_tests }}
+    steps:
+      - id: plan
+        env:
+          # Flipped to 'false' the day the merge queue goes on. Until then every
+          # pull request push builds every platform, as before.
+          PLATFORM_BUILDS_ON_PUSH: 'true'
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          python3 - <<'EOF'
+          import json, os
+          event, ref = os.environ['EVENT'], os.environ['REF']
+          # Actions compares label names without case, so this does too.
+          labels = {l.lower() for l in json.loads(os.environ['LABELS'] or 'null') or []}
+          inputs = json.loads(os.environ['INPUTS'] or 'null') or {}
+          everywhere = event == 'merge_group' or ref.startswith('refs/tags/')
+          on_push = os.environ['PLATFORM_BUILDS_ON_PUSH'] == 'true' and event == 'pull_request'
+          testflight = inputs.get('distribution') == 'testflight'
+
+          # dispatch_inputs: the manual-run inputs that select the job. apple:
+          # the job also runs for a TestFlight upload, which skips every other
+          # platform.
+          def want(label, dispatch_inputs, apple=False):
+              if event == 'workflow_dispatch':
+                  return any(inputs.get(i) for i in dispatch_inputs) and (apple or not testflight)
+              return everywhere or on_push or 'ci:full' in labels or f'ci:{label}' in labels
+
+          out = {
+              'android':       want('android', ['run_all', 'android']),
+              'ios':           want('apple', ['run_all', 'ios'], apple=True),
+              'macos':         want('apple', ['run_all', 'macos'], apple=True),
+              'tvos':          want('apple', ['run_all', 'tvos'], apple=True),
+              'windows':       want('windows', ['run_all', 'windows']),
+              'windows_arm64': want('windows', ['run_all', 'windows_arm64']),
+              'linux':         want('linux', ['run_all', 'linux']),
+              # Web has no release artifact, so it never ran on tags or manual runs.
+              'web':           event in ('pull_request', 'merge_group') and want('web', []),
+              'apple_tests':   want('apple', ['run_all'], apple=True),
+          }
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              for k, v in out.items():
+                  f.write(f'{k}={"true" if v else "false"}\n')
+          print(out)
+          EOF
+
   # Android APK + AAB, with mobile and TV on their own runners
   android:
-    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.android) && inputs.distribution != 'testflight' }}
+    needs: plan
+    if: needs.plan.outputs.android == 'true'
     name: android (${{ matrix.target }})
     strategy:
       fail-fast: false
@@ -170,7 +245,8 @@ jobs:
 
   # iOS: an unsigned IPA for releases, or a TestFlight upload
   ios:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.ios }}
+    needs: plan
+    if: needs.plan.outputs.ios == 'true'
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
@@ -259,7 +335,8 @@ jobs:
 
   # macOS: a signed and notarized DMG for releases, or a TestFlight upload
   macos:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.macos }}
+    needs: plan
+    if: needs.plan.outputs.macos == 'true'
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
@@ -342,7 +419,8 @@ jobs:
 
   # tvOS: an unsigned IPA for releases, or a TestFlight upload
   tvos:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.tvos }}
+    needs: plan
+    if: needs.plan.outputs.tvos == 'true'
     runs-on: macos-26
     timeout-minutes: 60
     steps:
@@ -516,7 +594,8 @@ jobs:
 
   # Windows installer EXE
   windows:
-    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows) && inputs.distribution != 'testflight' }}
+    needs: plan
+    if: needs.plan.outputs.windows == 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
@@ -616,7 +695,8 @@ jobs:
 
   # Windows ARM64 installer EXE (native build on an ARM64 runner)
   windows-arm64:
-    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64) && inputs.distribution != 'testflight' }}
+    needs: plan
+    if: needs.plan.outputs.windows_arm64 == 'true'
     runs-on: windows-11-arm
     steps:
       - uses: actions/checkout@v5
@@ -739,7 +819,8 @@ jobs:
 
   # Linux packages, built natively for each architecture
   linux:
-    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.linux) && inputs.distribution != 'testflight' }}
+    needs: plan
+    if: needs.plan.outputs.linux == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -868,7 +949,8 @@ jobs:
 
   # Web, built at the root base href so the artifact runs from any static server
   web:
-    if: github.event_name == 'pull_request'
+    needs: plan
+    if: needs.plan.outputs.web == 'true'
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
@@ -889,7 +971,8 @@ jobs:
   # The XCTest targets for the native iOS and macOS code, which flutter test
   # can't reach. tvOS has no test target of its own.
   apple-tests:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
+    needs: plan
+    if: needs.plan.outputs.apple_tests == 'true'
     runs-on: macos-26
     timeout-minutes: 60
     steps:
@@ -1039,12 +1122,35 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  # The one check a ruleset requires for the platform builds. A skipped job
+  # passes, so a pull request with nothing planned reports success in seconds,
+  # and a failed or cancelled one fails it.
+  # In a run for a label that isn't ci:<platform>, plan is skipped and this
+  # is too, under another name. A skipped check named build counts as passed
+  # and could replace a failed one for the same commit.
+  build:
+    name: ${{ needs.plan.result == 'skipped' && 'build (label added, nothing to check)' || 'build' }}
+    if: always() && needs.plan.result != 'skipped'
+    needs: [plan, android, ios, macos, tvos, windows, windows-arm64, linux, web, apple-tests]
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Fail if any planned job failed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+          results = {k: v['result'] for k, v in json.loads(os.environ['NEEDS']).items()}
+          print(results)
+          sys.exit(1 if any(r in ('failure', 'cancelled') for r in results.values()) else 0)
+          EOF
+
   # What the PR Comment workflow reads to build its comment. always() keeps this
   # running when a platform job fails, which is the case the comment most needs
   # to report.
   save-pr-results:
-    if: always() && github.event_name == 'pull_request'
-    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, apple-tests]
+    if: always() && github.event_name == 'pull_request' && needs.plan.result != 'skipped'
+    needs: [plan, android, ios, macos, tvos, windows, windows-arm64, linux, web, apple-tests]
     runs-on: ubuntu-26.04
     steps:
       - name: Write outcomes.json
@@ -1061,7 +1167,18 @@ jobs:
             "windows_arm64": "${{ needs.windows-arm64.result }}",
             "linux": "${{ needs.linux.result }}",
             "web": "${{ needs.web.result }}",
-            "apple_tests": "${{ needs.apple-tests.result }}"
+            "apple_tests": "${{ needs.apple-tests.result }}",
+            "planned": {
+              "android": ${{ needs.plan.outputs.android == 'true' }},
+              "ios": ${{ needs.plan.outputs.ios == 'true' }},
+              "macos": ${{ needs.plan.outputs.macos == 'true' }},
+              "tvos": ${{ needs.plan.outputs.tvos == 'true' }},
+              "windows": ${{ needs.plan.outputs.windows == 'true' }},
+              "windows_arm64": ${{ needs.plan.outputs.windows_arm64 == 'true' }},
+              "linux": ${{ needs.plan.outputs.linux == 'true' }},
+              "web": ${{ needs.plan.outputs.web == 'true' }},
+              "apple_tests": ${{ needs.plan.outputs.apple_tests == 'true' }}
+            }
           }
           EOF
 

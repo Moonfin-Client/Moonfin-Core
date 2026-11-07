@@ -40,27 +40,44 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
             const run = context.payload.workflow_run;
             const isChecks = run.name === 'Checks';
-            const { data } = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: isChecks ? 'build.yml' : 'checks.yml',
+            const completedRuns = async (workflow_id) => (await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id,
               head_sha: run.head_sha,
               event: 'pull_request',
               status: 'completed',
               per_page: 10,
-            });
+            })).data.workflow_runs;
             // A cancelled run has no results to show, so it counts as not
             // finished yet.
-            const other = data.workflow_runs.find(r => r.conclusion === 'success' || r.conclusion === 'failure');
+            const finished = (r) => r.conclusion === 'success' || r.conclusion === 'failure';
+            // Adding a label that isn't ci:<platform> starts a Build run that
+            // skips plan and builds nothing. It says nothing about the commit,
+            // so the comment keeps showing the last real Build run.
+            const labelOnly = async (r) => {
+              const { data } = await github.rest.actions.listJobsForWorkflowRun({ owner, repo, run_id: r.id, filter: 'latest', per_page: 100 });
+              return data.jobs.some(job => job.name === 'plan' && job.conclusion === 'skipped');
+            };
+            const latestBuild = async () => {
+              for (const r of await completedRuns('build.yml')) {
+                if (finished(r) && !(await labelOnly(r))) return r;
+              }
+              return undefined;
+            };
+            const checksRun = isChecks ? run : (await completedRuns('checks.yml')).find(finished);
+            const buildRun = isChecks || await labelOnly(run) ? await latestBuild() : run;
             const set = (name, r) => {
               core.setOutput(`${name}_run_id`, r ? String(r.id) : '');
               core.setOutput(`${name}_run_number`, r ? String(r.run_number) : '');
               core.setOutput(`${name}_conclusion`, r ? r.conclusion : '');
             };
-            set(isChecks ? 'checks' : 'build', run);
-            set(isChecks ? 'build' : 'checks', other);
+            set('checks', checksRun);
+            set('build', buildRun);
 
       # Each of these is missing when its workflow hasn't finished yet, or when
       # the job that uploads it died first. The comment still posts and says so.
@@ -196,6 +213,7 @@ jobs:
               { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
               { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
               { platform: 'tvOS',          job: 'tvos',          artifact: 'tvos-ipa',             files: 'Moonfin_tvOS_v*_unsigned.ipa' },
+              { platform: 'Apple tests',   job: 'apple_tests',   artifact: 'apple-test-results',   files: 'test-results.json', tests: true },
               { platform: 'Windows x64',   job: 'windows',       artifact: 'windows-exe',          files: 'Moonfin_Windows_v*.exe' },
               { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
               { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
@@ -208,14 +226,32 @@ jobs:
             // artifact only uploads when its own leg got that far, so its presence
             // is what tells the two apart. Without outcomes.json, an artifact
             // still proves its build passed, but a missing one proves nothing.
+            // The Apple tests row is a job, not a build, and uploads its results
+            // file whether the tests passed or not, so there it proves nothing.
             const statusOf = (row) => {
               if (!buildRunId) return 'running';
               const result = outcomes?.[row.job];
-              if (result === 'success' || artifacts.has(row.artifact)) return 'success';
+              if (result === 'success' || (!row.tests && artifacts.has(row.artifact))) return 'success';
               return outcomes ? result : 'unknown';
             };
 
             const badge = { success: '✅ Passed', failure: '❌ Failed', running: '⏳ Running', unknown: '⚠️ No result' };
+
+            // Which jobs the Build run's plan chose. A job that was skipped
+            // because it wasn't planned is "not run", with the label that
+            // builds it. One that was planned and still skipped stays a
+            // warning. Results from before plan existed have no planned map,
+            // and everything counts as planned.
+            const planned = outcomes?.planned && typeof outcomes.planned === 'object' ? outcomes.planned : {};
+            const labelFor = {
+              android: 'ci:android',
+              ios: 'ci:apple', macos: 'ci:apple', tvos: 'ci:apple', apple_tests: 'ci:apple',
+              windows: 'ci:windows', windows_arm64: 'ci:windows',
+              linux: 'ci:linux',
+              web: 'ci:web',
+            };
+            const notRun = (job) => Boolean(buildRunId) && outcomes?.[job] === 'skipped' && planned[job] === false;
+            const notRunText = (job) => `⏭️ not run, add \`${labelFor[job]}\``;
 
             const artifactCell = (row) => {
               const artifact = artifacts.get(row.artifact);
@@ -226,10 +262,14 @@ jobs:
             // The Apple XCTests still run in Build All Platforms.
             const checks = checksRunId ? process.env.CHECKS_CONCLUSION : 'running';
             const statuses = rows.map(statusOf);
-            const buildsPassed = Boolean(buildRunId) && statuses.every(s => s === 'success');
+            // The Apple tests row counts with the tests below, not the builds.
+            const builds = rows.filter(row => !row.tests);
+            const buildsPassed = Boolean(buildRunId) && builds.every(row => notRun(row.job) || statusOf(row) === 'success');
+            const nothingBuilt = Boolean(buildRunId) && builds.every(row => notRun(row.job));
+            const someNotRun = builds.some(row => notRun(row.job));
             // Without outcomes.json the Apple XCTests are unaccounted for too.
             const buildResultsMissing = Boolean(buildRunId) && !outcomes;
-            const appleTestsPassed = !buildRunId || outcomes?.apple_tests === 'success';
+            const appleTestsPassed = !buildRunId || outcomes?.apple_tests === 'success' || notRun('apple_tests');
             const testsPassed = checks === 'success' && Boolean(tests) && appleTestsPassed;
             const passed = buildsPassed && testsPassed;
 
@@ -327,12 +367,24 @@ jobs:
               summary = testsPassed
                 ? 'The analyzer and tests passed. The platform builds are still running, this comment updates when they finish.'
                 : 'The analyzer or tests failed. The platform builds are still running, this comment updates when they finish.';
+            } else if (nothingBuilt) {
+              // No platform was planned, so the headline is the Checks result.
+              headline = checks === 'running' ? '## ⏳ Checks Running' : testsPassed ? '## ✅ Checks Passed' : '## ❌ Checks Failed';
+              summary = checks === 'running'
+                ? 'The analyzer and tests are still running. No platform was built for this commit, add a `ci:` label to build one.'
+                : testsPassed
+                  ? 'The analyzer and tests passed. No platform was built for this commit, add a `ci:` label to build one.'
+                  : 'The analyzer or tests failed. No platform was built for this commit, add a `ci:` label to build one.';
             } else if (checks === 'running' && buildsPassed) {
               headline = '## ⏳ Checks Running';
-              summary = 'All platform builds passed. The analyzer and tests are still running, this comment updates when they finish.';
+              summary = someNotRun
+                ? 'The platforms that were built passed. The analyzer and tests are still running, this comment updates when they finish.'
+                : 'All platform builds passed. The analyzer and tests are still running, this comment updates when they finish.';
             } else if (passed) {
               headline = '## ✅ Build Successful';
-              summary = 'All platform builds and tests passed. You can download the test artifacts below.';
+              summary = someNotRun
+                ? 'The platforms that were built passed, and so did the tests. The others need a `ci:` label to build.'
+                : 'All platform builds and tests passed. You can download the test artifacts below.';
             } else if (buildResultsMissing) {
               const checksPassed = checks === 'success' && Boolean(tests);
               headline = checksPassed ? '## ⚠️ Build Results Missing' : '## ❌ Checks Failed';
@@ -340,7 +392,9 @@ jobs:
                 'Build All Platforms finished without reporting its results. Any platform without an artifact and the Apple tests are unaccounted for. Check the build run.';
             } else if (buildsPassed) {
               headline = '## ❌ Checks Failed';
-              summary = 'All platform builds passed, but the test run did not.';
+              summary = someNotRun
+                ? 'The platforms that were built passed, but the test run did not.'
+                : 'All platform builds passed, but the test run did not.';
             } else {
               headline = '## ❌ Build Failed';
               summary = 'One or more platform builds failed. Artifacts are listed for the platforms that did build.';
@@ -362,7 +416,7 @@ jobs:
               '| Platform | Status | Artifact |',
               '|---|---|---|',
               ...rows.map((row, i) =>
-                `| **${row.platform}** | ${badge[statuses[i]] || '⚠️ Skipped'} | ${artifactCell(row)} |`),
+                `| **${row.platform}** | ${notRun(row.job) ? notRunText(row.job) : (badge[statuses[i]] || '⚠️ Skipped')} | ${artifactCell(row)} |`),
               '',
               '| Property | Value |',
               '|---|---|',

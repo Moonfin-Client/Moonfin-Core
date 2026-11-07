@@ -40,6 +40,8 @@ Every Android command takes a `--flavor`, and the per-platform build commands ar
 
 Reviews happen in the pull request. If something is asked of you, reply there, even if it's to disagree.
 
+The platform builds run in the merge queue after approval, not on every push. If you need a build earlier, for example to try it on a device, ask for a `ci:android`, `ci:apple`, `ci:windows`, `ci:linux` or `ci:web` label, or `ci:full` for all of them. That platform then builds on every push and the bot comment links its artifacts.
+
 ## Reporting bugs
 
 Use the issue forms, they ask for what we need to reproduce the problem. UI bugs need a screenshot or recording and playback bugs need a diagnostic log, which you capture from Settings > About > Diagnostics & Logging as described on [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs). A bot labels issues that are missing them, and nothing happens on those until the evidence arrives. Check [Common Problems](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Common-Problems) first, the fix may already be written up.
