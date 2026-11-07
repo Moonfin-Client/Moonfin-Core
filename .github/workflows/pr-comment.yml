@@ -84,6 +84,16 @@ jobs:
           run-id: ${{ steps.runs.outputs.checks_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download touched-lines results
+        if: steps.runs.outputs.checks_run_id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          name: delta-results
+          path: delta-results
+          run-id: ${{ steps.runs.outputs.checks_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download Apple test results
         if: steps.runs.outputs.build_run_id != ''
         continue-on-error: true
@@ -260,6 +270,57 @@ jobs:
               }
             }
 
+            // The delta job's advisory findings on the lines this pull request
+            // touched. Each file is missing when its script crashed, and the
+            // whole section when Checks hasn't finished. Nothing here changes
+            // the headline.
+            const listOf = (part) => (part && Array.isArray(part.items) ? part.items : [])
+              .filter(item => item && typeof item === 'object');
+            const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+            const diagnostics = readJson('delta-results/diagnostics.json');
+            const format = readJson('delta-results/format.json');
+            const l10n = readJson('delta-results/l10n.json');
+            const deltaLines = [];
+            if (diagnostics || format) {
+              const diagCount = clamp(diagnostics?.count);
+              const hunkCount = clamp(format?.hunks);
+              if (diagnostics && format && diagCount === 0 && hunkCount === 0) {
+                deltaLines.push('**Touched lines** ✅ no new diagnostics, formatted');
+              } else {
+                const counts = [
+                  diagnostics ? plural(diagCount, 'new diagnostic', 'new diagnostics') : 'analyzer check did not run',
+                  format ? plural(hunkCount, 'format hunk', 'format hunks') : 'format check did not run',
+                ];
+                deltaLines.push(`**Touched lines** ⚠️ ${counts.join(', ')}`);
+                const shown = [
+                  ...listOf(diagnostics).slice(0, 30).map(d =>
+                    `- \`${escapeText(`${d.file}:${clamp(d.line)} ${d.code} ${d.message}`)}\``),
+                  ...listOf(format).slice(0, 30).map(f =>
+                    `- \`${escapeText(`${f.file}:${clamp(f.line)}`)}\` dart format would change this`),
+                ];
+                const hidden = diagCount + hunkCount - shown.length;
+                if (hidden > 0) shown.push(`- and ${hidden} more, see the delta job log`);
+                if (shown.length > 0) {
+                  deltaLines.push('', '<details><summary>Touched lines</summary>', '', ...shown, '', '</details>');
+                }
+              }
+            }
+            const l10nItems = listOf(l10n).slice(0, 30);
+            if (l10nItems.length > 0) {
+              if (deltaLines.length > 0) deltaLines.push('');
+              deltaLines.push(`**Localization** ⚠️ ${plural(clamp(l10n.count), 'finding', 'findings')}`);
+              // The message is outside a code span, so markdown and HTML
+              // characters are escaped as well.
+              const escapeProse = (value) => escapeText(value).replace(/[\\<>[\]*_~#!]/g, c => `\\${c}`);
+              const shown = l10nItems.map(item => {
+                const subject = String(item.file_or_key ?? '');
+                const message = String(item.message ?? '');
+                const rest = message.startsWith(`${subject}: `) ? message.slice(subject.length + 2) : message;
+                return `- \`${escapeText(subject)}\`: ${escapeProse(rest)}`;
+              });
+              deltaLines.push('', '<details><summary>Localization</summary>', '', ...shown, '', '</details>');
+            }
+
             // Checks usually reports first, Build All Platforms takes longer.
             let headline;
             let summary;
@@ -298,6 +359,7 @@ jobs:
               summary,
               '',
               ...testLines,
+              ...(deltaLines.length > 0 ? ['', ...deltaLines] : []),
               '',
               '| Platform | Status | Artifact |',
               '|---|---|---|',
