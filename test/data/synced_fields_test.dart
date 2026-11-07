@@ -57,6 +57,7 @@ void main() {
     'continueWatchingDefaultAction',
     'crashReportsEnabled',
     'customThemeId',
+    'dateFormat',
     'defaultAudioLanguage',
     'defaultDownloadQuality',
     'defaultFavoritesFilter',

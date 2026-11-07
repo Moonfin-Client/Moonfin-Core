@@ -53,6 +53,12 @@ permissions:
   contents: write
   actions: read
 
+# A new push to a pull request replaces its running build. Every other run
+# gets a group of its own, so tags and manual runs never queue or cancel.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   # checks.yml and gradle-cache.yml read this line with sed, so keep it on
   # one line in this form.
