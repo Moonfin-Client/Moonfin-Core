@@ -67,8 +67,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  # checks.yml and gradle-cache.yml read this line with sed, so keep it on
-  # one line in this form.
+  # checks.yml reads this line with sed, so keep it on one line in this
+  # form.
   FLUTTER_VERSION: '3.47.2'
   # A tag on the tvOS Flutter fork, built on the version above. Bump it with
   # FLUTTER_VERSION.
@@ -167,16 +167,16 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # Restores the Gradle cache gradle-cache.yml saves on main, so a PR run
-      # doesn't download every dependency from Maven Central, which refuses
-      # the shared runner IPs (429/403). Restore only: the warmer is the one
-      # writer, so an entry under its key always holds what this release build
-      # and the kotlin tests resolve. When a PR changes a hashed file,
-      # restore-keys falls back to main's entry for the same Flutter version.
-      # Robolectric fetches its android-all jars into ~/.m2, not through
-      # Gradle, so that is cached too. Keep path, key and restore-keys the
-      # same here, in the kotlin suite in checks.yml and in gradle-cache.yml,
-      # or the keys stop matching.
+      # Restores the Gradle cache the kotlin suite in checks.yml saves on main,
+      # so a PR run doesn't download every dependency from Maven Central,
+      # which refuses the shared runner IPs (429/403). Restore only: that
+      # suite is the one writer, so an entry under its key always holds what
+      # this release build and the kotlin tests resolve. When a PR changes a
+      # hashed file, restore-keys falls back to main's entry for the same
+      # Flutter version. Robolectric fetches its android-all jars into ~/.m2,
+      # not through Gradle, so that is cached too. Keep path, key and
+      # restore-keys the same here and in the kotlin suite in checks.yml, or
+      # the keys stop matching.
       - uses: actions/cache/restore@v5
         with:
           path: |
@@ -611,7 +611,9 @@ jobs:
 
       # vcpkg builds libarchive and its dependencies from source, OpenSSL
       # included, which took about 13 minutes of every run. Its binary cache
-      # skips that once a run on main or an earlier run of the same PR saved it.
+      # skips that once the warm-vcpkg job in checks.yml saved it on main, or
+      # an earlier run of the same PR did. Keep the version step, path, key
+      # and restore-keys the same as there.
       - name: Find the runner's vcpkg and image versions
         id: vcpkg
         shell: pwsh
@@ -735,7 +737,9 @@ jobs:
 
       # vcpkg builds libarchive and its dependencies from source, OpenSSL
       # included, which took about 13 minutes of every run. Its binary cache
-      # skips that once a run on main or an earlier run of the same PR saved it.
+      # skips that once the warm-vcpkg job in checks.yml saved it on main, or
+      # an earlier run of the same PR did. Keep the version step, path, key
+      # and restore-keys the same as there.
       - name: Find the runner's vcpkg and image versions
         id: vcpkg
         shell: pwsh
@@ -1058,8 +1062,11 @@ jobs:
 
           # Test output can contain lines that read as workflow commands
           # (an early ::endgroup:: for one), so commands are off while it prints.
+          # The group header goes out before that, so the label (a test name)
+          # is squashed onto one line in case it carries a newline.
           token = secrets.token_hex(16)
           for label, text in details[:50]:
+              label = ' '.join(label.split())
               print(f'::group::{label}')
               print(f'::stop-commands::{token}')
               print(text)

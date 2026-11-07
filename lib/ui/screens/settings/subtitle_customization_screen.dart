@@ -10,7 +10,6 @@ import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/platform_detection.dart';
-import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -555,50 +554,33 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
     _pickerOpen = true;
     final l10n = AppLocalizations.of(context);
     final current = _binding.value;
-    final isTV = PlatformDetection.isTV;
     final preview = SettingsPreviewScope.maybeOf(context);
     final key = widget.preference.key;
     final entries = widget.allowTransparent
         ? subtitlePresetColors.entries
         : subtitlePresetColors.entries.where((e) => Color(e.value).a > 0);
-    var picked = false;
-    final result = await showFocusRestoringDialog<int>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) => SimpleDialog(
-        title: Text(widget.title),
-        children: entries.map((e) {
-          final selected = e.value == current;
-          return settingsPreviewOption(
-            onTry: preview == null
-                ? null
-                : () => preview.tryValue(key, e.value),
-            child: TvFocusHighlight(
-              builder: (_, _) => ListTile(
-                autofocus: isTV && selected,
-                leading: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Color(e.value),
-                    shape: BoxShape.circle,
-                    border: Border.fromBorderSide(
-                      ThemeRegistry.active.borders.chipBorder,
-                    ),
-                  ),
-                ),
-                title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  if (picked) return;
-                  picked = true;
-                  Navigator.pop(ctx, e.value);
-                },
-              ),
-            ),
-          );
-        }).toList(),
+    final names = {for (final e in entries) e.value: e.key};
+    final result = await showSettingsPicker<int>(
+      context,
+      title: widget.title,
+      values: names.keys.toList(),
+      current: current,
+      labelOf: (v) {
+        final name = names[v]!;
+        return subtitleColorLabel(name, l10n) ?? name;
+      },
+      leadingOf: (v) => Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          color: Color(v),
+          shape: BoxShape.circle,
+          border: Border.fromBorderSide(
+            ThemeRegistry.active.borders.chipBorder,
+          ),
+        ),
       ),
+      onTry: preview == null ? null : (v, _) => preview.tryValue(key, v),
     );
     preview?.clearTry(key);
     if (!mounted) return;

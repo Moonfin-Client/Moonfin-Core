@@ -372,61 +372,31 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
     final l10n = AppLocalizations.of(context);
     final preview = SettingsPreviewScope.maybeOf(context);
     final prefKey = UserPreferences.navbarColor.key;
-    final selectedIndex = _keys.indexWhere((e) => e == current);
-    final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
-    final result = await showFocusRestoringDialog<String>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) {
-        final closeOnce = createDialogBackCloseHandler(ctx);
-        return Focus(
-          canRequestFocus: false,
-          skipTraversal: true,
-          onKeyEvent: (_, event) {
-            if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
-            if (event is KeyDownEvent || event is KeyUpEvent) {
-              closeOnce();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: SimpleDialog(
-            title: Text(l10n.navbarColor),
-            children: _keys.asMap().entries.map((entry) {
-              final i = entry.key;
-              final key = entry.value;
-              final selected = key == current;
-              final swatch = _swatchColor(key);
-              return settingsPreviewOption(
-                onTry: preview == null
-                    ? null
-                    : () => preview.tryValue(prefKey, key),
-                child: TvFocusHighlight(
-                  builder: (_, _) => ListTile(
-                    autofocus: i == autofocusIndex,
-                    leading: Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: swatch,
-                        shape: BoxShape.circle,
-                        border: Border.fromBorderSide(
-                          ThemeRegistry.active.borders.chipBorder.copyWith(
-                            color: _swatchBorder(swatch),
-                          ),
-                        ),
-                      ),
-                    ),
-                    title: Text(_labelFor(key, l10n)),
-                    trailing: selected ? const Icon(Icons.check) : null,
-                    onTap: () => Navigator.pop(ctx, key),
-                  ),
-                ),
-              );
-            }).toList(),
+    final result = await showSettingsPicker<String>(
+      context,
+      title: l10n.navbarColor,
+      values: _keys,
+      current: current,
+      labelOf: (key) => _labelFor(key, l10n),
+      leadingOf: (key) {
+        final swatch = _swatchColor(key);
+        return Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: swatch,
+            shape: BoxShape.circle,
+            border: Border.fromBorderSide(
+              ThemeRegistry.active.borders.chipBorder.copyWith(
+                color: _swatchBorder(swatch),
+              ),
+            ),
           ),
         );
       },
+      onTry: preview == null
+          ? null
+          : (key, _) => preview.tryValue(prefKey, key),
     );
     preview?.clearTry(prefKey);
 
@@ -506,48 +476,13 @@ class _ShuffleContentTypePickerTileState
     if (_pickerOpen) return;
     _pickerOpen = true;
     final l10n = AppLocalizations.of(context);
-    final entries = _labels.toList();
-    final normalizedCurrent = _normalize(current);
-    final selectedIndex = entries.indexWhere((e) => e == normalizedCurrent);
-    final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
     try {
-      final result = await showFocusRestoringDialog<String>(
-        context: context,
-        useRootNavigator: false,
-        builder: (ctx) {
-          final closeOnce = createDialogBackCloseHandler(ctx);
-          return Focus(
-            canRequestFocus: false,
-            skipTraversal: true,
-            onKeyEvent: (_, event) {
-              if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
-              if (event is KeyDownEvent || event is KeyUpEvent) {
-                closeOnce();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: FocusScope(
-              autofocus: true,
-              child: SimpleDialog(
-                title: Text(l10n.settingsShuffleContentTypeFilter),
-                children: entries.asMap().entries.map((entry) {
-                  final i = entry.key;
-                  final value = entry.value;
-                  final selected = value == normalizedCurrent;
-                  return TvFocusHighlight(
-                    builder: (_, _) => ListTile(
-                      autofocus: i == autofocusIndex,
-                      title: Text(_label(value, l10n)),
-                      trailing: selected ? const Icon(Icons.check) : null,
-                      onTap: () => Navigator.pop(ctx, value),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          );
-        },
+      final result = await showSettingsPicker<String>(
+        context,
+        title: l10n.settingsShuffleContentTypeFilter,
+        values: _labels.toList(),
+        current: _normalize(current),
+        labelOf: (value) => _label(value, l10n),
       );
 
       if (!mounted || result == null || result == _binding.value) return;

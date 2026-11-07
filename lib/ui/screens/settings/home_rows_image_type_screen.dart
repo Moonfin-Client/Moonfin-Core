@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
@@ -8,9 +7,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/focus/dpad_keys.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
-import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../../util/signed_in_server_features.dart';
@@ -249,52 +246,13 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
     if (_pickerOpen) return;
     _pickerOpen = true;
     final l10n = AppLocalizations.of(context);
-    final values = ImageType.values.toList();
-    final selectedIndex = values.indexOf(current);
-    final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
     try {
-      final result = await showFocusRestoringDialog<ImageType>(
-        context: context,
-        useRootNavigator: false,
-        builder: (ctx) {
-          final closeOnce = createDialogBackCloseHandler(ctx);
-          var picked = false;
-          return Focus(
-            canRequestFocus: false,
-            skipTraversal: true,
-            onKeyEvent: (_, event) {
-              if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
-              if (event is KeyDownEvent || event is KeyUpEvent) {
-                closeOnce();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: FocusScope(
-              autofocus: true,
-              child: SimpleDialog(
-                title: Text(l10n.imageType),
-                children: values.asMap().entries.map((entry) {
-                  final i = entry.key;
-                  final v = entry.value;
-                  final selected = v == current;
-                  return TvFocusHighlight(
-                    builder: (_, _) => ListTile(
-                      autofocus: i == autofocusIndex,
-                      title: Text(_imageTypeLabel(v, l10n)),
-                      trailing: selected ? const Icon(Icons.check) : null,
-                      onTap: () {
-                        if (picked) return;
-                        picked = true;
-                        Navigator.pop(ctx, v);
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          );
-        },
+      final result = await showSettingsPicker<ImageType>(
+        context,
+        title: l10n.imageType,
+        values: ImageType.values,
+        current: current,
+        labelOf: (v) => _imageTypeLabel(v, l10n),
       );
       if (result != null && result != current) {
         await onSelected(result);

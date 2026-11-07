@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:server_core/server_core.dart';
 import 'package:server_jellyfin/src/api/jellyfin_users_api.dart';
 import 'package:test/test.dart';
 
@@ -34,6 +35,28 @@ class _FakeServer extends Interceptor {
 Dio _dio(_FakeServer server) => Dio()..interceptors.add(server);
 
 void main() {
+  group('updateUserConfiguration', () {
+    test('logs the library ids when the server turns the body down', () async {
+      final logged = <String>[];
+      ServerLog.sink = (category, level, message, {error}) =>
+          logged.add(message);
+      addTearDown(() => ServerLog.sink = null);
+      final server = _FakeServer(400, {
+        'title': 'One or more validation errors occurred.',
+      });
+      final config = UserConfiguration.fromJson({
+        'MyMediaExcludes': ['not-a-guid'],
+      });
+
+      await expectLater(
+        JellyfinUsersApi(_dio(server)).updateUserConfiguration(config),
+        throwsA(isA<DioException>()),
+      );
+      expect(logged.single, contains('rejected with 400'));
+      expect(logged.single, contains('MyMediaExcludes: [not-a-guid]'));
+    });
+  });
+
   group('getAccessSchedules', () {
     test(
       'reads the user by id, which still answers outside the schedule',

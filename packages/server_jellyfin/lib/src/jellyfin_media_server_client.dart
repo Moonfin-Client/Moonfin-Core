@@ -72,6 +72,17 @@ class JellyfinMediaServerClient extends MediaServerClient {
     return _progressPings % _progressPingLogInterval == 1;
   }
 
+  static String _clientErrorBody(Response<dynamic>? response) {
+    final status = response?.statusCode ?? 0;
+    final data = response?.data;
+    if (status < 400 || status >= 500 || (data is! String && data is! Map)) {
+      return '';
+    }
+    final text = '$data'.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (text.isEmpty) return '';
+    return ' ${text.length > 500 ? '${text.substring(0, 500)}...' : text}';
+  }
+
   void _setupInterceptors() {
     _dio.interceptors.add(redirectInterceptor(_dio));
     _dio.interceptors.add(InterceptorsWrapper(
@@ -98,7 +109,8 @@ class JellyfinMediaServerClient extends MediaServerClient {
       onError: (error, handler) {
         ServerLog.network(
           '✗ ${error.requestOptions.method} ${error.requestOptions.uri} '
-          '(${error.response?.statusCode ?? error.type.name})',
+          '(${error.response?.statusCode ?? error.type.name})'
+          '${_clientErrorBody(error.response)}',
           level: ServerLogLevel.error,
           error: error.message ?? error.toString(),
         );

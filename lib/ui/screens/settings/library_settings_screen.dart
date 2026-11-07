@@ -116,6 +116,11 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
       } catch (_) {
         if (!mounted || opId != _lastQueuedOpId) return;
         setState(() => _config = config);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).friendsSaveFailed),
+          ),
+        );
       }
     });
     return _saveQueue;
