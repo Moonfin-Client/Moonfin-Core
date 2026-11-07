@@ -656,6 +656,7 @@ class PlexItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async {
     final container = await plexContainer(
       _dio,

@@ -11,6 +11,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
@@ -19,6 +20,7 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_cues.dart';
 
 class NativeApplePlayerBackend
     with SubtitleDelayState, AppleSecondarySubtitleControls
@@ -202,11 +204,13 @@ class NativeApplePlayerBackend
       case 'setSubtitlePosition':
       case 'selectSecondarySubtitle':
       case 'setSecondarySubtitleDelay':
+      case 'loadSubtitleCues':
       case 'configureSecondarySubtitleStyle':
       case 'setSpeed':
       case 'setBitrate':
       case 'selectChannel':
       case 'openGuide':
+      case 'guideButton':
       case 'record':
       case 'messageAction':
       case 'toggleOrientation':
@@ -429,6 +433,7 @@ class NativeApplePlayerBackend
       'subtitleRendererMode': _modeToWire(_requestedSubtitleRendererMode),
       'forceSubtitlesDisabledOnStart':
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
+      ...appleTvCadenceArgs(_prefs),
     });
   }
 
@@ -769,6 +774,19 @@ class NativeApplePlayerBackend
 
   Future<void> showRemoteSubtitles(List<Map<String, dynamic>> results) async {
     await _invoke<void>('showRemoteSubtitles', {'results': results});
+  }
+
+  /// The lines of the subtitle track the delay panel moves, for its timeline.
+  Future<void> showSubtitleCues(
+    List<SubtitleCue> cues, {
+    required bool secondary,
+  }) async {
+    await _invoke<void>('showSubtitleCues', {
+      'secondary': secondary,
+      'cues': [
+        for (final cue in cues) [cue.start, cue.end, cue.text],
+      ],
+    });
   }
 
   Future<void> showSubtitleProgress(String message) async {

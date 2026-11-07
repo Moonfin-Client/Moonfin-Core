@@ -987,7 +987,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "Aucun livre trouvé pour cet auteur.",
+    "noBooksFound": "Aucun livre trouvé",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -1255,7 +1255,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Rechercher avec le plugin OpenSubtitles",
+    "searchOpenSubtitlesPlugin": "Rechercher avec OpenSubtitles",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -6384,7 +6384,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay nécessite un serveur Jellyfin. Le serveur actuel ne le prend pas en charge.",
     "syncPlayGroupFallbackName": "Groupe SyncPlay",
     "syncPlayGroupTooltip": "Groupe SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {{count} participant} other {{count} participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6424,9 +6424,9 @@
     "syncPlayJoinGroupWarning": "Rejoindre un groupe SyncPlay peut remplacer votre lecture en cours. Continuer ?",
     "syncPlayJoin": "Rejoindre",
     "syncPlayStateIdle": "Inactif",
-    "syncPlayStateWaiting": "En attendant",
+    "syncPlayStateWaiting": "En attente",
     "syncPlayStatePaused": "En pause",
-    "syncPlayStatePlaying": "Jouant",
+    "syncPlayStatePlaying": "En lecture",
     "syncPlayUserJoinedGroup": "{userName} a rejoint le groupe SyncPlay",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
@@ -9097,7 +9097,7 @@
     "@trailerCaptions": {
         "description": "Setting for YouTube trailer captions"
     },
-    "trailerCaptionsDescription": "Afficher les sous-titres des bandes-annonces YouTube dans la barre média",
+    "trailerCaptionsDescription": "Affiche les sous-titres des bandes-annonces YouTube",
     "@trailerCaptionsDescription": {
         "description": "Description for YouTube trailer captions"
     },
@@ -11050,7 +11050,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Affiche les badges de disponibilité des saisons sur les écrans de détails des médias",
+    "showSeerrAvailabilityBadgesDescription": "Affiche le statut Seerr sur les affiches et les saisons dans toute l'application",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -13443,7 +13443,7 @@
     "@preferredSecondarySubtitleLanguage": {
         "description": "Preferred language used to sort secondary subtitle tracks in the picker. It doesn't turn subtitles on."
     },
-    "primarySubtitleSlot": "Principal",
+    "primarySubtitleSlot": "Piste principale",
     "@primarySubtitleSlot": {
         "description": "Label for the primary subtitle selection slot"
     },
@@ -13451,7 +13451,7 @@
     "@secondarySubtitleSlot": {
         "description": "Label for the secondary subtitle selection slot"
     },
-    "secondarySubtitleTrack": "Piste de sous-titres secondaire",
+    "secondarySubtitleTrack": "Sous-titres secondaires",
     "@secondarySubtitleTrack": {
         "description": "Title of the picker for the secondary subtitle track"
     },
@@ -14782,5 +14782,2504 @@
     "animeMarkerDubbedShort": "Dub",
     "@animeMarkerDubbedShort": {
         "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "Sub/Dub",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "signingIn": "Identification en cours…",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "signedInOnThisDevice": "Session ouverte sur cet appareil",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "Code PIN requis",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Mot de passe requis",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Continuer en tant que {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Basculer vers {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Connecté en tant que {user} sur {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Actif",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStyleStage": "Scène",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Première",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "detailScreenStyleQuickLook": "Coup d'œil",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Givre",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Ouvrir la page complète",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Retour pour fermer",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} sur {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "keyboardStyle": "Style du clavier",
+    "@keyboardStyle": {
+        "description": "Label for the setting that picks how the on-screen keyboard looks, or whether the TV's own keyboard is used"
+    },
+    "keyboardStyleDescription": "Natif utilise le clavier de votre téléviseur. Classique correspond au clavier Moonfin d'origine. Glass est un panneau dépoli avec de plus grandes touches. Dock occupe le bas de l'écran et affiche ce que vous saisissez au-dessus des touches.",
+    "@keyboardStyleDescription": {
+        "description": "Explanation under the keyboard style setting"
+    },
+    "keyboardStyleNative": "Natif",
+    "@keyboardStyleNative": {
+        "description": "Keyboard style option: the TV or device's own system keyboard"
+    },
+    "keyboardStyleClassic": "Classique",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "keyboardStyleDocked": "Dock",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "keyboardSpace": "espace",
+    "@keyboardSpace": {
+        "description": "Label on the on-screen keyboard's space bar, lowercase like a printed key"
+    },
+    "keyboardHoldForAccents": "maintenir pour les accents",
+    "@keyboardHoldForAccents": {
+        "description": "On-screen keyboard hint next to an OK button cap: holding OK on a letter shows its accented versions"
+    },
+    "keyboardClose": "fermer",
+    "@keyboardClose": {
+        "description": "On-screen keyboard hint next to a Back button cap, lowercase like the hold for accents hint: Back closes the keyboard"
+    },
+    "signInWithPlex": "Se connecter avec Plex",
+    "@signInWithPlex": {
+        "description": "Plex sign-in option label and title of the Plex sign-in screen"
+    },
+    "plexLinkInstructions": "Rendez-vous sur plex.tv/link depuis n'importe quel appareil et saisissez ce code",
+    "@plexLinkInstructions": {
+        "description": "Instructions above the code on the Plex sign-in screen"
+    },
+    "plexOpenLink": "Ouvrir plex.tv/link",
+    "@plexOpenLink": {
+        "description": "Button that opens plex.tv/link in the browser with the code filled in"
+    },
+    "plexWaitingForApproval": "En attente de votre approbation du code…",
+    "@plexWaitingForApproval": {
+        "description": "Status shown while the app waits for the Plex code to be approved"
+    },
+    "plexSignInWithPassword": "Se connecter avec un mot de passe",
+    "@plexSignInWithPassword": {
+        "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+    },
+    "plexVerificationCode": "Code de vérification",
+    "@plexVerificationCode": {
+        "description": "Field for the account's two-step verification code, shown once Plex asks for it"
+    },
+    "plexNoServers": "Aucun serveur Plex trouvé sur ce compte",
+    "@plexNoServers": {
+        "description": "Shown when the Plex account has no servers"
+    },
+    "noOtherAudioTracks": "Aucune autre piste audio",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "bookReadingUnavailableTitle": "Impossible de lire des livres sur Apple TV",
+    "@bookReadingUnavailableTitle": {
+        "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
+    },
+    "bookReadingUnavailableMessage": "Ouvrez ce titre dans Moonfin sur un téléphone, une tablette ou un ordinateur pour le lire. La lecture des livres audio reste possible ici.",
+    "@bookReadingUnavailableMessage": {
+        "description": "Body of the dialog shown on Apple TV when the user tries to open a book or comic"
+    },
+    "seriesRecordingSkipsShowing": "L'enregistrement de la série ignorera cette diffusion",
+    "@seriesRecordingSkipsShowing": {
+        "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+    },
+    "seriesRecordingEpisodesQuestion": "Quels épisodes enregistrer ?",
+    "@seriesRecordingEpisodesQuestion": {
+        "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+    },
+    "seriesRecordingAllEpisodes": "Tous les épisodes",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "seriesRecordingAllEpisodesDescription": "Toutes les diffusions, rediffusions comprises",
+    "@seriesRecordingAllEpisodesDescription": {
+        "description": "Explains the All Episodes series recording choice"
+    },
+    "seriesRecordingNotRecordedEpisodes": "Épisodes pas encore enregistrés",
+    "@seriesRecordingNotRecordedEpisodes": {
+        "description": "Series recording choice that skips episodes already in the library"
+    },
+    "seriesRecordingNotRecordedEpisodesDescription": "Ignore les épisodes déjà présents dans votre bibliothèque et n'enregistre chaque épisode qu'une seule fois",
+    "@seriesRecordingNotRecordedEpisodesDescription": {
+        "description": "Explains the Episodes Not Already Recorded series recording choice"
+    },
+    "seriesRecordingNewEpisodesOnly": "Nouveaux épisodes uniquement",
+    "@seriesRecordingNewEpisodesOnly": {
+        "description": "Series recording choice that records only first airings"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "Premières diffusions uniquement, sans rediffusion",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "Paramètres de la série",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "Enregistrement de la série mis à jour",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "Impossible de modifier l'enregistrement de la série",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "playerMatchingDisplayRate": "Adaptation de l'affichage à {fps} fps…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "seasonalFollower": "Suiveur de sélection",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Un élément saisonnier, comme la planchette de Ouija d'Halloween, suit ce que vous sélectionnez sur l'écran d'accueil",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "Un élément saisonnier, comme la planchette de Ouija d'Halloween, remplace le pointeur de la souris sur l'écran d'accueil",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "invertGestureIndicators": "Inverser les indicateurs de geste",
+    "@invertGestureIndicators": {
+        "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+    },
+    "invertGestureIndicatorsDescription": "Place les indicateurs de luminosité et de volume du même côté que le glissement ou du côté opposé",
+    "@invertGestureIndicatorsDescription": {
+        "description": "Description explaining gesture indicator placement relative to the swipe side"
+    },
+    "gestureIndicatorSame": "Même côté",
+    "@gestureIndicatorSame": {
+        "description": "Option to display gesture indicators on the same side as the swipe"
+    },
+    "gestureIndicatorInverted": "Côté opposé",
+    "@gestureIndicatorInverted": {
+        "description": "Option to display gesture indicators on the opposite side from the swipe"
+    },
+    "detailSectionSeerrStreaming": "Services de streaming",
+    "@detailSectionSeerrStreaming": {
+        "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
+    },
+    "seerrStreamingOn": "En streaming sur",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "detailSectionPersonLinks": "Liens",
+    "@detailSectionPersonLinks": {
+        "description": "Details screen section: buttons that open a person's IMDb, TMDB and social media pages"
+    },
+    "detailSectionPersonLinksSubtitle": "IMDb, TMDB et réseaux sociaux",
+    "@detailSectionPersonLinksSubtitle": {
+        "description": "Subtitle under the person links section switch"
+    },
+    "radarrCalendarRow": "Films à venir (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Séries à venir (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Sorties à venir",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Calendriers Radarr et Sonarr",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Calendrier Radarr",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Calendrier Sonarr",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Aujourd'hui} one{Demain} other{Dans {days} jours}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Cinéma",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Numérique",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Physique",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Calendriers des sorties",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Afficher ou masquer les calendriers des sorties de Radarr/Sonarr.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "enableRadarrCalendar": "Activer le calendrier des sorties de Radarr",
+    "@enableRadarrCalendar": {
+        "description": "Turns on the Radarr calendar home row"
+    },
+    "radarrCalendarShowCinema": "Afficher les sorties cinéma à venir",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Afficher les sorties numériques à venir",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Afficher les sorties physiques à venir",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "calendarShowReleaseDate": "Afficher la date de sortie sur l'écran d'accueil",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Masquer les films déjà présents sur le serveur",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "enableSonarrCalendar": "Activer le calendrier des sorties de Sonarr",
+    "@enableSonarrCalendar": {
+        "description": "Turns on the Sonarr calendar home row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Afficher les informations de l'épisode",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Masquer les épisodes déjà présents sur le serveur",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Fusionner les calendriers Sonarr et Radarr",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "transcodeAudioCodecs": "Codecs audio à transcoder",
+    "@transcodeAudioCodecs": {
+        "description": "Setting that lists the audio codecs the server converts instead of the device playing them"
+    },
+    "transcodeAudioCodecsDescription": "Le serveur convertit l'audio encodé dans ces formats au lieu de l'envoyer tel quel.",
+    "@transcodeAudioCodecsDescription": {
+        "description": "Description for the transcode audio codecs setting"
+    },
+    "secondarySubtitlesEnabledSubtitle": "Affiche une deuxième piste de sous-titres en même temps. Le menu des sous-titres demande alors d'abord la piste principale ou secondaire",
+    "@secondarySubtitlesEnabledSubtitle": {
+        "description": "Subtitle of the setting that turns secondary subtitles on, explaining the extra step it adds to the subtitle menu"
+    },
+    "secondaryDelayAdjustment": "Décalage des sous-titres secondaires",
+    "@secondaryDelayAdjustment": {
+        "description": "Title of the secondary subtitle delay menu. This adjustment is added to the primary subtitle delay."
+    },
+    "showLibrariesIndividually": "Afficher les bibliothèques individuellement",
+    "@showLibrariesIndividually": {
+        "description": "Setting that puts each library in the navigation bar as its own button instead of grouping them under the Libraries menu"
+    },
+    "showLibrariesIndividuallySubtitle": "Affiche chaque bibliothèque comme un bouton de la barre de navigation, au lieu du menu Bibliothèques",
+    "@showLibrariesIndividuallySubtitle": {
+        "description": "Subtitle for the Show Libraries Individually setting"
+    },
+    "peekHomeRows": "Aperçu des rangées d'accueil",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "peekHomeRowsDescription": "Affiche la moitié supérieure de la première rangée en bas de la barre média",
+    "@peekHomeRowsDescription": {
+        "description": "Description of the Peek Home Rows media bar setting"
+    },
+    "mediaBarSourceNewReleases": "Nouvelles saisons et nouveaux épisodes",
+    "@mediaBarSourceNewReleases": {
+        "description": "Media bar source: series with episodes that aired recently"
+    },
+    "mediaBarNewReleaseBanner": "Bannière de nouveauté",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags series in the media bar when new episodes aired recently"
+    },
+    "mediaBarNewReleaseBannerDescription": "Signale les séries avec une nouvelle saison ou de nouveaux épisodes diffusés récemment.",
+    "mediaBarNewReleaseDays": "Période de nouveauté",
+    "@mediaBarNewReleaseDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Combien de temps un épisode reste considéré comme nouveau après sa diffusion.",
+    "mediaBarNewSeries": "Nouvelle série",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Nouvelle saison",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Nouveaux épisodes",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "trailerVolume": "Volume des bandes-annonces",
+    "@trailerVolume": {
+        "description": "Setting for how loud media bar trailers play"
+    },
+    "trailerVolumeDescription": "Volume de lecture des bandes-annonces de la barre média",
+    "@trailerVolumeDescription": {
+        "description": "Description for the trailer volume slider"
+    },
+    "previewVolume": "Volume de l'aperçu",
+    "@previewVolume": {
+        "description": "Setting for how loud media previews on cards play"
+    },
+    "previewVolumeDescription": "Volume de lecture des aperçus sur les visuels",
+    "@previewVolumeDescription": {
+        "description": "Description for the preview volume slider"
+    },
+    "continueWatchingDefaultAction": "Action par défaut",
+    "@continueWatchingDefaultAction": {
+        "description": "Setting for default click action on Continue Watching and Next Up items"
+    },
+    "continueWatchingDefaultActionDescription": "Ce que fait la sélection d'un élément « Continuer de regarder » ou « À suivre »",
+    "@continueWatchingDefaultActionDescription": {
+        "description": "Description for Continue Watching and Next Up default click action setting"
+    },
+    "goToDetailsScreen": "Voir les détails",
+    "@goToDetailsScreen": {
+        "description": "Option to navigate to the details screen for an item"
+    },
+    "playImmediately": "Lire immédiatement",
+    "@playImmediately": {
+        "description": "Option to play an item immediately"
+    },
+    "pinSynced": "Code PIN synchronisé",
+    "@pinSynced": {
+        "description": "Shown under the PIN switch when the PIN is kept on the server, so it applies on every device"
+    },
+    "pinResetFailed": "Le code PIN enregistré sur le serveur n'a pas pu être effacé. S'il est toujours actif, demandez à un administrateur du serveur de le supprimer.",
+    "@pinResetFailed": {
+        "description": "Shown on sign in when Forgot PIN could not clear a PIN kept on the server"
+    },
+    "mdblistWatchingNow": "En ce moment sur MDBList",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "mdblistWatchingNowDescription": "Affiche ce que les utilisateurs de MDBList regardent en ce moment",
+    "@mdblistWatchingNowDescription": {
+        "description": "Description for the Watching on MDBList setting"
+    },
+    "watchingNowWatchersCount": "Spectateurs : {count}",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchingNowLiveSummary": "{users} regardent en ce moment · {movies} films · {shows} séries",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} ont regardé aujourd'hui · {movies} films · {shows} séries",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "moonbaseAddress": "Adresse de Moonbase",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "seerrBadgeStyle": "Style de badge",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "« Badge » place la pastille Seerr dans un coin. « Bannière » affiche le statut en bandeau en haut de l'affiche.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Badge",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "stripDolbyVisionHdr10PlusTitle": "Lire en HDR10+ les vidéos qui combinent Dolby Vision et HDR10+",
+    "@stripDolbyVisionHdr10PlusTitle": {
+        "description": "Setting title: drop the Dolby Vision layer from videos that carry both Dolby Vision and HDR10+"
+    },
+    "stripDolbyVisionHdr10PlusSubtitle": "Supprime la couche Dolby Vision des vidéos qui contiennent aussi du HDR10+. À activer si ces vidéos ont du son mais un écran noir.",
+    "@stripDolbyVisionHdr10PlusSubtitle": {
+        "description": "Setting subtitle for dropping Dolby Vision from Dolby Vision plus HDR10+ videos"
+    },
+    "libraryCardTitles": "Titres sous les affiches",
+    "@libraryCardTitles": {
+        "description": "Setting that shows or hides the title and details under each card in library grids"
+    },
+    "libraryCardTitlesDescription": "Affiche le titre et les détails de chaque élément sous son visuel, dans les grilles des bibliothèques.",
+    "@libraryCardTitlesDescription": {
+        "description": "Description of the Titles Under Posters setting"
+    },
+    "sinceYouWatched": "Depuis votre dernier visionnage",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "Depuis votre dernier visionnage",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "Depuis que vous avez regardé « {title} »",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Depuis votre dernier visionnage - Rangée {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Afficher les rangées « Depuis votre dernier visionnage »",
+    "displaySinceYouWatchedRowsSubtitle": "Afficher et personnaliser les rangées « Depuis votre dernier visionnage » dans les sections d'accueil.",
+    "sinceYouWatchedSource": "Source des recommandations",
+    "sinceYouWatchedSourceDescription": "Choisissez la source des recommandations (l'algorithme local « Moonfin recommande », le serveur « Jellyfin recommande » ou les mesures de similarité TMDb. Remarque : les recommandations en ligne nécessitent l'intégration Seerr).",
+    "sinceYouWatchedSourceLocal": "Moonfin recommande",
+    "sinceYouWatchedSourceServer": "Jellyfin recommande",
+    "sinceYouWatchedSourceOnline": "Similarité TMDb",
+    "sinceYouWatchedSourceType": "Type de source",
+    "sinceYouWatchedSourceTypeDescription": "Choisissez le type d'éléments à recommander",
+    "sinceYouWatchedSourceItem": "Élément source",
+    "sinceYouWatchedSourceItemDescription": "Choisissez l'élément source sur lequel baser les recommandations",
+    "sinceYouWatchedRecentlyWatched": "Vu récemment",
+    "sinceYouWatchedNumRows": "Nombre de rangées à ajouter",
+    "sinceYouWatchedNumRowsDescription": "Choisissez le nombre de rangées « Depuis votre dernier visionnage » à afficher (1-5)",
+    "sinceYouWatchedIncludeWatched": "Inclure les éléments déjà vus",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Inclut les éléments déjà vus dans les recommandations",
+    "sorting": "Tri",
+    "imdbRowsSorting": "Tri des rangées IMDb",
+    "imdbRowsSortingDescription": "Triez les rangées IMDb par nom, date de sortie, note, etc.",
+    "imdbRowsSortOrderDescription": "Triez les rangées IMDb par ordre croissant ou décroissant.",
+    "tmdbRowsSorting": "Tri des rangées TMDB",
+    "tmdbRowsSortingDescription": "Trie les rangées TMDB par nom, date de sortie, note, etc.",
+    "tmdbRowsSortOrderDescription": "Trie les rangées TMDB par ordre croissant ou décroissant.",
+    "seerrRowsSorting": "Tri des rangées Seerr",
+    "seerrRowsSortingDescription": "Triez les rangées Seerr par nom, date de sortie, note, etc.",
+    "seerrRowsSortOrderDescription": "Trie les rangées Seerr par ordre croissant ou décroissant.",
+    "externalRowSortDefault": "Par défaut (ordre de la liste)",
+    "externalRowSortName": "Nom",
+    "externalRowSortReleaseDate": "Date de sortie",
+    "externalRowSortRating": "Note",
+    "externalRowSortPopularity": "Popularité",
+    "externalRowSortShuffle": "Aléatoire",
+    "hevcSoftwareDirectPlay": "Lecture directe HEVC (décodage logiciel)",
+    "hevcSoftwareDirectPlaySubtitle": "Lit les fichiers HEVC jusqu'à 1080p depuis le fichier d'origine au lieu de demander un transcodage au serveur. Cette Apple TV décode en logiciel, les fichiers 10 bits lourds ou à débit élevé peuvent donc provoquer des saccades.",
+    "av1SoftwareUhdDirectPlay": "Lecture directe AV1 4K (décodage logiciel)",
+    "av1SoftwareUhdDirectPlaySubtitle": "Lit les fichiers AV1 au-delà de 1080p, HDR10 compris, depuis le fichier d'origine au lieu de demander un transcodage au serveur. Cet appareil décode l'AV1 en logiciel, les fichiers 4K lourds ou à débit élevé peuvent donc provoquer des saccades.",
+    "cadenceSlowdown": "24 fps fluide sur un téléviseur 60 Hz",
+    "cadenceSlowdownSubtitle": "Quand « Adapter la fréquence d'images » est désactivé, lit la vidéo 24 fps 0,1 % plus lentement pour l'adapter au téléviseur sans perte d'images. Inutilisé quand l'audio est transmis en Passthrough vers un ampli AV.",
+    "cadenceTipTitle": "Activer « Adapter la fréquence d'images »",
+    "cadenceTipMessage": "Cette vidéo ne peut pas être lue de façon fluide à la fréquence de rafraîchissement actuelle de votre téléviseur. Sur votre Apple TV, ouvrez Réglages > Vidéo et audio > Adapter au contenu, puis activez « Adapter à la fréquence d'images ».",
+    "cadenceTipSlowdownHint": "Ou activez « 24 fps fluide sur un téléviseur 60 Hz » dans Moonfin, sous Lecture > Qualité et décodage.",
+    "externalPlayerLiveTvOnly": "TV en direct uniquement",
+    "@externalPlayerLiveTvOnly": {
+        "description": "Setting that limits the external player to Live TV channels"
+    },
+    "externalPlayerLiveTvOnlySubtitle": "Utiliser le lecteur externe pour la TV en direct et garder tout le reste dans le lecteur intégré.",
+    "@externalPlayerLiveTvOnlySubtitle": {
+        "description": "Description for the Live TV Only external player setting"
+    },
+    "personWebsite": "Site officiel",
+    "@personWebsite": {
+        "description": "Tooltip for the button on a person page that opens their own website"
+    },
+    "watchPartyGroupSubtitles": "Sous-titres pour tout le monde",
+    "@watchPartyGroupSubtitles": {
+        "description": "The Watch Party host's subtitle choice for the whole group"
+    },
+    "watchPartyOwnSubtitles": "Au choix de chacun",
+    "@watchPartyOwnSubtitles": {
+        "description": "Watch Party subtitle option that leaves subtitles to each member"
+    },
+    "watchPartyLobby": "Dans le salon",
+    "@watchPartyLobby": {
+        "description": "Watch Party status while nothing plays"
+    },
+    "watchPartyUpNextLabel": "À suivre",
+    "@watchPartyUpNextLabel": {
+        "description": "Label over the title a Watch Party host has staged"
+    },
+    "watchPartyRoomSettings": "Paramètres du salon",
+    "@watchPartyRoomSettings": {
+        "description": "Heading over a Watch Party host's room switches"
+    },
+    "watchPartyCodeOrLink": "Code du salon ou lien d'invitation",
+    "@watchPartyCodeOrLink": {
+        "description": "Join box on the Watch Party screen"
+    },
+    "watchPartyCopyInvite": "Copier le lien d'invitation",
+    "@watchPartyCopyInvite": {
+        "description": "Host button that copies a Watch Party invite link"
+    },
+    "watchPartyInviteCopied": "Lien d'invitation copié",
+    "@watchPartyInviteCopied": {
+        "description": "Snackbar after copying a Watch Party invite link"
+    },
+    "watchPartyLetEveryoneVote": "Laisser tout le monde voter pour un film",
+    "@watchPartyLetEveryoneVote": {
+        "description": "Host switch that turns a Watch Party into a vote on movies"
+    },
+    "watchPartyVoteHelp": "Ajoutez des films au vote de tous, puis lancez celui que vous voulez. Les épisodes de séries restent votre choix.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "watchPartyGuestVoteHelp": "Votez pour ce que vous voulez regarder. L'hôte en lancera un.",
+    "@watchPartyGuestVoteHelp": {
+        "description": "Under a guest's vote list in a Watch Party"
+    },
+    "watchPartySearchMovies": "Rechercher un film",
+    "@watchPartySearchMovies": {
+        "description": "Hint in the host's movie search in a Watch Party vote"
+    },
+    "watchPartyNoSuggestions": "Aucun film soumis au vote pour l'instant.",
+    "@watchPartyNoSuggestions": {
+        "description": "Shown when a Watch Party vote has no movies"
+    },
+    "watchPartySuggested": "Ajouté au vote de la Watch Party",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "watchPartyVoteCount": "{count, plural, one {{count} vote} other {{count} votes}}",
+    "@watchPartyVoteCount": {
+        "description": "How many votes a movie has in a Watch Party vote",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchParty": "Watch Party",
+    "@watchParty": {
+        "description": "Title of Silo's Watch Party screen"
+    },
+    "watchPartyUnavailable": "Ce serveur ne propose pas Watch Party.",
+    "@watchPartyUnavailable": {
+        "description": "Shown when the Silo server has no Watch Party rooms"
+    },
+    "watchPartyRoomCode": "Code du salon",
+    "@watchPartyRoomCode": {
+        "description": "Label for a Watch Party room's join code"
+    },
+    "watchPartyStart": "Démarrer une Watch Party",
+    "@watchPartyStart": {
+        "description": "Button that opens a new Watch Party room"
+    },
+    "watchPartyPickTitle": "Ouvrez un titre et choisissez « Regarder en groupe » pour décider de ce que tout le monde regarde.",
+    "@watchPartyPickTitle": {
+        "description": "How a Watch Party host picks what to watch"
+    },
+    "watchPartyWaitingForHost": "En attente du choix de l'hôte.",
+    "@watchPartyWaitingForHost": {
+        "description": "Shown to Watch Party guests before anything is picked"
+    },
+    "watchPartyShareCode": "Les autres vous rejoignent avec ce code depuis leur écran Watch Party.",
+    "@watchPartyShareCode": {
+        "description": "Under a Watch Party room's code"
+    },
+    "watchPartyReconnecting": "Reconnexion…",
+    "@watchPartyReconnecting": {
+        "description": "Watch Party connection status while the room socket reconnects"
+    },
+    "watchPartyOffline": "hors ligne",
+    "@watchPartyOffline": {
+        "description": "After a Watch Party member's name when they are not connected"
+    },
+    "watchPartyStartForEveryone": "Lancer pour tout le monde",
+    "@watchPartyStartForEveryone": {
+        "description": "Host button that starts the staged item for the whole Watch Party"
+    },
+    "watchPartyResumeAt": "Reprendre à {time}",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartFromBeginning": "Lancer depuis le début",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeWhere": "À la position de {name}, la moins avancée du groupe.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeEarliest": "À la position la moins avancée du groupe.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "watchPartyResumeNotStarted": "{count, plural, one{{count} personne n'a pas encore commencé.} other{{count} personnes n'ont pas encore commencé.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyBackToLobby": "Revenir au salon",
+    "@watchPartyBackToLobby": {
+        "description": "Host button that stops Watch Party playback"
+    },
+    "watchPartyGuestsCanPause": "Les invités peuvent lire et mettre en pause",
+    "@watchPartyGuestsCanPause": {
+        "description": "Host switch for guest transport control in a Watch Party"
+    },
+    "watchPartyEnd": "Terminer la Watch Party",
+    "@watchPartyEnd": {
+        "description": "Host button that closes the Watch Party room for everyone"
+    },
+    "watchPartyEnded": "La Watch Party est terminée.",
+    "@watchPartyEnded": {
+        "description": "Shown when the Watch Party room was closed"
+    },
+    "watchPartyStaged": "Choisi pour la Watch Party",
+    "@watchPartyStaged": {
+        "description": "Snackbar after the host picks an item for the Watch Party"
+    },
+    "watchPartyUpNext": "À suivre : {title}",
+    "@watchPartyUpNext": {
+        "description": "The item a Watch Party host has staged",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sortServerOrder": "Ordre du serveur",
+    "sortCurrent": "Tri : {option}",
+    "@sortCurrent": {
+        "description": "Label beside a sort button showing the sort that is active",
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryFolderView": "Vue dossiers",
+    "@libraryFolderView": {
+        "description": "Checkbox in a library's Sort and Filter options that lists the library one folder at a time instead of all its items at once"
+    },
+    "hideHomeWatchProgress": "Masquer la progression de lecture",
+    "@hideHomeWatchProgress": {
+        "description": "Setting title to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeWatchProgressSubtitle": "Masque la barre de progression sur les affiches des titres déjà commencés.",
+    "@hideHomeWatchProgressSubtitle": {
+        "description": "Description for setting to hide the playback progress bar on home screen posters"
+    },
+    "hideHomeUnwatchedCount": "Masquer le compteur d'inédits",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "hideHomeUnwatchedCountSubtitle": "Masque le compteur indiquant combien d'épisodes restent à voir.",
+    "@hideHomeUnwatchedCountSubtitle": {
+        "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
+    },
+    "setupStyleStage": "Scène",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupDetailStageHint": "L'affiche en avant, avec le bouton de lecture en dessous et les détails à côté.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupStylePremiere": "Première",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupDetailPremiereHint": "Le titre centré sur une vignette qui remplit l'écran, avec tout le reste en dessous.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
+    },
+    "setupStyleQuickLook": "Coup d'œil",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Un panneau par-dessus l'écran où vous étiez, avec la lecture et l'essentiel, la page complète restant accessible d'une pression.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Givre",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "Le titre dans une fenêtre de verre au-dessus de son visuel flouté, avec des onglets sous les boutons.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "setupStepOf": "Étape {current} sur {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupCurrent": "Actuel",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "setupTvHint": "Haut et bas pour prévisualiser · OK pour choisir · Retour deux fois pour passer",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "setupNavbarTopHint": "Des onglets en haut de l'écran.",
+    "@setupNavbarTopHint": {
+        "description": "What the Top Bar navigation position gives you"
+    },
+    "setupNavbarLeftHint": "Une fine barre d'icônes sur le côté gauche.",
+    "@setupNavbarLeftHint": {
+        "description": "What the Left Sidebar navigation position gives you"
+    },
+    "setupNavbarBottomHint": "Des onglets le long du bord inférieur, à portée de pouce.",
+    "@setupNavbarBottomHint": {
+        "description": "What the Bottom Bar navigation position gives you on phones"
+    },
+    "setupMediaBarMoonfinHint": "Un grand visuel, avec le titre, les détails et le résumé superposés.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "Un grand visuel dominé par un grand logo du titre.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "setupMediaBarBookshelfHint": "Les titres rangés comme des livres sur une étagère, celui mis en avant présenté de face.",
+    "@setupMediaBarBookshelfHint": {
+        "description": "What the Bookshelf media bar style looks like"
+    },
+    "setupMediaBarGalleryHint": "Le titre mis en avant s'ouvre en grand, les suivants alignés à côté.",
+    "@setupMediaBarGalleryHint": {
+        "description": "What the Gallery media bar style looks like"
+    },
+    "setupMediaBarBannerHint": "Une bannière moins haute au-dessus de vos rangées, pour en afficher davantage à l'écran.",
+    "@setupMediaBarBannerHint": {
+        "description": "What the Banner media bar style looks like"
+    },
+    "setupMediaBarAyaHint": "Le visuel d'abord, dans un panneau encadré, avec vos rangées juste en dessous.",
+    "@setupMediaBarAyaHint": {
+        "description": "What the Aya media bar style looks like"
+    },
+    "setupMediaBarOffHint": "Aucune zone à la une. L'accueil s'ouvre directement sur vos rangées.",
+    "@setupMediaBarOffHint": {
+        "description": "What turning the media bar off does to the Home screen"
+    },
+    "cinemaSkipPrerolls": "Bouton « Passer » du mode cinéma",
+    "cinemaSkipPrerollsDescription": "En mode cinéma, affiche un bouton « Passer » pendant les bandes-annonces, les publicités et les autres contenus diffusés avant le film.",
+    "siloPasswordChangeTitle": "Choisissez un nouveau mot de passe",
+    "@siloPasswordChangeTitle": {
+        "description": "Title of the dialog shown after signing in to a Silo server with a temporary password"
+    },
+    "siloPasswordChangeMessage": "Ce compte utilise un mot de passe temporaire. Choisissez-en un nouveau pour terminer la connexion.",
+    "@siloPasswordChangeMessage": {
+        "description": "Explanation in the Silo change-password dialog. The temporary password was set by the server's admin."
+    },
+    "siloPasswordChangeNew": "Nouveau mot de passe",
+    "@siloPasswordChangeNew": {
+        "description": "Field label in the Silo change-password dialog"
+    },
+    "siloPasswordChangeConfirm": "Confirmer le nouveau mot de passe",
+    "@siloPasswordChangeConfirm": {
+        "description": "Field label in the Silo change-password dialog: the new password typed a second time"
+    },
+    "siloPasswordChangeSubmit": "Changer le mot de passe",
+    "@siloPasswordChangeSubmit": {
+        "description": "Button in the Silo change-password dialog that saves the new password and finishes signing in"
+    },
+    "siloPasswordChangeTooShort": "{count, plural, one{Utilisez au moins {count} caractère} other{Utilisez au moins {count} caractères}}",
+    "@siloPasswordChangeTooShort": {
+        "description": "Error in the Silo change-password dialog when the new password is shorter than the server allows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPasswordChangeTooLong": "Ce mot de passe est trop long",
+    "@siloPasswordChangeTooLong": {
+        "description": "Error in the Silo change-password dialog when the new password is longer than the server allows"
+    },
+    "siloPasswordChangeMismatch": "Les mots de passe ne correspondent pas",
+    "@siloPasswordChangeMismatch": {
+        "description": "Error in the Silo change-password dialog when the two new password fields differ"
+    },
+    "siloPasswordChangeSameAsTemporary": "Choisissez un mot de passe différent du mot de passe temporaire",
+    "@siloPasswordChangeSameAsTemporary": {
+        "description": "Error in the Silo change-password dialog when the new password equals the temporary one used to sign in"
+    },
+    "siloPasswordChangeFailed": "Le mot de passe n'a pas pu être changé. Réessayez.",
+    "@siloPasswordChangeFailed": {
+        "description": "Error in the Silo change-password dialog when the request failed (network or server error)"
+    },
+    "siloPasswordChangeUnavailable": "Ce compte utilise un mot de passe temporaire et ce serveur ne permet pas de le changer ici. Changez-le dans l'application web Silo, puis reconnectez-vous.",
+    "@siloPasswordChangeUnavailable": {
+        "description": "Sign-in error for a Silo account with a temporary password when the server has password changes switched off"
+    },
+    "siloPasswordChangedSignInAgain": "Votre mot de passe a été changé. Connectez-vous avec le nouveau mot de passe.",
+    "@siloPasswordChangedSignInAgain": {
+        "description": "Shown on the sign-in screen when the Silo password was changed but the session could not continue"
+    },
+    "siloServerRowSubtitle": "Depuis votre serveur",
+    "@siloServerRowSubtitle": {
+        "description": "Subtitle of a Home row the media server curates itself (a Silo home section), on Home and in Home settings"
+    },
+    "homeScreenBackdrop": "Arrière-plan de l'écran d'accueil",
+    "@homeScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the home screen"
+    },
+    "homeScreenBackdropFullScreen": "Plein écran",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "homeScreenBackdropCorner": "Coin",
+    "@homeScreenBackdropCorner": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+    },
+    "homeScreenBackdropTop": "Haut",
+    "@homeScreenBackdropTop": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop across the top half of the screen, fading into the background toward the bottom"
+    },
+    "detailsScreenBackdrop": "Arrière-plan de l'écran de détails",
+    "@detailsScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the item details screen"
+    },
+    "detailsBackdropSize": "Taille de l'arrière-plan",
+    "@detailsBackdropSize": {
+        "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"
+    },
+    "detailsBackdropFullScreen": "Plein écran",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "detailsBackdropFit": "Ajuster",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "libraryBackdrops": "Arrière-plan des bibliothèques",
+    "@libraryBackdrops": {
+        "description": "Setting to show or hide backdrop images while browsing library pages"
+    },
+    "playbackInfoChannel": "Chaîne",
+    "@playbackInfoChannel": {
+        "description": "Playback information row label: the Live TV channel being watched"
+    },
+    "playbackInfoProgram": "Programme",
+    "@playbackInfoProgram": {
+        "description": "Playback information row label: the Live TV program on now"
+    },
+    "playbackInfoWhy": "Cause",
+    "@playbackInfoWhy": {
+        "description": "Playback information row label: why the server isn't sending the original file as is"
+    },
+    "playbackInfoServerCompatibilityCheck": "Vérification de compatibilité du serveur",
+    "@playbackInfoServerCompatibilityCheck": {
+        "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+    },
+    "playbackInfoBitrateUnavailable": "Débit indisponible",
+    "@playbackInfoBitrateUnavailable": {
+        "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+    },
+    "playbackInfoQualityLimit": "Limite de qualité",
+    "@playbackInfoQualityLimit": {
+        "description": "Playback information row label: the maximum streaming bitrate the user picked"
+    },
+    "playbackInfoFrameRate": "Fréquence d'images",
+    "@playbackInfoFrameRate": {
+        "description": "Playback information row label: video frames per second"
+    },
+    "playbackInfoDelivery": "Source",
+    "@playbackInfoDelivery": {
+        "description": "Playback information row label: how the subtitles reach the player (embedded, external, burned in)"
+    },
+    "playbackInfoFile": "Fichier",
+    "@playbackInfoFile": {
+        "description": "Playback information section header for the media file"
+    },
+    "playbackInfoTechnical": "Technique",
+    "@playbackInfoTechnical": {
+        "description": "Playback information section header for details aimed at developers and testers"
+    },
+    "playbackInfoDevice": "Appareil",
+    "@playbackInfoDevice": {
+        "description": "Playback information row label: this device's model and operating system"
+    },
+    "playbackInfoAudioRoute": "Sortie audio",
+    "@playbackInfoAudioRoute": {
+        "description": "Playback information row label: where the sound goes, like HDMI or Bluetooth"
+    },
+    "playbackInfoSurround51": "5.1 surround",
+    "@playbackInfoSurround51": {
+        "description": "Playback information value: six channel surround audio"
+    },
+    "playbackInfoSurround71": "7.1 surround",
+    "@playbackInfoSurround71": {
+        "description": "Playback information value: eight channel surround audio"
+    },
+    "playbackInfoChannelCount": "{count} canaux",
+    "@playbackInfoChannelCount": {
+        "description": "Playback information value: an audio channel count with no common layout name",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoBurnedIn": "Incrustés par le serveur",
+    "@playbackInfoBurnedIn": {
+        "description": "Playback information value: the server draws the subtitles into the video picture"
+    },
+    "playbackInfoOriginal": "{value} (d'origine : {original})",
+    "@playbackInfoOriginal": {
+        "description": "Playback information value: the bitrate being sent, with the file's own bitrate after it",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            },
+            "original": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoConvertedFrom": "{value} (conversion depuis {source})",
+    "@playbackInfoConvertedFrom": {
+        "description": "Playback information value: what the player gets, with what the file had before the server converted it",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoResolutionConverted": "{name} ({size}, conversion depuis {source})",
+    "@playbackInfoResolutionConverted": {
+        "description": "Playback information value: the resolution being sent, like 1080p (1920x1080, converted from 4K)",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "size": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoNoteDirectPlay": "Lecture du fichier d'origine tel quel.",
+    "@playbackInfoNoteDirectPlay": {
+        "description": "Playback information note under the play method for direct play"
+    },
+    "playbackInfoNoteDirectStream": "Le serveur ré-encapsule le fichier sans le convertir.",
+    "@playbackInfoNoteDirectStream": {
+        "description": "Playback information note under the play method for direct stream"
+    },
+    "playbackInfoNoteLiveRelay": "Le serveur relaie la chaîne sans la convertir.",
+    "@playbackInfoNoteLiveRelay": {
+        "description": "Playback information note under the play method for a live TV channel the server passes through"
+    },
+    "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+    "@playbackInfoFrameRateFrom": {
+        "description": "Playback information frame rate with where the player got it",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateSourceHeader": "en-tête du flux",
+    "@playbackInfoRateSourceHeader": {
+        "description": "Playback information: the frame rate came from the video stream's own header"
+    },
+    "playbackInfoRateSourceMeasured": "mesurée",
+    "@playbackInfoRateSourceMeasured": {
+        "description": "Playback information: the frame rate was measured from the video's frame timing"
+    },
+    "playbackInfoRateSourceServer": "serveur",
+    "@playbackInfoRateSourceServer": {
+        "description": "Playback information: the frame rate came from the server's description of the media"
+    },
+    "playbackInfoServerFrameRate": "Fréquence d'images du serveur",
+    "@playbackInfoServerFrameRate": {
+        "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+    },
+    "playbackInfoScan": "Balayage",
+    "@playbackInfoScan": {
+        "description": "Playback information row: whether the video is progressive or interlaced"
+    },
+    "playbackInfoProgressive": "Progressif",
+    "@playbackInfoProgressive": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoInterlaced": "Entrelacé",
+    "@playbackInfoInterlaced": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoRepeatedFields": "Téléciné (trames répétées)",
+    "@playbackInfoRepeatedFields": {
+        "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+    },
+    "playbackInfoHdmiOutput": "Sortie HDMI",
+    "@playbackInfoHdmiOutput": {
+        "description": "Playback information row: the display mode the device is sending"
+    },
+    "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+    "@playbackInfoDisplayMode": {
+        "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+        "placeholders": {
+            "width": {
+                "type": "String"
+            },
+            "height": {
+                "type": "String"
+            },
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateCorrections": "Corrections de fréquence",
+    "@playbackInfoRateCorrections": {
+        "description": "Playback information row: how many times live TV changed the display rate after it started"
+    },
+    "playbackInfoAudioOutput": "Sortie",
+    "@playbackInfoAudioOutput": {
+        "description": "Playback information row in the Audio section: how the audio leaves the device"
+    },
+    "playbackInfoPassthroughOf": "Passthrough ({codec})",
+    "@playbackInfoPassthroughOf": {
+        "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDecodedTo": "Décodé ({channels})",
+    "@playbackInfoDecodedTo": {
+        "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoNoteTranscodeVideo": "Le serveur convertit la vidéo pour que cet appareil puisse la lire.",
+    "@playbackInfoNoteTranscodeVideo": {
+        "description": "Playback information note under the play method when only the video is transcoded"
+    },
+    "playbackInfoNoteTranscodeAudio": "Le serveur convertit l'audio pour que cet appareil puisse le lire.",
+    "@playbackInfoNoteTranscodeAudio": {
+        "description": "Playback information note under the play method when only the audio is transcoded"
+    },
+    "playbackInfoNoteTranscodeBoth": "Le serveur convertit la vidéo et l'audio pour que cet appareil puisse les lire.",
+    "@playbackInfoNoteTranscodeBoth": {
+        "description": "Playback information note under the play method when the video and the audio are transcoded"
+    },
+    "playbackInfoNoteTranscodeUnknown": "Le serveur convertit ce fichier pour que cet appareil puisse le lire.",
+    "@playbackInfoNoteTranscodeUnknown": {
+        "description": "Playback information note under the play method for a transcode when it isn't known what is converted"
+    },
+    "playbackInfoNoteOffline": "Lecture d'une copie téléchargée.",
+    "@playbackInfoNoteOffline": {
+        "description": "Playback information note under the play method when a download plays"
+    },
+    "playbackInfoWhyForced": "Le transcodage est forcé dans les paramètres",
+    "@playbackInfoWhyForced": {
+        "description": "Playback information reason: a setting turned off direct play, so the server has to transcode"
+    },
+    "playbackInfoWhyBitrate": "Le débit dépasse la limite de streaming",
+    "@playbackInfoWhyBitrate": {
+        "description": "Playback information reason: the file's bitrate is over the streaming limit, used when the two numbers can't be shown"
+    },
+    "playbackInfoWhyContainer": "Cet appareil ne peut pas lire ce type de fichier",
+    "@playbackInfoWhyContainer": {
+        "description": "Playback information reason: the container format isn't supported, used when the file type isn't known"
+    },
+    "playbackInfoWhyVideo": "Cet appareil ne peut pas lire ce format vidéo",
+    "@playbackInfoWhyVideo": {
+        "description": "Playback information reason: the video format isn't supported, used when the server gives no detail or the detail isn't known"
+    },
+    "playbackInfoWhyHdr": "Cet appareil ne peut pas afficher ce format HDR",
+    "@playbackInfoWhyHdr": {
+        "description": "Playback information reason: the HDR format isn't supported, used when the HDR type isn't known"
+    },
+    "playbackInfoWhyAudio": "Cet appareil ne peut pas lire ce format audio",
+    "@playbackInfoWhyAudio": {
+        "description": "Playback information reason: the audio format isn't supported, used when the server gives no detail or the detail isn't known"
+    },
+    "playbackInfoWhySubtitles": "Les sous-titres sont incrustés dans la vidéo",
+    "@playbackInfoWhySubtitles": {
+        "description": "Playback information reason: the player can't show the subtitles, so the server draws them into the video, used when the subtitle format isn't known"
+    },
+    "playbackInfoWhyOther": "Le fichier n'a pas pu être lu directement",
+    "@playbackInfoWhyOther": {
+        "description": "Playback information reason: any other server reason"
+    },
+    "playbackInfoWhyBitrateLimit": "{bitrate} dépasse la limite de streaming de {limit}",
+    "@playbackInfoWhyBitrateLimit": {
+        "description": "Playback information reason: the file's bitrate, like 68.4 Mbps, is over the streaming limit, like 20 Mbps",
+        "placeholders": {
+            "bitrate": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyContainerName": "Cet appareil ne peut pas ouvrir les fichiers {container}",
+    "@playbackInfoWhyContainerName": {
+        "description": "Playback information reason: the container format, like MKV, isn't supported",
+        "placeholders": {
+            "container": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoCodec": "Cet appareil ne peut pas lire la vidéo {codec}",
+    "@playbackInfoWhyVideoCodec": {
+        "description": "Playback information reason: the video codec, like HEVC or AV1, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfileUnknown": "Le serveur n'a pas pu vérifier le profil {codec} de ce flux.",
+    "@playbackInfoWhyVideoProfileUnknown": {
+        "description": "Playback information reason when the server could not determine the video profile",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfile": "Cet appareil ne peut pas lire la vidéo {codec} {profile}",
+    "@playbackInfoWhyVideoProfile": {
+        "description": "Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            },
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoLevel": "Cet appareil ne peut pas lire la vidéo {codec} niveau {level}",
+    "@playbackInfoWhyVideoLevel": {
+        "description": "Playback information reason: the video codec's level, like HEVC level 5.1, isn't supported",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            },
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoBitDepth": "Cet appareil ne peut pas lire la vidéo {bits} bits",
+    "@playbackInfoWhyVideoBitDepth": {
+        "description": "Playback information reason: the video bit depth, like 10-bit, isn't supported",
+        "placeholders": {
+            "bits": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoWhyVideoResolution": "Cet appareil ne peut pas lire une vidéo en {resolution}",
+    "@playbackInfoWhyVideoResolution": {
+        "description": "Playback information reason: the video resolution, like 4K or 1080p, isn't supported",
+        "placeholders": {
+            "resolution": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoFrameRate": "Cet appareil ne peut pas lire une vidéo à {fps} fps",
+    "@playbackInfoWhyVideoFrameRate": {
+        "description": "Playback information reason: the video frame rate in frames per second, like 59.94, isn't supported",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyInterlaced": "Cet appareil ne peut pas lire la vidéo entrelacée",
+    "@playbackInfoWhyInterlaced": {
+        "description": "Playback information reason: interlaced video isn't supported"
+    },
+    "playbackInfoWhyAnamorphic": "Cet appareil ne peut pas lire la vidéo anamorphique",
+    "@playbackInfoWhyAnamorphic": {
+        "description": "Playback information reason: anamorphic video isn't supported"
+    },
+    "playbackInfoWhyHdrName": "Cet appareil ne peut pas afficher {range}",
+    "@playbackInfoWhyHdrName": {
+        "description": "Playback information reason: the HDR format, like Dolby Vision Profile 7 or HDR10+, isn't supported",
+        "placeholders": {
+            "range": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioCodec": "Cet appareil ne peut pas lire l'audio {format}",
+    "@playbackInfoWhyAudioCodec": {
+        "description": "Playback information reason: the audio codec, like Dolby TrueHD or DTS, isn't supported",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioProfile": "Cet appareil ne peut pas lire {fullFormat}",
+    "@playbackInfoWhyAudioProfile": {
+        "description": "Playback information reason: the full audio format, like Dolby TrueHD with Atmos or DTS-HD Master Audio, isn't supported",
+        "placeholders": {
+            "fullFormat": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioChannels": "Cet appareil ne peut pas lire l'audio {channels}",
+    "@playbackInfoWhyAudioChannels": {
+        "description": "Playback information reason: the audio channel layout, like 7.1 or 3-channel, isn't supported",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioSampleRate": "Cet appareil ne peut pas lire l'audio en {rate} kHz",
+    "@playbackInfoWhyAudioSampleRate": {
+        "description": "Playback information reason: the audio sample rate in kilohertz, like 96 or 44.1, isn't supported",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyAudioBitDepth": "Cet appareil ne peut pas lire l'audio {bits} bits",
+    "@playbackInfoWhyAudioBitDepth": {
+        "description": "Playback information reason: the audio bit depth, like 24-bit, isn't supported",
+        "placeholders": {
+            "bits": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoWhyAudioExternal": "La piste audio se trouve dans un fichier séparé",
+    "@playbackInfoWhyAudioExternal": {
+        "description": "Playback information reason: the picked audio track is an external file"
+    },
+    "playbackInfoWhySecondaryAudio": "Cet appareil ne peut lire que la première piste audio",
+    "@playbackInfoWhySecondaryAudio": {
+        "description": "Playback information reason: the device can't switch to an audio track other than the first"
+    },
+    "playbackInfoWhySubtitleFormat": "Les sous-titres {format} sont incrustés dans la vidéo",
+    "@playbackInfoWhySubtitleFormat": {
+        "description": "Playback information reason: the player can't show this subtitle format, like PGS or ASS, so the server draws the subtitles into the video",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDroppedFrames": "Images perdues",
+    "@playbackInfoDroppedFrames": {
+        "description": "Playback information row label: how many video frames the player skipped"
+    },
+    "playFromServer": "Lire depuis le serveur",
+    "@playFromServer": {
+        "description": "Long-press menu action on a downloaded video: play it by streaming from the server instead of the downloaded copy, for example to get a higher quality than the download"
+    },
+    "settingsApplePlayerUi": "Lecteur vidéo",
+    "@settingsApplePlayerUi": {
+        "description": "Settings label on iPhone, iPad and Apple TV for choosing which player plays video"
+    },
+    "settingsApplePlayerUiDescription": "Le lecteur de style Apple natif n'a pas de bouton de diffusion, de décalage audio ni de PiP, et son verrouillage de l'orientation n'est disponible que dans la TV en direct",
+    "@settingsApplePlayerUiDescription": {
+        "description": "Settings description for the video player choice, listing what the native Apple style player lacks"
+    },
+    "settingsApplePlayerUiStandard": "Standard",
+    "@settingsApplePlayerUiStandard": {
+        "description": "Option for the regular Moonfin video player on iPhone and iPad"
+    },
+    "settingsApplePlayerUiNative": "Style Apple natif",
+    "@settingsApplePlayerUiNative": {
+        "description": "Option for the native video player that the Apple TV app uses, offered on iPhone and iPad"
+    },
+    "playerTransportPosition": "Boutons de lecture",
+    "@playerTransportPosition": {
+        "description": "Settings label for where the play, skip and seek buttons sit in the video player"
+    },
+    "playerTransportPositionDescription": "Affiche la lecture, le saut et le défilement au centre de la vidéo, ou en mode Dock dans la barre du bas",
+    "@playerTransportPositionDescription": {
+        "description": "Settings description for where the video player's play buttons sit"
+    },
+    "playerTransportOnScreen": "Sur l'écran",
+    "@playerTransportOnScreen": {
+        "description": "Option that puts the play, skip and seek buttons in the middle of the video"
+    },
+    "playerTransportDocked": "Dock",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "incompleteRecording": "Incomplet",
+    "@incompleteRecording": {
+        "description": "Badge and detail label for a Live TV recording that was written for less than its scheduled length"
+    },
+    "incompleteRecordingMinutes": "{recorded} sur {expected} min",
+    "@incompleteRecordingMinutes": {
+        "description": "How many minutes of an incomplete Live TV recording were written, out of its scheduled length with padding",
+        "placeholders": {
+            "recorded": {
+                "type": "int",
+                "example": "23"
+            },
+            "expected": {
+                "type": "int",
+                "example": "37"
+            }
+        }
+    },
+    "completeShowingScheduled": "Diffusion complète programmée {dateTime}",
+    "@completeShowingScheduled": {
+        "description": "Detail line status: a later complete showing of the incomplete episode will be recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "completeCopyRecorded": "Copie complète enregistrée le {dateTime}",
+    "@completeCopyRecorded": {
+        "description": "Detail line status: a complete copy of the incomplete episode has since been recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "noCompleteShowingFound": "Aucune diffusion complète trouvée",
+    "@noCompleteShowingFound": {
+        "description": "Detail line status: no later complete showing of the incomplete episode was found in the guide"
+    },
+    "keepAsComplete": "Marquer comme complet",
+    "@keepAsComplete": {
+        "description": "Action that clears the Incomplete mark on a Live TV recording for everyone on the server"
+    },
+    "keptAsComplete": "Marqué comme complet",
+    "@keptAsComplete": {
+        "description": "Snackbar confirmation after Keep as Complete"
+    },
+    "unableToKeepAsComplete": "Impossible de marquer comme complet",
+    "@unableToKeepAsComplete": {
+        "description": "Snackbar shown when Keep as Complete fails"
+    },
+    "recordPromptTitle": "Enregistrer {name}",
+    "@recordPromptTitle": {
+        "description": "Title of the Record prompt for a program that is already airing",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptStarted": "{minutes, plural, one{Cette diffusion a commencé il y a {minutes} minute : le début ne sera pas enregistré.} other{Cette diffusion a commencé il y a {minutes} minutes : le début ne sera pas enregistré.}}",
+    "@recordPromptStarted": {
+        "description": "First line of the Record prompt, saying how long ago the program started",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlsoRecordLater": "Enregistrer aussi la diffusion à venir pour obtenir un enregistrement complet ?",
+    "@recordPromptAlsoRecordLater": {
+        "description": "Record prompt question when a future showing is shown below it"
+    },
+    "recordPromptSearchLater": "Enregistrer aussi automatiquement une diffusion à venir, dès qu'une est trouvée, pour obtenir un enregistrement complet ?",
+    "@recordPromptSearchLater": {
+        "description": "Record prompt question when no future showing is known yet and Moonfin will look for one"
+    },
+    "recordPromptNow": "Maintenant",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "recordPromptLater": "Diffusion à venir",
+    "@recordPromptLater": {
+        "description": "Label of the Record prompt card for the future showing that would also be recorded"
+    },
+    "recordPromptAired": "{minutes, plural, one{{minutes} min déjà diffusée} other{{minutes} min déjà diffusées}}",
+    "@recordPromptAired": {
+        "description": "Beside the progress bar on the Record prompt's Now card",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptUncertainMatch": "Correspondance établie uniquement sur le titre et la description. Vérifiez qu'il s'agit bien du même programme.",
+    "@recordPromptUncertainMatch": {
+        "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+    },
+    "recordPromptDescriptionsDiffer": "Les descriptions diffèrent, il s'agit peut-être d'un autre programme.",
+    "@recordPromptDescriptionsDiffer": {
+        "description": "Caution under the future showing when its description differs from the program airing now"
+    },
+    "recordPromptSameEpisode": "Même épisode (S{season}E{episode})",
+    "@recordPromptSameEpisode": {
+        "description": "Note under the future showing when its season and episode match the program airing now",
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlreadyScheduled": "Enregistrement déjà programmé",
+    "@recordPromptAlreadyScheduled": {
+        "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+    },
+    "recordPromptTomorrow": "Demain",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "recordNowOnly": "Enregistrer maintenant uniquement",
+    "@recordNowOnly": {
+        "description": "Record prompt choice: only record the program that is airing now"
+    },
+    "recordNowAnd": "Enregistrer maintenant et {when}",
+    "@recordNowAnd": {
+        "description": "Record prompt choice: record now and the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordNowAndLater": "Enregistrer maintenant et la diffusion à venir",
+    "@recordNowAndLater": {
+        "description": "Record prompt choice when no future showing is known yet: record now and let Moonfin find a future showing"
+    },
+    "recordOnlyLater": "Enregistrer {when} uniquement",
+    "@recordOnlyLater": {
+        "description": "Record prompt choice: skip the airing now and record only the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordLaterShowingOnly": "Enregistrer uniquement la diffusion à venir",
+    "@recordLaterShowingOnly": {
+        "description": "Record prompt choice when no future showing is known yet: skip the airing now and let Moonfin record a future showing"
+    },
+    "laterShowingOnlyRequested": "La diffusion à venir sera enregistrée.",
+    "@laterShowingOnlyRequested": {
+        "description": "Snackbar after choosing to record only the future showing"
+    },
+    "unableToRequestLaterShowingOnly": "Impossible de demander la diffusion à venir : rien ne sera enregistré.",
+    "@unableToRequestLaterShowingOnly": {
+        "description": "Snackbar when only the future showing was chosen and asking for it failed"
+    },
+    "laterShowingRequested": "Enregistrement lancé. Une diffusion à venir sera aussi enregistrée.",
+    "@laterShowingRequested": {
+        "description": "Snackbar after recording now and asking for a future showing"
+    },
+    "unableToRequestLaterShowing": "Enregistrement lancé, mais impossible de demander une diffusion à venir.",
+    "@unableToRequestLaterShowing": {
+        "description": "Snackbar when the recording started but asking for a future showing failed"
+    },
+    "siloCodeSignIn": "Connexion par code",
+    "@siloCodeSignIn": {
+        "description": "Silo login screen: the toggle for signing in by approving a code from another device (Silo's name for what Jellyfin calls Quick Connect)"
+    },
+    "siloCodeSignInInstruction": "Scannez le QR code avec votre téléphone, ou ouvrez {address} sur un appareil déjà connecté et saisissez ce code :",
+    "@siloCodeSignInInstruction": {
+        "description": "Silo login screen, sign in with a code: how to approve the code shown below",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "silo.example.com/activate"
+            }
+        }
+    },
+    "siloCodeSignInInstructionNoLink": "Saisissez ce code dans Silo, sur un appareil déjà connecté :",
+    "@siloCodeSignInInstructionNoLink": {
+        "description": "Silo login screen, sign in with a code, when the server gave no page address"
+    },
+    "siloCodeSignInOpened": "Code trouvé. Approuvez la connexion sur votre autre appareil.",
+    "@siloCodeSignInOpened": {
+        "description": "Silo login screen, sign in with a code: someone has looked the code up and is about to approve it"
+    },
+    "siloCodeSignInDenied": "Cette connexion a été refusée.",
+    "@siloCodeSignInDenied": {
+        "description": "Silo login screen, sign in with a code: the person approving refused the request"
+    },
+    "siloCodeSignInNewCode": "Obtenir un nouveau code",
+    "@siloCodeSignInNewCode": {
+        "description": "Silo login screen, sign in with a code: button that shows a new code after the last one ended"
+    },
+    "siloCodeSignInOff": "La connexion par code est désactivée sur ce serveur.",
+    "@siloCodeSignInOff": {
+        "description": "Silo login screen: the server doesn't offer sign-in with a code"
+    },
+    "siloCodeSignInPasswordChangeRequired": "Ce compte utilise un mot de passe temporaire. Connectez-vous une fois avec ce mot de passe pour le remplacer.",
+    "@siloCodeSignInPasswordChangeRequired": {
+        "description": "Silo login screen: a code was approved for an account that must first replace its temporary password, which needs a password sign-in"
+    },
+    "siloApproveSignIn": "Approuver une connexion",
+    "@siloApproveSignIn": {
+        "description": "Title of the dialog where a signed-in Silo user types the code another device shows, to sign that device in (Silo's counterpart of authorizing a Quick Connect code)"
+    },
+    "siloApproveSignInHint": "Code affiché sur l'autre appareil",
+    "@siloApproveSignInHint": {
+        "description": "Hint in the Silo approve-a-sign-in dialog's code field"
+    },
+    "siloApproveSignInApprove": "Approuver",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "siloApproveSignInDone": "Approuvé. L'autre appareil se connecte.",
+    "@siloApproveSignInDone": {
+        "description": "Shown after a Silo sign-in code was approved"
+    },
+    "siloApproveSignInNoRequest": "Aucune connexion n'est en attente avec ce code. Vérifiez-le, ou demandez un nouveau code sur l'autre appareil.",
+    "@siloApproveSignInNoRequest": {
+        "description": "Shown when Silo has no pending sign-in for the typed code (unknown, expired, already used or declined)"
+    },
+    "siloNativeOfferTitle": "Se connecter directement à Silo ?",
+    "@siloNativeOfferTitle": {
+        "description": "Title of the dialog shown when the address being added is Silo's Jellyfin-compatible service and Silo's own API answers on another port of the same host"
+    },
+    "siloNativeOfferMessage": "Cette adresse est le service compatible Jellyfin de {serverName}. Moonfin peut se connecter directement à Silo sur {address}, avec les fonctions propres à Silo.",
+    "@siloNativeOfferMessage": {
+        "description": "Body of the dialog offering to add a Silo server natively instead of through its Jellyfin-compatible service",
+        "placeholders": {
+            "serverName": {
+                "type": "String"
+            },
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloNativeOfferUse": "Utiliser Silo",
+    "@siloNativeOfferUse": {
+        "description": "Button: add the Silo server through its native API"
+    },
+    "siloNativeOfferKeep": "Garder Jellyfin",
+    "@siloNativeOfferKeep": {
+        "description": "Button: add the address as a Jellyfin server, as entered"
+    },
+    "siloAppUpdateRequired": "Ce serveur Silo nécessite une version plus récente de Moonfin. Mettez Moonfin à jour pour l'utiliser.",
+    "@siloAppUpdateRequired": {
+        "description": "Shown when a Silo server no longer speaks the API this version of Moonfin uses (its API is newer)"
+    },
+    "siloServerUpdateRequired": "Ce serveur Silo est trop ancien pour cette version de Moonfin. Mettez Silo à jour pour l'utiliser.",
+    "@siloServerUpdateRequired": {
+        "description": "Shown when a Silo server's API is older than the one this version of Moonfin uses"
+    },
+    "siloTooManyAttempts": "Trop de tentatives. Réessayez plus tard.",
+    "@siloTooManyAttempts": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429) without saying how long to wait"
+    },
+    "siloTooManyAttemptsWait": "Trop de tentatives. Réessayez dans {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloServerBusy": "Le serveur est occupé ou en cours de démarrage. Réessayez plus tard.",
+    "@siloServerBusy": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503) without saying how long to wait"
+    },
+    "siloServerBusyWait": "Le serveur est occupé ou en cours de démarrage. Réessayez dans {wait}.",
+    "@siloServerBusyWait": {
+        "description": "Shown when Silo answers that it is temporarily unavailable (HTTP 503); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloWaitSeconds": "{count, plural, one{{count} seconde} other{{count} secondes}}",
+    "@siloWaitSeconds": {
+        "description": "How long to wait before trying again, in seconds; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloWaitMinutes": "{count, plural, one{{count} minute} other{{count} minutes}}",
+    "@siloWaitMinutes": {
+        "description": "How long to wait before trying again, in minutes; fills {wait} in siloTooManyAttemptsWait and siloServerBusyWait",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "siloPlaybackUnavailable": "La lecture n'est pas disponible sur ce serveur Silo.",
+    "@siloPlaybackUnavailable": {
+        "description": "Player message: the Silo server has playback switched off for this account"
+    },
+    "siloPlaybackUpdateRequired": "Ce serveur Silo nécessite une version plus récente de Moonfin pour la lecture.",
+    "@siloPlaybackUpdateRequired": {
+        "description": "Player message: the Silo server no longer speaks the playback protocol this version of Moonfin uses"
+    },
+    "siloPlaybackEndedOnServer": "La lecture a été arrêtée sur le serveur Silo.",
+    "@siloPlaybackEndedOnServer": {
+        "description": "Player message: an administrator ended this playback session on the Silo server"
+    },
+    "siloPinTitle": "Code PIN pour {name}",
+    "@siloPinTitle": {
+        "description": "Title of the dialog asking for a Silo household profile's PIN; name is the profile's name",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinHint": "Code PIN",
+    "@siloPinHint": {
+        "description": "Field label in the Silo profile PIN dialog"
+    },
+    "siloPinUnlock": "Déverrouiller",
+    "@siloPinUnlock": {
+        "description": "Button in the Silo profile PIN dialog that checks the PIN"
+    },
+    "siloPinWrong": "Ce code PIN n'est pas le bon.",
+    "@siloPinWrong": {
+        "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
+    },
+    "siloPinLocked": "Trop de codes PIN erronés. Réessayez plus tard.",
+    "@siloPinLocked": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs, without saying for how long"
+    },
+    "siloPinLockedWait": "Trop de codes PIN erronés. Réessayez dans {wait}.",
+    "@siloPinLockedWait": {
+        "description": "Shown when Silo has locked the profile after too many wrong PINs; wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinFailed": "Le code PIN n'a pas pu être vérifié. Réessayez.",
+    "@siloPinFailed": {
+        "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
+    },
+    "siloSignOutAccount": "Se déconnecter du compte Silo",
+    "@siloSignOutAccount": {
+        "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
+    },
+    "trailerCount": "{count, plural, one{{count} bande-annonce} other{{count} bandes-annonces}}",
+    "@trailerCount": {
+        "description": "How many trailers the trailer picker lists, shown in its header",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "trailerNumber": "Bande-annonce {number}",
+    "@trailerNumber": {
+        "description": "Fallback name in the trailer picker for a trailer the server gave no name, numbered by its place in the list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "subtitled": "Sous-titré",
+    "@subtitled": {
+        "description": "Chip in the trailer picker on a trailer that has subtitles burned into the video"
+    },
+    "rommAccount": "Compte RomM",
+    "@rommAccount": {
+        "description": "Title of the screen, and the button on a game library, for linking the user's own RomM account"
+    },
+    "rommAccountIntro": "Liez votre compte RomM pour jouer depuis votre propre bibliothèque RomM et conserver vos sauvegardes dans RomM.",
+    "@rommAccountIntro": {
+        "description": "Explains what linking a RomM account does, shown above the Link button"
+    },
+    "rommLinkAccount": "Lier le compte RomM",
+    "@rommLinkAccount": {
+        "description": "Button that starts linking a RomM account"
+    },
+    "rommLinkInstructions": "Connectez-vous à RomM et saisissez ce code pour lier votre compte.",
+    "@rommLinkInstructions": {
+        "description": "Instructions above the code while a RomM link waits for approval"
+    },
+    "rommLinkScanOrVisit": "Scannez le QR code avec votre téléphone, ou ouvrez {url}",
+    "@rommLinkScanOrVisit": {
+        "description": "Shown on TV beside the QR code while a RomM link waits for approval",
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "rommOpen": "Ouvrir RomM",
+    "@rommOpen": {
+        "description": "Button that opens the RomM approval page in the browser with the code filled in"
+    },
+    "rommWaitingForApproval": "En attente de votre approbation du code dans RomM…",
+    "@rommWaitingForApproval": {
+        "description": "Status shown while the app waits for the RomM code to be approved"
+    },
+    "rommLinkedAs": "Compte lié : {username}",
+    "@rommLinkedAs": {
+        "description": "Shown when the user's RomM account is linked",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "rommLinked": "Votre compte RomM est lié.",
+    "@rommLinked": {
+        "description": "Shown when the user's RomM account is linked and the server sent no user name"
+    },
+    "rommUnlinkNote": "La dissociation empêche Moonfin d'utiliser votre clé RomM. La clé reste dans RomM jusqu'à ce que vous la supprimiez de vos jetons d'API.",
+    "@rommUnlinkNote": {
+        "description": "Explains what Unlink does on the RomM account screen"
+    },
+    "rommUnlink": "Dissocier",
+    "@rommUnlink": {
+        "description": "Button that unlinks the user's RomM account"
+    },
+    "rommLinkExpired": "Le code a expiré avant d'être approuvé. Relancez la liaison pour en obtenir un nouveau.",
+    "@rommLinkExpired": {
+        "description": "Error when a RomM link code ran out of time"
+    },
+    "rommLinkDenied": "La demande de liaison a été refusée dans RomM.",
+    "@rommLinkDenied": {
+        "description": "Error when the user declined the RomM link request"
+    },
+    "rommUnreachable": "Moonfin n'a pas pu joindre RomM. Réessayez dans un instant.",
+    "@rommUnreachable": {
+        "description": "Error when the server couldn't reach RomM while linking"
+    },
+    "rommNotAvailable": "Ce serveur n'a aucune bibliothèque RomM.",
+    "@rommNotAvailable": {
+        "description": "Shown on the RomM account screen when the server has no RomM library"
+    },
+    "rommAccountLoadFailed": "Impossible de charger votre compte RomM.",
+    "@rommAccountLoadFailed": {
+        "description": "Error when the RomM account status couldn't be loaded from the server"
+    },
+    "reviews": "Avis",
+    "@reviews": {
+        "description": "Title of the row, tab and card on the details screen that lists TMDB user reviews"
+    },
+    "detailSectionReviews": "Avis",
+    "@detailSectionReviews": {
+        "description": "Details screen section: user reviews from TMDB"
+    },
+    "spotlightReviewsCount": "{count, plural, one{{count} avis} other{{count} avis}}",
+    "@spotlightReviewsCount": {
+        "description": "How many reviews a title has, under the Reviews card on the details screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "readOnTmdb": "Lire l'avis sur TMDB",
+    "@readOnTmdb": {
+        "description": "Button in an opened review that opens the review on the TMDB website"
+    },
+    "addServerButtonSubtitle": "Par adresse, ou avec un compte Plex ou Emby Connect",
+    "@addServerButtonSubtitle": {
+        "description": "Second line of the Add Server button on the server screen"
+    },
+    "addServerChooseHow": "Choisissez votre mode de connexion.",
+    "@addServerChooseHow": {
+        "description": "Subtitle of the first step of the Add Server dialog"
+    },
+    "addServerAddressChoice": "Jellyfin, Emby ou Silo, sur votre réseau ou en ligne",
+    "@addServerAddressChoice": {
+        "description": "Add Server dialog: what the Server Address option is for"
+    },
+    "addServerPlexChoice": "Utilisez votre compte Plex pour retrouver les serveurs associés",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "La même adresse que celle que vous ouvririez dans un navigateur, port compris.",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "addServerDetectNote": "Fonctionne avec Jellyfin, Emby et Silo. Une adresse Plex ouvre la connexion Plex.",
+    "@addServerDetectNote": {
+        "description": "Add Server dialog: note under the address field"
+    },
+    "addServerChecking": "Vérification de {address}",
+    "@addServerChecking": {
+        "description": "Add Server dialog: shown under the field while the typed address is being tried",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "addServerUnreachableDetail": "Vérifiez l'adresse et le port, et que le serveur est en cours d'exécution.",
+    "@addServerUnreachableDetail": {
+        "description": "Add Server dialog: detail under Unable to connect to server"
+    },
+    "addServerFound": "Serveur trouvé",
+    "@addServerFound": {
+        "description": "Add Server dialog: title once the address answered"
+    },
+    "addServerFoundNote": "Continuez pour choisir qui se connecte.",
+    "@addServerFoundNote": {
+        "description": "Add Server dialog: under the server that was found"
+    },
+    "addServerUseDifferentAddress": "Utiliser une autre adresse",
+    "@addServerUseDifferentAddress": {
+        "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
+    },
+    "musicArtistCount": "{count, plural, one{{count} artiste} other{{count} artistes}}",
+    "@musicArtistCount": {
+        "description": "Count next to the title of a music library's Artists screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicSongCount": "{count, plural, one{{count} chanson} other{{count} chansons}}",
+    "@musicSongCount": {
+        "description": "Count of songs, next to the Songs screen title and under a playlist",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicPlaylistCount": "{count, plural, one{{count} playlist} other{{count} playlists}}",
+    "@musicPlaylistCount": {
+        "description": "Count next to the title of a music library's Playlists screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "musicPlayCount": "{count, plural, one{{count} lecture} other{{count} lectures}}",
+    "@musicPlayCount": {
+        "description": "How many times a song was played, at the end of a Most Played row",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "allArtists": "Tous les artistes",
+    "@allArtists": {
+        "description": "Artists screen switch: every artist, not only those credited on albums"
+    },
+    "libraryZToA": "Z à A",
+    "@libraryZToA": {
+        "description": "Sort order from Z to A"
+    },
+    "musicSortYear": "Année",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "musicFilter": "Filtrer",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "musicGenreFilterTitle": "Filtrer par genre",
+    "@musicGenreFilterTitle": {
+        "description": "Title of the genre list the Albums screen's Filter button opens"
+    },
+    "openAlbum": "Ouvrir l'album",
+    "@openAlbum": {
+        "description": "Button that opens an album's details screen"
+    },
+    "openPlaylist": "Ouvrir la playlist",
+    "@openPlaylist": {
+        "description": "Button that opens a playlist's details screen, where its order can be changed"
+    },
+    "allSongsAToZ": "Toutes les chansons de A à Z",
+    "@allSongsAToZ": {
+        "description": "Songs screen button that opens the full list of songs by name"
+    },
+    "musicMix": "Mix",
+    "@musicMix": {
+        "description": "Small label over a music mix card, as in a playlist the app put together"
+    },
+    "musicMixEverything": "Tous les morceaux",
+    "@musicMixEverything": {
+        "description": "Songs screen mix card that shuffles the whole library"
+    },
+    "musicMixEverythingSubtitle": "300 morceaux au hasard",
+    "@musicMixEverythingSubtitle": {
+        "description": "Line under the Everything mix card"
+    },
+    "mostPlayed": "Les plus écoutés",
+    "@mostPlayed": {
+        "description": "Songs screen mix card and list of the songs played most"
+    },
+    "musicMixMostPlayedSubtitle": "Votre top 100",
+    "@musicMixMostPlayedSubtitle": {
+        "description": "Line under the Most Played mix card"
+    },
+    "musicMixFreshArrivals": "Nouveautés",
+    "@musicMixFreshArrivals": {
+        "description": "Songs screen mix card of the newest songs in the library"
+    },
+    "musicMixFreshArrivalsSubtitle": "Les 100 morceaux les plus récents",
+    "@musicMixFreshArrivalsSubtitle": {
+        "description": "Line under the Fresh Arrivals mix card"
+    },
+    "musicMixRediscover": "À redécouvrir",
+    "@musicMixRediscover": {
+        "description": "Songs screen mix card of favorite songs that haven't been played in a while"
+    },
+    "musicMixRediscoverSubtitle": "Des favoris que vous n'avez pas écoutés récemment",
+    "@musicMixRediscoverSubtitle": {
+        "description": "Line under the Rediscover mix card"
+    },
+    "musicSortMostAlbums": "Le plus d'albums",
+    "@musicSortMostAlbums": {
+        "description": "Genres screen order: the genres with the most albums first"
+    },
+    "bookSeriesPosition": "Livre {index} sur {total}",
+    "@bookSeriesPosition": {
+        "description": "Series screen: where the reader is in a series, the next unread book's number and how many books it has",
+        "placeholders": {
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFavoriteCount": "{count, plural, one{{count} favori} other{{count} favoris}}",
+    "@bookFavoriteCount": {
+        "description": "Book library Favorites screen header count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookSortZToA": "Z à A",
+    "@bookSortZToA": {
+        "description": "Authors screen order, from Z back to A"
+    },
+    "bookSortMostTitles": "Le plus de titres",
+    "@bookSortMostTitles": {
+        "description": "Book genres screen order: the genres with the most titles first"
+    },
+    "bookSurpriseMe": "Surprenez-moi",
+    "@bookSurpriseMe": {
+        "description": "Button on a book genre that opens a random unread title from it"
+    },
+    "bookShuffleAudiobooks": "Lecture aléatoire des livres audio",
+    "@bookShuffleAudiobooks": {
+        "description": "Button on an author that plays one of their audiobooks at random"
+    },
+    "bookStartReading": "Commencer à lire",
+    "@bookStartReading": {
+        "description": "Button on an author that opens their first unread book"
+    },
+    "bookOtherBooks": "Autres livres",
+    "@bookOtherBooks": {
+        "description": "Heading over an author's books that aren't part of a series"
+    },
+    "bookDiscoverSearchBooks": "Rechercher dans Open Library",
+    "@bookDiscoverSearchBooks": {
+        "description": "Placeholder in the Discover search field for books"
+    },
+    "bookDiscoverSearchAudiobooks": "Rechercher dans LibriVox",
+    "@bookDiscoverSearchAudiobooks": {
+        "description": "Placeholder in the Discover search field for audiobooks"
+    },
+    "bookDiscoverFeatured": "À la une",
+    "@bookDiscoverFeatured": {
+        "description": "Label over the highlighted title at the top of Discover"
+    },
+    "bookReaderControlsAutoHide": "Les commandes se masquent automatiquement",
+    "@bookReaderControlsAutoHide": {
+        "description": "Comic reader toggle while its bars fade out on their own"
+    },
+    "bookReaderControlsStayVisible": "Les commandes restent affichées",
+    "@bookReaderControlsStayVisible": {
+        "description": "Comic reader toggle while its bars stay on screen"
+    },
+    "settingsLivePreview": "Aperçu en direct",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "settingsPreviewShowsOn": "Visible dans l'aperçu : {screen}",
+    "@settingsPreviewShowsOn": {
+        "description": "Under the Settings live preview, says the focused setting changes the named preview screen",
+        "placeholders": {
+            "screen": {
+                "type": "String",
+                "example": "Home"
+            }
+        }
+    },
+    "settingsPreviewNotShown": "Non visible dans l'aperçu",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsPreviewSaved": "Enregistré",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "smartSearch": "Recherche intelligente",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "Recherche intelligente sur {seerr}",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
+    },
+    "calendar": "Calendrier",
+    "@calendar": {
+        "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+    },
+    "showCalendarButton": "Afficher le bouton Calendrier",
+    "@showCalendarButton": {
+        "description": "Settings toggle that adds the Calendar button to the navigation bar"
+    },
+    "showCalendarButtonSubtitle": "Affiche le calendrier des épisodes et des films à venir dans la barre de navigation",
+    "@showCalendarButtonSubtitle": {
+        "description": "Subtitle of the Show Calendar Button setting"
+    },
+    "calendarFullCalendar": "Calendrier complet",
+    "@calendarFullCalendar": {
+        "description": "Button on the calendar that opens the month grid"
+    },
+    "calendarUpcoming": "À venir",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarRecentlyAired": "Diffusés récemment",
+    "@calendarRecentlyAired": {
+        "description": "Calendar tab listing episodes and movies from the last few days"
+    },
+    "calendarRemindMe": "Me prévenir",
+    "@calendarRemindMe": {
+        "description": "Button that asks for a notification when an episode or movie lands in the library"
+    },
+    "calendarReminderSet": "Rappel programmé",
+    "@calendarReminderSet": {
+        "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+    },
+    "calendarReminderFailed": "Impossible d'enregistrer le rappel",
+    "@calendarReminderFailed": {
+        "description": "Message when setting or removing a calendar reminder fails"
+    },
+    "calendarReadyToWatch": "Prêt à regarder",
+    "@calendarReadyToWatch": {
+        "description": "Calendar row of recent episodes and movies that are already in the library"
+    },
+    "calendarComingUpThisWeek": "À venir cette semaine",
+    "@calendarComingUpThisWeek": {
+        "description": "Calendar row of episodes and movies airing in the next seven days"
+    },
+    "calendarNothingUpcoming": "Rien à venir",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarNothingRecent": "Rien de diffusé récemment",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarEmptyDay": "Rien ce jour-là",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarStartsIn": "Commence dans",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarUnitDays": "jours",
+    "@calendarUnitDays": {
+        "description": "Unit under the days number of the calendar countdown"
+    },
+    "calendarUnitHours": "h",
+    "@calendarUnitHours": {
+        "description": "Unit under the hours number of the calendar countdown"
+    },
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarDayAtTime": "{day} à {time}",
+    "@calendarDayAtTime": {
+        "description": "When an episode airs, like Today at 9:00 PM",
+        "placeholders": {
+            "day": {
+                "type": "String",
+                "example": "Today"
+            },
+            "time": {
+                "type": "String",
+                "example": "9:00 PM"
+            }
+        }
+    },
+    "calendarAllDay": "Toute la journée",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "calendarBadgeSeriesPremiere": "Première de la série",
+    "@calendarBadgeSeriesPremiere": {
+        "description": "Tag on the first episode of a series"
+    },
+    "calendarBadgeSeasonPremiere": "Nouvelle saison",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "calendarBadgeSeasonFinale": "Final de saison",
+    "@calendarBadgeSeasonFinale": {
+        "description": "Tag on the last episode of a season"
+    },
+    "calendarBadgeMidseasonFinale": "Final de mi-saison",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarBadgeSeriesFinale": "Final de la série",
+    "@calendarBadgeSeriesFinale": {
+        "description": "Tag on the last episode of a series"
+    },
+    "calendarBadgeNew": "INÉDIT",
+    "@calendarBadgeNew": {
+        "description": "Short tag on a month grid day that has a premiere"
+    },
+    "calendarStatusInLibrary": "Dans la bibliothèque",
+    "@calendarStatusInLibrary": {
+        "description": "Tag on a calendar entry that is already on the server"
+    },
+    "calendarNotMonitored": "Non surveillé",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarMovieDetails": "Détails du film",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarProblemAdminsOnly": "Le calendrier est réservé aux administrateurs sur ce serveur.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "calendarProblemNeedsSeerr": "Un administrateur doit se connecter à Seerr dans Moonfin avant que le calendrier puisse se charger.",
+    "@calendarProblemNeedsSeerr": {
+        "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+    },
+    "calendarProblemNotConfigured": "Aucun serveur Sonarr ou Radarr n'est encore lié.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarProblemFailed": "Impossible de charger le calendrier.",
+    "@calendarProblemFailed": {
+        "description": "Calendar message when loading fails"
+    },
+    "calendarSettingsSubtitle": "Style, filtres et actions du calendrier",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "calendarSettingsView": "Affichage",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsStyle": "Style du calendrier",
+    "@calendarSettingsStyle": {
+        "description": "Calendar setting that picks what the Calendar button opens"
+    },
+    "calendarSettingsStyleDescription": "Ce qu'ouvre le bouton Calendrier. Dans les deux cas, le mois complet reste accessible d'un bouton.",
+    "@calendarSettingsStyleDescription": {
+        "description": "Description of the Calendar style setting"
+    },
+    "calendarSettingsStyleAgenda": "Agenda",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "calendarSettingsStyleCountdown": "Compte à rebours",
+    "@calendarSettingsStyleCountdown": {
+        "description": "Calendar style that counts down to the next episode or movie"
+    },
+    "calendarSettingsWeekStart": "Premier jour de la semaine",
+    "@calendarSettingsWeekStart": {
+        "description": "Calendar setting for the first day of the week in the month grid"
+    },
+    "calendarSettingsWhatShows": "Contenu affiché",
+    "@calendarSettingsWhatShows": {
+        "description": "Calendar settings section header for which episodes and movies the calendar lists"
+    },
+    "calendarSettingsScope": "Afficher",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsScopeDescription": "« Mes séries » garde les séries mises en favori ou déjà commencées",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "calendarSettingsScopeEverything": "Tout",
+    "@calendarSettingsScopeEverything": {
+        "description": "Calendar Show choice that lists every episode and movie"
+    },
+    "calendarSettingsScopeMyShows": "Mes séries",
+    "@calendarSettingsScopeMyShows": {
+        "description": "Calendar Show choice that lists only series the user favorited or started watching"
+    },
+    "calendarSettingsUnmonitored": "Inclure les titres non surveillés",
+    "@calendarSettingsUnmonitored": {
+        "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+    },
+    "calendarSettingsUnmonitoredSubtitle": "Afficher aussi les épisodes et les films que Sonarr et Radarr ne doivent pas télécharger",
+    "@calendarSettingsUnmonitoredSubtitle": {
+        "description": "Subtitle of the Include unmonitored calendar setting"
+    },
+    "calendarSettingsSpecials": "Spéciaux",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsSpecialsSubtitle": "Épisodes de la saison 0, comme les bonus et les épisodes spéciaux des fêtes",
+    "@calendarSettingsSpecialsSubtitle": {
+        "description": "Subtitle of the Specials calendar setting"
+    },
+    "calendarSettingsBadges": "Marqueurs de première et de finale",
+    "@calendarSettingsBadges": {
+        "description": "Calendar setting that marks premieres and finales on the calendar"
+    },
+    "calendarSettingsBadgesSubtitle": "Signaler les premières, les finales et les nouvelles saisons",
+    "@calendarSettingsBadgesSubtitle": {
+        "description": "Subtitle of the Premiere and finale tags calendar setting"
+    },
+    "calendarSettingsColorBy": "Couleur selon",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+    },
+    "calendarSettingsColorByDescription": "Type distingue les épisodes des films. Statut indique ce qui est dans votre bibliothèque, à venir ou manquant.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "calendarSettingsColorByType": "Type",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "calendarSettingsImageType": "Type de visuel",
+    "@calendarSettingsImageType": {
+        "description": "Calendar setting for the artwork on the Countdown rows"
+    },
+    "calendarSettingsImageTypeDescription": "Le visuel des rangées du style Compte à rebours",
+    "@calendarSettingsImageTypeDescription": {
+        "description": "Description of the Card image calendar setting"
+    },
+    "calendarSettingsSpoilerSafe": "Sans spoilers",
+    "@calendarSettingsSpoilerSafe": {
+        "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Masquer les titres et les images d'épisode des séries que vous n'avez pas rattrapées",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "calendarSettingsActions": "Actions",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "calendarSettingsSelectAction": "Sélection d'un élément",
+    "@calendarSettingsSelectAction": {
+        "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+    },
+    "calendarSettingsSelectActionDescription": "Ce que fait la touche OK ou un appui sur un élément déjà présent dans votre bibliothèque",
+    "@calendarSettingsSelectActionDescription": {
+        "description": "Description of the Selecting an item calendar setting"
+    },
+    "calendarSettingsSelectDetails": "Ouvrir les détails",
+    "@calendarSettingsSelectDetails": {
+        "description": "Selecting an item choice that opens the details page"
+    },
+    "calendarSettingsSelectPlay": "Lire si présent dans la bibliothèque",
+    "@calendarSettingsSelectPlay": {
+        "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+    },
+    "calendarSettingsRequestButton": "Bouton de demande",
+    "@calendarSettingsRequestButton": {
+        "description": "Calendar setting that shows the request button on missing titles"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Afficher le bouton de demande Seerr sur les films et les saisons manquants",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "calendarSettingsReminders": "Rappels",
+    "@calendarSettingsReminders": {
+        "description": "Calendar setting that offers the Remind me button"
+    },
+    "calendarSettingsRemindersSubtitle": "Afficher « Me prévenir », qui envoie une notification quand un titre arrive dans votre bibliothèque",
+    "@calendarSettingsRemindersSubtitle": {
+        "description": "Subtitle of the Reminders calendar setting"
+    },
+    "calendarRowSeeAll": "Visuel « Voir tout »",
+    "@calendarRowSeeAll": {
+        "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+    },
+    "calendarRowSeeAllSubtitle": "Termine les rangées à venir par un visuel qui ouvre le calendrier",
+    "@calendarRowSeeAllSubtitle": {
+        "description": "Subtitle of the See All card setting"
+    },
+    "showNextAirDate": "Prochaine diffusion en fin d'épisode",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "showNextAirDateSubtitle": "Quand le prochain épisode n'est pas encore dans votre bibliothèque, le visuel de fin d'épisode indique sa date de diffusion",
+    "@showNextAirDateSubtitle": {
+        "description": "Subtitle of the Next air date at the end setting"
     }
 }

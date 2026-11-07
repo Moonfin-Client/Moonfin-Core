@@ -19,12 +19,25 @@ import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
 import kotlin.math.roundToInt
 
-/** Replace Media3's default SRT alignment margins. Other formats keep their coordinates. */
+// Where Media3 puts a MOV_TEXT cue when the track sets no position of its own.
+private const val TX3G_DEFAULT_LINE = 0.85f
+
+/**
+ * Replace Media3's default SRT alignment margins and its default MOV_TEXT position.
+ * Other formats keep their coordinates.
+ */
 internal fun primaryCueWithoutDefaultMargin(cue: Cue, format: Format?): Cue {
     val mime = if (format?.sampleMimeType == MimeTypes.APPLICATION_MEDIA3_CUES)
         format.codecs else format?.sampleMimeType
-    if (mime != MimeTypes.APPLICATION_SUBRIP || cue.bitmap != null ||
-        cue.lineType != Cue.LINE_TYPE_FRACTION) return cue
+    if (cue.bitmap != null || cue.lineType != Cue.LINE_TYPE_FRACTION) return cue
+    if (mime == MimeTypes.APPLICATION_TX3G) {
+        if (cue.line != TX3G_DEFAULT_LINE || cue.lineAnchor != Cue.ANCHOR_TYPE_START) return cue
+        return cue.buildUpon()
+            .setLine(Cue.DIMEN_UNSET, Cue.TYPE_UNSET)
+            .setLineAnchor(Cue.TYPE_UNSET)
+            .build()
+    }
+    if (mime != MimeTypes.APPLICATION_SUBRIP) return cue
     val edge = when {
         cue.line == 0.08f && cue.lineAnchor == Cue.ANCHOR_TYPE_START -> 0f
         cue.line == 0.92f && cue.lineAnchor == Cue.ANCHOR_TYPE_END -> 1f

@@ -320,6 +320,31 @@ void main() {
     expect(properties['sub-pos'], isNull);
   });
 
+  test('the size setting scales an ASS primary and keeps plain text at its size', () async {
+    await selectPair(primaryCodec: 'ass');
+    await backend.configureSubtitleStyle(fontSize: 20);
+    expect(properties['sub-ass-override'], 'no');
+    expect(properties['sub-scale'], isNull);
+
+    await backend.configureSubtitleStyle(fontSize: 40);
+    expect(properties['sub-ass-override'], 'scale');
+    expect(properties['sub-scale'], '2.0');
+    // sub-scale also reaches the secondary, so its base size is halved.
+    expect(properties['sub-font-size'], '46');
+    final scaledPosition = position();
+
+    await prefs.set(UserPreferences.assDirectPlay, false);
+    await backend.configureSubtitleStyle(fontSize: 40);
+    expect(properties['sub-ass-override'], 'force');
+    expect(position(), scaledPosition);
+    await prefs.set(UserPreferences.assDirectPlay, true);
+
+    await backend.disableSubtitleTrack();
+    expect(properties['sub-ass-override'], 'no');
+    expect(properties['sub-scale'], '1.0');
+    expect(properties['sub-font-size'], '92');
+  });
+
   test('secondary spacing clamps to Default and +6%', () async {
     await selectPair(primary: 'Primary');
     await backend.configureSecondarySubtitleStyle(verticalOffset: 0);

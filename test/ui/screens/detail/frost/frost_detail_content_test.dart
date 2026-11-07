@@ -226,7 +226,12 @@ void main() {
       ...itemData('Movie'),
       'MediaStreams': streams,
       'MediaSources': [
-        {'Id': 'source-1', 'Name': '4K', 'MediaStreams': streams},
+        {
+          'Id': 'source-1',
+          'Name': '4K',
+          'Path': '/media/movies/Movie (2024)/Movie (2024) - 4K.mkv',
+          'MediaStreams': streams,
+        },
       ],
     };
   }
@@ -242,6 +247,17 @@ void main() {
     expect(find.text('Overview'), findsOneWidget);
     expect(find.text('Details'), findsOneWidget);
     expect(find.text('English TrueHD 7.1'), findsOneWidget);
+  });
+
+  testWidgets('a TV draws its toolbar with every action button on screen', (
+    tester,
+  ) async {
+    await prefs.set(UserPreferences.detailButtonsMaxVisible, -1);
+    await pumpContent(tester, viewModel('Movie', data: movieWithTracks()));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(DetailActionButtons), findsOneWidget);
   });
 
   testWidgets('up from the toolbar enters the tab, down from it reaches the '
@@ -289,6 +305,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('A useful detail overview'), findsNothing);
     expect(find.text('MOVIE TITLE'), findsOneWidget);
+  });
+
+  testWidgets('the Details tab names the file', (tester) async {
+    await pumpContent(tester, viewModel('Movie', data: movieWithTracks()));
+    await tester.pump();
+
+    await tester.tap(find.text('Details'));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Movie (2024) - 4K.mkv'), findsOneWidget);
   });
 
   testWidgets('a phone gets the sheet with its tabs across the top', (

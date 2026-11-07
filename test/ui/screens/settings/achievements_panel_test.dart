@@ -56,11 +56,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// The row sits below the fold at test window size.
-  Future<void> openAppearance(WidgetTester tester) async {
-    await tester.ensureVisible(find.text('Appearance'));
+  /// The row can sit below the fold at test window size.
+  Future<void> openRow(WidgetTester tester, String label) async {
+    await tester.ensureVisible(find.text(label));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Appearance'));
+    await tester.tap(find.text(label));
     await tester.pumpAndSettle();
   }
 
@@ -157,8 +157,7 @@ void main() {
 
     testWidgets('rerolling swaps the daily set once confirmed', (tester) async {
       await pumpPanel(tester);
-      await tester.tap(find.text('Quests'));
-      await tester.pumpAndSettle();
+      await openRow(tester, 'Quests');
 
       expect(find.text('Watch something'), findsOneWidget);
 
@@ -182,8 +181,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      await tester.tap(find.text('Quests'));
-      await tester.pumpAndSettle();
+      await openRow(tester, 'Quests');
 
       await tester.tap(find.text('Reroll daily quests'));
       await tester.pumpAndSettle();
@@ -200,8 +198,7 @@ void main() {
       adapter.dailyRerollsLeft = 0;
 
       await pumpPanel(tester);
-      await tester.tap(find.text('Quests'));
-      await tester.pumpAndSettle();
+      await openRow(tester, 'Quests');
 
       expect(
         find.text('Used today, comes back at midnight UTC'),
@@ -372,7 +369,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       expect(find.text('Medal'), findsOneWidget);
       expect(find.text('Night Owl'), findsOneWidget);
@@ -383,7 +380,7 @@ void main() {
 
     testWidgets('wearing one the profile owns puts it on', (tester) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       expect(find.text('Owned'), findsOneWidget);
 
@@ -398,7 +395,7 @@ void main() {
       adapter.equippedAvatarId = 'avatar-medal';
 
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       await tester.tap(find.text('Medal'));
       await tester.pumpAndSettle();
@@ -411,7 +408,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
       await tester.tap(find.text('Titles'));
       await tester.pumpAndSettle();
 
@@ -428,7 +425,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       await tester.tap(find.text('Night Owl'));
       await tester.pumpAndSettle();
@@ -441,7 +438,7 @@ void main() {
 
     testWidgets('an avatar the bank cannot cover is not sold', (tester) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       await tester.tap(find.text('Diamond'));
       await tester.pumpAndSettle();
@@ -454,7 +451,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      await openAppearance(tester);
+      await openRow(tester, 'Appearance');
 
       // The catalogue hands a clapperboard the same film strip it gives
       // popcorn, so the panel draws the clapperboard Material has instead.

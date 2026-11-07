@@ -56,6 +56,9 @@ class _FakePluginSyncService extends ChangeNotifier
   bool get seerrAvailable => false;
 
   @override
+  bool get calendarAvailable => false;
+
+  @override
   bool get smartSearchEnabled => smartAnswer != null;
 
   @override

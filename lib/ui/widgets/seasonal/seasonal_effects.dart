@@ -16,6 +16,10 @@ import 'seasonal_follower.dart';
 import 'seasonal_simulation.dart';
 import 'seasonal_sprite_atlas.dart';
 
+/// How many effects the settings live preview is running. Home's own pauses
+/// while it's above zero, so the two never animate at once.
+final seasonalPreviewsRunning = ValueNotifier<int>(0);
+
 /// Decides whether Home's seasonal effect runs at all.
 ///
 /// It draws nothing and holds no ticker for an effect it doesn't know, with reduce motion

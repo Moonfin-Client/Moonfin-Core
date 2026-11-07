@@ -953,6 +953,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int? profileId,
     String? rootFolder,
     int? serverId,
+    int? tvdbId,
   }) async {
     final d = await _detail(mediaType, mediaId);
     final year = d['year'];
@@ -1075,6 +1076,13 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   @override
   Future<List<dynamic>> getSonarrServers() async => const [];
+
+  /// Silo adds series itself, so there is no Sonarr match to pick. Throwing
+  /// rather than answering empty keeps the request sheet from reading it as a
+  /// series that has no match.
+  @override
+  Future<List<dynamic>> lookupSonarrSeries(int tmdbId) async =>
+      throw UnsupportedError('Silo has no Sonarr lookup');
 
   @override
   Future<List<dynamic>> getRadarrSettings() async => const [];

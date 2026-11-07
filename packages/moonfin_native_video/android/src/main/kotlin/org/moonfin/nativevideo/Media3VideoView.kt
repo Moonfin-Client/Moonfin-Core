@@ -90,6 +90,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.text.TextOutput
 import androidx.media3.exoplayer.text.TextRenderer
+import androidx.media3.exoplayer.upstream.Loader
 import androidx.media3.exoplayer.video.MediaCodecVideoRenderer
 import androidx.media3.exoplayer.video.VideoRendererEventListener
 import androidx.media3.extractor.DefaultExtractorsFactory
@@ -1029,6 +1030,10 @@ class Media3VideoView(
     // calls libass. Torn down before the player, so an in-flight render never
     // outlives the native objects it reads.
     private var assOverlayView: MoonfinAssOverlayView? = null
+
+    // Both subtitle profiles default to a size of 20, which leaves ASS as
+    // authored.
+    private var assFontScale = 1f
 
     // True once a source has been loaded into the current player. Reusing the
     // same ExoPlayer instance + surface for a second source hangs in buffering
@@ -2808,6 +2813,7 @@ class Media3VideoView(
             AssHandlerConfig(cacheSize = assCacheSizeMb()),
         )
         registerAssFonts(assHandler)
+        val assDialogue = AssDialogueQueue()
         // Tie extractor callbacks to this player, not a later replacement.
         val associatedAssOverlay = AtomicReference<MoonfinAssOverlayView?>()
         // Serializes track creation and dialogue reads against the overlay's
@@ -2821,7 +2827,7 @@ class Media3VideoView(
         val doviExtractorsFactory = DoviCompatExtractorsFactory(
             LiveFmp4ExtractorsFactory(
                 extractorsFactory.withMoonfinMkvSupport(
-                    assParserFactory, assHandler,
+                    assParserFactory, assHandler, assDialogue,
                     onAssDialogueLoaded = { associatedAssOverlay.get()?.onAssDialogueLoaded() },
                 ),
                 assParserFactory,
@@ -2860,14 +2866,16 @@ class Media3VideoView(
             .setPauseAtEndOfMediaItems(false)
             .build()
             .also {
-                attachAssOverlay(assHandler)
+                attachAssOverlay(assHandler, assDialogue)
                 associatedAssOverlay.set(requireNotNull(assOverlayView))
                 // init() sets up the handler's looper and registers it as a
                 // listener. Its callbacks reach libass unlocked, so the
                 // forwarder takes that seat instead.
                 assHandler.init(it)
                 it.removeListener(assHandler)
-                it.addListener(MoonfinAssPlayerListener(assHandler, requireNotNull(assOverlayView)))
+                it.addListener(
+                    MoonfinAssPlayerListener(assHandler, assDialogue, requireNotNull(assOverlayView)),
+                )
                 if (currentMediaType != "audio") {
                     if (useSurfaceView) {
                         it.setVideoSurfaceView(videoView as SurfaceView)
@@ -2946,9 +2954,10 @@ class Media3VideoView(
         })
     }
 
-    private fun attachAssOverlay(assHandler: AssHandler) {
+    private fun attachAssOverlay(assHandler: AssHandler, assDialogue: AssDialogueQueue) {
         releaseAssOverlay()
-        val overlay = MoonfinAssOverlayView(context, assHandler)
+        val overlay = MoonfinAssOverlayView(context, assHandler, assDialogue)
+        overlay.setFontScale(assFontScale)
         overlay.onInkChanged = { ink ->
             assInk = ink
             pushAssInk()
@@ -5161,6 +5170,8 @@ class Media3VideoView(
         if (fontSize != null) {
             val fractionalTextSize = (fontSize / 24f) * 0.06f
             subtitleView.setFractionalTextSize(fractionalTextSize.coerceAtLeast(0.01f))
+            assFontScale = fontSize / 20f
+            assOverlayView?.setFontScale(assFontScale)
         }
 
         if (verticalOffset != null) {
@@ -6298,25 +6309,12 @@ class Media3VideoView(
             ?.startsWith("audio/") == true
     }
 
-    private fun errorIsNoValidVarintLengthMaskFound(error: PlaybackException): Boolean {
+    // Media3 wraps anything a container reader throws, other than an I/O
+    // error, in an UnexpectedLoaderException.
+    private fun errorIsContainerReaderCrash(error: PlaybackException): Boolean {
         val exo = error as? ExoPlaybackException ?: return false
-        if (exo.type != ExoPlaybackException.TYPE_SOURCE) return false
-
-        var cause: Throwable? = exo.sourceException
-        var depth = 0
-
-        while (cause != null && depth < 3) {
-            if (cause is IllegalStateException &&
-                cause.message == "No valid varint length mask found"
-            ) {
-                return true
-            }
-
-            cause = cause.cause
-            depth++
-        }
-
-        return false
+        return exo.type == ExoPlaybackException.TYPE_SOURCE &&
+            exo.sourceException is Loader.UnexpectedLoaderException
     }
 
     // Every data source the factory makes reads its request properties when
@@ -6367,15 +6365,11 @@ class Media3VideoView(
             PlaybackException.ERROR_CODE_DECODING_FAILED ->
                 if (errorIsFromAudioRenderer(error)) "unsupported_audio" else null
 
-            // Some MKVs carry zero padding after the last real cluster while
-            // the Segment size runs to EOF. Media3 reads a 0x00 there as an
-            // EBML length byte, which has no leading 1-bit and so no valid
-            // varint length mask. The container is the malformed part, and any
-            // server transcode rewrites it without the tail.
+            // A container reader crashed on the file, like an MKV with zero
+            // padding after its last cluster or an AVI with an odd-sized
+            // chunk. Any server transcode rewrites the container.
             PlaybackException.ERROR_CODE_IO_UNSPECIFIED ->
-                if (!containerFallbackAttempted &&
-                    errorIsNoValidVarintLengthMaskFound(error)
-                ) {
+                if (!containerFallbackAttempted && errorIsContainerReaderCrash(error)) {
                     "unsupported_container"
                 } else {
                     null

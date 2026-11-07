@@ -103,6 +103,10 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
+/// Watching Now prints its titles on the artwork, so nothing sits under it.
+double _classicCardMetadataFor(HomeRow row) =>
+    row.id == 'mdblist_watching_now' ? 0.0 : _classicCardMetadataHeight;
+
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
     isRowsV2 || !PlatformDetection.useMobileUi ? 6.0 : 16.0;
@@ -146,6 +150,24 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static ImageType homeRowImageTypeForRow(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._homeRowImageTypeForRow(row, prefs);
+
+  @visibleForTesting
+  static String? resolveRowImageUrl(
+    AggregatedItem item,
+    ImageApi imageApi,
+    ImageType imageType,
+  ) => _ContentRowsState._resolveRowImageUrl(
+    item,
+    imageApi,
+    200,
+    imageType,
+    false,
+    1,
+  );
+
+  @visibleForTesting
+  static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
+      _ContentRowsState._showsCalendarSeeAll(row, prefs);
 
   @visibleForTesting
   static Widget topBackdrop(Widget backdrop) =>
@@ -618,13 +640,23 @@ class _HomeShellState extends State<_HomeShell>
                   ),
                   if (seasonalEffect != UserPreferences.seasonalNone)
                     Positioned.fill(
-                      child: SeasonalEffectsHost(
-                        followFocus: PlatformDetection.isTV && seasonalFollower,
-                        effect: seasonalEffect,
-                        density: _userPrefs.get(UserPreferences.seasonalDensity),
-                        reducedFrameRate:
-                            _userPrefs.resolveDevicePerformanceTier() ==
-                            DevicePerformanceTier.reduced,
+                      child: ValueListenableBuilder<int>(
+                        valueListenable: seasonalPreviewsRunning,
+                        builder: (context, previews, child) => TickerMode(
+                          enabled: previews == 0,
+                          child: child!,
+                        ),
+                        child: SeasonalEffectsHost(
+                          followFocus:
+                              PlatformDetection.isTV && seasonalFollower,
+                          effect: seasonalEffect,
+                          density: _userPrefs.get(
+                            UserPreferences.seasonalDensity,
+                          ),
+                          reducedFrameRate:
+                              _userPrefs.resolveDevicePerformanceTier() ==
+                              DevicePerformanceTier.reduced,
+                        ),
                       ),
                     ),
                 ],
@@ -2792,7 +2824,7 @@ class _ContentRowsState extends State<_ContentRows>
     return (_isHomeRowsStyleV2() ? 7.0 : 24.0) +
         lineHeight(textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)) +
         (subtitle != null && subtitle.isNotEmpty
-            ? 2.0 + lineHeight(textTheme.bodySmall)
+            ? (row.id == 'mdblist_watching_now' ? 14.0 : 2.0) + lineHeight(textTheme.bodySmall)
             : 0.0);
   }
 
@@ -3246,18 +3278,25 @@ class _ContentRowsState extends State<_ContentRows>
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
-        final imageHeight = modernImageHeight(posterSize, platformScale);
+        final imageHeight = modernImageHeight(posterSize, platformScale)
+            .clamp(220.0 * desktopScale, double.infinity);
         final budget = _v2MetadataBudgetFor(row, prefs);
         childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
-        final imageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+        final baseImageHeight = (row.id == 'mdblist_watching_now'
+            ? posterSize.landscapeHeight.toDouble()
+            : posterSize.portraitHeight.toDouble()) * platformScale;
+        // A loading row is LibraryRow's spinner at its 220 default height,
+        // which can be taller than the posters.
+        final imageHeight =
+            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final headroom = _focusHeadroom(
           imageHeight,
           prefs.get(UserPreferences.cardFocusExpansion),
         );
         childHeight =
             imageHeight +
-            (_classicCardMetadataHeight * metadataScale) +
+            (_classicCardMetadataFor(row) * metadataScale) +
             (10 * metadataScale) +
             headroom;
       }
@@ -3288,7 +3327,8 @@ class _ContentRowsState extends State<_ContentRows>
               ? posterSize.landscapeHeight.toDouble()
               : posterSize.portraitHeight.toDouble()) * platformScale;
           if (imageHeight > maxImageHeight) maxImageHeight = imageHeight;
-          final cardHeight = imageHeight + (_classicCardMetadataHeight * metadataScale);
+          final cardHeight =
+              imageHeight + (_classicCardMetadataFor(row) * metadataScale);
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
@@ -3311,9 +3351,9 @@ class _ContentRowsState extends State<_ContentRows>
         (row.rowType != HomeRowType.liveTv &&
             row.rowType != HomeRowType.libraryTilesSmall);
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
-    final headerPaddingBottom = isRowsV2 ? 1.0 : 8.0;
+    final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
-    final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
+    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 24.0 : 18.0) * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
     var totalHeight = childHeight + headerHeight;
@@ -4264,16 +4304,21 @@ class _ContentRowsState extends State<_ContentRows>
       final maxCardHeight = _isRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
-                (_classicCardMetadataHeight * metadataScale) +
+                (_classicCardMetadataFor(row) * metadataScale) +
                 _classicRowPadding(row, prefs);
       final headroom = _focusHeadroom(
         maxImageHeight,
         prefs.get(UserPreferences.cardFocusExpansion),
       );
+      final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
+      final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+      final subtitleHeight = hasSubtitle
+          ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale
+          : 0.0;
       return _libraryRowExtent(
         maxCardHeight + headroom,
         metadataScale: metadataScale,
-      );
+      ) + subtitleHeight;
     }
   }
 
@@ -4518,6 +4563,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   String? _rowSubtitle(HomeRow row, AppLocalizations l10n) {
+    if (row.subtitle != null && row.subtitle!.isNotEmpty) {
+      return row.subtitle;
+    }
     if (row.id == 'merged_calendar') return l10n.arrCalendarsRowSubtitle;
     if (row.id == 'radarr_calendar') return l10n.radarrCalendarRowSubtitle;
     if (row.id == 'sonarr_calendar') return l10n.sonarrCalendarRowSubtitle;
@@ -5371,7 +5419,8 @@ class _ContentRowsState extends State<_ContentRows>
                 : posterSize.portraitHeight.toDouble()) *
             platformScale;
         if (height > maxImageHeight) maxImageHeight = height;
-        final cardHeight = height + (_classicCardMetadataHeight * metadataScale);
+        final cardHeight =
+            height + (_classicCardMetadataFor(row) * metadataScale);
         if (cardHeight > maxCardHeight) maxCardHeight = cardHeight;
         if (firstCardWidth == 0) firstCardWidth = height * ar;
       }
@@ -5398,13 +5447,14 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitle = _rowSubtitle(row, l10n);
     final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
     final rowTotalHeight =
-        lockedRowHeight + (hasSubtitle ? 18.0 : 0.0);
+        lockedRowHeight + (hasSubtitle ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) : 0.0);
 
     if (row.isLoading && row.items.isEmpty) {
       return _buildTitledRow(
         key: _rowContainerKey(rowIndex),
         title: _localizedRowTitle(row, l10n),
         subtitle: subtitle,
+        isWatchingNow: row.id == 'mdblist_watching_now',
         rowIndex: rowIndex,
         hasItems: false,
         height: rowTotalHeight,
@@ -5430,16 +5480,21 @@ class _ContentRowsState extends State<_ContentRows>
         ? (_rowGlide(rowIndex)..growth = v2FocusedWidth - v2PortraitWidth)
         : null;
 
+    final rowItems = _showsCalendarSeeAll(row, prefs)
+        ? [...row.items, _calendarSeeAllItem]
+        : row.items;
+
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
       subtitle: subtitle,
+      isWatchingNow: row.id == 'mdblist_watching_now',
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowTotalHeight,
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
-        items: row.items,
+        items: rowItems,
           itemKey: _rowItemIdentity,
           hubKey: _hubKeyForRow(row),
           controller: _rowHorizontalController(rowIndex),
@@ -5463,6 +5518,10 @@ class _ContentRowsState extends State<_ContentRows>
           ),
           onLeftEdge: _onRowLeftEdge,
           onIndexChanged: (index, item) {
+          if (identical(item, _calendarSeeAllItem)) {
+            _finishSharedPreview();
+            return;
+          }
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
@@ -5501,21 +5560,34 @@ class _ContentRowsState extends State<_ContentRows>
             widget.viewModel.loadMoreForRow(rowIndex);
           }
         },
-        onLongPress: (_, item) => showContextMenu(
-          context,
-          item,
-          onChanged: () => setState(() {}),
-          isContinueWatchingOrNextUp: _isContinueWatchingOrNextUp(row),
-        ),
+        onLongPress: (_, item) {
+          if (identical(item, _calendarSeeAllItem)) return;
+          showContextMenu(
+            context,
+            item,
+            onChanged: () => setState(() {}),
+            isContinueWatchingOrNextUp: _isContinueWatchingOrNextUp(row),
+          );
+        },
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
+          if (identical(item, _calendarSeeAllItem)) {
+            _openCalendarFromRow();
+            return;
+          }
           if (_playedOnSelect(row, item)) return;
           if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-            context.push(Destinations.genre(item.name, genreId: item.id));
+            context.push(
+              Destinations.genre(
+                item.name,
+                genreId: item.id,
+                serverId: item.serverId,
+              ),
+            );
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
-            context.push(Destinations.studio(item.name));
+            context.push(Destinations.studio(item.name, serverId: item.serverId));
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
@@ -5530,6 +5602,20 @@ class _ContentRowsState extends State<_ContentRows>
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
+          if (identical(item, _calendarSeeAllItem)) {
+            return _buildCalendarSeeAllCard(
+              l10n: l10n,
+              width: firstCardWidth,
+              aspectRatio: isRowsV2
+                  ? v2PortraitAspect
+                  : _aspectRatioForRowItem(row.items.first, row, rowImageType),
+              isFocused: isFocused,
+              isRowsV2: isRowsV2,
+              focusColor: focusColor,
+              cardExpansion: cardExpansion,
+              suppressFocusGlow: suppressFocusGlow,
+            );
+          }
           final requestScale = MediaQuery.devicePixelRatioOf(
             context,
           ).clamp(1.0, 2.0);
@@ -5624,7 +5710,15 @@ class _ContentRowsState extends State<_ContentRows>
                     if (row.rowType == HomeRowType.libraryTiles) {
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
-                      context.push(Destinations.genre(item.name, genreId: item.id));
+                      context.push(
+                        Destinations.genre(
+                          item.name,
+                          genreId: item.id,
+                          serverId: item.serverId,
+                        ),
+                      );
+                    } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
+                      context.push(Destinations.studio(item.name, serverId: item.serverId));
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
@@ -5666,7 +5760,13 @@ class _ContentRowsState extends State<_ContentRows>
                   : Theme.of(context).colorScheme.onSurface.withAlpha(180);
               final subtitleStyle = baseTextStyle.copyWith(
                 color: subtitleColor,
-                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+                fontWeight: isNeon ? FontWeight.w600 : null,
+                shadows: isNeon
+                    ? const [
+                        Shadow(blurRadius: 4, color: Colors.black),
+                        Shadow(blurRadius: 6, color: Colors.black87),
+                      ]
+                    : const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
 
               cardSubtitleWidget = Column(
@@ -5725,13 +5825,21 @@ class _ContentRowsState extends State<_ContentRows>
                   // the way the Jellyfin genre row does.
                   final isSeerrGenreCard =
                       _isSeerrFilterRow(row) && item.type == 'Genre';
+                  final isWatchingNow = row.id == 'mdblist_watching_now';
                   final card = MediaCard(
-                    animeMarkerItemId: isSeerrGenreCard ? null : item.id,
-                    recordingItemId: isSeerrGenreCard ? null : item.id,
-                    title: cardTitle,
-                    imageOverlays: isSeerrGenreCard
-                        ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
-                        : const <Widget>[],
+                    animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    posterBadgeItemId:
+                        isSeerrGenreCard || isWatchingNow || item.serverId == 'seerr'
+                        ? null
+                        : item.id,
+                    recordingItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    title: isWatchingNow ? item.name : cardTitle,
+                    showLabel: !isWatchingNow,
+                    imageOverlays: isWatchingNow
+                        ? _buildWatchingNowOverlays(item, l10n)
+                        : (isSeerrGenreCard
+                            ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
+                            : const <Widget>[]),
                     imageUnderlays: [
                       if (glide != null &&
                           canUseExpandedV2Card &&
@@ -6016,10 +6124,179 @@ class _ContentRowsState extends State<_ContentRows>
     return '${hours}h ${minutes}m';
   }
 
+
+  List<Widget> _buildWatchingNowOverlays(
+    AggregatedItem item,
+    AppLocalizations l10n,
+  ) {
+    final rank = (item.rawData['Rank'] ?? item.rawData['WatchingNowRank'])?.toString() ?? '';
+    final mediaType = (item.rawData['MediaType'] ?? item.rawData['WatchingNowType']) as String? ?? 'movie';
+    final watchers = (item.rawData['Watchers'] ?? item.rawData['WatchingNowWatchers']) as int? ?? 0;
+    final logoUrl = (item.rawData['LogoUrl'] ?? item.rawData['LogoPath']) as String?;
+
+    return [
+      Positioned.fill(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.25),
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.85),
+              ],
+              stops: const [0.0, 0.4, 1.0],
+            ),
+          ),
+        ),
+      ),
+      if (rank.isNotEmpty)
+        Positioned(
+          top: 10,
+          left: 12,
+          child: Text(
+            rank,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              shadows: [
+                Shadow(blurRadius: 6, color: Colors.black),
+                Shadow(blurRadius: 12, color: Colors.black87),
+              ],
+            ),
+          ),
+        ),
+      Positioned(
+        top: 10,
+        right: 12,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.65),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Colors.white24, width: 0.5),
+          ),
+          child: Text(
+            mediaType.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 14,
+        right: 14,
+        bottom: 26,
+        height: 44,
+        child: (logoUrl != null && logoUrl.isNotEmpty)
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: Semantics(
+                  label: item.name,
+                  child: BoundedNetworkImage(
+                    imageUrl: logoUrl,
+                    fit: BoxFit.contain,
+                    maxWidth: 300,
+                    errorBuilder: (_, _, _) => Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        item.name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          shadows: [
+                            Shadow(blurRadius: 6, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  item.name,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    shadows: [
+                      Shadow(blurRadius: 6, color: Colors.black),
+                    ],
+                  ),
+                ),
+              ),
+      ),
+      Positioned(
+        left: 12,
+        bottom: 8,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 7,
+              height: 7,
+              decoration: const BoxDecoration(
+                color: Color(0xFF22C55E),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x8822C55E),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              l10n.watchingNowWatchersCount(watchers),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                shadows: [
+                  Shadow(blurRadius: 4, color: Colors.black),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildWatchingNowSubtitle(BuildContext context, String subtitle) {
+    return Text(
+      subtitle,
+      style: TextStyle(
+        fontSize: 13.0,
+        fontWeight: FontWeight.w700,
+        color: AppColorScheme.onSurface.withValues(alpha: 0.95),
+      ),
+    );
+  }
+
   Widget _buildTitledRow({
     Key? key,
     required String title,
     String? subtitle,
+    bool isWatchingNow = false,
     required int rowIndex,
     required bool hasItems,
     required double height,
@@ -6042,7 +6319,7 @@ class _ContentRowsState extends State<_ContentRows>
               _kHomeRowLabelInset,
               _rowHeaderPaddingTop(isRowsV2),
               8,
-              isRowsV2 ? 1 : 8,
+              isWatchingNow ? 12.0 : (isRowsV2 ? 1 : 8),
             ),
             child: Row(
               children: [
@@ -6051,22 +6328,70 @@ class _ContentRowsState extends State<_ContentRows>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isWatchingNow) ...[
+                            Icon(
+                              Icons.public,
+                              size: 18,
+                              color: AppColorScheme.onSurface,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          Flexible(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       if (subtitle != null && subtitle.isNotEmpty) ...[
                         const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.5,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (isWatchingNow) ...[
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF22C55E),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0xAA22C55E),
+                                      blurRadius: 5,
+                                      spreadRadius: 1.5,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                            Flexible(
+                              child: isWatchingNow
+                                  ? _buildWatchingNowSubtitle(context, subtitle)
+                                  : Text(
+                                      subtitle,
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColorScheme.onSurface.withValues(
+                                          alpha: 0.95,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                        shadows: const [
+                                          Shadow(blurRadius: 4, color: Colors.black54),
+                                        ],
+                                      ),
+                                    ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ],
@@ -6131,7 +6456,75 @@ class _ContentRowsState extends State<_ContentRows>
   /// classic layout whichever style is picked.
   static bool _isWideArtworkRow(HomeRow row) =>
       _isSeerrFilterRow(row) ||
+      row.id == 'mdblist_watching_now' ||
       (row.rowType == HomeRowType.studios && row.id == 'studios');
+
+  static const _calendarRowIds = {
+    'radarr_calendar',
+    'sonarr_calendar',
+    'merged_calendar',
+  };
+
+  /// The last card of an Upcoming row, which opens the full calendar.
+  static const _calendarSeeAllItem = AggregatedItem(
+    id: 'calendar_see_all',
+    serverId: 'calendar',
+    rawData: {},
+  );
+
+  static bool _showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
+      row.items.isNotEmpty &&
+      _calendarRowIds.contains(row.id) &&
+      prefs.get(UserPreferences.calendarRowSeeAll) &&
+      GetIt.instance.isRegistered<PluginSyncService>() &&
+      GetIt.instance<PluginSyncService>().calendarAvailable;
+
+  void _openCalendarFromRow() => context.push(Destinations.calendarMonth);
+
+  Widget _buildCalendarSeeAllCard({
+    required AppLocalizations l10n,
+    required double width,
+    required double aspectRatio,
+    required bool isFocused,
+    required bool isRowsV2,
+    required Color focusColor,
+    required bool cardExpansion,
+    required bool suppressFocusGlow,
+  }) {
+    return MediaCard(
+      title: l10n.seeAll,
+      showLabel: false,
+      width: width,
+      aspectRatio: aspectRatio,
+      classicHomeLabel: !isRowsV2,
+      focusColor: focusColor,
+      cardFocusExpansion: isRowsV2 ? false : cardExpansion,
+      externalIsFocused: isFocused,
+      suppressFocusGlow: suppressFocusGlow,
+      imageOverlays: [
+        // MediaCard centers the title as placeholder text, so the icon sits
+        // a fixed distance above the middle to stay clear of it on short cards.
+        Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 64),
+            child: Center(
+              child: Icon(
+                Icons.calendar_month,
+                size: 32,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+        ),
+      ],
+      onTap: () {
+        _finishSharedPreview(releaseResources: true);
+        _openCalendarFromRow();
+      },
+    );
+  }
 
   static bool _isRowModern(HomeRow row, UserPreferences prefs) {
     if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
@@ -6519,6 +6912,14 @@ class _ContentRowsState extends State<_ContentRows>
               : _homeRowImageTypeForRow(row, prefs));
     final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
     final isMyMediaRow = row.rowType == HomeRowType.libraryTiles;
+    if (row.id == 'mdblist_watching_now') {
+      final height = posterSize.landscapeHeight.toDouble() * platformScale;
+      return (
+        url: item.rawData['BackdropPath'] as String?,
+        width: height * (16 / 9),
+        aspectRatio: 16 / 9,
+      );
+    }
     if (isRowsV2 && !isModernMyMediaStatic) {
       final v2ImageHeight =
           modernImageHeight(posterSize, platformScale);
@@ -6667,6 +7068,9 @@ class _ContentRowsState extends State<_ContentRows>
     HomeRow row,
     ImageType imageType,
   ) {
+    if (row.id == 'mdblist_watching_now') {
+      return 16 / 9;
+    }
     if (row.isAudio) {
       return 1.0;
     }
@@ -6714,7 +7118,15 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
+    final studioLogo = item.rawData[studioLogoUrlKey];
+    if (studioLogo is String) return studioLogo;
+
     if (item.type == 'Studio' || item.type == 'Network') {
+      final maxW = artworkRequestWidth(
+        height * (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9),
+        requestScale,
+        ArtworkShape.landscape,
+      );
       final primaryUrl = _resolvePrimaryImageUrl(
         item,
         imageApi,
@@ -6723,13 +7135,21 @@ class _ContentRowsState extends State<_ContentRows>
           requestScale,
           ArtworkShape.poster,
         ),
-        maxWidth: artworkRequestWidth(
-          height * 16 / 9,
-          requestScale,
-          ArtworkShape.landscape,
-        ),
+        maxWidth: maxW,
       );
       if (primaryUrl != null) return primaryUrl;
+      // Jellyfin studios usually have only a Thumb, so a poster row would
+      // otherwise have nothing to show. Thumb and banner rows reach it below.
+      if (imageType == ImageType.poster) {
+        final thumbTag = _tagForType(item, 'Thumb');
+        if (thumbTag != null) {
+          return imageApi.getThumbImageUrl(
+            item.id,
+            maxWidth: maxW,
+            tag: thumbTag,
+          );
+        }
+      }
     }
 
     if (item.serverId == 'seerr') {

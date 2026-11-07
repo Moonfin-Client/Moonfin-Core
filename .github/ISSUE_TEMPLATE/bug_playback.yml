@@ -169,13 +169,13 @@ body:
         Diagnostic logging is off by default and is kept in memory only, so turn it on before you reproduce the problem. There's no log file on disk to go looking for.
 
         1. Settings > About > Diagnostics & Logging
-        2. Turn on "Enable diagnostic logging"
+        2. Turn on "Diagnostic Logging"
         3. Reproduce the problem, and don't restart the app afterwards, restarting clears the buffer
         4. Press "Copy all logs" and paste the result here
 
         "Send report to server" uploads to your own server, not to us, so the filename it shows you doesn't help here. Only use it if you administer that server and will fetch the file from Administration > Logs and attach it yourself.
 
-        Full instructions: https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs
+        Full instructions are on the [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs) wiki page.
       render: shell
     validations:
       required: true

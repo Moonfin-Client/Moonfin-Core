@@ -110,5 +110,7 @@ body:
     id: logs
     attributes:
       label: Logs / extra context (optional)
+      description: |
+        Paste a diagnostic log here if you have one. The [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs) wiki page has the steps.
     validations:
       required: false

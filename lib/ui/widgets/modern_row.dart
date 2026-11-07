@@ -20,11 +20,11 @@ double modernImageHeight(PosterSize posterSize, double platformScale) =>
     posterSize.portraitHeight * platformScale;
 
 /// Room under a Modern poster for the title, the metadata line, the ratings
-/// and three lines of overview. Phones only show the title and one line.
+/// and three lines of overview. A phone gets no room from the lowest padding
+/// step, so its budget alone has to fit a tapped card.
 double modernMetadataBudget(UserPreferences prefs, RatingSettings ratings) {
-  if (PlatformDetection.useMobileUi) return 50.0;
   final ratingsPadding = prefs.get(ratings.additionalRatings) ? 8.0 : 0.0;
-  return 175.0 + ratingsPadding;
+  return (PlatformDetection.useMobileUi ? 150.0 : 175.0) + ratingsPadding;
 }
 
 /// How far a grown card's ratings and overview can run before the row ends.
@@ -342,7 +342,7 @@ class ModernCardDetails extends StatelessWidget {
             enabledRatings: prefs.get(ratingSettings.sources),
             showLabels: prefs.get(ratingSettings.labels),
             showBadges: prefs.get(ratingSettings.badges),
-            singleLine: !PlatformDetection.useMobileUi,
+            singleLine: true,
           ),
         if (overview.isNotEmpty &&
             !prefs.get(UserPreferences.hideHomeMediaDescription))

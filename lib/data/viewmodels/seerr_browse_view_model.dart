@@ -210,7 +210,8 @@ class SeerrBrowseViewModel extends ChangeNotifier {
 
   final SeerrRepository _repo;
   final String? filterId;
-  final String mediaType;
+  String _mediaType;
+  String get mediaType => _mediaType;
   final String? filterType;
 
   bool _requestLookupLoaded = false;
@@ -225,7 +226,7 @@ class SeerrBrowseViewModel extends ChangeNotifier {
   SeerrBrowseViewModel(
     this._repo, {
     this.filterId,
-    required this.mediaType,
+    required this._mediaType,
     this.filterType,
   }) {
     _state = SeerrBrowseState(sortBy: sortOptions.first);
@@ -318,6 +319,30 @@ class SeerrBrowseViewModel extends ChangeNotifier {
   void setSortBy(SeerrSortOption option) {
     if (option.value == _state.sortBy.value) return;
     _state = _state.copyWith(sortBy: option);
+    load();
+  }
+
+  /// Genres and series statuses belong to one media type, so switching drops
+  /// them and reads the genre list again. The sort carries over by name, since
+  /// its field differs between movies and series.
+  void setMediaType(String type) {
+    if (type == _mediaType) return;
+    _mediaType = type;
+    final sort = _state.sortBy;
+    final match = sortOptions.where((o) => o.label == sort.label).firstOrNull;
+    final direction = sort.value.endsWith('.asc') ? 'asc' : 'desc';
+    _filterOptionsRequested = false;
+    _filterGenres = const [];
+    _state = _state.copyWith(
+      sortBy: match == null
+          ? sortOptions.first
+          : SeerrSortOption(
+              match.label,
+              '${match.value.split('.').first}.$direction',
+            ),
+      genreIds: const {},
+      tvStatuses: const {},
+    );
     load();
   }
 

@@ -9,12 +9,29 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
+import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
+import 'package:moonfin/data/repositories/calendar_repository.dart';
+import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/services/background_service.dart';
+import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/row_data_source.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/browse/book_category_screen.dart';
+import 'package:moonfin/ui/screens/browse/classic_book_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/immersive_music_screen.dart';
+import 'package:moonfin/ui/screens/browse/library_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
+import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
@@ -27,14 +44,19 @@ import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/trickplay.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seasonal/seasonal_effects.dart';
 import 'package:moonfin/ui/widgets/settings/preference_tiles.dart';
 import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
+import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
 import 'package:moonfin/util/platform_detection.dart';
-import 'package:server_core/server_core.dart' show ImageApi, MediaServerClient;
+import 'package:playback_core/playback_core.dart'
+    show PlaybackManager, QueueService;
+import 'package:server_core/server_core.dart'
+    show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Users extends Mock implements UserRepository {}
@@ -42,6 +64,41 @@ class _Users extends Mock implements UserRepository {}
 class _Client extends Mock implements MediaServerClient {}
 
 class _Images extends Mock implements ImageApi {}
+
+class _Sync extends Mock implements PluginSyncService {}
+
+class _Calendar extends Mock implements CalendarRepository {}
+
+class _Factory extends Mock implements MediaServerClientFactory {}
+
+class _MdbList extends Mock implements MdbListRepository {}
+
+class _Backdrops extends Mock implements BackgroundService {}
+
+class _Item extends Fake implements AggregatedItem {}
+
+class _Rows extends Mock implements RowDataSource {}
+
+class _Playback extends Mock implements PlaybackManager {}
+
+/// Two films in a library called Films, whatever the call asks for.
+class _Items implements ItemsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => switch (invocation.memberName) {
+    #getItems => Future.value(<String, dynamic>{
+      'Items': [
+        for (final name in ['First Film', 'Second Film'])
+          {'Id': name, 'Name': name, 'Type': 'Movie', 'ServerId': 'server'},
+      ],
+      'TotalRecordCount': 2,
+    }),
+    #getItem => Future.value(<String, dynamic>{
+      'Name': 'Films',
+      'CollectionType': 'movies',
+    }),
+    _ => super.noSuchMethod(invocation),
+  };
+}
 
 /// Items with no artwork URLs, so images fall back to drawn placeholders and
 /// nothing touches the network.
@@ -367,7 +424,7 @@ void main() {
     });
   });
 
-  group('the scene chips on a TV', () {
+  group('the scene pills on a TV', () {
     late AppLocalizations l10n;
 
     setUp(() {
@@ -376,20 +433,15 @@ void main() {
       l10n = lookupAppLocalizations(const Locale('en'));
     });
 
-    Future<Map<SettingsPreviewScene, FocusNode>> pumpChips(
+    Future<FocusNode> pumpScenes(
       WidgetTester tester,
       SettingsPreviewController controller, {
       required double width,
       required double scale,
+      VoidCallback? onExitLeft,
     }) async {
-      final nodes = {
-        for (final scene in SettingsPreviewScene.values) scene: FocusNode(),
-      };
-      addTearDown(() {
-        for (final node in nodes.values) {
-          node.dispose();
-        }
-      });
+      final node = FocusNode();
+      addTearDown(node.dispose);
       await tester.pumpWidget(
         host(
           controller,
@@ -402,9 +454,14 @@ void main() {
                 alignment: Alignment.topLeft,
                 child: SizedBox(
                   width: width,
-                  child: SettingsPreviewSceneChips(
-                    controller: controller,
-                    focusNodes: nodes,
+                  // The preview rebuilds the strip as the scene changes.
+                  child: ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) => SettingsPreviewScenes(
+                      controller: controller,
+                      focusNode: node,
+                      onExitLeft: onExitLeft,
+                    ),
                   ),
                 ),
               ),
@@ -412,80 +469,85 @@ void main() {
           ),
         ),
       );
+      // The strip measures its labels a frame after it's built.
+      await tester.pump();
       await tester.pump();
       expect(tester.takeException(), isNull);
-      return nodes;
+      return node;
     }
 
-    Rect chip(WidgetTester tester, SettingsPreviewScene scene) =>
+    Rect scene(WidgetTester tester, SettingsPreviewScene scene) =>
         tester.getRect(find.text(settingsPreviewSceneName(l10n, scene)));
 
     // 622 is what the TV layout leaves the preview column.
     for (final scale in DesktopUiScale.values) {
-      testWidgets('the chips get their room first at UI scale ${scale.name}', (
-        tester,
-      ) async {
-        await pumpChips(
+      testWidgets('the strip stays in its row beside the label at UI scale '
+          '${scale.name}', (tester) async {
+        await pumpScenes(
           tester,
           SettingsPreviewController(),
           width: 622,
           scale: scale.scaleFactor,
         );
+        final strip = tester.getRect(find.byType(SlidingPillTabs));
         final row = tester.getRect(find.byType(SingleChildScrollView));
-        final label = tester.getSize(
+        final label = tester.getRect(
           find.text(l10n.settingsLivePreview.toUpperCase()),
         );
-        final first = chip(tester, SettingsPreviewScene.home);
-        expect(first.left, greaterThanOrEqualTo(row.left));
-        expect(first.right, lessThanOrEqualTo(row.right));
-        // Either every chip fits, or the label gave up all of its room
-        // before any chip went past the edge.
-        final last = chip(tester, settingsPreviewScenes.last);
-        expect(
-          last.right <= row.right || label.width == 0,
-          isTrue,
-          reason: 'label ${label.width}, chips end ${last.right} of ${row.right}',
-        );
-        if (scale.scaleFactor <= DesktopUiScale.large.scaleFactor) {
-          expect(last.right, lessThanOrEqualTo(row.right));
-        }
+        expect(label.right, lessThanOrEqualTo(strip.left));
+        expect(strip.right, lessThanOrEqualTo(622));
+        expect(scene(tester, SettingsPreviewScene.home).left,
+            greaterThanOrEqualTo(row.left));
         debugDefaultTargetPlatformOverride = null;
       });
     }
 
-    testWidgets('chips too wide for the row scroll with the first in view', (
+    testWidgets('scenes too wide for the row scroll with the first in view', (
       tester,
     ) async {
-      await pumpChips(
+      await pumpScenes(
         tester,
         SettingsPreviewController(),
-        width: 260,
-        scale: DesktopUiScale.greatGrandparents.scaleFactor,
+        width: 300,
+        scale: 1,
       );
       final row = tester.getRect(find.byType(SingleChildScrollView));
-      final first = chip(tester, SettingsPreviewScene.home);
+      final first = scene(tester, SettingsPreviewScene.home);
       expect(first.left, greaterThanOrEqualTo(row.left));
       expect(first.right, lessThanOrEqualTo(row.right));
       expect(
-        chip(tester, SettingsPreviewScene.search).right,
+        scene(tester, SettingsPreviewScene.search).right,
         greaterThan(row.right),
       );
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('focusing a chip shows its scene', (tester) async {
+    testWidgets('Left and Right switch scenes and Left off the first leaves', (
+      tester,
+    ) async {
       final controller = SettingsPreviewController();
-      final nodes = await pumpChips(
+      var left = 0;
+      final node = await pumpScenes(
         tester,
         controller,
         width: 622,
         scale: 1,
+        onExitLeft: () => left++,
       );
-      nodes[SettingsPreviewScene.player]!.requestFocus();
+      node.requestFocus();
       await tester.pump();
-      expect(controller.scene, SettingsPreviewScene.player);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.details);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(left, 0);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      expect(left, 1);
 
       // Focus back on a setting hands the preview back to it.
+      controller.showScene(SettingsPreviewScene.player);
       controller.focus(
         const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
       );
@@ -2259,5 +2321,438 @@ void main() {
       expect(prefs.get(UserPreferences.subtitlesTextColor), 0xFFFFFFFF);
       debugDefaultTargetPlatformOverride = null;
     });
+  });
+
+  group('the calendar scene', () {
+    late _Sync sync;
+
+    setUp(() {
+      registerFallbackValue(DateTime(2026));
+      sync = _Sync();
+      when(() => sync.pluginAvailable).thenReturn(true);
+      when(() => sync.seerrAvailable).thenReturn(false);
+      when(() => sync.calendarAvailable).thenReturn(true);
+      when(() => sync.calendarRemindersAvailable).thenReturn(false);
+      when(() => sync.calendarDaysBack).thenReturn(14);
+      when(() => sync.calendarDaysAhead).thenReturn(90);
+      GetIt.instance.registerSingleton<PluginSyncService>(sync);
+
+      final now = DateTime.now();
+      final calendar = _Calendar();
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'aired',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.subtract(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Aired Show',
+            seasonNumber: 1,
+            episodeNumber: 4,
+            hasFile: true,
+            itemId: 'series',
+            episodeId: 'episode',
+          ),
+          CalendarEntry(
+            key: 'next',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Upcoming Show',
+            episodeTitle: 'The Next One',
+            seasonNumber: 2,
+            episodeNumber: 1,
+          ),
+        ]),
+      );
+      GetIt.instance.registerSingleton<CalendarRepository>(calendar);
+    });
+
+    test('its settings show on it, and ones it never draws stay put', () {
+      for (final key in [
+        UserPreferences.calendarStyle.key,
+        UserPreferences.calendarScope.key,
+        UserPreferences.calendarShowBadges.key,
+        UserPreferences.calendarColorBy.key,
+        UserPreferences.calendarImageType.key,
+        UserPreferences.calendarSpoilerSafe.key,
+        UserPreferences.calendarReminders.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.calendar,
+          reason: key,
+        );
+      }
+      // The release types are shared with the Upcoming Movies row, week start
+      // only changes the month grid, and the select action only acts on a press.
+      for (final key in [
+        UserPreferences.radarrCalendarShowCinema.key,
+        UserPreferences.calendarWeekStart.key,
+        UserPreferences.calendarSelectAction.key,
+      ]) {
+        expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
+      }
+      expect(
+        SettingsPreviewController.sceneForKey(
+          UserPreferences.showCalendarButton.key,
+        ),
+        SettingsPreviewScene.home,
+      );
+    });
+
+    test('the chip waits on the server offering the calendar', () {
+      expect(settingsPreviewScenes, contains(SettingsPreviewScene.calendar));
+      when(() => sync.calendarAvailable).thenReturn(false);
+      expect(
+        settingsPreviewScenes,
+        isNot(contains(SettingsPreviewScene.calendar)),
+      );
+    });
+
+    for (final layout in [
+      InterfaceLayout.tv,
+      InterfaceLayout.desktop,
+      InterfaceLayout.phone,
+    ]) {
+      testWidgets('draws the style a picker tries on $layout', (tester) async {
+        debugDefaultTargetPlatformOverride = layout == InterfaceLayout.desktop
+            ? TargetPlatform.linux
+            : TargetPlatform.android;
+        PlatformDetection.setInterfaceLayout(layout);
+        // A phone's top bar asks the player for its height, so the bottom bar
+        // keeps that out of the test.
+        if (layout == InterfaceLayout.phone) {
+          await GetIt.instance<UserPreferences>().set(
+            UserPreferences.navbarPosition,
+            NavbarPosition.bottom,
+          );
+        }
+        SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+        // The test font's glyphs are a full em wide, so the calendar's header
+        // chips only run out of room here. Anything else still fails.
+        final onError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (!details.exceptionAsString().contains('overflowed')) {
+            onError?.call(details);
+          }
+        };
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        // One frame starts the load and the next draws what it found.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        for (final position in NavbarPosition.values) {
+          controller
+            ..tryValue('pref_navbar_position', position)
+            ..tryValue('pref_calendar_style', CalendarStyle.countdown);
+          await tester.pump(const Duration(milliseconds: 300));
+          expect(find.byType(CalendarCountdownView), findsOneWidget);
+          expect(find.byType(CalendarAgendaView), findsNothing);
+          expect(tester.takeException(), isNull);
+        }
+
+        controller.clearTry('pref_calendar_style');
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        await tester.pumpWidget(const SizedBox());
+        FlutterError.onError = onError;
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+  });
+
+  group('the library scene', () {
+    AggregatedLibrary library(String id, String type) => AggregatedLibrary(
+      id: id,
+      name: id,
+      collectionType: type,
+      serverId: 'server',
+    );
+
+    late _Backdrops backdrops;
+
+    setUp(() {
+      registerFallbackValue(BlurContext.browsing);
+      registerFallbackValue(_Item());
+      final client = _Client();
+      when(() => client.itemsApi).thenReturn(_Items());
+      when(() => client.imageApi).thenReturn(_Images());
+      when(() => client.baseUrl).thenReturn('http://server');
+      when(() => client.userId).thenReturn('user');
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      final factory = _Factory();
+      when(() => factory.clientForServerOrActive(any())).thenReturn(client);
+      backdrops = _Backdrops();
+      when(() => backdrops.backdropUrlsFor(any())).thenReturn(const []);
+      GetIt.instance
+        ..registerSingleton<MediaServerClientFactory>(factory)
+        ..registerSingleton<MdbListRepository>(_MdbList())
+        ..registerSingleton<BackgroundService>(backdrops);
+    });
+
+    test('its settings show on it', () {
+      for (final key in [
+        UserPreferences.libraryStyle.key,
+        UserPreferences.groupItemsIntoCollections.key,
+        UserPreferences.showMediaDetailsOnLibraryPage.key,
+        UserPreferences.libraryCardTitles.key,
+        UserPreferences.useDetailedSubHeadings.key,
+        UserPreferences.hideBackdropsInLibraries.key,
+        UserPreferences.musicLibraryStyle.key,
+        UserPreferences.bookLibraryStyle.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.library,
+          reason: key,
+        );
+      }
+    });
+
+    test('the chip waits on a video, music or book library', () {
+      SetupPreviewData.libraries.value = [library('photos', 'homevideos')];
+      expect(settingsPreviewScenes, isNot(contains(SettingsPreviewScene.library)));
+      SetupPreviewData.libraries.value = [library('books', 'books')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+      SetupPreviewData.libraries.value = [library('music', 'music')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('shows', 'tvshows'),
+      ];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+    });
+
+    /// Focuses [prefKey] beside a Movies library and [other], with the
+    /// services the music and book screens read, and checks each tried style
+    /// draws its own screen in place of the video library.
+    Future<SettingsPreviewController> expectStylesDrawn(
+      WidgetTester tester,
+      AggregatedLibrary other,
+      String prefKey,
+      List<(Object, Type)> styles,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [library('films', 'movies'), other];
+      final playback = _Playback();
+      when(() => playback.queueService).thenReturn(QueueService());
+      GetIt.instance
+        ..registerSingleton<PlaybackManager>(playback)
+        ..registerSingleton<RowDataSource>(_Rows())
+        ..registerSingleton<MediaServerClient>(
+          GetIt.instance<MediaServerClientFactory>().clientForServerOrActive(
+            null,
+          ),
+        );
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      for (final (style, screen) in styles) {
+        controller.tryValue(prefKey, style);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(screen), findsOneWidget, reason: '$style');
+        expect(find.byType(LibraryBrowseScreen), findsNothing);
+        expect(tester.takeException(), isNull);
+      }
+      return controller;
+    }
+
+    testWidgets('Book Library Style draws the book library in the style a '
+        'picker tries', (tester) async {
+      await expectStylesDrawn(
+        tester,
+        library('shelf', 'books'),
+        'pref_book_library_style',
+        [
+          (BookLibraryStyle.classic, ClassicBookBrowseScreen),
+          (BookLibraryStyle.readingRoom, ReadingRoomBookScreen),
+          (BookLibraryStyle.bookstore, BookCategoryScreen),
+        ],
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('Music Library Style draws the music library in the style a '
+        'picker tries and leaves the app backdrop alone', (tester) async {
+      final controller = await expectStylesDrawn(
+        tester,
+        library('tunes', 'music'),
+        'pref_music_library_style',
+        [
+          (MusicLibraryStyle.classic, MusicBrowseScreen),
+          (MusicLibraryStyle.quickAccess, QuickAccessMusicScreen),
+          (MusicLibraryStyle.immersive, ImmersiveMusicScreen),
+        ],
+      );
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+
+      // Any other library setting goes back to the video library.
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(LibraryBrowseScreen), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('draws the first video library in the style a picker tries', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('films', 'movies'),
+        library('shows', 'tvshows'),
+      ];
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      LibraryBrowseScreen screen() =>
+          tester.widget<LibraryBrowseScreen>(find.byType(LibraryBrowseScreen));
+      expect(screen().libraryId, 'films');
+      expect(screen().previewStyle, LibraryStyle.classic);
+
+      for (final style in LibraryStyle.values) {
+        controller.tryValue('pref_library_style', style);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(screen().previewStyle, style);
+        expect(tester.takeException(), isNull);
+      }
+      // The first film stands in for the focused card, and its backdrop is
+      // worked out without setting the app's own.
+      expect(find.text('First Film'), findsWidgets);
+      verify(() => backdrops.backdropUrlsFor(any())).called(greaterThan(0));
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
+  testWidgets('the seasonal settings draw their effect over Home and pause '
+      'the one behind Settings meanwhile', (tester) async {
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalSurprise.key),
+      SettingsPreviewScene.home,
+    );
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalDensity.key),
+      SettingsPreviewScene.home,
+    );
+    // The follower follows focus, which the preview doesn't have.
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalFollower.key),
+      isNull,
+    );
+
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController();
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+      ),
+    );
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+
+    controller
+      ..focus(
+        SettingsPreviewEntry(
+          title: 'Seasonal Effect',
+          prefKey: UserPreferences.seasonalSurprise.key,
+        ),
+      )
+      ..tryValue(UserPreferences.seasonalSurprise.key, UserPreferences.seasonalSnow)
+      ..tryValue(
+        UserPreferences.seasonalDensity.key,
+        UserPreferences.seasonalDensityHeavy,
+      );
+    await tester.pump(const Duration(milliseconds: 300));
+    final effect = tester.widget<SeasonalEffectsHost>(
+      find.byType(SeasonalEffectsHost),
+    );
+    expect(effect.effect, UserPreferences.seasonalSnow);
+    expect(effect.density, UserPreferences.seasonalDensityHeavy);
+    expect(seasonalPreviewsRunning.value, 1);
+
+    // It holds still while keys are pressed, and runs again after.
+    bool running() => tester
+        .widget<TickerMode>(
+          find
+              .ancestor(
+                of: find.byType(SeasonalEffectsHost),
+                matching: find.byType(TickerMode),
+              )
+              .first,
+        )
+        .enabled;
+    expect(running(), isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(running(), isFalse);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(running(), isTrue);
+
+    // Any other setting takes the effect away and lets Home's run again.
+    controller.focus(
+      const SettingsPreviewEntry(title: 'Clock', prefKey: 'pref_clock_behavior'),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+    expect(seasonalPreviewsRunning.value, 0);
+    await tester.pumpWidget(const SizedBox());
   });
 }

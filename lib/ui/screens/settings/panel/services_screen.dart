@@ -47,7 +47,10 @@ class _ServicesScreenState extends State<_ServicesScreen> {
           // The plugin probe lands after sign in, so the list waits on it
           // rather than reading the flag once and never hearing the answer.
           child: ListenableBuilder(
-            listenable: achievementsService,
+            listenable: Listenable.merge([
+              achievementsService,
+              GetIt.instance<PluginSyncService>(),
+            ]),
             builder: (context, _) => _buildList(l10n, achievementsService),
           ),
         ),
@@ -60,6 +63,7 @@ class _ServicesScreenState extends State<_ServicesScreen> {
       l10n.seerr,
     );
     final seerrShown = seerrOnAnySignedInServer();
+    final calendarShown = GetIt.instance<PluginSyncService>().calendarAvailable;
     return ListView(
       children: [
         adaptiveListSection(
@@ -79,9 +83,19 @@ class _ServicesScreenState extends State<_ServicesScreen> {
                 onTap: () =>
                     context.pushSettingsScreen(const SeerrConfigScreen()),
               ),
-            if (achievements.available)
+            if (calendarShown)
               _TvSettingsListTile(
                 autofocus: !seerrShown,
+                leading: const Icon(Icons.calendar_month),
+                title: Text(l10n.calendar),
+                subtitle: Text(l10n.calendarSettingsSubtitle),
+                onTap: () => context.pushSettingsScreen(
+                  const _CalendarSettingsScreen(),
+                ),
+              ),
+            if (achievements.available)
+              _TvSettingsListTile(
+                autofocus: !seerrShown && !calendarShown,
                 leading: const Icon(
                   Icons.military_tech,
                   color: Color(0xFFFFC107),

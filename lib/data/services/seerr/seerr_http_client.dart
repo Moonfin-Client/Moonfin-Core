@@ -304,6 +304,7 @@ class SeerrHttpClient {
     int? profileId,
     String? rootFolder,
     int? serverId,
+    int? tvdbId,
   }) async {
     final body = <String, dynamic>{
       'mediaId': mediaId,
@@ -320,6 +321,9 @@ class SeerrHttpClient {
       } else {
         body['seasons'] = seasons;
       }
+      // Only set when TMDB has no TVDB id for the series and the viewer picked
+      // Sonarr's match, the way Seerr's own request modal does.
+      if (tvdbId != null) body['tvdbId'] = tvdbId;
     }
 
     final response = await _dio.post(
@@ -818,6 +822,18 @@ class SeerrHttpClient {
     );
     _requireSuccess(response, 'getSonarrServerDetails');
     return response.data as Map<String, dynamic>;
+  }
+
+  /// The series Sonarr matches for a TMDB id, as Seerr's request modal lists
+  /// them when TMDB has no TVDB id for the series.
+  Future<List<dynamic>> lookupSonarrSeries(int tmdbId) async {
+    final response = await _dio.get(
+      _apiUrl('service/sonarr/lookup/$tmdbId'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'lookupSonarrSeries');
+    final data = response.data;
+    return data is List ? data : const [];
   }
 
   Future<List<dynamic>> getRadarrSettings() async {

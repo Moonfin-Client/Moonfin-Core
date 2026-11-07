@@ -463,6 +463,17 @@ void main() {
       expect(opener.hasFocus, isTrue);
       expect(find.text('Open'), findsOneWidget);
     });
+
+    testWidgets('the Record button closes the dialog it opened', (
+      tester,
+    ) async {
+      await open(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.mediaRecord);
+      await tester.pumpAndSettle();
+      expect(completed, isTrue);
+      expect(result, isNull);
+      expect(opener.hasFocus, isTrue);
+    });
   });
 
   group('recording flow shared by both Live TV players', () {

@@ -123,6 +123,17 @@ class PluginSyncService extends ChangeNotifier {
   bool _smartSearchEnabled = false;
   bool get smartSearchEnabled => _pluginAvailable && _smartSearchEnabled;
 
+  /// Whether this user can open the arr calendar. Off when no Sonarr or Radarr
+  /// is linked, or the admin kept the calendar to admins.
+  bool _calendarAvailable = false;
+  bool get calendarAvailable => _pluginAvailable && _calendarAvailable;
+  int _calendarDaysBack = 14;
+  int get calendarDaysBack => _calendarDaysBack;
+  int _calendarDaysAhead = 90;
+  int get calendarDaysAhead => _calendarDaysAhead;
+  bool _calendarReminders = false;
+  bool get calendarRemindersAvailable => _pluginAvailable && _calendarReminders;
+
   /// Whether the server will take an uploaded diagnostic report. An older
   /// plugin, or none at all, leaves it false.
   bool _clientLogSupported = false;
@@ -228,6 +239,11 @@ class PluginSyncService extends ChangeNotifier {
     return value is String ? value : null;
   }
 
+  int? _readCount(Map<String, dynamic> data, String key) {
+    final value = _readValue(data, key);
+    return value is num && value >= 0 ? value.toInt() : null;
+  }
+
   void resetState({
     bool notify = true,
     bool stopStream = true,
@@ -254,6 +270,10 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbDetailsSupported = false;
     _recommendationsSupported = false;
     _smartSearchEnabled = false;
+    _calendarAvailable = false;
+    _calendarDaysBack = 14;
+    _calendarDaysAhead = 90;
+    _calendarReminders = false;
     _clientLogSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
@@ -366,6 +386,10 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'recommendationsSupported') ?? false;
       _smartSearchEnabled =
           _readBool(pingResult, 'smartSearchEnabled') ?? false;
+      _calendarAvailable = _readBool(pingResult, 'calendarAvailable') ?? false;
+      _calendarDaysBack = _readCount(pingResult, 'calendarDaysBack') ?? 14;
+      _calendarDaysAhead = _readCount(pingResult, 'calendarDaysAhead') ?? 90;
+      _calendarReminders = _readBool(pingResult, 'calendarReminders') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
@@ -1755,20 +1779,18 @@ class PluginSyncService extends ChangeNotifier {
               }
               continue;
             }
-            if (type == prefs.HomeSectionType.radarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableRadarrCalendar);
-              final idx = sections.indexWhere((s) => s.type == type);
-              if (idx >= 0) {
-                sections[idx] = sections[idx].copyWith(enabled: localEnabled);
-              } else {
-                sections.add(
-                  HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
-                );
-              }
-              continue;
-            }
-            if (type == prefs.HomeSectionType.sonarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableSonarrCalendar);
+            // These rows follow their own synced switch, not the row order.
+            final toggle = switch (type) {
+              prefs.HomeSectionType.radarrCalendar =>
+                UserPreferences.enableRadarrCalendar,
+              prefs.HomeSectionType.sonarrCalendar =>
+                UserPreferences.enableSonarrCalendar,
+              prefs.HomeSectionType.mdblistWatchingNow =>
+                UserPreferences.mdblistWatchingNowEnabled,
+              _ => null,
+            };
+            if (toggle != null) {
+              final localEnabled = _prefs.get(toggle);
               final idx = sections.indexWhere((s) => s.type == type);
               if (idx >= 0) {
                 sections[idx] = sections[idx].copyWith(enabled: localEnabled);
@@ -1888,6 +1910,13 @@ class PluginSyncService extends ChangeNotifier {
         );
         continue;
       }
+      if (type == prefs.HomeSectionType.mdblistWatchingNow) {
+        final localEnabled = _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
       sections.add(
         HomeSectionConfig(type: type, enabled: false, order: order++),
       );
@@ -1919,8 +1948,10 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-      final enabled = type == prefs.HomeSectionType.seasonal &&
-          _prefs.get(UserPreferences.seasonalRowEnabled);
+      final enabled = (type == prefs.HomeSectionType.seasonal &&
+              _prefs.get(UserPreferences.seasonalRowEnabled)) ||
+          (type == prefs.HomeSectionType.mdblistWatchingNow &&
+              _prefs.get(UserPreferences.mdblistWatchingNowEnabled));
       sections.add(
         HomeSectionConfig(type: type, enabled: enabled, order: order++),
       );
@@ -2382,6 +2413,8 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.enableSonarrCalendar,
       prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
       prefs.HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        UserPreferences.mdblistWatchingNowEnabled,
       prefs.HomeSectionType.sinceYouWatched1 =>
         UserPreferences.sinceYouWatched1Enabled,
       prefs.HomeSectionType.sinceYouWatched2 =>

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 
@@ -660,6 +661,34 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     }
   }
 
+  /// Whether a series request first needs the viewer to pick Sonarr's match.
+  /// Sonarr can't add a series without a TVDB id, and when TMDB has none for
+  /// it Seerr drops the request once it tries to send it on. Seerr's own
+  /// request modal asks for the match in that case, so this does too. A series
+  /// already on Seerr with a TVDB id from an earlier request has one to use.
+  bool get needsSeriesMatch =>
+      _state.isTv &&
+      _state.externalIds?.tvdbId == null &&
+      _state.mediaInfo?.tvdbId == null;
+
+  /// The series Sonarr offers for this title, empty when it has none.
+  ///
+  /// Null when there is no Sonarr to ask: a Seerr with none set up answers
+  /// 404, and Silo has none at all. Seerr only drops a series without a TVDB
+  /// id when it has a Sonarr to send it to, so the request can still go out
+  /// then. Any other failure is thrown, since Sonarr is there and would drop
+  /// a request sent without the match.
+  Future<List<SeerrSonarrSeries>?> lookupSeriesMatches() async {
+    try {
+      return await _repo.lookupSonarrSeries(_state.tmdbId);
+    } on UnsupportedError {
+      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
   Future<void> submitRequest({
     bool is4k = false,
     List<int>? seasons,
@@ -667,6 +696,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     int? profileId,
     String? rootFolder,
     int? serverId,
+    int? tvdbId,
   }) async {
     if (_state.isRequesting) {
       return;
@@ -686,6 +716,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         profileId: profileId,
         rootFolder: rootFolder,
         serverId: serverId,
+        tvdbId: tvdbId,
       );
 
       await _reloadDetails('Request submitted');

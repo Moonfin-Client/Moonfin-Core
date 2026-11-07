@@ -18,6 +18,7 @@ import 'focus/glass_focus_halo.dart';
 import 'marquee_text.dart';
 import 'live_tv/incomplete_recording.dart';
 import 'media_badge.dart';
+import 'poster_badges.dart';
 import 'seerr/seerr_status_dot.dart';
 import '../mixins/focus_state_mixin.dart';
 
@@ -147,6 +148,11 @@ class MediaCard extends StatefulWidget {
   /// movies, which have no series to inherit a verdict from.
   final String? animeMarkerItemId;
 
+  /// The item behind the admin's poster badges, such as VFQ. Set only for the server's
+  /// own items: a Seerr card's id is a TMDB id, which the server could mistake for one
+  /// of its own.
+  final String? posterBadgeItemId;
+
   /// The item behind the Incomplete badge, for cards that can show a Live TV
   /// recording. The badge draws nothing unless the item is incomplete.
   final String? recordingItemId;
@@ -211,6 +217,7 @@ class MediaCard extends StatefulWidget {
     this.showLabel = true,
     this.classicHomeLabel = false,
     this.animeMarkerItemId,
+    this.posterBadgeItemId,
     this.recordingItemId,
   });
 
@@ -400,9 +407,16 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     final subtitleStyle = baseTextStyle.copyWith(
       color: subtitleColor,
       fontSize: classic ? tvPx(20) : null,
-      fontWeight: classic ? FontWeight.w400 : null,
+      fontWeight: isNeon
+          ? FontWeight.w600
+          : (classic ? FontWeight.w400 : null),
       height: classic ? 28 / 20 : null,
-      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+      shadows: isNeon
+          ? const [
+              Shadow(blurRadius: 4, color: Colors.black),
+              Shadow(blurRadius: 6, color: Colors.black87),
+            ]
+          : const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
     final textScaler = MediaQuery.textScalerOf(context);
     // The classic home label takes its line heights straight from the canvas.
@@ -478,6 +492,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       imageSourceAspectRatio: widget.imageSourceAspectRatio,
                       overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
                       animeMarkerItemId: widget.animeMarkerItemId,
+                      posterBadgeItemId: widget.posterBadgeItemId,
                       recordingItemId: widget.recordingItemId,
                       isGenreFallback: widget.isGenreFallback,
                     ),
@@ -736,6 +751,7 @@ class _CardImage extends StatelessWidget {
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
   final String? animeMarkerItemId;
+  final String? posterBadgeItemId;
   final String? recordingItemId;
 
   const _CardImage({
@@ -762,6 +778,7 @@ class _CardImage extends StatelessWidget {
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
     this.animeMarkerItemId,
+    this.posterBadgeItemId,
     this.recordingItemId,
   });
 
@@ -901,6 +918,7 @@ class _CardImage extends StatelessWidget {
                 if (isFavorite ||
                     _showSeerrMediaTypeBadge ||
                     animeMarkerItemId != null ||
+                    posterBadgeItemId != null ||
                     recordingItemId != null)
                   Positioned(
                     top: bannerInset + (overlayOccupiesTopLeft ? 32 : 6),
@@ -920,6 +938,17 @@ class _CardImage extends StatelessWidget {
                         if (animeMarkerItemId != null)
                           AnimeItemAudioBadge(
                             itemId: animeMarkerItemId!,
+                            scale: 0.85,
+                            padding: isFavorite ||
+                                    posterBadgeItemId != null ||
+                                    recordingItemId != null
+                                ? const EdgeInsets.only(bottom: 4)
+                                : EdgeInsets.zero,
+                          ),
+                        // Takes no space until the server says the item has some.
+                        if (posterBadgeItemId != null)
+                          PosterBadges(
+                            itemId: posterBadgeItemId!,
                             scale: 0.85,
                             padding: isFavorite || recordingItemId != null
                                 ? const EdgeInsets.only(bottom: 4)
@@ -974,6 +1003,21 @@ class _CardImage extends StatelessWidget {
                           AppColorScheme.accent,
                         ),
                       ),
+                    ),
+                  ),
+                // The other corners, clear of the Seerr banner, the watched tick and
+                // the progress bar.
+                if (posterBadgeItemId != null)
+                  Positioned.fill(
+                    child: PosterBadgeCorners(
+                      itemId: posterBadgeItemId!,
+                      scale: 0.85,
+                      top:
+                          bannerInset +
+                          (showSeerrDot || _showWatchedIndicator ? 34 : 6),
+                      bottom: playedPercentage != null && playedPercentage! > 0
+                          ? 18
+                          : 6,
                     ),
                   ),
                 ...imageOverlays,

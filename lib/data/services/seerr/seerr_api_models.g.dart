@@ -1065,6 +1065,24 @@ Map<String, dynamic> _$SeerrLanguageProfileToJson(
   SeerrLanguageProfile instance,
 ) => <String, dynamic>{'id': instance.id, 'name': instance.name};
 
+SeerrSonarrSeries _$SeerrSonarrSeriesFromJson(Map<String, dynamic> json) =>
+    SeerrSonarrSeries(
+      tvdbId: (json['tvdbId'] as num).toInt(),
+      title: json['title'] as String,
+      year: (json['year'] as num?)?.toInt(),
+      overview: json['overview'] as String?,
+      remotePoster: json['remotePoster'] as String?,
+    );
+
+Map<String, dynamic> _$SeerrSonarrSeriesToJson(SeerrSonarrSeries instance) =>
+    <String, dynamic>{
+      'tvdbId': instance.tvdbId,
+      'title': instance.title,
+      'year': instance.year,
+      'overview': instance.overview,
+      'remotePoster': instance.remotePoster,
+    };
+
 SeerrSeason _$SeerrSeasonFromJson(Map<String, dynamic> json) => SeerrSeason(
   id: (json['id'] as num?)?.toInt(),
   seasonNumber: (json['seasonNumber'] as num).toInt(),

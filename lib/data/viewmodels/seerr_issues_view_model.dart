@@ -7,7 +7,8 @@ import '../services/seerr/seerr_models.dart';
 enum SeerrIssueFilter { open, resolved, all }
 
 extension SeerrIssueFilterApi on SeerrIssueFilter {
-  String? get apiValue => this == SeerrIssueFilter.all ? null : name;
+  /// Always sent, because Seerr's API spec defaults a missing filter to open.
+  String get apiValue => name;
 }
 
 const _pageSize = 20;

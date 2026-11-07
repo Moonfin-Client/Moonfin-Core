@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../data/services/item_membership_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
@@ -85,6 +86,11 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
   Future<void> _addToPlaylist(String playlistId) async {
     try {
       await _client.itemsApi.addToPlaylist(playlistId, widget.itemIds);
+      ItemMembershipService.instance.notifyItemAddedToPlaylist(
+        widget.serverId ?? '',
+        playlistId,
+        widget.itemIds,
+      );
       if (mounted) Navigator.pop(context, true);
     } catch (_) {
       if (mounted) {
@@ -105,6 +111,14 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
         name: name,
         itemIds: widget.itemIds,
       );
+      final plId = result['Id']?.toString();
+      if (plId != null && plId.isNotEmpty) {
+        ItemMembershipService.instance.notifyItemAddedToPlaylist(
+          widget.serverId ?? '',
+          plId,
+          widget.itemIds,
+        );
+      }
       if (mounted) Navigator.pop(context, result.isNotEmpty);
     } catch (_) {
       if (mounted) {

@@ -20,6 +20,7 @@ import '../../widgets/focus/focusable_toolbar_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/music/music_navigation.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -52,6 +53,7 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
   String? _backdropUrl;
   Timer? _backdropDebounce;
   bool _initialBackdropApplied = false;
+  late final bool _inPreview = inSettingsPreview(context);
 
   @override
   void initState() {
@@ -63,9 +65,11 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
     );
     _vm.addListener(_onChanged);
     _vm.load();
-    _backgroundSub = _backgroundService.backgroundStream.listen((url) {
-      if (mounted) setState(() => _backdropUrl = url);
-    });
+    if (!_inPreview) {
+      _backgroundSub = _backgroundService.backgroundStream.listen((url) {
+        if (mounted) setState(() => _backdropUrl = url);
+      });
+    }
     _prefs.addListener(_onChanged);
   }
 
@@ -88,7 +92,13 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
       final featured = _vm.featuredItem;
       if (featured != null) {
         _initialBackdropApplied = true;
-        _backgroundService.setBackground(featured);
+        if (_inPreview) {
+          _backdropUrl = _backgroundService
+              .backdropUrlsFor(featured)
+              .firstOrNull;
+        } else {
+          _backgroundService.setBackground(featured);
+        }
       }
     }
     setState(() {});

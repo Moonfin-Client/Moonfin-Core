@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../../auth/repositories/server_repository.dart';
@@ -133,10 +134,24 @@ Future<void> _navigate(String route, String? pinnedUserId) async {
   await _startupSettled();
   final activeUserId = GetIt.instance<SessionRepository>().activeUserId;
   if (pinnedUserId == null || pinnedUserId == activeUserId) {
-    appRouter.go(route);
+    unawaited(openLinkedRoute(appRouter, route));
     return;
   }
   await _switchUserAndNavigate(route, pinnedUserId);
+}
+
+/// Opens a linked [route]. go() builds a nested route's parents, which would
+/// put the Live TV page, one the app never opens itself, under a Live TV link,
+/// so those open over Home instead, as the in-app entry points do.
+@visibleForTesting
+Future<void> openLinkedRoute(GoRouter router, String route) async {
+  if (!route.startsWith('${Destinations.liveTv}/')) {
+    router.go(route);
+    return;
+  }
+  router.go(Destinations.home);
+  await WidgetsBinding.instance.endOfFrame;
+  unawaited(router.push(route));
 }
 
 /// Switches to [userId] before navigating, since otherwise the route resolves
@@ -150,7 +165,7 @@ Future<void> _switchUserAndNavigate(String route, String userId) async {
   if (serverId == null ||
       _switchBlocked(userId) ||
       GetIt.instance<UserPreferences>().get(UserPreferences.kidsModeEnabled)) {
-    appRouter.go(route);
+    unawaited(openLinkedRoute(appRouter, route));
     return;
   }
 
@@ -165,13 +180,15 @@ Future<void> _switchUserAndNavigate(String route, String userId) async {
     pinned = false;
   }
   if (!pinned) {
-    appRouter.go(route);
+    unawaited(openLinkedRoute(appRouter, route));
     return;
   }
 
   // The switch rebuilds everything that follows the signed-in user, so the
   // navigation waits a frame rather than landing in the middle of that.
-  WidgetsBinding.instance.addPostFrameCallback((_) => appRouter.go(route));
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => unawaited(openLinkedRoute(appRouter, route)),
+  );
 }
 
 /// Polls until the app is no longer on the startup screen (StartupScreen's

@@ -554,9 +554,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       final versions = _names(item.mediaSources);
       final video = streams.where((stream) => stream['Type'] == 'Video');
       final size = formatMediaSourceSize(source['Size'] as int? ?? 0);
+      final path = source['Path'] as String? ?? '';
+      final fileName = path.split('/').last.split('\\').last;
       media.addAll([
         if (item.mediaSources.length > 1 && versions != null)
           _Row(l10n.version, versions),
+        if (fileName.isNotEmpty) _Row(l10n.playbackInfoFile, fileName),
         if (video.isNotEmpty)
           _Row(
             l10n.video,
@@ -772,12 +775,10 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     Color? color,
     EdgeInsetsGeometry? padding,
     bool shadow = false,
-    bool liveBlur = true,
   }) => glassPane(
     tier: _tier,
     fallbackColor: color ?? _tint(0.5),
     cornerRadius: radius,
-    sigma: liveBlur ? GlassRecipe.panelSigma : 0,
     padding: padding,
     shadow: shadow,
     context: context,
@@ -836,9 +837,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     AppLocalizations l10n,
   ) {
     final overview = _tab == _Tab.overview;
-    // Everything under these panes is already blurred or shaded, so a live
-    // blur barely shows, and on some Windows PCs it washes the window out gray.
-    final liveBlur = !PlatformDetection.isWindows;
 
     final window = Positioned(
       left: 24,
@@ -849,7 +847,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         radius: 44,
         color: _tint(0.36),
         shadow: true,
-        liveBlur: liveBlur,
         child: ClipRRect(
           borderRadius: AppRadius.circular(44),
           child: Stack(
@@ -928,7 +925,6 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 38,
           shadow: true,
-          liveBlur: liveBlur,
           padding: const EdgeInsets.all(8),
           // Unbounded across, so the row sizes to its buttons and never wraps.
           child: UnconstrainedBox(
@@ -959,13 +955,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         child: _glass(
           radius: 30,
           shadow: true,
-          liveBlur: liveBlur,
           padding: const EdgeInsets.all(6),
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 4,
+              spacing: 14,
               children: [
                 for (final (index, tab) in tabs.indexed)
                   _barTab(tab, index, tabs, l10n),
@@ -1030,13 +1025,17 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             children: [
               _tabIcon(tab),
               const SizedBox(width: 10),
-              Text(
-                _tabLabel(tab, l10n),
-                maxLines: 1,
-                style: TextStyle(
-                  color: _ink(),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                child: Text(
+                  _tabLabel(tab, l10n),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: _ink(),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

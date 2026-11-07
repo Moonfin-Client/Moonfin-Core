@@ -1577,6 +1577,8 @@ class _SearchScreenState extends State<SearchScreen>
     // the line under the name instead.
     final serverOnSubtitle = serverName != null && item.type == 'Person';
     return MediaCard(
+      // A person has no file to read labels from.
+      posterBadgeItemId: item.type == 'Person' ? null : item.id,
       title: item.name,
       subtitle: serverOnSubtitle ? serverName : _subtitle(item),
       imageUrl: _imageUrl(item, maxWidth: requestWidth),

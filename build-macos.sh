@@ -137,9 +137,9 @@ fi
 
 echo "Preparing Flutter macOS generated files..."
 if [ "$BUILD_APPSTORE_PKG" = "1" ]; then
-  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_pkg
+  flutter build macos --release --config-only --dart-define=DISTRIBUTION_CHANNEL=macos_pkg
 else
-  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
+  flutter build macos --release --config-only --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
 fi
 
 echo "Cleaning previous App Store outputs..."
@@ -264,7 +264,7 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
     DMG_ARCHIVE_PATH="$REPO_ROOT/build/macos/dmg/${APP_NAME}.xcarchive"
     rm -rf "$DMG_ARCHIVE_PATH"
     mkdir -p "$(dirname "$DMG_ARCHIVE_PATH")"
-    flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
+    flutter build macos --release --config-only --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
     DMG_ARCHIVE_CMD=(
       xcodebuild
       -workspace "$WORKSPACE"

@@ -84,6 +84,8 @@ void _safeRestoreFocus(FocusNode? node) {
 /// Use this everywhere [showDialog] is called from a TV-facing screen so
 /// keyboard/dpad focus returns to the originating widget instead of being
 /// lost to the route's default focus traversal.
+///
+/// [closeKeys] also close it, such as the remote button that opened it.
 Future<T?> showFocusRestoringDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -93,6 +95,7 @@ Future<T?> showFocusRestoringDialog<T>({
   bool useSafeArea = true,
   RouteSettings? routeSettings,
   String? barrierLabel,
+  Set<LogicalKeyboardKey> closeKeys = const {},
 }) {
   final previousFocus = FocusManager.instance.primaryFocus;
   return showAdaptiveDialog<T>(
@@ -101,6 +104,14 @@ Future<T?> showFocusRestoringDialog<T>({
       canRequestFocus: false,
       skipTraversal: true,
       onKeyEvent: (node, event) {
+        if (closeKeys.contains(event.logicalKey)) {
+          if (event is KeyDownEvent) Navigator.of(dialogContext).pop();
+          return KeyEventResult.handled;
+        }
+        // Left unhandled, Record reaches the media session, which pauses.
+        if (event.logicalKey == LogicalKeyboardKey.mediaRecord) {
+          return KeyEventResult.handled;
+        }
         if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
         if (event is KeyDownEvent) {
           // A focused text field owns backspace (it's editing, not "back");

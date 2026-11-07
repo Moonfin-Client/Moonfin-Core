@@ -72,11 +72,11 @@ jobs:
           - target: tv
             artifact: android-tv
             files: Moonfin_AndroidTV_v*.*
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -118,12 +118,23 @@ jobs:
             keytool -list -v -keystore android/app/release.keystore -storepass "$STORE_PASSWORD" >/dev/null
           fi
 
+      # The 8 GB heap in android/gradle.properties suits a dev machine, but on
+      # the 16 GB runner it leaves no room for the Dart AOT compiles. The user
+      # gradle.properties takes precedence over the project one.
+      - name: Limit Gradle memory
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError
+          kotlin.daemon.jvmargs=-Xmx2G
+          EOF
+
       - name: Build
         run: |
           chmod +x build-android.sh
           ./build-android.sh ${{ matrix.target }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.files }}
@@ -133,7 +144,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.ios }}
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -170,7 +181,7 @@ jobs:
           (cd "$TMPDIR" && zip -qry "$OLDPWD/Moonfin_iOS_v${VERSION}_unsigned.ipa" Payload)
           rm -rf "$TMPDIR"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: ios-ipa
@@ -222,7 +233,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.macos }}
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -267,7 +278,7 @@ jobs:
           chmod +x build-macos.sh
           ./build-macos.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: macos-dmg
@@ -306,7 +317,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Select Xcode 26.3
         run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
@@ -326,7 +337,7 @@ jobs:
 
       - name: Cache flutter-tvos toolchain
         id: cache-fluttertvos
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/flutter-tvos
           key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
@@ -457,7 +468,7 @@ jobs:
           cp -R "$APP" "$RUNNER_TEMP/Payload/"
           ( cd "$RUNNER_TEMP" && zip -qry "$GITHUB_WORKSPACE/Moonfin_tvOS_v${VERSION}_unsigned.ipa" Payload )
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: tvos-ipa
@@ -479,7 +490,7 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows) && inputs.distribution != 'testflight' }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -488,6 +499,27 @@ jobs:
       - name: Install Inno Setup
         shell: pwsh
         run: choco install innosetup -y --no-progress
+
+      # vcpkg builds libarchive and its dependencies from source, OpenSSL
+      # included, which took about 13 minutes of every run. Its binary cache
+      # skips that once a run on main or an earlier run of the same PR saved it.
+      - name: Find the runner's vcpkg and image versions
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          # The image version is in the key because an image update can bring
+          # a new compiler with the same vcpkg, and a cache that matched the key
+          # exactly would never be saved again. On a new image this starts from
+          # the last cache, and vcpkg's ABI hashes rebuild whatever went stale.
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Build installer
         shell: pwsh
@@ -503,7 +535,7 @@ jobs:
           Write-Host "Found Windows artifact(s):"
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         id: unsigned-windows
         with:
           name: windows-exe
@@ -530,7 +562,7 @@ jobs:
       # architecture rather than two carrying the same filename.
       - name: Replace with the signed installer
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-exe
           path: signed/Moonfin_Windows_v*.exe
@@ -544,7 +576,7 @@ jobs:
         shell: pwsh
         run: .\build-windows.ps1 -Store
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
           name: windows-msix
@@ -556,7 +588,7 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64) && inputs.distribution != 'testflight' }}
     runs-on: windows-11-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Verify ARM64 runner
         shell: pwsh
@@ -591,6 +623,27 @@ jobs:
         shell: pwsh
         run: choco install innosetup -y --no-progress
 
+      # vcpkg builds libarchive and its dependencies from source, OpenSSL
+      # included, which took about 13 minutes of every run. Its binary cache
+      # skips that once a run on main or an earlier run of the same PR saved it.
+      - name: Find the runner's vcpkg and image versions
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          # The image version is in the key because an image update can bring
+          # a new compiler with the same vcpkg, and a cache that matched the key
+          # exactly would never be saved again. On a new image this starts from
+          # the last cache, and vcpkg's ABI hashes rebuild whatever went stale.
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
+
       - name: Build ARM64 installer
         shell: pwsh
         run: .\build-windows.ps1 -Architecture arm64
@@ -605,7 +658,7 @@ jobs:
           Write-Host "Found Windows ARM64 artifact(s):"
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         id: unsigned-windows-arm64
         with:
           name: windows-arm64-exe
@@ -632,7 +685,7 @@ jobs:
       # architecture rather than two carrying the same filename.
       - name: Replace with the signed installer
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-arm64-exe
           path: signed/Moonfin_WindowsARM64_v*.exe
@@ -644,7 +697,7 @@ jobs:
         shell: pwsh
         run: .\build-windows.ps1 -Architecture arm64 -Store
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
           name: windows-arm64-msix
@@ -672,7 +725,7 @@ jobs:
             artifact_prefix: Moonfin_LinuxARM64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         if: matrix.arch == 'x64'
@@ -767,7 +820,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: linux-packages-${{ matrix.arch }}
           path: |
@@ -783,9 +836,9 @@ jobs:
   # Web, built at the root base href so the artifact runs from any static server
   web:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -794,7 +847,7 @@ jobs:
       - name: Build web
         run: flutter build web --wasm --release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: web
           path: build/web
@@ -804,13 +857,21 @@ jobs:
   # The platform builds above compile only reachable code, so a broken file
   # nothing imports and a failing test are invisible to them. This job is
   # what the PR comment reads its Tests line from.
+  # The suites are split across parallel runners because one after the other
+  # they took over half an hour, and tests-summary merges the results back.
   tests:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [analyze-packages, app, kotlin]
+    name: tests (${{ matrix.suite }})
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
+        if: matrix.suite == 'kotlin'
         with:
           distribution: temurin
           java-version: '17'
@@ -826,23 +887,31 @@ jobs:
           packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
 
           flutter pub get
-          for pkg in $packages; do
-            (cd "packages/$pkg" && flutter pub get >/dev/null)
-          done
 
-          # Only error lines gate the job, the tree carries longstanding infos.
-          dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-          for pkg in $packages; do
-            (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
-          done
+          case "${{ matrix.suite }}" in
+            analyze-packages)
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter pub get >/dev/null)
+              done
 
-          flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
-          for pkg in $packages; do
-            (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
-          done
+              # Only error lines gate the job, the tree carries longstanding infos.
+              dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+              for pkg in $packages; do
+                (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+              done
 
-          # gradlew is gitignored, and only a Flutter build writes it.
-          (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              for pkg in $packages; do
+                (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
+              done
+              ;;
+            app)
+              flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
+              ;;
+            kotlin)
+              # gradlew is gitignored, and only a Flutter build writes it.
+              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              ;;
+          esac
 
           echo "$status" > /tmp/test-results/run-status
 
@@ -909,17 +978,17 @@ jobs:
               'analyzer_sample': analyzer[:10],
               'run_status': run_status,
           }
-          with open('/tmp/test-results/test-results.json', 'w') as f:
+          with open('/tmp/test-results/test-results-${{ matrix.suite }}.json', 'w') as f:
               json.dump(out, f)
           print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
           EOF
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: test-results
-          path: /tmp/test-results/test-results.json
+          name: test-results-${{ matrix.suite }}
+          path: /tmp/test-results/test-results-${{ matrix.suite }}.json
 
       - name: Gate on failures
         if: always()
@@ -927,10 +996,65 @@ jobs:
           python3 - <<'EOF'
           import json
           import sys
-          results = json.load(open('/tmp/test-results/test-results.json'))
+          results = json.load(open('/tmp/test-results/test-results-${{ matrix.suite }}.json'))
           bad = results['failed'] or results['analyzer_errors'] or results['run_status']
           sys.exit(1 if bad else 0)
           EOF
+
+  # Merges the per-suite results into the one test-results.json the PR comment
+  # reads. A suite that died before uploading counts as a failed run.
+  tests-summary:
+    if: ${{ !cancelled() && needs.tests.result != 'skipped' }}
+    needs: tests
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: test-results-*
+          path: parts
+          merge-multiple: true
+
+      - name: Merge results
+        run: |
+          python3 - <<'EOF'
+          import json
+          import os
+
+          suites = ['analyze-packages', 'app', 'kotlin']
+          out = {
+              'passed': 0,
+              'failed': 0,
+              'failures': [],
+              'more_failures': 0,
+              'analyzer_errors': 0,
+              'analyzer_sample': [],
+              'run_status': 0,
+          }
+          for suite in suites:
+              path = f'parts/test-results-{suite}.json'
+              if not os.path.exists(path):
+                  print(f'No results from {suite}')
+                  out['run_status'] = 1
+                  continue
+              part = json.load(open(path))
+              for key in ('passed', 'failed', 'more_failures', 'analyzer_errors'):
+                  out[key] += part[key]
+              out['failures'] += part['failures']
+              out['analyzer_sample'] += part['analyzer_sample']
+              out['run_status'] = max(out['run_status'], part['run_status'])
+
+          out['more_failures'] += max(0, len(out['failures']) - 50)
+          out['failures'] = out['failures'][:50]
+          out['analyzer_sample'] = out['analyzer_sample'][:10]
+          with open('test-results.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
+          EOF
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: test-results
+          path: test-results.json
 
   # The XCTest targets for the native iOS and macOS code, which flutter test
   # can't reach. tvOS has no test target of its own.
@@ -939,7 +1063,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -1030,7 +1154,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: apple-test-results
           path: ${{ runner.temp }}/apple-tests/test-results.json
@@ -1052,7 +1176,7 @@ jobs:
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
     needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests, apple-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Write outcomes.json
         run: |
@@ -1073,7 +1197,7 @@ jobs:
           }
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: build-results
           path: outcomes.json
@@ -1082,13 +1206,13 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [android, ios, macos, tvos, windows, windows-arm64, linux]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           draft: true
           files: Moonfin_*

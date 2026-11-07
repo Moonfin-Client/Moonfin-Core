@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
@@ -29,7 +30,9 @@ import '../../../l10n/current_app_localizations.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
@@ -46,6 +49,7 @@ import '../../../data/utils/blocked_ratings.dart';
 import '../../../util/seasonal_country.dart';
 import '../../../util/seerr_genre_art.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../navigation/app_router.dart' show PlayerRouteObserver;
 
 class HomeViewModel extends ChangeNotifier {
   /// Cards in a merged row, matching what a single library row shows.
@@ -522,6 +526,11 @@ class HomeViewModel extends ChangeNotifier {
           .map((c) => c.type)
           .toList();
 
+      if (!sections.contains(HomeSectionType.mdblistWatchingNow)) {
+        _watchingNowTimer?.cancel();
+        _watchingNowTimer = null;
+      }
+
       if (!sections.contains(HomeSectionType.mediaBar)) {
         _mediaBarViewModel.load(force: forceRefresh);
       }
@@ -597,14 +606,25 @@ class HomeViewModel extends ChangeNotifier {
             _rows,
             cfg,
           ).any((r) => !r.isLoading);
+          if (cfg.type == HomeSectionType.mdblistWatchingNow) {
+            _ensureWatchingNowTimer();
+          }
           if (keepsRowsOnFailure(
             preserveExisting: preserveExisting,
             hydratedFromCache: hydratedFromCache,
             hasVisibleRow: hasVisibleRow,
           )) {
-            return;
+            if (cfg.type != HomeSectionType.mdblistWatchingNow) return;
+            // Kept Watching Now cards still follow the parental settings,
+            // which may have changed since they were fetched.
+            sectionRows = [
+              for (final row in _rowsForConfig(_rows, cfg))
+                if (!row.isLoading)
+                  row.copyWith(items: withoutUnratedOrBlockedItems(row.items)),
+            ];
+          } else {
+            sectionRows = const <HomeRow>[];
           }
-          sectionRows = const <HomeRow>[];
         }
         final currentConfigs = _prefs.activeHomeSectionConfigs;
         final isStillActive = currentConfigs.any((c) => c.stableId == cfg.stableId);
@@ -966,6 +986,8 @@ class HomeViewModel extends ChangeNotifier {
         return row.id == 'tmdb_trending_tv_weekly';
       case HomeSectionType.tmdbTrendingAllWeekly:
         return row.id == 'tmdb_trending_all_weekly';
+      case HomeSectionType.mdblistWatchingNow:
+        return row.id == 'mdblist_watching_now';
       case HomeSectionType.radarrCalendar:
         return row.id == 'radarr_calendar';
       case HomeSectionType.sonarrCalendar:
@@ -1098,7 +1120,11 @@ class HomeViewModel extends ChangeNotifier {
       _rows.removeAt(index);
     } else {
       _emptySectionIds.remove(rowId);
-      _rows[index] = _rows[index].copyWith(items: items, isLoading: false);
+      _rows[index] = _rows[index].copyWith(
+        items: items,
+        subtitle: fresh.subtitle,
+        isLoading: false,
+      );
     }
     notifyListeners();
   }
@@ -1377,6 +1403,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'tmdbTrendingTvWeekly'};
       case HomeSectionType.tmdbTrendingAllWeekly:
         return const {'tmdbTrendingAllWeekly'};
+      case HomeSectionType.mdblistWatchingNow:
+        return const {'mdblistWatchingNowEnabled'};
       case HomeSectionType.radarrCalendar:
         return const {'radarrCalendar'};
       case HomeSectionType.sonarrCalendar:
@@ -1579,22 +1607,23 @@ class HomeViewModel extends ChangeNotifier {
         final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
         final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedStudios(
-                  sortBy: studiosSortBy,
-                  sortOrder: studiosSortOrder,
-                  selectedIds: selectedIds,
-                  title: l10n.studios,
-                )
-              : await _dataSource.loadStudios(
-                  _serverId,
-                  sortBy: studiosSortBy,
-                  sortOrder: studiosSortOrder,
-                  selectedIds: selectedIds,
-                  title: l10n.studios,
-                ),
-        ];
+        final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();
+        final studiosRow = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedStudios(
+                sortBy: studiosSortBy,
+                sortOrder: studiosSortOrder,
+                selectedIds: selectedIds,
+                title: l10n.studios,
+              )
+            : await _dataSource.loadStudios(
+                _serverId,
+                sortBy: studiosSortBy,
+                sortOrder: studiosSortOrder,
+                selectedIds: selectedIds,
+                title: l10n.studios,
+              );
+        attachStudioLogoUrls(studiosRow.items, await logoUrls);
+        return [studiosRow];
       case HomeSectionType.libraryTilesSmall:
         return [
           _multiServerEnabled
@@ -1795,6 +1824,8 @@ class HomeViewModel extends ChangeNotifier {
         return _loadTmdbChartRow(HomeSectionType.tmdbTrendingTvWeekly, 'Trending TV (Weekly)', 'tmdb_trending_tv_weekly');
       case HomeSectionType.tmdbTrendingAllWeekly:
         return _loadTmdbChartRow(HomeSectionType.tmdbTrendingAllWeekly, 'Trending All (Weekly)', 'tmdb_trending_all_weekly');
+      case HomeSectionType.mdblistWatchingNow:
+        return _loadMdblistWatchingNowRow(l10n);
       case HomeSectionType.recentlyReleased:
         return _loadRecentlyReleasedRow();
       case HomeSectionType.seasonal:
@@ -2296,6 +2327,13 @@ class HomeViewModel extends ChangeNotifier {
         return HomeRow(
           id: 'tmdb_trending_all_weekly',
           title: 'Trending All (Weekly)',
+          rowType: HomeRowType.pluginDynamic,
+          isLoading: true,
+        );
+      case HomeSectionType.mdblistWatchingNow:
+        return HomeRow(
+          id: 'mdblist_watching_now',
+          title: l10n.mdblistWatchingNow,
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );
@@ -3352,6 +3390,141 @@ class HomeViewModel extends ChangeNotifier {
       debugPrint('[TmdbChartRow] Failed to load TMDB chart row $sectionType: $e');
       return const [];
     }
+  }
+
+  Future<List<HomeRow>> _loadMdblistWatchingNowRow(AppLocalizations l10n) async {
+    try {
+      if (!GetIt.instance.isRegistered<MdbListRepository>()) return const [];
+      final repo = GetIt.instance<MdbListRepository>();
+      final data = await repo.getWatchingNow();
+      if (data == null) {
+        throw Exception('Failed to fetch MDBList watching now feed');
+      }
+      if (data.error?.isNotEmpty == true) {
+        throw Exception('MDBList watching now feed error: ${data.error}');
+      }
+      if (data.items.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
+
+      final identifiedItems = data.items
+          .where((item) =>
+              item.imdbId.isNotEmpty ||
+              item.tmdbId != null ||
+              item.publicId.isNotEmpty)
+          .toList();
+      if (identifiedItems.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
+
+      final aggregatedItems = <AggregatedItem>[];
+      for (var i = 0; i < identifiedItems.length; i++) {
+        final item = identifiedItems[i];
+        final itemId = item.imdbId.isNotEmpty
+            ? item.imdbId
+            : (item.tmdbId != null ? item.tmdbId.toString() : item.publicId);
+        aggregatedItems.add(
+          AggregatedItem(
+            id: itemId,
+            serverId: 'seerr',
+            rawData: {
+              'Name': item.title,
+              'Type': item.mediaType == 'show' ? 'Series' : 'Movie',
+              'ProductionYear': item.year,
+              'Rank': i + 1,
+              'Watchers': item.watchers,
+              'LogoUrl': item.logo ?? '',
+              'BackdropPath': item.backdrop ?? '',
+              'PosterPath': item.backdrop ?? '',
+              'ProviderIds': {
+                if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
+                if (item.tmdbId != null) 'Tmdb': item.tmdbId.toString(),
+              },
+              'TmdbId': item.tmdbId != null ? item.tmdbId.toString() : '',
+              'ImdbId': item.imdbId,
+              'MediaType': item.mediaType,
+              'IsWatchingNow': true,
+            },
+          ),
+        );
+      }
+
+      final formatter = NumberFormat.decimalPattern();
+      final usersStr = formatter.format(data.users);
+      final moviesStr = formatter.format(data.movies);
+      final showsStr = formatter.format(data.shows);
+      final subtitle = data.mode == 'today'
+          ? l10n.watchingNowLiveSummaryToday(usersStr, moviesStr, showsStr)
+          : l10n.watchingNowLiveSummary(usersStr, moviesStr, showsStr);
+
+      final filteredItems = withoutUnratedOrBlockedItems(aggregatedItems);
+      if (filteredItems.isEmpty) {
+        _ensureWatchingNowTimer();
+        return const [];
+      }
+
+      _ensureWatchingNowTimer();
+
+      return [
+        HomeRow(
+          id: 'mdblist_watching_now',
+          title: l10n.mdblistWatchingNow,
+          subtitle: subtitle,
+          rowType: HomeRowType.pluginDynamic,
+          items: filteredItems,
+        ),
+      ];
+    } catch (e) {
+      debugPrint('[HomeViewModel] Failed to load mdblistWatchingNow: $e');
+      rethrow;
+    }
+  }
+
+  Timer? _watchingNowTimer;
+
+  void _ensureWatchingNowTimer() {
+    if (_watchingNowTimer != null && _watchingNowTimer!.isActive) return;
+    _watchingNowTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      final isConfigured = _prefs.get(UserPreferences.mdblistWatchingNowEnabled) &&
+          _prefs.activeHomeSectionConfigs.any((c) => c.type == HomeSectionType.mdblistWatchingNow);
+      if (!isConfigured) {
+        _watchingNowTimer?.cancel();
+        _watchingNowTimer = null;
+        return;
+      }
+      // Nobody sees Home under the player or with the app in the background,
+      // so those ticks are skipped and the next one catches up.
+      final lifecycle = WidgetsBinding.instance.lifecycleState;
+      if (PlayerRouteObserver.instance.isPlayerActive.value ||
+          lifecycle == AppLifecycleState.paused ||
+          lifecycle == AppLifecycleState.hidden) {
+        return;
+      }
+      final l10n = currentAppLocalizations();
+      if (!_rows.any((row) => row.id == 'mdblist_watching_now')) {
+        unawaited(load(preserveExisting: true, newSectionsOnly: true));
+        return;
+      }
+      _refreshRowInPlace(
+        'mdblist_watching_now',
+        () async {
+          final rows = await _loadMdblistWatchingNowRow(l10n);
+          if (rows.isEmpty) {
+            throw Exception('Transient error refreshing mdblist_watching_now');
+          }
+          return rows.first;
+        },
+        (items) => items,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _watchingNowTimer?.cancel();
+    super.dispose();
   }
 
   Future<List<HomeRow>> _loadSeasonalRow(

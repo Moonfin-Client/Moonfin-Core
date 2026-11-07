@@ -182,6 +182,13 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
                   subtitle: l10n.replaceSkipOutroWithNextUpDisplaySubtitle,
                   icon: Icons.skip_next,
                 ),
+              if (showNextUpOptions)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showNextAirDate,
+                  title: l10n.showNextAirDate,
+                  subtitle: l10n.showNextAirDateSubtitle,
+                  icon: Icons.event_available_outlined,
+                ),
               EnumPreferenceTile<StillWatchingBehavior>(
                 preference: UserPreferences.stillWatchingBehavior,
                 title: l10n.stillWatchingPrompt,

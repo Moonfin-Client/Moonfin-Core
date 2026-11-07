@@ -944,7 +944,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         // pure dead work. The registration method itself stays: the plugin
         // casts this Activity to GamepadsCompatibleActivity and calls it
         // unconditionally, so the interface member must remain implemented.
-        return super.dispatchKeyEvent(event)
+        return super.dispatchKeyEvent(ModifierScanCodePolicy.forFlutter(event))
     }
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {

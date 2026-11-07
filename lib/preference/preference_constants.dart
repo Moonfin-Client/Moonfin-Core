@@ -573,6 +573,7 @@ enum HomeSectionType {
   tmdbTrendingTvDaily('tmdb_trending_tv_daily'),
   tmdbTrendingTvWeekly('tmdb_trending_tv_weekly'),
   tmdbTrendingAllWeekly('tmdb_trending_all_weekly'),
+  mdblistWatchingNow('mdblist_watching_now'),
   radarrCalendar('radarr_calendar'),
   sonarrCalendar('sonarr_calendar'),
   sinceYouWatched1('sinceyouwatched1'),
@@ -1072,41 +1073,19 @@ enum ScreensaverTimeout {
 enum SinceYouWatchedSource {
   local,
   server,
-  online;
-
-  String get displayName => switch (this) {
-    SinceYouWatchedSource.local => 'Moonfin Recommends',
-    SinceYouWatchedSource.server => 'Jellyfin Recommends',
-    SinceYouWatchedSource.online => 'TMDb Similarity',
-  };
+  online,
 }
 
 enum SinceYouWatchedSourceType {
   movies,
   shows,
-  both;
-
-  String get displayName {
-    switch (this) {
-      case movies: return 'Movies';
-      case shows: return 'Shows';
-      case both: return 'Both';
-    }
-  }
+  both,
 }
 
 enum SinceYouWatchedSourceItem {
   recentlyWatched,
   favorites,
-  random;
-
-  String get displayName {
-    switch (this) {
-      case recentlyWatched: return 'Recently Watched';
-      case favorites: return 'Favorites';
-      case random: return 'Random';
-    }
-  }
+  random,
 }
 
 enum SinceYouWatchedNumRows {
@@ -1208,3 +1187,17 @@ enum ModernCardTransitionSpeed {
   const ModernCardTransitionSpeed(this.duration);
   final Duration duration;
 }
+
+/// What the Calendar button opens. The month grid sits behind both styles.
+enum CalendarStyle { agenda, countdown }
+
+enum CalendarWeekStart { locale, sunday, monday }
+
+/// [myShows] keeps episodes of series the user favorited or has watched.
+enum CalendarScope { everything, myShows }
+
+enum CalendarColorBy { type, status }
+
+enum CalendarImageType { poster, thumb }
+
+enum CalendarSelectAction { details, play }

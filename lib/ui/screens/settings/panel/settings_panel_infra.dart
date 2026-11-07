@@ -205,19 +205,3 @@ String _formatCamelCaseLabel(String camelCase) {
   }
   return buf.toString();
 }
-
-void _ensureSettingsTileVisible(
-  BuildContext context, {
-  double alignment = 0.9,
-}) {
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (!context.mounted) return;
-    Scrollable.ensureVisible(
-      context,
-      alignment: alignment,
-      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      duration: const Duration(milliseconds: 120),
-      curve: Curves.easeOut,
-    );
-  });
-}

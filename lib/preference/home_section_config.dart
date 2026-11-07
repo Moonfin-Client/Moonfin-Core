@@ -401,6 +401,11 @@ class HomeSectionConfig {
       enabled: false,
       order: 47,
     ),
+    HomeSectionConfig(
+      type: HomeSectionType.mdblistWatchingNow,
+      enabled: false,
+      order: 48,
+    ),
   ];
 
   static bool isSupportedJson(Map<String, dynamic> json) {
