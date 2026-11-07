@@ -7288,7 +7288,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clásico es el diseño centrado original de moonfin. Moderno es un diseño cinematográfico adaptable. Foco es un diseño que pone la imagen principal en el primer plano, con tarjetas de contenido emergentes. Nuevo es un diseño a pantalla completa, con secciones apiladas verticalmente a lo largo de la página. Minimalista muestra la ilustración, un botón de reproducción y los episodios.",
+    "detailScreenStyleSubtitle": "El aspecto que tiene una película o serie al abrirla.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -9831,5 +9831,55 @@
     "seriesRecordingNewEpisodesOnly": "Sólo nuevos episodios",
     "@seriesRecordingNewEpisodesOnly": {
         "description": "Series recording choice that records only first airings"
+    },
+    "signingIn": "Iniciando sesión...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "signedInOnThisDevice": "Sesión iniciada en este dispositivo",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "Se requiere PIN",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Se requiere Contraseña",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Continuar como {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Cambiar a {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Sesión iniciada como {user} en {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Activo",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
     }
 }
