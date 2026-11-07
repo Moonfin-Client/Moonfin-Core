@@ -424,6 +424,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
                 : MediaCard.aspectRatioForType(item.type);
 
             return MediaCard(
+              posterBadgeItemId: isFolder ? null : item.id,
               title: _vm.getItemDisplayName(item),
               subtitle: _subtitleText(item, isFolder),
               imageUrl: _imageUrl(item, maxWidth: cardWidth.toInt()),

@@ -464,8 +464,7 @@ class SessionRepository {
     // no requests of its own to set up.
     if (client.serverType == ServerType.plex) return;
 
-    // Register the FCM token now that a session exists, and push the current
-    // notification prefs so defaults reach the plugin. Startup registration
+    // Register the FCM token now that a session exists. Startup registration
     // bails before login, so this is where closed-app push actually enrolls.
     if (PlatformDetection.isMobile) {
       try {
@@ -473,9 +472,9 @@ class SessionRepository {
           await GetIt.instance<PushMessagingService>()
               .registerWithCurrentToken();
         }
-        await _pluginSyncService.pushNotificationPrefs(client);
       } catch (_) {}
     }
+    await _pluginSyncService.syncNotificationPrefs(client);
 
     final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
