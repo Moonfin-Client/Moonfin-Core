@@ -103,15 +103,10 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
-/// Watching Now prints its titles on the artwork, but needs breathing room
-/// for row separation and focus glow so it matches standard row spacing.
-const _watchingNowCardMetadataHeight = 24.0;
-
-/// Metadata height allowance under classic cards.
+/// Watching Now prints its titles on the artwork, so it only needs room for
+/// the focus ring and a gap before the next row.
 double _classicCardMetadataFor(HomeRow row) =>
-    row.id == 'mdblist_watching_now'
-        ? _watchingNowCardMetadataHeight
-        : _classicCardMetadataHeight;
+    row.id == 'mdblist_watching_now' ? 24.0 : _classicCardMetadataHeight;
 
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
@@ -174,10 +169,6 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._showsCalendarSeeAll(row, prefs);
-
-  @visibleForTesting
-  static double classicCardMetadataFor(HomeRow row) =>
-      _classicCardMetadataFor(row);
 
   @visibleForTesting
   static Widget topBackdrop(Widget backdrop) =>
@@ -2850,9 +2841,6 @@ class _ContentRowsState extends State<_ContentRows>
     UserPreferences prefs,
   ) {
     final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
-    if (row.id == 'mdblist_watching_now') {
-      return posterSize.landscapeHeight.toDouble() * platformScale;
-    }
     if (_isRowModern(row, prefs)) {
       return modernImageHeight(posterSize, platformScale);
     }
@@ -3352,12 +3340,8 @@ class _ContentRowsState extends State<_ContentRows>
           }
         }
         if (maxCardHeight == 0.0) {
-          maxImageHeight = (row.id == 'mdblist_watching_now'
-                  ? posterSize.landscapeHeight.toDouble()
-                  : posterSize.portraitHeight.toDouble()) *
-              platformScale;
-          maxCardHeight =
-              maxImageHeight + (_classicCardMetadataFor(row) * metadataScale);
+          maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+          maxCardHeight = maxImageHeight + (_classicCardMetadataHeight * metadataScale);
         }
         maxCardHeight += _classicRowPadding(row, prefs);
       }
@@ -5450,23 +5434,15 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (firstCardWidth == 0) {
-      final defaultAspect =
-          row.isAudio ? 1.0 : (row.id == 'mdblist_watching_now' ? 16 / 9 : 2 / 3);
+      final defaultAspect = row.isAudio ? 1.0 : 2 / 3;
       firstCardWidth =
-          (row.id == 'mdblist_watching_now'
-                  ? posterSize.landscapeHeight.toDouble()
-                  : posterSize.portraitHeight.toDouble()) *
-              platformScale *
-              defaultAspect;
+          posterSize.portraitHeight.toDouble() * platformScale * defaultAspect;
     }
     if (maxCardHeight == 0) {
-      maxImageHeight = (row.id == 'mdblist_watching_now'
-              ? posterSize.landscapeHeight.toDouble()
-              : posterSize.portraitHeight.toDouble()) *
-          platformScale;
+      maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
       maxCardHeight =
           maxImageHeight +
-          (_classicCardMetadataFor(row) * metadataScale);
+          (_classicCardMetadataHeight * metadataScale);
     }
 
     final rowPadding = 5.0 * metadataScale;
