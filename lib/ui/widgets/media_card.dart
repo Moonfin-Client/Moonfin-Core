@@ -466,7 +466,8 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                     curve: PlatformDetection.isAppleTV
                         ? Curves.easeOutCubic
                         : Curves.linear,
-                    alignment: widget.showLabel && widget.title != null
+                    alignment: (widget.showLabel && widget.title != null) ||
+                            widget.cardFocusExpansion
                         ? Alignment.bottomCenter
                         : Alignment.center,
                     child: _CardImage(
