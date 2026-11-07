@@ -217,7 +217,7 @@ class NouveauHeroState extends State<NouveauHero> {
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    var item = widget.item;
     final viewModel = widget.viewModel;
     final textTheme = Theme.of(context).textTheme;
 
@@ -243,6 +243,19 @@ class NouveauHeroState extends State<NouveauHero> {
         : item.logoImageTag != null
         ? item.id
         : item.seriesId;
+
+    AggregatedItem? series;
+    List<AggregatedItem>? seriesBooks;
+    if (item.type == 'BookSeries') {
+      series = item;
+      seriesBooks = widget.viewModel.seriesBooks;
+      final firstBook =
+        seriesBooks
+          .where((book) => (book.playedPercentage ?? 0) > 0 && !book.isPlayed)
+          .firstOrNull ??
+        seriesBooks.where((book) => !book.isPlayed).firstOrNull;
+      if (firstBook != null) item = firstBook;
+    }
 
     final overview = cleanOverview(item.overview?.trim());
 
@@ -375,8 +388,12 @@ class NouveauHeroState extends State<NouveauHero> {
           )
         : null;
 
+    final itemName = series == null
+        ? item.name
+        : series.rawData["Name"];
+
     final branding = _NouveauBranding(
-      title: item.name,
+      title: itemName,
       logoUrl: logoUrl,
       companionTitle: isSeason ? item.name : null,
       titleStyle: titleStyle,
