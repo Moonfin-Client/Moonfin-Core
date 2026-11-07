@@ -79,10 +79,22 @@ jobs:
                 (cd "packages/$pkg" && flutter pub get >/dev/null)
               done
 
-              # Only error lines gate the job, the tree carries longstanding infos.
-              dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+              # Only error lines gate the job, the tree carries longstanding
+              # infos and warnings. The exit code still counts, since an
+              # analyzer that crashes (exit 4) or gets killed prints no error
+              # lines and would pass as clean otherwise.
+              analyze() {
+                (cd "$1" && dart analyze --no-fatal-warnings) > /tmp/test-results/analyzer-output.txt 2>&1 || {
+                  rc=$?
+                  status=1
+                  echo "dart analyze in $1 exited with $rc"
+                  grep -vE "^ *(info|warning) - " /tmp/test-results/analyzer-output.txt || true
+                }
+                grep -E " error - " /tmp/test-results/analyzer-output.txt >> /tmp/test-results/analyzer.txt || true
+              }
+              analyze .
               for pkg in $packages; do
-                (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+                analyze "packages/$pkg"
               done
 
               for pkg in $packages; do
