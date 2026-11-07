@@ -112,6 +112,11 @@ class ParentCollection {
     this.missingItems = const [],
   });
 
+  /// Built from Seerr because the server holds no box set for this title's
+  /// TMDB collection. Its [items] are still library items, but its
+  /// [boxSetItem] is a Seerr item, so nothing may treat [id] as a server id.
+  bool get isSynthetic => boxSetItem.serverId == 'seerr';
+
   /// Library members with the missing titles slotted in by release date.
   List<AggregatedItem> get itemsWithMissing =>
       mergeMissingByReleaseOrder(items, missingItems);
@@ -2183,6 +2188,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       if (boxSetInfo.isEmpty) {
         _parentCollections = const [];
         notifyListeners();
+        final load = ++_parentCollectionsLoad;
+        unawaited(_loadSyntheticParentCollection(item, const [], load));
         return;
       }
 
@@ -2229,7 +2236,144 @@ class ItemDetailViewModel extends ChangeNotifier {
       notifyListeners();
       final load = ++_parentCollectionsLoad;
       unawaited(_loadMissingParentCollectionItems(collections, load));
+      unawaited(_loadSyntheticParentCollection(item, collections, load));
     } catch (_) {}
+  }
+
+  /// A movie whose TMDB collection the server holds no box set for, because
+  /// Jellyfin only builds one once two of its films are in the library (or
+  /// doesn't build them at all). Seerr fills that gap: the collection goes in
+  /// front of the rows, with the parts the library holds as library items
+  /// and the rest of the franchise as missing titles. Box sets that are
+  /// something else (a hand-made "Trending" list) don't count; only one
+  /// carrying this collection's TMDB id does, and then its own row already
+  /// shows the franchise. Movies only, as TMDB keeps no
+  /// shared id space with series. Runs after the library rows are out, so
+  /// the page never waits on Seerr, and [load] drops a result a reload has
+  /// overtaken.
+  Future<void> _loadSyntheticParentCollection(
+    AggregatedItem item,
+    List<ParentCollection> boxSets,
+    int load,
+  ) async {
+    if (item.type != 'Movie' || !_showMissingCollectionItems) return;
+    final tmdbId = int.tryParse(item.tmdbId ?? '');
+    if (tmdbId == null || tmdbId <= 0) return;
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      final collectionId = await _seerrCollectionIdForMovie(repo, item, tmdbId);
+      if (collectionId == null) return;
+      final key = collectionId.toString();
+      if (boxSets.any((boxSet) => boxSet.boxSetItem.tmdbId == key)) return;
+      final collection = await repo.getCollectionDetails(collectionId);
+      final members = await _libraryCollectionMembers(item, collection);
+      final missing = seerrMissingCollectionItems(
+        parts: collection.parts,
+        libraryTmdbIds: {
+          tmdbId.toString(),
+          for (final member in members) ?member.tmdbId,
+        },
+        blockNsfw: GetIt.instance<SeerrPreferences>().blockNsfw,
+      );
+      // A row holding only this film says nothing the page doesn't already
+      // show. A fully owned franchise still gets its row, as the server
+      // never grouped it.
+      if (missing.isEmpty && members.length < 2) return;
+      if (_isDisposed || load != _parentCollectionsLoad) return;
+      final name = collection.name ?? '';
+      final synthetic = ParentCollection(
+        id: 'seerr:$key',
+        name: name,
+        boxSetItem: AggregatedItem(
+          id: key,
+          serverId: 'seerr',
+          rawData: {
+            'Id': key,
+            'Name': name,
+            'Type': 'BoxSet',
+            'Overview': collection.overview,
+            'PosterPath': collection.posterPath,
+            'BackdropPath': collection.backdropPath,
+            'SeerrMediaType': 'collection',
+            'ProviderIds': {'Tmdb': key},
+          },
+        ),
+        items: members,
+        missingItems: missing,
+      );
+      _parentCollections = [
+        synthetic,
+        for (final current in _parentCollections)
+          if (current.id != synthetic.id) current,
+      ];
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  /// The collection's parts that are in this library, as library items, so
+  /// they open, sync and show play state like a box set's members. Without a
+  /// box set there is no member list to read, so the library ids come from
+  /// Seerr, which records the media server's id for every title it has seen
+  /// arrive. One request then fetches them, which also drops any id that
+  /// belongs to another server. [item] itself is always among them.
+  Future<List<AggregatedItem>> _libraryCollectionMembers(
+    AggregatedItem item,
+    SeerrCollection collection,
+  ) async {
+    final ids = <String>{
+      for (final part in collection.parts)
+        if (part.mediaInfo case final info?)
+          if (info.jellyfinMediaId ?? info.jellyfinMediaId4k case final id?
+              when id.isNotEmpty && id != item.id)
+            id,
+    };
+    var found = const <AggregatedItem>[];
+    if (ids.isNotEmpty) {
+      try {
+        final data = await _client.itemsApi.getItems(
+          ids: ids.toList(),
+          fields: 'PrimaryImageAspectRatio,BasicSyncInfo,ProviderIds',
+        );
+        found = _mapItems((data['Items'] as List?) ?? const []);
+      } catch (_) {}
+    }
+    return _sortCollectionByReleaseOrder([
+      item,
+      for (final member in found)
+        if (member.id != item.id) member,
+    ]);
+  }
+
+  /// Which TMDB collection a movie belongs to. Jellyfin often files it on the
+  /// movie as `TmdbCollection`, which spares the Seerr lookup. Otherwise the
+  /// answer is remembered across detail opens, so a page asks Seerr once per
+  /// movie and session; a movie with no collection is remembered too, as
+  /// that's the common case. The collection itself is never cached, because
+  /// its parts carry request status that changes once someone requests one.
+  static final Map<int, int?> _seerrCollectionIdByMovie = {};
+  static const int _seerrCollectionCacheLimit = 500;
+
+  Future<int?> _seerrCollectionIdForMovie(
+    SeerrRepository repo,
+    AggregatedItem item,
+    int tmdbId,
+  ) async {
+    final providerIds = item.rawData['ProviderIds'];
+    if (providerIds is Map) {
+      final own = int.tryParse('${providerIds['TmdbCollection'] ?? ''}');
+      if (own != null && own > 0) return own;
+    }
+    if (_seerrCollectionIdByMovie.containsKey(tmdbId)) {
+      return _seerrCollectionIdByMovie[tmdbId];
+    }
+    final found = (await repo.getMovieDetails(tmdbId)).collection?.id;
+    final collectionId = found != null && found > 0 ? found : null;
+    if (_seerrCollectionIdByMovie.length >= _seerrCollectionCacheLimit) {
+      _seerrCollectionIdByMovie.remove(_seerrCollectionIdByMovie.keys.first);
+    }
+    _seerrCollectionIdByMovie[tmdbId] = collectionId;
+    return collectionId;
   }
 
   Future<bool> _boxSetContainsItem(String boxSetId, String itemId) async {

@@ -442,7 +442,12 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
 
     if (sections.shows(DetailSection.collections)) {
       for (final collection in vm.parentCollections) {
-        if (collection.items.isEmpty) continue;
+        // These rows show library members only, so a collection built from
+        // Seerr with no other part in the library would hold just this title.
+        if (collection.items.isEmpty ||
+            (collection.isSynthetic && collection.items.length < 2)) {
+          continue;
+        }
         final node = pageNode('collection-${collection.id}');
         out.add(
           DetailPageSection(

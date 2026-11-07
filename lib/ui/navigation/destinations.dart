@@ -402,6 +402,9 @@ class Destinations {
   /// Everything the screen needs travels in the route, so a restored or shared
   /// link resolves the same way a fresh tap does.
   static String seerrMedia(String itemId, {String? mediaType, String? title}) {
+    // A TMDB collection travels as a Seerr item too (the stand-in for a box
+    // set the server hasn't made), and it has its own screen.
+    if (mediaType == 'collection') return seerrCollection(itemId);
     final base = '/seerr/media/$itemId';
     final params = <String, String>{};
     if (mediaType != null && mediaType.trim().isNotEmpty) {
