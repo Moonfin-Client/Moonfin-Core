@@ -344,11 +344,11 @@ jobs:
           path: test-results.json
           overwrite: true
 
-  # Advisory only: analyzer diagnostics, dart format changes and localization
-  # slips on the lines this pull request added or changed. The PR comment
-  # shows what it found. It never fails on a finding, and the checks gate
-  # doesn't wait for it. continue-on-error on the job too, so a setup failure
-  # can't fail the Checks run either.
+  # Advisory only: analyzer diagnostics and localization slips on the lines
+  # this pull request added or changed. The PR comment shows what it found.
+  # It never fails on a finding, and the checks gate doesn't wait for it.
+  # continue-on-error on the job too, so a setup failure can't fail the
+  # Checks run either.
   delta:
     if: github.event_name == 'pull_request'
     continue-on-error: true
@@ -381,7 +381,7 @@ jobs:
             (cd "packages/$pkg" && flutter pub get >/dev/null)
           done
 
-      # Each script writes its own file, so one crashing leaves the other two.
+      # Each script writes its own file, so one crashing leaves the other.
       - name: Check the touched lines
         continue-on-error: true
         env:
@@ -390,7 +390,6 @@ jobs:
           mkdir -p /tmp/delta-results
           status=0
           python3 scripts/ci/touched_lines_diagnostics.py "$BASE" HEAD --out /tmp/delta-results/diagnostics.json || status=1
-          python3 scripts/ci/format_delta.py "$BASE" HEAD --out /tmp/delta-results/format.json || status=1
           python3 scripts/ci/l10n_guard.py "$BASE" HEAD --out /tmp/delta-results/l10n.json || status=1
           exit "$status"
 

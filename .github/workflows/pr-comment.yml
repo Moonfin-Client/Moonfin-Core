@@ -278,49 +278,28 @@ jobs:
               .filter(item => item && typeof item === 'object');
             const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
             const diagnostics = readJson('delta-results/diagnostics.json');
-            const format = readJson('delta-results/format.json');
             const l10n = readJson('delta-results/l10n.json');
             const deltaLines = [];
             // Checks finished but the delta job left nothing: say so, as the
             // tests line does, rather than look like a clean run.
-            if (checksRunId && !diagnostics && !format) {
+            if (checksRunId && !diagnostics) {
               deltaLines.push(`**Touched lines**${l10n ? '' : ' and **Localization**'} ⚠️ did not run, see the delta job log`);
             }
-            if (diagnostics || format) {
-              const diagCount = clamp(diagnostics?.count);
-              const hunkCount = clamp(format?.hunks);
-              // A file dart format rejected wasn't checked, so it can't count
-              // as formatted.
-              const uncheckedAll = (Array.isArray(format?.unchecked) ? format.unchecked : [])
-                .filter(path => typeof path === 'string' && path);
-              const unchecked = uncheckedAll.slice(0, 30);
-              if (diagnostics && format && diagCount === 0 && hunkCount === 0 && uncheckedAll.length === 0) {
-                deltaLines.push('**Touched lines** ✅ no new diagnostics, formatted');
+            if (diagnostics) {
+              const diagCount = clamp(diagnostics.count);
+              if (diagCount === 0) {
+                deltaLines.push('**Touched lines** ✅ no new diagnostics');
               } else {
-                const counts = [
-                  diagnostics ? plural(diagCount, 'new diagnostic', 'new diagnostics') : 'analyzer check did not run',
-                  format ? plural(hunkCount, 'format hunk', 'format hunks') : 'format check did not run',
-                ];
-                if (uncheckedAll.length > 0) {
-                  counts.push(plural(uncheckedAll.length, 'file dart format could not check', 'files dart format could not check'));
-                }
-                deltaLines.push(`**Touched lines** ⚠️ ${counts.join(', ')}`);
-                const shown = [
-                  ...listOf(diagnostics).slice(0, 30).map(d =>
-                    `- \`${escapeText(`${d.file}:${clamp(d.line)} ${d.code} ${d.message}`)}\``),
-                  ...listOf(format).slice(0, 30).map(f =>
-                    `- \`${escapeText(`${f.file}:${clamp(f.line)}`)}\` dart format would change this`),
-                  ...unchecked.map(path => `- \`${escapeText(path)}\` dart format could not check this file`),
-                ];
-                const hidden = diagCount + hunkCount + uncheckedAll.length - shown.length;
+                deltaLines.push(`**Touched lines** ⚠️ ${plural(diagCount, 'new diagnostic', 'new diagnostics')}`);
+                const shown = listOf(diagnostics).slice(0, 30).map(d =>
+                  `- \`${escapeText(`${d.file}:${clamp(d.line)} ${d.code} ${d.message}`)}\``);
+                const hidden = diagCount - shown.length;
                 if (hidden > 0) shown.push(`- and ${hidden} more, see the delta job log`);
-                if (shown.length > 0) {
-                  deltaLines.push('', '<details><summary>Touched lines</summary>', '', ...shown, '', '</details>');
-                }
+                deltaLines.push('', '<details><summary>Touched lines</summary>', '', ...shown, '', '</details>');
               }
             }
             const l10nItems = listOf(l10n).slice(0, 30);
-            if (!l10n && (diagnostics || format)) {
+            if (!l10n && diagnostics) {
               // The line only shows findings, so a crashed script would
               // otherwise read as none.
               if (deltaLines.length > 0) deltaLines.push('');
