@@ -19,9 +19,14 @@ on:
     branches:
       - main
   merge_group:
+  # Main, to warm the caches below. Release tags, as in build.yml, so a tagged
+  # commit still gets the analyzer and tests like it did when they were a job
+  # in Build All Platforms. A tag doesn't save any caches.
   push:
     branches:
       - main
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
   schedule:
     # Recreates the caches if they were evicted, which happens to an entry
     # nothing read for a week. With the entries in place the warming steps
@@ -32,8 +37,8 @@ permissions:
   contents: read
 
 # A new push to a pull request replaces its running checks. Every other run
-# gets a group of its own, so pushes to main, manual runs and merge groups
-# never queue or cancel.
+# gets a group of its own, so pushes to main, tags, manual runs and merge
+# groups never queue or cancel.
 concurrency:
   group: checks-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -302,7 +307,7 @@ jobs:
       - name: Resolve the release build's dependencies
         if: >-
           !cancelled() && matrix.suite == 'kotlin' &&
-          (github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          (github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
           steps.gradle-cache.outputs.cache-hit != 'true'
         run: |
           (cd android && ./gradlew --stop) || true
@@ -324,7 +329,7 @@ jobs:
       - uses: actions/cache/save@v5
         if: >-
           !cancelled() && matrix.suite == 'kotlin' &&
-          (github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          (github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
           steps.gradle-cache.outputs.cache-hit != 'true'
         with:
           path: |
@@ -424,7 +429,7 @@ jobs:
   # save, so a warm run is a restore and a no-op install. Not part of the
   # checks gate: a cold cache only makes the next build slower.
   warm-vcpkg:
-    if: github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches
     name: warm-vcpkg (${{ matrix.triplet }})
     strategy:
       fail-fast: false
