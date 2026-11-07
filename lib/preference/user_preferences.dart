@@ -585,6 +585,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_server_messages_button',
     'pref_show_friends_button',
     'pref_show_book_discover_tab',
+    'pref_book_folders_as_series',
     'pref_show_media_details_on_library_page',
     'pref_library_card_titles',
     'pref_use_detailed_sub_headings',
@@ -2085,6 +2086,13 @@ class UserPreferences extends ChangeNotifier {
   static final showBookDiscoverTab = Preference(
     key: 'pref_show_book_discover_tab',
     defaultValue: true,
+  );
+
+  /// Off by default, as it is assumed the book metadata should include series
+  /// info. A user can override depending on their specific library structure
+  static final bookFoldersAsSeries = Preference(
+    key: 'pref_book_folders_as_series',
+    defaultValue: false,
   );
 
   /// Lists the book library's titles in rows instead of a cover grid.

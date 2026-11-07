@@ -15491,6 +15491,13 @@ class AppLocalizationsRo extends AppLocalizations {
       'Răsfoiește titluri din Open Library și LibriVox în bibliotecile tale de cărți și cărți audio';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes => 'Descarcă automat episoadele noi';
 
   @override

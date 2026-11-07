@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../services/row_data_source.dart';
@@ -999,9 +1001,10 @@ List<AggregatedItem> bookSeriesEntries({
   };
   final byFolder = <String, List<AggregatedItem>>{};
   final byName = <String, List<AggregatedItem>>{};
+  final bookFoldersAsSeries = GetIt.instance<UserPreferences>().get(UserPreferences.bookFoldersAsSeries);
   for (final book in books) {
     final parent = book.parentId;
-    if (book.isComic && seriesFolders.containsKey(parent)) {
+    if (bookFoldersAsSeries && seriesFolders.containsKey(parent)) {
       byFolder.putIfAbsent(parent!, () => []).add(book);
     }
     final name = book.seriesName?.trim();
