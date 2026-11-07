@@ -44,6 +44,13 @@ class OfflineUsersApi implements UsersApi {
     throw offlineUnavailable('/Users/$userId');
   }
 
+  // Answering null would read as a server that can't tell the time. Failing
+  // keeps the last clock.
+  @override
+  Future<ServerTime?> getServerTime() async {
+    throw offlineUnavailable('/Moonfin/Time');
+  }
+
   // Answering with an empty configuration reads as a user who excludes
   // nothing, and a caller that caches the answer keeps that long after the
   // server is back. Failing lets them ask again.

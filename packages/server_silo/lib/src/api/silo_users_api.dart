@@ -171,6 +171,10 @@ class SiloUsersApi implements UsersApi {
   Future<List<AccessSchedule>?> getAccessSchedules(String userId) async =>
       const [];
 
+  // Silo has no schedule to judge.
+  @override
+  Future<ServerTime?> getServerTime() async => null;
+
   /// The settings Moonfin reads from a `UserConfiguration`, resolved by Silo
   /// for the acting profile on this device (`GET /settings/values/effective`).
   ///
