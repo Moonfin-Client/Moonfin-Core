@@ -390,7 +390,7 @@ class NouveauHeroState extends State<NouveauHero> {
 
     final itemName = series == null
         ? item.name
-        : series.rawData["Name"];
+        : series.rawData["Name"] ?? '';
 
     final branding = _NouveauBranding(
       title: itemName,

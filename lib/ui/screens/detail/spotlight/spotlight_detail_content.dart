@@ -1160,7 +1160,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         : _buildTagline(context, item);
     final itemName = series == null
         ? item.name
-        : series.rawData["Name"];
+        : series.rawData["Name"] ?? '';
     final realItem = series ?? item;
 
     return Column(

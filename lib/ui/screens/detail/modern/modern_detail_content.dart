@@ -4329,7 +4329,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
       final itemName = series == null
           ? item.name
-          : series.rawData["Name"];
+          : series.rawData["Name"] ?? '';
 
       final playlistInfo = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
