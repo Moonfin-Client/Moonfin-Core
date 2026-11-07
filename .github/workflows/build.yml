@@ -53,10 +53,10 @@ permissions:
   contents: write
   actions: read
 
-# A new push to a pull request replaces its running build. Tags and manual
-# runs are never cancelled; their group is their ref.
+# A new push to a pull request replaces its running build. Every other run
+# gets a group of its own, so tags and manual runs never queue or cancel.
 concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
