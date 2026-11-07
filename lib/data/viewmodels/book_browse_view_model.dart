@@ -256,7 +256,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
       _bookCount = titles.where(isBookItem).length;
       _audiobookCount = titles.where(isAudiobookItem).length;
       _comicCount = titles.where(isComicItem).length;
-      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF, libraryId: this.libraryId);
+      _allSeries = bookSeriesEntries(books: titles, folders: await foldersF, libraryId: libraryId);
 
       _authorTitles = _tallyAuthorTitles(titles);
       final artists = await artistsF;
