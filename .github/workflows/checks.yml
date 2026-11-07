@@ -3,23 +3,43 @@ name: Checks
 # The fast tier: the analyzer and every test suite, on Ubuntu only. It reports
 # on a pull request in about 15 minutes, while Build All Platforms is still
 # building. The PR Comment workflow reads its results from here.
+#
+# On main it also keeps the Gradle and vcpkg caches warm. A cache saved by a
+# pull request can't be read by any other pull request, but one saved on main
+# can be read by all of them, so this is where Build All Platforms' android and
+# Windows jobs, and the kotlin suite below, get theirs.
 on:
   workflow_dispatch:
+    inputs:
+      warm_caches:
+        description: Also save the Gradle and vcpkg caches, as a push to main does
+        type: boolean
+        default: false
   pull_request:
     branches:
       - main
   merge_group:
+  push:
+    branches:
+      - main
+  schedule:
+    # Recreates the caches if they were evicted, which happens to an entry
+    # nothing read for a week. With the entries in place the warming steps
+    # stop after the restore.
+    - cron: '17 4 * * *'
 
 permissions:
   contents: read
 
 env:
-  # Keep equal to FLUTTER_VERSION in build.yml.
+  # Keep equal to FLUTTER_VERSION in build.yml. The Gradle cache key uses it,
+  # so the cache saved here only matches build.yml's android job while the two
+  # agree.
   FLUTTER_VERSION: '3.47.2'
 
 # A new push to a pull request replaces its running checks. Every other run
-# gets a group of its own, so manual runs and merge groups never queue or
-# cancel.
+# gets a group of its own, so pushes to main, manual runs and merge groups
+# never queue or cancel.
 concurrency:
   group: checks-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -51,7 +71,10 @@ jobs:
           java-version: '17'
 
       # The same Gradle cache as the android job in build.yml, see there.
+      # Pull requests only restore it. On main the save step further down
+      # writes it.
       - uses: actions/cache/restore@v5
+        id: gradle-cache
         if: matrix.suite == 'kotlin'
         with:
           path: |
@@ -265,6 +288,46 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # The android job in build.yml builds release, which needs dependencies
+      # and release Flutter engine artifacts the debug unit tests don't. Both
+      # flavors have the same dependencies, so one APK covers them. Runs after
+      # a test failure too, so a red main still warms everything it can. The
+      # daemons are stopped so the new one picks up the memory limit, which is
+      # the same as the android job's, for the 16 GB runner.
+      - name: Resolve the release build's dependencies
+        if: >-
+          !cancelled() && matrix.suite == 'kotlin' &&
+          (github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          steps.gradle-cache.outputs.cache-hit != 'true'
+        run: |
+          (cd android && ./gradlew --stop) || true
+          pkill -f KotlinCompileDaemon || true
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError
+          kotlin.daemon.jvmargs=-Xmx2G
+          EOF
+          flutter build apk --release --flavor mobile --dart-define=DISTRIBUTION_CHANNEL=apk
+
+      # This is the one writer of the Gradle cache, so an entry under the exact
+      # key always holds what the kotlin tests and the release build resolve.
+      # A failed run (a test failure, or Maven Central refusing a download)
+      # still saves what it resolved, but under a key of its own: pull requests
+      # can fall back to it, and the next run misses the exact key and tries
+      # again rather than taking an incomplete entry as done. Path and key are
+      # the restore step's.
+      - uses: actions/cache/save@v5
+        if: >-
+          !cancelled() && matrix.suite == 'kotlin' &&
+          (github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches) &&
+          steps.gradle-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.m2/repository/org/robolectric
+          key: ${{ steps.gradle-cache.outputs.cache-primary-key }}${{ job.status == 'failure' && format('-partial-{0}', github.run_id) || '' }}
+
   # Merges the per-suite results into the one test-results.json the PR comment
   # reads. A suite that died before uploading counts as a failed run.
   summary:
@@ -347,3 +410,58 @@ jobs:
           print(results)
           sys.exit(1 if any(r in ('failure', 'cancelled') for r in results.values()) else 0)
           EOF
+
+  # Saves vcpkg's binary cache on main for the Windows jobs in build.yml, which
+  # build libarchive and its dependencies, OpenSSL included, from source for
+  # about 13 minutes without it. The version step, path, key and restore-keys
+  # are copied from those jobs and must stay identical to them, or the build
+  # looks up a key this never saves. With an exact hit actions/cache doesn't
+  # save, so a warm run is a restore and a no-op install. Not part of the
+  # checks gate: a cold cache only makes the next build slower.
+  warm-vcpkg:
+    if: github.event_name == 'push' || github.event_name == 'schedule' || inputs.warm_caches
+    name: warm-vcpkg (${{ matrix.triplet }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            triplet: x64-windows
+          - runner: windows-11-arm
+            triplet: arm64-windows
+    runs-on: ${{ matrix.runner }}
+    steps:
+      # vcpkg runs in the checkout like in the build, so a manifest added to
+      # the repo later would apply here too.
+      - uses: actions/checkout@v5
+
+      - name: Find the runner's vcpkg and image versions
+        id: vcpkg
+        shell: pwsh
+        run: |
+          $commit = git -C $env:VCPKG_INSTALLATION_ROOT rev-parse HEAD
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+          "image=$env:ImageVersion" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.vcpkg.outputs.commit }}-${{ steps.vcpkg.outputs.image }}
+          restore-keys: vcpkg-${{ runner.os }}-${{ runner.arch }}-
+
+      # The same classic-mode install build-windows.ps1 runs, with the vcpkg
+      # it finds first on a runner (C:\vcpkg), so the ABI hashes are the ones
+      # the build looks up. There is no manifest or overlay port to match.
+      - name: Build libarchive into the binary cache
+        shell: pwsh
+        env:
+          VCPKG_TRIPLET: ${{ matrix.triplet }}
+        run: |
+          $vcpkg = 'C:\vcpkg\vcpkg.exe'
+          if (-not (Test-Path $vcpkg)) {
+            $vcpkg = (Get-Command vcpkg -ErrorAction Stop).Source
+          }
+          & $vcpkg install "libarchive:$env:VCPKG_TRIPLET"
+          if ($LASTEXITCODE -ne 0) {
+            throw "vcpkg install libarchive:$env:VCPKG_TRIPLET failed with exit code $LASTEXITCODE"
+          }
