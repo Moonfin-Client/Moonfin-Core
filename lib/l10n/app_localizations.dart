@@ -9466,6 +9466,36 @@ abstract class AppLocalizations {
   /// **'Dimming Level'**
   String get dimmingLevel;
 
+  /// Screensaver setting that lets the screensaver start while music or an audiobook plays
+  ///
+  /// In en, this message translates to:
+  /// **'Show During Music and Audiobooks'**
+  String get screensaverDuringAudio;
+
+  /// Description under the Show During Music and Audiobooks screensaver setting
+  ///
+  /// In en, this message translates to:
+  /// **'Let the screensaver start while audio plays, so cover art doesn\'t sit on screen for hours.'**
+  String get screensaverDuringAudioDescription;
+
+  /// TV setting for how long without a button press before the TV's own screensaver and sleep timer take over
+  ///
+  /// In en, this message translates to:
+  /// **'Let TV Sleep After'**
+  String get sleepAfterIdle;
+
+  /// Description under the Let TV Sleep After setting on Android TV, where the app closes
+  ///
+  /// In en, this message translates to:
+  /// **'Close Moonfin after this long without a button press so your TV\'s own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.'**
+  String get sleepAfterIdleDescriptionAndroid;
+
+  /// Description under the Let TV Sleep After setting on Apple TV, where the app stays open
+  ///
+  /// In en, this message translates to:
+  /// **'After this long without a button press, hand the screen back to your Apple TV\'s own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.'**
+  String get sleepAfterIdleDescriptionAppleTv;
+
   /// Setting for max age rating
   ///
   /// In en, this message translates to:
@@ -21291,6 +21321,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How long the player controls stay on screen after your last button press, tap or mouse move.'**
   String get settingsHideControlsAfterDescription;
+
+  /// Playback setting for how much the player controls dim while HDR video plays
+  ///
+  /// In en, this message translates to:
+  /// **'Dim Controls in HDR'**
+  String get settingsHdrControlsDimming;
+
+  /// Description under the Dim Controls in HDR playback setting
+  ///
+  /// In en, this message translates to:
+  /// **'White looks far brighter next to HDR video, so the player controls dim by this much while it plays.'**
+  String get settingsHdrControlsDimmingDescription;
 
   /// No description provided for @settingsBitstreamAc3ToExternalDecoder.
   ///
