@@ -154,10 +154,10 @@ void main() {
 
       await pressKey(tester, LogicalKeyboardKey.enter);
       expect(find.textContaining('An overview of'), findsOneWidget);
-      await pressKey(tester, LogicalKeyboardKey.arrowDown);
       expect(focusedBookNode(), 'book:panel:read');
 
       await pressKey(tester, LogicalKeyboardKey.arrowUp);
+      expect(focusedBookNode(), 'book:title:0');
       await pressKey(tester, LogicalKeyboardKey.enter);
       expect(find.textContaining('An overview of'), findsNothing);
     });
