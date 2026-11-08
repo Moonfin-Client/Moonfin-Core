@@ -13,6 +13,7 @@ import 'package:server_core/server_core.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/chapter_markers.dart';
+import '../../../data/utils/episode_cast_utils.dart';
 import '../../../data/utils/server_trickplay.dart';
 import '../../../data/utils/trickplay_headers.dart';
 import '../../../data/models/trickplay_info.dart';
@@ -922,6 +923,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (itemId != null && _castCache.containsKey(itemId)) {
       return _castCache[itemId]!;
     }
+    if (item is AggregatedItem && item.type == 'Episode') {
+      _resolveCastAsync(item);
+    }
     final raw = _rawDataForQueueItem(item);
     final people = (raw?['People'] as List?)?.cast<Map<String, dynamic>>();
     if (people == null || people.isEmpty) return const [];
@@ -931,14 +935,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _resolveCastAsync(dynamic item) {
     if (item is! AggregatedItem) return;
     final itemId = item.id;
-    if (_castCache.containsKey(itemId) ||
-        _castResolving == itemId ||
-        item.people.isNotEmpty) {
+    if (_castCache.containsKey(itemId) || _castResolving == itemId) {
       return;
     }
     if (item.type != 'Episode' ||
-        item.seriesId == null ||
-        item.seriesId!.isEmpty) {
+        ((item.seriesId == null || item.seriesId!.isEmpty) &&
+            (item.seasonId == null || item.seasonId!.isEmpty))) {
       return;
     }
     final client = _clientForQueueItem(item);
@@ -946,12 +948,18 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _castResolving = itemId;
     () async {
       try {
-        final seriesData = await client.itemsApi.getItem(item.seriesId!);
-        final people = (seriesData['People'] as List?)
-            ?.cast<Map<String, dynamic>>();
-        _castCache[itemId] = (people == null || people.isEmpty)
+        final parentActors = await resolveParentCast(
+          client: client,
+          seasonId: item.seasonId,
+          seriesId: item.seriesId,
+        );
+        final merged = mergeEpisodePeople(
+          episodePeople: item.people,
+          parentActors: parentActors,
+        );
+        _castCache[itemId] = merged.isEmpty
             ? const []
-            : _mapPeople(people, client.imageApi);
+            : _mapPeople(merged, client.imageApi);
       } catch (_) {
         _castCache[itemId] = const [];
       } finally {
