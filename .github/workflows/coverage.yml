@@ -1,0 +1,121 @@
+name: Coverage
+
+# Advisory: how many of the lines a pull request changes under lib/ some test
+# runs, and how many its own tests run. The PR comment shows it. It never
+# fails on what it finds, and no required check waits for it.
+#
+# Its own workflow rather than a job in Checks, because the full suite with
+# coverage takes about as long as the test shards: the PR comment shows the
+# Checks and Build results as soon as they're in, and adds this when it's done.
+# It always starts, with no paths filter, so the comment can tell a pull request
+# with nothing to measure from one whose run hasn't finished.
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+# A new push makes the run for the last one pointless.
+concurrency:
+  group: coverage-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    steps:
+      # A draft gets the line in the comment, without the run.
+      - name: Skip drafts
+        if: github.event.pull_request.draft
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p /tmp/coverage-results
+          echo "{\"status\": \"draft\", \"pr_number\": $PR_NUMBER}" > /tmp/coverage-results/coverage.json
+
+      - uses: actions/checkout@v5
+        if: ${{ !github.event.pull_request.draft }}
+        with:
+          # The script diffs against the merge base with the base branch.
+          fetch-depth: 0
+
+      # Most of a run is setting up Flutter, which a pull request that changes
+      # no Dart file under lib/ doesn't need. This check only has to never skip
+      # a change the script would measure. Without one, the script still runs,
+      # without Flutter, for its warning about test files CI never runs.
+      - name: Find changed Dart code
+        id: changed
+        if: ${{ !github.event.pull_request.draft }}
+        env:
+          BASE: origin/${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          files=$(git diff --name-only --no-renames --diff-filter=AM "$BASE...HEAD")
+          if grep -E '^(packages/[^/]+/)?lib/.+\.dart$' <<< "$files" > /dev/null; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            mkdir -p /tmp/coverage-results
+            echo "{\"status\": \"error\", \"pr_number\": $PR_NUMBER}" > /tmp/coverage-results/coverage.json
+            python3 scripts/ci/changed_lines_coverage.py "$BASE" HEAD \
+              --pr-number "$PR_NUMBER" --out /tmp/coverage-results/coverage.json || true
+          fi
+
+      # The same as in Checks, so build.yml stays the one place it's set.
+      - name: Read the Flutter version build.yml uses
+        if: steps.changed.outputs.code
+        run: |
+          version=$(sed -n "s/^  FLUTTER_VERSION: '\(.*\)'$/\1/p" .github/workflows/build.yml)
+          if [ -z "$version" ]; then
+            echo "::error file=.github/workflows/build.yml::Couldn't find FLUTTER_VERSION in build.yml"
+            exit 1
+          fi
+          echo "FLUTTER_VERSION=$version" >> "$GITHUB_ENV"
+
+      - uses: subosito/flutter-action@v2
+        if: steps.changed.outputs.code
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Get packages
+        if: steps.changed.outputs.code
+        run: |
+          flutter pub get
+          # The same package list as the Checks tests job, read from there.
+          for pkg in $(grep -m1 -oP '^\s*packages="\K[^"]+' .github/workflows/checks.yml); do
+            (cd "packages/$pkg" && flutter pub get >/dev/null)
+          done
+
+      # The script writes its file after each stage, so the error left here
+      # first is what the comment sees if it crashes before stage 1 is done.
+      - name: Measure the changed lines the tests run
+        if: steps.changed.outputs.code
+        continue-on-error: true
+        # Stage 2 takes about 10 minutes. The result file is written after
+        # stage 1 as well, so a run that hits this still shows what it had,
+        # marked partial.
+        timeout-minutes: 30
+        env:
+          BASE: origin/${{ github.base_ref }}
+          # The lines no test runs are marked as annotations at their place in
+          # Files changed, which shows the pull request's head rather than the
+          # merge this job checked out.
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p /tmp/coverage-results
+          echo "{\"status\": \"error\", \"pr_number\": $PR_NUMBER}" > /tmp/coverage-results/coverage.json
+          python3 scripts/ci/changed_lines_coverage.py "$BASE" HEAD --annotate "$PR_HEAD" \
+            --pr-number "$PR_NUMBER" --out /tmp/coverage-results/coverage.json
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-results
+          path: /tmp/coverage-results/
+          if-no-files-found: ignore
+          retention-days: 7
