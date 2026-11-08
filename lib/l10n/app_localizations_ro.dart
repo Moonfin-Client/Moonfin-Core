@@ -11046,13 +11046,34 @@ class AppLocalizationsRo extends AppLocalizations {
   String get syncPlayRepeat => 'Repetă';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Unul';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Amestecat';
 
   @override
   String get syncPlayShuffleModeSorted => 'Sortat';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11080,6 +11101,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Creează un grup nou';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Numele grupului';
 
   @override
@@ -11092,7 +11117,16 @@ class AppLocalizationsRo extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Grupuri disponibile';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Niciun grup disponibil';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Te alături grupului SyncPlay?';
@@ -11100,6 +11134,10 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Alăturarea la un grup SyncPlay poate înlocui coada ta curentă de redare. Continui?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Alătură-te';
@@ -12154,6 +12192,13 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Câte secunde să sară înainte după apăsarea butonului de derulare rapidă.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

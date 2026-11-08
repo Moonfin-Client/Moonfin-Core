@@ -11000,13 +11000,34 @@ class AppLocalizationsTa extends AppLocalizations {
   String get syncPlayRepeat => 'மீண்டும் செய்யவும்';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'ஒன்று';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'கலக்கப்பட்டது';
 
   @override
   String get syncPlayShuffleModeSorted => 'வரிசைப்படுத்தப்பட்டது';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11034,6 +11055,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'புதிய குழுவை உருவாக்கவும்';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'குழுவின் பெயர்';
 
   @override
@@ -11046,7 +11071,16 @@ class AppLocalizationsTa extends AppLocalizations {
   String get syncPlayAvailableGroups => 'கிடைக்கும் குழுக்கள்';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'குழுக்கள் இல்லை';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay குழுவில் சேரவா?';
@@ -11054,6 +11088,10 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay குழுவில் சேர்வது உங்கள் தற்போதைய பிளேபேக் வரிசையை மாற்றலாம். தொடரவா?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'சேருங்கள்';
@@ -12103,6 +12141,13 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'ஃபாஸ்ட் ஃபார்வர்ட் பட்டனை அழுத்திய பிறகு எத்தனை வினாடிகள் முன்னோக்கி குதிக்க வேண்டும்.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

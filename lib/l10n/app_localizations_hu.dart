@@ -11027,13 +11027,34 @@ class AppLocalizationsHu extends AppLocalizations {
   String get syncPlayRepeat => 'Ismétlés';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Egy';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Megkeverve';
 
   @override
   String get syncPlayShuffleModeSorted => 'Rendezett';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11061,6 +11082,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Új csoport létrehozása';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Csoport neve';
 
   @override
@@ -11073,7 +11098,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Elérhető csoportok';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Nincsenek elérhető csoportok';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Csatlakozol a SyncPlay-csoporthoz?';
@@ -11081,6 +11115,10 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'A SyncPlay-csoporthoz való csatlakozás lecserélheti a jelenlegi lejátszási sorodat. Folytatod?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Csatlakozás';
@@ -12130,6 +12168,13 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Hány másodpercet ugorjon előre a lejátszó a gyors előretekerés gomb megnyomása után.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

@@ -11112,13 +11112,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get syncPlayRepeat => 'Répéter';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Un';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Mélange';
 
   @override
   String get syncPlayShuffleModeSorted => 'Trié';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11146,6 +11167,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Créer un nouveau groupe';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Nom du groupe';
 
   @override
@@ -11158,7 +11183,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Groupes disponibles';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Aucun groupe disponible';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Rejoindre le groupe SyncPlay ?';
@@ -11166,6 +11200,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Rejoindre un groupe SyncPlay peut remplacer votre lecture en cours. Continuer ?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Rejoindre';
@@ -12224,6 +12262,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Nombre de secondes à avancer à chaque appui sur le bouton.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

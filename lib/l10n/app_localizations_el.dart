@@ -11056,13 +11056,34 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlayRepeat => 'Επαναλαμβάνω';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Ενας';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Ανακατεμένα';
 
   @override
   String get syncPlayShuffleModeSorted => 'Ταξινομημένο';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11090,6 +11111,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Δημιουργήστε μια νέα ομάδα';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Όνομα ομάδας';
 
   @override
@@ -11102,7 +11127,16 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Διαθέσιμες ομάδες';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Δεν υπάρχουν διαθέσιμες ομάδες';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Εγγραφείτε στην ομάδα SyncPlay;';
@@ -11110,6 +11144,10 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Η συμμετοχή σε μια ομάδα SyncPlay μπορεί να αντικαταστήσει την τρέχουσα ουρά αναπαραγωγής. Συνεχίζω;';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Ενώνω';
@@ -12169,6 +12207,13 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Πόσα δευτερόλεπτα να μεταπηδήσετε προς τα εμπρός αφού πατήσετε το κουμπί γρήγορης προώθησης.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

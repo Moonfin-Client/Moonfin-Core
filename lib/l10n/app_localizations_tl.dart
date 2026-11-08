@@ -11020,13 +11020,34 @@ class AppLocalizationsTl extends AppLocalizations {
   String get syncPlayRepeat => 'Ulitin';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Isa';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Binasa';
 
   @override
   String get syncPlayShuffleModeSorted => 'Inayos';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11054,6 +11075,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Gumawa ng bagong grupo';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Pangalan ng grupo';
 
   @override
@@ -11066,7 +11091,16 @@ class AppLocalizationsTl extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Magagamit na mga grupo';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Walang available na grupo';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Sumali sa SyncPlay group?';
@@ -11074,6 +11108,10 @@ class AppLocalizationsTl extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Maaaring palitan ng pagsali sa isang pangkat ng SyncPlay ang iyong kasalukuyang pila sa pag-playback. Magpatuloy?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Sumali';
@@ -12125,6 +12163,13 @@ class AppLocalizationsTl extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Ilang segundo upang tumalon pasulong pagkatapos pindutin ang pindutan ng fast forward.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

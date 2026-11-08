@@ -10944,13 +10944,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get syncPlayRepeat => 'Lặp lại';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Một';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Đã xáo trộn';
 
   @override
   String get syncPlayShuffleModeSorted => 'Đã sắp xếp';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -10978,6 +10999,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Tạo một nhóm mới';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Tên nhóm';
 
   @override
@@ -10990,7 +11015,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Các nhóm có sẵn';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Không có nhóm nào';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Tham gia nhóm SyncPlay?';
@@ -10998,6 +11032,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Việc tham gia nhóm SyncPlay có thể thay thế hàng đợi phát lại hiện tại của bạn. Tiếp tục?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Tham gia';
@@ -12039,6 +12077,13 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Nhảy về phía trước bao nhiêu giây sau khi nhấn nút tua đi nhanh.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

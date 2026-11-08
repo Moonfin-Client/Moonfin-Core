@@ -10935,13 +10935,34 @@ class AppLocalizationsEo extends AppLocalizations {
   String get syncPlayRepeat => 'Ripeti';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Unu';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Miksita';
 
   @override
   String get syncPlayShuffleModeSorted => 'Ordigita';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'Sinkronigi nunan reproduktan vicon';
@@ -10968,6 +10989,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Kreu novan grupon';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Grupnomo';
 
   @override
@@ -10980,7 +11005,16 @@ class AppLocalizationsEo extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Disponeblaj grupoj';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Neniuj grupoj disponeblaj';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Ĉu aliĝi al SyncPlay-grupo?';
@@ -10988,6 +11022,10 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Aliĝi al SyncPlay-grupo povas anstataŭigi vian nunan reproduktan vicon. Ĉu daŭrigi?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Aliĝu';
@@ -12031,6 +12069,13 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Kiom da sekundoj salti antaŭen post premado de la rapida antaŭen-butono.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

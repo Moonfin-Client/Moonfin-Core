@@ -11125,13 +11125,34 @@ class AppLocalizationsCa extends AppLocalizations {
   String get syncPlayRepeat => 'Repetiu';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Un';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Remenat';
 
   @override
   String get syncPlayShuffleModeSorted => 'Ordenat';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11159,6 +11180,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Crea un grup nou';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Nom del grup';
 
   @override
@@ -11171,7 +11196,16 @@ class AppLocalizationsCa extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Grups disponibles';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'No hi ha grups disponibles';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Vols unir-te al grup de SyncPlay?';
@@ -11179,6 +11213,10 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Unir-se a un grup de SyncPlay pot substituir la vostra cua de reproducció actual. Continuar?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Uneix-te';
@@ -12243,6 +12281,13 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Quants segons cal saltar endavant després de prémer el botó d\'avançament ràpid.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

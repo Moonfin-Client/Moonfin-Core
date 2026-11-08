@@ -10899,13 +10899,34 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncPlayRepeat => 'تکرار کنید';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'یکی';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'به هم ریخته';
 
   @override
   String get syncPlayShuffleModeSorted => 'مرتب شده است';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'همگام سازی صف پخش فعلی';
@@ -10932,6 +10953,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'یک گروه جدید ایجاد کنید';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'نام گروه';
 
   @override
@@ -10944,7 +10969,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncPlayAvailableGroups => 'گروه های موجود';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'هیچ گروهی در دسترس نیست';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'به گروه SyncPlay بپیوندید؟';
@@ -10952,6 +10986,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'پیوستن به یک گروه SyncPlay ممکن است جایگزین صف پخش فعلی شما شود. ادامه دهید؟';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'بپیوندید';
@@ -11985,6 +12023,13 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'چند ثانیه بعد از فشار دادن دکمه سریع به جلو پرش به جلو.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

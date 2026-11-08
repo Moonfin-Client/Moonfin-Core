@@ -10629,13 +10629,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayRepeat => '반복';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => '한 항목';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => '섞임';
 
   @override
   String get syncPlayShuffleModeSorted => '정렬됨';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => '현재 재생 대기열 동기화';
@@ -10661,6 +10682,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayCreateNewGroup => '새 그룹 만들기';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => '그룹 이름';
 
   @override
@@ -10673,7 +10698,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayAvailableGroups => '사용 가능한 그룹';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => '사용 가능한 그룹이 없습니다.';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay 그룹에 참여하시겠습니까?';
@@ -10681,6 +10715,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay 그룹에 참여하면 현재 재생 대기열이 대체될 수 있습니다. 계속할까요?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => '참여';
@@ -11685,6 +11723,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       '빨리감기 버튼을 누른 후 앞으로 이동할 시간(초)입니다.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder => 'AC3를 외부 디코더로 비트스트림 전송';

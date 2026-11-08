@@ -10946,13 +10946,34 @@ class AppLocalizationsAf extends AppLocalizations {
   String get syncPlayRepeat => 'Herhaal';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Een';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Geskommel';
 
   @override
   String get syncPlayShuffleModeSorted => 'Gesorteer';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'Sinkroniseer huidige afspeelwag';
@@ -10979,6 +11000,10 @@ class AppLocalizationsAf extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Skep \'n nuwe groep';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Groepnaam';
 
   @override
@@ -10991,7 +11016,16 @@ class AppLocalizationsAf extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Beskikbare groepe';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Geen groepe beskikbaar nie';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Sluit aan by SyncPlay-groep?';
@@ -10999,6 +11033,10 @@ class AppLocalizationsAf extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Om by \'n SyncPlay-groep aan te sluit, kan dalk jou huidige terugspeelwaglys vervang. Gaan voort?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Sluit aan';
@@ -12040,6 +12078,13 @@ class AppLocalizationsAf extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Hoeveel sekondes om vorentoe te spring nadat jy die vinnig vorentoe-knoppie gedruk het.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

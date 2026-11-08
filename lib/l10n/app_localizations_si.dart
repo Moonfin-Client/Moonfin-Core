@@ -10936,13 +10936,34 @@ class AppLocalizationsSi extends AppLocalizations {
   String get syncPlayRepeat => 'නැවත නැවත කරන්න';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'එකක්';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'කලවම් කළා';
 
   @override
   String get syncPlayShuffleModeSorted => 'වර්ග කර ඇත';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'වත්මන් පසුධාවන පෝලිම සමමුහුර්ත කරන්න';
@@ -10969,6 +10990,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'නව කණ්ඩායමක් සාදන්න';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'කණ්ඩායමේ නම';
 
   @override
@@ -10981,7 +11006,16 @@ class AppLocalizationsSi extends AppLocalizations {
   String get syncPlayAvailableGroups => 'පවතින කණ්ඩායම්';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'කණ්ඩායම් නොමැත';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay කණ්ඩායමට සම්බන්ධ වන්නද?';
@@ -10989,6 +11023,10 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay කණ්ඩායමකට සම්බන්ධ වීමෙන් ඔබේ වත්මන් පසුධාවන පෝලිම ප්‍රතිස්ථාපනය කළ හැක. දිගටම කරගෙන යන්නද?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'එක්වන්න';
@@ -12027,6 +12065,13 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Fast forward බොත්තම එබීමෙන් පසු තත්පර කීයක් ඉදිරියට පනින්න.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

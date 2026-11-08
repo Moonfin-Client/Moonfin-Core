@@ -10985,13 +10985,34 @@ class AppLocalizationsLv extends AppLocalizations {
   String get syncPlayRepeat => 'Atkārtojiet';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Viens';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Sajaukts';
 
   @override
   String get syncPlayShuffleModeSorted => 'Sakārtots';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11019,6 +11040,10 @@ class AppLocalizationsLv extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Izveidojiet jaunu grupu';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Grupas nosaukums';
 
   @override
@@ -11031,7 +11056,16 @@ class AppLocalizationsLv extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Pieejamās grupas';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Nav pieejama neviena grupa';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Vai pievienoties SyncPlay grupai?';
@@ -11039,6 +11073,10 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Pievienošanās SyncPlay grupai var aizstāt pašreizējo atskaņošanas rindu. Vai turpināt?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Pievienojieties';
@@ -12085,6 +12123,13 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Cik sekundes, lai pārietu uz priekšu pēc pārtīšanas pogas nospiešanas.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

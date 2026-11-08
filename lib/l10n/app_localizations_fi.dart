@@ -11030,13 +11030,34 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayRepeat => 'Toista uudestaan';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Yksi';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Sekoitettu';
 
   @override
   String get syncPlayShuffleModeSorted => 'Lajiteltu';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'Synkronoi nykyinen toistojono';
@@ -11063,6 +11084,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Luo uusi ryhmä';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Ryhmän nimi';
 
   @override
@@ -11075,7 +11100,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Saatavilla olevat ryhmät';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Ryhmiä ei ole saatavilla';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Liitytkö SyncPlay ryhmään?';
@@ -11083,6 +11117,10 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay ryhmään liittyminen voi korvata nykyisen toistojonosi. Jatkaa?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Liity';
@@ -12131,6 +12169,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Kuinka monta sekuntia hyppää eteenpäin eteenpäinkelauspainikkeen painamisen jälkeen.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

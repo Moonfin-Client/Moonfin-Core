@@ -10985,13 +10985,34 @@ class AppLocalizationsLt extends AppLocalizations {
   String get syncPlayRepeat => 'Pakartokite';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Vienas';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Sumaišytas';
 
   @override
   String get syncPlayShuffleModeSorted => 'Surūšiuota';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11019,6 +11040,10 @@ class AppLocalizationsLt extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Sukurti naują grupę';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Grupės pavadinimas';
 
   @override
@@ -11031,7 +11056,16 @@ class AppLocalizationsLt extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Galimos grupės';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Nėra pasiekiamų grupių';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Prisijungti prie SyncPlay grupės?';
@@ -11039,6 +11073,10 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Prisijungimas prie „SyncPlay“ grupės gali pakeisti dabartinę atkūrimo eilę. Tęsti?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Prisijunk';
@@ -12090,6 +12128,13 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Kiek sekundžių reikia šokti pirmyn paspaudus greito pirmyn mygtuką.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

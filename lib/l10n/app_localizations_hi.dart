@@ -10927,13 +10927,34 @@ class AppLocalizationsHi extends AppLocalizations {
   String get syncPlayRepeat => 'दोहराना';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'एक';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'फेरबदल';
 
   @override
   String get syncPlayShuffleModeSorted => 'क्रमबद्ध';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'वर्तमान प्लेबैक कतार को सिंक करें';
@@ -10960,6 +10981,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'एक नया समूह बनाएं';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'समूह नाम';
 
   @override
@@ -10972,7 +10997,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get syncPlayAvailableGroups => 'उपलब्ध समूह';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'कोई समूह उपलब्ध नहीं';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay समूह में शामिल हों?';
@@ -10980,6 +11014,10 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay समूह में शामिल होने से आपकी वर्तमान प्लेबैक कतार प्रतिस्थापित हो सकती है। जारी रखना?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'जोड़ना';
@@ -12016,6 +12054,13 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'फ़ास्ट फ़ॉरवर्ड बटन दबाने के बाद कितने सेकंड आगे कूदना है।';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

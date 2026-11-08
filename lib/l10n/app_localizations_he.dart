@@ -10850,13 +10850,34 @@ class AppLocalizationsHe extends AppLocalizations {
   String get syncPlayRepeat => 'לַחֲזוֹר עַל';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'אֶחָד';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'ערבב';
 
   @override
   String get syncPlayShuffleModeSorted => 'מְמוּיָן';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'סנכרן את תור ההשמעה הנוכחי';
@@ -10883,6 +10904,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'צור קבוצה חדשה';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'שם הקבוצה';
 
   @override
@@ -10895,7 +10920,16 @@ class AppLocalizationsHe extends AppLocalizations {
   String get syncPlayAvailableGroups => 'קבוצות זמינות';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'אין קבוצות זמינות';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'להצטרף לקבוצת SyncPlay?';
@@ -10903,6 +10937,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'הצטרפות לקבוצת SyncPlay עשויה להחליף את תור ההשמעה הנוכחי שלך. לְהַמשִׁיך?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'לְהִצְטַרֵף';
@@ -11925,6 +11963,13 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'כמה שניות לקפוץ קדימה לאחר לחיצה על כפתור ההרצה קדימה.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

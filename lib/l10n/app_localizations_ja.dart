@@ -10754,13 +10754,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncPlayRepeat => '繰り返す';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => '1つ';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'シャッフル';
 
   @override
   String get syncPlayShuffleModeSorted => 'ソート済み';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => '現在の再生キューを同期します';
@@ -10786,6 +10807,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncPlayCreateNewGroup => '新しいグループを作成する';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'グループ名';
 
   @override
@@ -10798,7 +10823,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncPlayAvailableGroups => '利用可能なグループ';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => '利用可能なグループがありません';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay グループに参加しますか?';
@@ -10806,6 +10840,10 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay グループに参加すると、現在の再生キューが置き換えられる場合があります。続く？';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => '参加する';
@@ -11815,6 +11853,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsSkipForwardLengthDescription => '早送りボタンを押してから何秒前にジャンプするか。';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder => 'ビットストリーム AC3 から外部デコーダへ';

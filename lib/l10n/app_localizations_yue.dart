@@ -10705,13 +10705,34 @@ class AppLocalizationsYue extends AppLocalizations {
   String get syncPlayRepeat => '重複';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => '一';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => '洗牌';
 
   @override
   String get syncPlayShuffleModeSorted => '已排序';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => '同步目前播放隊列';
@@ -10737,6 +10758,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get syncPlayCreateNewGroup => '建立一個新群組';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => '團體名稱';
 
   @override
@@ -10749,13 +10774,26 @@ class AppLocalizationsYue extends AppLocalizations {
   String get syncPlayAvailableGroups => '可用群組';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => '沒有可用的群組';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => '加入 SyncPlay 群組？';
 
   @override
   String get syncPlayJoinGroupWarning => '加入 SyncPlay 群組可能會取代您目前的播放佇列。繼續？';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => '加入';
@@ -11755,6 +11793,13 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get settingsSkipForwardLengthDescription => '按下快轉按鈕後快轉多少秒。';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder => '位元流 AC3 到外部解碼器';

@@ -10984,13 +10984,34 @@ class AppLocalizationsSk extends AppLocalizations {
   String get syncPlayRepeat => 'Opakujte';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Jeden';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Zamiešané';
 
   @override
   String get syncPlayShuffleModeSorted => 'Zoradené';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11018,6 +11039,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Vytvorte novú skupinu';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Názov skupiny';
 
   @override
@@ -11030,7 +11055,16 @@ class AppLocalizationsSk extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Dostupné skupiny';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Nie sú dostupné žiadne skupiny';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Pripojiť sa k skupine SyncPlay?';
@@ -11038,6 +11072,10 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Pripojenie sa k skupine SyncPlay môže nahradiť váš aktuálny zoznam prehrávania. Pokračovať?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Pripojte sa';
@@ -12089,6 +12127,13 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Koľko sekúnd preskočiť dopredu po stlačení tlačidla rýchleho posunu dopredu.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

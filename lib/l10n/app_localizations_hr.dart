@@ -11136,13 +11136,34 @@ class AppLocalizationsHr extends AppLocalizations {
   String get syncPlayRepeat => 'Ponoviti';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Jedan';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Promiješano';
 
   @override
   String get syncPlayShuffleModeSorted => 'Poredano';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11170,6 +11191,10 @@ class AppLocalizationsHr extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Stvorite novu grupu';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Naziv grupe';
 
   @override
@@ -11182,7 +11207,16 @@ class AppLocalizationsHr extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Dostupne grupe';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Nema dostupnih grupa';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Pridružite se grupi SyncPlay?';
@@ -11190,6 +11224,10 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Pridruživanje grupi SyncPlay može zamijeniti vaš trenutni red reprodukcije. Nastaviti?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Pridruži se';
@@ -12240,6 +12278,13 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Za koliko sekundi skočiti unaprijed nakon pritiska na gumb za brzo premotavanje.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

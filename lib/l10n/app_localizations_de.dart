@@ -11074,13 +11074,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncPlayRepeat => 'Wiederholen';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Eins';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Gemischt';
 
   @override
   String get syncPlayShuffleModeSorted => 'Sortiert';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11108,6 +11129,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Erstellen Sie eine neue Gruppe';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Gruppenname';
 
   @override
@@ -11120,7 +11145,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Verfügbare Gruppen';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Keine Gruppen verfügbar';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Der SyncPlay-Gruppe beitreten?';
@@ -11128,6 +11162,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Der Beitritt zu einer SyncPlay-Gruppe kann Ihre aktuelle Wiedergabewarteschlange ersetzen. Weitermachen?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Verbinden';
@@ -12183,6 +12221,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Wie viele Sekunden soll nach dem Drücken der Schnellvorlauftaste vorwärts gesprungen werden?';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

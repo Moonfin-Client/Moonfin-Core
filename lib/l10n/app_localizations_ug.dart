@@ -10968,13 +10968,34 @@ class AppLocalizationsUg extends AppLocalizations {
   String get syncPlayRepeat => 'تەكرارلاڭ';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'بىرى';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'تەرتىپسىز';
 
   @override
   String get syncPlayShuffleModeSorted => 'تەرتىپلەنگەن';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11002,6 +11023,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'يېڭى گۇرۇپپا قۇرۇڭ';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'گۇرۇپپا ئىسمى';
 
   @override
@@ -11014,7 +11039,16 @@ class AppLocalizationsUg extends AppLocalizations {
   String get syncPlayAvailableGroups => 'ئىشلەتكىلى بولىدىغان گۇرۇپپىلار';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'گۇرۇپپا يوق';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay گۇرۇپپىسىغا قوشۇلۇڭ؟';
@@ -11022,6 +11056,10 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay گۇرۇپپىسىغا قوشۇلسىڭىز نۆۋەتتىكى قويۇش ئۆچرەتلىرىڭىزنىڭ ئورنىنى ئېلىشى مۇمكىن. داۋاملاشتۇرامسىز؟';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'قوشۇلۇڭ';
@@ -12065,6 +12103,13 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'تېز ئىلگىرىلەش كۇنۇپكىسىنى باسقاندىن كېيىن قانچە سېكۇنت سەكرەش.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

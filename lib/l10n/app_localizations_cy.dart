@@ -10989,13 +10989,34 @@ class AppLocalizationsCy extends AppLocalizations {
   String get syncPlayRepeat => 'Ailadrodd';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Un';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Wedi\'i gymysgu';
 
   @override
   String get syncPlayShuffleModeSorted => 'Wedi\'i drefnu';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'Cysoni ciw chwarae cyfredol';
@@ -11022,6 +11043,10 @@ class AppLocalizationsCy extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Creu grŵp newydd';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Enw grŵp';
 
   @override
@@ -11034,7 +11059,16 @@ class AppLocalizationsCy extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Grwpiau sydd ar gael';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Dim grwpiau ar gael';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Ymuno â grŵp SyncPlay?';
@@ -11042,6 +11076,10 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'Mae\'n bosibl y bydd ymuno â grŵp SyncPlay yn disodli eich ciw chwarae presennol. Parhau?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Ymuno';
@@ -12088,6 +12126,13 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Sawl eiliad i neidio ymlaen ar ôl pwyso\'r botwm cyflym ymlaen.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

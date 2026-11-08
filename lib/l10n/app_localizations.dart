@@ -19306,11 +19306,23 @@ abstract class AppLocalizations {
   /// **'Repeat'**
   String get syncPlayRepeat;
 
+  /// Subtitle of the Repeat tile on the SyncPlay screen
+  ///
+  /// In en, this message translates to:
+  /// **'Replay one item or the whole queue'**
+  String get syncPlayRepeatSubtitle;
+
   /// No description provided for @syncPlayRepeatOne.
   ///
   /// In en, this message translates to:
   /// **'One'**
   String get syncPlayRepeatOne;
+
+  /// Subtitle of the Shuffle tile on the SyncPlay screen
+  ///
+  /// In en, this message translates to:
+  /// **'Play the queue in order or shuffled'**
+  String get syncPlayShuffleSubtitle;
 
   /// No description provided for @syncPlayShuffleModeShuffled.
   ///
@@ -19323,6 +19335,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sorted'**
   String get syncPlayShuffleModeSorted;
+
+  /// Small label on the signed-in user's own chip in the SyncPlay participant list
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get syncPlayParticipantYou;
+
+  /// Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued
+  ///
+  /// In en, this message translates to:
+  /// **'{participants} · {detail}'**
+  String syncPlayGroupSubtitle(String participants, String detail);
+
+  /// Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'
+  ///
+  /// In en, this message translates to:
+  /// **'nothing queued yet'**
+  String get syncPlayNothingQueued;
+
+  /// Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group
+  ///
+  /// In en, this message translates to:
+  /// **'Others can join from their SyncPlay screen while this group exists.'**
+  String get syncPlayOthersCanJoinHint;
 
   /// No description provided for @syncPlaySyncCurrentQueue.
   ///
@@ -19366,6 +19402,12 @@ abstract class AppLocalizations {
   /// **'Create a new group'**
   String get syncPlayCreateNewGroup;
 
+  /// Subtitle under 'Create a new group' on the SyncPlay screen
+  ///
+  /// In en, this message translates to:
+  /// **'Watch together with everyone who joins'**
+  String get syncPlayCreateGroupSubtitle;
+
   /// No description provided for @syncPlayGroupName.
   ///
   /// In en, this message translates to:
@@ -19390,11 +19432,23 @@ abstract class AppLocalizations {
   /// **'Available groups'**
   String get syncPlayAvailableGroups;
 
+  /// Heading of the SyncPlay available groups list with how many there are
+  ///
+  /// In en, this message translates to:
+  /// **'Available groups · {count}'**
+  String syncPlayAvailableGroupsCount(int count);
+
   /// No description provided for @syncPlayNoGroupsAvailable.
   ///
   /// In en, this message translates to:
   /// **'No groups available'**
   String get syncPlayNoGroupsAvailable;
+
+  /// Second line of the empty state in the SyncPlay available groups list
+  ///
+  /// In en, this message translates to:
+  /// **'Groups other people create on this server will show up here.'**
+  String get syncPlayNoGroupsAvailableHint;
 
   /// No description provided for @syncPlayJoinGroupQuestion.
   ///
@@ -19407,6 +19461,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Joining a SyncPlay group may replace your current playback queue. Continue?'**
   String get syncPlayJoinGroupWarning;
+
+  /// Note with an info icon under the list of available groups on the SyncPlay screen
+  ///
+  /// In en, this message translates to:
+  /// **'Joining a group may replace your current playback queue.'**
+  String get syncPlayJoinReplacesQueueNote;
 
   /// No description provided for @syncPlayJoin.
   ///
@@ -21219,6 +21279,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How many seconds to jump forward after pressing the fast forward button.'**
   String get settingsSkipForwardLengthDescription;
+
+  /// Playback setting for how long the player controls stay on screen after the last input
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Controls After'**
+  String get settingsHideControlsAfter;
+
+  /// Description under the Hide Controls After playback setting
+  ///
+  /// In en, this message translates to:
+  /// **'How long the player controls stay on screen after your last button press, tap or mouse move.'**
+  String get settingsHideControlsAfterDescription;
 
   /// No description provided for @settingsBitstreamAc3ToExternalDecoder.
   ///

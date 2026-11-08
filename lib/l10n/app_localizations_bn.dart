@@ -10936,13 +10936,34 @@ class AppLocalizationsBn extends AppLocalizations {
   String get syncPlayRepeat => 'পুনরাবৃত্তি করুন';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'এক';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'এলোমেলো';
 
   @override
   String get syncPlayShuffleModeSorted => 'সাজানো';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'বর্তমান প্লেব্যাক সারি সিঙ্ক করুন';
@@ -10969,6 +10990,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'একটি নতুন গ্রুপ তৈরি করুন';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'গ্রুপের নাম';
 
   @override
@@ -10981,7 +11006,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get syncPlayAvailableGroups => 'উপলব্ধ গ্রুপ';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'কোন গ্রুপ উপলব্ধ নেই';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay গ্রুপে যোগ দেবেন?';
@@ -10989,6 +11023,10 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'একটি SyncPlay গোষ্ঠীতে যোগদান আপনার বর্তমান প্লেব্যাক সারি প্রতিস্থাপন করতে পারে৷ চালিয়ে যান?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'যোগদান করুন';
@@ -12026,6 +12064,13 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'ফাস্ট ফরওয়ার্ড বোতাম টিপে কত সেকেন্ড এগিয়ে যেতে হবে।';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>

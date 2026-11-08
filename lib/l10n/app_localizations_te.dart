@@ -10996,13 +10996,34 @@ class AppLocalizationsTe extends AppLocalizations {
   String get syncPlayRepeat => 'పునరావృతం చేయండి';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'ఒకటి';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'షఫుల్ చేయబడింది';
 
   @override
   String get syncPlayShuffleModeSorted => 'క్రమబద్ధీకరించబడింది';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11030,6 +11051,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'కొత్త సమూహాన్ని సృష్టించండి';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'సమూహం పేరు';
 
   @override
@@ -11042,7 +11067,16 @@ class AppLocalizationsTe extends AppLocalizations {
   String get syncPlayAvailableGroups => 'అందుబాటులో ఉన్న సమూహాలు';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'సమూహాలు అందుబాటులో లేవు';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay సమూహంలో చేరాలా?';
@@ -11050,6 +11084,10 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay సమూహంలో చేరడం వలన మీ ప్రస్తుత ప్లేబ్యాక్ క్యూను భర్తీ చేయవచ్చు. కొనసాగించాలా?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'చేరండి';
@@ -12101,6 +12139,13 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'ఫాస్ట్ ఫార్వర్డ్ బటన్‌ను నొక్కిన తర్వాత ఎన్ని సెకన్లు ముందుకు దూకాలి.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>
