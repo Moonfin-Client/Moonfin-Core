@@ -58,6 +58,7 @@ class ScreensaverController {
   bool _playbackActive = false;
   bool _streamPlaying = false;
   bool _trailerActive = false;
+  bool _homePreviewActive = false;
   bool _nativePlayerPresented = false;
   bool _wakeLockEnabled = false;
 
@@ -95,6 +96,14 @@ class ScreensaverController {
     _onStateChanged();
   }
 
+  /// A home card's preview, which can be a full trailer.
+  void setHomePreviewActive(bool value) {
+    if (_homePreviewActive == value) return;
+    _homePreviewActive = value;
+    _refreshWakeLock();
+    _onStateChanged();
+  }
+
   bool get _armed =>
       PlatformDetection.isTV &&
       _enabledCache &&
@@ -102,6 +111,7 @@ class ScreensaverController {
       !_playbackActive &&
       (!_streamPlaying || (_duringAudioCache && _playingAudio)) &&
       !_trailerActive &&
+      !_homePreviewActive &&
       !_nativePlayerPresented;
 
   bool get _playingAudio {
@@ -281,7 +291,7 @@ class ScreensaverController {
           activityPaused: _activityPaused,
           playbackActive: _playbackActive,
           streamPlaying: _streamPlaying,
-          trailerActive: _trailerActive,
+          trailerActive: _trailerActive || _homePreviewActive,
           screensaverVisible: visible.value,
           isTv: PlatformDetection.isTV,
           screensaverEnabled: _enabledCache,

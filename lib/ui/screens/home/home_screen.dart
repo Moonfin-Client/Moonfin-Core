@@ -1047,6 +1047,7 @@ class _ContentRowsState extends State<_ContentRows>
   set _previewReady(bool value) {
     if (_previewReadyNotifier.value != value) {
       _previewReadyNotifier.value = value;
+      _screensaver.setHomePreviewActive(value);
     }
   }
 
@@ -1073,9 +1074,11 @@ class _ContentRowsState extends State<_ContentRows>
     }
   }
 
+  final _screensaver = GetIt.instance<ScreensaverController>();
+
   // The screensaver draws over Home instead of opening a route, so the media
   // bar has to pause for it here or it keeps paging behind it.
-  final _screensaverVisible = GetIt.instance<ScreensaverController>().visible;
+  late final _screensaverVisible = _screensaver.visible;
   late final _mediaBarPauseInputs = Listenable.merge([
     _chromeAudioActiveNotifier,
     _screensaverVisible,
@@ -1575,6 +1578,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   @override
   void dispose() {
+    _screensaver.setHomePreviewActive(false);
     HardwareKeyboard.instance.removeHandler(_handleGlobalHardwareKey);
     _rowPrefetchDebounce?.cancel();
     _v2Expansion.dispose();
