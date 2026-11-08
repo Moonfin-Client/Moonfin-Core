@@ -52,6 +52,7 @@ import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
+import '../../playback/media_kit_player_backend.dart';
 import '../../playback/native_apple_player_backend.dart';
 import '../../playback/audio_handler.dart';
 import '../../playback/headless_session_bootstrap.dart';
@@ -974,7 +975,7 @@ class SessionRepository {
   }
 
   Future<void> _setLocalVolume(PlaybackManager manager, double volume) async {
-    final clamped = volume.clamp(0, 100).toDouble();
+    final clamped = volume.clamp(0, maxPlayerVolume).toDouble();
     final backend = manager.backend;
     if (backend == null) return;
     if (PlatformDetection.isMobile) {

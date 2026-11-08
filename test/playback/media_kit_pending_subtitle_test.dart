@@ -97,6 +97,7 @@ class _Player extends Fake implements Player {
   PlayerState get state => const PlayerState();
   final selections = <String>[];
   final opened = <String>[];
+  final volumes = <double>[];
   String? automaticSubtitleSid;
   Completer<void>? openStarted;
   Completer<void>? delayOpen;
@@ -127,6 +128,9 @@ class _Player extends Fake implements Player {
       native.properties['sid'] = automaticSubtitleSid!;
     }
   }
+
+  @override
+  Future<void> setVolume(double volume) async => volumes.add(volume);
 
   @override
   Future<void> stop() async {}
@@ -717,5 +721,21 @@ void main() {
       await backend.configureSubtitleStyle(fontFamily: '');
       expect(properties['sub-font'], 'sans-serif');
     });
+  });
+
+  test('mpv plays up to 150% on Windows and Linux, 100% elsewhere', () async {
+    await backend.setVolume(200);
+    await backend.setVolume(-5);
+    expect(player.volumes, [150, 0]);
+
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    for (final (platform, ceiling) in [
+      (TargetPlatform.windows, 150.0),
+      (TargetPlatform.linux, 150.0),
+      (TargetPlatform.macOS, 100.0),
+    ]) {
+      debugDefaultTargetPlatformOverride = platform;
+      expect(maxPlayerVolume, ceiling, reason: platform.name);
+    }
   });
 }

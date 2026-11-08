@@ -6383,7 +6383,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final backend = _manager.backend;
     if (backend == null) return;
 
-    final next = (_playerVolume + (delta * 100.0)).clamp(0.0, 100.0);
+    final next = (_playerVolume + (delta * 100.0)).clamp(0.0, maxPlayerVolume);
     _playerVolume = next;
     await backend.setVolume(next);
     _persistPlayerVolume();
@@ -6503,7 +6503,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _initDesktopVolume() {
     _playerVolume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _reportVolumeToManager();
@@ -6528,7 +6528,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// controller. Reads [_osdVolume] because a phone's volume is the system one
   /// and a desktop's is the player's.
   void _reportVolumeToManager() {
-    final level = (_osdVolume * 100).clamp(0.0, 100.0).toDouble();
+    final level = (_osdVolume * 100).clamp(0.0, maxPlayerVolume).toDouble();
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
   }
 
@@ -6764,7 +6764,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
       } else {
         final newVolume = (_verticalDragStartValue + deltaValue)
-            .clamp(0.0, 1.0)
+            .clamp(0.0, maxPlayerVolume / 100)
             .toDouble();
         _playerVolume = newVolume * 100.0;
         _manager.backend?.setVolume(_playerVolume);
@@ -6809,7 +6809,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 200.0,
               ) /
               200.0
-        : displayVolume.clamp(0.0, 1.0);
+        : (displayVolume * 100 / maxPlayerVolume).clamp(0.0, 1.0);
     final overlayLabel = usingMedia3Boost && _media3VolumeBoostLevel > 0
         ? 'Volume +$_media3VolumeBoostLevel'
         : '${(displayVolume * 100).round()}%';
@@ -7179,7 +7179,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _useSystemVolume ? _systemVolume : _playerVolume / 100.0;
 
   void _setOsdVolume(double fraction) {
-    final clamped = fraction.clamp(0.0, 1.0).toDouble();
+    final clamped = fraction.clamp(0.0, maxPlayerVolume / 100).toDouble();
     if (_useSystemVolume) {
       unawaited(_setMobileSystemVolume(clamped, syncFromSystem: true));
     } else {
@@ -7280,9 +7280,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       overlayColor: Colors.white24,
                     ),
                     child: Slider(
-                      value: _osdVolume.clamp(0.0, 1.0),
-                      min: 0,
-                      max: 1,
+                      value: _osdVolume.clamp(0.0, maxPlayerVolume / 100),
+                      max: maxPlayerVolume / 100,
                       onChanged: apply,
                     ),
                   ),

@@ -536,7 +536,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _initPlayerVolume() {
     _playerVolume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _manager.reportVolumeState(
@@ -552,7 +552,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   void _setPlayerVolume(double fraction) {
-    final level = (fraction * 100).clamp(0.0, 100.0).toDouble();
+    final level = (fraction * 100).clamp(0.0, maxPlayerVolume).toDouble();
     setState(() => _playerVolume = level);
     unawaited(_manager.backend?.setVolume(level));
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
@@ -2749,6 +2749,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                         ),
                         child: Slider(
                           value: _playerVolume / 100,
+                          max: maxPlayerVolume / 100,
                           activeColor: AppColorScheme.accent,
                           inactiveColor: Colors.white24,
                           onChangeStart: (_) => _hideTimer?.cancel(),

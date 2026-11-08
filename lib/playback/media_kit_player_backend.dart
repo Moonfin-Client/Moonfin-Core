@@ -180,6 +180,14 @@ class _MediaKitDeviceProfileCapabilities {
   }
 }
 
+/// The loudest the app's own player volume goes, in percent. Windows and
+/// Linux play through mpv, which amplifies past full scale. The players on
+/// macOS and the web stop at 100.
+double get maxPlayerVolume =>
+    PlatformDetection.isWindows || PlatformDetection.isLinux
+    ? MediaKitPlayerBackend.maxVolume
+    : 100;
+
 class MediaKitPlayerBackend extends PlayerBackend
     with SubtitleDelayState, WidgetsBindingObserver
     implements
@@ -588,6 +596,9 @@ class MediaKitPlayerBackend extends PlayerBackend
   static bool get _useLibass =>
       PlatformDetection.isAndroid || PlatformDetection.isIOS;
 
+  /// mpv amplifies past 100, but its own default ceiling is 130.
+  static const double maxVolume = 150;
+
   // libass needs a font with CJK glyphs bundled or Asian subtitles show as
   // tofu. The family name has to match the font's internal name.
   static const String _libassFontAsset = 'assets/fonts/NotoSansCJK-Regular.otf';
@@ -678,6 +689,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       // re-open the stream until the read gives up, so this bounds how long a
       // resume can sit frozen.
       _nativeSetProperty(platform, 'network-timeout', '20');
+      // Before the custom mpv.conf, so a volume-max there still wins.
+      _nativeSetProperty(platform, 'volume-max', maxVolume.toStringAsFixed(0));
       // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
       // through in seconds, so bursty networks stutter. A larger demuxer
       // budget keeps a real runway on desktop, but a filled 256MiB cache on
@@ -3128,7 +3141,7 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   Future<void> setVolume(double volume) async {
-    await _player.setVolume(volume.clamp(0, 100));
+    await _player.setVolume(volume.clamp(0, maxVolume));
   }
 
   @override

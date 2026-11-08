@@ -14,8 +14,8 @@ void main() {
     manager.reportVolumeState(volume: 140, isMuted: false);
     await pumpEventQueue();
 
-    expect(levels, [30, 0, 100]);
-    expect(manager.volume, 100);
+    expect(levels, [30, 0, 140]);
+    expect(manager.volume, 140);
     expect(manager.isMuted, isFalse);
   });
 }

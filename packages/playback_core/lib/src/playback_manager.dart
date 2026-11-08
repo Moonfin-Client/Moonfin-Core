@@ -669,7 +669,7 @@ class PlaybackManager implements AudioOwnable {
     required bool isMuted,
     bool reportImmediately = false,
   }) {
-    final level = volume.clamp(0, 100).toDouble();
+    final level = volume < 0 ? 0.0 : volume;
     _isMuted = isMuted;
     if (level != _volume) {
       _volume = level;
@@ -4122,7 +4122,9 @@ class PlaybackManager implements AudioOwnable {
               isPaused: state.isPaused,
               audioStreamIndex: _audioStreamIndex,
               subtitleStreamIndex: _subtitleStreamIndex,
-              volumeLevel: _volume.round(),
+              // The server's scale stops at 100, so a boosted player reads as
+              // full volume there.
+              volumeLevel: _volume.clamp(0, 100).round(),
               isMuted: _isMuted,
             )
             .then<void>(

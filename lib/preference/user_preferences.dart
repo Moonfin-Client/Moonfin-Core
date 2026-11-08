@@ -3885,8 +3885,9 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30,
   );
 
-  // Desktop player volume (0-100), independent of the OS volume. Persisted so
-  // playback resumes at the last level instead of jumping to max.
+  // Desktop player volume in percent, independent of the OS volume, up to
+  // maxPlayerVolume. Persisted so playback resumes at the last level instead
+  // of jumping to max.
   static final playerVolume = Preference(
     key: 'player_volume',
     defaultValue: 100.0,
