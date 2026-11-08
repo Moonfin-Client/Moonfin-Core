@@ -90,6 +90,19 @@ void main() {
       expect(find.byType(BookCard), findsNWidgets(5));
     });
 
+    testWidgets('the rail opens the library in folders', (tester) async {
+      await pumpWideBookScreen(tester);
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(BookLibraryRail),
+          matching: find.text('Folders'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('/folder/lib-1'), findsOneWidget);
+    });
+
     testWidgets('an update leaves focus where the viewer put it', (
       tester,
     ) async {
@@ -187,6 +200,42 @@ void main() {
       );
       expect(strip.entries.first.label, 'Overview');
       expect(strip.entries.singleWhere((e) => e.selected).label, 'Series');
+    });
+
+    testWidgets('Classic opens the library in folders from its overview', (
+      tester,
+    ) async {
+      await prefs.set(
+        UserPreferences.bookLibraryStyle,
+        BookLibraryStyle.classic,
+      );
+      await pumpBookScreen(tester);
+
+      tester
+          .widget<BookCategoryStrip>(find.byType(BookCategoryStrip))
+          .entries
+          .singleWhere((e) => e.label == 'Folders')
+          .onSelect();
+      await tester.pumpAndSettle();
+      expect(find.text('/folder/lib-1'), findsOneWidget);
+    });
+
+    testWidgets('Reading Room opens folders from a destination', (
+      tester,
+    ) async {
+      await prefs.set(
+        UserPreferences.bookLibraryStyle,
+        BookLibraryStyle.readingRoom,
+      );
+      await pumpBookScreen(tester, kind: BookCategoryKind.authors);
+
+      tester
+          .widget<BookCategoryChips>(find.byType(BookCategoryChips))
+          .entries
+          .singleWhere((e) => e.label == 'Folders')
+          .onSelect();
+      await tester.pumpAndSettle();
+      expect(find.text('/folder/lib-1'), findsOneWidget);
     });
 
     testWidgets('Reading Room keeps its icon chips', (tester) async {

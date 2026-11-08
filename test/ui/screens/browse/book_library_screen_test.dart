@@ -227,7 +227,12 @@ void main() {
     testWidgets('the strip offers Discover by default', (tester) async {
       await pumpScreen(tester);
 
-      expect(stripLabels(tester), ['Overview', 'Titles', 'Discover']);
+      expect(stripLabels(tester), [
+        'Overview',
+        'Titles',
+        'Folders',
+        'Discover',
+      ]);
     });
 
     testWidgets('turning Discover off takes it out of the strip', (
@@ -354,7 +359,12 @@ void main() {
     testWidgets('the chips offer Discover by default', (tester) async {
       await pumpScreen(tester);
 
-      expect(chipLabels(tester), ['Overview', 'Titles', 'Discover']);
+      expect(chipLabels(tester), [
+        'Overview',
+        'Titles',
+        'Folders',
+        'Discover',
+      ]);
     });
 
     testWidgets('turning Discover off takes it out of the chips', (

@@ -21,6 +21,7 @@ enum BookCategoryKind {
   genres,
   collections,
   favorites,
+  folders,
   discover;
 
   static BookCategoryKind? parse(String? name) =>
@@ -33,6 +34,7 @@ enum BookCategoryKind {
     genres => l10n.genres,
     collections => l10n.collections,
     favorites => l10n.favorites,
+    folders => l10n.folders,
     discover => l10n.discover,
   };
 
@@ -43,6 +45,7 @@ enum BookCategoryKind {
     genres => Icons.sell_outlined,
     collections => Icons.collections_bookmark_outlined,
     favorites => Icons.favorite_border_rounded,
+    folders => Icons.folder_outlined,
     discover => Icons.explore_outlined,
   };
 }
