@@ -10724,8 +10724,100 @@
     "@animeMarkerPending": {
         "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
     },
-    "timesUpMessage": "Dieses Konto ist derzeit nicht verfügbar.",
+    "timesUpMessage": "Dieses Konto ist derzeit nicht verfügbar",
     "@timesUpMessage": {
         "description": "Explanation on the Time's up screen"
+    },
+    "quickConnectScanHint": "Oder scanne dies mit einem Smartphone, das bei deinem Server angemeldet ist",
+    "@quickConnectScanHint": {
+        "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+    },
+    "quickConnectTapOrScanHint": "Tippe in deinem Browser auf „Genehmigen“ oder scanne dies mit einem anderen Gerät",
+    "@quickConnectTapOrScanHint": {
+        "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+    },
+    "timesUpTitle": "Die Zeit ist abgelaufen",
+    "@timesUpTitle": {
+        "description": "Title of the screen that covers the app when the user's access schedule doesn't allow the current time"
+    },
+    "timesUpResumesToday": "Du kannst es heute wieder um {time} verwenden",
+    "@timesUpResumesToday": {
+        "description": "When access returns, on the Time's up screen, for a time later today",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesTomorrow": "Du kannst es morgen um {time} wieder verwenden",
+    "@timesUpResumesTomorrow": {
+        "description": "When access returns, on the Time's up screen, for a time tomorrow",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesOn": "Du kannst es am {Tag} um {Uhrzeit} wieder verwenden",
+    "@timesUpResumesOn": {
+        "description": "When access returns, on the Time's up screen, for a time on a later day",
+        "placeholders": {
+            "day": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "loginForbidden": "Mit diesem Konto kann derzeit keine Anmeldung erfolgen. Möglicherweise liegt der Zeitpunkt außerhalb der zulässigen Nutzungszeiten, oder das Konto ist gesperrt beziehungsweise deaktiviert. Versuche es später noch einmal oder wende dich an einen Administrator.",
+    "@loginForbidden": {
+        "description": "Sign in error when the server refuses the account with a 403, which Jellyfin does for an access schedule, a lockout or a disabled account without saying which"
+    },
+    "signedInOnThisDevice": "Auf diesem Gerät angemeldet",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "PIN erforderlich",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Passwort erforderlich",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Als {name} fortfahren",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Zu {name} wechseln",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Angemeldet als {user} auf {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "accountActive": "Aktiv",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
     }
 }
