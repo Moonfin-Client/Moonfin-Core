@@ -120,7 +120,7 @@ class PixelPurge extends ArcadeGame {
     t += dt;
     p.hdr -= dt;
     p.shrink -= dt;
-    final drift = 4 + t * .06;
+    final drift = 2 + t * .025;
     for (final k in blocks) {
       k.y += drift * dt;
       k.flash -= dt;
