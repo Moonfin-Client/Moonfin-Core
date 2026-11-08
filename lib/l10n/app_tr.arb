@@ -17370,5 +17370,10 @@
     "showNextAirDateSubtitle": "Sonraki bölüm henüz kütüphanenizde değilse, bölüm sonu kartında ne zaman yayınlanacağı gösterilir",
     "@showNextAirDateSubtitle": {
         "description": "Subtitle of the Next air date at the end setting"
-    }
+    },
+    "settingsDateFormat": "Tarih Formatı",
+    "settingsDateFormatDescription": "Takvim ve çıkış tarihleri için ay-gün, gün-ay veya yerel ayar varsayılanı arasında seçim yapın",
+    "dateFormatSystem": "Yerel Varsayılan",
+    "dateFormatMonthDay": "Ay / Gün (10 Kas)",
+    "dateFormatDayMonth": "Gün / Ay (10 Kas)"
 }
