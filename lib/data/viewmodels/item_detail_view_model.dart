@@ -2789,6 +2789,14 @@ class ItemDetailViewModel extends ChangeNotifier {
     try {
       await _mutations.setPlayed(_mutationId, isPlayed: newState);
       await _reload();
+      // The server marks every episode underneath too, but only this id was
+      // published, so read the episodes and seasons back rather than wait
+      // for the socket to report each of them.
+      final type = _item?.type;
+      if (type == 'Series' || type == 'Season') {
+        _userDataStale = true;
+        await syncUserDataIfStale();
+      }
     } catch (_) {
       _applyOptimisticUpdate({'Played': !newState});
     }
