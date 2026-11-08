@@ -546,6 +546,29 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('the clock tick rebuilds the seek bar, not the whole player', (
+    tester,
+  ) async {
+    await mountPlayer(tester);
+    manager.state.setDuration(const Duration(minutes: 10));
+    await tester.pump();
+
+    final rebuilt = <Type>[];
+    debugOnRebuildDirtyWidget = (element, _) {
+      rebuilt.add(element.widget.runtimeType);
+    };
+    try {
+      await tester.pump(const Duration(seconds: 3));
+    } finally {
+      debugOnRebuildDirtyWidget = null;
+    }
+
+    expect(rebuilt, isNot(contains(VideoPlayerScreen)));
+    expect(rebuilt, contains(ValueListenableBuilder<int>));
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   // Issue #1751: the unlock prompt sits at the end of the top bar, where the
   // lock button was, instead of over the middle of the picture.
   for (final direction in TextDirection.values) {

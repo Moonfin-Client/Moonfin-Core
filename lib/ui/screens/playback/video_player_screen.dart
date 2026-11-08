@@ -296,6 +296,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
   Timer? _endsAtTicker;
+  final _clockTick = ValueNotifier<int>(0);
   bool _isSeeking = false;
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
@@ -1073,6 +1074,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _cinemaSkip.dispose();
     _displayPlayingDebounce?.cancel();
     _endsAtTicker?.cancel();
+    _clockTick.dispose();
     _volumeOverlayTimer?.cancel();
     _brightnessOverlayTimer?.cancel();
     _zoomModeToastTimer?.cancel();
@@ -2935,7 +2937,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _state.duration <= Duration.zero) {
         return;
       }
-      setState(() {});
+      _clockTick.value++;
     });
   }
 
@@ -5218,7 +5220,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  Widget _buildSeekbar() {
+  /// The time slots can show the clock, so the once-a-second tick rebuilds
+  /// just the seek bar, not the whole player.
+  Widget _buildSeekbar() => ValueListenableBuilder<int>(
+    valueListenable: _clockTick,
+    builder: (_, _, _) => _buildSeekbarContent(),
+  );
+
+  Widget _buildSeekbarContent() {
     // The slot layout only changes from the settings screen, so resolve it
     // here instead of on every position tick inside the stream builders.
     final aboveLeftSlot = _prefs.get(UserPreferences.playbackTimeAboveLeft);
