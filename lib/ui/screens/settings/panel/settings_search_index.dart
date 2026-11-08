@@ -955,6 +955,15 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.dimmingLevel,
         keywords: ['brightness'],
       ),
+      if (ScreensaverController.sleepAfterIdleSupported)
+        screensaver.leaf(
+          'pref_sleep_after_idle',
+          l10n.sleepAfterIdle,
+          subtitle: PlatformDetection.isAppleTV
+              ? l10n.sleepAfterIdleDescriptionAppleTv
+              : l10n.sleepAfterIdleDescriptionAndroid,
+          keywords: ['close', 'quit', 'idle', 'auto exit', 'power'],
+        ),
     ],
 
     home.screen(keywords: ['home page', 'rows']),

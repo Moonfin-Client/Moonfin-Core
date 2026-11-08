@@ -37,6 +37,7 @@ import '../../../util/language_codes.dart';
 import '../../../util/live_tv_library.dart';
 import '../../../util/locale_names.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../screensaver/screensaver_controller.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/platform_detection.dart';

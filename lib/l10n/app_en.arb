@@ -7011,6 +7011,18 @@
   "@dimmingLevel": {
     "description": "Setting for dimming level"
   },
+  "sleepAfterIdle": "Let TV Sleep After",
+  "@sleepAfterIdle": {
+    "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+  },
+  "sleepAfterIdleDescriptionAndroid": "Close Moonfin after this long without a button press so your TV's own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.",
+  "@sleepAfterIdleDescriptionAndroid": {
+    "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+  },
+  "sleepAfterIdleDescriptionAppleTv": "After this long without a button press, hand the screen back to your Apple TV's own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.",
+  "@sleepAfterIdleDescriptionAppleTv": {
+    "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+  },
   "maxAgeRating": "Max Age Rating",
   "@maxAgeRating": {
     "description": "Setting for max age rating"

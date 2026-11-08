@@ -4163,18 +4163,22 @@ class PlaybackManager implements AudioOwnable {
     final service = generation.service;
     if (service == null) return;
     try {
-      unawaited(
-        service
-            .onPlaybackStop(
-              generation.item,
-              generation.resolution,
-              generation.stopPosition,
-              releaseLiveStream: _claimLiveStreamRelease(generation.resolution),
-            )
-            .catchError((_) {}),
-      );
+      _lastStopReport = service
+          .onPlaybackStop(
+            generation.item,
+            generation.resolution,
+            generation.stopPosition,
+            releaseLiveStream: _claimLiveStreamRelease(generation.resolution),
+          )
+          .catchError((_) {});
     } catch (_) {}
   }
+
+  Future<void> _lastStopReport = Future<void>.value();
+
+  /// The latest stop report, for anything about to close the app to wait on
+  /// so the server keeps the resume point.
+  Future<void> get lastStopReport => _lastStopReport;
 
   /// True only the first time it is asked for [resolution], so a session
   /// makes at most one live stream release attempt however many stops it
@@ -5632,17 +5636,16 @@ class PlaybackManager implements AudioOwnable {
           _issuePlaybackStop(progressGeneration);
         } else {
           try {
-            unawaited(
-              _service
-                      ?.onPlaybackStop(
-                        reportItem,
-                        resolution,
-                        pos,
-                        releaseLiveStream: _claimLiveStreamRelease(resolution),
-                      )
-                      .catchError((_) {}) ??
-                  Future<void>.value(),
-            );
+            _lastStopReport =
+                _service
+                    ?.onPlaybackStop(
+                      reportItem,
+                      resolution,
+                      pos,
+                      releaseLiveStream: _claimLiveStreamRelease(resolution),
+                    )
+                    .catchError((_) {}) ??
+                Future<void>.value();
           } catch (_) {}
         }
         if (releaseServerResources &&

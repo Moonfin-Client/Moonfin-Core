@@ -7,6 +7,8 @@ import 'package:server_core/server_core.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/platform_detection.dart';
+import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -229,6 +231,20 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                     labelOf: (value) => value == 0 ? l10n.off : '$value%',
                   ),
                 ],
+                if (ScreensaverController.sleepAfterIdleSupported)
+                  IntPickerPreferenceTile(
+                    preference: UserPreferences.sleepAfterIdle,
+                    title: l10n.sleepAfterIdle,
+                    description: PlatformDetection.isAppleTV
+                        ? l10n.sleepAfterIdleDescriptionAppleTv
+                        : l10n.sleepAfterIdleDescriptionAndroid,
+                    icon: Icons.bedtime_outlined,
+                    options: {
+                      0: l10n.off,
+                      for (final minutes in const [15, 30, 60, 120])
+                        minutes: l10n.minutesShort(minutes),
+                    },
+                  ),
               ],
             ),
 
