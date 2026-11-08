@@ -334,6 +334,7 @@ class SessionRepository {
           _logger.w('Stored access token was rejected. Logging out.');
           // Point the teardown at this session so it removes the right
           // stored credentials.
+          await _forgetUnrememberedPinOfActive();
           _activeServerId = serverId;
           _activeUserId = userId;
           await destroyCurrentSession(tokenKnownInvalid: true);
@@ -720,24 +721,16 @@ class SessionRepository {
     return serverId == null ? 0 : _siloSiblings(serverId, _activeUserId).length;
   }
 
-  /// Drops the PIN proofs of the Silo profiles whose PIN is asked for every
-  /// time, so the next switch to one asks again. Run when the app starts,
-  /// with no profile in use.
-  Future<void> forgetUnrememberedSiloPins() async {
-    for (final server in _authStore.getServers()) {
-      for (final user in _authStore.getUsers(server.id)) {
-        await _siloTokens.forgetUnrememberedPin(user);
-      }
-    }
-  }
-
   /// Leaving a Silo profile whose PIN is asked for every time locks it
-  /// again.
+  /// again, however it is left: a switch, a sign-out or a rejected token.
   Future<void> _forgetUnrememberedPinOfActive() async {
     final serverId = _activeServerId;
     final userId = _activeUserId;
     if (serverId == null || userId == null) return;
-    final user = _authStore.getUser(serverId, userId);
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
     if (user != null) await _siloTokens.forgetUnrememberedPin(user);
   }
 
@@ -768,6 +761,7 @@ class SessionRepository {
   }
 
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+    await _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
     _remoteNavigationGeneration++;

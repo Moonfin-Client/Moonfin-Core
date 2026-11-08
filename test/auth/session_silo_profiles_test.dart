@@ -166,21 +166,21 @@ void main() {
     expect(repo.activeUserId, isNull);
   });
 
-  test('at start-up, a PIN asked every time is asked again', () async {
+  test('signing out of a profile whose PIN is asked every time locks it',
+      () async {
     await store.putServer(_server);
     await store.putSiloTokens('s1', '9', _pair);
     await store.putUser(_profile('teen', pin: true));
     await store.putUser(_profile('kid', pin: true));
     final storage = SiloTokenStorage(store);
     final teen = store.getUser('s1', 'teen')!;
-    final kid = store.getUser('s1', 'kid')!;
     await storage.saveProfileToken(teen, 'pvt_teen', remember: false);
-    await storage.saveProfileToken(kid, 'pvt_kid');
+    repo.setActiveSessionForTest('s1', 'teen');
 
-    await repo.forgetUnrememberedSiloPins();
+    await repo.destroyCurrentSession();
 
     expect(storage.needsPin(teen), isTrue);
-    expect(storage.needsPin(kid), isFalse);
+    expect(storage.remembersPin(teen), isFalse);
   });
 
   group('signing out', () {

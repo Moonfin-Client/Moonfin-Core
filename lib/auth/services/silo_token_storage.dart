@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 
@@ -28,6 +30,13 @@ class SiloTokenStorage {
 
   final AuthenticationStore _store;
 
+  /// This run of the app. A proof kept for a PIN asked every time carries it
+  /// and only counts in the run that got it, so any later start (the app
+  /// opened again, or a background job or the car starting it headless)
+  /// asks for the PIN again.
+  static final _launch =
+      '${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 32)}';
+
   /// The stored pair for [accountId] on [serverId], or null.
   SiloTokens? read(String serverId, String accountId) =>
       SiloTokens.fromJson(_store.getSiloTokens(serverId, accountId));
@@ -56,6 +65,9 @@ class SiloTokenStorage {
     final proof = _store.getSiloProfileToken(user.serverId, accountId, user.id);
     final token = proof?['token'];
     if (token is! String || token.isEmpty) return null;
+    if (proof?['remember'] == false && proof?['launch'] != _launch) {
+      return null;
+    }
     final expires = DateTime.tryParse(proof?['expiresAt'] as String? ?? '');
     if (expires != null && !expires.isAfter(now ?? DateTime.now())) {
       return null;
@@ -69,9 +81,9 @@ class SiloTokenStorage {
       user.siloHasPin && profileToken(user, now: now) == null;
 
   /// Keeps the proof Silo gave for [user]'s PIN, under its account. Without
-  /// [remember] the proof only lasts while the profile is in use:
-  /// [forgetUnrememberedPin] drops it when the app starts or another
-  /// profile is switched to, and the choice stays for the next PIN dialog.
+  /// [remember] the proof only lasts while the profile is in use: it counts
+  /// only in this run of the app, [forgetUnrememberedPin] drops it when the
+  /// profile is left, and the choice stays for the next PIN dialog.
   Future<void> saveProfileToken(
     PrivateUser user,
     String token, {
@@ -83,7 +95,7 @@ class SiloTokenStorage {
     await _store.putSiloProfileToken(user.serverId, accountId, user.id, {
       'token': token,
       if (expiresAt != null) 'expiresAt': expiresAt.toUtc().toIso8601String(),
-      if (!remember) 'remember': false,
+      if (!remember) ...{'remember': false, 'launch': _launch},
     });
   }
 

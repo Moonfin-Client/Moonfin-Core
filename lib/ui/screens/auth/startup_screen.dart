@@ -101,10 +101,6 @@ class _StartupScreenState extends State<StartupScreen>
       return;
     }
 
-    // Nobody is signed in yet, so a Silo profile whose PIN is asked for
-    // every time is locked again.
-    await session.forgetUnrememberedSiloPins();
-
     final behavior = authPrefs.loginBehavior;
     String? targetUserId;
 

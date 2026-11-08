@@ -370,6 +370,29 @@ void main() {
       expect(storage.remembersPin(teen()), isFalse);
     });
 
+    test('a PIN asked every time only counts in the run that got it',
+        () async {
+      await storage.save('s1', '9', _pair('1'));
+      await store.putSiloProfileToken('s1', '9', 'teen', {
+        'token': 'pvt_1',
+        'remember': false,
+        'launch': 'an earlier run',
+      });
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
+    test('a new sign-in keeps which PINs are asked every time', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      await storage.save('s1', '9', _pair('2'), newLogin: true);
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
     test('a new sign-in drops the proofs of the old login', () async {
       await storage.save('s1', '9', _pair('1'));
       await storage.saveProfileToken(teen(), 'pvt_1');

@@ -249,7 +249,8 @@ class _AccountDialogState extends State<_AccountDialog> {
     if (_busy) return;
     setState(() => _busy = true);
 
-    await _sessionRepo.destroyCurrentSession();
+    // A Silo household's login ends on Silo too, not only on this device.
+    await _sessionRepo.signOutSiloAccount();
     await _serverRepo.loadStoredServers();
     final serverIds = _serverRepo.servers.map((s) => s.id).toList();
     for (final id in serverIds) {

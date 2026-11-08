@@ -13,6 +13,7 @@ import '../../../auth/services/silo_token_storage.dart';
 import '../../../auth/store/authentication_store.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/silo_failure_message.dart';
 import '../../widgets/overlay_sheet.dart';
 import 'silo_secret_field.dart';
@@ -247,22 +248,39 @@ class _SiloPinDialogState extends State<SiloPinDialog> {
                     onSubmitted: (_) => _submit(),
                   ),
                   const SizedBox(height: 8),
-                  // The box behind paints over a ListTile's ink without one.
-                  Material(
-                    type: MaterialType.transparency,
-                    child: CheckboxListTile(
-                      focusNode: _rememberFocus,
-                      value: _remember,
-                      onChanged: _busy
-                          ? null
-                          : (value) => setState(() => _remember = value ?? true),
-                      title: Text(
-                        l10n.siloPinRemember,
-                        style: TextStyle(color: onSurface),
+                  // A remote's down goes on to Unlock rather than to whichever
+                  // button default traversal picks, and up back to the PIN.
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    onKeyEvent: (_, event) {
+                      if (!event.isActionable) return KeyEventResult.ignored;
+                      final target = event.logicalKey.isDownKey
+                          ? _submitFocus
+                          : event.logicalKey.isUpKey
+                          ? _fieldFocus
+                          : null;
+                      if (target == null) return KeyEventResult.ignored;
+                      target.requestFocus();
+                      return KeyEventResult.handled;
+                    },
+                    // The box behind paints over a ListTile's ink without one.
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: CheckboxListTile(
+                        focusNode: _rememberFocus,
+                        value: _remember,
+                        onChanged: _busy
+                            ? null
+                            : (value) => setState(() => _remember = value ?? true),
+                        title: Text(
+                          l10n.siloPinRemember,
+                          style: TextStyle(color: onSurface),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
                       ),
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
                     ),
                   ),
                   if (_error != null) ...[
