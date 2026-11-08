@@ -232,19 +232,10 @@ class _AccountDialogState extends State<_AccountDialog> {
     );
   }
 
+  /// Signs the active user out. For a Silo profile that is the whole
+  /// account: every stored profile of it goes and its login ends, whichever
+  /// profile is in use.
   Future<void> _signOutCurrent() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-    await _sessionRepo.destroyCurrentSession();
-
-    if (!mounted) return;
-    Navigator.of(context).pop();
-    context.go(Destinations.serverSelect);
-  }
-
-  /// Signs every stored profile of the active Silo account out and ends
-  /// its login. "Sign out" leaves the account's other profiles.
-  Future<void> _signOutSiloAccount() async {
     if (_busy) return;
     setState(() => _busy = true);
     await _sessionRepo.signOutSiloAccount();
@@ -352,9 +343,8 @@ class _AccountDialogState extends State<_AccountDialog> {
       if (!PlatformDetection.isWeb)
         action(l10n.selectServer, _changeServer, icon: Icons.home),
       action(l10n.signOut, _signOutCurrent),
-      if (_sessionRepo.activeUserHasSiloSiblings)
-        action(l10n.siloSignOutAccount, _signOutSiloAccount),
-      if (_accounts.length > 1)
+      // A lone Silo household is already all signed out by "Sign out".
+      if (_accounts.length > 1 + _sessionRepo.activeSiloSiblingCount)
         action(l10n.signOutAllUsers, _signOutAll, danger: true),
       if (showAppActions) ...[
         action(l10n.settings, () async {

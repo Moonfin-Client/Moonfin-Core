@@ -16705,6 +16705,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get siloPinUnlock => 'Unlock';
 
   @override
+  String get siloPinRemember => 'Remember PIN on this device';
+
+  @override
   String get siloPinWrong => 'That PIN isn\'t right.';
 
   @override
@@ -16717,9 +16720,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get siloPinFailed => 'The PIN couldn\'t be checked. Try again.';
-
-  @override
-  String get siloSignOutAccount => 'Sign out of the Silo account';
 
   @override
   String trailerCount(int count) {

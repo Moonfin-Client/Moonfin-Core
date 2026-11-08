@@ -16241,6 +16241,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get siloPinUnlock => '잠금 해제';
 
   @override
+  String get siloPinRemember => 'Remember PIN on this device';
+
+  @override
   String get siloPinWrong => 'PIN이 올바르지 않습니다.';
 
   @override
@@ -16253,9 +16256,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get siloPinFailed => 'PIN을 확인하지 못했습니다. 다시 시도하세요.';
-
-  @override
-  String get siloSignOutAccount => 'Silo 계정에서 로그아웃';
 
   @override
   String trailerCount(int count) {

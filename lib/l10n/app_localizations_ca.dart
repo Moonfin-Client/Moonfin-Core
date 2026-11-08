@@ -17026,6 +17026,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get siloPinUnlock => 'Desbloqueja';
 
   @override
+  String get siloPinRemember => 'Remember PIN on this device';
+
+  @override
   String get siloPinWrong => 'Aquest PIN no és correcte.';
 
   @override
@@ -17040,9 +17043,6 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get siloPinFailed =>
       'No s\'ha pogut comprovar el PIN. Torna-ho a provar.';
-
-  @override
-  String get siloSignOutAccount => 'Tanca la sessió del compte de Silo';
 
   @override
   String trailerCount(int count) {

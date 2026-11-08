@@ -348,6 +348,28 @@ void main() {
       expect(client.profileToken, isNull);
     });
 
+    test('a remembered PIN keeps its proof', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1');
+
+      await storage.forgetUnrememberedPin(teen());
+
+      expect(storage.remembersPin(teen()), isTrue);
+      expect(storage.needsPin(teen()), isFalse);
+    });
+
+    test('a PIN asked every time loses its proof and keeps the choice',
+        () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+      expect(storage.needsPin(teen()), isFalse);
+
+      await storage.forgetUnrememberedPin(teen());
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
     test('a new sign-in drops the proofs of the old login', () async {
       await storage.save('s1', '9', _pair('1'));
       await storage.saveProfileToken(teen(), 'pvt_1');

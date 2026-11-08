@@ -365,6 +365,9 @@ class SessionRepository {
     userDataSync.bindTo(_socketHandler.events, userId: userId);
     _refreshCarBrowseTree(signedIn: true);
 
+    if (serverId != _activeServerId || userId != _activeUserId) {
+      await _forgetUnrememberedPinOfActive();
+    }
     _activeServerId = serverId;
     _activeUserId = userId;
 
@@ -710,13 +713,32 @@ class SessionRepository {
     }
   }
 
-  /// Whether the active user is a Silo profile with other profiles of its
-  /// account stored here, so "Sign out of the account" means more than
-  /// "Sign out".
-  bool get activeUserHasSiloSiblings {
+  /// How many other profiles of the active user's Silo account are stored
+  /// here. "Sign out" takes them too.
+  int get activeSiloSiblingCount {
     final serverId = _activeServerId;
-    return serverId != null &&
-        _siloSiblings(serverId, _activeUserId).isNotEmpty;
+    return serverId == null ? 0 : _siloSiblings(serverId, _activeUserId).length;
+  }
+
+  /// Drops the PIN proofs of the Silo profiles whose PIN is asked for every
+  /// time, so the next switch to one asks again. Run when the app starts,
+  /// with no profile in use.
+  Future<void> forgetUnrememberedSiloPins() async {
+    for (final server in _authStore.getServers()) {
+      for (final user in _authStore.getUsers(server.id)) {
+        await _siloTokens.forgetUnrememberedPin(user);
+      }
+    }
+  }
+
+  /// Leaving a Silo profile whose PIN is asked for every time locks it
+  /// again.
+  Future<void> _forgetUnrememberedPinOfActive() async {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (serverId == null || userId == null) return;
+    final user = _authStore.getUser(serverId, userId);
+    if (user != null) await _siloTokens.forgetUnrememberedPin(user);
   }
 
   /// Signs the whole Silo account out on this device: every stored

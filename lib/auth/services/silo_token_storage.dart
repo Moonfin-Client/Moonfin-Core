@@ -68,17 +68,45 @@ class SiloTokenStorage {
   bool needsPin(PrivateUser user, {DateTime? now}) =>
       user.siloHasPin && profileToken(user, now: now) == null;
 
-  /// Keeps the proof Silo gave for [user]'s PIN, under its account.
+  /// Keeps the proof Silo gave for [user]'s PIN, under its account. Without
+  /// [remember] the proof only lasts while the profile is in use:
+  /// [forgetUnrememberedPin] drops it when the app starts or another
+  /// profile is switched to, and the choice stays for the next PIN dialog.
   Future<void> saveProfileToken(
     PrivateUser user,
     String token, {
     DateTime? expiresAt,
+    bool remember = true,
   }) async {
     final accountId = user.siloAccountId;
     if (accountId == null) return;
     await _store.putSiloProfileToken(user.serverId, accountId, user.id, {
       'token': token,
       if (expiresAt != null) 'expiresAt': expiresAt.toUtc().toIso8601String(),
+      if (!remember) 'remember': false,
+    });
+  }
+
+  /// Whether [user]'s PIN is kept on this device once entered, as last
+  /// chosen in the PIN dialog. True until the person asks to be asked
+  /// every time.
+  bool remembersPin(PrivateUser user) {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return true;
+    final proof = _store.getSiloProfileToken(user.serverId, accountId, user.id);
+    return proof?['remember'] != false;
+  }
+
+  /// Drops [user]'s PIN proof when the person chose to be asked for the PIN
+  /// every time, keeping that choice. A remembered proof stays.
+  Future<void> forgetUnrememberedPin(PrivateUser user) async {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return;
+    final proof = _store.getSiloProfileToken(user.serverId, accountId, user.id);
+    if (proof == null || proof['remember'] != false) return;
+    if (!proof.containsKey('token')) return;
+    await _store.putSiloProfileToken(user.serverId, accountId, user.id, {
+      'remember': false,
     });
   }
 
