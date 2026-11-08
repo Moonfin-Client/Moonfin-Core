@@ -689,8 +689,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (item is! AggregatedItem) return false;
     if (item.people.isNotEmpty) return true;
     return item.type == 'Episode' &&
-        item.seriesId != null &&
-        item.seriesId!.isNotEmpty;
+        ((item.seriesId != null && item.seriesId!.isNotEmpty) ||
+            (item.seasonId != null && item.seasonId!.isNotEmpty));
   }
 
   bool _canFavorite(dynamic item) {

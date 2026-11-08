@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -151,6 +153,72 @@ void main() {
     final actors = vm.actors;
     expect(actors.length, 1);
     expect(actors.first['Name'], 'Series Regular');
+  });
+
+  test('older in-flight parent cast lookup does not overwrite newer cast data', () async {
+    final completer1 = Completer<Map<String, dynamic>>();
+    when(() => itemsApi.getItem('ep-1')).thenAnswer(
+      (_) async => {
+        'Id': 'ep-1',
+        'Type': 'Episode',
+        'Name': 'Test Episode',
+        'SeasonId': 'season-slow',
+        'SeriesId': 'series-slow',
+        'People': const [],
+      },
+    );
+    when(() => itemsApi.getEpisodes(any(), seasonId: any(named: 'seasonId'), fields: any(named: 'fields'))).thenAnswer(
+      (_) async => {'Items': []},
+    );
+    when(() => itemsApi.getSimilarItems(any(), limit: any(named: 'limit'))).thenAnswer(
+      (_) async => {'Items': []},
+    );
+    when(() => itemsApi.getSpecialFeatures(any())).thenAnswer((_) async => []);
+    when(() => itemsApi.getItem('season-slow')).thenAnswer((_) => completer1.future);
+
+    final vm = createViewModel('ep-1');
+    await vm.load();
+
+    // Start a second load with fast resolution before the first completes
+    when(() => itemsApi.getItem('season-fast')).thenAnswer(
+      (_) async => {
+        'Id': 'season-fast',
+        'Type': 'Season',
+        'People': [
+          {'Id': 'f1', 'Name': 'Fast Actor', 'Type': 'Actor', 'Role': 'Sheriff'},
+        ],
+      },
+    );
+    when(() => itemsApi.getItem('ep-1')).thenAnswer(
+      (_) async => {
+        'Id': 'ep-1',
+        'Type': 'Episode',
+        'Name': 'Test Episode',
+        'SeasonId': 'season-fast',
+        'SeriesId': 'series-fast',
+        'People': const [],
+      },
+    );
+
+    await vm.load();
+
+    for (var i = 0; i < 100 && vm.parentActors.isEmpty; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(vm.parentActors.first['Name'], 'Fast Actor');
+
+    // Complete the first (slower) lookup
+    completer1.complete({
+      'Id': 'season-slow',
+      'Type': 'Season',
+      'People': [
+        {'Id': 's1', 'Name': 'Slow Stale Actor', 'Type': 'Actor', 'Role': 'Old'},
+      ],
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    // Stale lookup must be ignored due to generation change
+    expect(vm.parentActors.first['Name'], 'Fast Actor');
   });
 }
 

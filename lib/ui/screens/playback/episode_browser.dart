@@ -10,7 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/season_queue_context.dart';
 
-const _episodeFields = '$kSeasonQueueEpisodeFields,Overview';
+const _episodeFields = '$kSeasonQueueEpisodeFields,Overview,People';
 
 /// Only an episode of a series has a season to browse, so a movie, a channel
 /// or a track never gets the button. Nor does a download playing offline, or a

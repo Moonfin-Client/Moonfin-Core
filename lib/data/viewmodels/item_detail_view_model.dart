@@ -930,6 +930,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> load({String? mediaSourceId}) async {
     _similarInitialLoadComplete = false;
     _state = ItemDetailState.loading;
+    _castLoadGeneration++;
     _parentActors = const [];
     _collectionItems = const [];
     _missingCollectionItems = const [];
@@ -1311,18 +1312,20 @@ class ItemDetailViewModel extends ChangeNotifier {
     return loadAllSeriesEpisodes();
   }
 
+  int _castLoadGeneration = 0;
   List<Map<String, dynamic>> _parentActors = const [];
   List<Map<String, dynamic>> get parentActors => _parentActors;
 
   Future<void> _loadParentCast() async {
     final item = _item;
     if (item == null) return;
+    final generation = ++_castLoadGeneration;
     final actors = await resolveParentCast(
       client: _client,
       seasonId: item.seasonId,
       seriesId: item.seriesId,
     );
-    if (_isDisposed || actors.isEmpty) return;
+    if (_isDisposed || generation != _castLoadGeneration || actors.isEmpty) return;
     _parentActors = actors;
     notifyListeners();
   }
@@ -1335,11 +1338,12 @@ class ItemDetailViewModel extends ChangeNotifier {
       return t == 'Actor' || t == 'GuestStar';
     });
     if (hasActors) return;
+    final generation = ++_castLoadGeneration;
     final actors = await resolveParentCast(
       client: _client,
       seriesId: item.seriesId,
     );
-    if (_isDisposed || actors.isEmpty) return;
+    if (_isDisposed || generation != _castLoadGeneration || actors.isEmpty) return;
     _parentActors = actors;
     notifyListeners();
   }
