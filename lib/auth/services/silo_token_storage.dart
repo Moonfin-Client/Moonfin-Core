@@ -109,6 +109,19 @@ class SiloTokenStorage {
     return proof?['remember'] != false;
   }
 
+  /// Drops [user]'s PIN proof, which Silo no longer takes, keeping whether
+  /// its PIN is asked for every time.
+  Future<void> forgetProfileToken(PrivateUser user) async {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return;
+    await _store.putSiloProfileToken(
+      user.serverId,
+      accountId,
+      user.id,
+      remembersPin(user) ? null : {'remember': false},
+    );
+  }
+
   /// Drops [user]'s PIN proof when the person chose to be asked for the PIN
   /// every time, keeping that choice. A remembered proof stays.
   Future<void> forgetUnrememberedPin(PrivateUser user) async {

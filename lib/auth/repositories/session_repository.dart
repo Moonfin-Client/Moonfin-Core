@@ -320,6 +320,8 @@ class SessionRepository {
       accessToken: accessToken,
       onEnded: () => _onSiloLoginEnded(serverId, userId, user.name),
     );
+    siloClientOf(client)?.onProfileProofRejected = () =>
+        _onSiloProofRejected(serverId, userId);
     client.userId = userId;
 
     // A stored token can be long dead, and everything past this point fires
@@ -693,6 +695,29 @@ class SessionRepository {
     }());
   }
 
+  /// Silo no longer takes the active profile's PIN proof (its PIN was set,
+  /// changed or reset elsewhere). The proof goes, and the server's profiles
+  /// open, where picking the profile asks for the PIN again.
+  void _onSiloProofRejected(String serverId, String userId) {
+    if (_activeServerId != serverId || _activeUserId != userId) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user == null) return;
+    _logger.w('Silo refused the profile\'s PIN proof. Asking for the PIN.');
+    unawaited(() async {
+      try {
+        await _siloTokens.forgetProfileToken(user);
+      } catch (e) {
+        _logger.w('Forgetting the refused PIN proof failed: $e');
+      }
+      final silo = _clientFactory.getClientIfExists(serverId);
+      if (silo != null) siloClientOf(silo)?.profileToken = null;
+      _router.go('${Destinations.server}?serverId=$serverId');
+    }());
+  }
+
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
   List<PrivateUser> _siloSiblings(String serverId, String? userId) {
@@ -731,7 +756,13 @@ class SessionRepository {
         .getUsers(serverId)
         .where((u) => u.id == userId)
         .firstOrNull;
-    if (user != null) await _siloTokens.forgetUnrememberedPin(user);
+    if (user == null) return;
+    // Leaving goes on whatever the store does.
+    try {
+      await _siloTokens.forgetUnrememberedPin(user);
+    } catch (e) {
+      _logger.w('Forgetting the unremembered PIN failed: $e');
+    }
   }
 
   /// Signs the whole Silo account out on this device: every stored

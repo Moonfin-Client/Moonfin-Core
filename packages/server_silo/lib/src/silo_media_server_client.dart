@@ -133,6 +133,13 @@ class SiloMediaServerClient extends MediaServerClient
   @override
   String? get profileToken => _profileToken;
 
+  /// Called once per proof when Silo refuses the [profileToken] a request
+  /// carried (`403 profile_verification_required`): the profile's PIN was
+  /// set, changed or reset since it was unlocked, and every request as it
+  /// fails the same way until it is unlocked again.
+  void Function()? onProfileProofRejected;
+  String? _rejectedProof;
+
   @override
   set profileToken(String? token) {
     if (token == _profileToken) return;
@@ -220,6 +227,14 @@ class SiloMediaServerClient extends MediaServerClient
       handler.next(response);
     },
     onError: (error, handler) {
+      final sent = error.requestOptions.headers['X-Profile-Token'];
+      if (error.error case SiloProblem(code: 'profile_verification_required')
+          when sent != null &&
+              sent == _profileToken &&
+              sent != _rejectedProof) {
+        _rejectedProof = sent as String;
+        onProfileProofRejected?.call();
+      }
       ServerLog.network(
         '✗ ${error.requestOptions.method} ${error.requestOptions.uri} '
         '(${error.response?.statusCode ?? error.type.name})',
