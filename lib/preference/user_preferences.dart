@@ -2371,6 +2371,11 @@ class UserPreferences extends ChangeNotifier {
     values: ScreensaverTimeout.values,
   );
 
+  static final screensaverDuringAudio = Preference(
+    key: 'pref_screensaver_during_audio',
+    defaultValue: false,
+  );
+
   /// Minutes without a button press before the TV is left to sleep, or 0 for
   /// never.
   static final sleepAfterIdle = Preference(

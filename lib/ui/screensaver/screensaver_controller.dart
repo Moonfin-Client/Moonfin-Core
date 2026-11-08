@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../data/models/aggregated_item.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/app_exit.dart';
@@ -16,6 +17,7 @@ class ScreensaverController {
       _enabledCache = _prefs.get(UserPreferences.screensaverEnabled);
       _timeoutCache = _prefs.get(UserPreferences.screensaverTimeout);
       _sleepAfterCache = _prefs.get(UserPreferences.sleepAfterIdle);
+      _duringAudioCache = _prefs.get(UserPreferences.screensaverDuringAudio);
       _playingSub = _playbackManager.state.playingStream.listen(
         _onPlayingChanged,
       );
@@ -48,6 +50,7 @@ class ScreensaverController {
   Timer? _sleepTimer;
   int _sleepAfterCache = 0;
   bool _screenHandedBack = false;
+  bool _duringAudioCache = false;
   final Set<LogicalKeyboardKey> _consumedKeys = {};
   bool _enabledCache = false;
   ScreensaverTimeout _timeoutCache = ScreensaverTimeout.m5;
@@ -97,9 +100,14 @@ class ScreensaverController {
       _enabledCache &&
       !_activityPaused &&
       !_playbackActive &&
-      !_streamPlaying &&
+      (!_streamPlaying || (_duringAudioCache && _playingAudio)) &&
       !_trailerActive &&
       !_nativePlayerPresented;
+
+  bool get _playingAudio {
+    final item = _playbackManager.queueService.currentItem;
+    return item is AggregatedItem && item.isAudioLike;
+  }
 
   void notifyInteraction() {
     if (!PlatformDetection.isTV || visible.value) return;
@@ -151,14 +159,17 @@ class ScreensaverController {
     final enabled = _prefs.get(UserPreferences.screensaverEnabled);
     final timeout = _prefs.get(UserPreferences.screensaverTimeout);
     final sleepAfter = _prefs.get(UserPreferences.sleepAfterIdle);
+    final duringAudio = _prefs.get(UserPreferences.screensaverDuringAudio);
     if (enabled == _enabledCache &&
         timeout == _timeoutCache &&
-        sleepAfter == _sleepAfterCache) {
+        sleepAfter == _sleepAfterCache &&
+        duringAudio == _duringAudioCache) {
       return;
     }
     _enabledCache = enabled;
     _timeoutCache = timeout;
     _sleepAfterCache = sleepAfter;
+    _duringAudioCache = duringAudio;
     _refreshWakeLock();
     _onStateChanged();
   }

@@ -7011,6 +7011,14 @@
   "@dimmingLevel": {
     "description": "Setting for dimming level"
   },
+  "screensaverDuringAudio": "Show During Music and Audiobooks",
+  "@screensaverDuringAudio": {
+    "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+  },
+  "screensaverDuringAudioDescription": "Let the screensaver start while audio plays, so cover art doesn't sit on screen for hours.",
+  "@screensaverDuringAudioDescription": {
+    "description": "Description under the Show During Music and Audiobooks screensaver setting"
+  },
   "sleepAfterIdle": "Let TV Sleep After",
   "@sleepAfterIdle": {
     "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"

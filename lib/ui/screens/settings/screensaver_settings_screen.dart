@@ -230,6 +230,12 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                     divisions: 9,
                     labelOf: (value) => value == 0 ? l10n.off : '$value%',
                   ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.screensaverDuringAudio,
+                    title: l10n.screensaverDuringAudio,
+                    subtitle: l10n.screensaverDuringAudioDescription,
+                    icon: Icons.headphones,
+                  ),
                 ],
                 if (ScreensaverController.sleepAfterIdleSupported)
                   IntPickerPreferenceTile(

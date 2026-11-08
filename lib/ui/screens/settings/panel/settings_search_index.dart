@@ -955,6 +955,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.dimmingLevel,
         keywords: ['brightness'],
       ),
+      screensaver.leaf(
+        'pref_screensaver_during_audio',
+        l10n.screensaverDuringAudio,
+        subtitle: l10n.screensaverDuringAudioDescription,
+        keywords: ['music', 'audiobook', 'burn in', 'now playing'],
+      ),
       if (ScreensaverController.sleepAfterIdleSupported)
         screensaver.leaf(
           'pref_sleep_after_idle',
