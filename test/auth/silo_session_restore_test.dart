@@ -352,7 +352,7 @@ void main() {
       await storage.save('s1', '9', _pair('1'));
       await storage.saveProfileToken(teen(), 'pvt_1');
 
-      await storage.forgetUnrememberedPin(teen());
+      storage.forgetUnrememberedPin(teen());
 
       expect(storage.remembersPin(teen()), isTrue);
       expect(storage.needsPin(teen()), isFalse);
@@ -364,20 +364,44 @@ void main() {
       await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
       expect(storage.needsPin(teen()), isFalse);
 
-      await storage.forgetUnrememberedPin(teen());
+      storage.forgetUnrememberedPin(teen());
 
       expect(storage.needsPin(teen()), isTrue);
       expect(storage.remembersPin(teen()), isFalse);
     });
 
-    test('a PIN asked every time only counts in the run that got it',
+    test('a PIN asked every time keeps its proof off the disk', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      expect(store.getSiloProfileToken('s1', '9', 'teen'), {'remember': false});
+      expect(storage.profileToken(teen()), 'pvt_1');
+
+      // The next start reads the same preferences into a new store.
+      final nextStart = AuthenticationStore();
+      await nextStart.init();
+      final nextStorage = SiloTokenStorage(nextStart);
+      expect(nextStorage.needsPin(teen()), isTrue);
+      expect(nextStorage.remembersPin(teen()), isFalse);
+    });
+
+    test('remembering a PIN again stores its proof', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+      await storage.saveProfileToken(teen(), 'pvt_2');
+
+      storage.forgetUnrememberedPin(teen());
+
+      expect(storage.remembersPin(teen()), isTrue);
+      expect(storage.profileToken(teen()), 'pvt_2');
+    });
+
+    test('a refused proof of a PIN asked every time goes, keeping the choice',
         () async {
       await storage.save('s1', '9', _pair('1'));
-      await store.putSiloProfileToken('s1', '9', 'teen', {
-        'token': 'pvt_1',
-        'remember': false,
-        'launch': 'an earlier run',
-      });
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      await storage.forgetProfileToken(teen());
 
       expect(storage.needsPin(teen()), isTrue);
       expect(storage.remembersPin(teen()), isFalse);

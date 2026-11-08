@@ -336,7 +336,7 @@ class SessionRepository {
           _logger.w('Stored access token was rejected. Logging out.');
           // Point the teardown at this session so it removes the right
           // stored credentials.
-          await _forgetUnrememberedPinOfActive();
+          _forgetUnrememberedPinOfActive();
           _activeServerId = serverId;
           _activeUserId = userId;
           await destroyCurrentSession(tokenKnownInvalid: true);
@@ -369,7 +369,7 @@ class SessionRepository {
     _refreshCarBrowseTree(signedIn: true);
 
     if (serverId != _activeServerId || userId != _activeUserId) {
-      await _forgetUnrememberedPinOfActive();
+      _forgetUnrememberedPinOfActive();
     }
     _activeServerId = serverId;
     _activeUserId = userId;
@@ -748,7 +748,7 @@ class SessionRepository {
 
   /// Leaving a Silo profile whose PIN is asked for every time locks it
   /// again, however it is left: a switch, a sign-out or a rejected token.
-  Future<void> _forgetUnrememberedPinOfActive() async {
+  void _forgetUnrememberedPinOfActive() {
     final serverId = _activeServerId;
     final userId = _activeUserId;
     if (serverId == null || userId == null) return;
@@ -756,13 +756,7 @@ class SessionRepository {
         .getUsers(serverId)
         .where((u) => u.id == userId)
         .firstOrNull;
-    if (user == null) return;
-    // Leaving goes on whatever the store does.
-    try {
-      await _siloTokens.forgetUnrememberedPin(user);
-    } catch (e) {
-      _logger.w('Forgetting the unremembered PIN failed: $e');
-    }
+    if (user != null) _siloTokens.forgetUnrememberedPin(user);
   }
 
   /// Signs the whole Silo account out on this device: every stored
@@ -792,7 +786,7 @@ class SessionRepository {
   }
 
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
-    await _forgetUnrememberedPinOfActive();
+    _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
     _remoteNavigationGeneration++;
