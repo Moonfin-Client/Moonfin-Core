@@ -1932,6 +1932,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       return KeyEventResult.handled;
     }
 
+    // Stop leaves the player even with the guide or channel list open.
+    if (event.logicalKey == LogicalKeyboardKey.mediaStop) {
+      if (event is KeyDownEvent) unawaited(_exitPlayback());
+      return KeyEventResult.handled;
+    }
+
     // While either in-player picker is open it owns all navigation keys.
     // Let them flow to the embedded guide's focus subtree.
     if (_isGuidePickerOpen || _isCarouselOpen) {
