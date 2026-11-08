@@ -7289,7 +7289,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  static const _speedSteps = <double>[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+  /// Apple's engine holds video at 2x, since AVPlayer gets unstable past it.
+  late final List<double> _speedSteps = [
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    if (!PlatformDetection.isApple && !PlatformDetection.isAppleTV) ...[
+      2.5,
+      3.0,
+      3.5,
+      4.0,
+      5.0,
+    ],
+  ];
 
   /// Nudges the playback speed one step along the same ladder the speed
   /// picker offers, from whichever step sits nearest the current speed.

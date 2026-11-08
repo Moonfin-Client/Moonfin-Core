@@ -623,7 +623,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   Future<void> _showOverflowSheet(AggregatedItem item) async {
-    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0];
     const sleepOptions = <String, Duration?>{
       'Off': null,
       '15 min': Duration(minutes: 15),
