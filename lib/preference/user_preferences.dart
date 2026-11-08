@@ -984,6 +984,9 @@ class UserPreferences extends ChangeNotifier {
 
   int resolveMaxAudioChannels() => get(maxAudioChannels);
 
+  Duration resolveControlsHideDelay() =>
+      Duration(milliseconds: get(controlsHideDelay));
+
   PosterSize resolveLibraryPosterSize() {
     if (containsPreference(libraryPosterSize, scopedOnly: true)) {
       return get(libraryPosterSize);
@@ -2936,6 +2939,11 @@ class UserPreferences extends ChangeNotifier {
   static final skipForwardLength = Preference(
     key: 'skipForwardLength',
     defaultValue: 30000,
+  );
+
+  static final controlsHideDelay = Preference(
+    key: 'controlsHideDelay',
+    defaultValue: 5000,
   );
 
   static final unpauseRewindDuration = Preference(

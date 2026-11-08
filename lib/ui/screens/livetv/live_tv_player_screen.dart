@@ -1245,9 +1245,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _scheduleHide() {
     _hideTimer?.cancel();
-    final hideDelay = PlatformDetection.useMobileUi
-        ? const Duration(seconds: 8)
-        : const Duration(seconds: 5);
+    final hideDelay = _prefs.resolveControlsHideDelay();
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       if (_isOverlayInteractionActive) {

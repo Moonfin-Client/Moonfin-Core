@@ -11137,6 +11137,14 @@
   "settingsFortyFiveSeconds": "45 seconds",
   "settingsSixtySeconds": "60 seconds",
   "settingsSkipForwardLengthDescription": "How many seconds to jump forward after pressing the fast forward button.",
+  "settingsHideControlsAfter": "Hide Controls After",
+  "@settingsHideControlsAfter": {
+    "description": "Playback setting for how long the player controls stay on screen after the last input"
+  },
+  "settingsHideControlsAfterDescription": "How long the player controls stay on screen after your last button press, tap or mouse move.",
+  "@settingsHideControlsAfterDescription": {
+    "description": "Description under the Hide Controls After playback setting"
+  },
   "settingsBitstreamAc3ToExternalDecoder": "Bitstream AC3 to external decoder",
   "settingsCinemaMode": "Cinema Mode",
   "settingsCinemaModeSubtitle": "Play trailers/prerolls before a main feature",

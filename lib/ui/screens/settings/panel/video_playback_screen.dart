@@ -174,6 +174,17 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   60000: l10n.settingsSixtySeconds,
                 },
               ),
+              IntPickerPreferenceTile(
+                preference: UserPreferences.controlsHideDelay,
+                title: l10n.settingsHideControlsAfter,
+                description: l10n.settingsHideControlsAfterDescription,
+                icon: Icons.timer_outlined,
+                options: {
+                  1000: l10n.settingsOneSecond,
+                  3000: l10n.settingsThreeSeconds,
+                  5000: l10n.fiveSeconds,
+                },
+              ),
               SwitchPreferenceTile(
                 preference: UserPreferences.showChapterMarkers,
                 title: l10n.showChapterMarkers,

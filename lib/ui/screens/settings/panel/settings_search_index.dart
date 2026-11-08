@@ -1635,6 +1635,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'seek forward',
     ]),
     video.leaf(
+      'controlsHideDelay',
+      l10n.settingsHideControlsAfter,
+      subtitle: l10n.settingsHideControlsAfterDescription,
+      keywords: ['osd', 'timeout', 'auto hide', 'player ui'],
+    ),
+    video.leaf(
       'showChapterMarkers',
       l10n.showChapterMarkers,
       subtitle: l10n.showChapterMarkersDescription,

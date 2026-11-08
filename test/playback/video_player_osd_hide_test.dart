@@ -514,6 +514,38 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  Future<void> playWithHideDelay(WidgetTester tester, int milliseconds) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.controlsHideDelay,
+      milliseconds,
+    );
+    await mountPlayer(tester);
+    manager.state.setPlaying(true);
+    await tester.pump();
+  }
+
+  testWidgets('the controls stay up for the delay set in settings', (
+    tester,
+  ) async {
+    await playWithHideDelay(tester, 3000);
+
+    await tester.pump(const Duration(milliseconds: 2500));
+    expect(find.byType(Slider), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(Slider), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('a short hide delay clears the controls sooner', (tester) async {
+    await playWithHideDelay(tester, 1000);
+
+    await tester.pump(const Duration(milliseconds: 1500));
+    expect(find.byType(Slider), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   // Issue #1751: the unlock prompt sits at the end of the top bar, where the
   // lock button was, instead of over the middle of the picture.
   for (final direction in TextDirection.values) {

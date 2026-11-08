@@ -2941,11 +2941,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _scheduleHide({Duration? delay}) {
     _hideTimer?.cancel();
-    final hideDelay =
-        delay ??
-        (PlatformDetection.useMobileUi
-            ? const Duration(seconds: 8)
-            : const Duration(seconds: 5));
+    final hideDelay = delay ?? _prefs.resolveControlsHideDelay();
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       // Closing a dialog gives focus back to the button that opened it, so the
