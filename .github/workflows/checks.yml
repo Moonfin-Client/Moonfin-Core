@@ -406,7 +406,8 @@ jobs:
           overwrite: true
 
   # Advisory only: analyzer diagnostics and localization slips on the lines
-  # this pull request added or changed. The PR comment shows what it found.
+  # this pull request added or changed, and which of those lines its own tests
+  # run. The PR comment shows what it found.
   # It never fails on a finding, and the checks gate doesn't wait for it.
   # continue-on-error on the job too, so a setup failure can't fail the
   # Checks run either.
@@ -453,6 +454,26 @@ jobs:
           python3 scripts/ci/touched_lines_diagnostics.py "$BASE" HEAD --out /tmp/delta-results/diagnostics.json || status=1
           python3 scripts/ci/l10n_guard.py "$BASE" HEAD --out /tmp/delta-results/l10n.json || status=1
           exit "$status"
+
+      # Only the test files this pull request adds or changes, with coverage,
+      # to show which of its changed lines they run. A step of its own so a
+      # hang can't cost the results above. Usually a minute or two, inside the
+      # time the test shards take. A big pull request can take longer, and the
+      # PR comment waits for the whole Checks run, so the timeout keeps that
+      # wait to a few minutes rather than dropping the result for the pull
+      # requests that need it most.
+      - name: Run the pull request's own tests with coverage
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          BASE: origin/${{ github.base_ref }}
+        # The script only writes its file when it finishes, so the error left
+        # here first is what the comment sees if it crashes or times out. A
+        # missing file means a branch from before this step, and shows nothing.
+        run: |
+          mkdir -p /tmp/delta-results
+          echo '{"status": "error"}' > /tmp/delta-results/pr-tests-coverage.json
+          python3 scripts/ci/pr_tests_coverage.py "$BASE" HEAD --out /tmp/delta-results/pr-tests-coverage.json
 
       - uses: actions/upload-artifact@v6
         if: always()

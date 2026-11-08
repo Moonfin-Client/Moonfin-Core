@@ -323,7 +323,7 @@ jobs:
             // Checks finished but the delta job left nothing: say so, as the
             // tests line does, rather than look like a clean run.
             if (checksRunId && !diagnostics) {
-              deltaLines.push(`**Touched lines**${l10n ? '' : ' and **Localization**'} ⚠️ did not run, see the delta job log`);
+              deltaLines.push(`**Touched lines**${l10n ? '' : ", **Localization** and **PR's tests**"} ⚠️ did not run, see the delta job log`);
             }
             if (diagnostics) {
               const diagCount = clamp(diagnostics.count);
@@ -357,6 +357,83 @@ jobs:
                 return `- \`${escapeText(subject)}\`: ${escapeProse(rest)}`;
               });
               deltaLines.push('', '<details><summary>Localization</summary>', '', ...shown, '', '</details>');
+            }
+
+            // Which changed lines the pull request's own new or changed test
+            // files run. Missing on a branch from before the check existed,
+            // and then nothing shows. Like the rest, it never changes the
+            // headline.
+            const prTests = readJson('delta-results/pr-tests-coverage.json');
+            const prTestLines = [];
+            const asList = (value) => (Array.isArray(value) ? value : []);
+            const prTestStatus = String(prTests?.status ?? '');
+            if (prTestStatus === 'error') {
+              prTestLines.push("**PR's tests** ⚠️ coverage did not run, see the delta job log");
+            } else if (prTestStatus === 'no_tests') {
+              prTestLines.push("**PR's tests** no test files changed");
+            } else if (prTestStatus === 'skipped') {
+              prTestLines.push(`**PR's tests** coverage skipped, ${plural(clamp(prTests.test_files), 'test file', 'test files')} changed`);
+            } else if (prTestStatus === 'ok') {
+              const run = clamp(prTests.lines_run);
+              const total = clamp(prTests.lines);
+              const failedTests = clamp(prTests.tests_failed);
+              const files = asList(prTests.files).filter(f => f && typeof f === 'object').slice(0, 15);
+              const unloaded = clamp(prTests.unloaded);
+              const notLoaded = plural(unloaded, 'changed file', 'changed files');
+              // Measurable, because Dart only records lines that make a call
+              // or create an object. A bare return on its own line has no
+              // record, so "all" can't promise every branch ran.
+              let line;
+              if (total === 0) {
+                line = unloaded > 0
+                  ? `**PR's tests** 🧪 didn't load ${notLoaded}`
+                  : "**PR's tests** 🧪 no measurable changed lines";
+              } else {
+                line = run === total
+                  ? `**PR's tests** 🧪 ran all ${plural(total, 'measurable changed line', 'measurable changed lines')}`
+                  : `**PR's tests** 🧪 ran ${run} of ${plural(total, 'measurable changed line', 'measurable changed lines')}`;
+                if (unloaded > 0) line += `, and didn't load ${notLoaded}`;
+              }
+              if (failedTests > 0) line += ` · ${failedTests} of its tests failed here, so this may be low`;
+              const details = [];
+              // A malformed range is dropped rather than shown.
+              const range = (r) => {
+                const [a, b] = asList(r);
+                if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b) || a < 1 || b < a) return null;
+                return a === b ? `${a}` : `${a}-${b}`;
+              };
+              for (const f of files) {
+                if (f.loaded === false) {
+                  details.push(`- \`${escapeText(f.file)}\` not loaded by these tests (${plural(clamp(f.changed), 'changed line', 'changed lines')})`);
+                } else {
+                  const gaps = asList(f.not_run).slice(0, 10).map(range).filter(Boolean);
+                  const more = clamp(f.more_ranges) > 0 ? ` and ${clamp(f.more_ranges)} more` : '';
+                  const where = gaps.length > 0 ? `, not run: ${gaps.join(', ')}${more}` : '';
+                  details.push(`- \`${escapeText(f.file)}\` ${clamp(f.run)} of ${clamp(f.lines)}${where}`);
+                }
+              }
+              if (clamp(prTests.more_files) > 0) details.push(`- and ${plural(clamp(prTests.more_files), 'more file', 'more files')}`);
+              prTestLines.push(line);
+              if (details.length > 0) {
+                details.push('', `From ${plural(clamp(prTests.test_files), 'test file', 'test files')} this pull request added or changed. ` +
+                  'Other tests may still run these lines, this only measures its own. ' +
+                  'Dart only measures lines that make a call or create an object.');
+                prTestLines.push('', "<details><summary>Changed lines the PR's tests didn't run</summary>", '', ...details, '', '</details>');
+              }
+              const webOnly = asList(prTests.web_only).slice(0, 10).map(p => `\`${escapeText(p)}\``);
+              if (webOnly.length > 0) prTestLines.push('', `Web only, so not measured: ${webOnly.join(', ')}`);
+            }
+            // Shown whatever the status: CI never runs these files at all.
+            for (const t of asList(prTests?.never_run_tests).filter(t => t && typeof t === 'object').slice(0, 10)) {
+              const why = t.reason === 'package'
+                ? "its package isn't in the Checks package list"
+                : 'test files must end in `_test.dart`';
+              if (prTestLines.length > 0) prTestLines.push('');
+              prTestLines.push(`⚠️ \`${escapeText(t.file)}\` never runs in CI, ${why}`);
+            }
+            if (prTestLines.length > 0) {
+              if (deltaLines.length > 0) deltaLines.push('');
+              deltaLines.push(...prTestLines);
             }
 
             // Checks usually reports first, Build All Platforms takes longer.
