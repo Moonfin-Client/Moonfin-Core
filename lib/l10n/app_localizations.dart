@@ -29804,6 +29804,672 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When the next episode isn\'t in your library yet, the end of episode card says when it airs'**
   String get showNextAirDateSubtitle;
+
+  /// Name of the hidden arcade in Settings > About. A product name, keep it short
+  ///
+  /// In en, this message translates to:
+  /// **'After Hours'**
+  String get afterHoursTitle;
+
+  /// Toast when the seventh press on the Version row opens the hidden arcade
+  ///
+  /// In en, this message translates to:
+  /// **'After Hours unlocked'**
+  String get afterHoursUnlocked;
+
+  /// Toast counting down the remote presses on the Version row left before the hidden arcade opens
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more press} other{{count} more presses}}'**
+  String afterHoursPressesLeft(int count);
+
+  /// Toast counting down the taps on the Version row left before the hidden arcade opens
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more tap} other{{count} more taps}}'**
+  String afterHoursTapsLeft(int count);
+
+  /// Button that starts playing a game in the arcade. Play as in playing a game, not playing media
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get afterHoursPlay;
+
+  /// Title of the screen and the card that show the top 3 scores for every arcade game
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboards'**
+  String get afterHoursLeaderboards;
+
+  /// Heading over the three best scores in an arcade game
+  ///
+  /// In en, this message translates to:
+  /// **'Top 3'**
+  String get afterHoursTop3;
+
+  /// Note saying the arcade scores shown come from the named server
+  ///
+  /// In en, this message translates to:
+  /// **'Scores from {server}'**
+  String afterHoursScoresFrom(String server);
+
+  /// Note saying the arcade scores shown are the ones kept on this device, because the server has none
+  ///
+  /// In en, this message translates to:
+  /// **'Scores on this device'**
+  String get afterHoursScoresOnDevice;
+
+  /// Shown when a run in an arcade game ends
+  ///
+  /// In en, this message translates to:
+  /// **'Game over'**
+  String get afterHoursGameOver;
+
+  /// Shown when a finished arcade run places in the top 3, with its place
+  ///
+  /// In en, this message translates to:
+  /// **'New #{rank} on the board'**
+  String afterHoursNewRank(int rank);
+
+  /// Button that starts a new run of the same arcade game
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get afterHoursPlayAgain;
+
+  /// Button that leaves a finished game for the arcade menu
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the arcade'**
+  String get afterHoursBackToArcade;
+
+  /// Short button on a phone that leaves a finished game for the arcade menu
+  ///
+  /// In en, this message translates to:
+  /// **'Arcade'**
+  String get afterHoursArcade;
+
+  /// Note under the Play button on a phone: the screen rotates to landscape during the game
+  ///
+  /// In en, this message translates to:
+  /// **'Turns to landscape while you play'**
+  String get afterHoursLandscapeNote;
+
+  /// Label before the touchscreen controls of an arcade game
+  ///
+  /// In en, this message translates to:
+  /// **'Touch'**
+  String get afterHoursTouch;
+
+  /// Short tag on the leaderboard row the player just set. Keep it very short
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get afterHoursNewTag;
+
+  /// Shown in place of a leaderboard nobody has played yet
+  ///
+  /// In en, this message translates to:
+  /// **'No scores yet'**
+  String get afterHoursNoScores;
+
+  /// Flashes in the Case Stack arcade game when a case lands exactly on the one below
+  ///
+  /// In en, this message translates to:
+  /// **'PERFECT'**
+  String get afterHoursPerfect;
+
+  /// Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs
+  ///
+  /// In en, this message translates to:
+  /// **'BOX SET'**
+  String get afterHoursBoxSet;
+
+  /// Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer Run'**
+  String get afterHoursBufferRun;
+
+  /// Kind of game Buffer Run is
+  ///
+  /// In en, this message translates to:
+  /// **'Endless runner with a gravity flip'**
+  String get afterHoursBufferRunGenre;
+
+  /// Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation
+  ///
+  /// In en, this message translates to:
+  /// **'The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.'**
+  String get afterHoursBufferRunPitch;
+
+  /// Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.'**
+  String get afterHoursBufferRunRemote;
+
+  /// Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to jump, and tap again in the air to flip. Swipe toward the side you\'re running on to slide.'**
+  String get afterHoursBufferRunTouch;
+
+  /// Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control
+  ///
+  /// In en, this message translates to:
+  /// **'Fast Forward'**
+  String get afterHoursFastForward;
+
+  /// Kind of game Fast Forward is
+  ///
+  /// In en, this message translates to:
+  /// **'Three-lane runner'**
+  String get afterHoursFastForwardGenre;
+
+  /// Two sentence description of the Fast Forward arcade game, set in a cinema lobby
+  ///
+  /// In en, this message translates to:
+  /// **'A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don\'t move for anyone.'**
+  String get afterHoursFastForwardPitch;
+
+  /// Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Up and Down change lanes. OK jumps.'**
+  String get afterHoursFastForwardRemote;
+
+  /// Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up or down to change lanes. Tap to jump.'**
+  String get afterHoursFastForwardTouch;
+
+  /// Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable
+  ///
+  /// In en, this message translates to:
+  /// **'Cable Crawl'**
+  String get afterHoursCableCrawl;
+
+  /// Kind of game Cable Crawl is, a snake-like game on a grid
+  ///
+  /// In en, this message translates to:
+  /// **'Grid crawler'**
+  String get afterHoursCableCrawlGenre;
+
+  /// Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength
+  ///
+  /// In en, this message translates to:
+  /// **'Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.'**
+  String get afterHoursCableCrawlPitch;
+
+  /// Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Arrows turn. The cable never stops.'**
+  String get afterHoursCableCrawlRemote;
+
+  /// Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to turn.'**
+  String get afterHoursCableCrawlTouch;
+
+  /// Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases
+  ///
+  /// In en, this message translates to:
+  /// **'Case Stack'**
+  String get afterHoursCaseStack;
+
+  /// Kind of game Case Stack is
+  ///
+  /// In en, this message translates to:
+  /// **'One-button stacker'**
+  String get afterHoursCaseStackGenre;
+
+  /// Two sentence description of the Case Stack arcade game
+  ///
+  /// In en, this message translates to:
+  /// **'Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.'**
+  String get afterHoursCaseStackPitch;
+
+  /// Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'OK drops the case.'**
+  String get afterHoursCaseStackRemote;
+
+  /// Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Tap anywhere to drop.'**
+  String get afterHoursCaseStackTouch;
+
+  /// Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts
+  ///
+  /// In en, this message translates to:
+  /// **'Pixel Purge'**
+  String get afterHoursPixelPurge;
+
+  /// Kind of game Pixel Purge is, a brick breaker with a paddle
+  ///
+  /// In en, this message translates to:
+  /// **'Paddle breaker'**
+  String get afterHoursPixelPurgeGenre;
+
+  /// Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar
+  ///
+  /// In en, this message translates to:
+  /// **'A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.'**
+  String get afterHoursPixelPurgePitch;
+
+  /// Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Left and Right slide the scrubber. The ball launches on its own.'**
+  String get afterHoursPixelPurgeRemote;
+
+  /// Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to slide the scrubber.'**
+  String get afterHoursPixelPurgeTouch;
+
+  /// Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it
+  ///
+  /// In en, this message translates to:
+  /// **'How to play'**
+  String get afterHoursHowToPlay;
+
+  /// Button on the How to play card that starts the game. Start as in begin playing
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get afterHoursStart;
+
+  /// Button on the How to play card opened from the pause menu, which returns to the paused game
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the game'**
+  String get afterHoursBackToGame;
+
+  /// Heading over the enemies on an arcade game's How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Enemies'**
+  String get afterHoursEnemies;
+
+  /// Heading over the obstacles on an arcade game's How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Obstacles'**
+  String get afterHoursObstacles;
+
+  /// Heading over the powerups on an arcade game's How to play card
+  ///
+  /// In en, this message translates to:
+  /// **'Powerups'**
+  String get afterHoursPowerups;
+
+  /// What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A shield that takes one hit.'**
+  String get afterHoursCastShieldLine;
+
+  /// What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'25 points a piece.'**
+  String get afterHoursCastPointsLine;
+
+  /// Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Lag Bat'**
+  String get afterHoursCastLagBat;
+
+  /// What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Swoops in at head height. Slide under it.'**
+  String get afterHoursCastLagBatLine;
+
+  /// Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Static Gremlin'**
+  String get afterHoursCastGremlin;
+
+  /// What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Hops along the floor or the ceiling toward you. Jump it.'**
+  String get afterHoursCastGremlinLine;
+
+  /// Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Cable Coil'**
+  String get afterHoursCastCable;
+
+  /// What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Low on the floor or the ceiling. Jump it.'**
+  String get afterHoursCastCableLine;
+
+  /// Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Buffering Banner'**
+  String get afterHoursCastBanner;
+
+  /// What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Slide under the sign. Its pole is a wall on the other side.'**
+  String get afterHoursCastBannerLine;
+
+  /// Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Intro'**
+  String get afterHoursCastSkipIntro;
+
+  /// What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Three seconds of dash that smashes anything.'**
+  String get afterHoursCastSkipIntroLine;
+
+  /// Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Popcorn'**
+  String get afterHoursCastPopcorn;
+
+  /// Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Loose Reel'**
+  String get afterHoursCastRollingReel;
+
+  /// What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Rolls down your lane faster than you run. Jump it.'**
+  String get afterHoursCastRollingReelLine;
+
+  /// Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Usher'**
+  String get afterHoursCastUsher;
+
+  /// What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Walks toward you and changes lanes once.'**
+  String get afterHoursCastUsherLine;
+
+  /// Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Velvet Rope'**
+  String get afterHoursCastVelvetRope;
+
+  /// What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Low. Jump it or change lanes.'**
+  String get afterHoursCastVelvetRopeLine;
+
+  /// Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Popcorn Cart'**
+  String get afterHoursCastPopcornCart;
+
+  /// What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Too tall to jump. Change lanes.'**
+  String get afterHoursCastPopcornCartLine;
+
+  /// Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Front Row Pass'**
+  String get afterHoursCastFrontRowPass;
+
+  /// Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Magnet'**
+  String get afterHoursCastMagnet;
+
+  /// What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Pulls in tickets from every lane for eight seconds.'**
+  String get afterHoursCastMagnetLine;
+
+  /// Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket'**
+  String get afterHoursCastTicket;
+
+  /// Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Interference Bug'**
+  String get afterHoursCastBug;
+
+  /// What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Wanders at random.'**
+  String get afterHoursCastBugLine;
+
+  /// Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Tangle'**
+  String get afterHoursCastTangle;
+
+  /// What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Slowly chases your plug.'**
+  String get afterHoursCastTangleLine;
+
+  /// Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Static'**
+  String get afterHoursCastStatic;
+
+  /// What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A dead cell. One appears every third signal.'**
+  String get afterHoursCastStaticLine;
+
+  /// Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Power Brick'**
+  String get afterHoursCastBrick;
+
+  /// What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A 2 by 2 block every fifth signal.'**
+  String get afterHoursCastBrickLine;
+
+  /// Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Ghost'**
+  String get afterHoursCastGhost;
+
+  /// What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Five seconds of passing through everything but the edge.'**
+  String get afterHoursCastGhostLine;
+
+  /// Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Snip'**
+  String get afterHoursCastSnip;
+
+  /// What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Cuts the cable in half for bonus points.'**
+  String get afterHoursCastSnipLine;
+
+  /// Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Signal'**
+  String get afterHoursCastSignal;
+
+  /// What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Points, and two more segments.'**
+  String get afterHoursCastSignalLine;
+
+  /// Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf Cat'**
+  String get afterHoursCastShelfCat;
+
+  /// What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Bats a case as it comes in, so that one slides faster.'**
+  String get afterHoursCastShelfCatLine;
+
+  /// Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Blu-ray Case'**
+  String get afterHoursCastBluCase;
+
+  /// What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A title from your library. The overhang gets trimmed off.'**
+  String get afterHoursCastBluCaseLine;
+
+  /// Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Steelbook'**
+  String get afterHoursCastSteelbook;
+
+  /// What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Every tenth case. Slides much faster.'**
+  String get afterHoursCastSteelbookLine;
+
+  /// Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect Drop'**
+  String get afterHoursCastPerfect;
+
+  /// What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Land it dead on and the stack grows a little wider.'**
+  String get afterHoursCastPerfectLine;
+
+  /// Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Box Set'**
+  String get afterHoursCastBoxSet;
+
+  /// What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Three perfect drops in a row grow it a lot wider.'**
+  String get afterHoursCastBoxSetLine;
+
+  /// Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Dead Pixel'**
+  String get afterHoursCastDeadPixel;
+
+  /// What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Falls from cleared blocks. Catching it shrinks the scrubber.'**
+  String get afterHoursCastDeadPixelLine;
+
+  /// Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Macroblock'**
+  String get afterHoursCastMacroblock;
+
+  /// What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'One hit clears it.'**
+  String get afterHoursCastMacroblockLine;
+
+  /// Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Keyframe'**
+  String get afterHoursCastKeyframe;
+
+  /// What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Takes three hits and drops a powerup.'**
+  String get afterHoursCastKeyframeLine;
+
+  /// What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A scrubber twice as wide for eight seconds.'**
+  String get afterHoursCastHdrLine;
+
+  /// Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer'**
+  String get afterHoursCastBufferNet;
+
+  /// What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column
+  ///
+  /// In en, this message translates to:
+  /// **'A net under the scrubber that saves one miss.'**
+  String get afterHoursCastBufferNetLine;
+
+  /// Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.'**
+  String get afterHoursBufferRunCardTouch;
+
+  /// Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line
+  ///
+  /// In en, this message translates to:
+  /// **'Left and Right slide the scrubber.'**
+  String get afterHoursPixelPurgeCardRemote;
 }
 
 class _AppLocalizationsDelegate

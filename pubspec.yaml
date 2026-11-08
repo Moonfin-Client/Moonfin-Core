@@ -301,6 +301,7 @@ flutter:
     - assets/subtitle_fonts/
     - assets/licenses/cores/
     - assets/reader/
+    - assets/after_hours/
 
   fonts:
     # The web engine fetches Roboto from fonts.gstatic.com unless it finds a
@@ -334,6 +335,10 @@ flutter:
         - asset: assets/fonts/Literata-Regular.ttf
         - asset: assets/fonts/Literata-SemiBold.ttf
           weight: 600
+    # The After Hours arcade's display face.
+    - family: Jersey10
+      fonts:
+        - asset: assets/fonts/Jersey10-Regular.ttf
 
 # The identity has to match Partner Center's Product identity page or the Store
 # rejects the upload.

@@ -16382,5 +16382,469 @@
   "showNextAirDateSubtitle": "When the next episode isn't in your library yet, the end of episode card says when it airs",
   "@showNextAirDateSubtitle": {
     "description": "Subtitle of the Next air date at the end setting"
+  },
+  "afterHoursTitle": "After Hours",
+  "@afterHoursTitle": {
+    "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+  },
+  "afterHoursUnlocked": "After Hours unlocked",
+  "@afterHoursUnlocked": {
+    "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+  },
+  "afterHoursPressesLeft": "{count, plural, =1{1 more press} other{{count} more presses}}",
+  "@afterHoursPressesLeft": {
+    "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursTapsLeft": "{count, plural, =1{1 more tap} other{{count} more taps}}",
+  "@afterHoursTapsLeft": {
+    "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursPlay": "Play",
+  "@afterHoursPlay": {
+    "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+  },
+  "afterHoursLeaderboards": "Leaderboards",
+  "@afterHoursLeaderboards": {
+    "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+  },
+  "afterHoursTop3": "Top 3",
+  "@afterHoursTop3": {
+    "description": "Heading over the three best scores in an arcade game"
+  },
+  "afterHoursScoresFrom": "Scores from {server}",
+  "@afterHoursScoresFrom": {
+    "description": "Note saying the arcade scores shown come from the named server",
+    "placeholders": {
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "afterHoursScoresOnDevice": "Scores on this device",
+  "@afterHoursScoresOnDevice": {
+    "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+  },
+  "afterHoursGameOver": "Game over",
+  "@afterHoursGameOver": {
+    "description": "Shown when a run in an arcade game ends"
+  },
+  "afterHoursNewRank": "New #{rank} on the board",
+  "@afterHoursNewRank": {
+    "description": "Shown when a finished arcade run places in the top 3, with its place",
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursPlayAgain": "Play again",
+  "@afterHoursPlayAgain": {
+    "description": "Button that starts a new run of the same arcade game"
+  },
+  "afterHoursBackToArcade": "Back to the arcade",
+  "@afterHoursBackToArcade": {
+    "description": "Button that leaves a finished game for the arcade menu"
+  },
+  "afterHoursArcade": "Arcade",
+  "@afterHoursArcade": {
+    "description": "Short button on a phone that leaves a finished game for the arcade menu"
+  },
+  "afterHoursLandscapeNote": "Turns to landscape while you play",
+  "@afterHoursLandscapeNote": {
+    "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+  },
+  "afterHoursTouch": "Touch",
+  "@afterHoursTouch": {
+    "description": "Label before the touchscreen controls of an arcade game"
+  },
+  "afterHoursNewTag": "NEW",
+  "@afterHoursNewTag": {
+    "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+  },
+  "afterHoursNoScores": "No scores yet",
+  "@afterHoursNoScores": {
+    "description": "Shown in place of a leaderboard nobody has played yet"
+  },
+  "afterHoursPerfect": "PERFECT",
+  "@afterHoursPerfect": {
+    "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+  },
+  "afterHoursBoxSet": "BOX SET",
+  "@afterHoursBoxSet": {
+    "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+  },
+  "afterHoursBufferRun": "Buffer Run",
+  "@afterHoursBufferRun": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+  },
+  "afterHoursBufferRunGenre": "Endless runner with a gravity flip",
+  "@afterHoursBufferRunGenre": {
+    "description": "Kind of game Buffer Run is"
+  },
+  "afterHoursBufferRunPitch": "The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.",
+  "@afterHoursBufferRunPitch": {
+    "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+  },
+  "afterHoursBufferRunRemote": "OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.",
+  "@afterHoursBufferRunRemote": {
+    "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursBufferRunTouch": "Tap to jump, and tap again in the air to flip. Swipe toward the side you're running on to slide.",
+  "@afterHoursBufferRunTouch": {
+    "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursFastForward": "Fast Forward",
+  "@afterHoursFastForward": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+  },
+  "afterHoursFastForwardGenre": "Three-lane runner",
+  "@afterHoursFastForwardGenre": {
+    "description": "Kind of game Fast Forward is"
+  },
+  "afterHoursFastForwardPitch": "A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don't move for anyone.",
+  "@afterHoursFastForwardPitch": {
+    "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+  },
+  "afterHoursFastForwardRemote": "Up and Down change lanes. OK jumps.",
+  "@afterHoursFastForwardRemote": {
+    "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursFastForwardTouch": "Swipe up or down to change lanes. Tap to jump.",
+  "@afterHoursFastForwardTouch": {
+    "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCableCrawl": "Cable Crawl",
+  "@afterHoursCableCrawl": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+  },
+  "afterHoursCableCrawlGenre": "Grid crawler",
+  "@afterHoursCableCrawlGenre": {
+    "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+  },
+  "afterHoursCableCrawlPitch": "Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.",
+  "@afterHoursCableCrawlPitch": {
+    "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+  },
+  "afterHoursCableCrawlRemote": "Arrows turn. The cable never stops.",
+  "@afterHoursCableCrawlRemote": {
+    "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCableCrawlTouch": "Swipe to turn.",
+  "@afterHoursCableCrawlTouch": {
+    "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCaseStack": "Case Stack",
+  "@afterHoursCaseStack": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+  },
+  "afterHoursCaseStackGenre": "One-button stacker",
+  "@afterHoursCaseStackGenre": {
+    "description": "Kind of game Case Stack is"
+  },
+  "afterHoursCaseStackPitch": "Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.",
+  "@afterHoursCaseStackPitch": {
+    "description": "Two sentence description of the Case Stack arcade game"
+  },
+  "afterHoursCaseStackRemote": "OK drops the case.",
+  "@afterHoursCaseStackRemote": {
+    "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCaseStackTouch": "Tap anywhere to drop.",
+  "@afterHoursCaseStackTouch": {
+    "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursPixelPurge": "Pixel Purge",
+  "@afterHoursPixelPurge": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+  },
+  "afterHoursPixelPurgeGenre": "Paddle breaker",
+  "@afterHoursPixelPurgeGenre": {
+    "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+  },
+  "afterHoursPixelPurgePitch": "A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.",
+  "@afterHoursPixelPurgePitch": {
+    "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+  },
+  "afterHoursPixelPurgeRemote": "Left and Right slide the scrubber. The ball launches on its own.",
+  "@afterHoursPixelPurgeRemote": {
+    "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursPixelPurgeTouch": "Drag to slide the scrubber.",
+  "@afterHoursPixelPurgeTouch": {
+    "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursHowToPlay": "How to play",
+  "@afterHoursHowToPlay": {
+    "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+  },
+  "afterHoursStart": "Start",
+  "@afterHoursStart": {
+    "description": "Button on the How to play card that starts the game. Start as in begin playing"
+  },
+  "afterHoursBackToGame": "Back to the game",
+  "@afterHoursBackToGame": {
+    "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+  },
+  "afterHoursEnemies": "Enemies",
+  "@afterHoursEnemies": {
+    "description": "Heading over the enemies on an arcade game's How to play card"
+  },
+  "afterHoursObstacles": "Obstacles",
+  "@afterHoursObstacles": {
+    "description": "Heading over the obstacles on an arcade game's How to play card"
+  },
+  "afterHoursPowerups": "Powerups",
+  "@afterHoursPowerups": {
+    "description": "Heading over the powerups on an arcade game's How to play card"
+  },
+  "afterHoursCastShieldLine": "A shield that takes one hit.",
+  "@afterHoursCastShieldLine": {
+    "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPointsLine": "25 points a piece.",
+  "@afterHoursCastPointsLine": {
+    "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastLagBat": "Lag Bat",
+  "@afterHoursCastLagBat": {
+    "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastLagBatLine": "Swoops in at head height. Slide under it.",
+  "@afterHoursCastLagBatLine": {
+    "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastGremlin": "Static Gremlin",
+  "@afterHoursCastGremlin": {
+    "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastGremlinLine": "Hops along the floor or the ceiling toward you. Jump it.",
+  "@afterHoursCastGremlinLine": {
+    "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastCable": "Cable Coil",
+  "@afterHoursCastCable": {
+    "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastCableLine": "Low on the floor or the ceiling. Jump it.",
+  "@afterHoursCastCableLine": {
+    "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBanner": "Buffering Banner",
+  "@afterHoursCastBanner": {
+    "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBannerLine": "Slide under the sign. Its pole is a wall on the other side.",
+  "@afterHoursCastBannerLine": {
+    "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSkipIntro": "Skip Intro",
+  "@afterHoursCastSkipIntro": {
+    "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSkipIntroLine": "Three seconds of dash that smashes anything.",
+  "@afterHoursCastSkipIntroLine": {
+    "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPopcorn": "Popcorn",
+  "@afterHoursCastPopcorn": {
+    "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastRollingReel": "Loose Reel",
+  "@afterHoursCastRollingReel": {
+    "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastRollingReelLine": "Rolls down your lane faster than you run. Jump it.",
+  "@afterHoursCastRollingReelLine": {
+    "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastUsher": "Usher",
+  "@afterHoursCastUsher": {
+    "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastUsherLine": "Walks toward you and changes lanes once.",
+  "@afterHoursCastUsherLine": {
+    "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastVelvetRope": "Velvet Rope",
+  "@afterHoursCastVelvetRope": {
+    "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastVelvetRopeLine": "Low. Jump it or change lanes.",
+  "@afterHoursCastVelvetRopeLine": {
+    "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPopcornCart": "Popcorn Cart",
+  "@afterHoursCastPopcornCart": {
+    "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastPopcornCartLine": "Too tall to jump. Change lanes.",
+  "@afterHoursCastPopcornCartLine": {
+    "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastFrontRowPass": "Front Row Pass",
+  "@afterHoursCastFrontRowPass": {
+    "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMagnet": "Magnet",
+  "@afterHoursCastMagnet": {
+    "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMagnetLine": "Pulls in tickets from every lane for eight seconds.",
+  "@afterHoursCastMagnetLine": {
+    "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastTicket": "Ticket",
+  "@afterHoursCastTicket": {
+    "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBug": "Interference Bug",
+  "@afterHoursCastBug": {
+    "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBugLine": "Wanders at random.",
+  "@afterHoursCastBugLine": {
+    "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastTangle": "Tangle",
+  "@afterHoursCastTangle": {
+    "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastTangleLine": "Slowly chases your plug.",
+  "@afterHoursCastTangleLine": {
+    "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastStatic": "Static",
+  "@afterHoursCastStatic": {
+    "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastStaticLine": "A dead cell. One appears every third signal.",
+  "@afterHoursCastStaticLine": {
+    "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBrick": "Power Brick",
+  "@afterHoursCastBrick": {
+    "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBrickLine": "A 2 by 2 block every fifth signal.",
+  "@afterHoursCastBrickLine": {
+    "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastGhost": "Ghost",
+  "@afterHoursCastGhost": {
+    "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastGhostLine": "Five seconds of passing through everything but the edge.",
+  "@afterHoursCastGhostLine": {
+    "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSnip": "Snip",
+  "@afterHoursCastSnip": {
+    "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSnipLine": "Cuts the cable in half for bonus points.",
+  "@afterHoursCastSnipLine": {
+    "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSignal": "Signal",
+  "@afterHoursCastSignal": {
+    "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSignalLine": "Points, and two more segments.",
+  "@afterHoursCastSignalLine": {
+    "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastShelfCat": "Shelf Cat",
+  "@afterHoursCastShelfCat": {
+    "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastShelfCatLine": "Bats a case as it comes in, so that one slides faster.",
+  "@afterHoursCastShelfCatLine": {
+    "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBluCase": "Blu-ray Case",
+  "@afterHoursCastBluCase": {
+    "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBluCaseLine": "A title from your library. The overhang gets trimmed off.",
+  "@afterHoursCastBluCaseLine": {
+    "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSteelbook": "Steelbook",
+  "@afterHoursCastSteelbook": {
+    "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSteelbookLine": "Every tenth case. Slides much faster.",
+  "@afterHoursCastSteelbookLine": {
+    "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPerfect": "Perfect Drop",
+  "@afterHoursCastPerfect": {
+    "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastPerfectLine": "Land it dead on and the stack grows a little wider.",
+  "@afterHoursCastPerfectLine": {
+    "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBoxSet": "Box Set",
+  "@afterHoursCastBoxSet": {
+    "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBoxSetLine": "Three perfect drops in a row grow it a lot wider.",
+  "@afterHoursCastBoxSetLine": {
+    "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastDeadPixel": "Dead Pixel",
+  "@afterHoursCastDeadPixel": {
+    "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastDeadPixelLine": "Falls from cleared blocks. Catching it shrinks the scrubber.",
+  "@afterHoursCastDeadPixelLine": {
+    "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastMacroblock": "Macroblock",
+  "@afterHoursCastMacroblock": {
+    "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMacroblockLine": "One hit clears it.",
+  "@afterHoursCastMacroblockLine": {
+    "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastKeyframe": "Keyframe",
+  "@afterHoursCastKeyframe": {
+    "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastKeyframeLine": "Takes three hits and drops a powerup.",
+  "@afterHoursCastKeyframeLine": {
+    "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastHdrLine": "A scrubber twice as wide for eight seconds.",
+  "@afterHoursCastHdrLine": {
+    "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBufferNet": "Buffer",
+  "@afterHoursCastBufferNet": {
+    "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBufferNetLine": "A net under the scrubber that saves one miss.",
+  "@afterHoursCastBufferNetLine": {
+    "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursBufferRunCardTouch": "Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.",
+  "@afterHoursBufferRunCardTouch": {
+    "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+  },
+  "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
+  "@afterHoursPixelPurgeCardRemote": {
+    "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
   }
 }

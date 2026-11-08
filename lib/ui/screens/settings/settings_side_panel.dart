@@ -69,6 +69,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../preference/seerr_row_config.dart';
 import '../../navigation/destinations.dart';
 import '../admin/admin_nav.dart';
+import '../after_hours/after_hours_trigger.dart';
 import '../setup/setup_wizard_gate.dart';
 import '../setup/setup_wizard_previews.dart' show SetupPreviewData;
 import '../../widgets/adaptive/adaptive_dialog.dart';
