@@ -36,7 +36,7 @@ Every Android command takes a `--flavor`, and the per-platform build commands ar
 2. Make your change and test it.
 3. Open a pull request against `main` and fill in the template. It is short, and the Platform and Type of Change checkboxes drive the labels that triage runs on, so tick the ones that apply.
 4. Include screenshots or a recording for anything visual, and a log for anything playback related. See [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs).
-5. CI runs the analyzer and the tests as "Checks", which reports in about 15 minutes. The platform builds run in the merge queue, or on the pull request for any `ci:` label it has (see below). A bot comment on the pull request shows how each part went and updates itself as each one finishes and with every push. Check it before asking for a review.
+5. CI runs the analyzer and the tests as "Checks", which reports in about 15 minutes, and builds every platform separately, which takes longer. A bot comment on the pull request shows how each part went and updates itself as each one finishes and with every push. Check it before asking for a review.
 
 Reviews happen in the pull request. If something is asked of you, reply there, even if it's to disagree.
 
