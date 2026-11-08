@@ -25,6 +25,7 @@ class MainFlutterWindow: NSWindow {
   private var gameChannel: NativeGameChannel?
   private var aetherVideoChannel: AetherVideoChannel?
   private var themeMusicChannel: AppleTvThemeMusicChannel?
+  private var arcadeSoundChannel: AppleArcadeSoundChannel?
   private var previewChannel: AppleTvPreviewChannel?
   // Retained so the security-scoped access stays open for the session.
   private var accessedDownloadURL: URL?
@@ -208,6 +209,7 @@ class MainFlutterWindow: NSWindow {
     // Trailers, row previews and theme music, on the same channels the other
     // Apple platforms use.
     self.themeMusicChannel = AppleTvThemeMusicChannel(messenger: messenger)
+    self.arcadeSoundChannel = AppleArcadeSoundChannel(messenger: messenger)
     let previewRegistrar = flutterViewController.registrar(forPlugin: "moonfin_appletv_preview")
     self.previewChannel = AppleTvPreviewChannel(
       messenger: messenger, textures: previewRegistrar.textures)

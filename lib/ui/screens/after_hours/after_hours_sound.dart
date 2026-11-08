@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit/media_kit.dart';
@@ -21,9 +22,12 @@ class AfterHoursSound {
     defaultValue: true,
   );
 
-  /// Apple builds leave libmpv out, so the arcade is silent there.
-  static bool get _supported =>
-      !PlatformDetection.isApple && !PlatformDetection.isAppleTV;
+  /// Apple builds leave libmpv out, so there the clips play through
+  /// AVAudioPlayer on a native channel instead.
+  static bool get _apple =>
+      PlatformDetection.isApple || PlatformDetection.isAppleTV;
+  static const _native = MethodChannel('moonfin/arcade_sound');
+  static const _musicAsset = 'assets/after_hours/menu-loop.mp3';
 
   bool get enabled => _enabled;
   bool _enabled = true;
@@ -32,6 +36,8 @@ class AfterHoursSound {
   bool _musicOn = false;
   int _users = 0;
   Timer? _unload;
+  bool _nativeFx = false;
+  bool _nativeMusic = false;
 
   PreferenceStore? get _store => GetIt.instance.maybeGet<PreferenceStore>();
 
@@ -41,22 +47,57 @@ class AfterHoursSound {
     _unload?.cancel();
     if (_users > 1) return;
     _enabled = _store?.get(_enabledPref) ?? true;
-    if (!_supported || _fx.isNotEmpty) return;
+    if (_apple) {
+      if (_nativeFx) return;
+      _nativeFx = true;
+      for (final s in ArcadeSound.values) {
+        unawaited(_nativeLoad(s.name, _fxAsset(s)));
+      }
+      return;
+    }
+    if (_fx.isNotEmpty) return;
     try {
       for (final s in ArcadeSound.values) {
         final player = _create();
         _fx[s] = player;
-        unawaited(
-          player.open(
-            Media('asset:///assets/after_hours/${s.file}.wav'),
-            play: false,
-          ),
-        );
+        unawaited(player.open(Media('asset:///${_fxAsset(s)}'), play: false));
       }
     } catch (e) {
       // Without libmpv the arcade still plays, only silently.
       debugPrint('[AfterHours] sound unavailable: $e');
     }
+  }
+
+  static String _fxAsset(ArcadeSound s) => 'assets/after_hours/${s.file}.wav';
+
+  Future<bool> _nativeLoad(
+    String id,
+    String asset, {
+    bool loop = false,
+    double volume = 1,
+  }) async {
+    try {
+      final bytes = await rootBundle.load(asset);
+      return await _native.invokeMethod<bool>('load', {
+            'id': id,
+            'data': bytes.buffer.asUint8List(
+              bytes.offsetInBytes,
+              bytes.lengthInBytes,
+            ),
+            'loop': loop,
+            'volume': volume,
+          }) ??
+          false;
+    } catch (e) {
+      debugPrint('[AfterHours] sound unavailable: $e');
+      return false;
+    }
+  }
+
+  void _nativeCall(String method, String id) {
+    unawaited(
+      _native.invokeMethod<void>(method, {'id': id}).catchError((_) {}),
+    );
   }
 
   Player _create() => MpvPlayerRegistry.instance.create(
@@ -74,13 +115,23 @@ class AfterHoursSound {
     _music = null;
     _musicOn = false;
     if (music != null) unawaited(MpvPlayerRegistry.instance.dispose(music));
-    if (_fx.isNotEmpty) {
+    if (_nativeMusic) {
+      _nativeMusic = false;
+      _nativeCall('unload', 'music');
+    }
+    if (_fx.isNotEmpty || _nativeFx) {
       _unload = Timer(const Duration(seconds: 30), _disposeEffects);
     }
   }
 
   void _disposeEffects() {
     if (_users > 0) return;
+    if (_nativeFx) {
+      _nativeFx = false;
+      for (final s in ArcadeSound.values) {
+        _nativeCall('unload', s.name);
+      }
+    }
     for (final p in _fx.values) {
       unawaited(MpvPlayerRegistry.instance.dispose(p));
     }
@@ -89,6 +140,10 @@ class AfterHoursSound {
 
   void play(ArcadeSound s) {
     if (!_enabled) return;
+    if (_nativeFx) {
+      _nativeCall('play', s.name);
+      return;
+    }
     final p = _fx[s];
     if (p == null) return;
     unawaited(_restart(p));
@@ -108,9 +163,14 @@ class AfterHoursSound {
     _applyMusic();
   }
 
+  bool get _wantMusic => _musicOn && _enabled && _users > 0;
+
   void _applyMusic() {
-    if (!_supported) return;
-    final want = _musicOn && _enabled && _users > 0;
+    final want = _wantMusic;
+    if (_apple) {
+      _applyNativeMusic(want);
+      return;
+    }
     var player = _music;
     if (want && player == null) {
       if (_fx.isEmpty) return;
@@ -119,13 +179,28 @@ class AfterHoursSound {
       // of reopening it, which keeps the four bars tight.
       unawaited(player.setPlaylistMode(PlaylistMode.single));
       unawaited(player.setVolume(70));
-      unawaited(
-        player.open(Media('asset:///assets/after_hours/menu-loop.mp3')),
-      );
+      unawaited(player.open(Media('asset:///$_musicAsset')));
       return;
     }
     if (player == null) return;
     unawaited(want ? player.play() : player.pause());
+  }
+
+  void _applyNativeMusic(bool want) {
+    if (want && !_nativeMusic) {
+      if (!_nativeFx) return;
+      _nativeMusic = true;
+      unawaited(
+        _nativeLoad('music', _musicAsset, loop: true, volume: .7).then((ok) {
+          if (ok && _nativeMusic && _wantMusic) {
+            _nativeCall('resume', 'music');
+          }
+        }),
+      );
+      return;
+    }
+    if (!_nativeMusic) return;
+    _nativeCall(want ? 'resume' : 'pause', 'music');
   }
 
   Future<void> setEnabled(bool on) async {

@@ -42,6 +42,7 @@
 		A28B0984853CBF7759E55954 /* NowPlayingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A71870DB153929F6FDDC901 /* NowPlayingController.swift */; };
 		AD10AD10AD10AD10AD100001 /* AppleTvAudioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */; };
 		AD10AD10AD10AD10AD100003 /* AppleTvThemeMusicChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100004 /* AppleTvThemeMusicChannel.swift */; };
+		A7C5D1000000000000000006 /* AppleArcadeSoundChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C5D1000000000000000005 /* AppleArcadeSoundChannel.swift */; };
 		BC59339B180C88464B1212F8 /* SubtitleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A0477050CD294B7CB8C754 /* SubtitleOverlay.swift */; };
 		C1F1E8188A6812EC3C6A9EF1 /* AppleTvGameInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A868E735744FD641776321 /* AppleTvGameInputViewController.swift */; };
 		CAE8045C3AB63C66024FA6B7 /* AetherVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78635028C38C060155519D22 /* AetherVideoChannel.swift */; };
@@ -141,6 +142,7 @@
 		ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
 		AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvAudioChannel.swift; sourceTree = "<group>"; };
 		AD10AD10AD10AD10AD100004 /* AppleTvThemeMusicChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvThemeMusicChannel.swift; sourceTree = "<group>"; };
+		A7C5D1000000000000000005 /* AppleArcadeSoundChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleArcadeSoundChannel.swift; sourceTree = "<group>"; };
 		AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoonfinTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C96906304636AD16C64D1AC9 /* PlayerTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlayerTypes.swift; path = Aether/PlayerTypes.swift; sourceTree = "<group>"; };
 		CD0CCE08AF23DCECD17895AC /* GameSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				A0D05FC70CE4F8BD2EC3962C /* AppleTvSystemChannel.swift */,
 				AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */,
 				AD10AD10AD10AD10AD100004 /* AppleTvThemeMusicChannel.swift */,
+				A7C5D1000000000000000005 /* AppleArcadeSoundChannel.swift */,
 				4790983D8AB5249022D779CA /* Games */,
 			);
 			path = Runner;
@@ -575,6 +578,7 @@
 				6E8429C73DFB8688BD40C60F /* AppleTvSystemChannel.swift in Sources */,
 				AD10AD10AD10AD10AD100001 /* AppleTvAudioChannel.swift in Sources */,
 				AD10AD10AD10AD10AD100003 /* AppleTvThemeMusicChannel.swift in Sources */,
+				A7C5D1000000000000000006 /* AppleArcadeSoundChannel.swift in Sources */,
 				0BB4A7E017A41C2DC92AA740 /* AppleTvGameChannel.swift in Sources */,
 				C1F1E8188A6812EC3C6A9EF1 /* AppleTvGameInputViewController.swift in Sources */,
 				1DFED451953EAD7F2A8939DF /* GameAudioOutput.swift in Sources */,
