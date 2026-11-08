@@ -916,14 +916,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }();
   }
 
-  List<Map<String, dynamic>> _castPeople(dynamic item) {
+  List<Map<String, dynamic>> _castPeople(
+    dynamic item, {
+    bool resolveCast = true,
+  }) {
     final imageApi = _clientForQueueItem(item)?.imageApi;
     if (imageApi == null) return const [];
     final itemId = _itemIdForQueueItem(item);
     if (itemId != null && _castCache.containsKey(itemId)) {
       return _castCache[itemId]!;
     }
-    if (item is AggregatedItem && item.type == 'Episode') {
+    if (resolveCast && item is AggregatedItem && item.type == 'Episode') {
       _resolveCastAsync(item);
     }
     final raw = _rawDataForQueueItem(item);
@@ -964,7 +967,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         // Leave uncached on error so a subsequent playback event can retry
       } finally {
         _castResolving = null;
-        if (mounted) _pushMetadata();
+        if (mounted) _pushMetadata(skipCastResolutionForId: itemId);
       }
     }();
   }
@@ -1230,12 +1233,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     return options;
   }
 
-  void _pushMetadata() {
+  void _pushMetadata({String? skipCastResolutionForId}) {
     final manager = _manager;
     final backend = _backend;
     if (manager == null || backend == null) return;
 
     final item = manager.queueService.currentItem;
+    final resolveCast =
+        skipCastResolutionForId == null ||
+        _itemIdForQueueItem(item) != skipCastResolutionForId;
     final chapters = _currentChapters();
 
     String topTitle = '';
@@ -1354,7 +1360,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       ).playbackInfoDroppedFrames,
       trickplay: _trickplayPayload(item, manager),
       hasCast: _hasCastCrew(item),
-      castPeople: _castPeople(item),
+      castPeople: _castPeople(item, resolveCast: resolveCast),
       pauseMeta: _pauseMetaPayload(item),
       selectedBitrateMbps: manager.maxBitrateOverrideMbps ?? -1,
       canFavorite: _canFavorite(item),
@@ -1366,7 +1372,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       transportDocked: _transportDocked(),
     );
 
-    _resolveCastAsync(item);
+    if (resolveCast) _resolveCastAsync(item);
   }
 
   int _prefInt(Preference<int> pref, {required int defaultValue}) {
