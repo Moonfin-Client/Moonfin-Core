@@ -515,7 +515,10 @@ def main():
             result['own_tests'] = 'ran' if own else 'none' if not tests else 'too_many'
             own_hits, result['tests_passed'], result['tests_failed'] = own_tests_stage(
                 root, runner, own, lib_files, packages)
-            if not runner.with_coverage:
+            # Stage 1 can have nothing to run, when only part files changed
+            # and no tests. That's no crash: they show as unloaded and stage
+            # 2 measures them.
+            if runner.runs and not runner.with_coverage:
                 result.update(status='error', files=[], lines=0, lines_run=0)
                 write(args.out, result)
                 sys.exit('error: the test run wrote no coverage')
