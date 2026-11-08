@@ -374,51 +374,69 @@ jobs:
             } else if (prTestStatus === 'skipped') {
               prTestLines.push(`**PR's tests** coverage skipped, ${plural(clamp(prTests.test_files), 'test file', 'test files')} changed`);
             } else if (prTestStatus === 'ok') {
-              const run = clamp(prTests.lines_run);
+              const run = Math.min(clamp(prTests.lines_run), clamp(prTests.lines));
               const total = clamp(prTests.lines);
               const failedTests = clamp(prTests.tests_failed);
               const files = asList(prTests.files).filter(f => f && typeof f === 'object').slice(0, 15);
               const unloaded = clamp(prTests.unloaded);
               const notLoaded = plural(unloaded, 'changed file', 'changed files');
-              // Measurable, because Dart only records lines that make a call
-              // or create an object. A bare return on its own line has no
-              // record, so "all" can't promise every branch ran.
+              // 🟢 from 75% of the measurable changed lines, 🔴 under 25%.
+              // The headline only grades 5 lines or more, since 1 of 2 says
+              // little. Measurable, because Dart only records lines that make
+              // a call or create an object: a bare return on its own line has
+              // no record, so "all" can't promise every branch ran.
+              const grade = (r, n) => r >= n * 0.75 ? '🟢' : r < n * 0.25 ? '🔴' : '🟡';
               let line;
               if (total === 0) {
                 line = unloaded > 0
-                  ? `**PR's tests** 🧪 didn't load ${notLoaded}`
+                  ? `**PR's tests** 🔴 didn't load ${notLoaded}`
                   : "**PR's tests** 🧪 no measurable changed lines";
               } else {
+                const mark = total >= 5 ? grade(run, total) : '🧪';
+                const pct = Math.floor((100 * run) / total);
                 line = run === total
-                  ? `**PR's tests** 🧪 ran all ${plural(total, 'measurable changed line', 'measurable changed lines')}`
-                  : `**PR's tests** 🧪 ran ${run} of ${plural(total, 'measurable changed line', 'measurable changed lines')}`;
+                  ? `**PR's tests** ${mark} ran all ${plural(total, 'measurable changed line', 'measurable changed lines')}`
+                  : `**PR's tests** ${mark} ran ${run} of ${plural(total, 'measurable changed line', 'measurable changed lines')} (${pct}%)`;
                 if (unloaded > 0) line += `, and didn't load ${notLoaded}`;
               }
               if (failedTests > 0) line += ` · ${failedTests} of its tests failed here, so this may be low`;
-              const details = [];
-              // A malformed range is dropped rather than shown.
-              const range = (r) => {
-                const [a, b] = asList(r);
-                if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b) || a < 1 || b < a) return null;
-                return a === b ? `${a}` : `${a}-${b}`;
-              };
-              for (const f of files) {
-                if (f.loaded === false) {
-                  details.push(`- \`${escapeText(f.file)}\` not loaded by these tests (${plural(clamp(f.changed), 'changed line', 'changed lines')})`);
-                } else {
-                  const gaps = asList(f.not_run).slice(0, 10).map(range).filter(Boolean);
-                  const more = clamp(f.more_ranges) > 0 ? ` and ${clamp(f.more_ranges)} more` : '';
-                  const where = gaps.length > 0 ? `, not run: ${gaps.join(', ')}${more}` : '';
-                  details.push(`- \`${escapeText(f.file)}\` ${clamp(f.run)} of ${clamp(f.lines)}${where}`);
-                }
-              }
-              if (clamp(prTests.more_files) > 0) details.push(`- and ${plural(clamp(prTests.more_files), 'more file', 'more files')}`);
               prTestLines.push(line);
-              if (details.length > 0) {
-                details.push('', `From ${plural(clamp(prTests.test_files), 'test file', 'test files')} this pull request added or changed. ` +
-                  'Other tests may still run these lines, this only measures its own. ' +
-                  'Dart only measures lines that make a call or create an object.');
-                prTestLines.push('', "<details><summary>Changed lines the PR's tests didn't run</summary>", '', ...details, '', '</details>');
+
+              // The worst files, visible rather than folded away. The exact
+              // lines are marked in Files changed, so the comment doesn't list
+              // line numbers.
+              const gapsLeft = files.some(f => f.loaded === false || clamp(f.run) < clamp(f.lines));
+              if (gapsLeft) {
+                // The last two parts of the path, so it stays short but two
+                // files with the same name in different folders differ.
+                const shortName = (path) => String(path ?? '').split('/').slice(-2).join('/');
+                const bar = (r, n) => {
+                  const filled = r >= n ? 10 : r <= 0 ? 0 : Math.min(9, Math.max(1, Math.round((10 * r) / n)));
+                  return '█'.repeat(filled) + '░'.repeat(10 - filled);
+                };
+                const shown = files.slice(0, 5);
+                const rows = shown.map(f => {
+                  const name = `\`${escapeText(shortName(f.file))}\``;
+                  if (f.loaded === false) {
+                    return `| 🔴 | ${name} | not loaded, ${plural(clamp(f.changed), 'changed line', 'changed lines')} |`;
+                  }
+                  const n = clamp(f.lines);
+                  const r = Math.min(clamp(f.run), n);
+                  return `| ${grade(r, n)} | ${name} | \`${bar(r, n)}\` ${r} of ${n} |`;
+                });
+                // The files not shown, as one row with what's left of the totals.
+                const rest = files.length - shown.length + clamp(prTests.more_files);
+                if (rest > 0) {
+                  const shownLoaded = shown.filter(f => f.loaded !== false);
+                  const restLines = Math.max(0, total - shownLoaded.reduce((n, f) => n + clamp(f.lines), 0));
+                  const restRun = Math.min(restLines, Math.max(0, run - shownLoaded.reduce((n, f) => n + clamp(f.run), 0)));
+                  const sum = restLines > 0 ? `\`${bar(restRun, restLines)}\` ${restRun} of ${restLines}` : '';
+                  rows.push(`| ${restLines > 0 ? grade(restRun, restLines) : ''} | and ${plural(rest, 'more file', 'more files')} | ${sum} |`);
+                }
+                const annotated = clamp(prTests.annotated);
+                const where = annotated > 0 ? ' The biggest stretches they missed are marked in Files changed.' : '';
+                prTestLines.push('', "| | File | Lines the PR's tests ran |", '|---|---|---|', ...rows, '',
+                  `<sub>Only the tests this pull request added or changed are counted, so older tests may still cover a line.${where}</sub>`);
               }
               const webOnly = asList(prTests.web_only).slice(0, 10).map(p => `\`${escapeText(p)}\``);
               if (webOnly.length > 0) prTestLines.push('', `Web only, so not measured: ${webOnly.join(', ')}`);

@@ -30,6 +30,7 @@ from touched_lines_diagnostics import changed_ranges, git, repo_root, workflow_p
 MAX_TEST_FILES = 25
 MAX_FILES = 15
 MAX_RANGES = 10
+MAX_ANNOTATIONS = 10
 IMPORTS_TEST = 'pr_tests_coverage_imports_test.dart'
 IMPORTS_TEST_NAME = 'pr_tests_coverage loads the changed files'
 
@@ -224,12 +225,68 @@ def not_run_ranges(executable, hits, hunks):
     return ranges
 
 
+def line_map(path, ref, root):
+    """Maps a line of the checked-out file to the same line in REF's copy, or
+    None for a line the two copies don't share. CI checks out the merge of the
+    pull request into its base, and Files changed shows the pull request's
+    head, so a line moves when the base changed the file above it."""
+    out = git('diff', '-U0', '--no-color', '--no-ext-diff', 'HEAD', ref, '--', path, cwd=root)
+    hunks = [(int(m.group(1)), int(m.group(2) or 1), int(m.group(4) or 1))
+             for m in re.finditer(r'^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@', out, re.M)]
+
+    def to_ref(n):
+        shift = 0
+        for start, old, new in hunks:
+            if old == 0:
+                # Lines inserted after line start: only later lines move.
+                if n > start:
+                    shift += new
+            elif n >= start + old:
+                shift += new - old
+            elif n >= start:
+                return None
+        return n + shift
+    return to_ref
+
+
+def annotate(gaps_by_file, ref, root):
+    """Prints a notice annotation for each of the biggest ranges of changed
+    lines the tests didn't run, so they show on those lines in Files changed.
+    GitHub keeps 10 notices per step. A range whose lines the base also
+    changed is left out rather than marked in the wrong place. Returns how
+    many it printed."""
+    ranges = sorted(((last - first + 1, path, first, last)
+                     for path, gaps in gaps_by_file.items() for first, last in gaps),
+                    key=lambda r: (-r[0], r[1], r[2]))
+    maps, printed = {}, 0
+    for _, path, first, last in ranges:
+        if printed == MAX_ANNOTATIONS:
+            break
+        to_ref = maps.setdefault(path, line_map(path, ref, root))
+        a, b = to_ref(first), to_ref(last)
+        if a is None or b is None or b - a != last - first:
+            continue
+        # Workflow command properties escape these characters, the message
+        # only the first three.
+        prop = path.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A') \
+            .replace(':', '%3A').replace(',', '%2C')
+        where = f'Line {a}' if a == b else f'Lines {a}-{b}'
+        print(f"::notice file={prop},line={a},endLine={b},title=Not run by this PR's tests::"
+              f"{where} changed in this pull request, and none of the tests it added or changed ran them.")
+        printed += 1
+    return printed
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('base', help='base ref, e.g. upstream/main or origin/main')
     parser.add_argument('head', nargs='?', default='HEAD', help='head ref (default HEAD)')
     parser.add_argument('--out', help='write the JSON result to this file')
+    parser.add_argument('--annotate', metavar='REF',
+                        help="mark the biggest ranges of lines not run as GitHub annotations, "
+                             "at their line numbers in REF (the pull request's head, which is "
+                             "what Files changed shows)")
     args = parser.parse_args()
 
     root = repo_root()
@@ -255,7 +312,7 @@ def main():
     else:
         hits, result['tests_passed'], result['tests_failed'] = run_tests(
             root, tests, sorted(ranges), local_packages(root))
-        files = []
+        files, gaps_by_file = [], {}
         for path, rs in ranges.items():
             changed = sorted({n for first, last in rs for n in range(first, last + 1)})
             if path not in hits:
@@ -266,20 +323,22 @@ def main():
             if not executable:
                 continue
             run = sum(1 for n in executable if hits[path][n] > 0)
-            gaps = not_run_ranges(executable, hits[path], rs)
+            gaps = gaps_by_file[path] = not_run_ranges(executable, hits[path], rs)
             files.append({'file': path, 'loaded': True, 'changed': len(changed),
                           'run': run, 'lines': len(executable),
                           'not_run': [list(g) for g in gaps[:MAX_RANGES]],
                           'more_ranges': max(0, len(gaps) - MAX_RANGES)})
             result['lines_run'] += run
             result['lines'] += len(executable)
-        # Most changed lines not run first. A file the tests never loaded
-        # counts all its changed lines, since none of them could have run.
-        files.sort(key=lambda f: (-(f['lines'] - f['run'] if f['loaded'] else f['changed']), f['file']))
-        result['files'] = [f for f in files if not f['loaded'] or f['run'] < f['lines']][:MAX_FILES]
-        result['more_files'] = max(0, sum(1 for f in files if not f['loaded'] or f['run'] < f['lines'])
-                                   - len(result['files']))
+        # Biggest part of the change first, so the top of the list is where
+        # most of it is, however well it's tested. A file the tests never
+        # loaded counts its changed lines, as it has no measurable ones.
+        files.sort(key=lambda f: (-(f['lines'] if f['loaded'] else f['changed']), f['file']))
+        result['files'] = files[:MAX_FILES]
+        result['more_files'] = max(0, len(files) - MAX_FILES)
         result['unloaded'] = sum(1 for f in files if not f['loaded'])
+        if args.annotate:
+            result['annotated'] = annotate(gaps_by_file, args.annotate, root)
 
     if args.out:
         with open(args.out, 'w') as f:
@@ -292,7 +351,7 @@ def main():
         for f in result['files']:
             if f['loaded']:
                 gaps = ', '.join(f'{a}-{b}' if a != b else str(a) for a, b in f['not_run'])
-                print(f"  {f['file']} {f['run']} of {f['lines']}, not run: {gaps}")
+                print(f"  {f['file']} {f['run']} of {f['lines']}" + (f', not run: {gaps}' if gaps else ''))
             else:
                 print(f"  {f['file']} not loaded by these tests ({f['changed']} changed lines)")
     for p in web_only:

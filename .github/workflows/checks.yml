@@ -467,13 +467,18 @@ jobs:
         timeout-minutes: 10
         env:
           BASE: origin/${{ github.base_ref }}
+          # The lines it didn't run are marked as annotations at their place
+          # in Files changed, which shows the pull request's head rather than
+          # the merge this job checked out.
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
         # The script only writes its file when it finishes, so the error left
         # here first is what the comment sees if it crashes or times out. A
         # missing file means a branch from before this step, and shows nothing.
         run: |
           mkdir -p /tmp/delta-results
           echo '{"status": "error"}' > /tmp/delta-results/pr-tests-coverage.json
-          python3 scripts/ci/pr_tests_coverage.py "$BASE" HEAD --out /tmp/delta-results/pr-tests-coverage.json
+          python3 scripts/ci/pr_tests_coverage.py "$BASE" HEAD --annotate "$PR_HEAD" \
+            --out /tmp/delta-results/pr-tests-coverage.json
 
       - uses: actions/upload-artifact@v6
         if: always()
