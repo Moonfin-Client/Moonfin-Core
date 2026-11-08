@@ -3857,8 +3857,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               _prefs.get(UserPreferences.skipBackLength),
               event,
             );
-            _seekRelative(-step, showControls: false);
-            _showControls(focusSeekbar: true);
+            _tvHiddenControlsSeek(-step);
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
@@ -3871,8 +3870,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               _prefs.get(UserPreferences.skipForwardLength),
               event,
             );
-            _seekRelative(step, showControls: false);
-            _showControls(focusSeekbar: true);
+            _tvHiddenControlsSeek(step);
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
@@ -6725,6 +6723,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _keyboardSeek(int ms) {
     if (_controlsVisible) {
       _seekRelative(ms);
+    } else {
+      _skipWithIndicator(ms);
+    }
+  }
+
+  // With the setting off, a D-pad seek leaves the controls down so they don't
+  // cover the subtitles, and only shows how far it went.
+  void _tvHiddenControlsSeek(int ms) {
+    if (_prefs.get(UserPreferences.showControlsOnSeek)) {
+      _seekRelative(ms, showControls: false);
+      _showControls(focusSeekbar: true);
     } else {
       _skipWithIndicator(ms);
     }

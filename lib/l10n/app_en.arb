@@ -4900,6 +4900,14 @@
   "@showChapterMarkersDescription": {
     "description": "Description for the chapter marks setting"
   },
+  "showControlsOnSeek": "Show Controls When Seeking",
+  "@showControlsOnSeek": {
+    "description": "TV setting label for bringing up the player controls when Left or Right seeks with the controls hidden"
+  },
+  "showControlsOnSeekDescription": "When off, Left and Right only skip and show how far, keeping subtitles in view",
+  "@showControlsOnSeekDescription": {
+    "description": "Description for the show controls when seeking setting"
+  },
   "osdLockButton": "OSD Lock Button",
   "@osdLockButton": {
     "description": "Setting for OSD lock button"

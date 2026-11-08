@@ -1143,6 +1143,65 @@ void main() {
     });
   });
 
+  group('on TV, Right with the controls hidden', () {
+    Future<void> playWithControlsHidden(WidgetTester tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: const [Locale('en')],
+          home: const VideoPlayerScreen(),
+        ),
+      );
+      manager.state.setDuration(const Duration(minutes: 10));
+      manager.state.setPlaying(true);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 10));
+      expect(find.byType(Slider), findsNothing);
+    }
+
+    testWidgets('seeks and brings the controls up by default', (tester) async {
+      await playWithControlsHidden(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 30)]);
+      expect(find.byType(Slider), findsOneWidget);
+      expect(find.text('30 seconds'), findsNothing);
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('only seeks with the setting off, and Up still opens them', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.showControlsOnSeek,
+        false,
+      );
+      await playWithControlsHidden(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 30)]);
+      expect(find.byType(Slider), findsNothing);
+      expect(find.text('30 seconds'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('30 seconds'), findsNothing);
+      expect(find.byType(Slider), findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pump();
+      expect(find.byType(Slider), findsOneWidget);
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   // Issue #1335: S, or Enter while the skip button shows, skips the intro.
   for (final key in [LogicalKeyboardKey.keyS, LogicalKeyboardKey.enter]) {
     testWidgets('${key.keyLabel} skips the intro on offer', (tester) async {

@@ -325,6 +325,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('nextUpTimeout', UserPreferences.nextUpTimeout, SyncCodec.integer),
   SyncedField('osdLockEnabled', UserPreferences.osdLockEnabled, SyncCodec.boolean),
   SyncedField('showChapterMarkers', UserPreferences.showChapterMarkers, SyncCodec.boolean),
+  SyncedField('showControlsOnSeek', UserPreferences.showControlsOnSeek, SyncCodec.boolean),
   SyncedField('playerSwipeGestures', UserPreferences.playerSwipeGestures, SyncCodec.boolean),
   SyncedField('detailButtonOrderTv', UserPreferences.detailButtonOrderTv, SyncCodec.csvList),
   SyncedField('detailButtonOrderMobile', UserPreferences.detailButtonOrderMobile, SyncCodec.csvList),

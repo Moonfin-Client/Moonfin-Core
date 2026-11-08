@@ -535,6 +535,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_watch_party_chat_overlay',
     'pref_watch_party_service',
     'showChapterMarkers',
+    'showControlsOnSeek',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
     'since_you_watched_2_enabled',
@@ -3049,6 +3050,13 @@ class UserPreferences extends ChangeNotifier {
   static final showChapterMarkers = Preference(
     key: 'showChapterMarkers',
     defaultValue: false,
+  );
+
+  /// On TV, whether Left or Right with the controls hidden brings them up.
+  /// Off, the press only seeks and shows how far it went.
+  static final showControlsOnSeek = Preference(
+    key: 'showControlsOnSeek',
+    defaultValue: true,
   );
   static final playerSwipeGestures = Preference(
     key: 'playerSwipeGestures',

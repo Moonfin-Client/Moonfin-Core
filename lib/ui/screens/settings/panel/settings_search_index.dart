@@ -1667,6 +1667,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showChapterMarkersDescription,
       keywords: ['seek bar', 'seekbar', 'progress bar', 'chapters', 'marks'],
     ),
+    if (PlatformDetection.isTV)
+      video.leaf(
+        'showControlsOnSeek',
+        l10n.showControlsOnSeek,
+        subtitle: l10n.showControlsOnSeekDescription,
+        keywords: ['osd', 'skip', 'd-pad', 'subtitles', 'player ui'],
+      ),
     if (PlatformDetection.useMobileUi) ...[
       video.leaf(
         'osdLockEnabled',

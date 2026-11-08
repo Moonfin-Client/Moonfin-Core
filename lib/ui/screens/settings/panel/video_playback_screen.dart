@@ -201,6 +201,13 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 subtitle: l10n.showChapterMarkersDescription,
                 icon: Icons.straighten,
               ),
+              if (PlatformDetection.isTV)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showControlsOnSeek,
+                  title: l10n.showControlsOnSeek,
+                  subtitle: l10n.showControlsOnSeekDescription,
+                  icon: Icons.fast_forward_outlined,
+                ),
               if (PlatformDetection.useMobileUi) ...[
                 SwitchPreferenceTile(
                   preference: UserPreferences.osdLockEnabled,

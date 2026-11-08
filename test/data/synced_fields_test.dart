@@ -293,6 +293,7 @@ void main() {
     'showBookDiscoverTab',
     'bookFoldersAsSeries',
     'showChapterMarkers',
+    'showControlsOnSeek',
     'showDescriptionOnPause',
     'showDownloadsButton',
     'showFavoritesButton',
