@@ -9,7 +9,6 @@ const _gb = 1024 * 1024 * 1024;
 /// 1.4 GB of 15.2 GB, about 9%.
 const _summary = SeerrDownloadSummary(
   fraction: 0.09,
-  isImporting: false,
   totalBytes: 15 * _gb,
   downloadedBytes: 1 * _gb,
 );
@@ -93,15 +92,18 @@ void main() {
     expect(bar.height, greaterThanOrEqualTo(6));
   });
 
-  testWidgets('importing says so instead of showing a stuck 100%', (
+  // A blocked import sits here with no end, so it can't claim to be
+  // importing.
+  testWidgets('a finished download says it is waiting for the import', (
     tester,
   ) async {
     await tester.pumpWidget(
       _host(
-        width: 320,
+        // The test font is about twice as wide as a real one.
+        width: 600,
         summary: const SeerrDownloadSummary(
           fraction: 1,
-          isImporting: true,
+          state: SeerrDownloadState.waitingForImport,
           totalBytes: 15 * _gb,
           downloadedBytes: 15 * _gb,
         ),
@@ -109,18 +111,187 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Importing'), findsOneWidget);
+    expect(find.text('Downloaded, waiting for import'), findsOneWidget);
     expect(find.text('100%'), findsNothing);
+  });
+
+  testWidgets('large text: says just Downloaded when the phrase would cut', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: _host(
+          width: 600,
+          summary: const SeerrDownloadSummary(
+            fraction: 1,
+            state: SeerrDownloadState.waitingForImport,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Downloaded'), findsOneWidget);
+  });
+
+  testWidgets('a tile says just Downloaded rather than cutting the phrase', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        width: 111,
+        summary: const SeerrDownloadSummary(
+          fraction: 1,
+          state: SeerrDownloadState.waitingForImport,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Downloaded'), findsOneWidget);
+  });
+
+  testWidgets('wide: shows the time left after the percentage', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        width: 600,
+        summary: const SeerrDownloadSummary(
+          fraction: 0.09,
+          timeLeft: Duration(hours: 1, minutes: 5),
+          totalBytes: 15 * _gb,
+          downloadedBytes: 1 * _gb,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('9% · 1h 5m left'), findsOneWidget);
+  });
+
+  // The pair below: 12 minutes fits at normal size, so only the text scale
+  // can push it out.
+  testWidgets('normal text: a short time left fits at 320', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        width: 320,
+        summary: const SeerrDownloadSummary(
+          fraction: 0.09,
+          timeLeft: Duration(minutes: 12),
+          totalBytes: 15 * _gb,
+          downloadedBytes: 1 * _gb,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('9% · 12m left'), findsOneWidget);
+  });
+
+  testWidgets('large text: drops the time left instead of overflowing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: _host(
+          width: 320,
+          summary: const SeerrDownloadSummary(
+            fraction: 0.09,
+            timeLeft: Duration(minutes: 12),
+            totalBytes: 15 * _gb,
+            downloadedBytes: 1 * _gb,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('left'), findsNothing);
+    expect(find.text('9%'), findsOneWidget);
+  });
+
+  testWidgets('medium: drops the time left before the sizes', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        width: 200,
+        summary: const SeerrDownloadSummary(
+          fraction: 0.09,
+          timeLeft: Duration(minutes: 12),
+          totalBytes: 15 * _gb,
+          downloadedBytes: 1 * _gb,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('left'), findsNothing);
+    expect(find.text('9%'), findsOneWidget);
+  });
+
+  testWidgets('stalled: says so, with the sizes when there is room', (
+    tester,
+  ) async {
+    const stalled = SeerrDownloadSummary(
+      fraction: 0,
+      state: SeerrDownloadState.stalled,
+      totalBytes: 15 * _gb,
+      downloadedBytes: 0,
+    );
+    await tester.pumpWidget(_host(width: 320, summary: stalled));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Stalled · '), findsOneWidget);
+    expect(find.textContaining('Downloading'), findsNothing);
+
+    // The word matters more than the sizes, so a tile keeps it.
+    await tester.pumpWidget(_host(width: 166, summary: stalled));
+    await tester.pumpAndSettle();
+    expect(find.text('Stalled'), findsOneWidget);
+    expect(find.text('0%'), findsOneWidget);
+  });
+
+  testWidgets('paused, queued and failed name their state', (tester) async {
+    for (final (state, label) in [
+      (SeerrDownloadState.paused, 'Paused'),
+      (SeerrDownloadState.queued, 'Queued'),
+      (SeerrDownloadState.failed, 'Download failed'),
+    ]) {
+      await tester.pumpWidget(
+        _host(
+          width: 166,
+          summary: SeerrDownloadSummary(fraction: 0.5, state: state),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(label), findsOneWidget, reason: state.name);
+    }
+  });
+
+  testWidgets('narrow: a stuck download leaves the percentage alone', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        width: 70,
+        summary: const SeerrDownloadSummary(
+          fraction: 0.5,
+          state: SeerrDownloadState.failed,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('50%'), findsOneWidget);
+    expect(find.textContaining('failed'), findsNothing);
   });
 
   testWidgets('no server sizes: falls back to the verb and the percentage', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _host(
-        width: 320,
-        summary: const SeerrDownloadSummary(fraction: 0.09, isImporting: false),
-      ),
+      _host(width: 320, summary: const SeerrDownloadSummary(fraction: 0.09)),
     );
     await tester.pumpAndSettle();
 

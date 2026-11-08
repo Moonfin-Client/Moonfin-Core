@@ -146,6 +146,8 @@ SeerrDownloadingItem _$SeerrDownloadingItemFromJson(
   size: (json['size'] as num?)?.toInt(),
   sizeLeft: (json['sizeLeft'] as num?)?.toInt(),
   downloadId: json['downloadId'] as String?,
+  status: json['status'] as String?,
+  timeLeft: json['timeLeft'] as String?,
 );
 
 Map<String, dynamic> _$SeerrDownloadingItemToJson(
@@ -154,6 +156,8 @@ Map<String, dynamic> _$SeerrDownloadingItemToJson(
   'size': instance.size,
   'sizeLeft': instance.sizeLeft,
   'downloadId': instance.downloadId,
+  'status': instance.status,
+  'timeLeft': instance.timeLeft,
 };
 
 SeerrExternalIds _$SeerrExternalIdsFromJson(Map<String, dynamic> json) =>

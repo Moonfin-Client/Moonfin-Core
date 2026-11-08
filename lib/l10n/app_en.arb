@@ -7779,6 +7779,18 @@
   "@seerrImportingStatus": {
     "description": "Label when a Seerr download has finished and is importing"
   },
+  "seerrWaitingForImport": "Downloaded, waiting for import",
+  "@seerrWaitingForImport": {
+    "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+  },
+  "seerrDownloadStalled": "Stalled",
+  "@seerrDownloadStalled": {
+    "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+  },
+  "seerrDownloadFailed": "Download failed",
+  "@seerrDownloadFailed": {
+    "description": "Label on the Seerr download bar when the download client reports the download as failed"
+  },
   "itemsCount": "{count} Items",
   "@itemsCount": {
     "description": "Status bar item count",

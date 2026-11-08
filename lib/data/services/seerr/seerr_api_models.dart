@@ -167,8 +167,8 @@ class SeerrMedia {
 }
 
 /// One Radarr/Sonarr queue entry, reported by Seerr while a request downloads.
-/// Only what the progress bars need: the byte counts, and the download id to
-/// count a season pack once.
+/// Only what the progress bars need: the byte counts, the download id to
+/// count a season pack once, and the queue status and time left.
 @JsonSerializable()
 class SeerrDownloadingItem {
   final int? size;
@@ -179,7 +179,22 @@ class SeerrDownloadingItem {
   /// back by a delay profile, which is not downloading yet.
   final String? downloadId;
 
-  const SeerrDownloadingItem({this.size, this.sizeLeft, this.downloadId});
+  /// The queue status as Radarr/Sonarr report it, such as "downloading",
+  /// "warning" for a stalled torrent, "paused" or "completed". Older Sonarr
+  /// capitalises it.
+  final String? status;
+
+  /// Time left as a .NET TimeSpan, "hh:mm:ss" or "d.hh:mm:ss". Missing when
+  /// the client can't estimate it, such as for a torrent with no peers.
+  final String? timeLeft;
+
+  const SeerrDownloadingItem({
+    this.size,
+    this.sizeLeft,
+    this.downloadId,
+    this.status,
+    this.timeLeft,
+  });
 
   factory SeerrDownloadingItem.fromJson(Map<String, dynamic> json) =>
       _$SeerrDownloadingItemFromJson(json);
