@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/util/game_artwork_cache.dart';
 import 'package:moonfin/util/image_cache_index.dart';
@@ -18,8 +19,7 @@ class _FakePathProvider extends PathProviderPlatform
   Future<String?> getTemporaryPath() async => root.path;
 
   @override
-  Future<String?> getApplicationSupportPath() async =>
-      '${root.path}/support';
+  Future<String?> getApplicationSupportPath() async => '${root.path}/support';
 }
 
 void main() {
@@ -132,36 +132,40 @@ void main() {
     expect(sega.existsSync(), isFalse);
   });
 
-  test(
-    'clearImageDiskCache live-clears a directory with an in-process manager '
-    'but deletes an orphaned one wholesale',
-    () async {
-      final originalPathProvider = PathProviderPlatform.instance;
-      PathProviderPlatform.instance = _FakePathProvider(root);
-      addTearDown(() => PathProviderPlatform.instance = originalPathProvider);
+  test('clearImageDiskCache live-clears a directory with an in-process manager '
+      'but deletes an orphaned one wholesale', () async {
+    final originalPathProvider = PathProviderPlatform.instance;
+    PathProviderPlatform.instance = _FakePathProvider(root);
+    addTearDown(() => PathProviderPlatform.instance = originalPathProvider);
 
-      // Live manager, as browsing a game system would create.
-      gameArtworkCacheManagerForScope('library/Arcade');
-      addTearDown(resetGameArtworkCacheManagers);
-      final live = writeScope('library/Arcade', 10, now);
-      // No manager: a cache left behind by an older session.
-      final orphan = writeScope('library/Sega', 10, now);
+    // Live manager, as browsing a game system would create.
+    // Widget tests do not register the native sqflite plugin used by the
+    // default Apple-platform repository. The repository is incidental to
+    // this disk-lifecycle test, so keep it in memory.
+    gameArtworkCacheManagerForScope(
+      'library/Arcade',
+      repo: NonStoringObjectProvider(),
+    );
+    addTearDown(resetGameArtworkCacheManagers);
+    final live = writeScope('library/Arcade', 10, now);
+    // No manager: a cache left behind by an older session.
+    final orphan = writeScope('library/Sega', 10, now);
 
-      await clearImageDiskCache();
+    await clearImageDiskCache();
 
-      expect(
-        live.existsSync(),
-        isTrue,
-        reason: 'a live manager must be cleared in place, not deleted out '
-            'from under it',
-      );
-      expect(
-        orphan.existsSync(),
-        isFalse,
-        reason: 'a directory with no live manager is safe to delete wholesale',
-      );
-    },
-  );
+    expect(
+      live.existsSync(),
+      isTrue,
+      reason:
+          'a live manager must be cleared in place, not deleted out '
+          'from under it',
+    );
+    expect(
+      orphan.existsSync(),
+      isFalse,
+      reason: 'a directory with no live manager is safe to delete wholesale',
+    );
+  });
 
   test('the artwork size sweep leaves the index file alone', () async {
     final originalPathProvider = PathProviderPlatform.instance;

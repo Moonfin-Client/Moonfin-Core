@@ -37,17 +37,28 @@ final Map<String, BaseCacheManager> _gameArtworkCacheManagers =
 /// Returns the cache dedicated to one game system. A system's art remains
 /// available while the user filters or scrolls within it; inactive systems are
 /// evicted as whole units only when the shared game-art budget needs room.
-BaseCacheManager gameArtworkCacheManagerForScope(String scope) {
+BaseCacheManager gameArtworkCacheManagerForScope(
+  String scope, {
+  @visibleForTesting CacheInfoRepository? repo,
+}) {
   final cacheKey = gameArtworkCacheKeyForScope(scope);
   return _gameArtworkCacheManagers.putIfAbsent(
     cacheKey,
     () => CacheManager(
-      Config(
-        cacheKey,
-        stalePeriod: const Duration(days: 14),
-        maxNrOfCacheObjects: gameArtworkCacheMaxObjectsPerSystem,
-        fileService: BoundedImageFileService(http.Client()),
-      ),
+      repo == null
+          ? Config(
+              cacheKey,
+              stalePeriod: const Duration(days: 14),
+              maxNrOfCacheObjects: gameArtworkCacheMaxObjectsPerSystem,
+              fileService: BoundedImageFileService(http.Client()),
+            )
+          : Config(
+              cacheKey,
+              stalePeriod: const Duration(days: 14),
+              maxNrOfCacheObjects: gameArtworkCacheMaxObjectsPerSystem,
+              fileService: BoundedImageFileService(http.Client()),
+              repo: repo,
+            ),
     ),
   );
 }

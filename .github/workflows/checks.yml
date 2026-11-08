@@ -58,7 +58,7 @@ jobs:
       matrix:
         # Three app shards. Keep in step with the % 3 below and the suite
         # list in summary.
-        suite: [analyze-packages, app-0, app-1, app-2, kotlin]
+        suite: [analyze-packages, app-0, app-1, app-2, web, kotlin]
     name: tests (${{ matrix.suite }})
     steps:
       - uses: actions/checkout@v5
@@ -142,6 +142,11 @@ jobs:
               suite="${{ matrix.suite }}"
               mapfile -t files < <(find test -name '*_test.dart' | LC_ALL=C sort | awk -v shard="${suite#app-}" '(NR - 1) % 3 == shard')
               flutter test "${files[@]}" --reporter json > "/tmp/test-results/$suite.jsonl" || status=1
+              ;;
+            web)
+              # Compile-time browser branches are unreachable from the
+              # default VM test platform used by the app shards.
+              flutter test --platform chrome --reporter json test/web/pwa_mobile_policy_test.dart > /tmp/test-results/web.jsonl || status=1
               ;;
             kotlin)
               # gradlew is gitignored, and only a Flutter build writes it.
@@ -366,7 +371,7 @@ jobs:
           import json
           import os
 
-          suites = ['analyze-packages', 'app-0', 'app-1', 'app-2', 'kotlin']
+          suites = ['analyze-packages', 'app-0', 'app-1', 'app-2', 'web', 'kotlin']
           out = {
               'pr_number': int(os.environ['PR_NUMBER']) if os.environ['PR_NUMBER'] else None,
               'sha': os.environ['SHA'],

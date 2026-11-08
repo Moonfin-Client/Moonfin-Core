@@ -918,7 +918,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         : content;
 
     return PopScope(
-      canPop: !mobilePanelOpen,
+      // Browser Back owns history. Do not cancel it merely to close a panel,
+      // which makes a PWA need a second Back gesture to leave the player.
+      canPop: PlatformDetection.isWeb || !mobilePanelOpen,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         setState(() {

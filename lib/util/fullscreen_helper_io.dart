@@ -4,6 +4,12 @@ import 'platform_detection.dart';
 
 bool _wasMaximized = false;
 
+bool isSupported() => PlatformDetection.isDesktop;
+
+Future<void> lockLandscape() async {}
+
+Future<void> unlockOrientation() async {}
+
 Future<bool> isFullscreen() async {
   if (!PlatformDetection.isDesktop) return false;
   return windowManager.isFullScreen();

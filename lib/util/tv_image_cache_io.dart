@@ -153,9 +153,8 @@ Future<void> retainGameArtworkCacheScope(String scope) async {
     final temp = await getTemporaryDirectory();
     final dir = Directory('${temp.path}/${gameArtworkCacheKeyForScope(scope)}');
     await dir.create(recursive: true);
-    await File(
-      '${dir.path}/$_gameArtworkScopeAccessFileName',
-    ).writeAsString('', flush: true);
+    await File('${dir.path}/$_gameArtworkScopeAccessFileName')
+        .writeAsString('', flush: true);
   } catch (_) {}
 }
 
@@ -183,7 +182,8 @@ Future<void> _enforceGameArtworkCacheBudget({required bool throttle}) async {
   _lastSweepByCacheKey[_gameArtworkBudgetSweepKey] = now;
   try {
     _coolingGameArtworkScopes.removeWhere(
-      (_, releasedAt) => now.difference(releasedAt) >= _gameArtworkScopeCooldown,
+      (_, releasedAt) =>
+          now.difference(releasedAt) >= _gameArtworkScopeCooldown,
     );
     final temp = await getTemporaryDirectory();
     await evictInactiveGameArtworkCaches(
@@ -365,9 +365,14 @@ Future<void> _enforceCacheDirectoryBudget(
 Future<void> clearImageDiskCache() async {
   try {
     await CachedNetworkImageProvider.defaultCacheManager.emptyCache();
-    // Durable at once, or a kill before the timed flush brings the rows back
-    // for files that are gone.
+  } catch (_) {}
+  // Durable at once, or a kill before the timed flush brings the rows back
+  // for files that are gone. Each cache is independent: one unavailable
+  // repository must not prevent the remaining on-disk caches from clearing.
+  try {
     await _imageCacheIndex?.flush();
+  } catch (_) {}
+  try {
     final temp = await getTemporaryDirectory();
     await for (final entity in temp.list(followLinks: false)) {
       if (entity is Directory &&
@@ -377,7 +382,11 @@ Future<void> clearImageDiskCache() async {
         }
       }
     }
+  } catch (_) {}
+  try {
     await gameSystemArtworkCacheManager.emptyCache();
+  } catch (_) {}
+  try {
     final retroArtworkCacheDir = await defaultRetroArtworkDiskCacheDirectory();
     if (await retroArtworkCacheDir.exists()) {
       await retroArtworkCacheDir.delete(recursive: true);

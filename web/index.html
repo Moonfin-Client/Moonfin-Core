@@ -18,7 +18,6 @@
 
   <title>Moonfin</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
   <style>
     html,
@@ -107,7 +106,9 @@
     }
   </style>
 
-  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <!-- Keep Chromium HLS playback available on fully self-hosted/offline
+       installations. This is hls.js 1.5.17; its license lives beside it. -->
+  <script defer src="vendor/hls/hls.min.js"></script>
   <script>
     (function () {
       function isHlsPlaylistUrl(url) {

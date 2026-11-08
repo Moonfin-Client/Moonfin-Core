@@ -678,7 +678,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
         : layout;
 
     return PopScope(
-      canPop: !_drawerOpen && !_drawerContentActive,
+      // Keep browser history predictable: native Back may walk out of the
+      // drawer first, while browser/PWA Back leaves this route in one action.
+      canPop: PlatformDetection.isWeb || (!_drawerOpen && !_drawerContentActive),
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         if (_drawerContentActive) {

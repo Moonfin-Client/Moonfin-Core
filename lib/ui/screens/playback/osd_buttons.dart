@@ -6,6 +6,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/fullscreen_helper.dart';
 import '../../../util/platform_detection.dart';
 
 /// The buttons around the playback controls, the ones a user can switch off.
@@ -46,7 +47,8 @@ enum OsdButton {
     OsdButton.cast => !PlatformDetection.isTV,
     OsdButton.volume => PlatformDetection.useDesktopUi,
     OsdButton.orientation => PlatformDetection.isMobile,
-    OsdButton.fullscreen => PlatformDetection.useDesktopUi,
+    OsdButton.fullscreen =>
+      !PlatformDetection.isTV && FullscreenHelper.isSupported,
     OsdButton.floatOnTop =>
       PlatformDetection.useDesktopUi && !PlatformDetection.isWeb,
     _ => true,
@@ -131,8 +133,11 @@ IconData osdZoomIcon(ZoomMode mode) => switch (mode) {
 
 enum OsdTransportButton { previous, seekBack, playPause, seekForward, next }
 
-typedef OsdTransportBuilder =
-    Widget Function(OsdTransportButton button, double iconSize, double extent);
+typedef OsdTransportBuilder = Widget Function(
+  OsdTransportButton button,
+  double iconSize,
+  double extent,
+);
 
 /// The transport in the middle of the picture, with play centered and the
 /// seeks and skips spreading out from it.

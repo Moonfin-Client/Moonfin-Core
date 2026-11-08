@@ -209,4 +209,32 @@ void main() {
 
     expect(librariesLabel, findsOneWidget);
   });
+
+  testWidgets('a phone layout dismisses its dropdown when tapped outside', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    (GetIt.instance<UserViewsRepository>() as _FakeUserViewsRepository).views =
+        const [
+          AggregatedLibrary(
+            id: 'movies',
+            name: 'Movies',
+            collectionType: 'movies',
+            serverId: 's1',
+          ),
+        ];
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_host(const TopToolbar()));
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('toolbar_libraries')));
+    await tester.pump();
+    expect(find.text('Movies'), findsOneWidget);
+
+    await tester.tapAt(const Offset(195, 700));
+    await tester.pump();
+    expect(find.text('Movies'), findsNothing);
+  });
 }

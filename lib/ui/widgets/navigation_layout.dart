@@ -12,8 +12,10 @@ import 'left_sidebar.dart';
 import 'top_toolbar.dart';
 
 import 'dart:async';
+
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
+
 import '../navigation/destinations.dart';
 import '../navigation/route_lifecycle_observer.dart';
 
@@ -27,8 +29,7 @@ class NavigationLayout extends StatefulWidget {
   /// content scrolls. No effect off-TV, where the toolbar is already fixed.
   final bool pinTopToolbar;
 
-  static bool get allowBottomNavbar =>
-      PlatformDetection.useMobileUi && !PlatformDetection.isWeb;
+  static bool get allowBottomNavbar => PlatformDetection.useMobileUi;
 
   static List<NavbarPosition> get availableNavbarPositions => <NavbarPosition>[
     NavbarPosition.top,
@@ -313,7 +314,9 @@ class _NavigationLayoutState extends State<NavigationLayout>
       NavbarPosition.left => _buildSidebar(),
       NavbarPosition.top => _buildToolbar(),
       NavbarPosition.bottom =>
-        NavigationLayout.allowBottomNavbar ? _buildBottomBar() : _buildToolbar(),
+        NavigationLayout.allowBottomNavbar
+            ? _buildBottomBar()
+            : _buildToolbar(),
     };
     // Grouping only pays off when the tier draws real backdrop blurs, the
     // sheen tier never does.
@@ -382,9 +385,7 @@ class _NavigationLayoutState extends State<NavigationLayout>
           Positioned(
             top: 16,
             left: 16,
-            child: SafeArea(
-              child: _buildFloatingBackButton(),
-            ),
+            child: SafeArea(child: _buildFloatingBackButton()),
           ),
       ],
     );
@@ -396,15 +397,12 @@ class _NavigationLayoutState extends State<NavigationLayout>
     final toolbar = ListenableBuilder(
       listenable: NavigationLayout.trailerChromeListenable,
       builder: (context, child) {
-        final show = widget.showNavigationChrome &&
-            !NavigationLayout.trailerHidesChrome;
+        final show =
+            widget.showNavigationChrome && !NavigationLayout.trailerHidesChrome;
         return AnimatedOpacity(
           opacity: show ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 200),
-          child: IgnorePointer(
-            ignoring: !show,
-            child: child,
-          ),
+          child: IgnorePointer(ignoring: !show, child: child),
         );
       },
       child: TopToolbar(
@@ -429,7 +427,10 @@ class _NavigationLayoutState extends State<NavigationLayout>
         : content;
     final musicExtra = TopToolbar.musicBarExtraHeight();
     final insetBody = (widget.pinTopToolbar && musicExtra > 0)
-        ? Padding(padding: EdgeInsets.only(top: musicExtra), child: body)
+        ? Padding(
+            padding: EdgeInsets.only(top: musicExtra),
+            child: body,
+          )
         : body;
     return Column(
       children: [
@@ -442,38 +443,34 @@ class _NavigationLayoutState extends State<NavigationLayout>
                   valueListenable: TopToolbar.isFocusedNotifier,
                   builder: (_, toolbarFocused, child) =>
                       ValueListenableBuilder<double>(
-                    valueListenable: _toolbarScrollOffset,
-                    builder: (_, offset, child) {
-                      // A focused toolbar must be visible. Screens can hand
-                      // focus to it while the content is scrolled down, which
-                      // would leave focus in a toolbar translated off screen.
-                      final translate = !widget.showNavigationChrome
-                          ? maxTranslate
-                          : toolbarFocused
-                          ? 0.0
-                          : offset.clamp(0.0, maxTranslate);
-                      return Positioned(
-                        left: 0,
-                        right: 0,
-                        top: -translate,
-                        child: IgnorePointer(
-                          ignoring: !widget.showNavigationChrome ||
-                              translate >= maxTranslate,
-                          child: child!,
-                        ),
-                      );
-                    },
-                    child: child,
-                  ),
+                        valueListenable: _toolbarScrollOffset,
+                        builder: (_, offset, child) {
+                          // A focused toolbar must be visible. Screens can hand
+                          // focus to it while the content is scrolled down, which
+                          // would leave focus in a toolbar translated off screen.
+                          final translate = !widget.showNavigationChrome
+                              ? maxTranslate
+                              : toolbarFocused
+                              ? 0.0
+                              : offset.clamp(0.0, maxTranslate);
+                          return Positioned(
+                            left: 0,
+                            right: 0,
+                            top: -translate,
+                            child: IgnorePointer(
+                              ignoring:
+                                  !widget.showNavigationChrome ||
+                                  translate >= maxTranslate,
+                              child: child!,
+                            ),
+                          );
+                        },
+                        child: child,
+                      ),
                   child: toolbar,
                 )
               else
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  child: toolbar,
-                ),
+                Positioned(left: 0, right: 0, top: 0, child: toolbar),
               if (widget.showBackButton &&
                   !PlatformDetection.isTV &&
                   !widget.showNavigationChrome)
@@ -496,15 +493,12 @@ class _NavigationLayoutState extends State<NavigationLayout>
     final sidebar = ListenableBuilder(
       listenable: NavigationLayout.trailerChromeListenable,
       builder: (context, child) {
-        final show = widget.showNavigationChrome &&
-            !NavigationLayout.trailerHidesChrome;
+        final show =
+            widget.showNavigationChrome && !NavigationLayout.trailerHidesChrome;
         return AnimatedOpacity(
           opacity: show ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 200),
-          child: IgnorePointer(
-            ignoring: !show,
-            child: child,
-          ),
+          child: IgnorePointer(ignoring: !show, child: child),
         );
       },
       child: LeftSidebar(
@@ -514,19 +508,16 @@ class _NavigationLayoutState extends State<NavigationLayout>
       ),
     );
 
-    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
+    if (PlatformDetection.isTV ||
+        (PlatformDetection.isDesktop ||
+            (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       return Column(
         children: [
           Expanded(
             child: Stack(
               children: [
                 Positioned.fill(child: content),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: sidebar,
-                ),
+                Positioned(top: 0, left: 0, bottom: 0, child: sidebar),
                 if (widget.showBackButton && !PlatformDetection.isTV)
                   Positioned(
                     top: 16,
@@ -547,9 +538,7 @@ class _NavigationLayoutState extends State<NavigationLayout>
           child: Stack(
             children: [
               Positioned.fill(child: content),
-              Positioned.fill(
-                child: sidebar,
-              ),
+              Positioned.fill(child: sidebar),
             ],
           ),
         ),
@@ -586,11 +575,7 @@ class _NavigationLayoutState extends State<NavigationLayout>
               ),
             ],
           ),
-          child: const Icon(
-            Icons.arrow_back,
-            size: 20,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.arrow_back, size: 20, color: Colors.white),
         ),
       ),
     );

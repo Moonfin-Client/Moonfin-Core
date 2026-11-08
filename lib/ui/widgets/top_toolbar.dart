@@ -2202,7 +2202,7 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
       child: content,
     );
 
-    if (!PlatformDetection.isMobile) return follower;
+    if (!PlatformDetection.useMobileUi) return follower;
 
     return Stack(
       children: [

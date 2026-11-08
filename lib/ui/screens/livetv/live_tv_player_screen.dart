@@ -31,9 +31,11 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/fullscreen_helper.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_back_policy.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/player_edge_drag.dart';
 import '../../../util/system_ui.dart';
@@ -115,7 +117,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   bool _carouselPriorInfoVisible = true;
   int _carouselPriorControlIndex = 0;
   DateTime? _suppressBackUntil;
-  bool _forcedLandscape = true;
+  bool _forcedLandscape = !PlatformDetection.isWeb;
+  bool _isWebFullscreen = false;
+  bool? _wasWebFullscreenOnEntry;
 
   GuideProgram? _currentProgram;
   LiveTvRecordingState? _recordingState;
@@ -254,6 +258,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
     _currentIndex = widget.startIndex;
     _applyPlayerDisplayMode();
+    if (PlatformDetection.isWeb) unawaited(_syncWebFullscreenState());
     _applySubtitleStyle();
     _prefs.addListener(_applySubtitleStyle);
     _backendSub = _manager.backendChangedStream.listen((backend) {
@@ -272,9 +277,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _failureCardReconcileBufferingSub = _state.bufferingStream.listen(
       (_) => _reconcileFailureCardWithPlayback(),
     );
-    _liveRecoveryStatusSub = _manager.liveRecoveryStatusStream.listen((
-      status,
-    ) {
+    _liveRecoveryStatusSub = _manager.liveRecoveryStatusStream.listen((status) {
       if (!mounted) return;
       setState(() => _liveRecoveryStatus = status);
     });
@@ -396,7 +399,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (!_isStopping) {
       _manager.stop(userInitiated: false);
     }
-    unawaited(_releasePlayerDisplayMode());
+    unawaited(_releasePlayerDisplayMode(exitWebFullscreen: true));
     super.dispose();
   }
 
@@ -412,6 +415,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (lifecycleState == AppLifecycleState.resumed) {
       unawaited(_carouselPrewarm?.onAppResumed());
     }
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (PlatformDetection.isWeb) unawaited(_syncWebFullscreenState());
   }
 
   void _onPiPChanged(bool isInPiP) {
@@ -844,10 +852,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   Future<void> _toggleChannelFavorite() async {
     final channel = _currentChannel;
     try {
-      await ItemMutationRepository(_client).setFavorite(
-        channel.id,
-        isFavorite: !channel.isFavorite,
-      );
+      await ItemMutationRepository(_client)
+          .setFavorite(channel.id, isFavorite: !channel.isFavorite);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1537,6 +1543,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _applyPlayerDisplayMode() {
     setImmersive(true);
+    if (PlatformDetection.isWeb) return;
     if (_forcedLandscape && !PlatformDetection.isTV) {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
@@ -1548,9 +1555,49 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     SystemChrome.setPreferredOrientations([]);
   }
 
-  Future<void> _releasePlayerDisplayMode() async {
+  Future<void> _releasePlayerDisplayMode({
+    required bool exitWebFullscreen,
+  }) async {
     setImmersive(false);
+    if (PlatformDetection.isWeb) {
+      // Restore the entry state instead of claiming fullscreen that belonged
+      // to the containing PWA before Live TV opened. Null is also preserved:
+      // without a completed entry query, this route cannot safely own it.
+      if (exitWebFullscreen &&
+          FullscreenHelper.shouldExitPlaybackFullscreen(
+            _wasWebFullscreenOnEntry,
+          )) {
+        await _setWebFullscreen(false);
+      }
+      return;
+    }
     await SystemChrome.setPreferredOrientations([]);
+  }
+
+  Future<void> _syncWebFullscreenState() async {
+    final fullscreen = await FullscreenHelper.isFullscreen();
+    if (!mounted) return;
+    _wasWebFullscreenOnEntry ??= fullscreen;
+    setState(() => _isWebFullscreen = fullscreen);
+  }
+
+  Future<void> _setWebFullscreen(bool fullscreen) async {
+    if (!PlatformDetection.isWeb) return;
+    await FullscreenHelper.setFullscreen(fullscreen);
+    final actual = await FullscreenHelper.isFullscreen();
+    if (actual) {
+      await FullscreenHelper.lockLandscape();
+    } else {
+      await FullscreenHelper.unlockOrientation();
+    }
+    if (mounted) setState(() => _isWebFullscreen = actual);
+  }
+
+  Future<void> _toggleWebFullscreen() async {
+    final fullscreen = await FullscreenHelper.isFullscreen();
+    if (!mounted) return;
+    _wasWebFullscreenOnEntry ??= fullscreen;
+    await _setWebFullscreen(!fullscreen);
   }
 
   void _showPlaybackInfo() {
@@ -1807,7 +1854,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _hideTimer?.cancel();
     _suppressBackNavigation();
     setState(() => _isGuidePickerOpen = true);
-    await _releasePlayerDisplayMode();
+    // This guide is an overlay in the player route, so leaving document
+    // fullscreen here would be surprising and cannot be restored without a
+    // new user gesture. Native platforms still release their orientation lock.
+    await _releasePlayerDisplayMode(exitWebFullscreen: false);
   }
 
   void _closeGuideOverlay() {
@@ -1841,7 +1891,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_isStopping) return;
     _isStopping = true;
     await _manager.stop(userInitiated: false);
-    await _releasePlayerDisplayMode();
+    await _releasePlayerDisplayMode(exitWebFullscreen: true);
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -1892,7 +1942,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     try {
       _isStopping = true;
       await _manager.stop(userInitiated: false);
-      await _releasePlayerDisplayMode();
+      await _releasePlayerDisplayMode(exitWebFullscreen: true);
       // Pop rather than replace, so whoever opened the player sees it close
       // (the guide reloads and restores focus) and Back returns there.
       if (mounted) {
@@ -2105,20 +2155,25 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        if (_isCarouselOpen) {
+        final mayConsumeBack = dismissPlaybackChromeBeforeBack();
+        // Browser Back owns browser history. Transient player overlays must
+        // not trap an installed PWA behind extra Back gestures.
+        if (mayConsumeBack && _isCarouselOpen) {
           _dismissChannelCarousel();
           return;
         }
-        if (_isGuidePickerOpen) {
+        if (mayConsumeBack && _isGuidePickerOpen) {
           if (_guideBackController.consumeBackPress()) return;
           _closeGuideOverlay();
           return;
         }
-        if (_isBackNavigationSuppressed) return;
+        if (mayConsumeBack && _isBackNavigationSuppressed) {
+          return;
+        }
         // Back dismisses the on-screen controls first; only exit the player once
         // the OSD is already hidden (e.g. after returning from the EPG overlay,
         // where a focused control otherwise keeps the OSD pinned open).
-        if (_infoVisible) {
+        if (_infoVisible && mayConsumeBack) {
           _hideInfo();
           return;
         }
@@ -2175,9 +2230,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                     _buildTopOverlay(),
                     _buildBottomOverlay(),
                   ],
-                  if (_channelFailed &&
-                      !_isGuidePickerOpen &&
-                      !_isCarouselOpen)
+                  if (_channelFailed && !_isGuidePickerOpen && !_isCarouselOpen)
                     _buildChannelFailedCard(),
                 ],
               ),
@@ -2310,9 +2363,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                   if (fps != null) ...[
                     const SizedBox(height: AppSpacing.spaceMd),
                     Text(
-                      AppLocalizations.of(
-                        context,
-                      ).playerMatchingDisplayRate(frameRateLabel(fps)),
+                      AppLocalizations.of(context)
+                          .playerMatchingDisplayRate(frameRateLabel(fps)),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: AppTypography.fontSizeMd,
@@ -2617,9 +2669,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                         _seekTarget ?? snap.data ?? _state.position,
                       );
                 return _buildOverlayControlButton(
-                  focusNode: PlatformDetection.isTV
-                      ? _tvJumpToLiveFocus
-                      : null,
+                  focusNode: PlatformDetection.isTV ? _tvJumpToLiveFocus : null,
                   icon: Icons.live_tv_rounded,
                   iconColor: behind > _liveEdgeSlack
                       ? Colors.white
@@ -2656,6 +2706,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                   ? l10n.playerTooltipUnlockOrientation
                   : l10n.playerTooltipLockLandscape,
               onPressed: _toggleOrientationLock,
+            ),
+          ],
+          if (PlatformDetection.isWeb && FullscreenHelper.isSupported) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              icon: _isWebFullscreen
+                  ? Icons.fullscreen_exit_rounded
+                  : Icons.fullscreen_rounded,
+              tooltip: _isWebFullscreen
+                  ? l10n.playerTooltipExitFullscreen
+                  : l10n.playerTooltipEnterFullscreen,
+              onPressed: _toggleWebFullscreen,
             ),
           ],
           if (hasAudioChoices) ...[

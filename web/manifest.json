@@ -3,11 +3,10 @@
     "short_name": "Moonfin",
     "start_url": ".",
     "display": "standalone",
-    "display_override": ["standalone", "window-controls-overlay"],
     "background_color": "#101010",
     "theme_color": "#00A4DC",
     "description": "Moonfin web client for self-hosted media servers",
-    "orientation": "portrait-primary",
+    "orientation": "any",
     "prefer_related_applications": false,
     "categories": ["entertainment", "video", "music"],
     "icons": [
@@ -32,20 +31,6 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "screenshots/moonfin-home.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "label": "Moonfin home"
-        },
-        {
-            "src": "screenshots/moonfin-library.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "label": "Moonfin library"
         }
     ]
 }

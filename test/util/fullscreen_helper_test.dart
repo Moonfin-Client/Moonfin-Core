@@ -86,6 +86,12 @@ void main() {
     );
   });
 
+  test('playback only exits fullscreen after a completed windowed entry', () {
+    expect(FullscreenHelper.shouldExitPlaybackFullscreen(false), isTrue);
+    expect(FullscreenHelper.shouldExitPlaybackFullscreen(true), isFalse);
+    expect(FullscreenHelper.shouldExitPlaybackFullscreen(null), isFalse);
+  });
+
   group('maximizedAfterWindowEvent', () {
     tearDown(() => debugDefaultTargetPlatformOverride = null);
 
