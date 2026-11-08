@@ -23,6 +23,13 @@ typedef DeleteServerDownload = Future<bool> Function(
   required String serverId,
 });
 
+/// The answer to "Delete this download?". Null is Not now.
+enum FinishedDownloadChoice { delete, keep }
+
+typedef AskToDeleteDownload = Future<FinishedDownloadChoice?> Function(
+  AggregatedItem item,
+);
+
 /// Removes episodes and movies the user downloaded by hand once they are
 /// watched, on every platform. What smart downloads and followed series
 /// queued goes by their own settings.
@@ -40,6 +47,8 @@ class RemoveWatchedService {
     required UserPreferences prefs,
     required DeleteServerDownload deleteDownload,
     SignedInServer? Function()? signedInServer,
+    SignedInServer? Function()? activeServer,
+    AskToDeleteDownload? askToDelete,
     bool Function()? syncInFlight,
     String? Function()? playingItemId,
     DateTime Function()? now,
@@ -48,6 +57,8 @@ class RemoveWatchedService {
        _prefs = prefs,
        _deleteDownload = deleteDownload,
        _signedInServer = signedInServer,
+       _activeServer = activeServer,
+       _askToDelete = askToDelete,
        _syncInFlight = syncInFlight,
        _playingItemId = playingItemId,
        _now = now ?? DateTime.now,
@@ -57,6 +68,11 @@ class RemoveWatchedService {
   final UserPreferences _prefs;
   final DeleteServerDownload _deleteDownload;
   final SignedInServer? Function()? _signedInServer;
+
+  /// The signed-in server even when it can't be reached: asking needs only
+  /// the downloads on disk.
+  final SignedInServer? Function()? _activeServer;
+  final AskToDeleteDownload? _askToDelete;
 
   /// Whether the reconnect sync is running. It ends with a pass of its own
   /// on fresh played state, so another one now would only race its writes.
@@ -70,6 +86,9 @@ class RemoveWatchedService {
   final _stoppedIds = <String>{};
   Timer? _stopTimer;
   Timer? _hourly;
+  final _finished = <String, AggregatedItem>{};
+  Timer? _askTimer;
+  bool _asking = false;
 
   /// Starts the hourly pass. Desktops and TVs stay connected and in the
   /// foreground for days, so a delay that runs out between reconnects needs
@@ -84,6 +103,10 @@ class RemoveWatchedService {
 
   bool get isEnabled =>
       _prefs.get(UserPreferences.downloadRemoveWatchedAfterHours) >= 0;
+
+  bool get asksFirst =>
+      _prefs.get(UserPreferences.downloadRemoveWatchedAfterHours) ==
+      UserPreferences.removeWatchedAsk;
 
   /// Deletes the watched downloads of [serverId], which [client] talks to,
   /// and returns how many went. Asked for while a pass runs, it waits for
@@ -202,6 +225,7 @@ class RemoveWatchedService {
   /// download. Debounced so a quick stop and start (the next episode, a
   /// re-resolve) fetches once, but every item stopped meanwhile is fetched.
   void onItemStopped(String itemId) {
+    if (_finished.isNotEmpty) _scheduleAsk();
     if (!isEnabled) return;
     _stoppedIds.add(itemId);
     _stopTimer?.cancel();
@@ -261,6 +285,62 @@ class RemoveWatchedService {
     }
   }
 
+  /// [item] stopped playing from its download at [position]. Played to the
+  /// end, it is asked about once nothing plays anymore, so finishing one
+  /// episode and going on to the next doesn't stop the show.
+  void onDownloadStopped(AggregatedItem item, Duration position) {
+    if (!asksFirst || !removeWatchedTypes.contains(item.type)) return;
+    if (!playedToEnd(item, position)) return;
+    _finished[item.id] = item;
+    _scheduleAsk();
+  }
+
+  void _scheduleAsk() {
+    _askTimer?.cancel();
+    _askTimer = Timer(_stopDebounce, () => unawaited(_askFinished()));
+  }
+
+  /// Something playing again leaves the finished downloads for the stop that
+  /// ends it.
+  Future<void> _askFinished() async {
+    final ask = _askToDelete;
+    final server = _activeServer?.call();
+    if (_asking || ask == null || server == null) return;
+    if (_playingItemId?.call() != null) return;
+    _asking = true;
+    try {
+      while (_finished.isNotEmpty) {
+        final item = _finished.remove(_finished.keys.first)!;
+        if (!await _shouldAsk(item, server)) continue;
+        switch (await ask(item)) {
+          case FinishedDownloadChoice.delete:
+            await _deleteDownload(item, serverId: server.serverId);
+          case FinishedDownloadChoice.keep:
+            await _prefs.setDownloadKept(server.serverId, item.id, keep: true);
+          case null:
+            break;
+        }
+      }
+    } catch (e) {
+      debugPrint('[RemoveWatched] Could not ask about a download: $e');
+    } finally {
+      _asking = false;
+    }
+  }
+
+  /// Only the episodes and movies downloaded by hand, as the automatic rule:
+  /// smart downloads and followed series go by their own settings.
+  Future<bool> _shouldAsk(AggregatedItem item, SignedInServer server) async {
+    if (!asksFirst ||
+        isKeptDownload(item, _prefs.downloadKeptIdsFor(server.serverId))) {
+      return false;
+    }
+    final row = await _rowOn(item.id, server.client, server.serverId);
+    return row != null &&
+        row.downloadStatus == 2 &&
+        DownloadSource.fromName(row.downloadSource) == DownloadSource.manual;
+  }
+
   /// This server's row for [itemId]. Emby ids are plain numbers, so another
   /// server's download can share one.
   Future<DownloadedItem?> _rowOn(
@@ -283,6 +363,7 @@ class RemoveWatchedService {
 
   void dispose() {
     _stopTimer?.cancel();
+    _askTimer?.cancel();
     _hourly?.cancel();
   }
 }

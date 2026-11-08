@@ -12247,8 +12247,12 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// and a followed series' delete setting.
   static Widget? _keepDownloadedRow(AggregatedItem item) {
     final prefs = GetIt.instance<UserPreferences>();
+    final removeWatchedHours = prefs.get(
+      UserPreferences.downloadRemoveWatchedAfterHours,
+    );
     final removeWatched =
-        prefs.get(UserPreferences.downloadRemoveWatchedAfterHours) >= 0;
+        removeWatchedHours >= 0 ||
+        removeWatchedHours == UserPreferences.removeWatchedAsk;
     final autoDownloads = GetIt.instance.isRegistered<AutoDownloadService>();
     final episodeRules =
         autoDownloads &&

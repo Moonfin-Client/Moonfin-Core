@@ -4388,13 +4388,18 @@ class UserPreferences extends ChangeNotifier {
   );
 
   /// Hours after an episode or movie the user downloaded by hand was watched
-  /// before it is removed: 0 right away, -1 never. Smart downloads and
+  /// before it is removed: 0 right away, -1 never, [removeWatchedAsk] asks
+  /// once one is played to the end from its file. Smart downloads and
   /// followed series remove what they queued by their own settings. One
   /// setting for the device, like the downloads themselves.
   static final downloadRemoveWatchedAfterHours = Preference(
     key: 'download_remove_watched_after_hours',
     defaultValue: -1,
   );
+
+  /// [downloadRemoveWatchedAfterHours] value that deletes nothing on its own
+  /// but asks, once a download is played to the end, whether to delete it.
+  static const removeWatchedAsk = -2;
 
   /// When the remove-watched setting was last turned on. Only what is watched
   /// after it is removed, so turning it on never empties the downloads the

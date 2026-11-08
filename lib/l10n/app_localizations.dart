@@ -27253,6 +27253,30 @@ abstract class AppLocalizations {
   /// **'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed'**
   String get removeWatchedDownloadsSubtitle;
 
+  /// Remove-watched-downloads option: ask whether to delete a download once it is played to the end
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me'**
+  String get removeWatchedAsk;
+
+  /// Title of the dialog shown after a downloaded episode or movie is played to the end
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this download?'**
+  String get deleteFinishedDownloadTitle;
+
+  /// Body of the dialog shown after a downloaded episode or movie is played to the end
+  ///
+  /// In en, this message translates to:
+  /// **'You finished {title}. Delete its download to free up space, or keep it and stop asking.'**
+  String deleteFinishedDownloadMessage(String title);
+
+  /// Button that closes a question without answering it, so it can be asked again later
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notNow;
+
   /// Toggle on the download sheet that stops watched downloads of this title from being removed automatically
   ///
   /// In en, this message translates to:

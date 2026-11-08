@@ -70,6 +70,7 @@ import '../../ui/navigation/destinations.dart';
 import '../../ui/screensaver/screensaver_controller.dart';
 import '../../ui/screens/home/home_view_model.dart';
 import '../../ui/screens/setup/setup_wizard_gate.dart';
+import '../../ui/widgets/finished_download_dialog.dart';
 import '../../watch_party/silo_watch_party_manager.dart';
 
 final _getIt = GetIt.instance;
@@ -271,17 +272,14 @@ void registerAppModule() {
             serverId: serverId,
           ),
       signedInServer: () {
-        if (!_getIt.isRegistered<MediaServerClient>()) return null;
         if (_getIt.isRegistered<ConnectivityService>() &&
             !_getIt<ConnectivityService>().canReachServer) {
           return null;
         }
-        final client = _getIt<MediaServerClient>();
-        return (
-          client: client,
-          serverId: _getIt<MediaServerClientFactory>().serverIdOf(client),
-        );
+        return _activeServer();
       },
+      activeServer: _activeServer,
+      askToDelete: askToDeleteFinishedDownload,
       syncInFlight: () =>
           _getIt.isRegistered<ConnectivityService>() &&
           _getIt<ConnectivityService>().isSyncing,
@@ -292,6 +290,15 @@ void registerAppModule() {
   _getIt.registerLazySingleton(() => const ExternalPlayerService());
 
   _registerUserScopedSingletons();
+}
+
+SignedInServer? _activeServer() {
+  if (!_getIt.isRegistered<MediaServerClient>()) return null;
+  final client = _getIt<MediaServerClient>();
+  return (
+    client: client,
+    serverId: _getIt<MediaServerClientFactory>().serverIdOf(client),
+  );
 }
 
 void _registerUserScopedSingletons() {
