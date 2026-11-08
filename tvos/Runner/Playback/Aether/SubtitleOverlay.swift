@@ -1034,12 +1034,8 @@ final class SubtitleOverlay: PlatformView {
         guard subtitleShadowColor != .clear else { return nil }
         let offset = subtitleShadowOffset * font.pointSize
         let shadow = NSShadow()
-        #if canImport(UIKit)
+        // NSTextField is flipped, so a positive height points down on AppKit too.
         shadow.shadowOffset = CGSize(width: offset, height: offset)
-        #else
-        // AppKit's shadow offsets point up.
-        shadow.shadowOffset = CGSize(width: offset, height: -offset)
-        #endif
         shadow.shadowBlurRadius = subtitleShadowBlur * font.pointSize
         shadow.shadowColor = subtitleShadowColor
         return shadow
