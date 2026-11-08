@@ -11165,6 +11165,14 @@
   "@settingsHideControlsAfterDescription": {
     "description": "Description under the Hide Controls After playback setting"
   },
+  "settingsHdrControlsDimming": "Dim Controls in HDR",
+  "@settingsHdrControlsDimming": {
+    "description": "Playback setting for how much the player controls dim while HDR video plays"
+  },
+  "settingsHdrControlsDimmingDescription": "White looks far brighter next to HDR video, so the player controls dim by this much while it plays.",
+  "@settingsHdrControlsDimmingDescription": {
+    "description": "Description under the Dim Controls in HDR playback setting"
+  },
   "settingsBitstreamAc3ToExternalDecoder": "Bitstream AC3 to external decoder",
   "settingsCinemaMode": "Cinema Mode",
   "settingsCinemaModeSubtitle": "Play trailers/prerolls before a main feature",

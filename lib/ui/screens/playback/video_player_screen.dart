@@ -740,6 +740,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return false;
   }
 
+  /// White looks far brighter next to an HDR picture, so the controls dim by
+  /// the amount set in settings while HDR is on screen.
+  Widget _dimForHdr(Widget child) {
+    final dimming = _prefs.get(UserPreferences.hdrControlsDimming);
+    final resolution = _manager.currentResolution;
+    if (dimming <= 0 ||
+        !isHdrSubtitleOutput(
+          videoRangeType: resolution?.videoRangeType,
+          isTranscoding: resolution?.playMethod == StreamPlayMethod.transcode,
+        )) {
+      return child;
+    }
+    final keep = (255 * (1 - dimming / 100)).round();
+    return ColorFiltered(
+      colorFilter: ColorFilter.mode(
+        Color.fromARGB(255, keep, keep, keep),
+        BlendMode.modulate,
+      ),
+      child: child,
+    );
+  }
+
   Future<void> _syncAutoHdrSwitching() async {
     if (!PlatformDetection.isWindows) return;
     // Leaving fullscreen on the way to the mini player must not drop the
@@ -4141,34 +4163,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         // is open, so closing it can hand focus back to the
                         // button that opened it.
                         Positioned.fill(
-                          child: Visibility(
-                            visible: !_subtitleDelayOpen,
-                            maintainState: true,
-                            maintainAnimation: true,
-                            maintainSize: true,
-                            maintainFocusability: true,
-                            child: Stack(
-                              children: [
-                                const Positioned.fill(
-                                  child: IgnorePointer(
-                                    child: ColoredBox(color: Color(0x4D000000)),
-                                  ),
-                                ),
-                                // The chrome stays in the tree while mpv owns
-                                // its own window: both native windows are
-                                // WS_EX_TRANSPARENT, so these widgets are still
-                                // what gets hit-tested. Only their pixels are
-                                // re-sent by HdrOverlayCapture.
-                                _buildTopOverlay(context),
-                                if (!PlatformDetection.useLeanbackUi &&
-                                    !_transportDocked)
-                                  Positioned.fill(
-                                    child: Center(
-                                      child: _buildCenterTransportControls(),
+                          child: _dimForHdr(
+                            Visibility(
+                              visible: !_subtitleDelayOpen,
+                              maintainState: true,
+                              maintainAnimation: true,
+                              maintainSize: true,
+                              maintainFocusability: true,
+                              child: Stack(
+                                children: [
+                                  const Positioned.fill(
+                                    child: IgnorePointer(
+                                      child: ColoredBox(
+                                        color: Color(0x4D000000),
+                                      ),
                                     ),
                                   ),
-                                _buildBottomOverlay(context),
-                              ],
+                                  // The chrome stays in the tree while mpv owns
+                                  // its own window: both native windows are
+                                  // WS_EX_TRANSPARENT, so these widgets are still
+                                  // what gets hit-tested. Only their pixels are
+                                  // re-sent by HdrOverlayCapture.
+                                  _buildTopOverlay(context),
+                                  if (!PlatformDetection.useLeanbackUi &&
+                                      !_transportDocked)
+                                    Positioned.fill(
+                                      child: Center(
+                                        child: _buildCenterTransportControls(),
+                                      ),
+                                    ),
+                                  _buildBottomOverlay(context),
+                                ],
+                              ),
                             ),
                           ),
                         ),

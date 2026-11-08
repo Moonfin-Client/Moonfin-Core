@@ -185,6 +185,16 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   5000: l10n.fiveSeconds,
                 },
               ),
+              SliderPreferenceTile(
+                preference: UserPreferences.hdrControlsDimming,
+                title: l10n.settingsHdrControlsDimming,
+                description: l10n.settingsHdrControlsDimmingDescription,
+                icon: Icons.hdr_on,
+                min: 0,
+                max: 70,
+                divisions: 7,
+                labelOf: (value) => value == 0 ? l10n.off : '$value%',
+              ),
               SwitchPreferenceTile(
                 preference: UserPreferences.showChapterMarkers,
                 title: l10n.showChapterMarkers,

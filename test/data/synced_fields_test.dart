@@ -114,6 +114,7 @@ void main() {
     'genresRowSortOrder',
     'glassQuality',
     'groupItemsIntoCollections',
+    'hdrControlsDimming',
     'hiddenContinueWatchingItems',
     'hiddenDetailButtonsDesktop',
     'hiddenDetailButtonsMobile',

@@ -1656,6 +1656,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['osd', 'timeout', 'auto hide', 'player ui'],
     ),
     video.leaf(
+      'hdrControlsDimming',
+      l10n.settingsHdrControlsDimming,
+      subtitle: l10n.settingsHdrControlsDimmingDescription,
+      keywords: ['osd', 'brightness', 'dim', 'player ui'],
+    ),
+    video.leaf(
       'showChapterMarkers',
       l10n.showChapterMarkers,
       subtitle: l10n.showChapterMarkersDescription,

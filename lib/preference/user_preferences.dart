@@ -434,6 +434,7 @@ class UserPreferences extends ChangeNotifier {
     'audio_night_mode',
     'confirm_exit',
     'controlsHideDelay',
+    'hdrControlsDimming',
     'defaultFavoritesFilter',
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
@@ -2959,6 +2960,12 @@ class UserPreferences extends ChangeNotifier {
   static final controlsHideDelay = Preference(
     key: 'controlsHideDelay',
     defaultValue: 5000,
+  );
+
+  /// How much the player controls dim while HDR plays, in percent.
+  static final hdrControlsDimming = Preference(
+    key: 'hdrControlsDimming',
+    defaultValue: 0,
   );
 
   static final unpauseRewindDuration = Preference(

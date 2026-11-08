@@ -121,9 +121,13 @@ class _Manager extends PlaybackManager {
   int stopCalls = 0;
   int nextInQueueCalls = 0;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
+  StreamResolutionResult? resolution;
 
   @override
   PlaybackBringupState get bringupState => bringup;
+
+  @override
+  StreamResolutionResult? get currentResolution => resolution;
 
   // The real calls run too, since they record the viewer's pause.
   @override
@@ -544,6 +548,67 @@ void main() {
     expect(find.byType(Slider), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
+  });
+
+  group('dimming the controls in HDR', () {
+    Future<ColorFilter?> controlsFilter(
+      WidgetTester tester, {
+      required int dimming,
+      String range = 'HDR10',
+      StreamPlayMethod method = StreamPlayMethod.directPlay,
+    }) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.hdrControlsDimming,
+        dimming,
+      );
+      manager.resolution = StreamResolutionResult(
+        streamUrl: 'http://server/stream',
+        mediaSourceId: 'source',
+        playMethod: method,
+        videoRangeType: range,
+      );
+      await mountPlayer(tester);
+      final filters = find.ancestor(
+        of: find.byType(Slider),
+        matching: find.byType(ColorFiltered),
+      );
+      final filter = filters.evaluate().isEmpty
+          ? null
+          : tester.widget<ColorFiltered>(filters.first).colorFilter;
+      await tester.pumpWidget(const SizedBox());
+      return filter;
+    }
+
+    testWidgets('HDR dims the controls by the set amount', (tester) async {
+      expect(
+        await controlsFilter(tester, dimming: 50),
+        const ColorFilter.mode(
+          Color.fromARGB(255, 128, 128, 128),
+          BlendMode.modulate,
+        ),
+      );
+    });
+
+    testWidgets('SDR leaves the controls alone', (tester) async {
+      expect(await controlsFilter(tester, dimming: 50, range: 'SDR'), isNull);
+    });
+
+    testWidgets('nothing dims with the setting off', (tester) async {
+      expect(await controlsFilter(tester, dimming: 0), isNull);
+    });
+
+    testWidgets('a transcode reaches the screen as SDR, so nothing dims', (
+      tester,
+    ) async {
+      expect(
+        await controlsFilter(
+          tester,
+          dimming: 50,
+          method: StreamPlayMethod.transcode,
+        ),
+        isNull,
+      );
+    });
   });
 
   testWidgets('the clock tick rebuilds the seek bar, not the whole player', (
