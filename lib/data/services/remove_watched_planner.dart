@@ -72,3 +72,12 @@ bool _removable(
   }
   return watchedLongEnough(item, deleteAfter, now);
 }
+
+/// Played to the end: past 90% of [item]'s runtime, where servers mark an
+/// item played and the credits usually start.
+bool playedToEnd(AggregatedItem item, Duration position) {
+  final runtime = item.runtime;
+  return runtime != null &&
+      runtime > Duration.zero &&
+      position >= runtime * 0.9;
+}

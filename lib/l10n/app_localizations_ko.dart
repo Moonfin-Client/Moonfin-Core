@@ -15007,6 +15007,20 @@ class AppLocalizationsKo extends AppLocalizations {
       '직접 다운로드한 에피소드와 영화를 언제 삭제할지 정합니다. 이 설정을 켠 뒤에 시청한 항목만 삭제됩니다';
 
   @override
+  String get removeWatchedAsk => 'Ask me';
+
+  @override
+  String get deleteFinishedDownloadTitle => 'Delete this download?';
+
+  @override
+  String deleteFinishedDownloadMessage(String title) {
+    return 'You finished $title. Delete its download to free up space, or keep it and stop asking.';
+  }
+
+  @override
+  String get notNow => 'Not Now';
+
+  @override
   String get keepDownloaded => '다운로드 유지';
 
   @override

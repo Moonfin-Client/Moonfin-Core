@@ -14186,6 +14186,27 @@
   "@removeWatchedDownloadsSubtitle": {
     "description": "Explains the remove-watched-downloads setting"
   },
+  "removeWatchedAsk": "Ask me",
+  "@removeWatchedAsk": {
+    "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+  },
+  "deleteFinishedDownloadTitle": "Delete this download?",
+  "@deleteFinishedDownloadTitle": {
+    "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+  },
+  "deleteFinishedDownloadMessage": "You finished {title}. Delete its download to free up space, or keep it and stop asking.",
+  "@deleteFinishedDownloadMessage": {
+    "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notNow": "Not Now",
+  "@notNow": {
+    "description": "Button that closes a question without answering it, so it can be asked again later"
+  },
   "keepDownloaded": "Keep Downloaded",
   "@keepDownloaded": {
     "description": "Toggle on the download sheet that stops watched downloads of this title from being removed automatically"

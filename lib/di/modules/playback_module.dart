@@ -912,14 +912,22 @@ void setActiveStreamResolver(MediaServerClient client) {
 /// Smart downloads and the remove-watched rule react as soon as an item
 /// stops, rather than waiting for the server's debounced user data event or
 /// the next reconnect.
-void _onItemStopped(dynamic item) {
+void _onItemStopped(
+  dynamic item,
+  StreamResolutionResult resolution,
+  Duration position,
+) {
   if (item is! AggregatedItem) return;
   if (item.type == 'Episode' && _getIt.isRegistered<AutoDownloadService>()) {
     _getIt<AutoDownloadService>().onEpisodeStopped(item.serverId);
   }
   if (removeWatchedTypes.contains(item.type) &&
       _getIt.isRegistered<RemoveWatchedService>()) {
-    _getIt<RemoveWatchedService>().onItemStopped(item.id);
+    final removeWatched = _getIt<RemoveWatchedService>();
+    if (resolution.isLocalMedia) {
+      removeWatched.onDownloadStopped(item, position);
+    }
+    removeWatched.onItemStopped(item.id);
   }
   // Plex sends no user data events, so the new resume point and watched state
   // have to be asked for. Plex items don't name their server, so one without
