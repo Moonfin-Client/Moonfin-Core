@@ -1,0 +1,97 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/repositories/item_mutation_repository.dart';
+import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/repositories/tmdb_repository.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
+import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _Client extends Mock implements MediaServerClient {}
+
+class _ItemsApi extends Mock implements ItemsApi {}
+
+class _PluginSyncService extends Mock implements PluginSyncService {}
+
+Map<String, dynamic> _episode(String id, int index) => {
+  'Id': id,
+  'Type': 'Episode',
+  'SeriesId': 'series-1',
+  'ParentIndexNumber': 1,
+  'IndexNumber': index,
+};
+
+void main() {
+  late _Client client;
+  late _ItemsApi itemsApi;
+
+  setUp(() async {
+    await GetIt.instance.reset();
+    userDataSync.reset();
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+    final pluginSync = _PluginSyncService();
+    when(() => pluginSync.seerrAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
+
+    client = _Client();
+    itemsApi = _ItemsApi();
+    when(() => client.itemsApi).thenReturn(itemsApi);
+    when(() => client.baseUrl).thenReturn('http://server');
+  });
+
+  tearDown(() async {
+    userDataSync.reset();
+    await GetIt.instance.reset();
+  });
+
+  test('marking the next up episode played moves the series on', () async {
+    when(
+      () => itemsApi.getItem(
+        'series-1',
+        mediaSourceId: any(named: 'mediaSourceId'),
+      ),
+    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
+    var nextUp = _episode('e3', 3);
+    when(
+      () => itemsApi.getNextUp(
+        seriesId: 'series-1',
+        limit: 1,
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [nextUp],
+      },
+    );
+
+    final vm = ItemDetailViewModel(
+      itemId: 'series-1',
+      client: client,
+      mutations: ItemMutationRepository(client),
+      mdbListRepository: MdbListRepository(client, TmdbRepository(client)),
+      tmdbRepository: TmdbRepository(client),
+    );
+    addTearDown(vm.dispose);
+    await vm.load();
+    for (var i = 0; i < 100 && vm.nextUp == null; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(vm.nextUp?.id, 'e3');
+
+    // The episode page marks it played; the server now has e4 as next up.
+    userDataSync.publish('e3', {'Played': true, 'PlaybackPositionTicks': 0});
+    nextUp = _episode('e4', 4);
+
+    await vm.syncUserDataIfStale();
+
+    expect(vm.nextUp?.id, 'e4');
+  });
+}

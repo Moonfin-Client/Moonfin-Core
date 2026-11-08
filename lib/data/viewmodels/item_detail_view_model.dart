@@ -813,6 +813,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     _syncingUserData = true;
     try {
       await userDataSync.refreshFromServer(_client, ids);
+      // A change to an episode's watched state can move the series on, and
+      // only the server knows which episode comes next.
+      if (!_isDisposed && _item?.type == 'Series') await _loadNextUp();
     } finally {
       _syncingUserData = false;
       _userDataStale = false;

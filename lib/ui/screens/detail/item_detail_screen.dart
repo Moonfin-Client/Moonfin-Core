@@ -9664,9 +9664,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             } else {
               // Next Up arrives on its own future, so fall back to whatever is part
               // way through. First unwatched can sit behind the user, since a
-              // skipped episode or a special counts as unwatched.
+              // skipped episode or a special counts as unwatched. A Next Up
+              // marked played since is stale until the page refetches it.
+              final nextUp = viewModel.nextUp;
               targetEpisode =
-                  viewModel.nextUp ??
+                  (nextUp != null && !nextUp.isPlayed ? nextUp : null) ??
                   allEpisodes.firstWhere(
                     (e) => !e.isPlayed && (e.playedPercentage ?? 0) > 0,
                     orElse: () => allEpisodes.firstWhere(
