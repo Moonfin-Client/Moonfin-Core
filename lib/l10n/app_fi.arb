@@ -1305,7 +1305,7 @@
     "@downloadAllQuality": {
         "description": "Title for download quality picker when downloading all"
     },
-    "downloadQuality": "Lataa laatu",
+    "downloadQuality": "Lataamisen Laatu",
     "@downloadQuality": {
         "description": "Title for download quality picker for a single item"
     },
@@ -2032,7 +2032,7 @@
     "@themeSystem": {
         "description": "Reader theme option for system default"
     },
-    "themeLight": "Teema: Valo",
+    "themeLight": "Teema: Vaalea",
     "@themeLight": {
         "description": "Reader theme option for light mode"
     },
@@ -17406,5 +17406,10 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "settingsDateFormat": "Päivämäärämuoto",
+    "settingsDateFormatDescription": "Valitse kalenterin ja julkaisupäivien osalta joko kuukausi-päivä-, päivä-kuukausi- tai paikallisen oletusasetuksen",
+    "dateFormatSystem": "Kieliasetuksen oletusarvo",
+    "dateFormatMonthDay": "Kuukausi / Päivä (10. marraskuuta)",
+    "dateFormatDayMonth": "Päivä / Kuukausi (10. marraskuuta)"
 }
