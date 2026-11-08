@@ -122,6 +122,7 @@ import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SecondarySubtitleOverlay
 import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.SubtitleBox
+import org.moonfin.nativevideo.subtitle.SubtitleEdgeSpan
 import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
@@ -135,6 +136,7 @@ import org.moonfin.nativevideo.subtitle.primaryCueWithoutDefaultMargin
 import org.moonfin.nativevideo.subtitle.sourceTreeFor
 import org.moonfin.nativevideo.subtitle.supportsSecondarySubtitleFormat
 import org.moonfin.nativevideo.subtitle.syncDelaysPayload
+import org.moonfin.nativevideo.subtitle.withEdges
 import org.moonfin.nativevideo.ts.withHdmvTsSupport
 
 @OptIn(ExperimentalApi::class)
@@ -1133,6 +1135,8 @@ class Media3VideoView(
     private var selectUndeterminedTextLanguage = false
     private var subtitleEmbeddedStylesEnabled = true
     private var subtitleEmbeddedFontSizesEnabled = true
+    private var subtitleEdgeSpan: SubtitleEdgeSpan? = null
+    private val subtitleTypefaces = HashMap<String, Typeface?>()
     private var assFallbackFontBytes: ByteArray? = null
     private var isDisposed = false
     internal var leaveCensus: (() -> Unit)? = null
@@ -1265,7 +1269,7 @@ class Media3VideoView(
             }?.let { it.group.getFormat(it.trackIndex) }
             val stacked = joinStackedCues(cueGroup.cues.map {
                 primaryCueWithoutDefaultMargin(it, format)
-            })
+            }).map { it.withEdges(subtitleEdgeSpan) }
             if (::secondarySubtitleOverlay.isInitialized) {
                 secondarySubtitleOverlay.updatePrimaryCues(stacked)
             } else {
@@ -5131,6 +5135,11 @@ class Media3VideoView(
         val verticalOffset = (args?.get("verticalOffset") as? Number)?.toFloat()
         val applyEmbeddedStyles = args?.get("applyEmbeddedStyles") as? Boolean
         val applyEmbeddedFontSizes = args?.get("applyEmbeddedFontSizes") as? Boolean
+        val strokeScale = (args?.get("strokeScale") as? Number)?.toFloat() ?: 1f
+        val shadowColor = (args?.get("shadowColor") as? Number)?.toInt() ?: 0
+        val shadowOffset = (args?.get("shadowOffset") as? Number)?.toFloat() ?: 0f
+        val shadowBlur = (args?.get("shadowBlur") as? Number)?.toFloat() ?: 0f
+        val fontPath = args?.get(if (bold) "boldFontPath" else "fontPath") as? String
 
         val edgeType = if (strokeColor != Color.TRANSPARENT) {
             CaptionStyleCompat.EDGE_TYPE_OUTLINE
@@ -5149,12 +5158,20 @@ class Media3VideoView(
         // Use the OS default typeface so Android falls back per script
         // for glyphs beyond Latin, instead of a bundled font
         // that only covers Latin and renders everything else as tofu.
+        // A downloaded font keeps that fallback for what it doesn't cover.
         val baseTypeface = Typeface.DEFAULT
-        val resolvedTypeface = if (bold) {
+        val resolvedTypeface = subtitleTypeface(fontPath) ?: if (bold) {
             Typeface.create(baseTypeface, Typeface.BOLD)
         } else {
             baseTypeface
         }
+        subtitleEdgeSpan = SubtitleEdgeSpan.of(
+            strokeScale,
+            edgeType == CaptionStyleCompat.EDGE_TYPE_OUTLINE,
+            shadowColor,
+            shadowOffset,
+            shadowBlur,
+        )
 
         subtitleView.setStyle(
             CaptionStyleCompat(
@@ -5186,7 +5203,21 @@ class Media3VideoView(
             verticalOffset = verticalOffset,
             embeddedStylesEnabled = subtitleEmbeddedStylesEnabled,
             embeddedFontSizesEnabled = subtitleEmbeddedFontSizesEnabled,
+            typeface = resolvedTypeface,
+            edgeSpan = subtitleEdgeSpan,
         )
+    }
+
+    private fun subtitleTypeface(path: String?): Typeface? {
+        if (path.isNullOrEmpty()) return null
+        return subtitleTypefaces.getOrPut(path) {
+            try {
+                Typeface.createFromFile(File(path))
+            } catch (e: RuntimeException) {
+                AndroidLog.w("MoonfinSubtitles", "Subtitle font failed to load: $path", e)
+                null
+            }
+        }
     }
 
     /** The window the player is on, or null before it has a timeline. */

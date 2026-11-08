@@ -26,6 +26,7 @@ import 'mpv_frame_sampler.dart';
 import 'pending_subtitle_choice.dart';
 import 'secondary_subtitle_position.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_fonts.dart';
 
 class _ParsedMpvConfCacheEntry {
   final DateTime modified;
@@ -924,6 +925,12 @@ class MediaKitPlayerBackend extends PlayerBackend
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
     await _configureAndroidLibassFonts();
+    if (_player.platform is NativePlayer) {
+      await _writeSubtitleFont(
+        _player.platform as NativePlayer,
+        _lastFontFamily ?? _prefs.get(UserPreferences.subtitlesFont),
+      );
+    }
     await _applyAudioPassthroughOptions();
     // Applied once and before the custom mpv.conf, which is only re-applied
     // when it changes, so the user's own values still win.
@@ -3543,6 +3550,11 @@ class MediaKitPlayerBackend extends PlayerBackend
   double? _lastFontSize;
   int? _lastFontWeight;
   double? _lastVerticalOffset;
+  double? _lastStrokeScale;
+  int? _lastShadowColor;
+  double? _lastShadowOffset;
+  double? _lastShadowBlur;
+  String? _lastFontFamily;
   bool _assScaleWritten = false;
 
   @override
@@ -3553,6 +3565,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     if (textColor != null) _lastTextColor = textColor;
     if (backgroundColor != null) _lastBackgroundColor = backgroundColor;
@@ -3560,6 +3577,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (fontSize != null) _lastFontSize = fontSize;
     if (fontWeight != null) _lastFontWeight = fontWeight;
     if (verticalOffset != null) _lastVerticalOffset = verticalOffset;
+    if (strokeScale != null) _lastStrokeScale = strokeScale;
+    if (shadowColor != null) _lastShadowColor = shadowColor;
+    if (shadowOffset != null) _lastShadowOffset = shadowOffset;
+    if (shadowBlur != null) _lastShadowBlur = shadowBlur;
+    if (fontFamily != null) _lastFontFamily = fontFamily;
 
     try {
       await _writeSubtitleStyle(_player.platform as NativePlayer);
@@ -3575,8 +3597,15 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     final backgroundColor = _lastBackgroundColor;
     if (backgroundColor != null) {
+      // The shadow is sized on the same 720 line canvas as the text.
+      final textSize = mpvSubtitleFontSize(
+        _lastFontSize ?? UserPreferences.subtitlesTextSize.defaultValue,
+      );
       for (final entry in subtitleBackgroundMpvProperties(
         backgroundColor,
+        shadowColor: _lastShadowColor ?? 0,
+        shadowOffset: (_lastShadowOffset ?? 0) * textSize,
+        shadowBlur: (_lastShadowBlur ?? 0) * textSize,
       ).entries) {
         await _nativeSetProperty(native, entry.key, entry.value);
       }
@@ -3588,7 +3617,11 @@ class MediaKitPlayerBackend extends PlayerBackend
         'sub-border-color',
         _argbToMpvColor(strokeColor),
       );
-      await _nativeSetProperty(native, 'sub-border-size', '2');
+      await _nativeSetProperty(
+        native,
+        'sub-border-size',
+        (2 * (_lastStrokeScale ?? 1)).round().toString(),
+      );
     }
     final fontWeight = _lastFontWeight;
     if (fontWeight != null) {
@@ -3605,6 +3638,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       final marginY = (verticalOffset * 720).round();
       await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
     }
+    final fontFamily = _lastFontFamily;
+    if (fontFamily != null) await _writeSubtitleFont(native, fontFamily);
     // Last, because it decides whether the colors above reach an ASS subtitle
     // at all, and it writes the size.
     await _applyAssOverrideMode();
@@ -3715,15 +3750,59 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   /// mpv uses sub-back-color for a shadow until a background box is selected.
   /// Reset both style and padding when the background becomes transparent.
-  static Map<String, String> subtitleBackgroundMpvProperties(int color) {
+  /// The box takes the place of a shadow, and libass blurs the outline along
+  /// with the shadow since it has no blur for the shadow alone.
+  static Map<String, String> subtitleBackgroundMpvProperties(
+    int color, {
+    int shadowColor = 0,
+    double shadowOffset = 0,
+    double shadowBlur = 0,
+  }) {
     final hasBackground = ((color >> 24) & 0xff) != 0;
+    final hasShadow = !hasBackground && shadowColor != 0;
     return {
-      'sub-back-color': _argbToMpvColor(color),
+      'sub-back-color': _argbToMpvColor(hasShadow ? shadowColor : color),
       'sub-border-style': hasBackground
           ? 'background-box'
           : 'outline-and-shadow',
-      'sub-shadow-offset': hasBackground ? '4' : '0',
+      'sub-shadow-offset': hasBackground
+          ? '4'
+          : hasShadow
+          ? shadowOffset.toStringAsFixed(1)
+          : '0',
+      'sub-blur': hasShadow ? shadowBlur.toStringAsFixed(1) : '0',
     };
+  }
+
+  /// Points libass at the picked font. mpv only reads the fonts folder as a
+  /// track loads, so this also runs before each stream opens. A font that
+  /// can't be placed leaves the player's own.
+  Future<void> _writeSubtitleFont(NativePlayer native, String family) async {
+    var font = _useLibass ? _libassFontFamily : 'sans-serif';
+    try {
+      final files = await SubtitleFonts.instance.files(family);
+      if (files != null) {
+        // Android and iOS already give libass a folder of bundled fonts, so
+        // the picked one joins them there.
+        final folder = _useLibass
+            ? (await _tryNativeGetProperty(native, 'sub-fonts-dir'))?.trim()
+            : null;
+        if (folder == null || folder.isEmpty) {
+          await _nativeSetProperty(
+            native,
+            'sub-fonts-dir',
+            File(files.regular).parent.path,
+          );
+        } else {
+          for (final path in [files.regular, files.bold]) {
+            final target = File('$folder/${path.split('/').last}');
+            if (!await target.exists()) await File(path).copy(target.path);
+          }
+        }
+        font = family;
+      }
+    } catch (_) {}
+    await _nativeSetProperty(native, 'sub-font', font);
   }
 
   Stream<T> _mergeWithStale<T>(

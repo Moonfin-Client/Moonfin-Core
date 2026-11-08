@@ -3538,6 +3538,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           verticalOffset: style.verticalOffset,
+          strokeScale: style.strokeScale,
+          shadowColor: style.shadowColor,
+          shadowOffset: style.shadowOffset,
+          shadowBlur: style.shadowBlur,
+          fontFamily: style.fontFamily,
           applyEmbeddedStyles: embeddedStyles,
           applyEmbeddedFontSizes: embeddedFontSizes,
         ),
@@ -3554,6 +3559,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           verticalOffset: style.verticalOffset,
+          strokeScale: style.strokeScale,
+          shadowColor: style.shadowColor,
+          shadowOffset: style.shadowOffset,
+          shadowBlur: style.shadowBlur,
+          fontFamily: style.fontFamily,
         ),
       );
     }

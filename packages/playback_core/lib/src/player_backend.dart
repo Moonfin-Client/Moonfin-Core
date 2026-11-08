@@ -186,6 +186,10 @@ abstract class PlayerBackend {
     String? language,
     String? codec,
   });
+
+  /// [shadowColor] is zero for no shadow. [shadowOffset] and [shadowBlur] are
+  /// fractions of the text size, and [fontFamily] is empty for the player's
+  /// own font.
   Future<void> configureSubtitleStyle({
     int? textColor,
     int? backgroundColor,
@@ -193,6 +197,11 @@ abstract class PlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   });
 
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode);

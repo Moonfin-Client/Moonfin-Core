@@ -2,6 +2,7 @@ import 'package:custom_tv_text_field/custom_tv_text_field.dart'
     show KeyboardStyle;
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
+import '../../playback/subtitle_fonts.dart';
 import '../../preference/preference_constants.dart' as prefs;
 import '../../preference/user_preferences.dart';
 import '../../ui/widgets/navigation_layout.dart';
@@ -421,6 +422,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('subtitleMode', UserPreferences.subtitleMode, SyncCodec.enumName, enumValues: prefs.SubtitleMode.values),
   SyncedField('subtitleTextStrokeColor', UserPreferences.subtitleTextStrokeColor, SyncCodec.colorAsText),
   SyncedField('subtitlesBackgroundColor', UserPreferences.subtitlesBackgroundColor, SyncCodec.colorAsText),
+  SyncedField('subtitlesFont', UserPreferences.subtitlesFont, SyncCodec.text, normalize: knownSubtitleFont),
   SyncedField('subtitlesHdrBackgroundColor', UserPreferences.subtitlesHdrBackgroundColor, SyncCodec.colorAsText),
   SyncedField('subtitlesHdrOffsetPosition', UserPreferences.subtitlesHdrOffsetPosition, SyncCodec.decimal),
   SyncedField('subtitlesHdrSeparate', UserPreferences.subtitlesHdrSeparate, SyncCodec.boolean),
@@ -429,6 +431,11 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('subtitlesHdrTextStrokeColor', UserPreferences.subtitlesHdrTextStrokeColor, SyncCodec.colorAsText),
   SyncedField('subtitlesHdrTextWeight', UserPreferences.subtitlesHdrTextWeight, SyncCodec.integer),
   SyncedField('subtitlesOffsetPosition', UserPreferences.subtitlesOffsetPosition, SyncCodec.decimal),
+  SyncedField('subtitlesShadow', UserPreferences.subtitlesShadow, SyncCodec.boolean),
+  SyncedField('subtitlesShadowBlur', UserPreferences.subtitlesShadowBlur, SyncCodec.integer),
+  SyncedField('subtitlesShadowIntensity', UserPreferences.subtitlesShadowIntensity, SyncCodec.integer),
+  SyncedField('subtitlesShadowOffset', UserPreferences.subtitlesShadowOffset, SyncCodec.integer),
+  SyncedField('subtitlesStrokeWidth', UserPreferences.subtitlesStrokeWidth, SyncCodec.integer),
   SyncedField('subtitlesTextColor', UserPreferences.subtitlesTextColor, SyncCodec.colorAsText),
   SyncedField('subtitlesTextSize', UserPreferences.subtitlesTextSize, SyncCodec.decimal),
   SyncedField('subtitlesTextWeight', UserPreferences.subtitlesTextWeight, SyncCodec.integer),

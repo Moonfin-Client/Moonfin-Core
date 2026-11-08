@@ -359,6 +359,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         verticalOffset: style.verticalOffset,
+        strokeScale: style.strokeScale,
+        shadowColor: style.shadowColor,
+        shadowOffset: style.shadowOffset,
+        shadowBlur: style.shadowBlur,
+        fontFamily: style.fontFamily,
       );
     } catch (_) {}
   }

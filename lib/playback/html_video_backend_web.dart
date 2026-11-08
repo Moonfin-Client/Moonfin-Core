@@ -11,6 +11,7 @@ import '../preference/user_preferences.dart';
 import 'html_video_backend_profile.dart';
 import 'letterbox_croppers.dart';
 import 'secondary_subtitle_position.dart';
+import 'subtitle_fonts.dart';
 import 'web_subtitle_overlay_web.dart';
 import 'web_secondary_subtitle_url.dart';
 import 'web_subtitle_position.dart';
@@ -104,6 +105,11 @@ class HtmlVideoBackend extends PlayerBackend
   double? _subtitleFontSize;
   int? _subtitleFontWeight;
   double _subtitleVerticalOffset = 0;
+  double _subtitleStrokeScale = 1;
+  int _subtitleShadowColor = 0;
+  double _subtitleShadowOffset = 0;
+  double _subtitleShadowBlur = 0;
+  SubtitleFont? _subtitleFont;
   // Check a fresh cue: assigning an unsupported property merely creates a JS field.
   static final _nativeLineAlignment = web.VTTCue(0, 1, '').has('lineAlign');
   static final _nativePositionAlignment = web.VTTCue(0, 1, '').has('positionAlign');
@@ -1181,7 +1187,8 @@ class HtmlVideoBackend extends PlayerBackend
     final font = _cueFontSize(secondary: secondary);
     final key =
         '${cue.text}|$canvasWidth|$_cueCanvasHeight|${cue.size}|'
-        '$rawPosition|${cue.align}|$positionAlign|$font|$_subtitleFontWeight';
+        '$rawPosition|${cue.align}|$positionAlign|$font|$_subtitleFontWeight|'
+        '$_cueFontFamily';
     final cached = _cueLayouts[key];
     if (cached != null) return cached;
     final measure = web.HTMLDivElement()
@@ -1189,7 +1196,7 @@ class HtmlVideoBackend extends PlayerBackend
       ..style.cssText =
           'position:fixed;visibility:hidden;left:-10000px;'
           'white-space:pre-line;overflow-wrap:break-word;box-sizing:border-box;'
-          'font-family:sans-serif;font-size:${font}px;'
+          'font-family:$_cueFontFamily;font-size:${font}px;'
           'line-height:1.2;font-weight:${(_subtitleFontWeight ?? 400) >= 600 ? 700 : 400};';
     measure.appendChild(cue.getCueAsHTML());
     web.document.body?.appendChild(measure);
@@ -1441,6 +1448,11 @@ class HtmlVideoBackend extends PlayerBackend
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     if (_disposed) return;
     if (textColor != null) _subtitleTextColor = textColor;
@@ -1451,6 +1463,11 @@ class HtmlVideoBackend extends PlayerBackend
     if (verticalOffset != null) {
       _subtitleVerticalOffset = verticalOffset.clamp(0.0, 1.0);
     }
+    if (strokeScale != null) _subtitleStrokeScale = strokeScale;
+    if (shadowColor != null) _subtitleShadowColor = shadowColor;
+    if (shadowOffset != null) _subtitleShadowOffset = shadowOffset;
+    if (shadowBlur != null) _subtitleShadowBlur = shadowBlur;
+    if (fontFamily != null) _subtitleFont = subtitleFontNamed(fontFamily);
     _applySubtitleAppearance();
     _forEachTextTrack(_positionCues);
     _positionSecondaryCues();
@@ -1467,7 +1484,7 @@ class HtmlVideoBackend extends PlayerBackend
     rules.add(
       'background-color: ${_cssColor(_subtitleBackgroundColor) ?? 'transparent'}',
     );
-    rules.add('font-family: sans-serif');
+    rules.add('font-family: $_cueFontFamily');
     rules.add('font-size: ${_cueFontSize()}px');
     rules.add('line-height: 1.2');
     final weight = _subtitleFontWeight;
@@ -1475,23 +1492,49 @@ class HtmlVideoBackend extends PlayerBackend
       rules.add('font-weight: ${weight >= 600 ? 'bold' : 'normal'}');
     }
     final stroke = _cssColor(_subtitleStrokeColor);
+    final shadow = _cssColor(_subtitleShadowColor);
     // Offsets in em so the outline keeps its weight as the text is resized.
-    rules.add(
-      stroke == null
-          ? 'text-shadow: none'
-          : 'text-shadow: -0.04em -0.04em 0 $stroke, 0.04em -0.04em 0 $stroke, '
-                '-0.04em 0.04em 0 $stroke, 0.04em 0.04em 0 $stroke',
-    );
+    // The first shadow is drawn on top, so the drop shadow goes last.
+    String em(double value) => '${value.toStringAsFixed(3)}em';
+    final w = em(0.04 * _subtitleStrokeScale);
+    final offset = em(_subtitleShadowOffset);
+    final blur = em(_subtitleShadowBlur);
+    final shadows = [
+      if (stroke != null) ...[
+        '-$w -$w 0 $stroke',
+        '$w -$w 0 $stroke',
+        '-$w $w 0 $stroke',
+        '$w $w 0 $stroke',
+      ],
+      if (shadow != null) '$offset $offset $blur $shadow',
+    ];
+    rules.add('text-shadow: ${shadows.isEmpty ? 'none' : shadows.join(', ')}');
 
     final style = _subtitleStyleElement ??= _createSubtitleStyleElement();
     final secondaryColor = _cssColor(_secondaryTextColor);
+    final font = _subtitleFont;
 
     style.textContent =
+        '${font == null ? '' : _fontFaces(font)}'
         '#$_viewType::cue { ${rules.join('; ')} }\n'
         '#$_viewType::cue(.moonfin-secondary) { '
         'font-size: ${_cueFontSize(secondary: true)}px; '
         '${secondaryColor == null ? '' : 'color: $secondaryColor;'} }';
   }
+
+  String get _cueFontFamily {
+    final font = _subtitleFont;
+    return font == null ? 'sans-serif' : "'${font.family}', sans-serif";
+  }
+
+  /// The browser fetches the picked font itself, the first time a cue needs
+  /// it.
+  static String _fontFaces(SubtitleFont font) => [
+    for (final bold in [false, true])
+      "@font-face { font-family: '${font.family}'; "
+          'font-weight: ${bold ? 700 : 400}; '
+          "src: url('${font.url(bold: bold)}') format('truetype'); }\n",
+  ].join();
 
   web.HTMLStyleElement _createSubtitleStyleElement() {
     final style = web.HTMLStyleElement();

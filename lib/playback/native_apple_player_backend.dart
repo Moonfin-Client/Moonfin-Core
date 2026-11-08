@@ -21,6 +21,7 @@ import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
 import 'subtitle_cues.dart';
+import 'subtitle_fonts.dart';
 
 class NativeApplePlayerBackend
     with SubtitleDelayState, AppleSecondarySubtitleControls
@@ -986,6 +987,11 @@ class NativeApplePlayerBackend
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     await _invoke<void>('configureSubtitleStyle', {
       'textColor': textColor,
@@ -994,6 +1000,11 @@ class NativeApplePlayerBackend
       'fontSize': fontSize,
       'fontWeight': fontWeight,
       'verticalOffset': verticalOffset,
+      'strokeScale': strokeScale,
+      'shadowColor': shadowColor,
+      'shadowOffset': shadowOffset,
+      'shadowBlur': shadowBlur,
+      ...await subtitleFontPaths(fontFamily),
     });
   }
 

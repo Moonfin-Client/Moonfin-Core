@@ -112,6 +112,11 @@ Future<void> setPrimarySubtitleAppearance(
     fontSize: style.fontSize,
     fontWeight: style.fontWeight,
     verticalOffset: style.verticalOffset,
+    strokeScale: style.strokeScale,
+    shadowColor: style.shadowColor,
+    shadowOffset: style.shadowOffset,
+    shadowBlur: style.shadowBlur,
+    fontFamily: style.fontFamily,
   );
   await syncSecondarySubtitleStyle(manager, prefs);
 }
@@ -169,6 +174,19 @@ class SubtitleStyle {
   final int fontWeight;
   final double verticalOffset;
 
+  /// The outline width as a multiple of each player's own.
+  final double strokeScale;
+
+  /// Zero for no shadow.
+  final int shadowColor;
+
+  /// Fractions of the text size.
+  final double shadowOffset;
+  final double shadowBlur;
+
+  /// Empty for the player's own font.
+  final String fontFamily;
+
   const SubtitleStyle({
     required this.textColor,
     required this.backgroundColor,
@@ -176,6 +194,11 @@ class SubtitleStyle {
     required this.fontSize,
     required this.fontWeight,
     required this.verticalOffset,
+    this.strokeScale = 1,
+    this.shadowColor = 0,
+    this.shadowOffset = 0,
+    this.shadowBlur = 0,
+    this.fontFamily = '',
   });
 
   /// Reads the appearance for whatever [resolution] is putting on screen.
@@ -201,6 +224,8 @@ class SubtitleStyle {
   }) {
     final useHdr = isHdr && get(UserPreferences.subtitlesHdrSeparate);
     T pick<T>(Preference<T> base, Preference<T> hdr) => get(useHdr ? hdr : base);
+    final shadowAlpha =
+        get(UserPreferences.subtitlesShadowIntensity) * 255 ~/ 100;
 
     return SubtitleStyle(
       textColor: pick(
@@ -227,6 +252,11 @@ class SubtitleStyle {
         UserPreferences.subtitlesOffsetPosition,
         UserPreferences.subtitlesHdrOffsetPosition,
       ).clamp(0.0, primarySubtitleMaxOffset).toDouble(),
+      strokeScale: get(UserPreferences.subtitlesStrokeWidth) / 100,
+      shadowColor: get(UserPreferences.subtitlesShadow) ? shadowAlpha << 24 : 0,
+      shadowOffset: get(UserPreferences.subtitlesShadowOffset) * 0.02,
+      shadowBlur: get(UserPreferences.subtitlesShadowBlur) * 0.02,
+      fontFamily: get(UserPreferences.subtitlesFont),
     );
   }
 
@@ -238,7 +268,12 @@ class SubtitleStyle {
       other.strokeColor == strokeColor &&
       other.fontSize == fontSize &&
       other.fontWeight == fontWeight &&
-      other.verticalOffset == verticalOffset;
+      other.verticalOffset == verticalOffset &&
+      other.strokeScale == strokeScale &&
+      other.shadowColor == shadowColor &&
+      other.shadowOffset == shadowOffset &&
+      other.shadowBlur == shadowBlur &&
+      other.fontFamily == fontFamily;
 
   @override
   int get hashCode => Object.hash(
@@ -248,5 +283,10 @@ class SubtitleStyle {
     fontSize,
     fontWeight,
     verticalOffset,
+    strokeScale,
+    shadowColor,
+    shadowOffset,
+    shadowBlur,
+    fontFamily,
   );
 }

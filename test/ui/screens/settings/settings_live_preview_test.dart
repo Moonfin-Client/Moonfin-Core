@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/user.dart';
@@ -20,6 +24,7 @@ import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/playback/subtitle_fonts.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -2319,6 +2324,89 @@ void main() {
       await tester.pumpAndSettle();
       expect(controller.isTrying('subtitles_text_color'), isFalse);
       expect(prefs.get(UserPreferences.subtitlesTextColor), 0xFFFFFFFF);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the line follows the stroke width and shadow', (
+      tester,
+    ) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Text Shadow',
+            prefKey: 'subtitles_shadow',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await pumpPlayer(tester, controller);
+      final plain = lineStyle(tester, 'hear').shadows!;
+
+      controller
+        ..tryValue('subtitles_shadow', true)
+        ..tryValue('subtitles_stroke_width', 200);
+      await pumpPlayer(tester, controller);
+      final styled = lineStyle(tester, 'hear').shadows!;
+      expect(styled, hasLength(plain.length + 1));
+      expect(styled.first.color.a, closeTo(0.8, 0.01));
+      expect(styled.last.offset, plain.last.offset * 2);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a font is only saved once it has downloaded', (tester) async {
+      final roboto = File('assets/fonts/Roboto-Regular.ttf').readAsBytesSync();
+      var portal = true;
+      final previous = SubtitleFonts.instance;
+      SubtitleFonts.instance = SubtitleFonts(
+        directory: () async => null,
+        client: MockClient(
+          (_) async => portal
+              ? http.Response('<html>Sign in</html>', 200)
+              : http.Response.bytes(roboto, 200),
+        ),
+      );
+      addTearDown(() => SubtitleFonts.instance = previous);
+      await tester.pumpWidget(
+        host(SettingsPreviewController(), const SubtitleCustomizationScreen()),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> pick() async {
+        await tester.ensureVisible(find.text(l10n.subtitleFont));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.subtitleFont));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Fira Sans'));
+        await tester.runAsync(() => SubtitleFonts.instance.load('Fira Sans'));
+        await tester.pumpAndSettle();
+      }
+
+      await pick();
+      expect(
+        find.text(l10n.subtitleFontDownloadFailed('Fira Sans')),
+        findsOneWidget,
+      );
+      expect(prefs.get(UserPreferences.subtitlesFont), '');
+
+      portal = false;
+      await pick();
+      expect(prefs.get(UserPreferences.subtitlesFont), 'Fira Sans');
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Bold Text switches the weight', (tester) async {
+      await tester.pumpWidget(
+        host(SettingsPreviewController(), const SubtitleCustomizationScreen()),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.subtitlesTextWeight), 700);
+      await tester.tap(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.subtitlesTextWeight), 400);
       debugDefaultTargetPlatformOverride = null;
     });
   });

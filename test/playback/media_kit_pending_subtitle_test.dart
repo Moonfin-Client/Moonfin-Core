@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:moonfin/playback/media_kit_player_backend.dart';
+import 'package:moonfin/playback/subtitle_fonts.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -665,4 +668,54 @@ void main() {
       expect(player.selections, action == 'choice' ? ['17'] : isEmpty);
     });
   }
+
+  group('a picked subtitle font', () {
+    late Directory fonts;
+    setUp(() {
+      fonts = Directory.systemTemp.createTempSync('subtitle-fonts');
+      final previous = SubtitleFonts.instance;
+      SubtitleFonts.instance = SubtitleFonts(directory: () async => fonts);
+      addTearDown(() {
+        SubtitleFonts.instance = previous;
+        fonts.deleteSync(recursive: true);
+      });
+    });
+    void download() {
+      File('${fonts.path}/FiraSans-Regular.ttf').writeAsBytesSync([0, 1, 0, 0]);
+      File('${fonts.path}/FiraSans-Bold.ttf').writeAsBytesSync([0, 1, 0, 0]);
+    }
+
+    test('waits for its download, and the stroke width applies either way', () async {
+      await backend.configureSubtitleStyle(strokeColor: 0xFF000000, strokeScale: 2, fontFamily: 'Fira Sans');
+      expect(properties['sub-border-size'], '4');
+      expect(properties['sub-font'], 'Noto Sans CJK SC');
+    });
+
+    test('joins the bundled fonts on Android before the stream opens', () async {
+      final bundled = Directory.systemTemp.createTempSync('bundled-fonts');
+      addTearDown(() => bundled.deleteSync(recursive: true));
+      properties['sub-fonts-dir'] = bundled.path;
+      await prefs.set(UserPreferences.subtitlesFont, 'Fira Sans');
+      download();
+
+      final race = await startOpeningRace({});
+      expect(properties['sub-font'], 'Fira Sans');
+      expect(properties['sub-fonts-dir'], bundled.path);
+      expect(File('${bundled.path}/FiraSans-Bold.ttf').existsSync(), isTrue);
+      race.release();
+      await race.opening;
+    });
+
+    test('points libass at the download folder on desktop', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      download();
+
+      await backend.configureSubtitleStyle(fontFamily: 'Fira Sans');
+      expect(properties['sub-fonts-dir'], fonts.path);
+      expect(properties['sub-font'], 'Fira Sans');
+      await backend.configureSubtitleStyle(fontFamily: '');
+      expect(properties['sub-font'], 'sans-serif');
+    });
+  });
 }

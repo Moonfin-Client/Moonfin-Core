@@ -20,6 +20,7 @@ private typealias PlatformLabel = NSTextField
 private typealias PlatformEdgeInsets = NSEdgeInsets
 #endif
 
+import CoreText
 import QuartzCore
 
 final class SubtitleOverlay: PlatformView {
@@ -239,6 +240,14 @@ final class SubtitleOverlay: PlatformView {
     private var subtitleBgColor: PlatformColor = .clear
     private var subtitleStrokeColor: PlatformColor = .black
     private var subtitleStrokeEnabled = true
+    private var subtitleStrokeScale: CGFloat = 1
+    private var subtitleShadowColor: PlatformColor = .clear
+    /// Fractions of the font size.
+    private var subtitleShadowOffset: CGFloat = 0
+    private var subtitleShadowBlur: CGFloat = 0
+    /// Downloaded font files, empty for the system font.
+    private var subtitleFontPath = ""
+    private var subtitleBoldFontPath = ""
     /// Point size the label's text was last built at, so layout only rebuilds
     /// it when the height actually changed.
     private var appliedFontSize: CGFloat = 0
@@ -261,7 +270,7 @@ final class SubtitleOverlay: PlatformView {
     }
 
     private var subtitleStrokeWidth: CGFloat {
-        subtitleStrokeEnabled ? max(2 * canvasScale, 1) : 0
+        subtitleStrokeEnabled ? max(2 * canvasScale, 1) * subtitleStrokeScale : 0
     }
 
     /// Keep the 40 to 100 position scale for the temporary lift above playback controls
@@ -517,7 +526,13 @@ final class SubtitleOverlay: PlatformView {
         strokeColor: Int?,
         fontSize: Double?,
         fontWeight: Int?,
-        verticalOffset: Double?
+        verticalOffset: Double?,
+        strokeScale: Double? = nil,
+        shadowColor: Int? = nil,
+        shadowOffset: Double? = nil,
+        shadowBlur: Double? = nil,
+        fontPath: String? = nil,
+        boldFontPath: String? = nil
     ) {
         if let textColor { subtitleTextColor = Self.colorFromARGB(textColor) }
         if let backgroundColor { subtitleBgColor = Self.colorFromARGB(backgroundColor) }
@@ -531,6 +546,12 @@ final class SubtitleOverlay: PlatformView {
         if let fontWeight {
             subtitleFontWeight = fontWeight >= 600 ? .bold : .semibold
         }
+        if let strokeScale { subtitleStrokeScale = CGFloat(strokeScale) }
+        if let shadowColor { subtitleShadowColor = Self.colorFromARGB(shadowColor) }
+        if let shadowOffset { subtitleShadowOffset = CGFloat(shadowOffset) }
+        if let shadowBlur { subtitleShadowBlur = CGFloat(shadowBlur) }
+        if let fontPath { subtitleFontPath = fontPath }
+        if let boldFontPath { subtitleBoldFontPath = boldFontPath }
         if let verticalOffset {
             authoredVerticalOffset = CGFloat(min(max(verticalOffset, 0), 1))
             setSubtitlePosition(basePosition: 100 - Int((verticalOffset * 60).rounded()))
@@ -552,6 +573,12 @@ final class SubtitleOverlay: PlatformView {
         subtitleBgColor = primary.subtitleBgColor
         subtitleStrokeColor = primary.subtitleStrokeColor
         subtitleStrokeEnabled = primary.subtitleStrokeEnabled
+        subtitleStrokeScale = primary.subtitleStrokeScale
+        subtitleShadowColor = primary.subtitleShadowColor
+        subtitleShadowOffset = primary.subtitleShadowOffset
+        subtitleShadowBlur = primary.subtitleShadowBlur
+        subtitleFontPath = primary.subtitleFontPath
+        subtitleBoldFontPath = primary.subtitleBoldFontPath
         authoredVerticalOffset = primary.authoredVerticalOffset
         subtitlePositionBase = primary.subtitlePositionBase
         if !activeTextEvents.isEmpty { showText(activeTextEvents) }
@@ -607,6 +634,12 @@ final class SubtitleOverlay: PlatformView {
         overlay.subtitleBgColor = subtitleBgColor
         overlay.subtitleStrokeColor = subtitleStrokeColor
         overlay.subtitleStrokeEnabled = subtitleStrokeEnabled
+        overlay.subtitleStrokeScale = subtitleStrokeScale
+        overlay.subtitleShadowColor = subtitleShadowColor
+        overlay.subtitleShadowOffset = subtitleShadowOffset
+        overlay.subtitleShadowBlur = subtitleShadowBlur
+        overlay.subtitleFontPath = subtitleFontPath
+        overlay.subtitleBoldFontPath = subtitleBoldFontPath
     }
 
     private func showText(_ events: [SubtitleEvent]) {
@@ -970,7 +1003,46 @@ final class SubtitleOverlay: PlatformView {
     }
 
     private func labelFont() -> PlatformFont {
-        PlatformFont.systemFont(ofSize: subtitleFontSize, weight: subtitleFontWeight)
+        downloadedFont(bold: subtitleFontWeight == .bold)
+            ?? PlatformFont.systemFont(ofSize: subtitleFontSize, weight: subtitleFontWeight)
+    }
+
+    private static var downloadedFontDescriptors: [String: CTFontDescriptor] = [:]
+
+    /// The picked font at the subtitle size. Only regular and bold are
+    /// downloaded, so italic is slanted rather than looked up.
+    private func downloadedFont(bold: Bool, italic: Bool = false) -> PlatformFont? {
+        let path = bold ? subtitleBoldFontPath : subtitleFontPath
+        guard !path.isEmpty else { return nil }
+        var descriptor = Self.downloadedFontDescriptors[path]
+        if descriptor == nil,
+           let data = FileManager.default.contents(atPath: path),
+           let found = (CTFontManagerCreateFontDescriptorsFromData(data as CFData)
+                as? [CTFontDescriptor])?.first {
+            descriptor = found
+            Self.downloadedFontDescriptors[path] = found
+        }
+        guard let descriptor else { return nil }
+        var slant = CGAffineTransform(a: 1, b: 0, c: 0.2, d: 1, tx: 0, ty: 0)
+        let font = italic
+            ? CTFontCreateWithFontDescriptor(descriptor, subtitleFontSize, &slant)
+            : CTFontCreateWithFontDescriptor(descriptor, subtitleFontSize, nil)
+        return font as PlatformFont
+    }
+
+    private func dropShadow(for font: PlatformFont) -> NSShadow? {
+        guard subtitleShadowColor != .clear else { return nil }
+        let offset = subtitleShadowOffset * font.pointSize
+        let shadow = NSShadow()
+        #if canImport(UIKit)
+        shadow.shadowOffset = CGSize(width: offset, height: offset)
+        #else
+        // AppKit's shadow offsets point up.
+        shadow.shadowOffset = CGSize(width: offset, height: -offset)
+        #endif
+        shadow.shadowBlurRadius = subtitleShadowBlur * font.pointSize
+        shadow.shadowColor = subtitleShadowColor
+        return shadow
     }
 
     /// Set paragraph alignment on the attributed string from the cue alignment. Use the
@@ -987,6 +1059,10 @@ final class SubtitleOverlay: PlatformView {
     }
 
     private func styledFont(for run: SubtitleStyledRun) -> PlatformFont {
+        if let font = downloadedFont(
+            bold: run.isBold || subtitleFontWeight == .bold, italic: run.isItalic) {
+            return font
+        }
         let font = PlatformFont.systemFont(
             ofSize: subtitleFontSize, weight: run.isBold ? .bold : subtitleFontWeight)
         guard run.isItalic else { return font }
@@ -1038,13 +1114,16 @@ final class SubtitleOverlay: PlatformView {
 
     private func fillText(_ text: String, alignment: Int? = nil) -> NSAttributedString {
         let font = labelFont()
-        return NSAttributedString(
-            string: text,
-            attributes: [
-                .font: font,
-                .foregroundColor: subtitleTextColor,
-                .paragraphStyle: paragraphStyle(for: font, alignment: alignment),
-            ])
+        var attrs: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: subtitleTextColor,
+            .paragraphStyle: paragraphStyle(for: font, alignment: alignment),
+        ]
+        // With an outline, the outline copy underneath casts the shadow.
+        if subtitleStrokeWidth == 0, let shadow = dropShadow(for: font) {
+            attrs[.shadow] = shadow
+        }
+        return NSAttributedString(string: text, attributes: attrs)
     }
 
     /// What sits under the text: the background box, and the outline when one
@@ -1067,6 +1146,13 @@ final class SubtitleOverlay: PlatformView {
             attrs[.strokeColor] = subtitleStrokeColor
             // Doubled, since only the outer half survives the fill on top.
             attrs[.strokeWidth] = subtitleStrokeWidth * 2
+            if let shadow = dropShadow(for: font) {
+                // Filled, so the shadow falls behind solid letters rather
+                // than tracing a ring.
+                attrs[.foregroundColor] = subtitleStrokeColor
+                attrs[.strokeWidth] = -subtitleStrokeWidth * 2
+                attrs[.shadow] = shadow
+            }
         }
         if subtitleBgColor != .clear {
             attrs[.backgroundColor] = subtitleBgColor

@@ -13708,6 +13708,47 @@
   "@subtitleHdrSeparateSubtitle": {
     "description": "Explains why a separate HDR subtitle style is worth setting."
   },
+  "subtitleBold": "Bold Text",
+  "@subtitleBold": {
+    "description": "Toggle that draws subtitles in a bold weight."
+  },
+  "subtitleStrokeWidth": "Text Stroke Width",
+  "@subtitleStrokeWidth": {
+    "description": "Setting for how thick the outline around subtitle text is."
+  },
+  "subtitleFont": "Font",
+  "@subtitleFont": {
+    "description": "Setting for which font subtitles are drawn in."
+  },
+  "subtitleFontDescription": "Fonts are downloaded from Google Fonts the first time you pick them",
+  "@subtitleFontDescription": {
+    "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+  },
+  "subtitleFontDownloadFailed": "Couldn't download {font}",
+  "@subtitleFontDownloadFailed": {
+    "description": "Shown when a subtitle font could not be downloaded.",
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleShadow": "Text Shadow",
+  "@subtitleShadow": {
+    "description": "Toggle for a drop shadow behind subtitle text."
+  },
+  "subtitleShadowIntensity": "Shadow Intensity",
+  "@subtitleShadowIntensity": {
+    "description": "How dark the subtitle drop shadow is."
+  },
+  "subtitleShadowOffset": "Shadow Offset",
+  "@subtitleShadowOffset": {
+    "description": "How far the subtitle drop shadow sits from the text."
+  },
+  "subtitleShadowBlur": "Shadow Blur",
+  "@subtitleShadowBlur": {
+    "description": "How soft the edge of the subtitle drop shadow is."
+  },
   "scrollSensitivity": "Scroll Sensitivity",
   "@scrollSensitivity": {
     "description": "Title of the desktop setting that scales mouse wheel scrolling."

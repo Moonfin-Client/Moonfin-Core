@@ -636,6 +636,12 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_stroke_color',
     'subtitles_text_size',
     'subtitles_offset_position',
+    'subtitles_stroke_width',
+    'subtitles_shadow',
+    'subtitles_shadow_intensity',
+    'subtitles_shadow_offset',
+    'subtitles_shadow_blur',
+    'subtitles_font',
     'secondary_subtitle_size_adjustment',
     'secondary_subtitle_offset_adjustment',
     'secondary_subtitle_text_color',
@@ -2814,6 +2820,42 @@ class UserPreferences extends ChangeNotifier {
   static final subtitlesOffsetPosition = Preference(
     key: 'subtitles_offset_position',
     defaultValue: 0.04,
+  );
+
+  /// The outline as a percent of the width each player draws by default.
+  static final subtitlesStrokeWidth = Preference(
+    key: 'subtitles_stroke_width',
+    defaultValue: 100,
+  );
+
+  static final subtitlesShadow = Preference(
+    key: 'subtitles_shadow',
+    defaultValue: false,
+  );
+
+  /// Percent opacity of the black drop shadow.
+  static final subtitlesShadowIntensity = Preference(
+    key: 'subtitles_shadow_intensity',
+    defaultValue: 80,
+  );
+
+  /// Steps of 2% of the text size.
+  static final subtitlesShadowOffset = Preference(
+    key: 'subtitles_shadow_offset',
+    defaultValue: 2,
+  );
+
+  /// Steps of 2% of the text size.
+  static final subtitlesShadowBlur = Preference(
+    key: 'subtitles_shadow_blur',
+    defaultValue: 2,
+  );
+
+  /// A family from the downloadable subtitle fonts, or empty for each
+  /// player's own font.
+  static final subtitlesFont = Preference(
+    key: 'subtitles_font',
+    defaultValue: '',
   );
 
   static final secondarySubtitleSizeAdjustment = Preference<double>(

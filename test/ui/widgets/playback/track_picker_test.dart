@@ -45,6 +45,11 @@ class _Backend extends Fake implements MediaKitPlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     if (verticalOffset != null) primaryOffsets.add(verticalOffset);
   }

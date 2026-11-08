@@ -1012,7 +1012,7 @@ class _PlayerSubtitles extends StatelessWidget {
         style: view.style.copyWith(
           fontSize: size,
           color: Color(color),
-          shadows: subtitleStrokeShadows(Color(style.strokeColor), size),
+          shadows: subtitleShadows(style, size),
         ),
       );
     }

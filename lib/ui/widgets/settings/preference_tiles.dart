@@ -619,7 +619,7 @@ Future<T?> showSettingsPicker<T>(
   required List<T> values,
   required T current,
   required String Function(T value) labelOf,
-  String Function(T value)? subtitleOf,
+  String? Function(T value)? subtitleOf,
   Widget Function(T value)? leadingOf,
   void Function(T value, int index)? onTry,
 }) {

@@ -2299,12 +2299,17 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     func applySubtitleStyle(
         textColor: Int?, backgroundColor: Int?, strokeColor: Int?,
-        fontSize: Double?, fontWeight: Int?, verticalOffset: Double?
+        fontSize: Double?, fontWeight: Int?, verticalOffset: Double?,
+        strokeScale: Double?, shadowColor: Int?, shadowOffset: Double?,
+        shadowBlur: Double?, fontPath: String?, boldFontPath: String?
     ) {
         subtitleOverlay.applyStyle(
             textColor: textColor, backgroundColor: backgroundColor,
             strokeColor: strokeColor, fontSize: fontSize,
-            fontWeight: fontWeight, verticalOffset: verticalOffset)
+            fontWeight: fontWeight, verticalOffset: verticalOffset,
+            strokeScale: strokeScale, shadowColor: shadowColor,
+            shadowOffset: shadowOffset, shadowBlur: shadowBlur,
+            fontPath: fontPath, boldFontPath: boldFontPath)
         secondarySubtitleOverlay.applySecondaryStyle(
             from: subtitleOverlay, fontSize: secondaryFontSize, textColor: secondaryTextColor)
         if let verticalOffset {

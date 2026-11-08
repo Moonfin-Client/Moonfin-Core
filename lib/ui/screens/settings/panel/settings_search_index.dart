@@ -1965,6 +1965,23 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['position', 'height'],
     ),
     subtitleStyle.leaf(
+      'subtitles_stroke_width',
+      l10n.subtitleStrokeWidth,
+      keywords: ['outline', 'border', 'thickness'],
+    ),
+    subtitleStyle.leaf('subtitles_text_weight', l10n.subtitleBold),
+    subtitleStyle.leaf(
+      'subtitles_font',
+      l10n.subtitleFont,
+      subtitle: l10n.subtitleFontDescription,
+      keywords: ['typeface', 'font family'],
+    ),
+    subtitleStyle.leaf(
+      'subtitles_shadow',
+      l10n.subtitleShadow,
+      keywords: ['drop shadow', 'blur'],
+    ),
+    subtitleStyle.leaf(
       'subtitles_hdr_separate',
       l10n.subtitleHdrSeparate,
       subtitle: l10n.subtitleHdrSeparateSubtitle,

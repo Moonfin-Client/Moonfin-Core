@@ -68,6 +68,11 @@ class _Backend extends Fake implements PlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {}
 }
 
