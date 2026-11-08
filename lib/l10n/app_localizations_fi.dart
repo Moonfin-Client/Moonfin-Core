@@ -245,7 +245,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä tiedot. Premiere keskittää otsikon koko näytön täyttävälle taustalle, ja kaikki osiot sijaitsevat sen alla sivua alaspäin. Quick Look avaa laatikon sen näytön päälle, jolla olit, ja koko sivu avautuu yhdellä painalluksella. Frost sijoittaa otsikon kelluvaan lasi-ikkunaan sen taideteoksen sumennetun kopion päälle, ja sen osat ovat välilehdissä painikkeiden alla.';
+      'Miltä elokuva tai sarja näyttää, kun sen avaa.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassinen';
@@ -3170,11 +3170,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchedIndicators => 'Katsotut indikaattorit';
 
   @override
-  String get showPosterLabels => 'Poster Labels';
+  String get showPosterLabels => 'Julisteiden tunnisteet';
 
   @override
   String get showPosterLabelsSubtitle =>
-      'Show the labels on posters, such as 4K or HDR.';
+      'Näytä julisteissa olevat merkinnät, kuten 4K tai HDR.';
 
   @override
   String get always => 'Aina';
@@ -6026,15 +6026,15 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get seerrSeriesMatchDescription =>
-      'We couldn\'t match this series automatically. Pick the right one below.';
+      'Emme pystyneet tunnistamaan tätä sarjaa automaattisesti. Valitse oikea vaihtoehto alla olevista.';
 
   @override
   String get seerrSeriesNoMatch =>
-      'We couldn\'t find a match for this series, so it can\'t be requested.';
+      'Emme löytäneet tätä sarjaa, joten sitä ei voi pyytää.';
 
   @override
   String get seerrSeriesMatchFailed =>
-      'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.';
+      'Sonarr ei löytänyt tälle sarjalle vastaavuutta tai palvelua ei saatu yhteyttä. Yritä uudelleen tai tarkista sarja Seerr palvelusta.';
 
   @override
   String get advancedOptions => 'Lisäasetukset';
@@ -11400,7 +11400,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get trackActionCancelDownload => 'Keskeytä lataus';
 
   @override
-  String get trackActionDeleteFromPlaylist => 'Poista soittolistasta';
+  String get trackActionDeleteFromPlaylist => 'Poista soittolistalta';
 
   @override
   String get trackActionMoveUp => 'Siirrä ylös';
@@ -11492,15 +11492,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get addToPlaylist => 'Lisää soittolistaan';
 
   @override
-  String get removeFromPlaylist => 'Remove from Playlist';
+  String get removeFromPlaylist => 'Poista soittolistalta';
 
   @override
   String removeFromPlaylistConfirm(String item, String playlist) {
-    return 'Remove $item from $playlist?';
+    return 'Poistetaanko $item $playlist:sta?';
   }
 
   @override
-  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+  String get removeFromPlaylistFailed =>
+      'Poistaminen soittolistasta epäonnistui';
 
   @override
   String get lyricsNotAvailable => 'Sanoja ei ole saatavilla';
@@ -15353,59 +15354,63 @@ class AppLocalizationsFi extends AppLocalizations {
   String get setupCurrent => 'Nykyinen';
 
   @override
-  String get setupMoonbaseTitle => 'Add Moonbase to your server';
+  String get setupMoonbaseTitle => 'Lisää Moonbase palvelimellesi';
 
   @override
   String get setupMoonbaseHint =>
-      'A free server plugin that unlocks more of Moonfin';
+      'Ilmainen palvelinlaajennus, joka avaa lisää Moonfinin ominaisuuksia';
 
   @override
   String get setupMoonbaseIntro =>
-      'Moonbase is free and runs on your server. With it, Moonfin gets:';
+      'Moonbase on ilmainen ja toimii omalla palvelimellasi. Sen avulla Moonfin saa:';
 
   @override
   String get setupMoonbaseAskAdmin =>
-      'Only a server admin can install it. Send them this link.';
+      'Vain palvelimen järjestelmänvalvoja voi asentaa sen. Lähetä hänelle tämä linkki.';
 
   @override
   String get setupMoonbaseManualSteps =>
-      'It takes a few steps on your server to install. They\'re all at this link.';
+      'Asennus vaatii muutaman vaiheen palvelimellasi. Ne kaikki löytyvät tästä linkistä.';
 
   @override
-  String get setupMoonbaseInstalling => 'Installing Moonbase...';
+  String get setupMoonbaseInstalling => 'Moonbase asennetaan...';
 
   @override
   String get setupMoonbaseInstalled =>
-      'Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.';
+      'Moonbase on asennettu. Se käynnistyy palvelimen uudelleenkäynnistyksen yhteydessä, jolloin kaikki parhaillaan käynnissä olevat toistot keskeytyvät.';
 
   @override
   String get setupMoonbaseRestarting =>
-      'The server is restarting. Moonbase turns on once it\'s back.';
+      'Palvelin käynnistyy uudelleen. Moonbase käynnistyy, kun palvelin on jälleen toiminnassa.';
 
   @override
-  String get moonbaseFeatureSync => 'Settings synced across your devices';
+  String get moonbaseFeatureSync =>
+      'Asetukset synkronoidaan laitteiden välillä';
 
   @override
-  String get moonbaseFeatureRatings => 'Extra ratings and TMDB reviews';
+  String get moonbaseFeatureRatings => 'Lisäarvostelut ja TMDB arvostelut';
 
   @override
-  String get moonbaseFeatureRows => 'Custom rows from your favorite lists';
+  String get moonbaseFeatureRows => 'Mukautetut rivit suosikkilistoistasi';
 
   @override
-  String get moonbaseFeatureGames => 'Retro games with synced saves';
+  String get moonbaseFeatureGames =>
+      'Retropelit, joissa tallennukset synkronoidaan';
 
   @override
-  String get moonbaseFeatureCalendar => 'A calendar of what\'s coming up';
+  String get moonbaseFeatureCalendar => 'Tulevien tapahtumien kalenteri';
 
   @override
-  String get moonbaseFeatureCollections => 'Your own order for each collection';
+  String get moonbaseFeatureCollections =>
+      'Oma tilauksesi kustakin kokoelmasta';
 
   @override
-  String get moonbaseFeatureMessages => 'Messages from your server admin';
+  String get moonbaseFeatureMessages =>
+      'Viestit palvelimen järjestelmänvalvojalta';
 
   @override
   String setupMoonbaseInstallFailed(String error) {
-    return 'Moonbase couldn\'t be installed. $error';
+    return 'Moonbase sovellusta ei voitu asentaa. $error';
   }
 
   @override
