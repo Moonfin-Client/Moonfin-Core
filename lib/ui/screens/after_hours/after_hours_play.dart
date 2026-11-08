@@ -17,6 +17,22 @@ import 'after_hours_scores.dart';
 import 'after_hours_sound.dart';
 import 'after_hours_widgets.dart';
 
+/// Where the 480 x 270 virtual screen sits inside [size].
+({double scale, Offset offset}) _arcadeLayout(
+  Size size, [
+  BoxFit fit = BoxFit.contain,
+]) {
+  final sx = size.width / arcadeW, sy = size.height / arcadeH;
+  final s = fit == BoxFit.cover ? math.max(sx, sy) : math.min(sx, sy);
+  return (
+    scale: s,
+    offset: Offset(
+      (size.width - arcadeW * s) / 2,
+      (size.height - arcadeH * s) / 2,
+    ),
+  );
+}
+
 /// Paints a game on the 480 x 270 virtual screen, scaled to fit or to cover,
 /// and steps it from a Ticker unless it's a still.
 class ArcadeCanvas extends StatefulWidget {
@@ -108,18 +124,8 @@ class ArcadeCanvasState extends State<ArcadeCanvas>
     _repaint.value++;
   }
 
-  /// Where the virtual screen sits inside [size].
-  ({double scale, Offset offset}) layout(Size size) {
-    final sx = size.width / arcadeW, sy = size.height / arcadeH;
-    final s = widget.fit == BoxFit.cover ? math.max(sx, sy) : math.min(sx, sy);
-    return (
-      scale: s,
-      offset: Offset(
-        (size.width - arcadeW * s) / 2,
-        (size.height - arcadeH * s) / 2,
-      ),
-    );
-  }
+  ({double scale, Offset offset}) layout(Size size) =>
+      _arcadeLayout(size, widget.fit);
 
   @override
   Widget build(BuildContext context) => RepaintBoundary(
@@ -483,7 +489,7 @@ class ArcadePlayViewState extends State<ArcadePlayView> with ImmersiveSystemUi {
                 onTick: _onTick,
               ),
             ),
-            if (_phase == _Phase.running) ..._hud(l10n),
+            if (_phase == _Phase.running) _hud(l10n),
             if (_phase == _Phase.paused) _pauseMenu(l10n),
             if (_phase == _Phase.over) _gameOver(l10n),
             if (_phase == _Phase.howTo) _howToCard(l10n),
@@ -493,64 +499,94 @@ class ArcadePlayViewState extends State<ArcadePlayView> with ImmersiveSystemUi {
     );
   }
 
-  List<Widget> _hud(AppLocalizations l10n) {
+  Widget _hud(AppLocalizations l10n) {
     final controls = widget.phone
         ? widget.id.touchControls(l10n)
         : widget.id.remoteControls(l10n);
-    return [
-      Positioned(
-        left: 16,
-        right: 16,
-        bottom: 18,
-        child: Center(
-          child: AnimatedOpacity(
-            opacity: _hint ? 1 : 0,
-            duration: const Duration(milliseconds: 400),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(8, 6, 22, .8),
-                borderRadius: BorderRadius.circular(999),
+    return Positioned.fill(
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // The row lines up with the score box the game draws at 8, 7,
+          // 92 by 21 on its virtual screen.
+          final l = _arcadeLayout(box.biggest);
+          final s = l.scale;
+          final top = l.offset.dy + 7 * s;
+          final rowH = 21 * s;
+          return Stack(
+            children: [
+              Positioned(
+                left: l.offset.dx + 108 * s,
+                right: l.offset.dx + 8 * s,
+                top: top,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!widget.phone) ...[
+                      Container(
+                        constraints: BoxConstraints(minHeight: rowH),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(8, 6, 22, .78),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: AhKeyHint(l10n.back, l10n.pause),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: AnimatedOpacity(
+                          opacity: _hint ? 1 : 0,
+                          duration: const Duration(milliseconds: 400),
+                          child: Container(
+                            constraints: BoxConstraints(minHeight: rowH),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(8, 6, 22, .8),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              controls,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: K.ink,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(
-                controls,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: K.ink),
-              ),
-            ),
-          ),
-        ),
+              if (widget.phone)
+                Positioned(
+                  right: 20,
+                  top: top + rowH / 2 - 24,
+                  child: SafeArea(
+                    child: Material(
+                      color: const Color.fromRGBO(255, 255, 255, .14),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: l10n.pause,
+                        icon: const Icon(Icons.pause, color: K.ink, size: 20),
+                        onPressed: _pause,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
-      if (widget.phone)
-        Positioned(
-          right: 20,
-          top: 24,
-          child: SafeArea(
-            child: Material(
-              color: const Color.fromRGBO(255, 255, 255, .14),
-              shape: const CircleBorder(),
-              child: IconButton(
-                tooltip: l10n.pause,
-                icon: const Icon(Icons.pause, color: K.ink, size: 20),
-                onPressed: _pause,
-              ),
-            ),
-          ),
-        )
-      else
-        Positioned(
-          right: 20,
-          bottom: 18,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(8, 6, 22, .78),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: AhKeyHint(l10n.back, l10n.pause),
-          ),
-        ),
-    ];
+    );
   }
 
   Widget _menu(List<(String, VoidCallback)> items, double fontSize) => Column(
