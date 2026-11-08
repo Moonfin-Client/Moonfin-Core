@@ -31,6 +31,22 @@ List<double> _demoRuns(ArcadeGameId id, int runs) {
   return out;
 }
 
+/// Hands out queued values first, then ordinary random ones.
+class _Scripted implements math.Random {
+  final queue = <double>[];
+  final _rest = math.Random(1);
+
+  @override
+  double nextDouble() =>
+      queue.isNotEmpty ? queue.removeAt(0) : _rest.nextDouble();
+
+  @override
+  int nextInt(int max) => _rest.nextInt(max);
+
+  @override
+  bool nextBool() => _rest.nextBool();
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -111,6 +127,26 @@ void main() {
       g.press(ArcadeButton.down);
       expect(g.p.jumps, 1);
       expect(g.p.vy, 540);
+    });
+
+    test('one well timed jump takes all five pieces of a popcorn arc', () {
+      int piecesTaken(int jumpAt) {
+        final rng = _Scripted();
+        final g =
+            ArcadeGameId.bufferRun.create(rng: rng, l10n: _l10n) as BufferRun;
+        g.next = 0;
+        // The first two draws pick popcorn and put it on the runner's side.
+        rng.queue.addAll([.9, .1]);
+        g.update(1 / 60);
+        final arc = g.things.where((o) => o.k == 'popcorn').toList();
+        for (var i = 1; i < 5 * 60 && !g.over; i++) {
+          if (i == jumpAt) g.jump();
+          g.update(1 / 60);
+        }
+        return arc.where((o) => o.dead).length;
+      }
+
+      expect(List.generate(4 * 60, piecesTaken).reduce(math.max), 5);
     });
 
     test('a cable ends the run, a dash smashes it, popcorn scores', () {

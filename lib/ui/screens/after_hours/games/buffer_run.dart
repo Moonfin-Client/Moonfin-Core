@@ -38,6 +38,8 @@ class BrPlayer {
 
 const double _g = 232;
 const double _c = arcadeH - _g;
+const double _jump = 540;
+const double _gravity = 1500;
 
 /// Endless runner with a gravity flip. Things on the ceiling are built in
 /// floor space and mirrored with H - y.
@@ -61,7 +63,7 @@ class BufferRun extends ArcadeGame {
     const [0, 1],
   );
 
-  double dist = 0, bonus = 0, speed = 210, next = 1.2, inv = 0, flipAt = 3;
+  double dist = 0, bonus = 0, speed = 170, next = 1.2, inv = 0, flipAt = 3;
   List<BrThing> things = [];
   BrPlayer p = BrPlayer();
 
@@ -83,7 +85,7 @@ class BufferRun extends ArcadeGame {
     super.reset();
     dist = 0;
     bonus = 0;
-    speed = 210;
+    speed = 170;
     next = 1.2;
     things = [];
     inv = 0;
@@ -91,7 +93,7 @@ class BufferRun extends ArcadeGame {
     p = BrPlayer();
   }
 
-  void _spawn() {
+  double _spawn() {
     final r = rng.nextDouble(), x = arcadeW + 20.0;
     final side = rng.nextDouble() < .7 ? p.grav : -p.grav;
     if (t > 5 && rng.nextDouble() < .12) {
@@ -106,7 +108,7 @@ class BufferRun extends ArcadeGame {
           pick: true,
         ),
       );
-      return;
+      return 0;
     }
     if (r < .3) {
       things.add(BrThing('cable', x, _g - 18, 26, 18, side));
@@ -139,30 +141,42 @@ class BufferRun extends ArcadeGame {
         BrThing('gremlin', x, _g - 18, 18, 18, side, hop: rand(.3, .8)),
       );
     } else {
-      for (var i = 0; i < 5; i++) {
-        things.add(
-          BrThing(
-            'popcorn',
-            x + i * 20,
-            _g - 46 - math.sin(i / 4 * math.pi) * 38,
-            12,
-            12,
-            side,
-            pick: true,
-          ),
-        );
-      }
+      return _popcornArc(x, side);
     }
+    return 0;
+  }
+
+  /// The five pieces sit along 80 percent of a jump's path at the current
+  /// speed, so one jump can take them all. Returns how long the arc takes to
+  /// pass, so the next spawn waits for it.
+  double _popcornArc(double x, double side) {
+    const air = 2 * _jump / _gravity, span = .8 * air;
+    for (var i = 0; i < 5; i++) {
+      final at = air / 2 + (i - 2) * span / 4;
+      final f = _jump * at - _gravity / 2 * at * at;
+      things.add(
+        BrThing(
+          'popcorn',
+          x + i * speed * span / 4,
+          _g - 27 - f,
+          12,
+          12,
+          side,
+          pick: true,
+        ),
+      );
+    }
+    return span;
   }
 
   @override
   void update(double dt) {
     t += dt;
-    speed = math.min(520, 210 + t * 6);
+    speed = math.min(520, 170 + t * 4.5);
     final v = speed * (p.dash > 0 ? 1.5 : 1);
     dist += v * dt;
     score = (dist / 8).floor() + bonus.toInt();
-    p.vy += 1500 * p.grav * dt;
+    p.vy += _gravity * p.grav * dt;
     p.y += p.vy * dt;
     final rest = p.grav > 0 ? _g - 20 : _c + 20;
     if ((p.y - rest) * p.grav >= 0) {
@@ -181,8 +195,8 @@ class BufferRun extends ArcadeGame {
     p.shield -= dt;
     inv -= dt;
     if ((next -= dt) <= 0) {
-      _spawn();
-      next = math.max(.45, rand(.8, 1.4) * 260 / speed);
+      final pass = _spawn();
+      next = math.max(.45, rand(.8, 1.4) * 260 / speed) + pass;
     }
     final pb = _box(p);
     for (final o in things) {
@@ -240,7 +254,7 @@ class BufferRun extends ArcadeGame {
   /// toward the other side.
   void jump() {
     if (p.jumps == 0) {
-      p.vy = -540 * p.grav;
+      p.vy = -_jump * p.grav;
       p.jumps = 1;
       p.ground = false;
       p.slide = 0;
