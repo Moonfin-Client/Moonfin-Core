@@ -957,11 +957,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           episodePeople: item.people,
           parentActors: parentActors,
         );
-        _castCache[itemId] = merged.isEmpty
-            ? const []
-            : _mapPeople(merged, client.imageApi);
+        if (merged.isNotEmpty || item.people.isNotEmpty) {
+          _castCache[itemId] = _mapPeople(merged, client.imageApi);
+        }
       } catch (_) {
-        _castCache[itemId] = const [];
+        // Leave uncached on error so a subsequent playback event can retry
       } finally {
         _castResolving = null;
         if (mounted) _pushMetadata();

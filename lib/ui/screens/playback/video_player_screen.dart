@@ -7833,14 +7833,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (item.type == 'Season' &&
           item.seriesId != null &&
           item.seriesId!.isNotEmpty) {
-        try {
-          final client = _clientForItem(item);
-          final parentCast = await resolveParentCast(
-            client: client,
-            seriesId: item.seriesId,
-          );
-          if (parentCast.isNotEmpty) return parentCast;
-        } catch (_) {}
+        final client = _clientForItem(item);
+        final parentCast = await resolveParentCast(
+          client: client,
+          seriesId: item.seriesId,
+        );
+        if (parentCast.isNotEmpty) return parentCast;
       }
       return const <Map<String, dynamic>>[];
     }

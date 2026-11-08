@@ -3274,42 +3274,6 @@ abstract class AppLocalizations {
   /// **'WRITERS'**
   String get writers;
 
-  /// Role label for an episode director
-  ///
-  /// In en, this message translates to:
-  /// **'Episode Director'**
-  String get episodeDirector;
-
-  /// Role label formatting an episode director with an existing role description
-  ///
-  /// In en, this message translates to:
-  /// **'{role} (Episode Director)'**
-  String episodeDirectorWithRole(String role);
-
-  /// Role label for an episode writer
-  ///
-  /// In en, this message translates to:
-  /// **'Episode Writer'**
-  String get episodeWriter;
-
-  /// Role label formatting an episode writer with an existing role description
-  ///
-  /// In en, this message translates to:
-  /// **'{role} (Episode Writer)'**
-  String episodeWriterWithRole(String role);
-
-  /// Role label for a guest star
-  ///
-  /// In en, this message translates to:
-  /// **'Guest Star'**
-  String get guestStar;
-
-  /// Role label formatting a character role as a guest star
-  ///
-  /// In en, this message translates to:
-  /// **'{role} (Guest Star)'**
-  String guestStarWithRole(String role);
-
   /// Metadata label for studio
   ///
   /// In en, this message translates to:

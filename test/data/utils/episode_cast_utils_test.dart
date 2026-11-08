@@ -69,6 +69,54 @@ void main() {
 
       expect(merged.single['Role'], 'Special Guest Star');
     });
+
+    test('does not skip guest star suffix on roles containing guest as part of character description', () {
+      final episodeActors = [
+        {'Id': 'g1', 'Name': 'Guest One', 'Type': 'GuestStar', 'Role': 'Guesthouse Owner'},
+      ];
+
+      final merged = mergeEpisodeCast(
+        episodeActors: episodeActors,
+        parentActors: [],
+      );
+
+      expect(merged.single['Role'], 'Guesthouse Owner (Guest Star)');
+    });
+
+    test('does not deduplicate distinct people sharing a name if they have different IDs', () {
+      final episodeActors = [
+        {'Id': 'ep_1', 'Name': 'John Smith', 'Type': 'Actor', 'Role': 'Junior'},
+      ];
+      final parentActors = [
+        {'Id': 'parent_1', 'Name': 'John Smith', 'Type': 'Actor', 'Role': 'Senior'},
+      ];
+
+      final merged = mergeEpisodeCast(
+        episodeActors: episodeActors,
+        parentActors: parentActors,
+      );
+
+      expect(merged.length, 2);
+      expect(merged[0]['Id'], 'ep_1');
+      expect(merged[1]['Id'], 'parent_1');
+    });
+
+    test('deduplicates people without IDs by name as fallback', () {
+      final episodeActors = [
+        {'Name': 'Jane Doe', 'Type': 'Actor', 'Role': 'Doctor'},
+      ];
+      final parentActors = [
+        {'Name': 'Jane Doe', 'Type': 'Actor', 'Role': 'Doctor Regular'},
+      ];
+
+      final merged = mergeEpisodeCast(
+        episodeActors: episodeActors,
+        parentActors: parentActors,
+      );
+
+      expect(merged.length, 1);
+      expect(merged[0]['Role'], 'Doctor');
+    });
   });
 
   group('mergeEpisodePeople', () {

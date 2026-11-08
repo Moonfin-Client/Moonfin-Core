@@ -930,6 +930,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> load({String? mediaSourceId}) async {
     _similarInitialLoadComplete = false;
     _state = ItemDetailState.loading;
+    _parentActors = const [];
     _collectionItems = const [];
     _missingCollectionItems = const [];
     _parentCollections = const [];
@@ -1316,16 +1317,14 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadParentCast() async {
     final item = _item;
     if (item == null) return;
-    try {
-      final actors = await resolveParentCast(
-        client: _client,
-        seasonId: item.seasonId,
-        seriesId: item.seriesId,
-      );
-      if (_isDisposed || actors.isEmpty) return;
-      _parentActors = actors;
-      notifyListeners();
-    } catch (_) {}
+    final actors = await resolveParentCast(
+      client: _client,
+      seasonId: item.seasonId,
+      seriesId: item.seriesId,
+    );
+    if (_isDisposed || actors.isEmpty) return;
+    _parentActors = actors;
+    notifyListeners();
   }
 
   Future<void> _loadSeasonCast() async {
@@ -1336,15 +1335,13 @@ class ItemDetailViewModel extends ChangeNotifier {
       return t == 'Actor' || t == 'GuestStar';
     });
     if (hasActors) return;
-    try {
-      final actors = await resolveParentCast(
-        client: _client,
-        seriesId: item.seriesId,
-      );
-      if (_isDisposed || actors.isEmpty) return;
-      _parentActors = actors;
-      notifyListeners();
-    } catch (_) {}
+    final actors = await resolveParentCast(
+      client: _client,
+      seriesId: item.seriesId,
+    );
+    if (_isDisposed || actors.isEmpty) return;
+    _parentActors = actors;
+    notifyListeners();
   }
 
   Future<void> _loadNextUp() async {
@@ -2839,6 +2836,36 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {}
   }
 
+  List<Map<String, dynamic>>? _cachedEpisodeDirectors;
+  List<Map<String, dynamic>>? _cachedEpisodeWriters;
+  AggregatedItem? _cachedEpisodeCrewItem;
+
+  void _ensureEpisodeCrew() {
+    if (identical(_cachedEpisodeCrewItem, _item)) return;
+    _cachedEpisodeCrewItem = _item;
+    final item = _item;
+    if (item?.type != 'Episode') {
+      _cachedEpisodeDirectors = null;
+      _cachedEpisodeWriters = null;
+      return;
+    }
+    final l10n = currentAppLocalizations();
+    _cachedEpisodeDirectors = item!.people
+        .where((p) => p['Type'] == 'Director')
+        .map((p) => <String, dynamic>{
+              ...p,
+              'Role': formatEpisodeDirectorRole(l10n, p['Role']?.toString()),
+            })
+        .toList(growable: false);
+    _cachedEpisodeWriters = item.people
+        .where((p) => p['Type'] == 'Writer')
+        .map((p) => <String, dynamic>{
+              ...p,
+              'Role': formatEpisodeWriterRole(l10n, p['Role']?.toString()),
+            })
+        .toList(growable: false);
+  }
+
   List<Map<String, dynamic>> get directors {
     if (_item?.type == 'BoxSet') {
       _ensureBoxSetPeople();
@@ -2846,12 +2873,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
     final list = _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
     if (_item?.type == 'Episode') {
-      final l10n = currentAppLocalizations();
-      return list.map((p) {
-        final role = p['Role']?.toString();
-        final formattedRole = formatEpisodeDirectorRole(l10n, role);
-        return <String, dynamic>{...p, 'Role': formattedRole};
-      }).toList();
+      _ensureEpisodeCrew();
+      return _cachedEpisodeDirectors ?? list;
     }
     return list;
   }
@@ -2863,12 +2886,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
     final list = _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
     if (_item?.type == 'Episode') {
-      final l10n = currentAppLocalizations();
-      return list.map((p) {
-        final role = p['Role']?.toString();
-        final formattedRole = formatEpisodeWriterRole(l10n, role);
-        return <String, dynamic>{...p, 'Role': formattedRole};
-      }).toList();
+      _ensureEpisodeCrew();
+      return _cachedEpisodeWriters ?? list;
     }
     return list;
   }

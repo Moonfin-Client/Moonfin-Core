@@ -9,8 +9,7 @@ String formatGuestStarRole(AppLocalizations l10n, String? role) {
   if (clean == null || clean.isEmpty) {
     return l10n.guestStar;
   }
-  if (clean.toLowerCase().contains(l10n.guestStar.toLowerCase()) ||
-      clean.toLowerCase().contains('guest')) {
+  if (clean.toLowerCase().contains(l10n.guestStar.toLowerCase())) {
     return clean;
   }
   return l10n.guestStarWithRole(clean);
@@ -59,40 +58,35 @@ Future<List<Map<String, dynamic>>> resolveParentCast({
   String? seriesId,
 }) async {
   if (seasonId != null && seasonId.isNotEmpty) {
-    try {
-      final data = await client.itemsApi.getItem(seasonId);
-      final people = (data['People'] as List?)
-          ?.whereType<Map>()
-          .map((p) => p.cast<String, dynamic>())
-          .toList(growable: false);
-      final actors = people?.where((p) {
-        final t = p['Type'] as String?;
-        return t == 'Actor' || t == 'GuestStar';
-      }).toList(growable: false);
-      if (actors != null && actors.isNotEmpty) {
-        return actors;
-      }
-    } catch (_) {}
+    final actors = await _actorsOf(client, seasonId);
+    if (actors.isNotEmpty) return actors;
   }
 
   if (seriesId != null && seriesId.isNotEmpty) {
-    try {
-      final data = await client.itemsApi.getItem(seriesId);
-      final people = (data['People'] as List?)
-          ?.whereType<Map>()
-          .map((p) => p.cast<String, dynamic>())
-          .toList(growable: false);
-      final actors = people?.where((p) {
-        final t = p['Type'] as String?;
-        return t == 'Actor' || t == 'GuestStar';
-      }).toList(growable: false);
-      if (actors != null && actors.isNotEmpty) {
-        return actors;
-      }
-    } catch (_) {}
+    final actors = await _actorsOf(client, seriesId);
+    if (actors.isNotEmpty) return actors;
   }
 
   return const <Map<String, dynamic>>[];
+}
+
+Future<List<Map<String, dynamic>>> _actorsOf(
+  MediaServerClient client,
+  String id,
+) async {
+  try {
+    final data = await client.itemsApi.getItem(id);
+    final people = (data['People'] as List?)
+        ?.whereType<Map>()
+        .map((p) => p.cast<String, dynamic>())
+        .toList(growable: false);
+    return people?.where((p) {
+      final t = p['Type'] as String?;
+      return t == 'Actor' || t == 'GuestStar';
+    }).toList(growable: false) ?? const [];
+  } catch (_) {
+    return const [];
+  }
 }
 
 /// Merges episode-specific actors with parent (season or series) actors.
@@ -116,21 +110,26 @@ List<Map<String, dynamic>> mergeEpisodeCast({
     return <String, dynamic>{...p, 'Role': formattedRole};
   }).toList();
 
-  final existingKeys = <String>{};
+  final existingIds = <String>{};
+  final existingNames = <String>{};
   for (final p in formattedEpisodeActors) {
     final id = p['Id']?.toString();
     final name = p['Name']?.toString();
-    if (id != null && id.isNotEmpty) existingKeys.add(id);
-    if (name != null && name.isNotEmpty) existingKeys.add(name);
+    if (id != null && id.isNotEmpty) {
+      existingIds.add(id);
+    } else if (name != null && name.isNotEmpty) {
+      existingNames.add(name);
+    }
   }
 
   final merged = [...formattedEpisodeActors];
   for (final p in parentActors) {
     final id = p['Id']?.toString();
     final name = p['Name']?.toString();
-    if ((id != null && existingKeys.contains(id)) ||
-        (name != null && existingKeys.contains(name))) {
-      continue;
+    if (id != null && id.isNotEmpty) {
+      if (existingIds.contains(id)) continue;
+    } else if (name != null && name.isNotEmpty) {
+      if (existingNames.contains(name)) continue;
     }
     merged.add(p);
   }
@@ -177,21 +176,26 @@ List<Map<String, dynamic>> mergeEpisodePeople({
     }
   }
 
-  final existingKeys = <String>{};
+  final existingIds = <String>{};
+  final existingNames = <String>{};
   for (final p in episodeCast) {
     final id = p['Id']?.toString();
     final name = p['Name']?.toString();
-    if (id != null && id.isNotEmpty) existingKeys.add(id);
-    if (name != null && name.isNotEmpty) existingKeys.add(name);
+    if (id != null && id.isNotEmpty) {
+      existingIds.add(id);
+    } else if (name != null && name.isNotEmpty) {
+      existingNames.add(name);
+    }
   }
 
   final mergedCast = [...episodeCast];
   for (final p in parentActors) {
     final id = p['Id']?.toString();
     final name = p['Name']?.toString();
-    if ((id != null && existingKeys.contains(id)) ||
-        (name != null && existingKeys.contains(name))) {
-      continue;
+    if (id != null && id.isNotEmpty) {
+      if (existingIds.contains(id)) continue;
+    } else if (name != null && name.isNotEmpty) {
+      if (existingNames.contains(name)) continue;
     }
     mergedCast.add(p);
   }

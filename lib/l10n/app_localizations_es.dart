@@ -1866,30 +1866,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get writers => 'GUIONISTAS';
 
   @override
-  String get episodeDirector => 'Episode Director';
-
-  @override
-  String episodeDirectorWithRole(String role) {
-    return '$role (Episode Director)';
-  }
-
-  @override
-  String get episodeWriter => 'Episode Writer';
-
-  @override
-  String episodeWriterWithRole(String role) {
-    return '$role (Episode Writer)';
-  }
-
-  @override
-  String get guestStar => 'Guest Star';
-
-  @override
-  String guestStarWithRole(String role) {
-    return '$role (Guest Star)';
-  }
-
-  @override
   String get studio => 'ESTUDIO';
 
   @override
