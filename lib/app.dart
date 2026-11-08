@@ -49,6 +49,7 @@ import 'ui/widgets/video_mini_player.dart';
 import 'ui/screens/settings/achievements_screen.dart';
 import 'ui/widgets/floating_notification.dart';
 import 'ui/widgets/offline_banner.dart';
+import 'ui/widgets/playback/playback_tab_title.dart';
 import 'ui/widgets/times_up_gate.dart';
 import 'ui/widgets/settings/settings_panel.dart';
 import 'ui/widgets/server_messages_dialog.dart';
@@ -386,7 +387,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
                   ],
                 );
 
-                return ListenableBuilder(
+                final app = ListenableBuilder(
                   listenable: _prefs,
                   builder: (context, _) {
                     // Read here rather than hoisted above the builder, so a
@@ -414,6 +415,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
                     );
                   },
                 );
+                return kIsWeb ? PlaybackTabTitle(child: app) : app;
               },
             );
           },
