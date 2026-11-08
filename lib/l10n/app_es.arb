@@ -9882,7 +9882,7 @@
     "@accountActive": {
         "description": "Marks the account that is signed in now in the Switch User screen"
     },
-    "spotlightTagsCount": "{count, plural, =1{1 tag} otro{{count} tags}}",
+    "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
     "@spotlightTagsCount": {
         "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
         "placeholders": {
@@ -9891,7 +9891,7 @@
             }
         }
     },
-    "spotlightStudiosCount": "{count, plural, =1{1 studio} otro{{count} studios}}",
+    "spotlightStudiosCount": "{count, plural, =1{1 studio} other{{count} studios}}",
     "@spotlightStudiosCount": {
         "description": "Count fragment on spotlight summary cards: studios",
         "placeholders": {
@@ -9900,7 +9900,7 @@
             }
         }
     },
-    "spotlightChaptersCount": "{count, plural, =1{1 chapter} otro{{count} chapters}}",
+    "spotlightChaptersCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
     "@spotlightChaptersCount": {
         "description": "Count fragment on spotlight summary cards: chapters",
         "placeholders": {
@@ -9909,7 +9909,7 @@
             }
         }
     },
-    "spotlightExtrasCount": "{count, plural, =1{1 extra} otro{{count} extras}}",
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extras}}",
     "@spotlightExtrasCount": {
         "description": "Count fragment on spotlight summary cards: extras/special features",
         "placeholders": {
@@ -9918,7 +9918,7 @@
             }
         }
     },
-    "spotlightSeasonsCount": "{count, plural, =1{1 season} otro{{count} seasons}}",
+    "spotlightSeasonsCount": "{count, plural, =1{1 season} other{{count} seasons}}",
     "@spotlightSeasonsCount": {
         "description": "Count fragment on spotlight summary cards: seasons",
         "placeholders": {
@@ -9927,7 +9927,7 @@
             }
         }
     },
-    "spotlightEpisodesCount": "{count, plural, =1{1 episode} otro{{count} episodes}}",
+    "spotlightEpisodesCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
     "@spotlightEpisodesCount": {
         "description": "Count fragment on spotlight summary cards: episodes",
         "placeholders": {
@@ -9936,7 +9936,7 @@
             }
         }
     },
-    "spotlightMoviesCount": "{count, plural, =1{1 movie} otro{{count} movies}}",
+    "spotlightMoviesCount": "{count, plural, =1{1 movie} other{{count} movies}}",
     "@spotlightMoviesCount": {
         "description": "Count fragment on spotlight summary cards: movies",
         "placeholders": {
@@ -9945,7 +9945,7 @@
             }
         }
     },
-    "spotlightShowsCount": "{count, plural, =1{1 show} otro{{count} shows}}",
+    "spotlightShowsCount": "{count, plural, =1{1 show} other{{count} shows}}",
     "@spotlightShowsCount": {
         "description": "Count fragment on spotlight summary cards: series/shows",
         "placeholders": {
@@ -9954,7 +9954,7 @@
             }
         }
     },
-    "spotlightTracksCount": "{count, plural, =1{1 track} otro{{count} tracks}}",
+    "spotlightTracksCount": "{count, plural, =1{1 track} other{{count} tracks}}",
     "@spotlightTracksCount": {
         "description": "Count fragment on spotlight summary cards: audio tracks",
         "placeholders": {
@@ -9963,7 +9963,7 @@
             }
         }
     },
-    "spotlightItemsCount": "{count, plural, =1{1 item} otro{{count} items}}",
+    "spotlightItemsCount": "{count, plural, =1{1 item} other{{count} items}}",
     "@spotlightItemsCount": {
         "description": "Count fragment on spotlight summary cards: generic items",
         "placeholders": {
@@ -9972,7 +9972,7 @@
             }
         }
     },
-    "spotlightAlbumsCount": "{count, plural, =1{1 album} otro{{count} albums}}",
+    "spotlightAlbumsCount": "{count, plural, =1{1 album} other{{count} albums}}",
     "@spotlightAlbumsCount": {
         "description": "Count fragment on spotlight summary cards: albums",
         "placeholders": {
@@ -9981,7 +9981,7 @@
             }
         }
     },
-    "spotlightCollectionsCount": "{count, plural, =1{1 collection} otro{{count} collections}}",
+    "spotlightCollectionsCount": "{count, plural, =1{1 collection} other{{count} collections}}",
     "@spotlightCollectionsCount": {
         "description": "Count fragment on spotlight summary cards: collections",
         "placeholders": {
@@ -9990,7 +9990,7 @@
             }
         }
     },
-    "spotlightTitlesCount": "{count, plural, =1{1 title} otro{{count} titles}}",
+    "spotlightTitlesCount": "{count, plural, =1{1 title} other{{count} titles}}",
     "@spotlightTitlesCount": {
         "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
         "placeholders": {
@@ -10039,7 +10039,7 @@
     "@rendererModeSkia": {
         "description": "Renderer option: always use the Skia renderer"
     },
-    "queuedMoreCount": "{count, plural, =1{1 more queued} otro{{count} mas queued}}",
+    "queuedMoreCount": "{count, plural, =1{1 more queued} other{{count} mas queued}}",
     "@queuedMoreCount": {
         "description": "Row under the active downloads list standing in for queued items not shown individually",
         "placeholders": {
@@ -10133,7 +10133,7 @@
     "@activeDownloads": {
         "description": "Tab title for downloads that are transferring or queued"
     },
-    "savedMediaCount": "{count, plural, =1{1 item} otro{{count} items}}",
+    "savedMediaCount": "{count, plural, =1{1 item} other{{count} items}}",
     "@savedMediaCount": {
         "description": "How many downloads the saved media list holds, shown beside the total size",
         "placeholders": {
@@ -10195,7 +10195,7 @@
             }
         }
     },
-    "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} otro{Delete {count} episodes}}",
+    "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} other{Delete {count} episodes}}",
     "@savedMediaDeleteEpisodes": {
         "description": "Menu action that removes every saved episode of one series",
         "placeholders": {

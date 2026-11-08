@@ -1418,7 +1418,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 нумера} one{{count} нумера} few{{count} нумере} other{{count} нумера}}",
+    "trackCount": "{count, plural, one{{count} нумера} few{{count} нумере} other{{count} нумера}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1427,7 +1427,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 поглавље} one{{count} поглавље} few{{count} поглавља} other{{count} поглавља}}",
+    "chapterCount": "{count, plural, one{{count} поглавље} few{{count} поглавља} other{{count} поглавља}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -7151,7 +7151,7 @@
     "analyticsTopArtists": "Водећи извођачи",
     "analyticsTopAuthors": "Водећи аутори",
     "analyticsTopContributors": "Водећи сарадници",
-    "analyticsLibrariesCount": "{count, plural, =1{1 медијатека} one{{count} медијатека} few{{count} медијатеке} other{{count} медијатека}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} медијатека} few{{count} медијатеке} other{{count} медијатека}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -11810,7 +11810,7 @@
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
-    "friendsUnreadCount": "{count, plural, =0{Нема непрочитаних порука} =1{1 непрочитана порука} one{{count} непрочитана порука} few{{count} непрочитане поруке} other{{count} непрочитаних порука}}",
+    "friendsUnreadCount": "{count, plural, =0{Нема непрочитаних порука} one{{count} непрочитана порука} few{{count} непрочитане поруке} other{{count} непрочитаних порука}}",
     "@friendsUnreadCount": {
         "description": "How many chat messages are unread",
         "placeholders": {
@@ -11823,7 +11823,7 @@
     "@friendsRequests": {
         "description": "Entry that opens pending friend requests"
     },
-    "friendsRequestCount": "{count, plural, =0{Ништа не чека на ваш одговор} =1{1 захтев чека на ваш одговор} one{{count} захтев чека на ваш одговор} few{{count} захтева чекају на ваш одговор} other{{count} захтева чека на ваш одговор}}",
+    "friendsRequestCount": "{count, plural, =0{Ништа не чека на ваш одговор} one{{count} захтев чека на ваш одговор} few{{count} захтева чекају на ваш одговор} other{{count} захтева чека на ваш одговор}}",
     "@friendsRequestCount": {
         "description": "How many friend requests wait for an answer",
         "placeholders": {
@@ -12168,7 +12168,7 @@
     "@chatGroupName": {
         "description": "Label of the group chat name field"
     },
-    "chatMemberCount": "{count, plural, =1{1 члан} one{{count} члан} few{{count} члана} other{{count} чланова}}",
+    "chatMemberCount": "{count, plural, one{{count} члан} few{{count} члана} other{{count} чланова}}",
     "@chatMemberCount": {
         "description": "How many people are in a group chat",
         "placeholders": {
