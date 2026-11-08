@@ -1006,6 +1006,66 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 
+  // Issue #2111: the remote's own subtitle and audio buttons open those menus,
+  // and a second press closes them.
+  group('remote subtitle and audio buttons', () {
+    setUp(() => PlatformDetection.setTvMode(true));
+    tearDown(() => PlatformDetection.setTvMode(false));
+
+    Future<void> mountEpisode(
+      WidgetTester tester,
+      List<Map<String, Object>> streams,
+    ) async {
+      manager.queueService.setQueue([
+        AggregatedItem(
+          id: 'ep1',
+          serverId: 'server',
+          rawData: {'Id': 'ep1', 'Type': 'Episode', 'MediaStreams': streams},
+        ),
+      ]);
+      await mountPlayer(tester);
+    }
+
+    testWidgets('open their menus and close them again', (tester) async {
+      await mountEpisode(tester, [
+        {'Type': 'Audio', 'Index': 1},
+        {'Type': 'Subtitle', 'Index': 2},
+      ]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.closedCaptionToggle);
+      await tester.pumpAndSettle();
+      expect(find.text('Subtitle Track'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.closedCaptionToggle);
+      await tester.pumpAndSettle();
+      expect(find.text('Subtitle Track'), findsNothing);
+
+      // The test keyboard has no physical key for it, so any stands in.
+      await tester.sendKeyEvent(
+        LogicalKeyboardKey.mediaAudioTrack,
+        physicalKey: PhysicalKeyboardKey.f12,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Audio Track'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('the subtitle one does nothing with no subtitles', (
+      tester,
+    ) async {
+      await mountEpisode(tester, [
+        {'Type': 'Audio', 'Index': 1},
+      ]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.closedCaptionToggle);
+      await tester.pumpAndSettle();
+      expect(find.text('Subtitle Track'), findsNothing);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   // Issue #1335: S, or Enter while the skip button shows, skips the intro.
   for (final key in [LogicalKeyboardKey.keyS, LogicalKeyboardKey.enter]) {
     testWidgets('${key.keyLabel} skips the intro on offer', (tester) async {

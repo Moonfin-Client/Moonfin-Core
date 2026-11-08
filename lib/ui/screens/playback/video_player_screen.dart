@@ -686,6 +686,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return raw.whereType<Map>().map((e) => e.cast<String, dynamic>()).toList();
   }
 
+  bool get _hasSubtitleStreams =>
+      _currentPlaybackMediaStreams().any((s) => s['Type'] == 'Subtitle');
+
+  bool get _hasSubtitleChoices {
+    final item = _queue.currentItem;
+    return _hasSubtitleStreams ||
+        item is AggregatedItem && TrackPicker.canDownloadRemoteSubtitles(item);
+  }
+
   List<Map<String, dynamic>> _currentPlaybackMediaStreams() {
     final resolutionStreams = _manager.currentResolution?.mediaStreams;
     if (resolutionStreams != null && resolutionStreams.isNotEmpty) {
@@ -3890,6 +3899,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _seekRelative(-_prefs.get(UserPreferences.skipBackLength));
           _showControls(focusSeekbar: PlatformDetection.isTV);
           return KeyEventResult.handled;
+        case LogicalKeyboardKey.closedCaptionToggle:
+          if (event is KeyDownEvent && _hasSubtitleChoices) {
+            _showTrackSelector(audio: false, closeKeys: {event.logicalKey});
+          }
+          return KeyEventResult.handled;
+        case LogicalKeyboardKey.mediaAudioTrack:
+          if (event is KeyDownEvent && _watchParty?.controlsPlayback != true) {
+            _showTrackSelector(audio: true, closeKeys: {event.logicalKey});
+          }
+          return KeyEventResult.handled;
         default:
           return KeyEventResult.ignored;
       }
@@ -5948,18 +5967,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             item is AggregatedItem && _playingChapters(item).isNotEmpty;
         final canBrowse = _canBrowseEpisodes(item);
         final hasCast = _hasCastCrew(item);
-        final playbackStreams = _currentPlaybackMediaStreams();
-        final hasSubtitleStreams = playbackStreams.any(
-          (s) => s['Type'] == 'Subtitle',
-        );
-        final canDownloadRemoteSubtitles =
-            item is AggregatedItem && TrackPicker.canDownloadRemoteSubtitles(item);
-        final showSubtitleButton =
-            hasSubtitleStreams || canDownloadRemoteSubtitles;
-        final subtitleButtonIcon =
-            !hasSubtitleStreams && canDownloadRemoteSubtitles
-            ? Icons.download_rounded
-            : Icons.subtitles_outlined;
+        final showSubtitleButton = _hasSubtitleChoices;
+        final subtitleButtonIcon = _hasSubtitleStreams
+            ? Icons.subtitles_outlined
+            : Icons.download_rounded;
         // Everyone in a Watch Party hears the same track.
         final showAudioButton = _watchParty?.controlsPlayback != true;
         final hidden = osdButtonLayout.hidden(_prefs);
@@ -7479,6 +7490,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _showTrackSelector({
     required bool audio,
     bool secondary = false,
+    Set<LogicalKeyboardKey> closeKeys = const {},
   }) {
     unawaited(
       TrackPicker.show(
@@ -7486,6 +7498,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         manager: _manager,
         audio: audio,
         secondary: secondary,
+        closeKeys: closeKeys,
         clientFor: _clientForItem,
         useRootNavigator: false,
         runMutation: _runSinglePlayerMutation,

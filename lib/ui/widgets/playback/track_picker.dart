@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
@@ -78,6 +79,7 @@ abstract final class TrackPicker {
     VoidCallback? onSubtitlesChanged,
     ValueChanged<bool>? onDialogOpenChanged,
     ValueChanged<bool>? onSubtitleDelayOpenChanged,
+    Set<LogicalKeyboardKey> closeKeys = const {},
   }) async {
     final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
@@ -292,6 +294,7 @@ abstract final class TrackPicker {
         dividerBefore: delayLimits == null ? null : options.length - 1,
         useRootNavigator: useRootNavigator,
         footer: footer,
+        closeKeys: closeKeys,
       ),
     );
     if (result == null || !context.mounted) return;
