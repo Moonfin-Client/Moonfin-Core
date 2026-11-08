@@ -305,6 +305,9 @@ class _SpotlightCardsBuilder {
         'people': _boxSetPeopleCard,
         'playlist_order': _boxSetPlaylistOrderCard,
       },
+      'BookSeries' => {
+        'books': _booksCard,
+      },
       _ => {
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
@@ -1126,6 +1129,33 @@ class _SpotlightCardsBuilder {
       if (url != null) return url;
     }
     return null;
+  }
+
+  SpotlightCardSpec? _booksCard() {
+    final books = vm.seriesBooks;
+    if (books.isEmpty) return null;
+    return SpotlightCardSpec(
+      id: 'books',
+      title: l10n.books,
+      subtitle: l10n.spotlightTitlesCount(books.length),
+      imageUrl:
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            item,
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            books[0],
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          fallbackImageUrl ??
+          _firstItemLandscape(books),
+      icon: Icons.book,
+      sections: [
+        _mediaSection(l10n.books, books),
+      ],
+    );
   }
 
   SpotlightCardSpec? _boxSetItemsCard() {

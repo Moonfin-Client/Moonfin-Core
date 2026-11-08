@@ -168,7 +168,13 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 strokeColor: (args["strokeColor"] as? NSNumber)?.intValue,
                 fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
                 fontWeight: (args["fontWeight"] as? NSNumber)?.intValue,
-                verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue)
+                verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue,
+                strokeScale: (args["strokeScale"] as? NSNumber)?.doubleValue,
+                shadowColor: (args["shadowColor"] as? NSNumber)?.intValue,
+                shadowOffset: (args["shadowOffset"] as? NSNumber)?.doubleValue,
+                shadowBlur: (args["shadowBlur"] as? NSNumber)?.doubleValue,
+                fontPath: args["fontPath"] as? String,
+                boldFontPath: args["boldFontPath"] as? String)
         case "setAllowUntrustedTls":
             EngineTLS.serverTrustEvaluator = EngineTrustPolicy.evaluator(from: args)
         case "setClientCertificates":

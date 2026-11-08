@@ -41,6 +41,13 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 icon: Icons.explore,
                 onChanged: _pushPersonalizationSync,
               ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.bookFoldersAsSeries,
+                title: l10n.bookFoldersAsSeries,
+                subtitle: l10n.bookFoldersAsSeriesDescription,
+                icon: Icons.book,
+                onChanged: _pushPersonalizationSync,
+              ),
             ],
           ),
           _SectionHeader(l10n.libraryView),

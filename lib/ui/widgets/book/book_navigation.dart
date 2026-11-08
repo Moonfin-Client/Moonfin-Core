@@ -21,6 +21,7 @@ enum BookCategoryKind {
   genres,
   collections,
   favorites,
+  folders,
   discover;
 
   static BookCategoryKind? parse(String? name) =>
@@ -33,6 +34,7 @@ enum BookCategoryKind {
     genres => l10n.genres,
     collections => l10n.collections,
     favorites => l10n.favorites,
+    folders => l10n.folders,
     discover => l10n.discover,
   };
 
@@ -43,6 +45,7 @@ enum BookCategoryKind {
     genres => Icons.sell_outlined,
     collections => Icons.collections_bookmark_outlined,
     favorites => Icons.favorite_border_rounded,
+    folders => Icons.folder_outlined,
     discover => Icons.explore_outlined,
   };
 }
@@ -58,8 +61,7 @@ void openBookLibraryItem(
   final isFolder = item.rawData['IsFolder'] as bool? ?? false;
   // A series named only by metadata has no folder to open, and an author known
   // only by name has no item.
-  if ((type == 'BookSeries' && !isFolder) ||
-      (type == 'Person' && item.id == item.name)) {
+  if (type == 'Person' && item.id == item.name) {
     context.push(Destinations.searchInLibrary(libraryId, query: item.name));
     return;
   }
@@ -77,7 +79,7 @@ void openBookLibraryItem(
     context.push(Destinations.folder(item.id, serverId: item.serverId));
     return;
   }
-  context.push(Destinations.item(item.id, serverId: item.serverId));
+  context.push(Destinations.item(item.id, serverId: item.serverId, libraryId: libraryId));
 }
 
 /// Opens the reader for a book or comic, and resumes an audiobook through

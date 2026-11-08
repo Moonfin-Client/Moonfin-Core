@@ -1,13 +1,11 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Shared speed for the long-form program descriptions in Live TV.
-const double kLiveTvDescriptionMarqueeMillisPerPixel = 55.0;
-
-/// Speed for the program description in the quick channel changer overlay,
-/// half as fast as [kLiveTvDescriptionMarqueeMillisPerPixel].
-const double kChannelCarouselDescriptionMarqueeMillisPerPixel = 110.0;
+// About the pace subtitle guidelines allow, slow enough to read from across
+// the room.
+const double _readingCharsPerSecond = 17;
 
 class MarqueeText extends StatefulWidget {
   final String text;
@@ -15,8 +13,9 @@ class MarqueeText extends StatefulWidget {
 
   /// The number of lines visible before an overflowing value scrolls. The
   /// default is the original horizontal one-line marquee. Values above one
-  /// use the same pause/repeat timing to scroll vertically through wrapped
-  /// text, keeping the full visible line budget available to the caller.
+  /// scroll vertically through wrapped text at reading pace, holding the first
+  /// lines long enough to read them and stopping on the last one. In that mode
+  /// [millisPerPixel] is ignored and [pauseDurationMs] is the shortest hold.
   final int maxLines;
 
   /// Optional rich content rendered in place of [text], so one scrolling line
@@ -59,12 +58,11 @@ class _MarqueeTextState extends State<MarqueeText>
   late final ScrollController _controller;
   late final AnimationController _anim;
   Timer? _pauseTimer;
-  double _lastTextWidth = 0.0;
+  double _scrollExtent = 0.0;
+  int _holdMs = 0;
+  int _endHoldMs = 0;
   bool _overflows = false;
   _MarqueeGroupState? _group;
-
-  double get _endOffset =>
-      widget.maxLines > 1 ? _lastTextWidth : _lastTextWidth + widget.gap;
 
   /// What gets painted and measured, the spans when given, otherwise [text].
   TextSpan get _span => widget.spans != null
@@ -142,12 +140,23 @@ class _MarqueeTextState extends State<MarqueeText>
 
   void _onTick() {
     if (_controller.hasClients) {
-      _controller.jumpTo(_anim.value * _endOffset);
+      _controller.jumpTo(_anim.value * _scrollExtent);
     }
   }
 
   void _onAnimationStatus(AnimationStatus status) {
     if (status != AnimationStatus.completed) return;
+    if (widget.maxLines > 1) {
+      _pauseTimer = Timer(Duration(milliseconds: _endHoldMs), () {
+        _pauseTimer = null;
+        if (mounted) _restart();
+      });
+    } else {
+      _restart();
+    }
+  }
+
+  void _restart() {
     if (_controller.hasClients) _controller.jumpTo(0);
     _anim.value = 0;
     _scheduleScroll();
@@ -155,18 +164,16 @@ class _MarqueeTextState extends State<MarqueeText>
 
   void _scheduleScroll() {
     if (!_overflows || _pauseTimer != null || _anim.isAnimating) return;
-    _pauseTimer = Timer(Duration(milliseconds: widget.pauseDurationMs), () {
+    _pauseTimer = Timer(Duration(milliseconds: _holdMs), () {
       _pauseTimer = null;
       if (mounted && _overflows) _anim.forward(from: 0);
     });
   }
 
-  void _updateAnimation(double textWidth, double parentWidth) {
+  void _updateAnimation(double textExtent, double parentExtent) {
     if (!mounted) return;
 
-    _lastTextWidth = textWidth;
-
-    _overflows = textWidth > parentWidth;
+    _overflows = textExtent > parentExtent;
     if (!_overflows) {
       _pauseTimer?.cancel();
       _pauseTimer = null;
@@ -179,10 +186,31 @@ class _MarqueeTextState extends State<MarqueeText>
       return;
     }
 
-    if (!_anim.isAnimating && _controller.hasClients) {
+    // A pending hold may be the one on the last lines, which a rebuild
+    // mustn't cut short.
+    if (!_anim.isAnimating && _pauseTimer == null && _controller.hasClients) {
       _controller.jumpTo(0);
     }
-    final scrollDurationMs = (_endOffset * widget.millisPerPixel).toInt();
+    final int scrollDurationMs;
+    if (widget.maxLines > 1) {
+      // One pixel down brings in a whole line of words, so the pace and the
+      // holds come from reading time rather than from distance.
+      _scrollExtent = textExtent - parentExtent;
+      final msPerChar = 1000 / _readingCharsPerSecond;
+      final chars = widget.text.length;
+      final visibleMs = chars * parentExtent / textExtent * msPerChar;
+      scrollDurationMs = (chars * _scrollExtent / textExtent * msPerChar)
+          .round();
+      _holdMs = math.max(widget.pauseDurationMs, visibleMs.round());
+      _endHoldMs = math.max(
+        widget.pauseDurationMs,
+        (visibleMs / widget.maxLines).round(),
+      );
+    } else {
+      _scrollExtent = textExtent + widget.gap;
+      scrollDurationMs = (_scrollExtent * widget.millisPerPixel).toInt();
+      _holdMs = widget.pauseDurationMs;
+    }
     final newDuration = Duration(milliseconds: scrollDurationMs);
 
     if (_anim.duration != newDuration) {

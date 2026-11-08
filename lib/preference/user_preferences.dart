@@ -123,6 +123,12 @@ class UserPreferences extends ChangeNotifier {
   // Series with episodes that aired lately, found from the episodes rather than
   // the series, whose own date is its first season's.
   static const mediaBarSourceNewReleases = 'newReleases';
+  static const mediaBarSourceTypeValues = <String>{
+    mediaBarSourceRandom,
+    mediaBarSourceRecentlyAdded,
+    mediaBarSourceRecentlyReleased,
+    mediaBarSourceNewReleases,
+  };
 
   // What a focused home card plays. episodePreviewEnabled says whether it
   // plays anything, which older apps also read, and mediaPreviewMode says
@@ -149,6 +155,7 @@ class UserPreferences extends ChangeNotifier {
   UserPreferences(this._store) {
     _adoptNewlyScopedPreferences();
     _repairMediaBarContentType();
+    _repairMediaBarSourceType();
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _migrateSeerrRowsVisibility();
@@ -263,6 +270,21 @@ class UserPreferences extends ChangeNotifier {
         continue;
       }
       _store.setString(key, normalizeMediaBarContentType(stored));
+    }
+  }
+
+  // The library and collection sources saved before draw like random here.
+  void _repairMediaBarSourceType() {
+    for (final key in _store.keys.toList()) {
+      if (key != mediaBarSourceType.key &&
+          !key.startsWith('${mediaBarSourceType.key}_')) {
+        continue;
+      }
+      final stored = _store.getString(key);
+      if (stored == null || mediaBarSourceTypeValues.contains(stored)) {
+        continue;
+      }
+      _store.setString(key, normalizeMediaBarSourceType(stored));
     }
   }
 
@@ -411,6 +433,8 @@ class UserPreferences extends ChangeNotifier {
     'ass_enabled',
     'audio_night_mode',
     'confirm_exit',
+    'controlsHideDelay',
+    'hdrControlsDimming',
     'defaultFavoritesFilter',
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
@@ -487,6 +511,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_component',
     'pref_screensaver_content_type',
     'pref_screensaver_dimming',
+    'pref_screensaver_during_audio',
     'pref_screensaver_enabled',
     'pref_screensaver_excluded_genres',
     'pref_screensaver_library_ids',
@@ -499,6 +524,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_timeout',
     'pref_seerr_rows_sort_by',
     'pref_seerr_rows_sort_order',
+    'pref_sleep_after_idle',
     'pref_studios_row_selected_ids',
     'pref_studios_row_sort_by',
     'pref_studios_row_sort_order',
@@ -585,12 +611,14 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_server_messages_button',
     'pref_show_friends_button',
     'pref_show_book_discover_tab',
+    'pref_book_folders_as_series',
     'pref_show_media_details_on_library_page',
     'pref_library_card_titles',
     'pref_use_detailed_sub_headings',
     'pref_hide_backdrops_in_libraries',
     'pref_show_clock',
     'pref_use_24_hour_clock',
+    'pref_date_format',
     'pref_clock_behavior',
     'pref_prefer_system_ime_keyboard',
     'pref_keyboard_style',
@@ -608,6 +636,12 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_stroke_color',
     'subtitles_text_size',
     'subtitles_offset_position',
+    'subtitles_stroke_width',
+    'subtitles_shadow',
+    'subtitles_shadow_intensity',
+    'subtitles_shadow_offset',
+    'subtitles_shadow_blur',
+    'subtitles_font',
     'secondary_subtitle_size_adjustment',
     'secondary_subtitle_offset_adjustment',
     'secondary_subtitle_text_color',
@@ -676,6 +710,7 @@ class UserPreferences extends ChangeNotifier {
     'seasonal_row_enabled',
     'seasonal_row_country',
     'seasonal_row_hidden_holidays',
+    'seasonal_row_all_year',
     'mediaBarEnabled',
     'mediaBarMode',
     'mediaBarContentType',
@@ -958,6 +993,9 @@ class UserPreferences extends ChangeNotifier {
           .toSet();
 
   int resolveMaxAudioChannels() => get(maxAudioChannels);
+
+  Duration resolveControlsHideDelay() =>
+      Duration(milliseconds: get(controlsHideDelay));
 
   PosterSize resolveLibraryPosterSize() {
     if (containsPreference(libraryPosterSize, scopedOnly: true)) {
@@ -1243,6 +1281,14 @@ class UserPreferences extends ChangeNotifier {
       return normalized;
     }
     return mediaBarContentTypeBoth;
+  }
+
+  static String normalizeMediaBarSourceType(String? sourceType) {
+    final normalized = (sourceType ?? '').trim().toLowerCase();
+    return mediaBarSourceTypeValues.firstWhere(
+      (value) => value.toLowerCase() == normalized,
+      orElse: () => mediaBarSourceRandom,
+    );
   }
 
   static final posterSize = EnumPreference(
@@ -1986,6 +2032,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final dateFormat = EnumPreference(
+    key: 'pref_date_format',
+    defaultValue: DateFormatSetting.system,
+    values: DateFormatSetting.values,
+  );
+
   // Opt-in: trust self-signed / private-CA TLS certificates. Off by default so
   // certificate validation stays on for everyone who doesn't need it.
   static final allowSelfSignedCerts = Preference(
@@ -2085,6 +2137,13 @@ class UserPreferences extends ChangeNotifier {
   static final showBookDiscoverTab = Preference(
     key: 'pref_show_book_discover_tab',
     defaultValue: true,
+  );
+
+  /// Off by default, as it is assumed the book metadata should include series
+  /// info. A user can override depending on their specific library structure
+  static final bookFoldersAsSeries = Preference(
+    key: 'pref_book_folders_as_series',
+    defaultValue: false,
   );
 
   /// Lists the book library's titles in rows instead of a cover grid.
@@ -2320,6 +2379,18 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_screensaver_timeout',
     defaultValue: ScreensaverTimeout.m5,
     values: ScreensaverTimeout.values,
+  );
+
+  static final screensaverDuringAudio = Preference(
+    key: 'pref_screensaver_during_audio',
+    defaultValue: false,
+  );
+
+  /// Minutes without a button press before the TV is left to sleep, or 0 for
+  /// never.
+  static final sleepAfterIdle = Preference(
+    key: 'pref_sleep_after_idle',
+    defaultValue: 0,
   );
 
   static final screensaverDimming = Preference(
@@ -2751,6 +2822,42 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.04,
   );
 
+  /// The outline as a percent of the width each player draws by default.
+  static final subtitlesStrokeWidth = Preference(
+    key: 'subtitles_stroke_width',
+    defaultValue: 100,
+  );
+
+  static final subtitlesShadow = Preference(
+    key: 'subtitles_shadow',
+    defaultValue: false,
+  );
+
+  /// Percent opacity of the black drop shadow.
+  static final subtitlesShadowIntensity = Preference(
+    key: 'subtitles_shadow_intensity',
+    defaultValue: 80,
+  );
+
+  /// Steps of 2% of the text size.
+  static final subtitlesShadowOffset = Preference(
+    key: 'subtitles_shadow_offset',
+    defaultValue: 2,
+  );
+
+  /// Steps of 2% of the text size.
+  static final subtitlesShadowBlur = Preference(
+    key: 'subtitles_shadow_blur',
+    defaultValue: 2,
+  );
+
+  /// A family from the downloadable subtitle fonts, or empty for each
+  /// player's own font.
+  static final subtitlesFont = Preference(
+    key: 'subtitles_font',
+    defaultValue: '',
+  );
+
   static final secondarySubtitleSizeAdjustment = Preference<double>(
     key: 'secondary_subtitle_size_adjustment',
     defaultValue: 0.0,
@@ -2890,6 +2997,17 @@ class UserPreferences extends ChangeNotifier {
   static final skipForwardLength = Preference(
     key: 'skipForwardLength',
     defaultValue: 30000,
+  );
+
+  static final controlsHideDelay = Preference(
+    key: 'controlsHideDelay',
+    defaultValue: 5000,
+  );
+
+  /// How much the player controls dim while HDR plays, in percent.
+  static final hdrControlsDimming = Preference(
+    key: 'hdrControlsDimming',
+    defaultValue: 0,
   );
 
   static final unpauseRewindDuration = Preference(
@@ -3767,8 +3885,9 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30,
   );
 
-  // Desktop player volume (0-100), independent of the OS volume. Persisted so
-  // playback resumes at the last level instead of jumping to max.
+  // Desktop player volume in percent, independent of the OS volume, up to
+  // maxPlayerVolume. Persisted so playback resumes at the last level instead
+  // of jumping to max.
   static final playerVolume = Preference(
     key: 'player_volume',
     defaultValue: 100.0,
@@ -3916,6 +4035,11 @@ class UserPreferences extends ChangeNotifier {
   static final seasonalRowHiddenHolidays = Preference(
     key: 'seasonal_row_hidden_holidays',
     defaultValue: '',
+  );
+
+  static final seasonalRowAllYear = Preference(
+    key: 'seasonal_row_all_year',
+    defaultValue: false,
   );
 
   static final loadingAnimationImage = EnumPreference(
@@ -4264,13 +4388,18 @@ class UserPreferences extends ChangeNotifier {
   );
 
   /// Hours after an episode or movie the user downloaded by hand was watched
-  /// before it is removed: 0 right away, -1 never. Smart downloads and
+  /// before it is removed: 0 right away, -1 never, [removeWatchedAsk] asks
+  /// once one is played to the end from its file. Smart downloads and
   /// followed series remove what they queued by their own settings. One
   /// setting for the device, like the downloads themselves.
   static final downloadRemoveWatchedAfterHours = Preference(
     key: 'download_remove_watched_after_hours',
     defaultValue: -1,
   );
+
+  /// [downloadRemoveWatchedAfterHours] value that deletes nothing on its own
+  /// but asks, once a download is played to the end, whether to delete it.
+  static const removeWatchedAsk = -2;
 
   /// When the remove-watched setting was last turned on. Only what is watched
   /// after it is removed, so turning it on never empties the downloads the

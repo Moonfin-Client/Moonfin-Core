@@ -52,6 +52,7 @@ import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
+import '../../playback/media_kit_player_backend.dart';
 import '../../playback/native_apple_player_backend.dart';
 import '../../playback/audio_handler.dart';
 import '../../playback/headless_session_bootstrap.dart';
@@ -464,8 +465,7 @@ class SessionRepository {
     // no requests of its own to set up.
     if (client.serverType == ServerType.plex) return;
 
-    // Register the FCM token now that a session exists, and push the current
-    // notification prefs so defaults reach the plugin. Startup registration
+    // Register the FCM token now that a session exists. Startup registration
     // bails before login, so this is where closed-app push actually enrolls.
     if (PlatformDetection.isMobile) {
       try {
@@ -473,9 +473,9 @@ class SessionRepository {
           await GetIt.instance<PushMessagingService>()
               .registerWithCurrentToken();
         }
-        await _pluginSyncService.pushNotificationPrefs(client);
       } catch (_) {}
     }
+    await _pluginSyncService.syncNotificationPrefs(client);
 
     final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
@@ -975,7 +975,7 @@ class SessionRepository {
   }
 
   Future<void> _setLocalVolume(PlaybackManager manager, double volume) async {
-    final clamped = volume.clamp(0, 100).toDouble();
+    final clamped = volume.clamp(0, maxPlayerVolume).toDouble();
     final backend = manager.backend;
     if (backend == null) return;
     if (PlatformDetection.isMobile) {

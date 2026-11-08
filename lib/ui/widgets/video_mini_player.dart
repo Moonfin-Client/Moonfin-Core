@@ -248,7 +248,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     _screensaver.setPlaybackActive(_state.isPlaying);
     _volume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     _subs.addAll([
       _state.playingStream.listen((playing) {
@@ -277,7 +277,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
   }
 
   void _setVolume(double fraction) {
-    final level = (fraction * 100).clamp(0.0, 100.0).toDouble();
+    final level = (fraction * 100).clamp(0.0, maxPlayerVolume).toDouble();
     setState(() => _volume = level);
     unawaited(_manager.backend?.setVolume(level));
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
@@ -786,6 +786,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                     if (constraints.maxWidth >= _rightSideWidth(scale) + 168)
                       PlayerVolumeControl(
                         volume: _volume / 100,
+                        max: maxPlayerVolume / 100,
                         onChanged: _setVolume,
                         onToggleMute: _toggleMute,
                       )

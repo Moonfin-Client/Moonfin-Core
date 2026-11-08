@@ -23,6 +23,7 @@
 		37206C100E6D00CCDFC3D5BF /* ChannelCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404F43B1C55A457B8CDF7516 /* ChannelCarousel.swift */; };
 		38309433A5B9EC8501A2A40F /* EpisodeBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2668020730B6FAE7A05244 /* EpisodeBrowser.swift */; };
 		38F3A10FD19E5334AB53BDE4 /* AppleTvThemeMusicChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556C2E3BDD198B9966DFC2C /* AppleTvThemeMusicChannel.swift */; };
+		A7C5D1000000000000000002 /* AppleArcadeSoundChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C5D1000000000000000001 /* AppleArcadeSoundChannel.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3D8486DD20ABC14FFFF6A62F /* AssRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6030FC79B2D18B3F2E4CD /* AssRenderer.swift */; };
 		41CA51BD8FB05EA3D2CCEFC1 /* AppleTvPreviewChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4929DF52D477CEFE7CE4E5BB /* AppleTvPreviewChannel.swift */; };
@@ -95,6 +96,7 @@
 		404F43B1C55A457B8CDF7516 /* ChannelCarousel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChannelCarousel.swift; path = ../../../tvos/Runner/Playback/ChannelCarousel.swift; sourceTree = "<group>"; };
 		43968872AF676659C55033B9 /* AetherVideoPlatformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoPlatformView.swift; path = ../../../tvos/Runner/Playback/Aether/AetherVideoPlatformView.swift; sourceTree = "<group>"; };
 		4556C2E3BDD198B9966DFC2C /* AppleTvThemeMusicChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleTvThemeMusicChannel.swift; path = ../../../tvos/Runner/AppleTvThemeMusicChannel.swift; sourceTree = "<group>"; };
+		A7C5D1000000000000000001 /* AppleArcadeSoundChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleArcadeSoundChannel.swift; path = ../../../tvos/Runner/AppleArcadeSoundChannel.swift; sourceTree = "<group>"; };
 		4929DF52D477CEFE7CE4E5BB /* AppleTvPreviewChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleTvPreviewChannel.swift; path = ../../../tvos/Runner/AppleTvPreviewChannel.swift; sourceTree = "<group>"; };
 		4AF42BA2B13FB8F5632D568A /* NativeApplePlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NativeApplePlayerViewController.swift; path = ../../../tvos/Runner/Playback/NativeApplePlayerViewController.swift; sourceTree = "<group>"; };
 		4CBFE510C5EC30207F9D695B /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				105ECADEE7194ADE67B88037 /* SubtitleFontLocator.swift */,
 				B1BFDAD54F78C69458FEFD17 /* SubtitleOverlay.swift */,
 				4556C2E3BDD198B9966DFC2C /* AppleTvThemeMusicChannel.swift */,
+				A7C5D1000000000000000001 /* AppleArcadeSoundChannel.swift */,
 				4929DF52D477CEFE7CE4E5BB /* AppleTvPreviewChannel.swift */,
 				09F431BFFA0E6CF94CC0C9B1 /* NativeApplePlayerChannel.swift */,
 				4AF42BA2B13FB8F5632D568A /* NativeApplePlayerViewController.swift */,
@@ -532,6 +535,7 @@
 				F9C19904A9134A29E5DB2A1C /* SubtitleFontLocator.swift in Sources */,
 				A8884959C962AC28473F5A8F /* SubtitleOverlay.swift in Sources */,
 				38F3A10FD19E5334AB53BDE4 /* AppleTvThemeMusicChannel.swift in Sources */,
+				A7C5D1000000000000000002 /* AppleArcadeSoundChannel.swift in Sources */,
 				41CA51BD8FB05EA3D2CCEFC1 /* AppleTvPreviewChannel.swift in Sources */,
 				B4017AACBF56D76ED5D22E59 /* NativeApplePlayerChannel.swift in Sources */,
 				01C118153B216319D6D5161A /* NativeApplePlayerViewController.swift in Sources */,

@@ -103,6 +103,15 @@ class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
                           code: _countryLabel(code, l10n),
                       },
                     ),
+                    // Silo picks its own seasonal row, so the switch would do nothing there.
+                    if (GetIt.instance<MediaServerClient>().itemsApi is! ServerHomeSectionsApi)
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.seasonalRowAllYear,
+                        title: l10n.seasonalRowAllYear,
+                        subtitle: l10n.seasonalRowAllYearDescription,
+                        icon: Icons.event_repeat,
+                        onChanged: _reloadHomeRows,
+                      ),
                   ],
                 ),
                 _SectionHeader(l10n.seasonalRowHolidays),

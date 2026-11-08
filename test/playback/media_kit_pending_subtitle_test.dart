@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:moonfin/playback/media_kit_player_backend.dart';
+import 'package:moonfin/playback/subtitle_fonts.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,6 +97,7 @@ class _Player extends Fake implements Player {
   PlayerState get state => const PlayerState();
   final selections = <String>[];
   final opened = <String>[];
+  final volumes = <double>[];
   String? automaticSubtitleSid;
   Completer<void>? openStarted;
   Completer<void>? delayOpen;
@@ -124,6 +128,9 @@ class _Player extends Fake implements Player {
       native.properties['sid'] = automaticSubtitleSid!;
     }
   }
+
+  @override
+  Future<void> setVolume(double volume) async => volumes.add(volume);
 
   @override
   Future<void> stop() async {}
@@ -318,6 +325,31 @@ void main() {
     expect(properties['sub-margin-y'], '259');
     expect(position(), inInclusiveRange(1, 99));
     expect(properties['sub-pos'], isNull);
+  });
+
+  test('the size setting scales an ASS primary and keeps plain text at its size', () async {
+    await selectPair(primaryCodec: 'ass');
+    await backend.configureSubtitleStyle(fontSize: 20);
+    expect(properties['sub-ass-override'], 'no');
+    expect(properties['sub-scale'], isNull);
+
+    await backend.configureSubtitleStyle(fontSize: 40);
+    expect(properties['sub-ass-override'], 'scale');
+    expect(properties['sub-scale'], '2.0');
+    // sub-scale also reaches the secondary, so its base size is halved.
+    expect(properties['sub-font-size'], '46');
+    final scaledPosition = position();
+
+    await prefs.set(UserPreferences.assDirectPlay, false);
+    await backend.configureSubtitleStyle(fontSize: 40);
+    expect(properties['sub-ass-override'], 'force');
+    expect(position(), scaledPosition);
+    await prefs.set(UserPreferences.assDirectPlay, true);
+
+    await backend.disableSubtitleTrack();
+    expect(properties['sub-ass-override'], 'no');
+    expect(properties['sub-scale'], '1.0');
+    expect(properties['sub-font-size'], '92');
   });
 
   test('secondary spacing clamps to Default and +6%', () async {
@@ -640,4 +672,70 @@ void main() {
       expect(player.selections, action == 'choice' ? ['17'] : isEmpty);
     });
   }
+
+  group('a picked subtitle font', () {
+    late Directory fonts;
+    setUp(() {
+      fonts = Directory.systemTemp.createTempSync('subtitle-fonts');
+      final previous = SubtitleFonts.instance;
+      SubtitleFonts.instance = SubtitleFonts(directory: () async => fonts);
+      addTearDown(() {
+        SubtitleFonts.instance = previous;
+        fonts.deleteSync(recursive: true);
+      });
+    });
+    void download() {
+      File('${fonts.path}/FiraSans-Regular.ttf').writeAsBytesSync([0, 1, 0, 0]);
+      File('${fonts.path}/FiraSans-Bold.ttf').writeAsBytesSync([0, 1, 0, 0]);
+    }
+
+    test('waits for its download, and the stroke width applies either way', () async {
+      await backend.configureSubtitleStyle(strokeColor: 0xFF000000, strokeScale: 2, fontFamily: 'Fira Sans');
+      expect(properties['sub-border-size'], '4');
+      expect(properties['sub-font'], 'Noto Sans CJK SC');
+    });
+
+    test('joins the bundled fonts on Android before the stream opens', () async {
+      final bundled = Directory.systemTemp.createTempSync('bundled-fonts');
+      addTearDown(() => bundled.deleteSync(recursive: true));
+      properties['sub-fonts-dir'] = bundled.path;
+      await prefs.set(UserPreferences.subtitlesFont, 'Fira Sans');
+      download();
+
+      final race = await startOpeningRace({});
+      expect(properties['sub-font'], 'Fira Sans');
+      expect(properties['sub-fonts-dir'], bundled.path);
+      expect(File('${bundled.path}/FiraSans-Bold.ttf').existsSync(), isTrue);
+      race.release();
+      await race.opening;
+    });
+
+    test('points libass at the download folder on desktop', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      download();
+
+      await backend.configureSubtitleStyle(fontFamily: 'Fira Sans');
+      expect(properties['sub-fonts-dir'], fonts.path);
+      expect(properties['sub-font'], 'Fira Sans');
+      await backend.configureSubtitleStyle(fontFamily: '');
+      expect(properties['sub-font'], 'sans-serif');
+    });
+  });
+
+  test('mpv plays up to 150% on Windows and Linux, 100% elsewhere', () async {
+    await backend.setVolume(200);
+    await backend.setVolume(-5);
+    expect(player.volumes, [150, 0]);
+
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    for (final (platform, ceiling) in [
+      (TargetPlatform.windows, 150.0),
+      (TargetPlatform.linux, 150.0),
+      (TargetPlatform.macOS, 100.0),
+    ]) {
+      debugDefaultTargetPlatformOverride = platform;
+      expect(maxPlayerVolume, ceiling, reason: platform.name);
+    }
+  });
 }

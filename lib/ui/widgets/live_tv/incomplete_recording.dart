@@ -601,7 +601,6 @@ class _ShowingCard extends StatelessWidget {
                 text: text,
                 maxLines: _descriptionLines,
                 style: style,
-                millisPerPixel: kLiveTvDescriptionMarqueeMillisPerPixel,
                 pauseDurationMs: 1600,
                 showDotSeparator: false,
               );

@@ -6,7 +6,7 @@ import '../../../preference/user_preferences.dart';
 import 'settings_section_header.dart';
 
 /// The mock screen the settings live preview draws.
-enum SettingsPreviewScene { home, details, player, search }
+enum SettingsPreviewScene { home, details, player, search, calendar, library }
 
 /// What the focused settings tile tells the preview about itself.
 class SettingsPreviewEntry {
@@ -60,6 +60,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_live_tv_button': SettingsPreviewScene.home,
     'pref_show_syncplay_button': SettingsPreviewScene.home,
     'pref_show_seerr_button': SettingsPreviewScene.home,
+    'pref_show_calendar_button': SettingsPreviewScene.home,
     'pref_show_libraries_in_toolbar': SettingsPreviewScene.home,
     'pref_show_libraries_individually': SettingsPreviewScene.home,
     'pref_show_downloads_button': SettingsPreviewScene.home,
@@ -83,6 +84,8 @@ class SettingsPreviewController extends ChangeNotifier {
     'homeRowsShowRatingLabels': SettingsPreviewScene.home,
     'homeRowsShowRatingBadges': SettingsPreviewScene.home,
     'pref_hide_home_media_description': SettingsPreviewScene.home,
+    'seasonal_surprise': SettingsPreviewScene.home,
+    'seasonal_density': SettingsPreviewScene.home,
     'pref_detail_screen_style': SettingsPreviewScene.details,
     'pref_hide_details_media_description': SettingsPreviewScene.details,
     'pref_show_details_backdrop': SettingsPreviewScene.details,
@@ -131,6 +134,12 @@ class SettingsPreviewController extends ChangeNotifier {
     'subtitles_text_size': SettingsPreviewScene.player,
     'subtitles_text_weight': SettingsPreviewScene.player,
     'subtitles_offset_position': SettingsPreviewScene.player,
+    'subtitles_stroke_width': SettingsPreviewScene.player,
+    'subtitles_shadow': SettingsPreviewScene.player,
+    'subtitles_shadow_intensity': SettingsPreviewScene.player,
+    'subtitles_shadow_offset': SettingsPreviewScene.player,
+    'subtitles_shadow_blur': SettingsPreviewScene.player,
+    'subtitles_font': SettingsPreviewScene.player,
     'secondary_subtitle_size_adjustment': SettingsPreviewScene.player,
     'secondary_subtitle_offset_adjustment': SettingsPreviewScene.player,
     'secondary_subtitle_text_color': SettingsPreviewScene.player,
@@ -156,6 +165,27 @@ class SettingsPreviewController extends ChangeNotifier {
     'trickplay_follow_scrub_position': SettingsPreviewScene.player,
     'trickplay_pause_while_scrubbing': SettingsPreviewScene.player,
     'pref_keyboard_style': SettingsPreviewScene.search,
+    'pref_calendar_style': SettingsPreviewScene.calendar,
+    'pref_calendar_scope': SettingsPreviewScene.calendar,
+    'pref_calendar_show_episodes': SettingsPreviewScene.calendar,
+    'pref_calendar_show_movies': SettingsPreviewScene.calendar,
+    'pref_calendar_libraries': SettingsPreviewScene.calendar,
+    'pref_calendar_unmonitored': SettingsPreviewScene.calendar,
+    'pref_calendar_specials': SettingsPreviewScene.calendar,
+    'pref_calendar_badges': SettingsPreviewScene.calendar,
+    'pref_calendar_color_by': SettingsPreviewScene.calendar,
+    'pref_calendar_image_type': SettingsPreviewScene.calendar,
+    'pref_calendar_spoiler_safe': SettingsPreviewScene.calendar,
+    'pref_calendar_request_button': SettingsPreviewScene.calendar,
+    'pref_calendar_reminders': SettingsPreviewScene.calendar,
+    'pref_library_style': SettingsPreviewScene.library,
+    'pref_group_items_into_collections': SettingsPreviewScene.library,
+    'pref_show_media_details_on_library_page': SettingsPreviewScene.library,
+    'pref_library_card_titles': SettingsPreviewScene.library,
+    'pref_use_detailed_sub_headings': SettingsPreviewScene.library,
+    'pref_hide_backdrops_in_libraries': SettingsPreviewScene.library,
+    'pref_music_library_style': SettingsPreviewScene.library,
+    'pref_book_library_style': SettingsPreviewScene.library,
   };
 
   /// The screensaver comes on over Home, so every one of its settings shows
@@ -218,6 +248,11 @@ class SettingsPreviewController extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// Whether [context] is a screen drawn inside the settings live preview,
+/// which leaves focus, the navbar and the app's backdrop to the real one.
+bool inSettingsPreview(BuildContext context) =>
+    SettingsPreviewScope.maybeOf(context) != null;
 
 class SettingsPreviewScope
     extends InheritedNotifier<SettingsPreviewController> {

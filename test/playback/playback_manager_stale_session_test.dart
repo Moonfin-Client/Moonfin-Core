@@ -523,6 +523,24 @@ void main() {
     manager.dispose();
   });
 
+  testWidgets('a boosted level reaches the server as full volume', (
+    tester,
+  ) async {
+    final service = _TestService();
+    final manager = _manager(_TestBackend(), _TestResolver(), service);
+    await manager.playItems(<dynamic>[
+      {'Id': 'volume', 'Type': 'Movie'},
+    ]);
+    manager.reportVolumeState(
+      volume: 150,
+      isMuted: false,
+      reportImmediately: true,
+    );
+    expect(manager.volume, 150);
+    expect(service.reportedVolumes, [(100, false)]);
+    manager.dispose();
+  });
+
   for (final fail in [false, true]) {
     testWidgets(
       'volume reports coalesce behind ${fail ? 'failed' : 'delayed'} progress',

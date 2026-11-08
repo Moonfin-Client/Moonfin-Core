@@ -121,6 +121,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   required VoidCallback openAdmin,
   required VoidCallback openThemeEditor,
 }) {
+  final prefs = GetIt.instance<UserPreferences>();
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
   final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
@@ -553,6 +554,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.settingsTwentyFourHourClockSubtitle,
       keywords: ['time format', 'am pm'],
     ),
+    general.leaf(
+      'pref_date_format',
+      l10n.settingsDateFormat,
+      subtitle: l10n.settingsDateFormatDescription,
+      keywords: ['date format', 'calendar date'],
+    ),
     if (PlatformDetection.isTV)
       general.leaf(
         'pref_keyboard_style',
@@ -948,6 +955,21 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.dimmingLevel,
         keywords: ['brightness'],
       ),
+      screensaver.leaf(
+        'pref_screensaver_during_audio',
+        l10n.screensaverDuringAudio,
+        subtitle: l10n.screensaverDuringAudioDescription,
+        keywords: ['music', 'audiobook', 'burn in', 'now playing'],
+      ),
+      if (ScreensaverController.sleepAfterIdleSupported)
+        screensaver.leaf(
+          'pref_sleep_after_idle',
+          l10n.sleepAfterIdle,
+          subtitle: PlatformDetection.isAppleTV
+              ? l10n.sleepAfterIdleDescriptionAppleTv
+              : l10n.sleepAfterIdleDescriptionAndroid,
+          keywords: ['close', 'quit', 'idle', 'auto exit', 'power'],
+        ),
     ],
 
     home.screen(keywords: ['home page', 'rows']),
@@ -1165,6 +1187,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
       seasonalRow.leaf('seasonal_row_hidden_holidays', l10n.seasonalRowHolidays),
+      if (GetIt.instance<MediaServerClient>().itemsApi is! ServerHomeSectionsApi)
+        seasonalRow.leaf('seasonal_row_all_year', l10n.seasonalRowAllYear, subtitle: l10n.seasonalRowAllYearDescription),
     ],
     if (pluginAvailable) ...[
       imdbLists.screen(keywords: ['top 250', 'popular', 'charts']),
@@ -1309,6 +1333,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.showBookDiscoverTab,
       subtitle: l10n.showBookDiscoverTabDescription,
       keywords: ['books', 'audiobooks', 'open library', 'librivox'],
+    ),
+    libraries.leaf(
+      'pref_book_folders_as_series',
+      l10n.bookFoldersAsSeries,
+      subtitle: l10n.bookFoldersAsSeriesDescription,
+      keywords: ['books', 'series', 'folder'],
     ),
     libraries.leaf('pref_library_style', l10n.libraryStyle, keywords: [
       'classic',
@@ -1620,6 +1650,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'seek forward',
     ]),
     video.leaf(
+      'controlsHideDelay',
+      l10n.settingsHideControlsAfter,
+      subtitle: l10n.settingsHideControlsAfterDescription,
+      keywords: ['osd', 'timeout', 'auto hide', 'player ui'],
+    ),
+    video.leaf(
+      'hdrControlsDimming',
+      l10n.settingsHdrControlsDimming,
+      subtitle: l10n.settingsHdrControlsDimmingDescription,
+      keywords: ['osd', 'brightness', 'dim', 'player ui'],
+    ),
+    video.leaf(
       'showChapterMarkers',
       l10n.showChapterMarkers,
       subtitle: l10n.showChapterMarkersDescription,
@@ -1923,6 +1965,23 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['position', 'height'],
     ),
     subtitleStyle.leaf(
+      'subtitles_stroke_width',
+      l10n.subtitleStrokeWidth,
+      keywords: ['outline', 'border', 'thickness'],
+    ),
+    subtitleStyle.leaf('subtitles_text_weight', l10n.subtitleBold),
+    subtitleStyle.leaf(
+      'subtitles_font',
+      l10n.subtitleFont,
+      subtitle: l10n.subtitleFontDescription,
+      keywords: ['typeface', 'font family'],
+    ),
+    subtitleStyle.leaf(
+      'subtitles_shadow',
+      l10n.subtitleShadow,
+      keywords: ['drop shadow', 'blur'],
+    ),
+    subtitleStyle.leaf(
       'subtitles_hdr_separate',
       l10n.subtitleHdrSeparate,
       subtitle: l10n.subtitleHdrSeparateSubtitle,
@@ -2223,12 +2282,14 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.calendarSettingsColorBy,
         subtitle: l10n.calendarSettingsColorByDescription,
       ),
-      calendarSettings.leaf(
-        'pref_calendar_image_type',
-        l10n.calendarSettingsImageType,
-        subtitle: l10n.calendarSettingsImageTypeDescription,
-        keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
-      ),
+      if (prefs.get(UserPreferences.calendarStyle) ==
+          CalendarStyle.countdown)
+        calendarSettings.leaf(
+          'pref_calendar_image_type',
+          l10n.calendarSettingsImageType,
+          subtitle: l10n.calendarSettingsImageTypeDescription,
+          keywords: [l10n.imageTypePoster, l10n.imageTypeThumbnail],
+        ),
       calendarSettings.leaf(
         'pref_calendar_spoiler_safe',
         l10n.calendarSettingsSpoilerSafe,

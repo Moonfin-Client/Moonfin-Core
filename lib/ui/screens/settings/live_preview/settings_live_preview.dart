@@ -3,16 +3,19 @@ import 'dart:math' as math;
 
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HardwareKeyboard, KeyUpEvent;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit_video/media_kit_video.dart' show SubtitleViewState;
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../data/models/aggregated_library.dart';
 import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../../data/models/media_segment.dart';
 import '../../../../data/models/trickplay_preview_layout.dart';
 import '../../../../data/repositories/poster_badge_repository.dart';
+import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/voice_search_controller.dart';
 import '../../../../data/utils/media_segment_actions.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -22,13 +25,15 @@ import '../../../../playback/subtitle_style.dart';
 import '../../../../playback/subtitle_view_config.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
-import '../../../../util/focus/input_mode_tracker.dart';
+import '../../../../util/device_performance.dart';
+import '../../../../util/game_library.dart' show isGameLibrary;
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../screensaver/bouncing_box.dart';
 import '../../../screensaver/screensaver_gradient_backdrops.dart';
 import '../../../screensaver/screensaver_view.dart';
 import '../../../widgets/adaptive/sf_symbol.dart';
+import '../../../widgets/book/book_navigation.dart' show BookCategoryKind;
 import '../../../widgets/bounded_network_image.dart';
 import '../../../widgets/image_source.dart';
 import '../../../widgets/playback/chapter_marker_track.dart';
@@ -39,8 +44,20 @@ import '../../../widgets/playback/player_logo.dart';
 import '../../../widgets/playback/seek_icons.dart';
 import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
+import '../../../widgets/seasonal/seasonal_effects.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
+import '../../../widgets/sliding_pill_tabs.dart';
 import '../../../widgets/video_mini_player.dart';
+import '../../browse/book_category_screen.dart';
+import '../../browse/classic_book_browse_screen.dart';
+import '../../browse/immersive_music_screen.dart';
+import '../../browse/library_browse_screen.dart';
+import '../../browse/music_browse_screen.dart';
+import '../../browse/quick_access_music_screen.dart';
+import '../../browse/reading_room_book_screen.dart';
+import '../../calendar/calendar_agenda_view.dart';
+import '../../calendar/calendar_controller.dart';
+import '../../calendar/calendar_countdown_view.dart';
 import '../../playback/osd_buttons.dart';
 import '../../setup/setup_wizard_previews.dart';
 
@@ -52,16 +69,122 @@ String settingsPreviewSceneName(
   SettingsPreviewScene.details => l10n.detailsPage,
   SettingsPreviewScene.player => l10n.player,
   SettingsPreviewScene.search => l10n.search,
+  SettingsPreviewScene.calendar => l10n.calendar,
+  SettingsPreviewScene.library => l10n.library,
 };
 
 /// The scenes this device has settings for. Keyboard Style is a TV setting,
-/// so only a TV gets the search keyboard.
+/// so only a TV gets the search keyboard, the calendar only shows for someone
+/// the server offers it to, and the library waits on a video, music or book
+/// one.
 List<SettingsPreviewScene> get settingsPreviewScenes => [
   SettingsPreviewScene.home,
   SettingsPreviewScene.details,
   SettingsPreviewScene.player,
   if (PlatformDetection.useLeanbackUi) SettingsPreviewScene.search,
+  if (GetIt.instance.isRegistered<PluginSyncService>() &&
+      GetIt.instance<PluginSyncService>().calendarAvailable)
+    SettingsPreviewScene.calendar,
+  if (_videoLibrary != null || _musicLibrary != null || _bookLibrary != null)
+    SettingsPreviewScene.library,
 ];
+
+/// The first library of one of [types] in the user's order. A games library
+/// can carry any of them, and opens the games screen instead.
+AggregatedLibrary? _firstLibrary(Set<String> types) => SetupPreviewData
+    .libraries
+    .value
+    .where(
+      (l) =>
+          types.contains(l.collectionType) &&
+          !isGameLibrary(l.id, l.collectionType, l.name),
+    )
+    .firstOrNull;
+
+AggregatedLibrary? get _videoLibrary => _firstLibrary(const {'movies', 'tvshows'});
+
+AggregatedLibrary? get _musicLibrary => _firstLibrary(const {'music'});
+
+AggregatedLibrary? get _bookLibrary =>
+    _firstLibrary(const {'books', 'audiobooks'});
+
+/// [screen] laid out by the canvas's size, with no system bars or keyboard.
+Widget _onCanvas(BuildContext context, Widget screen) => MediaQuery(
+  data: MediaQuery.of(context).copyWith(
+    size: setupPreviewSize(),
+    padding: EdgeInsets.zero,
+    viewPadding: EdgeInsets.zero,
+    viewInsets: EdgeInsets.zero,
+  ),
+  child: screen,
+);
+
+/// The video library in the style being looked at, or the music or book
+/// library while its style has focus. Without a video library it falls back to
+/// music, then books.
+Widget _libraryScene(String? focusedKey) => Builder(
+  builder: (context) {
+    final video = _videoLibrary;
+    final music = _musicLibrary;
+    final books = _bookLibrary;
+    if (books != null &&
+        (focusedKey == UserPreferences.bookLibraryStyle.key ||
+            (video == null && music == null))) {
+      final type = books.collectionType;
+      return settingsNavbarPreviewOver(
+        _onCanvas(
+          context,
+          switch (previewValue(context, UserPreferences.bookLibraryStyle)) {
+            BookLibraryStyle.classic => ClassicBookBrowseScreen(
+              libraryId: books.id,
+              collectionType: type,
+            ),
+            BookLibraryStyle.readingRoom => ReadingRoomBookScreen(
+              libraryId: books.id,
+              collectionType: type,
+            ),
+            BookLibraryStyle.bookstore => BookCategoryScreen(
+              libraryId: books.id,
+              kind: BookCategoryKind.titles,
+              collectionType: type,
+              root: true,
+            ),
+          },
+        ),
+      );
+    }
+    if (music != null &&
+        (focusedKey == UserPreferences.musicLibraryStyle.key || video == null)) {
+      final style = previewValue(context, UserPreferences.musicLibraryStyle);
+      final screen = _onCanvas(context, switch (style) {
+        MusicLibraryStyle.classic => MusicBrowseScreen(libraryId: music.id),
+        MusicLibraryStyle.quickAccess => QuickAccessMusicScreen(
+          libraryId: music.id,
+        ),
+        MusicLibraryStyle.immersive => ImmersiveMusicScreen(
+          libraryId: music.id,
+        ),
+      });
+      // Classic has no navbar of its own, the others sit in the app's.
+      return style == MusicLibraryStyle.classic
+          ? _designCanvas(setupPreviewSize(), screen)
+          : settingsNavbarPreviewOver(screen);
+    }
+    if (video == null) return const SizedBox.shrink();
+    return _designCanvas(
+      setupPreviewSize(),
+      _onCanvas(
+        context,
+        LibraryBrowseScreen(
+          key: ValueKey(video.id),
+          libraryId: video.id,
+          serverId: video.serverId,
+          previewStyle: previewValue(context, UserPreferences.libraryStyle),
+        ),
+      ),
+    );
+  },
+);
 
 /// The player lays out landscape even on a phone, where playback rotates. A TV
 /// is landscape already, so it shares the other scenes' canvas.
@@ -85,19 +208,27 @@ Listenable _previewListenable(SettingsPreviewController controller) =>
         GetIt.instance<PosterBadgeRepository>().available,
     ]);
 
-/// The live preview: scene chips over a mock of the screen the focused setting
+/// The live preview: the scenes over a mock of the screen the focused setting
 /// changes, drawn with the saved values or the option a picker is trying.
 class SettingsLivePreview extends StatefulWidget {
-  /// Hides the header so a phone can lay the chips out itself.
+  /// Hides the header so a phone can lay the scenes out itself.
   final bool showHeader;
 
-  /// Lets the D-pad reach the chips, see [SettingsPreviewSceneChips].
-  final Map<SettingsPreviewScene, FocusNode>? chipFocus;
+  /// Lets the D-pad reach the scenes, see [SettingsPreviewScenes].
+  final FocusNode? sceneFocus;
+
+  /// Left off the first scene.
+  final VoidCallback? onLeaveScenes;
+
+  /// Up or Down off the scenes, true when it was used.
+  final bool Function(bool isUp)? onScenesVertical;
 
   const SettingsLivePreview({
     super.key,
     this.showHeader = true,
-    this.chipFocus,
+    this.sceneFocus,
+    this.onLeaveScenes,
+    this.onScenesVertical,
   });
 
   @override
@@ -154,9 +285,11 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SettingsPreviewSceneChips(
+            SettingsPreviewScenes(
               controller: controller,
-              focusNodes: widget.chipFocus,
+              focusNode: widget.sceneFocus,
+              onExitLeft: widget.onLeaveScenes,
+              onVerticalNavigation: widget.onScenesVertical,
             ),
             const SizedBox(height: 10),
             Flexible(child: Center(child: frame)),
@@ -203,6 +336,8 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
             previewValue(context, UserPreferences.bottomNavbarStyle),
           ),
         ),
+        'seasonal_surprise' || 'seasonal_density' =>
+          const SettingsSeasonalPreview(),
         final key? when key.startsWith('pref_screensaver_') => Builder(
           builder: (context) =>
               previewValue(context, UserPreferences.screensaverEnabled)
@@ -221,29 +356,41 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
       ),
       SettingsPreviewScene.player => SettingsPlayerPreview(focusedKey: key),
       SettingsPreviewScene.search => const SettingsSearchPreview(),
+      SettingsPreviewScene.calendar => const SettingsCalendarPreview(),
+      SettingsPreviewScene.library => _libraryScene(key),
     };
   }
 }
 
-/// The "Live preview" label and the chips that switch scenes by hand.
-class SettingsPreviewSceneChips extends StatelessWidget {
+/// The "Live preview" label and the scenes, in the same pill strip as the
+/// categories, to switch scenes by hand.
+class SettingsPreviewScenes extends StatelessWidget {
   final SettingsPreviewController controller;
 
-  /// A node per chip where the D-pad can reach them. Without them a TV keeps
-  /// the chips out of focus and the preview just follows the focused setting.
-  final Map<SettingsPreviewScene, FocusNode>? focusNodes;
+  /// Where the D-pad reaches the scenes. Without it a TV keeps them out of
+  /// focus and the preview just follows the focused setting.
+  final FocusNode? focusNode;
 
-  /// Sits right after the last chip, like the phone's show/hide toggle.
-  final Widget? trailing;
+  /// Left off the first scene.
+  final VoidCallback? onExitLeft;
 
-  /// Runs after a chip switches the scene, so a hidden phone preview can open.
+  /// Up or Down off the scenes, true when it was used.
+  final bool Function(bool isUp)? onVerticalNavigation;
+
+  /// Sits before the scenes in place of the label, like the phone's show/hide
+  /// toggle, so it's in reach however many scenes there are.
+  final Widget? leading;
+
+  /// Runs after a scene is picked, so a hidden phone preview can open.
   final VoidCallback? onSceneTap;
 
-  const SettingsPreviewSceneChips({
+  const SettingsPreviewScenes({
     super.key,
     required this.controller,
-    this.focusNodes,
-    this.trailing,
+    this.focusNode,
+    this.onExitLeft,
+    this.onVerticalNavigation,
+    this.leading,
     this.onSceneTap,
   });
 
@@ -251,162 +398,61 @@ class SettingsPreviewSceneChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scenes = settingsPreviewScenes;
-    Widget chips = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < scenes.length; i++) ...[
-          if (i > 0) const SizedBox(width: 6),
-          _SceneChip(
-            label: settingsPreviewSceneName(l10n, scenes[i]),
-            selected: controller.scene == scenes[i],
-            focusNode: focusNodes?[scenes[i]],
-            onTap: () {
-              controller.showScene(scenes[i]);
-              onSceneTap?.call();
-            },
-          ),
+    // The strip keeps a fixed height and measures its labels once, so the
+    // scale is capped the way the category strip's is and a new one gets a
+    // fresh strip.
+    Widget pills = MediaQuery.withClampedTextScaling(
+      maxScaleFactor: DesktopUiScale.large.scaleFactor,
+      child: SlidingPillTabs(
+        key: ValueKey(MediaQuery.textScalerOf(context)),
+        labels: [
+          for (final scene in scenes) settingsPreviewSceneName(l10n, scene),
         ],
-        if (trailing case final trailing?) ...[
-          const SizedBox(width: 6),
-          trailing,
-        ],
-      ],
-    );
-    if (PlatformDetection.useLeanbackUi && focusNodes == null) {
-      chips = ExcludeFocus(child: chips);
-    }
-    // A phone has room for the chips or the label, and the chips matter more.
-    final phone = PlatformDetection.useMobileUi;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // The chips take the width they need and the label gets what's left,
-        // so only chips that outgrow the whole row scroll.
-        final chipsRoom = constraints.maxWidth - 16 - (phone ? 0 : 12);
-        return Row(
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColorScheme.accent,
-              ),
-            ),
-            const SizedBox(width: 8),
-            if (!phone) ...[
-              // Clipped so a label squeezed to nothing leaves no stray
-              // ellipsis behind.
-              Expanded(
-                child: ClipRect(
-                  child: Text(
-                    l10n.settingsLivePreview.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: math.max(0, chipsRoom)),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                // Room for the focus ring and glow, which the scroll view
-                // would otherwise clip.
-                padding: focusNodes == null
-                    ? null
-                    : const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                child: chips,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _SceneChip extends StatefulWidget {
-  final String label;
-  final bool selected;
-  final FocusNode? focusNode;
-  final VoidCallback onTap;
-
-  const _SceneChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    this.focusNode,
-  });
-
-  @override
-  State<_SceneChip> createState() => _SceneChipState();
-}
-
-class _SceneChipState extends State<_SceneChip> {
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = widget.selected;
-    final focused = InputModeTracker.showFocusVisuals(context, _focused);
-    final borders = ThemeRegistry.active.borders;
-    return AnimatedScale(
-      scale: focused ? 1.08 : 1.0,
-      duration: const Duration(milliseconds: 120),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.circular(999),
-          boxShadow: focused ? borders.focusGlow : null,
-        ),
-        child: Material(
-          color: selected ? Colors.white : Colors.transparent,
-          shape: StadiumBorder(
-            side: focused
-                ? borders.focusBorder.copyWith(width: 2)
-                : BorderSide(
-                    color: selected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.22),
-                  ),
-          ),
-          child: InkWell(
-            customBorder: const StadiumBorder(),
-            focusNode: widget.focusNode,
-            focusColor: Colors.transparent,
-            onFocusChange: (value) {
-              setState(() => _focused = value);
-              if (!value) return;
-              // Focusing a chip shows its scene, the way clicking it does.
-              widget.onTap();
-              Scrollable.ensureVisible(
-                context,
-                duration: const Duration(milliseconds: 120),
-              );
-            },
-            onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              child: Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: selected
-                      ? AppColors.black
-                      : AppColorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
-          ),
-        ),
+        selectedIndex: scenes.indexOf(controller.scene),
+        onChanged: (index) {
+          controller.showScene(scenes[index]);
+          onSceneTap?.call();
+        },
+        focusNode: focusNode,
+        onExitLeft: onExitLeft,
+        onVerticalNavigation: onVerticalNavigation,
+        alignment: leading == null
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
       ),
+    );
+    if (PlatformDetection.useLeanbackUi && focusNode == null) {
+      pills = ExcludeFocus(child: pills);
+    }
+    return Row(
+      children: [
+        if (leading case final leading?) ...[
+          leading,
+          const SizedBox(width: 6),
+        ] else ...[
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColorScheme.accent,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            l10n.settingsLivePreview.toUpperCase(),
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+        Expanded(child: pills),
+      ],
     );
   }
 }
@@ -966,7 +1012,7 @@ class _PlayerSubtitles extends StatelessWidget {
         style: view.style.copyWith(
           fontSize: size,
           color: Color(color),
-          shadows: subtitleStrokeShadows(Color(style.strokeColor), size),
+          shadows: subtitleShadows(style, size),
         ),
       );
     }
@@ -1626,6 +1672,123 @@ class SettingsScreensaverPreview extends StatelessWidget {
                     ),
                   ),
         ],
+      ),
+    );
+  }
+}
+
+/// Home with the seasonal effect and density being looked at over it. Home's
+/// own effect pauses meanwhile, and this one holds still while keys are
+/// pressed, since each frame it animates redraws all of Settings.
+class SettingsSeasonalPreview extends StatefulWidget {
+  const SettingsSeasonalPreview({super.key});
+
+  @override
+  State<SettingsSeasonalPreview> createState() =>
+      _SettingsSeasonalPreviewState();
+}
+
+class _SettingsSeasonalPreviewState extends State<SettingsSeasonalPreview> {
+  static const _holdAfterKey = Duration(milliseconds: 700);
+
+  Timer? _hold;
+
+  // Home rebuilds on the count, which mustn't happen mid build.
+  @override
+  void initState() {
+    super.initState();
+    scheduleMicrotask(() => seasonalPreviewsRunning.value++);
+    HardwareKeyboard.instance.addHandler(_onKey);
+  }
+
+  @override
+  void dispose() {
+    HardwareKeyboard.instance.removeHandler(_onKey);
+    _hold?.cancel();
+    scheduleMicrotask(() => seasonalPreviewsRunning.value--);
+    super.dispose();
+  }
+
+  bool _onKey(KeyEvent event) {
+    if (event is KeyUpEvent) return false;
+    final wasHeld = _hold != null;
+    _hold?.cancel();
+    _hold = Timer(_holdAfterKey, () {
+      if (mounted) setState(() => _hold = null);
+    });
+    if (!wasHeld) setState(() {});
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final prefs = GetIt.instance<UserPreferences>();
+    return Stack(
+      children: [
+        settingsHomePreview(),
+        Positioned.fill(
+          child: _designCanvas(
+            setupPreviewSize(),
+            TickerMode(
+              enabled: _hold == null,
+              child: SeasonalEffectsHost(
+                effect: previewValue(context, UserPreferences.seasonalSurprise),
+                density: previewValue(context, UserPreferences.seasonalDensity),
+                reducedFrameRate:
+                    prefs.resolveDevicePerformanceTier() ==
+                    DevicePerformanceTier.reduced,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The Calendar screen in the style being looked at, showing the user's own
+/// calendar.
+class SettingsCalendarPreview extends StatefulWidget {
+  const SettingsCalendarPreview({super.key});
+
+  @override
+  State<SettingsCalendarPreview> createState() =>
+      _SettingsCalendarPreviewState();
+}
+
+class _SettingsCalendarPreviewState extends State<SettingsCalendarPreview> {
+  final _controller = CalendarController();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_controller.load());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = previewValue(context, UserPreferences.calendarStyle);
+    return settingsNavbarPreviewOver(
+      // The preview draws its own bars, so the device's insets stay out.
+      MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        removeBottom: true,
+        child: ListenableBuilder(
+          listenable: _controller,
+          builder: (context, _) => switch (style) {
+            CalendarStyle.agenda => CalendarAgendaView(controller: _controller),
+            CalendarStyle.countdown => CalendarCountdownView(
+              controller: _controller,
+            ),
+          },
+        ),
       ),
     );
   }

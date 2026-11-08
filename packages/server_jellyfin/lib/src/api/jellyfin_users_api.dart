@@ -31,6 +31,23 @@ class JellyfinUsersApi implements UsersApi {
 
   @override
   Future<void> updateUserConfiguration(UserConfiguration config) async {
-    await _dio.post('/Users/Configuration', data: config.toJson());
+    try {
+      await _dio.post('/Users/Configuration', data: config.toJson());
+    } on DioException catch (e) {
+      final status = e.response?.statusCode ?? 0;
+      // Jellyfin's 400 doesn't say which field it couldn't read, so log the
+      // ids it was sent.
+      if (status >= 400 && status < 500) {
+        ServerLog.network(
+          'User configuration rejected with $status. '
+          'OrderedViews: ${config.orderedViews}, '
+          'MyMediaExcludes: ${config.myMediaExcludes}, '
+          'LatestItemsExcludes: ${config.latestItemsExcludes}, '
+          'GroupedFolders: ${config.groupedFolders}',
+          level: ServerLogLevel.error,
+        );
+      }
+      rethrow;
+    }
   }
 }

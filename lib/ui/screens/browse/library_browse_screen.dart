@@ -149,6 +149,10 @@ class LibraryBrowseScreen extends StatefulWidget {
   final List<String>? includeItemTypes;
   final bool favoritesOnly;
 
+  /// Set by the settings live preview, which draws the library in this style
+  /// with its first card held in focus and leaves the app's backdrop alone.
+  final LibraryStyle? previewStyle;
+
   const LibraryBrowseScreen({
     super.key,
     required this.libraryId,
@@ -158,6 +162,7 @@ class LibraryBrowseScreen extends StatefulWidget {
     this.studioName,
     this.includeItemTypes,
     this.favoritesOnly = false,
+    this.previewStyle,
   });
 
   @override
@@ -200,10 +205,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     _vm.addListener(_onChanged);
     _vm.load();
     _scrollController.addListener(_onScroll);
-    _backgroundSub = _backgroundService.backgroundStream.listen((url) {
-      if (mounted) setState(() => _backdropUrl = url);
-    });
-    _backdropUrl = _backgroundService.currentUrl;
+    if (widget.previewStyle == null) {
+      _backgroundSub = _backgroundService.backgroundStream.listen((url) {
+        if (mounted) setState(() => _backdropUrl = url);
+      });
+      _backdropUrl = _backgroundService.currentUrl;
+    }
     _prefs.addListener(_onChanged);
     InlineBackInterceptor.push(_backToAlphabet);
   }
@@ -287,6 +294,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   void _onChanged() {
     _hasSubtitlesCache = null;
+    if (widget.previewStyle != null &&
+        _vm.focusedItem == null &&
+        _vm.currentCategoryItems.isNotEmpty) {
+      final first = _vm.currentCategoryItems.first;
+      _backdropUrl = _backgroundService.backdropUrlsFor(first).firstOrNull;
+      _vm.setFocusedItem(first);
+    }
     if (mounted) setState(() {});
     _maybeBumpGridVersion();
   }
@@ -929,7 +943,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
-  LibraryStyle get _libraryStyle => _prefs.get(UserPreferences.libraryStyle);
+  LibraryStyle get _libraryStyle =>
+      widget.previewStyle ?? _prefs.get(UserPreferences.libraryStyle);
 
   bool get _usesDockedPanel =>
       _libraryStyle == LibraryStyle.docked && !_isCompact(context);

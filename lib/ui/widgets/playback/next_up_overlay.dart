@@ -5,7 +5,6 @@ import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/aggregated_item.dart';
@@ -16,6 +15,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/calendar_days.dart';
+import '../../../util/date_format_util.dart';
+import '../../../util/platform_detection.dart';
 import '../adaptive/adaptive_glass.dart';
 import '../anime_marker_badge.dart';
 
@@ -287,267 +288,267 @@ class _NextUpOverlayState extends State<NextUpOverlay>
         cardBorder.color != Colors.transparent &&
         cardBorder.width > 0;
 
-    return Positioned(
-      right: 24,
-      bottom: 120,
-      child: Container(
-        width: widget.isMinimal ? 300 : 340,
-        // The solid glass tier is a plain DecoratedBox that doesn't clip, so
-        // without this the thumbnail squares off the card's rounded corners on
-        // every theme that isn't Glass or Apple.
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.circular(cardRadius),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black54,
-              blurRadius: 20,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          fit: StackFit.passthrough,
-          children: [
-            adaptiveGlass(
-              context: context,
-              cornerRadius: cardRadius,
-              blur: 18,
-              fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
-              tint: AppColorScheme.surface.withValues(alpha: 0.22),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (hasThumb)
-                    Stack(
-                      children: [
-                        OfflineAwareImage(
-                          imageUrl: widget.imageUrl!,
-                          fit: BoxFit.fitWidth,
-                          width: double.infinity,
-                          placeholder: (context, url) => const AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Center(
-                              child: SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                          errorWidget: (_, _, _) => AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Container(
-                              color: AppColorScheme.surfaceVariant,
+    final card = Container(
+      width: widget.isMinimal ? 300 : 340,
+      // The solid glass tier is a plain DecoratedBox that doesn't clip, so
+      // without this the thumbnail squares off the card's rounded corners on
+      // every theme that isn't Glass or Apple.
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.circular(cardRadius),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 20,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        fit: StackFit.passthrough,
+        children: [
+          adaptiveGlass(
+            context: context,
+            cornerRadius: cardRadius,
+            blur: 18,
+            fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
+            tint: AppColorScheme.surface.withValues(alpha: 0.22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (hasThumb)
+                  Stack(
+                    children: [
+                      OfflineAwareImage(
+                        imageUrl: widget.imageUrl!,
+                        fit: BoxFit.fitWidth,
+                        width: double.infinity,
+                        placeholder: (context, url) => const AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           ),
                         ),
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [Colors.black87, Colors.transparent],
-                                stops: [0.04, 0.55],
-                              ),
+                        errorWidget: (_, _, _) => AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Container(
+                            color: AppColorScheme.surfaceVariant,
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [Colors.black87, Colors.transparent],
+                              stops: [0.04, 0.55],
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: 14,
-                          top: 12,
-                          right: 14,
-                          child: headerRow,
-                        ),
-                        Positioned(
-                          left: 14,
-                          right: 14,
-                          bottom: 10,
-                          child: titleBlock,
-                        ),
+                      ),
+                      Positioned(
+                        left: 14,
+                        top: 12,
+                        right: 14,
+                        child: headerRow,
+                      ),
+                      Positioned(
+                        left: 14,
+                        right: 14,
+                        bottom: 10,
+                        child: titleBlock,
+                      ),
+                    ],
+                  ),
+                Padding(
+                  padding: EdgeInsets.all(widget.isMinimal ? 10 : 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!hasThumb) ...[
+                        headerRow,
+                        SizedBox(height: widget.isMinimal ? 6 : 8),
+                        titleBlock,
+                        SizedBox(height: widget.isMinimal ? 10 : 14),
                       ],
-                    ),
-                  Padding(
-                    padding: EdgeInsets.all(widget.isMinimal ? 10 : 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (!hasThumb) ...[
-                          headerRow,
-                          SizedBox(height: widget.isMinimal ? 6 : 8),
-                          titleBlock,
-                          SizedBox(height: widget.isMinimal ? 10 : 14),
-                        ],
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (hasPrimary) ...[
-                              Expanded(
-                                child: Focus(
-                                  focusNode: widget.focusNode,
-                                  onFocusChange: (focused) {
-                                    if (_playFocused != focused) {
-                                      setState(() => _playFocused = focused);
-                                    }
-                                  },
-                                  onKeyEvent: (_, event) {
-                                    if (event is KeyDownEvent &&
-                                        (event.logicalKey ==
-                                                LogicalKeyboardKey.select ||
-                                            event.logicalKey ==
-                                                LogicalKeyboardKey.enter)) {
-                                      primaryAction();
-                                      return KeyEventResult.handled;
-                                    }
-                                    return KeyEventResult.ignored;
-                                  },
-                                  child: ElevatedButton(
-                                    autofocus: widget.focusNode == null,
-                                    onPressed: primaryAction,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: tvFocusMode
-                                          ? (_playFocused
-                                                ? AppColorScheme.accent
-                                                : AppColorScheme.surfaceVariant
-                                                      .scaleAlpha(0.9))
-                                          : AppColorScheme.accent,
-                                      foregroundColor: Colors.white,
-                                      side: _playFocused
-                                          ? ThemeRegistry
-                                                .active
-                                                .borders
-                                                .focusBorder
-                                          : BorderSide.none,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: widget.isMinimal ? 8 : 11,
-                                        horizontal: widget.isMinimal ? 10 : 16,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: AppRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        if (showProgressBar &&
-                                            widget.timeoutMs > 0 &&
-                                            item != null)
-                                          AnimatedBuilder(
-                                            animation: _countdownController,
-                                            builder: (context, _) =>
-                                                _PlayButtonRing(
-                                                  progress:
-                                                      1.0 -
-                                                      _countdownController.value,
-                                                ),
-                                          )
-                                        else
-                                          Icon(
-                                            item != null
-                                                ? Icons.play_arrow_rounded
-                                                : _reminderSet
-                                                ? Icons.notifications_active_rounded
-                                                : Icons.notifications_none_rounded,
-                                            size: 20,
-                                          ),
-                                        const SizedBox(width: 9),
-                                        Text(
-                                          item != null
-                                              ? l10n.playNext
-                                              : _reminderSet
-                                              ? l10n.calendarReminderSet
-                                              : l10n.calendarRemindMe,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                            Focus(
-                              focusNode: closeFocusNode,
-                              onFocusChange: (focused) {
-                                if (_dismissFocused != focused) {
-                                  setState(() => _dismissFocused = focused);
-                                }
-                              },
-                              onKeyEvent: (_, event) {
-                                if (event is KeyDownEvent &&
-                                    (event.logicalKey ==
-                                            LogicalKeyboardKey.select ||
-                                        event.logicalKey ==
-                                            LogicalKeyboardKey.enter)) {
-                                  widget.onDismiss();
-                                  return KeyEventResult.handled;
-                                }
-                                return KeyEventResult.ignored;
-                              },
-                              child: Tooltip(
-                                message: l10n.close,
-                                child: OutlinedButton(
-                                  onPressed: widget.onDismiss,
-                                  style: OutlinedButton.styleFrom(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (hasPrimary) ...[
+                            Expanded(
+                              child: Focus(
+                                focusNode: widget.focusNode,
+                                onFocusChange: (focused) {
+                                  if (_playFocused != focused) {
+                                    setState(() => _playFocused = focused);
+                                  }
+                                },
+                                onKeyEvent: (_, event) {
+                                  if (event is KeyDownEvent &&
+                                      (event.logicalKey ==
+                                              LogicalKeyboardKey.select ||
+                                          event.logicalKey ==
+                                              LogicalKeyboardKey.enter)) {
+                                    primaryAction();
+                                    return KeyEventResult.handled;
+                                  }
+                                  return KeyEventResult.ignored;
+                                },
+                                child: ElevatedButton(
+                                  autofocus: widget.focusNode == null,
+                                  onPressed: primaryAction,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: tvFocusMode
+                                        ? (_playFocused
+                                              ? AppColorScheme.accent
+                                              : AppColorScheme.surfaceVariant
+                                                    .scaleAlpha(0.9))
+                                        : AppColorScheme.accent,
                                     foregroundColor: Colors.white,
-                                    backgroundColor: _dismissFocused
-                                        ? AppColorScheme.accent.withValues(
-                                            alpha: 0.24,
-                                          )
-                                        : Colors.white.withValues(alpha: 0.08),
-                                    side: _dismissFocused
+                                    side: _playFocused
                                         ? ThemeRegistry
                                               .active
                                               .borders
                                               .focusBorder
-                                        : ThemeRegistry
-                                              .active
-                                              .borders
-                                              .chipBorder,
-                                    padding: EdgeInsets.all(
-                                      widget.isMinimal ? 8 : 11,
+                                        : BorderSide.none,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: widget.isMinimal ? 8 : 11,
+                                      horizontal: widget.isMinimal ? 10 : 16,
                                     ),
-                                    minimumSize: const Size(44, 44),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: AppRadius.circular(12),
                                     ),
                                   ),
-                                  child: const Icon(
-                                    Icons.close_rounded,
-                                    size: 20,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (showProgressBar &&
+                                          widget.timeoutMs > 0 &&
+                                          item != null)
+                                        AnimatedBuilder(
+                                          animation: _countdownController,
+                                          builder: (context, _) =>
+                                              _PlayButtonRing(
+                                                progress:
+                                                    1.0 -
+                                                    _countdownController.value,
+                                              ),
+                                        )
+                                      else
+                                        Icon(
+                                          item != null
+                                              ? Icons.play_arrow_rounded
+                                              : _reminderSet
+                                              ? Icons.notifications_active_rounded
+                                              : Icons.notifications_none_rounded,
+                                          size: 20,
+                                        ),
+                                      const SizedBox(width: 9),
+                                      Text(
+                                        item != null
+                                            ? l10n.playNext
+                                            : _reminderSet
+                                            ? l10n.calendarReminderSet
+                                            : l10n.calendarRemindMe,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
+                            const SizedBox(width: 10),
                           ],
-                        ),
-                      ],
-                    ),
+                          Focus(
+                            focusNode: closeFocusNode,
+                            onFocusChange: (focused) {
+                              if (_dismissFocused != focused) {
+                                setState(() => _dismissFocused = focused);
+                              }
+                            },
+                            onKeyEvent: (_, event) {
+                              if (event is KeyDownEvent &&
+                                  (event.logicalKey ==
+                                          LogicalKeyboardKey.select ||
+                                      event.logicalKey ==
+                                          LogicalKeyboardKey.enter)) {
+                                widget.onDismiss();
+                                return KeyEventResult.handled;
+                              }
+                              return KeyEventResult.ignored;
+                            },
+                            child: Tooltip(
+                              message: l10n.close,
+                              child: OutlinedButton(
+                                onPressed: widget.onDismiss,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: _dismissFocused
+                                      ? AppColorScheme.accent.withValues(
+                                          alpha: 0.24,
+                                        )
+                                      : Colors.white.withValues(alpha: 0.08),
+                                  side: _dismissFocused
+                                      ? ThemeRegistry.active.borders.focusBorder
+                                      : ThemeRegistry.active.borders.chipBorder,
+                                  padding: EdgeInsets.all(
+                                    widget.isMinimal ? 8 : 11,
+                                  ),
+                                  minimumSize: const Size(44, 44),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: AppRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            if (hasCardBorder)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: AppRadius.circular(cardRadius),
-                      border: Border.fromBorderSide(cardBorder),
-                    ),
+          ),
+          if (hasCardBorder)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: AppRadius.circular(cardRadius),
+                    border: Border.fromBorderSide(cardBorder),
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
+
+    // A landscape phone has no room above the bottom controls, so the card
+    // sits centered on the right edge there.
+    if (PlatformDetection.useMobileUi) {
+      return Positioned(
+        top: 0,
+        bottom: 0,
+        right: 24,
+        child: Center(widthFactor: 1, child: card),
+      );
+    }
+    return Positioned(right: 24, bottom: 120, child: card);
   }
 }
 
@@ -560,7 +561,7 @@ String _airsText(
   final local = airDate.airDate.toLocal();
   return l10n.calendarReleaseIn(
     calendarDaysBetween(DateTime.now(), local),
-    DateFormat.MMMd(Localizations.localeOf(context).toString()).format(local),
+    formatShortDate(local, locale: Localizations.localeOf(context).toString()),
   );
 }
 

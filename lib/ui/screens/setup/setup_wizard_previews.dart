@@ -1918,6 +1918,26 @@ Widget settingsHomePreview() {
   );
 }
 
+/// [body] as a screen under the navbar the live preview draws over Home, for a
+/// screen that keeps its own room for the bar.
+Widget settingsNavbarPreviewOver(Widget body) => _screen(
+  Builder(
+    builder: (context) {
+      final items = SetupPreviewData.items;
+      return switch (previewValue(context, UserPreferences.navbarPosition)) {
+        NavbarPosition.top => _topNavbarPreview(context, items, body: body),
+        NavbarPosition.left => _leftNavbarPreview(context, items, body: body),
+        NavbarPosition.bottom => _bottomNavbarPreview(
+          context,
+          items,
+          previewValue(context, UserPreferences.bottomNavbarStyle),
+          body: body,
+        ),
+      };
+    },
+  ),
+);
+
 typedef _NavButton = ({
   Widget Function(double size, Color color) icon,
   String label,
@@ -2153,6 +2173,7 @@ Widget _navbarRows(
 Widget _topNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2218,7 +2239,7 @@ Widget _topNavbarPreview(
     ),
   );
 
-  return Column(
+  final screen = Column(
     children: [
       SizedBox(
         height: toolbarHeight,
@@ -2260,14 +2281,24 @@ Widget _topNavbarPreview(
           ),
         ),
       ),
-      Expanded(
-        child: _navbarRows(
-          context,
-          items,
-          modern: modern,
-          focusFirst: focusFirst,
+      if (body == null)
+        Expanded(
+          child: _navbarRows(
+            context,
+            items,
+            modern: modern,
+            focusFirst: focusFirst,
+          ),
         ),
-      ),
+    ],
+  );
+  if (body == null) return screen;
+  // A screen with its own top inset runs under the bar, which floats over it
+  // the way the real one does.
+  return Stack(
+    children: [
+      Positioned.fill(child: body),
+      Positioned.fill(child: screen),
     ],
   );
 }
@@ -2277,6 +2308,7 @@ Widget _topNavbarPreview(
 Widget _leftNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2292,14 +2324,16 @@ Widget _leftNavbarPreview(
   return Stack(
     children: [
       Positioned.fill(
-        left: railInset,
-        child: _navbarRows(
-          context,
-          items,
-          topInset: 24,
-          modern: modern,
-          focusFirst: focusFirst,
-        ),
+        left: body == null ? railInset : 0,
+        child:
+            body ??
+            _navbarRows(
+              context,
+              items,
+              topInset: 24,
+              modern: modern,
+              focusFirst: focusFirst,
+            ),
       ),
       Positioned(
         left: 0,
@@ -2337,6 +2371,7 @@ Widget _bottomNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items,
   BottomNavbarStyle style, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2403,13 +2438,15 @@ Widget _bottomNavbarPreview(
   return Stack(
     children: [
       Positioned.fill(
-        child: _navbarRows(
-          context,
-          items,
-          topInset: 24,
-          modern: modern,
-          focusFirst: focusFirst,
-        ),
+        child:
+            body ??
+            _navbarRows(
+              context,
+              items,
+              topInset: 24,
+              modern: modern,
+              focusFirst: focusFirst,
+            ),
       ),
       Align(
         alignment: Alignment.bottomCenter,

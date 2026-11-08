@@ -21,6 +21,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
+import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
 class _Client extends Mock implements MediaServerClient {}
@@ -67,6 +68,11 @@ class _Backend extends Fake implements PlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {}
 }
 
@@ -77,6 +83,7 @@ class _Manager extends PlaybackManager {
   final seeks = <Duration>[];
   final playedChannelIds = <String>[];
   final resumes = <bool>[];
+  var stops = 0;
   final _bringup = StreamController<PlaybackBringupState>.broadcast();
 
   @override
@@ -144,7 +151,9 @@ class _Manager extends PlaybackManager {
   Future<void> pause() async => state.setPlaying(false);
 
   @override
-  Future<void> stop({bool userInitiated = true}) async {}
+  Future<void> stop({bool userInitiated = true}) async {
+    stops++;
+  }
 }
 
 // Issue #1189: a live stream that keeps a window, like an internet channel's
@@ -352,6 +361,48 @@ void main() {
 
     expect(topLocation(router), Destinations.liveTvGuide);
     expect(router.canPop(), isFalse);
+  });
+
+  testWidgets('Stop ends the stream and goes back to the guide', (
+    tester,
+  ) async {
+    final router = await pumpRoutedPlayer(tester, Destinations.liveTvGuide);
+    expect(topLocation(router), Destinations.liveTvPlayer);
+
+    await pressUnmapped(tester, LogicalKeyboardKey.mediaStop);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(manager.stops, 1);
+    expect(topLocation(router), Destinations.liveTvGuide);
+  });
+
+  testWidgets('Stop leaves even with the channel list open', (tester) async {
+    final liveTv = GetIt.instance<MediaServerClient>().liveTvApi;
+    when(
+      () => liveTv.getChannels(
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
+        fields: any(named: 'fields'),
+        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        userId: any(named: 'userId'),
+      ),
+    ).thenAnswer(
+      (_) async => const <String, dynamic>{
+        'Items': [
+          {'Id': 'ard', 'Name': 'Das Erste'},
+        ],
+      },
+    );
+    final router = await pumpRoutedPlayer(tester, Destinations.liveTvGuide);
+    await press(tester, LogicalKeyboardKey.arrowUp);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byType(ChannelCarousel), findsOneWidget);
+
+    await pressUnmapped(tester, LogicalKeyboardKey.mediaStop);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(manager.stops, 1);
+    expect(topLocation(router), Destinations.liveTvGuide);
   });
 
   testWidgets('Audio with one track or none says so', (tester) async {

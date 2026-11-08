@@ -245,7 +245,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic on alkuperäinen, keskitetty Moonfin-asettelu. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista. Stage aloittaa julisteella, jonka alla on toistopainike ja vieressä tiedot. Premiere keskittää otsikon koko näytön täyttävälle taustalle, ja kaikki osiot sijaitsevat sen alla sivua alaspäin. Quick Look avaa laatikon sen näytön päälle, jolla olit, ja koko sivu avautuu yhdellä painalluksella. Frost sijoittaa otsikon kelluvaan lasi-ikkunaan sen taideteoksen sumennetun kopion päälle, ja sen osat ovat välilehdissä painikkeiden alla.';
+      'Miltä elokuva tai sarja näyttää, kun sen avaa.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassinen';
@@ -495,7 +495,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get expandedTabsSubtitle =>
-      'Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. \tPoista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.';
+      'Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. Poista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.';
 
   @override
   String get showTechnicalDetails => 'Näytä tekniset tiedot';
@@ -1529,7 +1529,7 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get view => 'Näytä';
+  String get view => 'Näkymä';
 
   @override
   String get resumeReading => 'Jatka lukemista';
@@ -1706,7 +1706,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get audioTrack => 'Ääniraita';
 
   @override
-  String get noOtherAudioTracks => 'No other audio tracks';
+  String get noOtherAudioTracks => 'Ei muita ääniraitoja';
 
   @override
   String get subtitleTrack => 'Tekstitysraita';
@@ -2739,7 +2739,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String playerMatchingDisplayRate(String fps) {
-    return 'Matching display to $fps fps…';
+    return 'Näytön sovittaminen $fps fps:ään…';
   }
 
   @override
@@ -3170,11 +3170,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchedIndicators => 'Katsotut indikaattorit';
 
   @override
-  String get showPosterLabels => 'Poster Labels';
+  String get showPosterLabels => 'Julisteiden tunnisteet';
 
   @override
   String get showPosterLabelsSubtitle =>
-      'Show the labels on posters, such as 4K or HDR.';
+      'Näytä julisteissa olevat merkinnät, kuten 4K tai HDR.';
 
   @override
   String get always => 'Aina';
@@ -3409,6 +3409,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get seasonalRowHolidaysHint =>
       'Poista lomapäivän valinta, jotta sen rivi piilotetaan.';
+
+  @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
 
   @override
   String get holidayNewYear => 'Uusivuosi';
@@ -3880,22 +3887,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String get upcomingEpisodeTomorrow => 'Huomenna';
 
   @override
-  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+  String get radarrCalendarRow => 'Tulevat elokuvat (Radarr)';
 
   @override
-  String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
+  String get sonarrCalendarRow => 'Tulevat TV-ohjelmat (Sonarr)';
 
   @override
-  String get mergedCalendarRow => 'Upcoming Releases';
+  String get mergedCalendarRow => 'Tulevat julkaisut';
 
   @override
-  String get arrCalendarsRowSubtitle => 'Radarr and Sonarr Calendars';
+  String get arrCalendarsRowSubtitle => 'Radarr ja Sonarr kalenterit';
 
   @override
-  String get radarrCalendarRowSubtitle => 'Radarr Calendar';
+  String get radarrCalendarRowSubtitle => 'Radarr kalenteri';
 
   @override
-  String get sonarrCalendarRowSubtitle => 'Sonarr Calendar';
+  String get sonarrCalendarRowSubtitle => 'Sonarr kalenteri';
 
   @override
   String calendarReleaseIn(int days, String date) {
@@ -3910,52 +3917,56 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get calendarReleaseCinema => 'Cinema';
+  String get calendarReleaseCinema => 'Elokuvateatteri';
 
   @override
-  String get calendarReleaseDigital => 'Digital';
+  String get calendarReleaseDigital => 'Digitaalinen';
 
   @override
-  String get calendarReleasePhysical => 'Physical';
+  String get calendarReleasePhysical => 'Fyysinen';
 
   @override
-  String get upcomingCalendars => 'Upcoming Calendars';
+  String get upcomingCalendars => 'Tulevat tapahtumakalenteri';
 
   @override
   String get upcomingCalendarsDescription =>
-      'Toggle Upcoming Calendars from Radarr/Sonarr.';
+      'Näytä Radarrin/Sonarrin tulevat kalenterit.';
 
   @override
-  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+  String get enableRadarrCalendar =>
+      'Ota Radarrin tulevien tapahtumien kalenteri käyttöön';
 
   @override
-  String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
+  String get radarrCalendarShowCinema => 'Näytä tulevat elokuvajulkaisut';
 
   @override
-  String get radarrCalendarShowDigital => 'Show Upcoming Digital Releases';
+  String get radarrCalendarShowDigital =>
+      'Näytä tulevat digitaaliset julkaisut';
 
   @override
-  String get radarrCalendarShowPhysical => 'Show Upcoming Physical Releases';
+  String get radarrCalendarShowPhysical => 'Näytä tulevat fyysiset julkaisut';
 
   @override
-  String get calendarShowReleaseDate => 'Show Release Date on Home Screen';
+  String get calendarShowReleaseDate => 'Näytä julkaisupäivä aloitusnäytössä';
 
   @override
   String get radarrCalendarHideDownloaded =>
-      'Hide Movies Already on the Server';
+      'Piilota palvelimella jo olevat elokuvat';
 
   @override
-  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
+  String get enableSonarrCalendar =>
+      'Ota Sonarrin tulevien tapahtumien kalenteri käyttöön';
 
   @override
-  String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
+  String get sonarrCalendarShowEpisodeInfo => 'Näytä jakson tiedot';
 
   @override
   String get sonarrCalendarHideDownloaded =>
-      'Hide Episodes Already on the Server';
+      'Piilota palvelimella jo olevat jaksot';
 
   @override
-  String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
+  String get mergeRadarrSonarrCalendars =>
+      'Yhdistä Sonarr- ja Radarr-kalenterit';
 
   @override
   String get moveUp => 'Siirry ylöspäin';
@@ -5060,30 +5071,30 @@ class AppLocalizationsFi extends AppLocalizations {
   String get mediaBarSourceRandom => 'Satunnainen';
 
   @override
-  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
+  String get mediaBarSourceNewReleases => 'Uudet kaudet ja jaksot';
 
   @override
-  String get mediaBarNewReleaseBanner => 'New Release Banner';
+  String get mediaBarNewReleaseBanner => 'Uuden julkaisun banneri';
 
   @override
   String get mediaBarNewReleaseBannerDescription =>
-      'Flag series with a new season or new episodes that aired recently.';
+      'Merkitse sarjat, joiden uusi kausi tai uudet jaksot on äskettäin alkanut.';
 
   @override
-  String get mediaBarNewReleaseDays => 'New Release Window';
+  String get mediaBarNewReleaseDays => 'Uuden julkaisun aikataulu';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
-      'How long after an episode airs it still counts as new.';
+      'Kuinka kauan jakson esittämisen jälkeen sitä pidetään vielä uutena.';
 
   @override
-  String get mediaBarNewSeries => 'New Series';
+  String get mediaBarNewSeries => 'Uusi sarja';
 
   @override
-  String get mediaBarNewSeason => 'New Season';
+  String get mediaBarNewSeason => 'Uusi kausi';
 
   @override
-  String get mediaBarNewEpisodes => 'New Episodes';
+  String get mediaBarNewEpisodes => 'Uudet jaksot';
 
   @override
   String get moviesAndTvShows => 'Elokuvat ja TV ohjelmat';
@@ -5370,6 +5381,24 @@ class AppLocalizationsFi extends AppLocalizations {
   String get dimmingLevel => 'Himmennystaso';
 
   @override
+  String get screensaverDuringAudio => 'Show During Music and Audiobooks';
+
+  @override
+  String get screensaverDuringAudioDescription =>
+      'Let the screensaver start while audio plays, so cover art doesn\'t sit on screen for hours.';
+
+  @override
+  String get sleepAfterIdle => 'Let TV Sleep After';
+
+  @override
+  String get sleepAfterIdleDescriptionAndroid =>
+      'Close Moonfin after this long without a button press so your TV\'s own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.';
+
+  @override
+  String get sleepAfterIdleDescriptionAppleTv =>
+      'After this long without a button press, hand the screen back to your Apple TV\'s own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.';
+
+  @override
   String get maxAgeRating => 'Max ikäluokitus';
 
   @override
@@ -5484,20 +5513,20 @@ class AppLocalizationsFi extends AppLocalizations {
   String get additionalRatings => 'Lisäluokitukset';
 
   @override
-  String get mdblistWatchingNow => 'Watching on MDBList';
+  String get mdblistWatchingNow => 'Katsomassa MDBListissä';
 
   @override
   String get mdblistWatchingNowDescription =>
-      'Show what MDBList users are currently watching';
+      'Näytä, mitä MDBList-käyttäjät katsovat parhaillaan';
 
   @override
   String watchingNowWatchersCount(int count) {
-    return '$count watching';
+    return '$count katselee';
   }
 
   @override
   String watchingNowLiveSummary(String users, String movies, String shows) {
-    return '$users watching now · $movies movies · $shows shows';
+    return '$users katsomassa juuri nyt · $movies elokuvaa · $shows sarjaa';
   }
 
   @override
@@ -5506,7 +5535,7 @@ class AppLocalizationsFi extends AppLocalizations {
     String movies,
     String shows,
   ) {
-    return '$users watched today · $movies movies · $shows shows';
+    return '$users katsoi tänään · $movies elokuvaa · $shows sarjaa';
   }
 
   @override
@@ -6015,15 +6044,15 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get seerrSeriesMatchDescription =>
-      'We couldn\'t match this series automatically. Pick the right one below.';
+      'Emme pystyneet tunnistamaan tätä sarjaa automaattisesti. Valitse oikea vaihtoehto alla olevista.';
 
   @override
   String get seerrSeriesNoMatch =>
-      'We couldn\'t find a match for this series, so it can\'t be requested.';
+      'Emme löytäneet tätä sarjaa, joten sitä ei voi pyytää.';
 
   @override
   String get seerrSeriesMatchFailed =>
-      'Sonarr couldn\'t find a match for this series, or couldn\'t be reached. Try again, or check the series on Seerr.';
+      'Sonarr ei löytänyt tälle sarjalle vastaavuutta tai palvelua ei saatu yhteyttä. Yritä uudelleen tai tarkista sarja Seerr palvelusta.';
 
   @override
   String get advancedOptions => 'Lisäasetukset';
@@ -6371,7 +6400,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sessions => 'Istunnot';
 
   @override
-  String get set => 'Sarja';
+  String get set => 'Aseta';
 
   @override
   String get status => 'Tila';
@@ -11019,13 +11048,34 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayRepeat => 'Toista uudestaan';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => 'Yksi';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Sekoitettu';
 
   @override
   String get syncPlayShuffleModeSorted => 'Lajiteltu';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => 'Synkronoi nykyinen toistojono';
@@ -11052,6 +11102,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Luo uusi ryhmä';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => 'Ryhmän nimi';
 
   @override
@@ -11064,7 +11118,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayAvailableGroups => 'Saatavilla olevat ryhmät';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => 'Ryhmiä ei ole saatavilla';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'Liitytkö SyncPlay ryhmään?';
@@ -11072,6 +11135,10 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay ryhmään liittyminen voi korvata nykyisen toistojonosi. Jatkaa?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => 'Liity';
@@ -11389,7 +11456,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get trackActionCancelDownload => 'Keskeytä lataus';
 
   @override
-  String get trackActionDeleteFromPlaylist => 'Poista soittolistasta';
+  String get trackActionDeleteFromPlaylist => 'Poista soittolistalta';
 
   @override
   String get trackActionMoveUp => 'Siirrä ylös';
@@ -11481,15 +11548,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get addToPlaylist => 'Lisää soittolistaan';
 
   @override
-  String get removeFromPlaylist => 'Remove from Playlist';
+  String get removeFromPlaylist => 'Poista soittolistalta';
 
   @override
   String removeFromPlaylistConfirm(String item, String playlist) {
-    return 'Remove $item from $playlist?';
+    return 'Poistetaanko $item $playlist:sta?';
   }
 
   @override
-  String get removeFromPlaylistFailed => 'Failed to remove from playlist';
+  String get removeFromPlaylistFailed =>
+      'Poistaminen soittolistasta epäonnistui';
 
   @override
   String get lyricsNotAvailable => 'Sanoja ei ole saatavilla';
@@ -11754,6 +11822,22 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsTwentyFourHourClockSubtitle =>
       'Käytä 24 tunnin ajan muotoilua kaikkialla, missä kello näkyy';
+
+  @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
 
   @override
   String get settingsShowShuffleButtonInNavigation =>
@@ -12103,6 +12187,20 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       'Kuinka monta sekuntia hyppää eteenpäin eteenpäinkelauspainikkeen painamisen jälkeen.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
+
+  @override
+  String get settingsHdrControlsDimming => 'Dim Controls in HDR';
+
+  @override
+  String get settingsHdrControlsDimmingDescription =>
+      'White looks far brighter next to HDR video, so the player controls dim by this much while it plays.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>
@@ -12519,74 +12617,74 @@ class AppLocalizationsFi extends AppLocalizations {
   String get displayStudiosRowsSubtitle => 'Näytä Studiorivi Kotiosiossa.';
 
   @override
-  String get sinceYouWatched => 'Since You Watched';
+  String get sinceYouWatched => 'Sen jälkeen, kun katsoit';
 
   @override
-  String get sinceYouWatchedRowTitle => 'Since you watched';
+  String get sinceYouWatchedRowTitle => 'Koska katsoit';
 
   @override
   String sinceYouWatchedItemRowTitle(String title) {
-    return 'Since you watched \"$title\"';
+    return 'Koska katsoit \"$title\"';
   }
 
   @override
   String sinceYouWatchedRowNumber(int number) {
-    return 'Since You Watched Row $number';
+    return 'Koska katsoit rivi $number';
   }
 
   @override
-  String get displaySinceYouWatchedRows => 'Display Since You Watched Rows';
+  String get displaySinceYouWatchedRows => 'Näytä rivit, jotka olet katsonut';
 
   @override
   String get displaySinceYouWatchedRowsSubtitle =>
-      'Show and customize Since You Watched rows in Home Sections.';
+      'Näytä ja muokkaa katsomiasi rivejä Etusivun osioissa.';
 
   @override
-  String get sinceYouWatchedSource => 'Recommendation Source';
+  String get sinceYouWatchedSource => 'Suosituksen lähde';
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin suosittelee';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Jellyfin suosittelee';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb:n samankaltaisuus';
 
   @override
-  String get sinceYouWatchedSourceType => 'Source Type';
+  String get sinceYouWatchedSourceType => 'Lähdetyyppi';
 
   @override
   String get sinceYouWatchedSourceTypeDescription =>
-      'Choose type of items to recommend';
+      'Valitse suositeltavien tuotteiden tyyppi';
 
   @override
-  String get sinceYouWatchedSourceItem => 'Source Item';
+  String get sinceYouWatchedSourceItem => 'Lähdekohde';
 
   @override
   String get sinceYouWatchedSourceItemDescription =>
-      'Choose which source item to base recommendations on';
+      'Valitse, mihin lähde-eriin suositukset perustuvat';
 
   @override
-  String get sinceYouWatchedRecentlyWatched => 'Recently Watched';
+  String get sinceYouWatchedRecentlyWatched => 'Viimeksi katsotut';
 
   @override
-  String get sinceYouWatchedNumRows => 'Number of Rows to Add';
+  String get sinceYouWatchedNumRows => 'Lisättävien rivien määrä';
 
   @override
   String get sinceYouWatchedNumRowsDescription =>
-      'Choose how many Since You Watched rows to display (1-5)';
+      'Valitse, kuinka monta Siitä lähtien, kun katsoit -riviä haluat näyttää (1–5)';
 
   @override
-  String get sinceYouWatchedIncludeWatched => 'Include Previously Watched';
+  String get sinceYouWatchedIncludeWatched => 'Sisällytä aiemmin katsotut';
 
   @override
   String get sinceYouWatchedIncludeWatchedSubtitle =>
-      'Include watched items in recommendations';
+      'Sisällytä katsotut kohteet suosituksiin';
 
   @override
   String get studiosRowSorting => 'Studiorivi -lajittelu';
@@ -12831,22 +12929,22 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toista AV1-tiedostoja yli 1080p-tarkkuudella, mukaan lukien HDR10, suoraan alkuperäisestä tiedostosta sen sijaan, että pyydät palvelinta koodaamaan sen uudelleen. Tämä laite purkaa AV1-tiedostoja ohjelmistolla, joten raskaat 4K-tiedostot tai tiedostot, joiden bittinopeus on suuri, saattavat pätkiä.';
 
   @override
-  String get cadenceSlowdown => 'Smooth 24 fps on a 60 Hz TV';
+  String get cadenceSlowdown => 'Tasainen 24 fps 60 Hz:n televisiossa';
 
   @override
   String get cadenceSlowdownSubtitle =>
-      'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
+      'Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.';
 
   @override
-  String get cadenceTipTitle => 'Turn On Match Frame Rate';
+  String get cadenceTipTitle => 'Ota käyttöön kuvataajuuden täsmäys';
 
   @override
   String get cadenceTipMessage =>
-      'This video can\'t play smoothly at your TV\'s current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.';
+      'Tätä videota ei voi toistaa sujuvasti televisiosi nykyisellä virkistystaajuudella. Avaa Apple TV:ssä Asetukset > Video ja ääni > Sovita sisältö ja ota käyttöön Sovita kuvataajuus.';
 
   @override
   String get cadenceTipSlowdownHint =>
-      'Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.';
+      'Tai ota Moonfin-ohjelmassa käyttöön ”Smooth 24 fps on a 60 Hz TV” -asetus kohdassa Playback > Quality & Decoding.';
 
   @override
   String get useExternalPlayer => 'Käytä aina ulkoista soitinta';
@@ -13176,28 +13274,28 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String watchPartyResumeAt(String time) {
-    return 'Resume at $time';
+    return 'Jatka $time';
   }
 
   @override
-  String get watchPartyStartFromBeginning => 'Start from the beginning';
+  String get watchPartyStartFromBeginning => 'Aloita alusta';
 
   @override
   String watchPartyResumeWhere(String name) {
-    return 'Where $name left off, the earliest anyone here has reached.';
+    return 'Siitä, mihin $name jäi, on pisimmälle päässyt kukaan täällä.';
   }
 
   @override
   String get watchPartyResumeEarliest =>
-      'The earliest point anyone here has reached.';
+      'Aikaisin piste, johon kukaan täällä on päässyt.';
 
   @override
   String watchPartyResumeNotStarted(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count people haven\'t started it yet.',
-      one: '1 person hasn\'t started it yet.',
+      other: '$count ihmiset eivät ole vielä aloittaneet sitä.',
+      one: '1 kukaan ei ole vielä aloittanut sitä.',
     );
     return '$_temp0';
   }
@@ -13462,7 +13560,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get achievementsStatsServer => 'Tämä palvelin';
 
   @override
-  String get achievementsStatsClock => 'Koska katsoit';
+  String get achievementsStatsClock => 'Kun katsot';
 
   @override
   String get achievementsStatItems => 'Seuratut kohteet';
@@ -15054,7 +15152,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get personalRatingSaveFailed => 'Arvostelua ei voitu tallentaa';
 
   @override
-  String get increase => 'Lisää';
+  String get increase => 'Lisäys';
 
   @override
   String get decrease => 'Vähennä';
@@ -15126,6 +15224,36 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get subtitleHdrSeparateSubtitle =>
       'Valkoinen on HDR-tilassa huomattavasti kirkkaampi kuin SDR-tilassa, joten tässä tapauksessa himmeämpi tyyli estää häikäisyn';
+
+  @override
+  String get subtitleBold => 'Bold Text';
+
+  @override
+  String get subtitleStrokeWidth => 'Text Stroke Width';
+
+  @override
+  String get subtitleFont => 'Font';
+
+  @override
+  String get subtitleFontDescription =>
+      'Fonts are downloaded from Google Fonts the first time you pick them';
+
+  @override
+  String subtitleFontDownloadFailed(String font) {
+    return 'Couldn\'t download $font';
+  }
+
+  @override
+  String get subtitleShadow => 'Text Shadow';
+
+  @override
+  String get subtitleShadowIntensity => 'Shadow Intensity';
+
+  @override
+  String get subtitleShadowOffset => 'Shadow Offset';
+
+  @override
+  String get subtitleShadowBlur => 'Shadow Blur';
 
   @override
   String get scrollSensitivity => 'Vierityksen herkkyys';
@@ -15326,59 +15454,63 @@ class AppLocalizationsFi extends AppLocalizations {
   String get setupCurrent => 'Nykyinen';
 
   @override
-  String get setupMoonbaseTitle => 'Add Moonbase to your server';
+  String get setupMoonbaseTitle => 'Lisää Moonbase palvelimellesi';
 
   @override
   String get setupMoonbaseHint =>
-      'A free server plugin that unlocks more of Moonfin';
+      'Ilmainen palvelinlaajennus, joka avaa lisää Moonfinin ominaisuuksia';
 
   @override
   String get setupMoonbaseIntro =>
-      'Moonbase is free and runs on your server. With it, Moonfin gets:';
+      'Moonbase on ilmainen ja toimii omalla palvelimellasi. Sen avulla Moonfin saa:';
 
   @override
   String get setupMoonbaseAskAdmin =>
-      'Only a server admin can install it. Send them this link.';
+      'Vain palvelimen järjestelmänvalvoja voi asentaa sen. Lähetä hänelle tämä linkki.';
 
   @override
   String get setupMoonbaseManualSteps =>
-      'It takes a few steps on your server to install. They\'re all at this link.';
+      'Asennus vaatii muutaman vaiheen palvelimellasi. Ne kaikki löytyvät tästä linkistä.';
 
   @override
-  String get setupMoonbaseInstalling => 'Installing Moonbase...';
+  String get setupMoonbaseInstalling => 'Moonbase asennetaan...';
 
   @override
   String get setupMoonbaseInstalled =>
-      'Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.';
+      'Moonbase on asennettu. Se käynnistyy palvelimen uudelleenkäynnistyksen yhteydessä, jolloin kaikki parhaillaan käynnissä olevat toistot keskeytyvät.';
 
   @override
   String get setupMoonbaseRestarting =>
-      'The server is restarting. Moonbase turns on once it\'s back.';
+      'Palvelin käynnistyy uudelleen. Moonbase käynnistyy, kun palvelin on jälleen toiminnassa.';
 
   @override
-  String get moonbaseFeatureSync => 'Settings synced across your devices';
+  String get moonbaseFeatureSync =>
+      'Asetukset synkronoidaan laitteiden välillä';
 
   @override
-  String get moonbaseFeatureRatings => 'Extra ratings and TMDB reviews';
+  String get moonbaseFeatureRatings => 'Lisäarvostelut ja TMDB arvostelut';
 
   @override
-  String get moonbaseFeatureRows => 'Custom rows from your favorite lists';
+  String get moonbaseFeatureRows => 'Mukautetut rivit suosikkilistoistasi';
 
   @override
-  String get moonbaseFeatureGames => 'Retro games with synced saves';
+  String get moonbaseFeatureGames =>
+      'Retropelit, joissa tallennukset synkronoidaan';
 
   @override
-  String get moonbaseFeatureCalendar => 'A calendar of what\'s coming up';
+  String get moonbaseFeatureCalendar => 'Tulevien tapahtumien kalenteri';
 
   @override
-  String get moonbaseFeatureCollections => 'Your own order for each collection';
+  String get moonbaseFeatureCollections =>
+      'Oma tilauksesi kustakin kokoelmasta';
 
   @override
-  String get moonbaseFeatureMessages => 'Messages from your server admin';
+  String get moonbaseFeatureMessages =>
+      'Viestit palvelimen järjestelmänvalvojalta';
 
   @override
   String setupMoonbaseInstallFailed(String error) {
-    return 'Moonbase couldn\'t be installed. $error';
+    return 'Moonbase sovellusta ei voitu asentaa. $error';
   }
 
   @override
@@ -15449,6 +15581,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get showBookDiscoverTabDescription =>
       'Selaa Open Libraryn ja LibriVoxin teoksia kirja- ja äänikirjastoissasi';
+
+  @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
 
   @override
   String get autoDownloadNewEpisodes =>
@@ -15556,6 +15695,20 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get removeWatchedDownloadsSubtitle =>
       'Milloin itse ladatut jaksot ja elokuvat poistetaan. Vain ne, jotka katsot tämän toiminnon käyttöönoton jälkeen, poistetaan';
+
+  @override
+  String get removeWatchedAsk => 'Ask me';
+
+  @override
+  String get deleteFinishedDownloadTitle => 'Delete this download?';
+
+  @override
+  String deleteFinishedDownloadMessage(String title) {
+    return 'You finished $title. Delete its download to free up space, or keep it and stop asking.';
+  }
+
+  @override
+  String get notNow => 'Not Now';
 
   @override
   String get keepDownloaded => 'Tallenna ladatut tiedostot';
@@ -16169,10 +16322,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get playbackInfoServerCompatibilityCheck =>
-      'Server compatibility check';
+      'Palvelimen yhteensopivuustarkistus';
 
   @override
-  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+  String get playbackInfoBitrateUnavailable => 'Bittinopeutta ei saatavilla';
 
   @override
   String get playbackInfoQualityLimit => 'Laaturaja';
@@ -16238,7 +16391,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get playbackInfoNoteLiveRelay =>
-      'The server is relaying the channel without converting it.';
+      'Palvelin välittää kanavan muuntamatta sitä.';
 
   @override
   String playbackInfoFrameRateFrom(String rate, String source) {
@@ -16249,28 +16402,28 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playbackInfoRateSourceHeader => 'stream header';
 
   @override
-  String get playbackInfoRateSourceMeasured => 'measured';
+  String get playbackInfoRateSourceMeasured => 'mitattu';
 
   @override
-  String get playbackInfoRateSourceServer => 'server';
+  String get playbackInfoRateSourceServer => 'palvelin';
 
   @override
-  String get playbackInfoServerFrameRate => 'Server Frame Rate';
+  String get playbackInfoServerFrameRate => 'Palvelimen kuvanpäivitysnopeus';
 
   @override
-  String get playbackInfoScan => 'Scan';
+  String get playbackInfoScan => 'Skannaa';
 
   @override
-  String get playbackInfoProgressive => 'Progressive';
+  String get playbackInfoProgressive => 'Progressiivinen';
 
   @override
-  String get playbackInfoInterlaced => 'Interlaced';
+  String get playbackInfoInterlaced => 'Lomitettu';
 
   @override
-  String get playbackInfoRepeatedFields => 'Telecined (repeated fields)';
+  String get playbackInfoRepeatedFields => 'Telecined (toistuvat kentät)';
 
   @override
-  String get playbackInfoHdmiOutput => 'HDMI Output';
+  String get playbackInfoHdmiOutput => 'HDMI-lähtö';
 
   @override
   String playbackInfoDisplayMode(String width, String height, String rate) {
@@ -16278,19 +16431,19 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get playbackInfoRateCorrections => 'Rate Corrections';
+  String get playbackInfoRateCorrections => 'Säätökorjaukset';
 
   @override
-  String get playbackInfoAudioOutput => 'Output';
+  String get playbackInfoAudioOutput => 'Lähtö';
 
   @override
   String playbackInfoPassthroughOf(String codec) {
-    return 'Passthrough ($codec)';
+    return 'Läpivienti ($codec)';
   }
 
   @override
   String playbackInfoDecodedTo(String channels) {
-    return 'Decoded ($channels)';
+    return 'Koodattu ($channels)';
   }
 
   @override
@@ -16355,7 +16508,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String playbackInfoWhyVideoProfileUnknown(String codec) {
-    return 'The server couldn\'t verify this stream\'s $codec profile.';
+    return 'Palvelin ei pystynyt vahvistamaan tämän lähetyksen $codec-profiilia.';
   }
 
   @override
@@ -17051,53 +17204,53 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get calendar => 'Calendar';
+  String get calendar => 'Kalenteri';
 
   @override
-  String get showCalendarButton => 'Show Calendar Button';
+  String get showCalendarButton => 'Näytä kalenteri painike';
 
   @override
   String get showCalendarButtonSubtitle =>
-      'Show the calendar of upcoming episodes and movies in the navigation bar';
+      'Näytä tulevien jaksojen ja elokuvien kalenteri navigointipalkissa';
 
   @override
-  String get calendarFullCalendar => 'Full calendar';
+  String get calendarFullCalendar => 'Koko kalenteri';
 
   @override
-  String get calendarUpcoming => 'Upcoming';
+  String get calendarUpcoming => 'Tulevat tapahtumat';
 
   @override
-  String get calendarRecentlyAired => 'Recently aired';
+  String get calendarRecentlyAired => 'Äskettäin esitetty';
 
   @override
-  String get calendarRemindMe => 'Remind me';
+  String get calendarRemindMe => 'Muistuta minua';
 
   @override
-  String get calendarReminderSet => 'Reminder set';
+  String get calendarReminderSet => 'Muistutus asetukset';
 
   @override
-  String get calendarReminderFailed => 'Couldn\'t save the reminder';
+  String get calendarReminderFailed => 'Muistutusta ei voitu tallentaa';
 
   @override
-  String get calendarReadyToWatch => 'Ready to watch';
+  String get calendarReadyToWatch => 'Valmista katsottavaksi';
 
   @override
-  String get calendarComingUpThisWeek => 'Coming up this week';
+  String get calendarComingUpThisWeek => 'Tällä viikolla ohjelmassa';
 
   @override
-  String get calendarNothingUpcoming => 'Nothing coming up';
+  String get calendarNothingUpcoming => 'Ei tulossa mitään';
 
   @override
-  String get calendarNothingRecent => 'Nothing aired recently';
+  String get calendarNothingRecent => 'Viime aikoina ei ole lähetetty mitään';
 
   @override
-  String get calendarEmptyDay => 'Nothing on this day';
+  String get calendarEmptyDay => 'Tänään ei ole mitään';
 
   @override
-  String get calendarStartsIn => 'Starts in';
+  String get calendarStartsIn => 'Aloittaa';
 
   @override
-  String get calendarUnitDays => 'days';
+  String get calendarUnitDays => 'päivää';
 
   @override
   String get calendarUnitHours => 'hr';
@@ -17111,175 +17264,560 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get calendarAllDay => 'All day';
+  String get calendarAllDay => 'Koko päivän';
 
   @override
-  String get calendarBadgeSeriesPremiere => 'Series premiere';
+  String get calendarBadgeSeriesPremiere => 'Sarjan ensiesitys';
 
   @override
-  String get calendarBadgeSeasonPremiere => 'New season';
+  String get calendarBadgeSeasonPremiere => 'Uusi kausi';
 
   @override
-  String get calendarBadgeSeasonFinale => 'Finale';
+  String get calendarBadgeSeasonFinale => 'Finaali';
 
   @override
-  String get calendarBadgeMidseasonFinale => 'Midseason finale';
+  String get calendarBadgeMidseasonFinale => 'Kauden puolivälin finaali';
 
   @override
-  String get calendarBadgeSeriesFinale => 'Series finale';
+  String get calendarBadgeSeriesFinale => 'Sarjan finaali';
 
   @override
-  String get calendarBadgeNew => 'NEW';
+  String get calendarBadgeNew => 'UUTTA';
 
   @override
-  String get calendarStatusInLibrary => 'In library';
+  String get calendarStatusInLibrary => 'Kirjastossa';
 
   @override
-  String get calendarNotMonitored => 'Not monitored';
+  String get calendarNotMonitored => 'Ei seurata';
 
   @override
-  String get calendarMovieDetails => 'Movie details';
+  String get calendarMovieDetails => 'Elokuvan tiedot';
 
   @override
   String get calendarProblemAdminsOnly =>
-      'The calendar is limited to admins on this server.';
+      'Kalenteri on rajoitettu tämän palvelimen järjestelmänvalvojille.';
 
   @override
   String get calendarProblemNeedsSeerr =>
-      'An admin needs to sign in to Seerr in Moonfin before the calendar can load.';
+      'Järjestelmänvalvojan on kirjauduttava Seerr-palveluun Moonfinissä, ennen kuin kalenteri voidaan ladata.';
 
   @override
   String get calendarProblemNotConfigured =>
-      'No Sonarr or Radarr server is linked yet.';
+      'Sonarr- tai Radarr-palvelinta ei ole vielä liitetty.';
 
   @override
-  String get calendarProblemFailed => 'Couldn\'t load the calendar.';
+  String get calendarProblemFailed => 'Kalenteria ei voitu ladata.';
 
   @override
   String get calendarSettingsSubtitle =>
-      'Style, filters and actions for the calendar';
+      'Kalenterin tyylit, suodattimet ja toiminnot';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'Näkymä';
 
   @override
-  String get calendarSettingsStyle => 'Calendar style';
+  String get calendarSettingsStyle => 'Kalenterin tyyli';
 
   @override
   String get calendarSettingsStyleDescription =>
-      'What the Calendar button opens. The full month is one button away in both.';
+      'Mitä ”Kalenteri”-painike avaa. Kummassakin koko kuukausi avautuu yhdellä painalluksella.';
 
   @override
-  String get calendarSettingsStyleAgenda => 'Agenda';
+  String get calendarSettingsStyleAgenda => 'Esityslista';
 
   @override
-  String get calendarSettingsStyleCountdown => 'Countdown';
+  String get calendarSettingsStyleCountdown => 'Lähtölaskenta';
 
   @override
-  String get calendarSettingsWeekStart => 'Week starts on';
+  String get calendarSettingsWeekStart => 'Viikko alkaa';
 
   @override
-  String get calendarSettingsWhatShows => 'What shows';
+  String get calendarSettingsWhatShows => 'Mitä ohjelmia';
 
   @override
-  String get calendarSettingsScope => 'Show';
+  String get calendarSettingsScope => 'Sarja';
 
   @override
   String get calendarSettingsScopeDescription =>
-      'My shows keeps the series you favorited or started watching';
+      'My Shows palvelu tallentaa sarjat, jotka olet merkinnyt suosikeiksi tai joiden katsomisen olet aloittanut';
 
   @override
-  String get calendarSettingsScopeEverything => 'Everything';
+  String get calendarSettingsScopeEverything => 'Kaikki';
 
   @override
-  String get calendarSettingsScopeMyShows => 'My shows';
+  String get calendarSettingsScopeMyShows => 'Minun sarjat';
 
   @override
-  String get calendarSettingsUnmonitored => 'Include unmonitored';
+  String get calendarSettingsUnmonitored => 'Sisällytä ei seuratut';
 
   @override
   String get calendarSettingsUnmonitoredSubtitle =>
-      'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
+      'Luettele myös ne jaksot ja elokuvat, joita Sonarr ja Radarr eivät ole asetettuja lataamaan';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'Erikoisjaksot';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
-      'Season 0 episodes, like extras and holiday specials';
+      'Kauden 0 jaksot, kuten lisämateriaalia ja juhlapyhäerikoisjaksot';
 
   @override
-  String get calendarSettingsBadges => 'Premiere and finale tags';
+  String get calendarSettingsBadges => '”Premiere”- ja ”finale” tunnisteet';
 
   @override
   String get calendarSettingsBadgesSubtitle =>
-      'Mark premieres, finales and new seasons';
+      'Sarjojen ensiesitykset, finaalit ja uudet kaudet';
 
   @override
-  String get calendarSettingsColorBy => 'Color by';
+  String get calendarSettingsColorBy => 'Väritä';
 
   @override
   String get calendarSettingsColorByDescription =>
-      'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
+      'Tyyppi kertoo, ovatko kyseessä sarjan jaksot vai elokuvat. Tila kertoo, mitä kirjastossasi on, mitä on tulossa tai mitä puuttuu.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'Tyyppi';
 
   @override
-  String get calendarSettingsImageType => 'Card image';
+  String get calendarSettingsImageType => 'Kortin kuva';
 
   @override
-  String get calendarSettingsImageTypeDescription =>
-      'The artwork on the Countdown rows';
+  String get calendarSettingsImageTypeDescription => 'Countdown rivien kuvitus';
 
   @override
-  String get calendarSettingsSpoilerSafe => 'Spoiler safe';
+  String get calendarSettingsSpoilerSafe => 'Ei sisällä spoilereita';
 
   @override
   String get calendarSettingsSpoilerSafeSubtitle =>
-      'Hide episode titles and stills for shows you\'re behind on';
+      'Piilota niiden sarjojen jaksonimikkeet ja kuvat, joiden katsomisessa olet jäljessä';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'Toimenpiteet';
 
   @override
-  String get calendarSettingsSelectAction => 'Selecting an item';
+  String get calendarSettingsSelectAction => 'Kohteen valitseminen';
 
   @override
   String get calendarSettingsSelectActionDescription =>
-      'What OK or a tap does on something that\'s already in your library';
+      'Mitä ”OK” painike tai napautus tekee kohteelle, joka on jo kirjastossasi';
 
   @override
-  String get calendarSettingsSelectDetails => 'Open details';
+  String get calendarSettingsSelectDetails => 'Avaa tiedot';
 
   @override
-  String get calendarSettingsSelectPlay => 'Play when in library';
+  String get calendarSettingsSelectPlay => 'Toista kirjastossa ollessa';
 
   @override
-  String get calendarSettingsRequestButton => 'Request button';
+  String get calendarSettingsRequestButton => 'Pyydä painike';
 
   @override
   String get calendarSettingsRequestButtonSubtitle =>
-      'Show the Seerr request button on missing movies and seasons';
+      'Näytä ”Pyydä Seerriltä” painike puuttuvien elokuvien ja kausien kohdalla';
 
   @override
-  String get calendarSettingsReminders => 'Reminders';
+  String get calendarSettingsReminders => 'Muistutukset';
 
   @override
   String get calendarSettingsRemindersSubtitle =>
-      'Show Remind me, which sends a notification when a title lands in your library';
+      'Näytä ”Muistuta minua” toiminto, joka lähettää ilmoituksen, kun teos lisätään kirjastoosi';
 
   @override
-  String get calendarRowSeeAll => 'See All card';
+  String get calendarRowSeeAll => 'Katso kaikki kortti';
 
   @override
   String get calendarRowSeeAllSubtitle =>
-      'End the upcoming rows with a card that opens the calendar';
+      'Lopeta seuraavat rivit kortilla, joka avaa kalenterin';
 
   @override
-  String get showNextAirDate => 'Next air date at the end';
+  String get showNextAirDate => 'Seuraava lähetyspäivä lopussa';
 
   @override
   String get showNextAirDateSubtitle =>
-      'When the next episode isn\'t in your library yet, the end of episode card says when it airs';
+      'Jos seuraava jakso ei ole vielä kirjastossasi, jakson lopussa näkyvässä kortissa kerrotaan, milloin se lähetetään';
+
+  @override
+  String get afterHoursTitle => 'After Hours';
+
+  @override
+  String get afterHoursUnlocked => 'After Hours unlocked';
+
+  @override
+  String afterHoursPressesLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more presses',
+      one: '1 more press',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String afterHoursTapsLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more taps',
+      one: '1 more tap',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get afterHoursPlay => 'Play';
+
+  @override
+  String get afterHoursLeaderboards => 'Leaderboards';
+
+  @override
+  String get afterHoursTop3 => 'Top 3';
+
+  @override
+  String afterHoursScoresFrom(String server) {
+    return 'Scores from $server';
+  }
+
+  @override
+  String get afterHoursScoresOnDevice => 'Scores on this device';
+
+  @override
+  String get afterHoursGameOver => 'Game over';
+
+  @override
+  String afterHoursNewRank(int rank) {
+    return 'New #$rank on the board';
+  }
+
+  @override
+  String get afterHoursPlayAgain => 'Play again';
+
+  @override
+  String get afterHoursBackToArcade => 'Back to the arcade';
+
+  @override
+  String get afterHoursArcade => 'Arcade';
+
+  @override
+  String get afterHoursLandscapeNote => 'Turns to landscape while you play';
+
+  @override
+  String get afterHoursTouch => 'Touch';
+
+  @override
+  String get afterHoursNewTag => 'NEW';
+
+  @override
+  String get afterHoursNoScores => 'No scores yet';
+
+  @override
+  String get afterHoursPerfect => 'PERFECT';
+
+  @override
+  String get afterHoursBoxSet => 'BOX SET';
+
+  @override
+  String get afterHoursBufferRun => 'Buffer Run';
+
+  @override
+  String get afterHoursBufferRunGenre => 'Endless runner with a gravity flip';
+
+  @override
+  String get afterHoursBufferRunPitch =>
+      'The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.';
+
+  @override
+  String get afterHoursBufferRunRemote =>
+      'OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.';
+
+  @override
+  String get afterHoursBufferRunTouch =>
+      'Tap to jump, and tap again in the air to flip. Swipe toward the side you\'re running on to slide.';
+
+  @override
+  String get afterHoursFastForward => 'Fast Forward';
+
+  @override
+  String get afterHoursFastForwardGenre => 'Three-lane runner';
+
+  @override
+  String get afterHoursFastForwardPitch =>
+      'A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don\'t move for anyone.';
+
+  @override
+  String get afterHoursFastForwardRemote =>
+      'Up and Down change lanes. OK jumps.';
+
+  @override
+  String get afterHoursFastForwardTouch =>
+      'Swipe up or down to change lanes. Tap to jump.';
+
+  @override
+  String get afterHoursCableCrawl => 'Cable Crawl';
+
+  @override
+  String get afterHoursCableCrawlGenre => 'Grid crawler';
+
+  @override
+  String get afterHoursCableCrawlPitch =>
+      'Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.';
+
+  @override
+  String get afterHoursCableCrawlRemote =>
+      'Arrows turn. The cable never stops.';
+
+  @override
+  String get afterHoursCableCrawlTouch => 'Swipe to turn.';
+
+  @override
+  String get afterHoursCaseStack => 'Case Stack';
+
+  @override
+  String get afterHoursCaseStackGenre => 'One-button stacker';
+
+  @override
+  String get afterHoursCaseStackPitch =>
+      'Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.';
+
+  @override
+  String get afterHoursCaseStackRemote => 'OK drops the case.';
+
+  @override
+  String get afterHoursCaseStackTouch => 'Tap anywhere to drop.';
+
+  @override
+  String get afterHoursPixelPurge => 'Pixel Purge';
+
+  @override
+  String get afterHoursPixelPurgeGenre => 'Paddle breaker';
+
+  @override
+  String get afterHoursPixelPurgePitch =>
+      'A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.';
+
+  @override
+  String get afterHoursPixelPurgeRemote =>
+      'Left and Right slide the scrubber. The ball launches on its own.';
+
+  @override
+  String get afterHoursPixelPurgeTouch => 'Drag to slide the scrubber.';
+
+  @override
+  String get afterHoursHowToPlay => 'How to play';
+
+  @override
+  String get afterHoursStart => 'Start';
+
+  @override
+  String get afterHoursBackToGame => 'Back to the game';
+
+  @override
+  String get afterHoursEnemies => 'Enemies';
+
+  @override
+  String get afterHoursObstacles => 'Obstacles';
+
+  @override
+  String get afterHoursPowerups => 'Powerups';
+
+  @override
+  String get afterHoursCastShieldLine => 'A shield that takes one hit.';
+
+  @override
+  String get afterHoursCastPointsLine => '25 points a piece.';
+
+  @override
+  String get afterHoursCastLagBat => 'Lag Bat';
+
+  @override
+  String get afterHoursCastLagBatLine =>
+      'Swoops in at head height. Slide under it.';
+
+  @override
+  String get afterHoursCastGremlin => 'Static Gremlin';
+
+  @override
+  String get afterHoursCastGremlinLine =>
+      'Hops along the floor or the ceiling toward you. Jump it.';
+
+  @override
+  String get afterHoursCastCable => 'Cable Coil';
+
+  @override
+  String get afterHoursCastCableLine =>
+      'Low on the floor or the ceiling. Jump it.';
+
+  @override
+  String get afterHoursCastBanner => 'Buffering Banner';
+
+  @override
+  String get afterHoursCastBannerLine =>
+      'Slide under the sign. Its pole is a wall on the other side.';
+
+  @override
+  String get afterHoursCastSkipIntro => 'Skip Intro';
+
+  @override
+  String get afterHoursCastSkipIntroLine =>
+      'Three seconds of dash that smashes anything.';
+
+  @override
+  String get afterHoursCastPopcorn => 'Popcorn';
+
+  @override
+  String get afterHoursCastRollingReel => 'Loose Reel';
+
+  @override
+  String get afterHoursCastRollingReelLine =>
+      'Rolls down your lane faster than you run. Jump it.';
+
+  @override
+  String get afterHoursCastUsher => 'Usher';
+
+  @override
+  String get afterHoursCastUsherLine =>
+      'Walks toward you and changes lanes once.';
+
+  @override
+  String get afterHoursCastVelvetRope => 'Velvet Rope';
+
+  @override
+  String get afterHoursCastVelvetRopeLine => 'Low. Jump it or change lanes.';
+
+  @override
+  String get afterHoursCastPopcornCart => 'Popcorn Cart';
+
+  @override
+  String get afterHoursCastPopcornCartLine => 'Too tall to jump. Change lanes.';
+
+  @override
+  String get afterHoursCastFrontRowPass => 'Front Row Pass';
+
+  @override
+  String get afterHoursCastMagnet => 'Magnet';
+
+  @override
+  String get afterHoursCastMagnetLine =>
+      'Pulls in tickets from every lane for eight seconds.';
+
+  @override
+  String get afterHoursCastTicket => 'Ticket';
+
+  @override
+  String get afterHoursCastBug => 'Interference Bug';
+
+  @override
+  String get afterHoursCastBugLine => 'Wanders at random.';
+
+  @override
+  String get afterHoursCastTangle => 'Tangle';
+
+  @override
+  String get afterHoursCastTangleLine => 'Slowly chases your plug.';
+
+  @override
+  String get afterHoursCastStatic => 'Static';
+
+  @override
+  String get afterHoursCastStaticLine =>
+      'A dead cell. One appears every third signal.';
+
+  @override
+  String get afterHoursCastBrick => 'Power Brick';
+
+  @override
+  String get afterHoursCastBrickLine => 'A 2 by 2 block every fifth signal.';
+
+  @override
+  String get afterHoursCastGhost => 'Ghost';
+
+  @override
+  String get afterHoursCastGhostLine =>
+      'Five seconds of passing through everything but the edge.';
+
+  @override
+  String get afterHoursCastSnip => 'Snip';
+
+  @override
+  String get afterHoursCastSnipLine =>
+      'Cuts the cable in half for bonus points.';
+
+  @override
+  String get afterHoursCastSignal => 'Signal';
+
+  @override
+  String get afterHoursCastSignalLine => 'Points, and two more segments.';
+
+  @override
+  String get afterHoursCastShelfCat => 'Shelf Cat';
+
+  @override
+  String get afterHoursCastShelfCatLine =>
+      'Bats a case as it comes in, so that one slides faster.';
+
+  @override
+  String get afterHoursCastBluCase => 'Blu-ray Case';
+
+  @override
+  String get afterHoursCastBluCaseLine =>
+      'A title from your library. The overhang gets trimmed off.';
+
+  @override
+  String get afterHoursCastSteelbook => 'Steelbook';
+
+  @override
+  String get afterHoursCastSteelbookLine =>
+      'Every tenth case. Slides much faster.';
+
+  @override
+  String get afterHoursCastPerfect => 'Perfect Drop';
+
+  @override
+  String get afterHoursCastPerfectLine =>
+      'Land it dead on and the stack grows a little wider.';
+
+  @override
+  String get afterHoursCastBoxSet => 'Box Set';
+
+  @override
+  String get afterHoursCastBoxSetLine =>
+      'Three perfect drops in a row grow it a lot wider.';
+
+  @override
+  String get afterHoursCastDeadPixel => 'Dead Pixel';
+
+  @override
+  String get afterHoursCastDeadPixelLine =>
+      'Falls from cleared blocks. Catching it shrinks the scrubber.';
+
+  @override
+  String get afterHoursCastMacroblock => 'Macroblock';
+
+  @override
+  String get afterHoursCastMacroblockLine => 'One hit clears it.';
+
+  @override
+  String get afterHoursCastKeyframe => 'Keyframe';
+
+  @override
+  String get afterHoursCastKeyframeLine =>
+      'Takes three hits and drops a powerup.';
+
+  @override
+  String get afterHoursCastHdrLine =>
+      'A scrubber twice as wide for eight seconds.';
+
+  @override
+  String get afterHoursCastBufferNet => 'Buffer';
+
+  @override
+  String get afterHoursCastBufferNetLine =>
+      'A net under the scrubber that saves one miss.';
+
+  @override
+  String get afterHoursBufferRunCardTouch =>
+      'Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.';
+
+  @override
+  String get afterHoursPixelPurgeCardRemote =>
+      'Left and Right slide the scrubber.';
 }

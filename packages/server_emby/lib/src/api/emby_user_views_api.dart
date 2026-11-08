@@ -98,7 +98,8 @@ class EmbyUserViewsApi implements UserViewsApi {
 
   /// A library the user still has access to, just not on My Media, so a plain
   /// lookup by id reaches it. Anything nameless is dropped rather than handed
-  /// on as a blank row.
+  /// on as a blank row. If every id is a Guid Emby doesn't know, it answers
+  /// with every library the user has, so only the ones asked for are kept.
   Future<List<Map<String, dynamic>>> _viewsByIds(
     String userId,
     List<String> ids,
@@ -113,6 +114,11 @@ class EmbyUserViewsApi implements UserViewsApi {
           .whereType<Map>()
           .map((item) => item.cast<String, dynamic>())
           .where((item) => (item['Name']?.toString() ?? '').isNotEmpty)
+          .where(
+            (item) =>
+                ids.contains(item['Id']?.toString()) ||
+                ids.contains(item['Guid']?.toString()),
+          )
           .toList(growable: false);
     } catch (_) {
       return const [];

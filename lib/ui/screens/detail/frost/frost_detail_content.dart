@@ -554,9 +554,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       final versions = _names(item.mediaSources);
       final video = streams.where((stream) => stream['Type'] == 'Video');
       final size = formatMediaSourceSize(source['Size'] as int? ?? 0);
+      final path = source['Path'] as String? ?? '';
+      final fileName = path.split('/').last.split('\\').last;
       media.addAll([
         if (item.mediaSources.length > 1 && versions != null)
           _Row(l10n.version, versions),
+        if (fileName.isNotEmpty) _Row(l10n.playbackInfoFile, fileName),
         if (video.isNotEmpty)
           _Row(
             l10n.video,
@@ -957,7 +960,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             fit: BoxFit.scaleDown,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 4,
+              spacing: 14,
               children: [
                 for (final (index, tab) in tabs.indexed)
                   _barTab(tab, index, tabs, l10n),
@@ -1022,13 +1025,17 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             children: [
               _tabIcon(tab),
               const SizedBox(width: 10),
-              Text(
-                _tabLabel(tab, l10n),
-                maxLines: 1,
-                style: TextStyle(
-                  color: _ink(),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                child: Text(
+                  _tabLabel(tab, l10n),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: _ink(),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

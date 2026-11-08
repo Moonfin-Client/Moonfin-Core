@@ -103,16 +103,18 @@ class _BookTitlesScreenState extends BookCategoryState<BookTitlesScreen> {
       _details = null;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final row = sectionKey('title:row:${index - index % _columns}');
-      final rowContext = row.currentContext;
-      if (rowContext != null) {
+      final panelContext = sectionKey('title:panel').currentContext;
+      final targetContext = panelContext ??
+          sectionKey('title:row:${index - index % _columns}').currentContext;
+      if (targetContext != null) {
         Scrollable.ensureVisible(
-          rowContext,
+          targetContext,
           alignment: 0.05,
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeInOut,
         );
       }
+      if (wide) node('panel:read').requestFocus();
     });
     unawaited(() async {
       Map<String, dynamic>? details;
@@ -134,7 +136,11 @@ class _BookTitlesScreenState extends BookCategoryState<BookTitlesScreen> {
     _detailsRequest++;
     final index = vm.paneItems.indexWhere((item) => item.id == open);
     setState(() => _open = null);
-    if (index >= 0) node('title:$index').requestFocus();
+    if (index >= 0) {
+      final focus = node('title:$index');
+      focus.requestFocus();
+      reveal(focus);
+    }
   }
 
   void _setSort(LibrarySortBy sort) {
@@ -399,8 +405,17 @@ class _BookTitlesScreenState extends BookCategoryState<BookTitlesScreen> {
         : vm.isComicItem(item)
         ? l10n.bookFormatComic
         : l10n.bookFormatBook;
-    void up() => node('title:$cardIndex').requestFocus();
-    void down() => below?.requestFocus();
+    void up() {
+      final focus = node('title:$cardIndex');
+      focus.requestFocus();
+      reveal(focus);
+    }
+
+    void down() {
+      if (below == null) return;
+      below.requestFocus();
+      reveal(below);
+    }
 
     final buttons = [
       MusicPillButton(

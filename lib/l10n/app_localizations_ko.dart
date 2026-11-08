@@ -3334,6 +3334,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seasonalRowHolidaysHint => '기념일 체크를 해제하면 해당 행이 숨겨집니다.';
 
   @override
+  String get seasonalRowAllYear => 'Show All Year';
+
+  @override
+  String get seasonalRowAllYearDescription =>
+      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+
+  @override
   String get holidayNewYear => '새해';
 
   @override
@@ -5224,6 +5231,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dimmingLevel => '디밍 레벨';
+
+  @override
+  String get screensaverDuringAudio => 'Show During Music and Audiobooks';
+
+  @override
+  String get screensaverDuringAudioDescription =>
+      'Let the screensaver start while audio plays, so cover art doesn\'t sit on screen for hours.';
+
+  @override
+  String get sleepAfterIdle => 'Let TV Sleep After';
+
+  @override
+  String get sleepAfterIdleDescriptionAndroid =>
+      'Close Moonfin after this long without a button press so your TV\'s own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.';
+
+  @override
+  String get sleepAfterIdleDescriptionAppleTv =>
+      'After this long without a button press, hand the screen back to your Apple TV\'s own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.';
 
   @override
   String get maxAgeRating => '최대 연령 등급';
@@ -10622,13 +10647,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayRepeat => '반복';
 
   @override
+  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+
+  @override
   String get syncPlayRepeatOne => '한 항목';
+
+  @override
+  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
 
   @override
   String get syncPlayShuffleModeShuffled => '섞임';
 
   @override
   String get syncPlayShuffleModeSorted => '정렬됨';
+
+  @override
+  String get syncPlayParticipantYou => 'You';
+
+  @override
+  String syncPlayGroupSubtitle(String participants, String detail) {
+    return '$participants · $detail';
+  }
+
+  @override
+  String get syncPlayNothingQueued => 'nothing queued yet';
+
+  @override
+  String get syncPlayOthersCanJoinHint =>
+      'Others can join from their SyncPlay screen while this group exists.';
 
   @override
   String get syncPlaySyncCurrentQueue => '현재 재생 대기열 동기화';
@@ -10654,6 +10700,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayCreateNewGroup => '새 그룹 만들기';
 
   @override
+  String get syncPlayCreateGroupSubtitle =>
+      'Watch together with everyone who joins';
+
+  @override
   String get syncPlayGroupName => '그룹 이름';
 
   @override
@@ -10666,7 +10716,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayAvailableGroups => '사용 가능한 그룹';
 
   @override
+  String syncPlayAvailableGroupsCount(int count) {
+    return 'Available groups · $count';
+  }
+
+  @override
   String get syncPlayNoGroupsAvailable => '사용 가능한 그룹이 없습니다.';
+
+  @override
+  String get syncPlayNoGroupsAvailableHint =>
+      'Groups other people create on this server will show up here.';
 
   @override
   String get syncPlayJoinGroupQuestion => 'SyncPlay 그룹에 참여하시겠습니까?';
@@ -10674,6 +10733,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get syncPlayJoinGroupWarning =>
       'SyncPlay 그룹에 참여하면 현재 재생 대기열이 대체될 수 있습니다. 계속할까요?';
+
+  @override
+  String get syncPlayJoinReplacesQueueNote =>
+      'Joining a group may replace your current playback queue.';
 
   @override
   String get syncPlayJoin => '참여';
@@ -11334,6 +11397,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '시계가 표시되는 모든 곳에 24시간 형식을 사용합니다';
 
   @override
+  String get settingsDateFormat => 'Date Format';
+
+  @override
+  String get settingsDateFormatDescription =>
+      'Choose between month-day, day-month, or locale default for calendar and release dates';
+
+  @override
+  String get dateFormatSystem => 'Locale Default';
+
+  @override
+  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+
+  @override
+  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+
+  @override
   String get settingsShowShuffleButtonInNavigation => '탐색 바에 셔플 버튼 표시';
 
   @override
@@ -11662,6 +11741,20 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get settingsSkipForwardLengthDescription =>
       '빨리감기 버튼을 누른 후 앞으로 이동할 시간(초)입니다.';
+
+  @override
+  String get settingsHideControlsAfter => 'Hide Controls After';
+
+  @override
+  String get settingsHideControlsAfterDescription =>
+      'How long the player controls stay on screen after your last button press, tap or mouse move.';
+
+  @override
+  String get settingsHdrControlsDimming => 'Dim Controls in HDR';
+
+  @override
+  String get settingsHdrControlsDimmingDescription =>
+      'White looks far brighter next to HDR video, so the player controls dim by this much while it plays.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder => 'AC3를 외부 디코더로 비트스트림 전송';
@@ -14575,6 +14668,36 @@ class AppLocalizationsKo extends AppLocalizations {
       'HDR에서는 SDR보다 흰색이 훨씬 밝으므로, 더 어두운 스타일을 사용해 눈부심을 방지합니다';
 
   @override
+  String get subtitleBold => 'Bold Text';
+
+  @override
+  String get subtitleStrokeWidth => 'Text Stroke Width';
+
+  @override
+  String get subtitleFont => 'Font';
+
+  @override
+  String get subtitleFontDescription =>
+      'Fonts are downloaded from Google Fonts the first time you pick them';
+
+  @override
+  String subtitleFontDownloadFailed(String font) {
+    return 'Couldn\'t download $font';
+  }
+
+  @override
+  String get subtitleShadow => 'Text Shadow';
+
+  @override
+  String get subtitleShadowIntensity => 'Shadow Intensity';
+
+  @override
+  String get subtitleShadowOffset => 'Shadow Offset';
+
+  @override
+  String get subtitleShadowBlur => 'Shadow Blur';
+
+  @override
   String get scrollSensitivity => '스크롤 민감도';
 
   @override
@@ -14872,6 +14995,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '도서 및 오디오북 라이브러리에서 Open Library와 LibriVox의 작품을 둘러봅니다';
 
   @override
+  String get bookFoldersAsSeries => 'Treat book folders as series';
+
+  @override
+  String get bookFoldersAsSeriesDescription =>
+      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+
+  @override
   String get autoDownloadNewEpisodes => '새 에피소드 자동 다운로드';
 
   @override
@@ -14975,6 +15105,20 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get removeWatchedDownloadsSubtitle =>
       '직접 다운로드한 에피소드와 영화를 언제 삭제할지 정합니다. 이 설정을 켠 뒤에 시청한 항목만 삭제됩니다';
+
+  @override
+  String get removeWatchedAsk => 'Ask me';
+
+  @override
+  String get deleteFinishedDownloadTitle => 'Delete this download?';
+
+  @override
+  String deleteFinishedDownloadMessage(String title) {
+    return 'You finished $title. Delete its download to free up space, or keep it and stop asking.';
+  }
+
+  @override
+  String get notNow => 'Not Now';
 
   @override
   String get keepDownloaded => '다운로드 유지';
@@ -16643,4 +16787,390 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get showNextAirDateSubtitle =>
       'When the next episode isn\'t in your library yet, the end of episode card says when it airs';
+
+  @override
+  String get afterHoursTitle => 'After Hours';
+
+  @override
+  String get afterHoursUnlocked => 'After Hours unlocked';
+
+  @override
+  String afterHoursPressesLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more presses',
+      one: '1 more press',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String afterHoursTapsLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more taps',
+      one: '1 more tap',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get afterHoursPlay => 'Play';
+
+  @override
+  String get afterHoursLeaderboards => 'Leaderboards';
+
+  @override
+  String get afterHoursTop3 => 'Top 3';
+
+  @override
+  String afterHoursScoresFrom(String server) {
+    return 'Scores from $server';
+  }
+
+  @override
+  String get afterHoursScoresOnDevice => 'Scores on this device';
+
+  @override
+  String get afterHoursGameOver => 'Game over';
+
+  @override
+  String afterHoursNewRank(int rank) {
+    return 'New #$rank on the board';
+  }
+
+  @override
+  String get afterHoursPlayAgain => 'Play again';
+
+  @override
+  String get afterHoursBackToArcade => 'Back to the arcade';
+
+  @override
+  String get afterHoursArcade => 'Arcade';
+
+  @override
+  String get afterHoursLandscapeNote => 'Turns to landscape while you play';
+
+  @override
+  String get afterHoursTouch => 'Touch';
+
+  @override
+  String get afterHoursNewTag => 'NEW';
+
+  @override
+  String get afterHoursNoScores => 'No scores yet';
+
+  @override
+  String get afterHoursPerfect => 'PERFECT';
+
+  @override
+  String get afterHoursBoxSet => 'BOX SET';
+
+  @override
+  String get afterHoursBufferRun => 'Buffer Run';
+
+  @override
+  String get afterHoursBufferRunGenre => 'Endless runner with a gravity flip';
+
+  @override
+  String get afterHoursBufferRunPitch =>
+      'The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.';
+
+  @override
+  String get afterHoursBufferRunRemote =>
+      'OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.';
+
+  @override
+  String get afterHoursBufferRunTouch =>
+      'Tap to jump, and tap again in the air to flip. Swipe toward the side you\'re running on to slide.';
+
+  @override
+  String get afterHoursFastForward => 'Fast Forward';
+
+  @override
+  String get afterHoursFastForwardGenre => 'Three-lane runner';
+
+  @override
+  String get afterHoursFastForwardPitch =>
+      'A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don\'t move for anyone.';
+
+  @override
+  String get afterHoursFastForwardRemote =>
+      'Up and Down change lanes. OK jumps.';
+
+  @override
+  String get afterHoursFastForwardTouch =>
+      'Swipe up or down to change lanes. Tap to jump.';
+
+  @override
+  String get afterHoursCableCrawl => 'Cable Crawl';
+
+  @override
+  String get afterHoursCableCrawlGenre => 'Grid crawler';
+
+  @override
+  String get afterHoursCableCrawlPitch =>
+      'Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.';
+
+  @override
+  String get afterHoursCableCrawlRemote =>
+      'Arrows turn. The cable never stops.';
+
+  @override
+  String get afterHoursCableCrawlTouch => 'Swipe to turn.';
+
+  @override
+  String get afterHoursCaseStack => 'Case Stack';
+
+  @override
+  String get afterHoursCaseStackGenre => 'One-button stacker';
+
+  @override
+  String get afterHoursCaseStackPitch =>
+      'Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.';
+
+  @override
+  String get afterHoursCaseStackRemote => 'OK drops the case.';
+
+  @override
+  String get afterHoursCaseStackTouch => 'Tap anywhere to drop.';
+
+  @override
+  String get afterHoursPixelPurge => 'Pixel Purge';
+
+  @override
+  String get afterHoursPixelPurgeGenre => 'Paddle breaker';
+
+  @override
+  String get afterHoursPixelPurgePitch =>
+      'A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.';
+
+  @override
+  String get afterHoursPixelPurgeRemote =>
+      'Left and Right slide the scrubber. The ball launches on its own.';
+
+  @override
+  String get afterHoursPixelPurgeTouch => 'Drag to slide the scrubber.';
+
+  @override
+  String get afterHoursHowToPlay => 'How to play';
+
+  @override
+  String get afterHoursStart => 'Start';
+
+  @override
+  String get afterHoursBackToGame => 'Back to the game';
+
+  @override
+  String get afterHoursEnemies => 'Enemies';
+
+  @override
+  String get afterHoursObstacles => 'Obstacles';
+
+  @override
+  String get afterHoursPowerups => 'Powerups';
+
+  @override
+  String get afterHoursCastShieldLine => 'A shield that takes one hit.';
+
+  @override
+  String get afterHoursCastPointsLine => '25 points a piece.';
+
+  @override
+  String get afterHoursCastLagBat => 'Lag Bat';
+
+  @override
+  String get afterHoursCastLagBatLine =>
+      'Swoops in at head height. Slide under it.';
+
+  @override
+  String get afterHoursCastGremlin => 'Static Gremlin';
+
+  @override
+  String get afterHoursCastGremlinLine =>
+      'Hops along the floor or the ceiling toward you. Jump it.';
+
+  @override
+  String get afterHoursCastCable => 'Cable Coil';
+
+  @override
+  String get afterHoursCastCableLine =>
+      'Low on the floor or the ceiling. Jump it.';
+
+  @override
+  String get afterHoursCastBanner => 'Buffering Banner';
+
+  @override
+  String get afterHoursCastBannerLine =>
+      'Slide under the sign. Its pole is a wall on the other side.';
+
+  @override
+  String get afterHoursCastSkipIntro => 'Skip Intro';
+
+  @override
+  String get afterHoursCastSkipIntroLine =>
+      'Three seconds of dash that smashes anything.';
+
+  @override
+  String get afterHoursCastPopcorn => 'Popcorn';
+
+  @override
+  String get afterHoursCastRollingReel => 'Loose Reel';
+
+  @override
+  String get afterHoursCastRollingReelLine =>
+      'Rolls down your lane faster than you run. Jump it.';
+
+  @override
+  String get afterHoursCastUsher => 'Usher';
+
+  @override
+  String get afterHoursCastUsherLine =>
+      'Walks toward you and changes lanes once.';
+
+  @override
+  String get afterHoursCastVelvetRope => 'Velvet Rope';
+
+  @override
+  String get afterHoursCastVelvetRopeLine => 'Low. Jump it or change lanes.';
+
+  @override
+  String get afterHoursCastPopcornCart => 'Popcorn Cart';
+
+  @override
+  String get afterHoursCastPopcornCartLine => 'Too tall to jump. Change lanes.';
+
+  @override
+  String get afterHoursCastFrontRowPass => 'Front Row Pass';
+
+  @override
+  String get afterHoursCastMagnet => 'Magnet';
+
+  @override
+  String get afterHoursCastMagnetLine =>
+      'Pulls in tickets from every lane for eight seconds.';
+
+  @override
+  String get afterHoursCastTicket => 'Ticket';
+
+  @override
+  String get afterHoursCastBug => 'Interference Bug';
+
+  @override
+  String get afterHoursCastBugLine => 'Wanders at random.';
+
+  @override
+  String get afterHoursCastTangle => 'Tangle';
+
+  @override
+  String get afterHoursCastTangleLine => 'Slowly chases your plug.';
+
+  @override
+  String get afterHoursCastStatic => 'Static';
+
+  @override
+  String get afterHoursCastStaticLine =>
+      'A dead cell. One appears every third signal.';
+
+  @override
+  String get afterHoursCastBrick => 'Power Brick';
+
+  @override
+  String get afterHoursCastBrickLine => 'A 2 by 2 block every fifth signal.';
+
+  @override
+  String get afterHoursCastGhost => 'Ghost';
+
+  @override
+  String get afterHoursCastGhostLine =>
+      'Five seconds of passing through everything but the edge.';
+
+  @override
+  String get afterHoursCastSnip => 'Snip';
+
+  @override
+  String get afterHoursCastSnipLine =>
+      'Cuts the cable in half for bonus points.';
+
+  @override
+  String get afterHoursCastSignal => 'Signal';
+
+  @override
+  String get afterHoursCastSignalLine => 'Points, and two more segments.';
+
+  @override
+  String get afterHoursCastShelfCat => 'Shelf Cat';
+
+  @override
+  String get afterHoursCastShelfCatLine =>
+      'Bats a case as it comes in, so that one slides faster.';
+
+  @override
+  String get afterHoursCastBluCase => 'Blu-ray Case';
+
+  @override
+  String get afterHoursCastBluCaseLine =>
+      'A title from your library. The overhang gets trimmed off.';
+
+  @override
+  String get afterHoursCastSteelbook => 'Steelbook';
+
+  @override
+  String get afterHoursCastSteelbookLine =>
+      'Every tenth case. Slides much faster.';
+
+  @override
+  String get afterHoursCastPerfect => 'Perfect Drop';
+
+  @override
+  String get afterHoursCastPerfectLine =>
+      'Land it dead on and the stack grows a little wider.';
+
+  @override
+  String get afterHoursCastBoxSet => 'Box Set';
+
+  @override
+  String get afterHoursCastBoxSetLine =>
+      'Three perfect drops in a row grow it a lot wider.';
+
+  @override
+  String get afterHoursCastDeadPixel => 'Dead Pixel';
+
+  @override
+  String get afterHoursCastDeadPixelLine =>
+      'Falls from cleared blocks. Catching it shrinks the scrubber.';
+
+  @override
+  String get afterHoursCastMacroblock => 'Macroblock';
+
+  @override
+  String get afterHoursCastMacroblockLine => 'One hit clears it.';
+
+  @override
+  String get afterHoursCastKeyframe => 'Keyframe';
+
+  @override
+  String get afterHoursCastKeyframeLine =>
+      'Takes three hits and drops a powerup.';
+
+  @override
+  String get afterHoursCastHdrLine =>
+      'A scrubber twice as wide for eight seconds.';
+
+  @override
+  String get afterHoursCastBufferNet => 'Buffer';
+
+  @override
+  String get afterHoursCastBufferNetLine =>
+      'A net under the scrubber that saves one miss.';
+
+  @override
+  String get afterHoursBufferRunCardTouch =>
+      'Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.';
+
+  @override
+  String get afterHoursPixelPurgeCardRemote =>
+      'Left and Right slide the scrubber.';
 }

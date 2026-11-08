@@ -24,7 +24,7 @@ Every Android command takes a `--flavor`, and the per-platform build commands ar
 ## Making changes
 
 - Match the surrounding code. Follow what the file you are in already does rather than introducing a new pattern.
-- `flutter analyze` must come back clean and `flutter test` must pass. CI runs both and will tell you if they don't, but it is faster to find out locally.
+- `flutter analyze` must come back clean and `flutter test` must pass. CI runs both as "Checks" and tells you within about 15 minutes if they don't, but it is faster to find out locally.
 - Test on at least one real target and say which one in the pull request. Code under `lib/` is shared, so think about how your change behaves with touch, a pointer and a D-pad even if you can only test one of them.
 - Keep each pull request to one change. A fix and an unrelated refactor are two pull requests.
 - Don't edit the translation files under `lib/l10n/` by hand. Weblate owns them and will overwrite your edits on its next sync. New English strings go in `lib/l10n/app_en.arb`, and translations happen at [translate.moonfin.io](https://translate.moonfin.io/engage/moonfin-core/).
@@ -36,9 +36,11 @@ Every Android command takes a `--flavor`, and the per-platform build commands ar
 2. Make your change and test it.
 3. Open a pull request against `main` and fill in the template. It is short, and the Platform and Type of Change checkboxes drive the labels that triage runs on, so tick the ones that apply.
 4. Include screenshots or a recording for anything visual, and a log for anything playback related. See [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs).
-5. CI builds every platform and runs the analyzer and the tests. A bot comment on the pull request shows how each part went and updates itself with every push. Check it before asking for a review.
+5. CI runs the analyzer and the tests as "Checks", which reports in about 15 minutes, and builds every platform separately, which takes longer. A bot comment on the pull request shows how each part went and updates itself as each one finishes and with every push. Check it before asking for a review.
 
 Reviews happen in the pull request. If something is asked of you, reply there, even if it's to disagree.
+
+The platform builds run in the merge queue after approval, not on every push. If you need a build earlier, for example to try it on a device, ask for a `ci:android`, `ci:apple`, `ci:windows`, `ci:linux` or `ci:web` label, or `ci:full` for all of them. That platform then builds on every push and the bot comment links its artifacts.
 
 ## Reporting bugs
 

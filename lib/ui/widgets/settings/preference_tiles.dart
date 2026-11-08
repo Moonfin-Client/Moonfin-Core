@@ -619,7 +619,8 @@ Future<T?> showSettingsPicker<T>(
   required List<T> values,
   required T current,
   required String Function(T value) labelOf,
-  String Function(T value)? subtitleOf,
+  String? Function(T value)? subtitleOf,
+  Widget Function(T value)? leadingOf,
   void Function(T value, int index)? onTry,
 }) {
   final selectedIndex = values.indexOf(current);
@@ -630,61 +631,23 @@ Future<T?> showSettingsPicker<T>(
     useRootNavigator: false,
     builder: (ctx) => withBackClose(
       ctx,
-      SimpleDialog(
-        title: Text(title, style: _kSettingsTitleTextStyle),
+      SettingsPickerDialog(
+        title: title,
         children: values.asMap().entries.map((entry) {
           final i = entry.key;
           final v = entry.value;
-          final selected = v == current;
           return settingsPreviewOption(
             onTry: onTry == null ? null : () => onTry(v, i),
-            child: TvFocusHighlight(
-              builder: (_, focused) {
-                final invert = focused && settingsTileInvertsOnFocus;
-                return ListTile(
-                  autofocus: i == autofocusIndex,
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  title: Text(
-                    labelOf(v),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: invert
-                          ? AppColors.black.withValues(alpha: 0.87)
-                          : AppColorScheme.onSurface,
-                    ),
-                  ),
-                  subtitle: subtitleOf != null
-                      ? Text(
-                          subtitleOf(v),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: invert
-                                ? AppColors.black.withValues(alpha: 0.54)
-                                : AppColorScheme.onSurface.withValues(
-                                    alpha: 0.6,
-                                  ),
-                          ),
-                        )
-                      : null,
-                  isThreeLine: subtitleOf != null,
-                  trailing: selected
-                      ? Icon(
-                          Icons.check,
-                          color: invert
-                              ? AppColors.black.withValues(alpha: 0.54)
-                              : (AppUiIdiomResolver.isApple
-                                  ? AppColorScheme.accent
-                                  : null),
-                        )
-                      : null,
-                  onTap: () {
-                    if (picked) return;
-                    picked = true;
-                    Navigator.pop(ctx, v);
-                  },
-                );
+            child: SettingsPickerOption(
+              label: labelOf(v),
+              subtitle: subtitleOf?.call(v),
+              leading: leadingOf?.call(v),
+              selected: v == current,
+              autofocus: i == autofocusIndex,
+              onTap: () {
+                if (picked) return;
+                picked = true;
+                Navigator.pop(ctx, v);
               },
             ),
           );
@@ -692,6 +655,149 @@ Future<T?> showSettingsPicker<T>(
       ),
     ),
   );
+}
+
+/// The glass theme's dialog is see-through, and borderless rows can't hide what's
+/// behind it, so pickers draw the theme's dialog color opaque.
+Color? settingsPickerBackground(BuildContext context) =>
+    Theme.of(context).dialogTheme.backgroundColor?.withValues(alpha: 1);
+
+class SettingsPickerDialog extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  const SettingsPickerDialog({
+    super.key,
+    required this.title,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      backgroundColor: settingsPickerBackground(context),
+      titlePadding: const EdgeInsets.fromLTRB(24, 22, 24, 12),
+      contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+      ),
+      children: children,
+    );
+  }
+}
+
+/// The Apple idioms mark the current value with a trailing check like their
+/// native lists, so they get no radio.
+class SettingsPickerOption extends StatelessWidget {
+  final String label;
+  final String? subtitle;
+  final Widget? leading;
+  final bool selected;
+  final bool autofocus;
+  final VoidCallback onTap;
+
+  const SettingsPickerOption({
+    super.key,
+    required this.label,
+    this.subtitle,
+    this.leading,
+    required this.selected,
+    this.autofocus = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appleCheck =
+        AppUiIdiomResolver.isApple || AppUiIdiomResolver.appleTvStyle;
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      child: TvFocusHighlight(
+        quiet: true,
+        builder: (_, focused) {
+          final invert = focused && settingsTileInvertsOnFocus;
+          final ink = invert
+              ? AppColors.black.withValues(alpha: 0.87)
+              : AppColorScheme.onSurface;
+          final leadingParts = [
+            if (!appleCheck) _PickerRadio(selected: selected, invert: invert),
+            ?leading,
+          ];
+          return ListTile(
+            autofocus: autofocus,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+            minVerticalPadding: 12,
+            minLeadingWidth: 0,
+            horizontalTitleGap: 14,
+            leading: leadingParts.isEmpty
+                ? null
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 14,
+                    children: leadingParts,
+                  ),
+            title: Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: ink,
+              ),
+            ),
+            subtitle: subtitle == null
+                ? null
+                : Text(
+                    subtitle!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ink.withValues(alpha: invert ? 0.6 : 0.65),
+                    ),
+                  ),
+            trailing: appleCheck && selected
+                ? Icon(Icons.check, color: AppColorScheme.accent)
+                : null,
+            onTap: onTap,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PickerRadio extends StatelessWidget {
+  final bool selected;
+  final bool invert;
+
+  const _PickerRadio({required this.selected, required this.invert});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = invert
+        ? AppColors.black.withValues(alpha: selected ? 0.87 : 0.5)
+        : selected
+        ? AppColorScheme.accent
+        : AppColorScheme.onSurface.withValues(alpha: 0.45);
+    return Container(
+      width: 18,
+      height: 18,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 2),
+      ),
+      child: selected
+          ? Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            )
+          : null,
+    );
+  }
 }
 
 class SliderPreferenceTile extends StatefulWidget {
@@ -1039,41 +1145,15 @@ class _StringPickerPreferenceTileState
     _pickerOpen = true;
     final preview = SettingsPreviewScope.maybeOf(context);
     final key = widget.preference.key;
-    final entries = widget.options.entries.toList();
-    final selectedIndex = entries.indexWhere((e) => e.key == current);
-    final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
-    var picked = false;
-    final result = await showFocusRestoringDialog<String>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) => withBackClose(
-        ctx,
-        SimpleDialog(
-          title: Text(widget.title, style: _kSettingsTitleTextStyle),
-          children: entries.asMap().entries.map((entry) {
-            final i = entry.key;
-            final e = entry.value;
-            final selected = e.key == current;
-            return settingsPreviewOption(
-              onTry: preview == null
-                  ? null
-                  : () => preview.tryValue(key, e.key, index: i),
-              child: TvFocusHighlight(
-                builder: (_, _) => ListTile(
-                  autofocus: i == autofocusIndex,
-                  title: Text(e.value, style: _kSettingsTitleTextStyle),
-                  trailing: selected ? const Icon(Icons.check) : null,
-                  onTap: () {
-                    if (picked) return;
-                    picked = true;
-                    Navigator.pop(ctx, e.key);
-                  },
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
+    final result = await showSettingsPicker<String>(
+      context,
+      title: widget.title,
+      values: widget.options.keys.toList(),
+      current: current,
+      labelOf: (v) => widget.options[v]!,
+      onTry: preview == null
+          ? null
+          : (value, index) => preview.tryValue(key, value, index: index),
     );
     preview?.clearTry(key);
     _pickerOpen = false;
@@ -1318,44 +1398,15 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
     _pickerOpen = true;
     final preview = SettingsPreviewScope.maybeOf(context);
     final key = widget.preference.key;
-    final entries = widget.options.entries.toList();
-    final selectedIndex = entries.indexWhere((e) => e.key == current);
-    final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
-    var picked = false;
-    final result = await showFocusRestoringDialog<int>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) => withBackClose(
-        ctx,
-        SimpleDialog(
-          title: Text(widget.title, style: _kSettingsTitleTextStyle),
-          children: entries.asMap().entries.map((entry) {
-            final i = entry.key;
-            final e = entry.value;
-            final selected = e.key == current;
-            return settingsPreviewOption(
-              onTry: preview == null
-                  ? null
-                  : () => preview.tryValue(key, e.key, index: i),
-              child: TvFocusHighlight(
-                builder: (_, _) => ListTile(
-                  autofocus: i == autofocusIndex,
-                  title: Text(
-                    widget.dialogOptions?[e.key] ?? e.value,
-                    style: _kSettingsTitleTextStyle,
-                  ),
-                  trailing: selected ? const Icon(Icons.check) : null,
-                  onTap: () {
-                    if (picked) return;
-                    picked = true;
-                    Navigator.pop(ctx, e.key);
-                  },
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
+    final result = await showSettingsPicker<int>(
+      context,
+      title: widget.title,
+      values: widget.options.keys.toList(),
+      current: current,
+      labelOf: (v) => widget.dialogOptions?[v] ?? widget.options[v]!,
+      onTry: preview == null
+          ? null
+          : (value, index) => preview.tryValue(key, value, index: index),
     );
     preview?.clearTry(key);
     _pickerOpen = false;
@@ -1377,12 +1428,17 @@ class TvFocusHighlight extends StatefulWidget {
   /// null keeps the shared settings margins.
   final EdgeInsetsGeometry? outerPadding;
 
+  /// Draws nothing until focused and then a plain fill with no border or
+  /// glow, for rows inside a picker dialog.
+  final bool quiet;
+
   const TvFocusHighlight({
     super.key,
     required this.builder,
     this.enabled = true,
     this.focusNode,
     this.outerPadding,
+    this.quiet = false,
   });
 
   @override
@@ -1427,13 +1483,22 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
       descendantsAreFocusable: widget.enabled,
       onFocusChange: _onFocusChange,
       child: Padding(
-        padding: widget.outerPadding ?? _settingsTileOuterPadding(context),
+        padding:
+            widget.outerPadding ??
+            (widget.quiet
+                ? const EdgeInsets.symmetric(vertical: 1)
+                : _settingsTileOuterPadding(context)),
         child: Opacity(
           opacity: widget.enabled ? 1.0 : 0.45,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 90),
             curve: Curves.easeOut,
-            decoration: _settingsTileDecoration(context, focused: focusVisible),
+            decoration: widget.quiet && settingsTileInvertsOnFocus
+                ? BoxDecoration(
+                    color: focusVisible ? AppColorScheme.buttonFocused : null,
+                    borderRadius: AppRadius.circular(12),
+                  )
+                : _settingsTileDecoration(context, focused: focusVisible),
             child: ListTileTheme.merge(
               textColor: highlighted
                   ? AppColors.black.withValues(alpha: 0.87)

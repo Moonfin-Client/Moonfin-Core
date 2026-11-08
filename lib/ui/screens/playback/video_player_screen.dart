@@ -296,6 +296,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
   Timer? _endsAtTicker;
+  final _clockTick = ValueNotifier<int>(0);
   bool _isSeeking = false;
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
@@ -739,6 +740,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return false;
   }
 
+  /// White looks far brighter next to an HDR picture, so the controls dim by
+  /// the amount set in settings while HDR is on screen.
+  Widget _dimForHdr(Widget child) {
+    final dimming = _prefs.get(UserPreferences.hdrControlsDimming);
+    final resolution = _manager.currentResolution;
+    if (dimming <= 0 ||
+        !isHdrSubtitleOutput(
+          videoRangeType: resolution?.videoRangeType,
+          isTranscoding: resolution?.playMethod == StreamPlayMethod.transcode,
+        )) {
+      return child;
+    }
+    final keep = (255 * (1 - dimming / 100)).round();
+    return ColorFiltered(
+      colorFilter: ColorFilter.mode(
+        Color.fromARGB(255, keep, keep, keep),
+        BlendMode.modulate,
+      ),
+      child: child,
+    );
+  }
+
   Future<void> _syncAutoHdrSwitching() async {
     if (!PlatformDetection.isWindows) return;
     // Leaving fullscreen on the way to the mini player must not drop the
@@ -1073,6 +1096,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _cinemaSkip.dispose();
     _displayPlayingDebounce?.cancel();
     _endsAtTicker?.cancel();
+    _clockTick.dispose();
     _volumeOverlayTimer?.cancel();
     _brightnessOverlayTimer?.cancel();
     _zoomModeToastTimer?.cancel();
@@ -2935,17 +2959,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _state.duration <= Duration.zero) {
         return;
       }
-      setState(() {});
+      _clockTick.value++;
     });
   }
 
   void _scheduleHide({Duration? delay}) {
     _hideTimer?.cancel();
-    final hideDelay =
-        delay ??
-        (PlatformDetection.useMobileUi
-            ? const Duration(seconds: 8)
-            : const Duration(seconds: 5));
+    final hideDelay = delay ?? _prefs.resolveControlsHideDelay();
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       // Closing a dialog gives focus back to the button that opened it, so the
@@ -3518,6 +3538,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           verticalOffset: style.verticalOffset,
+          strokeScale: style.strokeScale,
+          shadowColor: style.shadowColor,
+          shadowOffset: style.shadowOffset,
+          shadowBlur: style.shadowBlur,
+          fontFamily: style.fontFamily,
           applyEmbeddedStyles: embeddedStyles,
           applyEmbeddedFontSizes: embeddedFontSizes,
         ),
@@ -3534,6 +3559,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           verticalOffset: style.verticalOffset,
+          strokeScale: style.strokeScale,
+          shadowColor: style.shadowColor,
+          shadowOffset: style.shadowOffset,
+          shadowBlur: style.shadowBlur,
+          fontFamily: style.fontFamily,
         ),
       );
     }
@@ -4143,34 +4173,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         // is open, so closing it can hand focus back to the
                         // button that opened it.
                         Positioned.fill(
-                          child: Visibility(
-                            visible: !_subtitleDelayOpen,
-                            maintainState: true,
-                            maintainAnimation: true,
-                            maintainSize: true,
-                            maintainFocusability: true,
-                            child: Stack(
-                              children: [
-                                const Positioned.fill(
-                                  child: IgnorePointer(
-                                    child: ColoredBox(color: Color(0x4D000000)),
-                                  ),
-                                ),
-                                // The chrome stays in the tree while mpv owns
-                                // its own window: both native windows are
-                                // WS_EX_TRANSPARENT, so these widgets are still
-                                // what gets hit-tested. Only their pixels are
-                                // re-sent by HdrOverlayCapture.
-                                _buildTopOverlay(context),
-                                if (!PlatformDetection.useLeanbackUi &&
-                                    !_transportDocked)
-                                  Positioned.fill(
-                                    child: Center(
-                                      child: _buildCenterTransportControls(),
+                          child: _dimForHdr(
+                            Visibility(
+                              visible: !_subtitleDelayOpen,
+                              maintainState: true,
+                              maintainAnimation: true,
+                              maintainSize: true,
+                              maintainFocusability: true,
+                              child: Stack(
+                                children: [
+                                  const Positioned.fill(
+                                    child: IgnorePointer(
+                                      child: ColoredBox(
+                                        color: Color(0x4D000000),
+                                      ),
                                     ),
                                   ),
-                                _buildBottomOverlay(context),
-                              ],
+                                  // The chrome stays in the tree while mpv owns
+                                  // its own window: both native windows are
+                                  // WS_EX_TRANSPARENT, so these widgets are still
+                                  // what gets hit-tested. Only their pixels are
+                                  // re-sent by HdrOverlayCapture.
+                                  _buildTopOverlay(context),
+                                  if (!PlatformDetection.useLeanbackUi &&
+                                      !_transportDocked)
+                                    Positioned.fill(
+                                      child: Center(
+                                        child: _buildCenterTransportControls(),
+                                      ),
+                                    ),
+                                  _buildBottomOverlay(context),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -5222,7 +5256,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  Widget _buildSeekbar() {
+  /// The time slots can show the clock, so the once-a-second tick rebuilds
+  /// just the seek bar, not the whole player.
+  Widget _buildSeekbar() => ValueListenableBuilder<int>(
+    valueListenable: _clockTick,
+    builder: (_, _, _) => _buildSeekbarContent(),
+  );
+
+  Widget _buildSeekbarContent() {
     // The slot layout only changes from the settings screen, so resolve it
     // here instead of on every position tick inside the stream builders.
     final aboveLeftSlot = _prefs.get(UserPreferences.playbackTimeAboveLeft);
@@ -6342,7 +6383,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final backend = _manager.backend;
     if (backend == null) return;
 
-    final next = (_playerVolume + (delta * 100.0)).clamp(0.0, 100.0);
+    final next = (_playerVolume + (delta * 100.0)).clamp(0.0, maxPlayerVolume);
     _playerVolume = next;
     await backend.setVolume(next);
     _persistPlayerVolume();
@@ -6462,7 +6503,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _initDesktopVolume() {
     _playerVolume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _reportVolumeToManager();
@@ -6487,7 +6528,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// controller. Reads [_osdVolume] because a phone's volume is the system one
   /// and a desktop's is the player's.
   void _reportVolumeToManager() {
-    final level = (_osdVolume * 100).clamp(0.0, 100.0).toDouble();
+    final level = (_osdVolume * 100).clamp(0.0, maxPlayerVolume).toDouble();
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
   }
 
@@ -6723,7 +6764,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
       } else {
         final newVolume = (_verticalDragStartValue + deltaValue)
-            .clamp(0.0, 1.0)
+            .clamp(0.0, maxPlayerVolume / 100)
             .toDouble();
         _playerVolume = newVolume * 100.0;
         _manager.backend?.setVolume(_playerVolume);
@@ -6768,7 +6809,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 200.0,
               ) /
               200.0
-        : displayVolume.clamp(0.0, 1.0);
+        : (displayVolume * 100 / maxPlayerVolume).clamp(0.0, 1.0);
     final overlayLabel = usingMedia3Boost && _media3VolumeBoostLevel > 0
         ? 'Volume +$_media3VolumeBoostLevel'
         : '${(displayVolume * 100).round()}%';
@@ -7138,7 +7179,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _useSystemVolume ? _systemVolume : _playerVolume / 100.0;
 
   void _setOsdVolume(double fraction) {
-    final clamped = fraction.clamp(0.0, 1.0).toDouble();
+    final clamped = fraction.clamp(0.0, maxPlayerVolume / 100).toDouble();
     if (_useSystemVolume) {
       unawaited(_setMobileSystemVolume(clamped, syncFromSystem: true));
     } else {
@@ -7239,9 +7280,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       overlayColor: Colors.white24,
                     ),
                     child: Slider(
-                      value: _osdVolume.clamp(0.0, 1.0),
-                      min: 0,
-                      max: 1,
+                      value: _osdVolume.clamp(0.0, maxPlayerVolume / 100),
+                      max: maxPlayerVolume / 100,
                       onChanged: apply,
                     ),
                   ),
@@ -7289,7 +7329,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  static const _speedSteps = <double>[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+  /// Apple's engine holds video at 2x, since AVPlayer gets unstable past it.
+  late final List<double> _speedSteps = [
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    if (!PlatformDetection.isApple && !PlatformDetection.isAppleTV) ...[
+      2.5,
+      3.0,
+      3.5,
+      4.0,
+      5.0,
+    ],
+  ];
 
   /// Nudges the playback speed one step along the same ladder the speed
   /// picker offers, from whichever step sits nearest the current speed.

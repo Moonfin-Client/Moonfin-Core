@@ -196,17 +196,20 @@ class _CalendarSettingsScreenState extends State<_CalendarSettingsScreen> {
                       },
                       onChanged: _changed,
                     ),
-                    EnumPreferenceTile<CalendarImageType>(
-                      preference: UserPreferences.calendarImageType,
-                      title: l10n.calendarSettingsImageType,
-                      description: l10n.calendarSettingsImageTypeDescription,
-                      icon: Icons.image_outlined,
-                      labelOf: (v) => switch (v) {
-                        CalendarImageType.poster => l10n.imageTypePoster,
-                        CalendarImageType.thumb => l10n.imageTypeThumbnail,
-                      },
-                      onChanged: _changed,
-                    ),
+                    // Only the Countdown rows have cards.
+                    if (prefs.get(UserPreferences.calendarStyle) ==
+                        CalendarStyle.countdown)
+                      EnumPreferenceTile<CalendarImageType>(
+                        preference: UserPreferences.calendarImageType,
+                        title: l10n.calendarSettingsImageType,
+                        description: l10n.calendarSettingsImageTypeDescription,
+                        icon: Icons.image_outlined,
+                        labelOf: (v) => switch (v) {
+                          CalendarImageType.poster => l10n.imageTypePoster,
+                          CalendarImageType.thumb => l10n.imageTypeThumbnail,
+                        },
+                        onChanged: _changed,
+                      ),
                     SwitchPreferenceTile(
                       preference: UserPreferences.calendarSpoilerSafe,
                       title: l10n.calendarSettingsSpoilerSafe,

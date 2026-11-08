@@ -107,6 +107,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private var updateTimer: Timer?
     private var lastShowAt: TimeInterval = 0
     private var osdDismissed = false
+    private weak var subtitleDelayPanel: SubtitleDelayPanelViewController?
     private var subtitlesRaised = false
 
     private var skipForwardMs = 30000
@@ -3102,7 +3103,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         if showControls {
             sheet.addAction(makePlayerAction(title: subtitleText("delayLabel") + "…", style: .default) {
-                [weak self] _ in self?.presentSubtitleDelayMenu(secondary: secondary)
+                [weak self] _ in self?.presentSubtitleDelayPanel(secondary: secondary)
             })
             if secondary || (subtitleControls["showPrimaryAppearance"] as? Bool ?? true) {
                 for field in secondary ? ["sizeAdjustment", "textColor", "verticalOffset"] : ["primaryFontSize", "primaryVerticalOffset"] {
@@ -3130,41 +3131,56 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
-    /// Reopen the delay menu after each adjustment so the user can keep changing it
-    /// with the remote.
-    private func presentSubtitleDelayMenu(secondary: Bool = false) {
-        let current = secondary ? player.secondaryDelayAdjustment : player.subtitleOverlay.delaySeconds
-        let sheet = self.makePlayerMenu(
-            title: subtitleText(secondary ? "secondaryDelayLabel" : "delayLabel"),
-            message: String(format: "%+.1f s", current),
-            preferredStyle: .actionSheet)
-        for step in [-0.5, -0.1, 0.1, 0.5] {
-            sheet.addAction(
-                self.makePlayerAction(title: String(format: "%+.1f s", step), style: .default) {
-                    [weak self] _ in self?.applySubtitleDelay(current + step, secondary: secondary)
-                })
+    /// The delay sits at the top, clear of the subtitles it moves, and the
+    /// controls step aside until it closes.
+    private func presentSubtitleDelayPanel(secondary: Bool) {
+        let panel = SubtitleDelayPanelViewController(
+            secondary: secondary,
+            label: subtitleText(secondary ? "secondaryDelayLabel" : "delayLabel"),
+            resetTitle: subtitleText("reset"),
+            delay: secondary ? player.secondaryDelayAdjustment : player.subtitleOverlay.delaySeconds,
+            accent: themeAccent,
+            showsTimeline: !isLive,
+            position: { [weak self] in self?.player.currentTime ?? 0 },
+            applyDelay: { [weak self] seconds in
+                self?.applySubtitleDelay(seconds, secondary: secondary) ?? seconds
+            })
+        panel.onClosed = { [weak self] in self?.showOsd() }
+        subtitleDelayPanel = panel
+        hideOsd()
+        presentPanel(panel)
+        if !isLive {
+            onSubtitleAction?(["event": "loadSubtitleCues", "secondary": secondary])
         }
-        if current != 0 {
-            sheet.addAction(
-                self.makePlayerAction(title: subtitleText("reset"), style: .default) {
-                    [weak self] _ in self?.applySubtitleDelay(0, secondary: secondary)
-                })
-        }
-        sheet.addAction(self.makePlayerAction(title: subtitleText("done"), style: .cancel))
-        presentSheet(sheet, from: .subtitles)
     }
 
-    private func applySubtitleDelay(_ seconds: TimeInterval, secondary: Bool = false) {
+    func showSubtitleCues(_ args: [String: Any]) {
+        guard let panel = subtitleDelayPanel,
+            panel.secondary == (args["secondary"] as? Bool ?? false)
+        else { return }
+        panel.setCues(
+            ((args["cues"] as? [[Any]]) ?? []).compactMap { entry in
+                guard entry.count == 3,
+                    let start = (entry[0] as? NSNumber)?.doubleValue,
+                    let end = (entry[1] as? NSNumber)?.doubleValue,
+                    let text = entry[2] as? String
+                else { return nil }
+                return SubtitleTimelineView.Cue(
+                    start: start, end: end, text: text.replacingOccurrences(of: "\n", with: " "))
+            })
+    }
+
+    private func applySubtitleDelay(_ seconds: TimeInterval, secondary: Bool) -> TimeInterval {
         let rounded = (seconds * 10).rounded() / 10
         if secondary {
             let bounded = min(max(rounded, -5), 5)
             player.setSecondarySubtitleDelay(bounded)
             onSubtitleAction?(["event": "setSecondarySubtitleDelay", "delayMs": Int((bounded * 1000).rounded())])
-        } else {
-            player.setSubtitleDelay(rounded)
-            onSubtitleDelayChanged?(Int((rounded * 1000).rounded()))
+            return bounded
         }
-        presentSubtitleDelayMenu(secondary: secondary)
+        player.setSubtitleDelay(rounded)
+        onSubtitleDelayChanged?(Int((rounded * 1000).rounded()))
+        return rounded
     }
 
     private func presentSubtitleAppearanceMenu(field: String) {
@@ -3715,7 +3731,7 @@ final class NativeApplePlayerViewController: UIViewController {
         updateLoadingOverlay()
 
         let shouldShow =
-            !cinemaSkipActive && !osdDismissed && !nextUpVisible
+            !cinemaSkipActive && !osdDismissed && !nextUpVisible && subtitleDelayPanel == nil
             && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
         updateSubtitleLoadingPill(osdShown: shouldShow)
@@ -5019,6 +5035,277 @@ private final class SyncPlayPanelViewController: UIViewController, RemotePlayerN
             return
         }
         super.pressesBegan(presses, with: event)
+    }
+}
+
+private final class SubtitleDelayPanelViewController: UIViewController, RemotePlayerNavigable {
+    let secondary: Bool
+    var onClosed: (() -> Void)?
+    private let label: String
+    private let resetTitle: String
+    private var delay: TimeInterval
+    private let accent: UIColor
+    private let showsTimeline: Bool
+    private let position: () -> TimeInterval
+    private let applyDelay: (TimeInterval) -> TimeInterval
+    private let valueLabel = UILabel()
+    private let timeline = SubtitleTimelineView()
+    private var buttons: [UIButton] = []
+    private var resetButton: UIButton?
+    private var displayLink: CADisplayLink?
+
+    init(
+        secondary: Bool, label: String, resetTitle: String, delay: TimeInterval,
+        accent: UIColor, showsTimeline: Bool, position: @escaping () -> TimeInterval,
+        applyDelay: @escaping (TimeInterval) -> TimeInterval
+    ) {
+        self.secondary = secondary
+        self.label = label
+        self.resetTitle = resetTitle
+        self.delay = delay
+        self.accent = accent
+        self.showsTimeline = showsTimeline
+        self.position = position
+        self.applyDelay = applyDelay
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Nothing dims the picture, so each step's effect shows while it's made.
+        view.backgroundColor = .clear
+
+        let panel = UIView()
+        panel.translatesAutoresizingMaskIntoConstraints = false
+        panel.backgroundColor = UIColor(white: 0.1, alpha: 0.92)
+        panel.layer.cornerRadius = 22
+        view.addSubview(panel)
+
+        let title = UILabel()
+        title.text = label
+        title.font = .systemFont(ofSize: 26, weight: .semibold)
+        title.textColor = UIColor(white: 1, alpha: 0.7)
+        valueLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .bold)
+        valueLabel.textColor = accent
+        valueLabel.setContentHuggingPriority(.required, for: .horizontal)
+        let header = UIStackView(arrangedSubviews: [title, valueLabel])
+
+        let steps = UIStackView()
+        steps.distribution = .fillEqually
+        steps.spacing = 16
+        for step in [-0.5, -0.1, 0, 0.1, 0.5] {
+            var config = UIButton.Configuration.plain()
+            config.title = step == 0 ? resetTitle : String(format: "%+.1f s", step)
+            config.cornerStyle = .capsule
+            config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 12, bottom: 16, trailing: 12)
+            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer {
+                var attributes = $0
+                attributes.font = .systemFont(ofSize: 28, weight: .semibold)
+                return attributes
+            }
+            let button = UIButton(configuration: config)
+            // A filled pill reads as a button on a touch screen, and the remote's
+            // focus turns it white the way the player's own controls do.
+            button.configurationUpdateHandler = { button in
+                let lit = button.isFocused
+                button.configuration?.baseForegroundColor = lit ? .black : .white
+                button.configuration?.background.backgroundColor = UIColor(
+                    white: 1, alpha: lit ? 1 : button.isHighlighted ? 0.28 : 0.14)
+            }
+            button.addAction(
+                UIAction { [weak self] _ in
+                    guard let self else { return }
+                    self.setDelay(step == 0 ? 0 : self.delay + step)
+                }, for: .primaryActionTriggered)
+            if step == 0 { resetButton = button }
+            buttons.append(button)
+            steps.addArrangedSubview(button)
+        }
+
+        timeline.accent = accent
+        timeline.isHidden = !showsTimeline
+        timeline.heightAnchor.constraint(equalToConstant: 100).isActive = true
+
+        let stack = UIStackView(arrangedSubviews: [header, steps, timeline])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 20
+        panel.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            panel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            panel.widthAnchor.constraint(equalToConstant: 1080),
+            stack.topAnchor.constraint(equalTo: panel.topAnchor, constant: 28),
+            stack.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -28),
+            stack.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 40),
+            stack.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -40),
+        ])
+        setDelay(delay, apply: false)
+    }
+
+    override var preferredFocusEnvironments: [UIFocusEnvironment] {
+        resetButton.map { [$0] } ?? super.preferredFocusEnvironments
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard showsTimeline, displayLink == nil else { return }
+        let link = CADisplayLink(target: self, selector: #selector(tick))
+        link.preferredFramesPerSecond = 30
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        displayLink?.invalidate()
+        displayLink = nil
+        onClosed?()
+        onClosed = nil
+    }
+
+    /// An empty list means the track has no lines to show, such as an image one.
+    func setCues(_ cues: [SubtitleTimelineView.Cue]) {
+        timeline.cues = cues
+        timeline.isHidden = cues.isEmpty
+        tick()
+    }
+
+    private func setDelay(_ seconds: TimeInterval, apply: Bool = true) {
+        delay = apply ? applyDelay(seconds) : seconds
+        valueLabel.text = String(format: "%+.1f s", delay)
+        timeline.delay = delay
+        timeline.setNeedsDisplay()
+    }
+
+    @objc private func tick() {
+        timeline.position = position()
+        timeline.setNeedsDisplay()
+    }
+
+    func handleRemoteNavigation(_ command: String) {
+        let system = UIFocusSystem.focusSystem(for: view)
+        let focused = buttons.firstIndex { $0 === system?.focusedItem }
+        switch command {
+        case "back":
+            dismiss(animated: true)
+        case "select":
+            if let focused { buttons[focused].sendActions(for: .primaryActionTriggered) }
+        case "moveleft", "moveright":
+            let step = command == "moveright" ? 1 : -1
+            let next = min(max((focused ?? buttons.count / 2) + step, 0), buttons.count - 1)
+            system?.requestFocusUpdate(to: buttons[next])
+            system?.updateFocusIfNeeded()
+        default:
+            break
+        }
+    }
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses where press.type == .menu {
+            dismiss(animated: true)
+            return
+        }
+        super.pressesBegan(presses, with: event)
+    }
+}
+
+/// The lines around the playhead on a ten second window. The delay moves the
+/// lines rather than the playhead, so they slide under a fixed mark the same
+/// way the subtitles shift against the picture.
+private final class SubtitleTimelineView: UIView {
+    struct Cue {
+        let start: TimeInterval
+        let end: TimeInterval
+        let text: String
+    }
+
+    private static let window: TimeInterval = 10
+    private static let rulerHeight: CGFloat = 26
+
+    var cues: [Cue] = []
+    var position: TimeInterval = 0
+    var delay: TimeInterval = 0
+    var accent: UIColor = .white
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isOpaque = false
+        contentMode = .redraw
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func draw(_ rect: CGRect) {
+        let start = max(0, position - Self.window / 2)
+        let end = start + Self.window
+        let width = bounds.width
+        func x(_ time: TimeInterval) -> CGFloat { CGFloat((time - start) / Self.window) * width }
+
+        let rulerStyle: [NSAttributedString.Key: Any] = [
+            .font: UIFont.monospacedDigitSystemFont(ofSize: 18, weight: .regular),
+            .foregroundColor: UIColor(white: 1, alpha: 0.54),
+        ]
+        var second = start.rounded(.up)
+        while second <= end {
+            let whole = Int(second)
+            let text = String(format: "%d:%02d", whole / 60, whole % 60) as NSString
+            let size = text.size(withAttributes: rulerStyle)
+            let left = x(second) - size.width / 2
+            // A time at the very edge would be cut in half, so it's left out.
+            if left >= 0, left + size.width <= width {
+                text.draw(at: CGPoint(x: left, y: 0), withAttributes: rulerStyle)
+            }
+            second += 1
+        }
+
+        let track = CGRect(
+            x: 0, y: Self.rulerHeight + 6, width: width,
+            height: bounds.height - Self.rulerHeight - 6)
+        let trackPath = UIBezierPath(roundedRect: track, cornerRadius: 12)
+        UIColor(white: 0, alpha: 0.35).setFill()
+        trackPath.fill()
+        UIColor(white: 1, alpha: 0.12).setStroke()
+        trackPath.stroke()
+
+        UIGraphicsGetCurrentContext()?.saveGState()
+        trackPath.addClip()
+        let font = UIFont.systemFont(ofSize: 20)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byTruncatingTail
+        for cue in cues {
+            let from = cue.start + delay
+            let to = cue.end + delay
+            if from >= end { break }
+            if to <= start { continue }
+            let active = position >= from && position <= to
+            let left = max(0, x(from))
+            // A line too short to see still gets a sliver, so it doesn't vanish.
+            let bar = CGRect(
+                x: left, y: track.minY + 10,
+                width: max(min(width, x(to)) - left, 4), height: track.height - 20)
+            (active ? accent.withAlphaComponent(0.85) : UIColor(white: 1, alpha: 0.16)).setFill()
+            UIBezierPath(roundedRect: bar, cornerRadius: 6).fill()
+            let textRect = bar.insetBy(dx: 10, dy: (bar.height - font.lineHeight) / 2)
+            guard textRect.width > 0 else { continue }
+            (cue.text as NSString).draw(
+                in: textRect,
+                withAttributes: [
+                    .font: font,
+                    .foregroundColor: active ? UIColor.white : UIColor(white: 1, alpha: 0.7),
+                    .paragraphStyle: paragraph,
+                ])
+        }
+        UIColor.white.setFill()
+        UIRectFill(CGRect(x: x(position) - 1.5, y: track.minY, width: 3, height: track.height))
+        UIGraphicsGetCurrentContext()?.restoreGState()
     }
 }
 

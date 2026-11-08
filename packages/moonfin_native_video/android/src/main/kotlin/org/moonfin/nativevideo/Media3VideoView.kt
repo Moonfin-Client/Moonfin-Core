@@ -90,6 +90,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.text.TextOutput
 import androidx.media3.exoplayer.text.TextRenderer
+import androidx.media3.exoplayer.upstream.Loader
 import androidx.media3.exoplayer.video.MediaCodecVideoRenderer
 import androidx.media3.exoplayer.video.VideoRendererEventListener
 import androidx.media3.extractor.DefaultExtractorsFactory
@@ -121,6 +122,7 @@ import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SecondarySubtitleOverlay
 import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.SubtitleBox
+import org.moonfin.nativevideo.subtitle.SubtitleEdgeSpan
 import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
@@ -134,6 +136,7 @@ import org.moonfin.nativevideo.subtitle.primaryCueWithoutDefaultMargin
 import org.moonfin.nativevideo.subtitle.sourceTreeFor
 import org.moonfin.nativevideo.subtitle.supportsSecondarySubtitleFormat
 import org.moonfin.nativevideo.subtitle.syncDelaysPayload
+import org.moonfin.nativevideo.subtitle.withEdges
 import org.moonfin.nativevideo.ts.withHdmvTsSupport
 
 @OptIn(ExperimentalApi::class)
@@ -1030,6 +1033,10 @@ class Media3VideoView(
     // outlives the native objects it reads.
     private var assOverlayView: MoonfinAssOverlayView? = null
 
+    // Both subtitle profiles default to a size of 20, which leaves ASS as
+    // authored.
+    private var assFontScale = 1f
+
     // True once a source has been loaded into the current player. Reusing the
     // same ExoPlayer instance + surface for a second source hangs in buffering
     // on some Android TVs (e.g. Sony BRAVIA after a cinema-mode intro), so the
@@ -1128,6 +1135,8 @@ class Media3VideoView(
     private var selectUndeterminedTextLanguage = false
     private var subtitleEmbeddedStylesEnabled = true
     private var subtitleEmbeddedFontSizesEnabled = true
+    private var subtitleEdgeSpan: SubtitleEdgeSpan? = null
+    private val subtitleTypefaces = HashMap<String, Typeface?>()
     private var assFallbackFontBytes: ByteArray? = null
     private var isDisposed = false
     internal var leaveCensus: (() -> Unit)? = null
@@ -1260,7 +1269,7 @@ class Media3VideoView(
             }?.let { it.group.getFormat(it.trackIndex) }
             val stacked = joinStackedCues(cueGroup.cues.map {
                 primaryCueWithoutDefaultMargin(it, format)
-            })
+            }).map { it.withEdges(subtitleEdgeSpan) }
             if (::secondarySubtitleOverlay.isInitialized) {
                 secondarySubtitleOverlay.updatePrimaryCues(stacked)
             } else {
@@ -2952,6 +2961,7 @@ class Media3VideoView(
     private fun attachAssOverlay(assHandler: AssHandler, assDialogue: AssDialogueQueue) {
         releaseAssOverlay()
         val overlay = MoonfinAssOverlayView(context, assHandler, assDialogue)
+        overlay.setFontScale(assFontScale)
         overlay.onInkChanged = { ink ->
             assInk = ink
             pushAssInk()
@@ -5125,6 +5135,11 @@ class Media3VideoView(
         val verticalOffset = (args?.get("verticalOffset") as? Number)?.toFloat()
         val applyEmbeddedStyles = args?.get("applyEmbeddedStyles") as? Boolean
         val applyEmbeddedFontSizes = args?.get("applyEmbeddedFontSizes") as? Boolean
+        val strokeScale = (args?.get("strokeScale") as? Number)?.toFloat() ?: 1f
+        val shadowColor = (args?.get("shadowColor") as? Number)?.toInt() ?: 0
+        val shadowOffset = (args?.get("shadowOffset") as? Number)?.toFloat() ?: 0f
+        val shadowBlur = (args?.get("shadowBlur") as? Number)?.toFloat() ?: 0f
+        val fontPath = args?.get(if (bold) "boldFontPath" else "fontPath") as? String
 
         val edgeType = if (strokeColor != Color.TRANSPARENT) {
             CaptionStyleCompat.EDGE_TYPE_OUTLINE
@@ -5143,12 +5158,20 @@ class Media3VideoView(
         // Use the OS default typeface so Android falls back per script
         // for glyphs beyond Latin, instead of a bundled font
         // that only covers Latin and renders everything else as tofu.
+        // A downloaded font keeps that fallback for what it doesn't cover.
         val baseTypeface = Typeface.DEFAULT
-        val resolvedTypeface = if (bold) {
+        val resolvedTypeface = subtitleTypeface(fontPath) ?: if (bold) {
             Typeface.create(baseTypeface, Typeface.BOLD)
         } else {
             baseTypeface
         }
+        subtitleEdgeSpan = SubtitleEdgeSpan.of(
+            strokeScale,
+            edgeType == CaptionStyleCompat.EDGE_TYPE_OUTLINE,
+            shadowColor,
+            shadowOffset,
+            shadowBlur,
+        )
 
         subtitleView.setStyle(
             CaptionStyleCompat(
@@ -5164,6 +5187,8 @@ class Media3VideoView(
         if (fontSize != null) {
             val fractionalTextSize = (fontSize / 24f) * 0.06f
             subtitleView.setFractionalTextSize(fractionalTextSize.coerceAtLeast(0.01f))
+            assFontScale = fontSize / 20f
+            assOverlayView?.setFontScale(assFontScale)
         }
 
         if (verticalOffset != null) {
@@ -5178,7 +5203,21 @@ class Media3VideoView(
             verticalOffset = verticalOffset,
             embeddedStylesEnabled = subtitleEmbeddedStylesEnabled,
             embeddedFontSizesEnabled = subtitleEmbeddedFontSizesEnabled,
+            typeface = resolvedTypeface,
+            edgeSpan = subtitleEdgeSpan,
         )
+    }
+
+    private fun subtitleTypeface(path: String?): Typeface? {
+        if (path.isNullOrEmpty()) return null
+        return subtitleTypefaces.getOrPut(path) {
+            try {
+                Typeface.createFromFile(File(path))
+            } catch (e: RuntimeException) {
+                AndroidLog.w("MoonfinSubtitles", "Subtitle font failed to load: $path", e)
+                null
+            }
+        }
     }
 
     /** The window the player is on, or null before it has a timeline. */
@@ -6301,25 +6340,12 @@ class Media3VideoView(
             ?.startsWith("audio/") == true
     }
 
-    private fun errorIsNoValidVarintLengthMaskFound(error: PlaybackException): Boolean {
+    // Media3 wraps anything a container reader throws, other than an I/O
+    // error, in an UnexpectedLoaderException.
+    private fun errorIsContainerReaderCrash(error: PlaybackException): Boolean {
         val exo = error as? ExoPlaybackException ?: return false
-        if (exo.type != ExoPlaybackException.TYPE_SOURCE) return false
-
-        var cause: Throwable? = exo.sourceException
-        var depth = 0
-
-        while (cause != null && depth < 3) {
-            if (cause is IllegalStateException &&
-                cause.message == "No valid varint length mask found"
-            ) {
-                return true
-            }
-
-            cause = cause.cause
-            depth++
-        }
-
-        return false
+        return exo.type == ExoPlaybackException.TYPE_SOURCE &&
+            exo.sourceException is Loader.UnexpectedLoaderException
     }
 
     // Every data source the factory makes reads its request properties when
@@ -6370,15 +6396,11 @@ class Media3VideoView(
             PlaybackException.ERROR_CODE_DECODING_FAILED ->
                 if (errorIsFromAudioRenderer(error)) "unsupported_audio" else null
 
-            // Some MKVs carry zero padding after the last real cluster while
-            // the Segment size runs to EOF. Media3 reads a 0x00 there as an
-            // EBML length byte, which has no leading 1-bit and so no valid
-            // varint length mask. The container is the malformed part, and any
-            // server transcode rewrites it without the tail.
+            // A container reader crashed on the file, like an MKV with zero
+            // padding after its last cluster or an AVI with an odd-sized
+            // chunk. Any server transcode rewrites the container.
             PlaybackException.ERROR_CODE_IO_UNSPECIFIED ->
-                if (!containerFallbackAttempted &&
-                    errorIsNoValidVarintLengthMaskFound(error)
-                ) {
+                if (!containerFallbackAttempted && errorIsContainerReaderCrash(error)) {
                     "unsupported_container"
                 } else {
                     null

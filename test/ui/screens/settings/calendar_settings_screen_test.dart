@@ -9,6 +9,7 @@ import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/repositories/user_views_repository.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/settings/settings_side_panel.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -84,6 +85,7 @@ void main() {
   testWidgets('a phone with Seerr and reminders gets every setting', (
     tester,
   ) async {
+    await prefs.set(UserPreferences.calendarStyle, CalendarStyle.countdown);
     await pump(tester);
     for (final title in [
       l10n.calendarSettingsStyle,
@@ -120,6 +122,18 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await pump(tester);
     expect(find.text(l10n.calendarSettingsReminders), findsNothing);
+  });
+
+  testWidgets('Card image only shows with the Countdown style', (
+    tester,
+  ) async {
+    await pump(tester);
+    expect(find.text(l10n.calendarSettingsImageType), findsNothing);
+
+    await prefs.set(UserPreferences.calendarStyle, CalendarStyle.countdown);
+    await tester.pumpWidget(const SizedBox());
+    await pump(tester);
+    expect(find.text(l10n.calendarSettingsImageType), findsOneWidget);
   });
 
   testWidgets('the release types go away with Movies', (tester) async {

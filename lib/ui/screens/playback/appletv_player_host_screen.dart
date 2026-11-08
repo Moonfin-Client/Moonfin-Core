@@ -25,6 +25,7 @@ import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
 import '../../../playback/appletv_subtitles.dart';
+import '../../../playback/subtitle_cue_loader.dart';
 import '../../../playback/playback_info_sections.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
@@ -358,6 +359,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         verticalOffset: style.verticalOffset,
+        strokeScale: style.strokeScale,
+        shadowColor: style.shadowColor,
+        shadowOffset: style.shadowOffset,
+        shadowBlur: style.shadowBlur,
+        fontFamily: style.fontFamily,
       );
     } catch (_) {}
   }
@@ -723,6 +729,23 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         item.type != 'Photo' &&
         item.type != 'Book' &&
         !isAudio;
+  }
+
+  Future<void> _sendSubtitleCues(
+    PlaybackManager manager, {
+    required bool secondary,
+  }) async {
+    final item = manager.queueService.currentItem;
+    final cues = await SubtitleCueLoader.load(
+      manager,
+      secondary
+          ? manager.secondarySubtitleStreamIndex
+          : manager.subtitleStreamIndex,
+      client: item is AggregatedItem ? _clientForQueueItem(item) : null,
+      itemId: item is AggregatedItem ? item.id : null,
+    );
+    if (!mounted) return;
+    await _backend?.showSubtitleCues(cues ?? const [], secondary: secondary);
   }
 
   void _searchRemoteSubtitles() {
@@ -1638,6 +1661,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         _prompts?.resolveStillWatching(shouldContinue: false);
       case 'searchSubtitles':
         _searchRemoteSubtitles();
+      case 'loadSubtitleCues':
+        unawaited(
+          _sendSubtitleCues(manager, secondary: action['secondary'] == true),
+        );
       case 'downloadSubtitle':
         final id = action['id']?.toString();
         if (id != null && id.isNotEmpty) _downloadSubtitle(id);

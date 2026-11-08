@@ -6,6 +6,7 @@ import 'package:moonfin/ui/widgets/player_volume_control.dart';
 Future<void> _pump(
   WidgetTester tester, {
   required double volume,
+  double max = 1,
   ValueChanged<double>? onChanged,
   VoidCallback? onToggleMute,
 }) {
@@ -16,6 +17,7 @@ Future<void> _pump(
       home: Scaffold(
         body: PlayerVolumeControl(
           volume: volume,
+          max: max,
           onChanged: onChanged ?? (_) {},
           onToggleMute: onToggleMute ?? () {},
         ),
@@ -56,5 +58,18 @@ void main() {
     await _pump(tester, volume: 1.4);
 
     expect(tester.widget<Slider>(find.byType(Slider)).value, 1.0);
+  });
+
+  testWidgets('a player that amplifies lets the slider reach past full', (
+    tester,
+  ) async {
+    double? reported;
+    await _pump(tester, volume: 1.4, max: 1.5, onChanged: (v) => reported = v);
+    expect(tester.widget<Slider>(find.byType(Slider)).value, 1.4);
+
+    await tester.tapAt(
+      tester.getTopRight(find.byType(Slider)) + const Offset(-4, 12),
+    );
+    expect(reported, greaterThan(1.4));
   });
 }

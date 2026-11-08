@@ -31,6 +31,7 @@ import 'book_favorites_screen.dart';
 import 'book_genres_screen.dart';
 import 'book_series_screen.dart';
 import 'book_titles_screen.dart';
+import 'folder_browse_screen.dart';
 import 'library_page_state.dart';
 import 'music_category_screen.dart' show MusicNearEnd;
 
@@ -149,6 +150,7 @@ class _BookCategoryScreenState extends State<BookCategoryScreen> {
           BookCategoryKind.favorites => BookFavoritesScreen(
             libraryId: libraryId,
           ),
+          BookCategoryKind.folders => FolderBrowseScreen(folderId: libraryId),
           BookCategoryKind.discover => BookDiscoverScreen(libraryId: libraryId),
         },
       ),
@@ -283,6 +285,9 @@ abstract class BookCategoryState<T extends StatefulWidget>
 
   void _select(BookNavPlace target) {
     if (target.kind == null) return openOverview();
+    if (target.kind == BookCategoryKind.folders) {
+      return openBookPlace(context, libraryId, target);
+    }
     final here =
         target.kind == _scope.kind &&
         (target.kind != BookCategoryKind.titles || target.scope == vm.scope);

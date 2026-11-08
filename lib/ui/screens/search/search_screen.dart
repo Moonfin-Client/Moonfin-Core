@@ -1577,6 +1577,8 @@ class _SearchScreenState extends State<SearchScreen>
     // the line under the name instead.
     final serverOnSubtitle = serverName != null && item.type == 'Person';
     return MediaCard(
+      // A person has no file to read labels from.
+      posterBadgeItemId: item.type == 'Person' ? null : item.id,
       title: item.name,
       subtitle: serverOnSubtitle ? serverName : _subtitle(item),
       imageUrl: _imageUrl(item, maxWidth: requestWidth),
@@ -1911,13 +1913,17 @@ class _ListeningPulseState extends State<_ListeningPulse>
       animation: _controller,
       builder: (_, _) {
         final t = _controller.value;
-        final size = widget.size * (1 + 0.6 * t);
-        return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.red.withValues(alpha: 0.5 * (1 - t)),
+        // Scaling at paint time keeps the mic's layout size fixed, so the
+        // ring doesn't push the search field around as it grows.
+        return Transform.scale(
+          scale: 1 + 0.6 * t,
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red.withValues(alpha: 0.5 * (1 - t)),
+            ),
           ),
         );
       },

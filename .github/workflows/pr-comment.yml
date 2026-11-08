@@ -1,18 +1,27 @@
 name: PR Comment
 
-# Posts one build-status comment on a pull request and rewrites it in place on
-# every new commit. It runs on workflow_run rather than pull_request so it still
-# has write access on pull requests from forks. It never checks out the PR
-# branch, it only reads the results artifact the build workflow uploaded.
+# Posts one status comment on a pull request and rewrites it in place on every
+# new commit. Checks and Build All Platforms report separately, so this runs
+# when either one completes and rebuilds the whole comment from the latest
+# results of both for that commit. It runs on workflow_run rather than
+# pull_request so it still has write access on pull requests from forks. It
+# never checks out the PR branch, it only reads the results artifacts the two
+# workflows uploaded.
 
 on:
   workflow_run:
-    workflows: [Build All Platforms]
+    workflows: [Checks, Build All Platforms]
     types: [completed]
 
 permissions:
   pull-requests: write
   actions: read
+
+# Checks and Build can finish for the same commit at the same time. One update
+# waits for the other instead of the two interleaving.
+concurrency:
+  group: pr-comment-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
 
 jobs:
   comment:
@@ -23,64 +32,132 @@ jobs:
        github.event.workflow_run.conclusion == 'failure')
 
     steps:
+      # The run that triggered this is one of the two. The other one is the
+      # other workflow's latest finished run for the same commit, if it has
+      # finished yet.
+      - name: Find the Checks and Build runs
+        id: runs
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const run = context.payload.workflow_run;
+            const isChecks = run.name === 'Checks';
+            const completedRuns = async (workflow_id) => (await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id,
+              head_sha: run.head_sha,
+              event: 'pull_request',
+              status: 'completed',
+              per_page: 10,
+            })).data.workflow_runs;
+            // A cancelled run has no results to show, so it counts as not
+            // finished yet.
+            const finished = (r) => r.conclusion === 'success' || r.conclusion === 'failure';
+            // Adding a label that isn't ci:<platform> starts a Build run that
+            // skips plan and builds nothing. It says nothing about the commit,
+            // so the comment keeps showing the last real Build run.
+            const labelOnly = async (r) => {
+              const { data } = await github.rest.actions.listJobsForWorkflowRun({ owner, repo, run_id: r.id, filter: 'latest', per_page: 100 });
+              return data.jobs.some(job => job.name === 'plan' && job.conclusion === 'skipped');
+            };
+            const latestBuild = async () => {
+              for (const r of await completedRuns('build.yml')) {
+                if (finished(r) && !(await labelOnly(r))) return r;
+              }
+              return undefined;
+            };
+            const checksRun = isChecks ? run : (await completedRuns('checks.yml')).find(finished);
+            const buildRun = isChecks || await labelOnly(run) ? await latestBuild() : run;
+            const set = (name, r) => {
+              core.setOutput(`${name}_run_id`, r ? String(r.id) : '');
+              core.setOutput(`${name}_run_number`, r ? String(r.run_number) : '');
+              core.setOutput(`${name}_conclusion`, r ? r.conclusion : '');
+            };
+            set('checks', checksRun);
+            set('build', buildRun);
+
+      # Each of these is missing when its workflow hasn't finished yet, or when
+      # the job that uploads it died first. The comment still posts and says so.
       - name: Download build results
-        id: results
+        if: steps.runs.outputs.build_run_id != ''
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           name: build-results
           path: build-results
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.runs.outputs.build_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Missing when the tests job died before uploading, the comment still
-      # posts and says the run needs a look.
       - name: Download test results
+        if: steps.runs.outputs.checks_run_id != ''
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           name: test-results
           path: test-results
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.runs.outputs.checks_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download touched-lines results
+        if: steps.runs.outputs.checks_run_id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          name: delta-results
+          path: delta-results
+          run-id: ${{ steps.runs.outputs.checks_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Apple test results
+        if: steps.runs.outputs.build_run_id != ''
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           name: apple-test-results
           path: apple-test-results
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.runs.outputs.build_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Post PR comment
-        if: steps.results.outcome == 'success'
         uses: actions/github-script@v8
+        env:
+          CHECKS_RUN_ID: ${{ steps.runs.outputs.checks_run_id }}
+          CHECKS_RUN_NUMBER: ${{ steps.runs.outputs.checks_run_number }}
+          CHECKS_CONCLUSION: ${{ steps.runs.outputs.checks_conclusion }}
+          BUILD_RUN_ID: ${{ steps.runs.outputs.build_run_id }}
+          BUILD_RUN_NUMBER: ${{ steps.runs.outputs.build_run_number }}
         with:
           script: |
             const fs = require('fs');
 
-            const outcomes = JSON.parse(fs.readFileSync('build-results/outcomes.json', 'utf8'));
+            const readJson = (path) => {
+              try {
+                const value = JSON.parse(fs.readFileSync(path, 'utf8'));
+                return value && typeof value === 'object' ? value : null;
+              } catch (_) {
+                return null;
+              }
+            };
+            const outcomes = readJson('build-results/outcomes.json');
+            const testResults = readJson('test-results/test-results.json');
+            const appleResults = readJson('apple-test-results/test-results.json');
 
-            // The artifact was produced by the pull request's own code, so
+            // The artifacts were produced by the pull request's own code, so
             // numbers are clamped and names are escaped before they reach a
             // comment posted with the repository's token.
             const clamp = (n) => Number.isFinite(Number(n)) ? Math.max(0, Math.floor(Number(n))) : 0;
             const escapeText = (value) => String(value)
               .replace(/[`\r\n|]/g, ' ')
-              .replace(/@/g, '@\u200b')
+              .replace(/@/g, '@​')
               .slice(0, 200);
 
-            const parts = ['test-results', 'apple-test-results'].flatMap(dir => {
-              try {
-                return [JSON.parse(fs.readFileSync(`${dir}/test-results.json`, 'utf8'))];
-              } catch (_) {
-                return [];
-              }
-            });
+            const parts = [testResults, appleResults].filter(Boolean);
             const sum = (key) => parts.reduce((n, part) => n + clamp(part[key]), 0);
             const concat = (key) => parts.flatMap(part => Array.isArray(part[key]) ? part[key] : []);
-            const tests = parts.length === 0 ? null : {
+            const tests = !testResults ? null : {
               passed: sum('passed'),
               failed: sum('failed'),
               failures: concat('failures'),
@@ -90,16 +167,45 @@ jobs:
             };
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const runId = context.payload.workflow_run.id;
-            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`;
+            const sha = context.payload.workflow_run.head_sha;
+            const runUrl = (id) => `${context.serverUrl}/${owner}/${repo}/actions/runs/${id}`;
+            const checksRunId = process.env.CHECKS_RUN_ID;
+            const buildRunId = process.env.BUILD_RUN_ID;
 
-            const { data: list } = await github.rest.actions.listWorkflowRunArtifacts({
-              owner,
-              repo,
-              run_id: runId,
-              per_page: 100,
-            });
-            const artifacts = new Map(list.artifacts.map(a => [a.name, a]));
+            // A workflow_run event from a fork doesn't name its pull request,
+            // so the number comes from whichever results file is there. It is
+            // only used when that pull request's head is still this commit,
+            // which also keeps a slow run for an older push from overwriting
+            // the comment for a newer one.
+            const prNumber = [outcomes, testResults]
+              .map(results => Number(results?.pr_number))
+              .find(n => Number.isSafeInteger(n) && n > 0);
+            if (!prNumber) {
+              core.info('Neither workflow left a pull request number, nothing to post.');
+              return;
+            }
+            let pull;
+            try {
+              ({ data: pull } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber }));
+            } catch (error) {
+              core.info(`Couldn't read pull request #${prNumber}: ${error.message}`);
+              return;
+            }
+            if (pull.head.sha !== sha) {
+              core.info(`#${prNumber} is at ${pull.head.sha} now, not ${sha}. The newer commit's runs post the comment.`);
+              return;
+            }
+
+            const artifacts = new Map();
+            if (buildRunId) {
+              const { data: list } = await github.rest.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: Number(buildRunId),
+                per_page: 100,
+              });
+              list.artifacts.forEach(a => artifacts.set(a.name, a));
+            }
 
             const rows = [
               { platform: 'Android',       job: 'android',       artifact: 'android',              files: 'Moonfin_Android_v* (apk/aab)' },
@@ -107,6 +213,7 @@ jobs:
               { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
               { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
               { platform: 'tvOS',          job: 'tvos',          artifact: 'tvos-ipa',             files: 'Moonfin_tvOS_v*_unsigned.ipa' },
+              { platform: 'Apple tests',   job: 'apple_tests',   artifact: 'apple-test-results',   files: 'test-results.json', tests: true },
               { platform: 'Windows x64',   job: 'windows',       artifact: 'windows-exe',          files: 'Moonfin_Windows_v*.exe' },
               { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
               { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
@@ -117,28 +224,61 @@ jobs:
             // Android builds both flavors and Linux both architectures in one matrix
             // job each, so a failure on either leg fails the job as a whole. An
             // artifact only uploads when its own leg got that far, so its presence
-            // is what tells the two apart.
+            // is what tells the two apart. Without outcomes.json, an artifact
+            // still proves its build passed, but a missing one proves nothing.
+            // The Apple tests row is a job, not a build, and uploads its results
+            // file whether the tests passed or not, so there it proves nothing.
             const statusOf = (row) => {
-              const result = outcomes[row.job];
-              return result === 'success' || artifacts.has(row.artifact) ? 'success' : result;
+              if (!buildRunId) return 'running';
+              const result = outcomes?.[row.job];
+              if (result === 'success' || (!row.tests && artifacts.has(row.artifact))) return 'success';
+              return outcomes ? result : 'unknown';
             };
 
-            const badge = { success: '✅ Passed', failure: '❌ Failed' };
+            const badge = { success: '✅ Passed', failure: '❌ Failed', running: '⏳ Running', unknown: '⚠️ No result' };
+
+            // Which jobs the Build run's plan chose. A job that was skipped
+            // because it wasn't planned is "not run", with the label that
+            // builds it. One that was planned and still skipped stays a
+            // warning. Results from before plan existed have no planned map,
+            // and everything counts as planned.
+            const planned = outcomes?.planned && typeof outcomes.planned === 'object' ? outcomes.planned : {};
+            const labelFor = {
+              android: 'ci:android',
+              ios: 'ci:apple', macos: 'ci:apple', tvos: 'ci:apple', apple_tests: 'ci:apple',
+              windows: 'ci:windows', windows_arm64: 'ci:windows',
+              linux: 'ci:linux',
+              web: 'ci:web',
+            };
+            const notRun = (job) => Boolean(buildRunId) && outcomes?.[job] === 'skipped' && planned[job] === false;
+            const notRunText = (job) => `⏭️ not run, add \`${labelFor[job]}\``;
 
             const artifactCell = (row) => {
               const artifact = artifacts.get(row.artifact);
-              return artifact ? `[${row.files}](${runUrl}/artifacts/${artifact.id})` : 'n/a';
+              return artifact ? `[${row.files}](${runUrl(buildRunId)}/artifacts/${artifact.id})` : 'n/a';
             };
 
+            // Checks is 'running' until it has a finished run for this commit.
+            // The Apple XCTests still run in Build All Platforms.
+            const checks = checksRunId ? process.env.CHECKS_CONCLUSION : 'running';
             const statuses = rows.map(statusOf);
-            const buildsPassed = statuses.every(s => s === 'success');
-            const testsPassed = outcomes.tests === 'success' && outcomes.apple_tests === 'success';
+            // The Apple tests row counts with the tests below, not the builds.
+            const builds = rows.filter(row => !row.tests);
+            const buildsPassed = Boolean(buildRunId) && builds.every(row => notRun(row.job) || statusOf(row) === 'success');
+            const nothingBuilt = Boolean(buildRunId) && builds.every(row => notRun(row.job));
+            const someNotRun = builds.some(row => notRun(row.job));
+            // Without outcomes.json the Apple XCTests are unaccounted for too.
+            const buildResultsMissing = Boolean(buildRunId) && !outcomes;
+            const appleTestsPassed = !buildRunId || outcomes?.apple_tests === 'success' || notRun('apple_tests');
+            const testsPassed = checks === 'success' && Boolean(tests) && appleTestsPassed;
             const passed = buildsPassed && testsPassed;
 
             const testLines = [];
-            if (testsPassed && tests) {
+            if (checks === 'running') {
+              testLines.push('**Tests** ⏳ running');
+            } else if (testsPassed && tests) {
               testLines.push(`**Tests** ✅ ${clamp(tests.passed)} passed, analyzer clean`);
-            } else if (!tests || outcomes.tests === 'skipped') {
+            } else if (!tests) {
               testLines.push('**Tests** ⚠️ did not run, see the workflow log');
             } else {
               const failedCount = clamp(tests.failed);
@@ -152,6 +292,8 @@ jobs:
                 const names = listed.map(name => `- \`${escapeText(name)}\``);
                 if (more > 0) names.push(`- and ${more} more, see the workflow log`);
                 testLines.push('', '<details><summary>Failing tests</summary>', '', ...names, '', '</details>');
+              } else if (checks === 'success' && buildResultsMissing) {
+                testLines.push(`**Tests** ⚠️ ${passedCount} passed, analyzer clean, Apple tests unaccounted for`);
               } else if (analyzerErrors === 0) {
                 testLines.push('**Tests** ❌ the run crashed before reporting, see the workflow log');
               } else {
@@ -168,30 +310,119 @@ jobs:
               }
             }
 
+            // The delta job's advisory findings on the lines this pull request
+            // touched. Each file is missing when its script crashed, and all of
+            // them when the job never got to run them. Nothing here changes
+            // the headline.
+            const listOf = (part) => (part && Array.isArray(part.items) ? part.items : [])
+              .filter(item => item && typeof item === 'object');
+            const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+            const diagnostics = readJson('delta-results/diagnostics.json');
+            const l10n = readJson('delta-results/l10n.json');
+            const deltaLines = [];
+            // Checks finished but the delta job left nothing: say so, as the
+            // tests line does, rather than look like a clean run.
+            if (checksRunId && !diagnostics) {
+              deltaLines.push(`**Touched lines**${l10n ? '' : ' and **Localization**'} ⚠️ did not run, see the delta job log`);
+            }
+            if (diagnostics) {
+              const diagCount = clamp(diagnostics.count);
+              if (diagCount === 0) {
+                deltaLines.push('**Touched lines** ✅ no new diagnostics');
+              } else {
+                deltaLines.push(`**Touched lines** ⚠️ ${plural(diagCount, 'new diagnostic', 'new diagnostics')}`);
+                const shown = listOf(diagnostics).slice(0, 30).map(d =>
+                  `- \`${escapeText(`${d.file}:${clamp(d.line)} ${d.code} ${d.message}`)}\``);
+                const hidden = diagCount - shown.length;
+                if (hidden > 0) shown.push(`- and ${hidden} more, see the delta job log`);
+                deltaLines.push('', '<details><summary>Touched lines</summary>', '', ...shown, '', '</details>');
+              }
+            }
+            const l10nItems = listOf(l10n).slice(0, 30);
+            if (!l10n && diagnostics) {
+              // The line only shows findings, so a crashed script would
+              // otherwise read as none.
+              if (deltaLines.length > 0) deltaLines.push('');
+              deltaLines.push('**Localization** ⚠️ check did not run, see the delta job log');
+            } else if (l10nItems.length > 0) {
+              if (deltaLines.length > 0) deltaLines.push('');
+              deltaLines.push(`**Localization** ⚠️ ${plural(clamp(l10n.count), 'finding', 'findings')}`);
+              // The message is outside a code span, so markdown and HTML
+              // characters are escaped as well.
+              const escapeProse = (value) => escapeText(value).replace(/[\\<>[\]*_~#!]/g, c => `\\${c}`);
+              const shown = l10nItems.map(item => {
+                const subject = String(item.file_or_key ?? '');
+                const message = String(item.message ?? '');
+                const rest = message.startsWith(`${subject}: `) ? message.slice(subject.length + 2) : message;
+                return `- \`${escapeText(subject)}\`: ${escapeProse(rest)}`;
+              });
+              deltaLines.push('', '<details><summary>Localization</summary>', '', ...shown, '', '</details>');
+            }
+
+            // Checks usually reports first, Build All Platforms takes longer.
+            let headline;
+            let summary;
+            if (!buildRunId) {
+              headline = testsPassed ? '## ✅ Checks Passed' : '## ❌ Checks Failed';
+              summary = testsPassed
+                ? 'The analyzer and tests passed. The platform builds are still running, this comment updates when they finish.'
+                : 'The analyzer or tests failed. The platform builds are still running, this comment updates when they finish.';
+            } else if (nothingBuilt) {
+              // No platform was planned, so the headline is the Checks result.
+              headline = checks === 'running' ? '## ⏳ Checks Running' : testsPassed ? '## ✅ Checks Passed' : '## ❌ Checks Failed';
+              summary = checks === 'running'
+                ? 'The analyzer and tests are still running. No platform was built for this commit, add a `ci:` label to build one.'
+                : testsPassed
+                  ? 'The analyzer and tests passed. No platform was built for this commit, add a `ci:` label to build one.'
+                  : 'The analyzer or tests failed. No platform was built for this commit, add a `ci:` label to build one.';
+            } else if (checks === 'running' && buildsPassed) {
+              headline = '## ⏳ Checks Running';
+              summary = someNotRun
+                ? 'The platforms that were built passed. The analyzer and tests are still running, this comment updates when they finish.'
+                : 'All platform builds passed. The analyzer and tests are still running, this comment updates when they finish.';
+            } else if (passed) {
+              headline = '## ✅ Build Successful';
+              summary = someNotRun
+                ? 'The platforms that were built passed, and so did the tests. The others need a `ci:` label to build.'
+                : 'All platform builds and tests passed. You can download the test artifacts below.';
+            } else if (buildResultsMissing) {
+              const checksPassed = checks === 'success' && Boolean(tests);
+              headline = checksPassed ? '## ⚠️ Build Results Missing' : '## ❌ Checks Failed';
+              summary = (checksPassed ? '' : 'The analyzer or tests failed. ') +
+                'Build All Platforms finished without reporting its results. Any platform without an artifact and the Apple tests are unaccounted for. Check the build run.';
+            } else if (buildsPassed) {
+              headline = '## ❌ Checks Failed';
+              summary = someNotRun
+                ? 'The platforms that were built passed, but the test run did not.'
+                : 'All platform builds passed, but the test run did not.';
+            } else {
+              headline = '## ❌ Build Failed';
+              summary = 'One or more platform builds failed. Artifacts are listed for the platforms that did build.';
+            }
+
+            const runLink = (name, id, number) =>
+              id ? `[${name} #${clamp(number)}](${runUrl(Number(id))})` : '⏳ Running';
+
             const marker = '<!-- moonfin-build-result -->';
             const body = [
               marker,
-              passed
-                ? '## ✅ Build Successful'
-                : buildsPassed ? '## ❌ Checks Failed' : '## ❌ Build Failed',
+              headline,
               '',
-              passed
-                ? 'All platform builds and tests passed. You can download the test artifacts below.'
-                : buildsPassed
-                  ? 'All platform builds passed, but the test run did not.'
-                  : 'One or more platform builds failed. Artifacts are listed for the platforms that did build.',
+              summary,
               '',
               ...testLines,
+              ...(deltaLines.length > 0 ? ['', ...deltaLines] : []),
               '',
               '| Platform | Status | Artifact |',
               '|---|---|---|',
               ...rows.map((row, i) =>
-                `| **${row.platform}** | ${badge[statuses[i]] || '⚠️ Skipped'} | ${artifactCell(row)} |`),
+                `| **${row.platform}** | ${notRun(row.job) ? notRunText(row.job) : (badge[statuses[i]] || '⚠️ Skipped')} | ${artifactCell(row)} |`),
               '',
               '| Property | Value |',
               '|---|---|',
-              `| **Commit** | \`${outcomes.sha.substring(0, 7)}\` |`,
-              `| **Workflow run** | [Build #${context.payload.workflow_run.run_number}](${runUrl}) |`,
+              `| **Commit** | \`${sha.substring(0, 7)}\` |`,
+              `| **Checks run** | ${runLink('Checks', checksRunId, process.env.CHECKS_RUN_NUMBER)} |`,
+              `| **Build run** | ${runLink('Build', buildRunId, process.env.BUILD_RUN_NUMBER)} |`,
             ].join('\n');
 
             // Paginated because the marker comment falls off the first page once
@@ -200,7 +431,7 @@ jobs:
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
-              issue_number: outcomes.pr_number,
+              issue_number: prNumber,
               per_page: 100,
             });
 
@@ -208,5 +439,5 @@ jobs:
             if (existing) {
               await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
             } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number: outcomes.pr_number, body });
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
             }

@@ -284,13 +284,26 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     }
 
     try {
-      final media = useYouTubeHeaders
-          ? Media(streamUrl, httpHeaders: YouTubeStreamResolver.youtubeHeaders)
-          : Media(streamUrl);
       await YouTubeStreamResolver.preferAudioLanguage(
         _player!,
         resolved.audioLanguage,
       );
+      // A single variant has none of the master's caption tracks, so captions
+      // keep the full master.
+      final media = _showCaptions
+          ? Media(
+              streamUrl,
+              httpHeaders: useYouTubeHeaders
+                  ? YouTubeStreamResolver.youtubeHeaders
+                  : null,
+            )
+          : await YouTubeStreamResolver.previewMedia(
+              _player!,
+              streamUrl,
+              youTube: useYouTubeHeaders,
+              audioLanguage: resolved.audioLanguage,
+            );
+      if (!mounted) return;
       await YouTubeStreamResolver.showCaptions(
         _player!,
         _showCaptions,
@@ -412,6 +425,7 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
                           onAutoplayFailed: _useEmbeddedYouTube
                               ? _fallBackToStreamPlayback
                               : null,
+                          autoplayTimeout: const Duration(seconds: 7),
                         ),
                       ),
                     )

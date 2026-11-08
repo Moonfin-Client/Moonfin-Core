@@ -401,6 +401,128 @@ void main() {
       verifyNever(() => items.getItem(any()));
     });
   });
+
+  group('set to ask', () {
+    late List<String> asked;
+    late FinishedDownloadChoice? answer;
+    String? playing;
+    const credits = Duration(minutes: 95);
+
+    AggregatedItem watched(String id, {String type = 'Movie'}) =>
+        AggregatedItem(
+          id: id,
+          serverId: 'server-a',
+          rawData: {
+            'Id': id,
+            'Type': type,
+            'Name': id,
+            'RunTimeTicks': const Duration(minutes: 100).inMicroseconds * 10,
+          },
+        );
+
+    setUp(() async {
+      asked = [];
+      answer = null;
+      playing = null;
+      service.dispose();
+      service = RemoveWatchedService(
+        repository: repo,
+        prefs: prefs,
+        deleteDownload: (item, {required serverId}) async {
+          deleted.add(item.id);
+          return true;
+        },
+        activeServer: () => (client: client, serverId: 'server-a'),
+        askToDelete: (item) async {
+          asked.add(item.id);
+          return answer;
+        },
+        playingItemId: () => playing,
+        stopDebounce: Duration.zero,
+      );
+      await prefs.setRemoveWatchedAfterHours(UserPreferences.removeWatchedAsk);
+    });
+
+    Future<void> finish(AggregatedItem item, {Duration at = credits}) async {
+      service.onDownloadStopped(item, at);
+      service.onItemStopped(item.id);
+      await pumpEventQueue();
+    }
+
+    test('deletes a download played to the end when told to', () async {
+      await download('m1');
+      answer = FinishedDownloadChoice.delete;
+
+      await finish(watched('m1'));
+
+      expect(asked, ['m1']);
+      expect(deleted, ['m1']);
+    });
+
+    test('keeps it on Keep and never asks about it again', () async {
+      await download('m1');
+      answer = FinishedDownloadChoice.keep;
+
+      await finish(watched('m1'));
+      await finish(watched('m1'));
+
+      expect(asked, ['m1']);
+      expect(deleted, isEmpty);
+      expect(prefs.isDownloadKept('server-a', 'm1'), isTrue);
+    });
+
+    test('leaves it alone on Not now', () async {
+      await download('m1');
+
+      await finish(watched('m1'));
+
+      expect(asked, ['m1']);
+      expect(deleted, isEmpty);
+      expect(prefs.isDownloadKept('server-a', 'm1'), isFalse);
+    });
+
+    test('does not ask when stopped before the end', () async {
+      await download('m1');
+
+      await finish(watched('m1'), at: const Duration(minutes: 30));
+
+      expect(asked, isEmpty);
+    });
+
+    test('waits until the next episode stops to ask', () async {
+      await download('e1', type: 'Episode');
+      playing = 'e2';
+
+      await finish(watched('e1', type: 'Episode'));
+      expect(asked, isEmpty);
+
+      playing = null;
+      service.onItemStopped('e2');
+      await pumpEventQueue();
+
+      expect(asked, ['e1']);
+    });
+
+    test('does not ask about kept titles or smart downloads', () async {
+      await download('kept');
+      await prefs.setDownloadKept('server-a', 'kept', keep: true);
+      await download('auto', type: 'Episode', source: 'auto');
+
+      await finish(watched('kept'));
+      await finish(watched('auto', type: 'Episode'));
+
+      expect(asked, isEmpty);
+    });
+
+    test('does not ask when set to delete on its own', () async {
+      await download('m1', played: false);
+      await prefs.setRemoveWatchedAfterHours(0);
+
+      await finish(watched('m1'));
+
+      expect(asked, isEmpty);
+    });
+  });
 }
 
 typedef _ServiceBuilder = RemoveWatchedService Function({

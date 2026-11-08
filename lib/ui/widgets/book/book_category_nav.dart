@@ -28,6 +28,7 @@ List<BookCategoryKind> bookCategoriesShown(BookLibraryHelpers facts) => [
       BookCategoryKind.genres => facts.genreCount > 0,
       BookCategoryKind.collections => facts.collectionCount > 0,
       BookCategoryKind.favorites => facts.favoriteCount > 0,
+      BookCategoryKind.folders => true,
       BookCategoryKind.discover => GetIt.instance<UserPreferences>().get(
         UserPreferences.showBookDiscoverTab,
       ),
@@ -50,6 +51,10 @@ String bookScopeTitle(AppLocalizations l10n, BookScope scope) =>
 void openBookPlace(BuildContext context, String libraryId, BookNavPlace place) {
   final kind = place.kind;
   if (kind == null) return;
+  if (kind == BookCategoryKind.folders) {
+    context.push(Destinations.folder(libraryId));
+    return;
+  }
   context.push(
     Destinations.bookCategory(
       libraryId,
@@ -93,6 +98,7 @@ List<BookRailSection> bookstoreNavSections(
             BookCategoryKind.genres => '${facts.genreCount}',
             BookCategoryKind.collections =>
               '${facts.collectionCount}${facts.collectionCountIsFloor ? '+' : ''}',
+            BookCategoryKind.folders => null,
             _ => '${facts.favoriteCount}',
           },
         ),

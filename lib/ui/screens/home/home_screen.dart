@@ -21,16 +21,19 @@ import 'package:server_core/server_core.dart' hide ImageType;
 import 'package:window_manager/window_manager.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/repositories/tmdb_repository.dart';
+import '../../../data/repositories/user_views_repository.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/background_service.dart';
 import '../../widgets/modern_row.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/row_data_source.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../data/services/connectivity_service.dart';
@@ -103,6 +106,11 @@ const _kHomeStartThreshold = 20.0;
 /// Room for the title, subtitle and gaps that sit under classic card artwork.
 const _classicCardMetadataHeight = 50.0;
 
+/// Watching Now prints its titles on the artwork, so it only needs room for
+/// the focus ring and a gap before the next row.
+double _classicCardMetadataFor(HomeRow row) =>
+    row.id == 'mdblist_watching_now' ? 24.0 : _classicCardMetadataHeight;
+
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double _rowHeaderPaddingTop(bool isRowsV2) =>
     isRowsV2 || !PlatformDetection.useMobileUi ? 6.0 : 16.0;
@@ -164,6 +172,14 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._showsCalendarSeeAll(row, prefs);
+
+  @visibleForTesting
+  static bool showsSeeAll(HomeRow row, UserPreferences prefs) =>
+      _ContentRowsState._showsSeeAll(row, prefs);
+
+  @visibleForTesting
+  static Future<String?> seeAllRoute(HomeRow row) =>
+      _ContentRowsState._seeAllRoute(row);
 
   @visibleForTesting
   static Widget topBackdrop(Widget backdrop) =>
@@ -229,6 +245,7 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastSonarrCalendarShowDate = true;
   bool _lastRadarrCalendarHideDownloaded = true;
   bool _lastSonarrCalendarHideDownloaded = true;
+  DateFormatSetting? _lastDateFormat;
 
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
@@ -274,6 +291,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
     _lastRadarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
     _lastSonarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
+    _lastDateFormat = _userPrefs.get(UserPreferences.dateFormat);
 
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
@@ -396,6 +414,7 @@ class _HomeShellState extends State<_HomeShell>
     final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
     final currentRadarrHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
     final currentSonarrHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
+    final currentDateFormat = _userPrefs.get(UserPreferences.dateFormat);
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
@@ -413,7 +432,8 @@ class _HomeShellState extends State<_HomeShell>
         currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
         currentShowSonarrDate != _lastSonarrCalendarShowDate ||
         currentRadarrHideDownloaded != _lastRadarrCalendarHideDownloaded ||
-        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded) {
+        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded ||
+        currentDateFormat != _lastDateFormat) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
@@ -431,6 +451,7 @@ class _HomeShellState extends State<_HomeShell>
       _lastSonarrCalendarShowDate = currentShowSonarrDate;
       _lastRadarrCalendarHideDownloaded = currentRadarrHideDownloaded;
       _lastSonarrCalendarHideDownloaded = currentSonarrHideDownloaded;
+      _lastDateFormat = currentDateFormat;
 
       _viewModel.refresh();
     }
@@ -636,13 +657,23 @@ class _HomeShellState extends State<_HomeShell>
                   ),
                   if (seasonalEffect != UserPreferences.seasonalNone)
                     Positioned.fill(
-                      child: SeasonalEffectsHost(
-                        followFocus: PlatformDetection.isTV && seasonalFollower,
-                        effect: seasonalEffect,
-                        density: _userPrefs.get(UserPreferences.seasonalDensity),
-                        reducedFrameRate:
-                            _userPrefs.resolveDevicePerformanceTier() ==
-                            DevicePerformanceTier.reduced,
+                      child: ValueListenableBuilder<int>(
+                        valueListenable: seasonalPreviewsRunning,
+                        builder: (context, previews, child) => TickerMode(
+                          enabled: previews == 0,
+                          child: child!,
+                        ),
+                        child: SeasonalEffectsHost(
+                          followFocus:
+                              PlatformDetection.isTV && seasonalFollower,
+                          effect: seasonalEffect,
+                          density: _userPrefs.get(
+                            UserPreferences.seasonalDensity,
+                          ),
+                          reducedFrameRate:
+                              _userPrefs.resolveDevicePerformanceTier() ==
+                              DevicePerformanceTier.reduced,
+                        ),
                       ),
                     ),
                 ],
@@ -3264,18 +3295,25 @@ class _ContentRowsState extends State<_ContentRows>
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
-        final imageHeight = modernImageHeight(posterSize, platformScale);
+        final imageHeight = modernImageHeight(posterSize, platformScale)
+            .clamp(220.0 * desktopScale, double.infinity);
         final budget = _v2MetadataBudgetFor(row, prefs);
         childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
-        final imageHeight = posterSize.portraitHeight.toDouble() * platformScale;
+        final baseImageHeight = (row.id == 'mdblist_watching_now'
+            ? posterSize.landscapeHeight.toDouble()
+            : posterSize.portraitHeight.toDouble()) * platformScale;
+        // A loading row is LibraryRow's spinner at its 220 default height,
+        // which can be taller than the posters.
+        final imageHeight =
+            baseImageHeight.clamp(220.0 * desktopScale, double.infinity);
         final headroom = _focusHeadroom(
           imageHeight,
           prefs.get(UserPreferences.cardFocusExpansion),
         );
         childHeight =
             imageHeight +
-            (_classicCardMetadataHeight * metadataScale) +
+            (_classicCardMetadataFor(row) * metadataScale) +
             (10 * metadataScale) +
             headroom;
       }
@@ -3306,7 +3344,8 @@ class _ContentRowsState extends State<_ContentRows>
               ? posterSize.landscapeHeight.toDouble()
               : posterSize.portraitHeight.toDouble()) * platformScale;
           if (imageHeight > maxImageHeight) maxImageHeight = imageHeight;
-          final cardHeight = imageHeight + (_classicCardMetadataHeight * metadataScale);
+          final cardHeight =
+              imageHeight + (_classicCardMetadataFor(row) * metadataScale);
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
@@ -3331,7 +3370,7 @@ class _ContentRowsState extends State<_ContentRows>
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
-    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 24.0 : 18.0) * metadataScale) : 0.0;
+    final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
     var totalHeight = childHeight + headerHeight;
@@ -4282,16 +4321,21 @@ class _ContentRowsState extends State<_ContentRows>
       final maxCardHeight = _isRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
-                (_classicCardMetadataHeight * metadataScale) +
+                (_classicCardMetadataFor(row) * metadataScale) +
                 _classicRowPadding(row, prefs);
       final headroom = _focusHeadroom(
         maxImageHeight,
         prefs.get(UserPreferences.cardFocusExpansion),
       );
+      final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
+      final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+      final subtitleHeight = hasSubtitle
+          ? (row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale
+          : 0.0;
       return _libraryRowExtent(
         maxCardHeight + headroom,
         metadataScale: metadataScale,
-      );
+      ) + subtitleHeight;
     }
   }
 
@@ -5392,7 +5436,8 @@ class _ContentRowsState extends State<_ContentRows>
                 : posterSize.portraitHeight.toDouble()) *
             platformScale;
         if (height > maxImageHeight) maxImageHeight = height;
-        final cardHeight = height + (_classicCardMetadataHeight * metadataScale);
+        final cardHeight =
+            height + (_classicCardMetadataFor(row) * metadataScale);
         if (cardHeight > maxCardHeight) maxCardHeight = cardHeight;
         if (firstCardWidth == 0) firstCardWidth = height * ar;
       }
@@ -5452,8 +5497,8 @@ class _ContentRowsState extends State<_ContentRows>
         ? (_rowGlide(rowIndex)..growth = v2FocusedWidth - v2PortraitWidth)
         : null;
 
-    final rowItems = _showsCalendarSeeAll(row, prefs)
-        ? [...row.items, _calendarSeeAllItem]
+    final rowItems = _showsSeeAll(row, prefs)
+        ? [...row.items, _seeAllItem]
         : row.items;
 
     return _buildTitledRow(
@@ -5490,7 +5535,7 @@ class _ContentRowsState extends State<_ContentRows>
           ),
           onLeftEdge: _onRowLeftEdge,
           onIndexChanged: (index, item) {
-          if (identical(item, _calendarSeeAllItem)) {
+          if (identical(item, _seeAllItem)) {
             _finishSharedPreview();
             return;
           }
@@ -5533,7 +5578,7 @@ class _ContentRowsState extends State<_ContentRows>
           }
         },
         onLongPress: (_, item) {
-          if (identical(item, _calendarSeeAllItem)) return;
+          if (identical(item, _seeAllItem)) return;
           showContextMenu(
             context,
             item,
@@ -5543,8 +5588,8 @@ class _ContentRowsState extends State<_ContentRows>
         },
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
-          if (identical(item, _calendarSeeAllItem)) {
-            _openCalendarFromRow();
+          if (identical(item, _seeAllItem)) {
+            unawaited(_openSeeAll(row));
             return;
           }
           if (_playedOnSelect(row, item)) return;
@@ -5574,8 +5619,9 @@ class _ContentRowsState extends State<_ContentRows>
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
-          if (identical(item, _calendarSeeAllItem)) {
-            return _buildCalendarSeeAllCard(
+          if (identical(item, _seeAllItem)) {
+            return _buildSeeAllCard(
+              row: row,
               l10n: l10n,
               width: firstCardWidth,
               aspectRatio: isRowsV2
@@ -5732,7 +5778,13 @@ class _ContentRowsState extends State<_ContentRows>
                   : Theme.of(context).colorScheme.onSurface.withAlpha(180);
               final subtitleStyle = baseTextStyle.copyWith(
                 color: subtitleColor,
-                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+                fontWeight: isNeon ? FontWeight.w600 : null,
+                shadows: isNeon
+                    ? const [
+                        Shadow(blurRadius: 4, color: Colors.black),
+                        Shadow(blurRadius: 6, color: Colors.black87),
+                      ]
+                    : const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
 
               cardSubtitleWidget = Column(
@@ -6348,8 +6400,12 @@ class _ContentRowsState extends State<_ContentRows>
                                       subtitle,
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: AppColorScheme.onSurface.withValues(
-                                          alpha: 0.8,
+                                          alpha: 0.95,
                                         ),
+                                        fontWeight: FontWeight.w600,
+                                        shadows: const [
+                                          Shadow(blurRadius: 4, color: Colors.black54),
+                                        ],
                                       ),
                                     ),
                             ),
@@ -6427,10 +6483,11 @@ class _ContentRowsState extends State<_ContentRows>
     'merged_calendar',
   };
 
-  /// The last card of an Upcoming row, which opens the full calendar.
-  static const _calendarSeeAllItem = AggregatedItem(
-    id: 'calendar_see_all',
-    serverId: 'calendar',
+  /// The last card of an Upcoming row, a library's Latest row or a pinned
+  /// collection, which opens everything the row only shows the start of.
+  static const _seeAllItem = AggregatedItem(
+    id: 'see_all',
+    serverId: 'see_all',
     rawData: {},
   );
 
@@ -6441,9 +6498,41 @@ class _ContentRowsState extends State<_ContentRows>
       GetIt.instance.isRegistered<PluginSyncService>() &&
       GetIt.instance<PluginSyncService>().calendarAvailable;
 
-  void _openCalendarFromRow() => context.push(Destinations.calendarMonth);
+  static bool _showsSeeAll(HomeRow row, UserPreferences prefs) =>
+      _showsCalendarSeeAll(row, prefs) ||
+      (row.items.isNotEmpty && homeRowSeeAllTarget(row) != null);
 
-  Widget _buildCalendarSeeAllCard({
+  Future<void> _openSeeAll(HomeRow row) async {
+    final route = await _seeAllRoute(row);
+    if (route != null && mounted) context.push(route);
+  }
+
+  static Future<String?> _seeAllRoute(HomeRow row) async {
+    if (_calendarRowIds.contains(row.id)) return Destinations.calendarMonth;
+    final target = homeRowSeeAllTarget(row);
+    if (target == null) return null;
+    final serverId = row.items.first.serverId;
+    if (target.isCollection) {
+      return Destinations.item(target.id, serverId: serverId);
+    }
+    // Games, music and books each open their own screen, so the library's
+    // type decides the route.
+    final views = await GetIt.instance<UserViewsRepository>()
+        .getAllViewsIncludingHidden()
+        .catchError((_) => const <AggregatedLibrary>[]);
+    final library = views.where((view) => view.id == target.id).firstOrNull;
+    return library == null
+        ? Destinations.library(target.id, serverId: serverId)
+        : libraryRoute(
+            library.id,
+            library.collectionType,
+            library.name,
+            serverId: library.serverId,
+          );
+  }
+
+  Widget _buildSeeAllCard({
+    required HomeRow row,
     required AppLocalizations l10n,
     required double width,
     required double aspectRatio,
@@ -6471,7 +6560,9 @@ class _ContentRowsState extends State<_ContentRows>
             padding: const EdgeInsets.only(bottom: 64),
             child: Center(
               child: Icon(
-                Icons.calendar_month,
+                _calendarRowIds.contains(row.id)
+                    ? Icons.calendar_month
+                    : Icons.grid_view_rounded,
                 size: 32,
                 color: Theme.of(
                   context,
@@ -6483,7 +6574,7 @@ class _ContentRowsState extends State<_ContentRows>
       ],
       onTap: () {
         _finishSharedPreview(releaseResources: true);
-        _openCalendarFromRow();
+        unawaited(_openSeeAll(row));
       },
     );
   }

@@ -191,6 +191,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         case "showRemoteSubtitles":
             let results = (args["results"] as? [[String: Any]]) ?? []
             playerVC?.presentRemoteSubtitleResults(results)
+        case "showSubtitleCues":
+            playerVC?.showSubtitleCues(args)
         case "showSubtitleProgress":
             playerVC?.showSubtitleProgress((args["message"] as? String) ?? "Working\u{2026}")
         case "hideSubtitleProgress":
@@ -305,7 +307,13 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             strokeColor: (args["strokeColor"] as? NSNumber)?.intValue,
             fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
             fontWeight: (args["fontWeight"] as? NSNumber)?.intValue,
-            verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue)
+            verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue,
+            strokeScale: (args["strokeScale"] as? NSNumber)?.doubleValue,
+            shadowColor: (args["shadowColor"] as? NSNumber)?.intValue,
+            shadowOffset: (args["shadowOffset"] as? NSNumber)?.doubleValue,
+            shadowBlur: (args["shadowBlur"] as? NSNumber)?.doubleValue,
+            fontPath: args["fontPath"] as? String,
+            boldFontPath: args["boldFontPath"] as? String)
         vc?.baseSubtitlePos = player.baseSubtitlePos
         vc?.reapplySubtitleClearance()
     }

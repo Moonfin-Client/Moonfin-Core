@@ -191,6 +191,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
                       context,
                       prefs,
                       UserPreferences.downloadRemoveWatchedAfterHours,
+                      choices: _removeWatchedChoices,
                       save: (hours) async {
                         await prefs.setRemoveWatchedAfterHours(hours);
                         // A shorter delay applies to what is already watched.
@@ -978,7 +979,17 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
 /// Never, right away, a day, a week.
 const _deleteAfterChoices = [-1, 0, 24, 24 * 7];
 
+/// The same, plus asking once a download is played to the end.
+const _removeWatchedChoices = [
+  -1,
+  UserPreferences.removeWatchedAsk,
+  0,
+  24,
+  24 * 7,
+];
+
 String _deleteAfterLabel(AppLocalizations l10n, int hours) => switch (hours) {
+  UserPreferences.removeWatchedAsk => l10n.removeWatchedAsk,
   < 0 => l10n.autoDownloadDeleteNever,
   0 => l10n.autoDownloadDeleteImmediately,
   < 24 * 7 => l10n.autoDownloadDeleteAfterDay,
@@ -991,6 +1002,7 @@ void _pickDeleteAfter(
   BuildContext context,
   UserPreferences prefs,
   Preference<int> pref, {
+  List<int> choices = _deleteAfterChoices,
   Future<void> Function(int hours)? save,
 }) {
   final l10n = AppLocalizations.of(context);
@@ -1008,7 +1020,7 @@ void _pickDeleteAfter(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final hours in _deleteAfterChoices)
+            for (final hours in choices)
               DpadRadioListTile<int>(
                 autofocus: hours == current,
                 title: Text(_deleteAfterLabel(l10n, hours)),

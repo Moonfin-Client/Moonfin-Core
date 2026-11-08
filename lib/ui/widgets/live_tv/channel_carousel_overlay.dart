@@ -893,7 +893,6 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
               text: overview,
               maxLines: _overviewLines,
               style: _overviewStyle,
-              millisPerPixel: kChannelCarouselDescriptionMarqueeMillisPerPixel,
               pauseDurationMs: 1600,
               showDotSeparator: false,
             ),

@@ -536,7 +536,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _initPlayerVolume() {
     _playerVolume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _manager.reportVolumeState(
@@ -552,7 +552,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   void _setPlayerVolume(double fraction) {
-    final level = (fraction * 100).clamp(0.0, 100.0).toDouble();
+    final level = (fraction * 100).clamp(0.0, maxPlayerVolume).toDouble();
     setState(() => _playerVolume = level);
     unawaited(_manager.backend?.setVolume(level));
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
@@ -1245,9 +1245,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _scheduleHide() {
     _hideTimer?.cancel();
-    final hideDelay = PlatformDetection.useMobileUi
-        ? const Duration(seconds: 8)
-        : const Duration(seconds: 5);
+    final hideDelay = _prefs.resolveControlsHideDelay();
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       if (_isOverlayInteractionActive) {
@@ -1865,6 +1863,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         verticalOffset: style.verticalOffset,
+        strokeScale: style.strokeScale,
+        shadowColor: style.shadowColor,
+        shadowOffset: style.shadowOffset,
+        shadowBlur: style.shadowBlur,
+        fontFamily: style.fontFamily,
       ),
     );
   }
@@ -1929,6 +1932,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         if (_isCarouselOpen) _dismissChannelCarousel();
         unawaited(_openRecordings());
       }
+      return KeyEventResult.handled;
+    }
+
+    // Stop leaves the player even with the guide or channel list open.
+    if (event.logicalKey == LogicalKeyboardKey.mediaStop) {
+      if (event is KeyDownEvent) unawaited(_exitPlayback());
       return KeyEventResult.handled;
     }
 
@@ -2740,6 +2749,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                         ),
                         child: Slider(
                           value: _playerVolume / 100,
+                          max: maxPlayerVolume / 100,
                           activeColor: AppColorScheme.accent,
                           inactiveColor: Colors.white24,
                           onChangeStart: (_) => _hideTimer?.cancel(),

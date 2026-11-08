@@ -8529,7 +8529,7 @@
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "detailScreenStyleSubtitle": "Klasik, orijinal ortalanmış Moonfin düzenidir. Modern, duyarlı sinematik bir düzendir. Spotlight, açılır içerik kartlarına sahip, ana görsel odaklı bir düzendir. Nouveau, bölümlerin sayfa boyunca alt alta sıralandığı tam ekran bir düzendir. Minimalist ise sadece kapak görselinden, tek bir oynatma butonundan ve bölümlerden oluşur. Sahne, solda afiş (poster), altında oyun/oynatma düğmesi ve yanında detaylar ile başlar. Premiere, başlığı tüm ekranı kaplayan bir arka planın üzerine ortalar ve sayfa boyunca her bir bölüm bunun altında yer alır.",
+    "detailScreenStyleSubtitle": "Bir film veya dizinin açıldığında nasıl göründüğü.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11268,7 +11268,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Medya detay sayfalarında sezon durum rozetlerini göster",
+    "showSeerrAvailabilityBadgesDescription": "Seerr durumunu uygulama genelinde afişlerde ve sezonlarda göster",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -16500,7 +16500,7 @@
     "@settingsPreviewSaved": {
         "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
     },
-    "detailScreenStyleStage": "Sahne",
+    "detailScreenStyleStage": "Stage",
     "@detailScreenStyleStage": {
         "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
     },
@@ -16523,5 +16523,852 @@
     "setupDetailPremiereHint": "Başlık tam ekran arka plan üzerinde ortalanmış, diğer her şey sayfanın alt kısmında.",
     "@setupDetailPremiereHint": {
         "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Quick Look",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Frost",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Tam sayfayı aç",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Geri ile çık",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played}/{total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "noOtherAudioTracks": "Başka ses izi yok",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "playerMatchingDisplayRate": "Ekran {fps} fps ile eşleştiriliyor…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "radarrCalendarRow": "Gelecek Filmler (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Gelecek Diziler (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Gelecek Yayınlar",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Radarr ve Sonarr Takvimleri",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Radarr Takvimi",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Sonarr Takvimi",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Bugün} =1{Yarın} other{{days} gün sonra}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Sinema",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Dijital",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Fiziksel",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Gelecek Takvimler",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "enableRadarrCalendar": "Radarr Gelecek Takvimini Etkinleştir",
+    "@enableRadarrCalendar": {
+        "description": "Turns on the Radarr calendar home row"
+    },
+    "radarrCalendarShowCinema": "Gelecek Sinema Vizyonlarını Göster",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Gelecek Dijital Yayınları Göster",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Gelecek Fiziksel Yayınları Göster",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "showPosterLabels": "Poster Etiketleri",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "showPosterLabelsSubtitle": "Posterlerde 4K veya HDR gibi etiketleri göster.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "calendarShowReleaseDate": "Ana Ekranda Yayın Tarihini Göster",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Sunucuda Zaten Olan Filmleri Gizle",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "enableSonarrCalendar": "Sonarr'ın Yaklaşanlar Takvimini Etkinleştir",
+    "@enableSonarrCalendar": {
+        "description": "Turns on the Sonarr calendar home row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Bölüm Bilgilerini Göster",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Sunucuda Zaten Olan Bölümleri Gizle",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Sonarr ve Radarr Takvimlerini Birleştir",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "mediaBarSourceNewReleases": "Yeni Sezonlar ve Bölümler",
+    "@mediaBarSourceNewReleases": {
+        "description": "Media bar source: series with episodes that aired recently"
+    },
+    "mediaBarNewReleaseBanner": "Yeni Yayın Bandı",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags series in the media bar when new episodes aired recently"
+    },
+    "mediaBarNewReleaseBannerDescription": "Yakın zamanda yeni sezonu veya yeni bölümleri yayınlanan dizileri işaretle.",
+    "mediaBarNewReleaseDays": "Yeni Yayın Süresi",
+    "@mediaBarNewReleaseDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Bir bölüm yayınlandıktan sonra ne kadar süre yeni sayılacağı.",
+    "mediaBarNewSeries": "Yeni Dizi",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Yeni Sezon",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Yeni Bölümler",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "mdblistWatchingNow": "MDBList'te İzleniyor",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "mdblistWatchingNowDescription": "MDBList kullanıcılarının şu anda neler izlediğini göster",
+    "@mdblistWatchingNowDescription": {
+        "description": "Description for the Watching on MDBList setting"
+    },
+    "watchingNowWatchersCount": "{count} izleyici",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchingNowLiveSummary": "{users} kişi şu an izliyor · {movies} film · {shows} dizi",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} kişi bugün izledi · {movies} film · {shows} dizi",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrBadgeStyle": "Rozet Stili",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "Rozet, Seerr'in durum noktasını bir köşeye yerleştirir. Bant ise durumu posterin üst kısmı boyunca gösterir.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Rozet",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "seerrSeriesMatchDescription": "Bu diziyi otomatik olarak eşleştiremedik. Aşağıdan doğru olanı seçin.",
+    "@seerrSeriesMatchDescription": {
+        "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+    },
+    "seerrSeriesNoMatch": "Bu dizi için eşleşme bulamadık, bu nedenle talep edilemiyor.",
+    "@seerrSeriesNoMatch": {
+        "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+    },
+    "seerrSeriesMatchFailed": "Sonarr bu dizi için eşleşme bulamadı veya Sonarr'a ulaşılamadı. Tekrar deneyin ya da diziyi Seerr'de kontrol edin.",
+    "@seerrSeriesMatchFailed": {
+        "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+    },
+    "removeFromPlaylist": "Oynatma Listesinden Kaldır",
+    "@removeFromPlaylist": {
+        "description": "Context menu action to remove an item from a playlist"
+    },
+    "removeFromPlaylistConfirm": "{playlist} listesinden {item} kaldırılsın mı?",
+    "@removeFromPlaylistConfirm": {
+        "description": "Confirmation shown before removing an item from a playlist",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "playlist": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromPlaylistFailed": "Oynatma listesinden kaldırılamadı",
+    "@removeFromPlaylistFailed": {
+        "description": "Error shown when removing an item from a playlist fails"
+    },
+    "sinceYouWatched": "İzlediğiniz İçin",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "İzlediğiniz için",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "\"{title}\" izlediğiniz için",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "İzlediğiniz İçin Satırı {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "İzlediğiniz İçin Satırlarını Göster",
+    "displaySinceYouWatchedRowsSubtitle": "İzlediğiniz İçin satırlarını Ana Ekran Bölümleri'nde göster ve özelleştir.",
+    "sinceYouWatchedSource": "Öneri Kaynağı",
+    "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
+    "sinceYouWatchedSourceLocal": "Moonfin Önerileri",
+    "sinceYouWatchedSourceServer": "Jellyfin Önerileri",
+    "sinceYouWatchedSourceOnline": "TMDb Benzerliği",
+    "sinceYouWatchedSourceType": "Kaynak Tipi",
+    "sinceYouWatchedSourceTypeDescription": "Önerilecek öğelerin tipini seçin",
+    "sinceYouWatchedSourceItem": "Kaynak Öğe",
+    "sinceYouWatchedSourceItemDescription": "Önerilerin hangi öğeye göre yapılacağını seçin",
+    "sinceYouWatchedRecentlyWatched": "Son İzlenenler",
+    "sinceYouWatchedNumRows": "Eklenecek Satır Sayısı",
+    "sinceYouWatchedNumRowsDescription": "Kaç tane İzlediğiniz İçin satırı gösterileceğini seçin (1-5)",
+    "sinceYouWatchedIncludeWatched": "Daha Önce İzlenenleri Dahil Et",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Önerilere izlenmiş öğeleri de dahil et",
+    "cadenceSlowdown": "60 Hz TV'de Akıcı 24 fps",
+    "cadenceSlowdownSubtitle": "Kare Hızı Eşleştirme kapalıyken 24 fps videoyu %0,1 daha yavaş oynatır; böylece video TV'ye kare atlamadan uyum sağlar. Ses bir AV alıcıya doğrudan aktarılıyorsa kullanılmaz.",
+    "cadenceTipTitle": "Kare Hızını Eşleştirmeyi Açın",
+    "cadenceTipMessage": "Bu video, TV'nizin mevcut yenileme hızında akıcı oynatılamıyor. Apple TV'nizde Ayarlar > Video ve Ses > İçeriği Eşleştir yolunu izleyin ve Kare Hızını Eşleştir seçeneğini açın.",
+    "cadenceTipSlowdownHint": "Ya da Moonfin'de Oynatma > Kalite ve Kod Çözme altındaki 60 Hz TV'de Akıcı 24 fps seçeneğini açın.",
+    "watchPartyResumeAt": "{time} noktasından devam et",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartFromBeginning": "Baştan başlat",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeWhere": "{name} kişisinin kaldığı yer; buradaki herkesin ulaştığı en erken nokta.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeEarliest": "Buradaki herkesin ulaştığı en erken nokta.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "watchPartyResumeNotStarted": "{count, plural, =1{1 kişi henüz izlemeye başlamadı.} other{{count} kişi henüz izlemeye başlamadı.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "setupStyleQuickLook": "Hızlı Bakış",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Bulunduğunuz ekranın üzerinde açılan, oynatma düğmesini ve temel bilgileri içeren bir panel. Tam sayfa tek bir basışla açılır.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Buzlu Cam",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "Başlık, bulanıklaştırılmış kapak görselinin üzerinde cam bir pencerede yer alır; sekmeler düğmelerin altındadır.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "setupMoonbaseTitle": "Sunucunuza Moonbase ekleyin",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "setupMoonbaseHint": "Moonfin'in daha fazla özelliğinin kilidini açan ücretsiz bir sunucu eklentisi",
+    "@setupMoonbaseHint": {
+        "description": "Line under the Moonbase row on the last setup wizard step"
+    },
+    "setupMoonbaseIntro": "Moonbase ücretsizdir ve sunucunuzda çalışır. Moonbase ile Moonfin şunları kazanır:",
+    "@setupMoonbaseIntro": {
+        "description": "First line of the Moonbase dialog, followed by a list of features"
+    },
+    "setupMoonbaseAskAdmin": "Yalnızca sunucu yöneticisi kurabilir. Bu bağlantıyı ona gönderin.",
+    "@setupMoonbaseAskAdmin": {
+        "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseManualSteps": "Sunucunuza kurmak birkaç adım sürer. Tüm adımlar bu bağlantıda.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseInstalling": "Moonbase kuruluyor...",
+    "@setupMoonbaseInstalling": {
+        "description": "Shown in the Moonbase dialog while the plugin installs"
+    },
+    "setupMoonbaseInstalled": "Moonbase kuruldu. Sunucu yeniden başlatıldığında etkinleşir; bu da şu anda oynatılan her şeyi durdurur.",
+    "@setupMoonbaseInstalled": {
+        "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+    },
+    "setupMoonbaseRestarting": "Sunucu yeniden başlatılıyor. Moonbase, sunucu tekrar açıldığında etkinleşecek.",
+    "@setupMoonbaseRestarting": {
+        "description": "Shown while the server restarts after Moonbase was installed"
+    },
+    "moonbaseFeatureSync": "Cihazlarınız arasında senkronize edilen ayarlar",
+    "@moonbaseFeatureSync": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureRatings": "Ek puanlar ve TMDB yorumları",
+    "@moonbaseFeatureRatings": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureRows": "Favori listelerinizden özel satırlar",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "moonbaseFeatureGames": "Kayıtları senkronize edilen retro oyunlar",
+    "@moonbaseFeatureGames": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureCalendar": "Yakında gelecek içeriklerin takvimi",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "moonbaseFeatureCollections": "Her koleksiyon için kendi sıralamanız",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureMessages": "Sunucu yöneticinizden mesajlar",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "setupMoonbaseInstallFailed": "Moonbase kurulamadı. {error}",
+    "@setupMoonbaseInstallFailed": {
+        "description": "Shown in the Moonbase dialog when installing or restarting failed",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoServerCompatibilityCheck": "Sunucu uyumluluk denetimi",
+    "@playbackInfoServerCompatibilityCheck": {
+        "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+    },
+    "playbackInfoBitrateUnavailable": "Bit hızı kullanılamıyor",
+    "@playbackInfoBitrateUnavailable": {
+        "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+    },
+    "playbackInfoNoteLiveRelay": "Sunucu kanalı dönüştürmeden aktarıyor.",
+    "@playbackInfoNoteLiveRelay": {
+        "description": "Playback information note under the play method for a live TV channel the server passes through"
+    },
+    "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+    "@playbackInfoFrameRateFrom": {
+        "description": "Playback information frame rate with where the player got it",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateSourceHeader": "akış başlığı",
+    "@playbackInfoRateSourceHeader": {
+        "description": "Playback information: the frame rate came from the video stream's own header"
+    },
+    "playbackInfoRateSourceMeasured": "ölçüldü",
+    "@playbackInfoRateSourceMeasured": {
+        "description": "Playback information: the frame rate was measured from the video's frame timing"
+    },
+    "playbackInfoRateSourceServer": "sunucu",
+    "@playbackInfoRateSourceServer": {
+        "description": "Playback information: the frame rate came from the server's description of the media"
+    },
+    "playbackInfoServerFrameRate": "Sunucu Kare Hızı",
+    "@playbackInfoServerFrameRate": {
+        "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+    },
+    "playbackInfoScan": "Tarama",
+    "@playbackInfoScan": {
+        "description": "Playback information row: whether the video is progressive or interlaced"
+    },
+    "playbackInfoProgressive": "Aşamalı",
+    "@playbackInfoProgressive": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoInterlaced": "Geçmeli",
+    "@playbackInfoInterlaced": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoRepeatedFields": "Telecine uygulanmış (tekrarlanan alanlar)",
+    "@playbackInfoRepeatedFields": {
+        "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+    },
+    "playbackInfoHdmiOutput": "HDMI Çıkışı",
+    "@playbackInfoHdmiOutput": {
+        "description": "Playback information row: the display mode the device is sending"
+    },
+    "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+    "@playbackInfoDisplayMode": {
+        "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+        "placeholders": {
+            "width": {
+                "type": "String"
+            },
+            "height": {
+                "type": "String"
+            },
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateCorrections": "Hız Düzeltmeleri",
+    "@playbackInfoRateCorrections": {
+        "description": "Playback information row: how many times live TV changed the display rate after it started"
+    },
+    "playbackInfoAudioOutput": "Çıkış",
+    "@playbackInfoAudioOutput": {
+        "description": "Playback information row in the Audio section: how the audio leaves the device"
+    },
+    "playbackInfoPassthroughOf": "Doğrudan aktarım ({codec})",
+    "@playbackInfoPassthroughOf": {
+        "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDecodedTo": "Kodu çözüldü ({channels})",
+    "@playbackInfoDecodedTo": {
+        "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfileUnknown": "Sunucu bu akışın {codec} profilini doğrulayamadı.",
+    "@playbackInfoWhyVideoProfileUnknown": {
+        "description": "Playback information reason when the server could not determine the video profile",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "smartSearch": "Akıllı Arama",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "{seerr} üzerinde Akıllı Arama",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
+    },
+    "calendar": "Takvim",
+    "@calendar": {
+        "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+    },
+    "showCalendarButton": "Takvim Düğmesini Göster",
+    "@showCalendarButton": {
+        "description": "Settings toggle that adds the Calendar button to the navigation bar"
+    },
+    "showCalendarButtonSubtitle": "Yaklaşan bölümlerin ve filmlerin takvimini gezinme çubuğunda göster",
+    "@showCalendarButtonSubtitle": {
+        "description": "Subtitle of the Show Calendar Button setting"
+    },
+    "calendarFullCalendar": "Tam takvim",
+    "@calendarFullCalendar": {
+        "description": "Button on the calendar that opens the month grid"
+    },
+    "calendarUpcoming": "Yaklaşanlar",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarRecentlyAired": "Yakın zamanda yayınlananlar",
+    "@calendarRecentlyAired": {
+        "description": "Calendar tab listing episodes and movies from the last few days"
+    },
+    "calendarRemindMe": "Bana hatırlat",
+    "@calendarRemindMe": {
+        "description": "Button that asks for a notification when an episode or movie lands in the library"
+    },
+    "calendarReminderSet": "Hatırlatıcı ayarlandı",
+    "@calendarReminderSet": {
+        "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+    },
+    "calendarReminderFailed": "Hatırlatıcı kaydedilemedi",
+    "@calendarReminderFailed": {
+        "description": "Message when setting or removing a calendar reminder fails"
+    },
+    "calendarReadyToWatch": "İzlemeye hazır",
+    "@calendarReadyToWatch": {
+        "description": "Calendar row of recent episodes and movies that are already in the library"
+    },
+    "calendarComingUpThisWeek": "Bu hafta gelecekler",
+    "@calendarComingUpThisWeek": {
+        "description": "Calendar row of episodes and movies airing in the next seven days"
+    },
+    "calendarNothingUpcoming": "Yaklaşan bir şey yok",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarNothingRecent": "Yakın zamanda yayınlanan bir şey yok",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarEmptyDay": "Bu günde hiçbir şey yok",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarStartsIn": "Başlamasına kalan",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarUnitDays": "gün",
+    "@calendarUnitDays": {
+        "description": "Unit under the days number of the calendar countdown"
+    },
+    "calendarUnitHours": "sa",
+    "@calendarUnitHours": {
+        "description": "Unit under the hours number of the calendar countdown"
+    },
+    "calendarUnitMinutes": "dk",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarDayAtTime": "{day} saat {time}",
+    "@calendarDayAtTime": {
+        "description": "When an episode airs, like Today at 9:00 PM",
+        "placeholders": {
+            "day": {
+                "type": "String",
+                "example": "Today"
+            },
+            "time": {
+                "type": "String",
+                "example": "9:00 PM"
+            }
+        }
+    },
+    "calendarAllDay": "Tüm gün",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "calendarBadgeSeriesPremiere": "Dizi prömiyeri",
+    "@calendarBadgeSeriesPremiere": {
+        "description": "Tag on the first episode of a series"
+    },
+    "calendarBadgeSeasonPremiere": "Yeni sezon",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "calendarBadgeSeasonFinale": "Sezon finali",
+    "@calendarBadgeSeasonFinale": {
+        "description": "Tag on the last episode of a season"
+    },
+    "calendarBadgeMidseasonFinale": "Sezon ortası finali",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarBadgeSeriesFinale": "Dizi finali",
+    "@calendarBadgeSeriesFinale": {
+        "description": "Tag on the last episode of a series"
+    },
+    "calendarBadgeNew": "YENİ",
+    "@calendarBadgeNew": {
+        "description": "Short tag on a month grid day that has a premiere"
+    },
+    "calendarStatusInLibrary": "Kütüphanede",
+    "@calendarStatusInLibrary": {
+        "description": "Tag on a calendar entry that is already on the server"
+    },
+    "calendarNotMonitored": "Takip edilmiyor",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarMovieDetails": "Film ayrıntıları",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarProblemAdminsOnly": "Bu sunucuda takvim yalnızca yöneticilere açık.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "calendarProblemNeedsSeerr": "Takvimin yüklenebilmesi için bir yöneticinin Moonfin'de Seerr'e giriş yapması gerekiyor.",
+    "@calendarProblemNeedsSeerr": {
+        "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+    },
+    "calendarProblemNotConfigured": "Henüz bağlı bir Sonarr veya Radarr sunucusu yok.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarProblemFailed": "Takvim yüklenemedi.",
+    "@calendarProblemFailed": {
+        "description": "Calendar message when loading fails"
+    },
+    "calendarSettingsSubtitle": "Takvimin stili, filtreleri ve eylemleri",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "calendarSettingsView": "Görünüm",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsStyle": "Takvim stili",
+    "@calendarSettingsStyle": {
+        "description": "Calendar setting that picks what the Calendar button opens"
+    },
+    "calendarSettingsStyleDescription": "Takvim düğmesinin neyi açacağı. Her iki seçenekte de tam ay görünümü bir düğme uzaklıkta.",
+    "@calendarSettingsStyleDescription": {
+        "description": "Description of the Calendar style setting"
+    },
+    "calendarSettingsStyleAgenda": "Ajanda",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "calendarSettingsStyleCountdown": "Geri sayım",
+    "@calendarSettingsStyleCountdown": {
+        "description": "Calendar style that counts down to the next episode or movie"
+    },
+    "calendarSettingsWeekStart": "Haftanın ilk günü",
+    "@calendarSettingsWeekStart": {
+        "description": "Calendar setting for the first day of the week in the month grid"
+    },
+    "calendarSettingsWhatShows": "Neler gösterilsin",
+    "@calendarSettingsWhatShows": {
+        "description": "Calendar settings section header for which episodes and movies the calendar lists"
+    },
+    "calendarSettingsScope": "Göster",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsScopeDescription": "Dizilerim, favorilediğiniz veya izlemeye başladığınız dizileri tutar",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "calendarSettingsScopeEverything": "Her şey",
+    "@calendarSettingsScopeEverything": {
+        "description": "Calendar Show choice that lists every episode and movie"
+    },
+    "calendarSettingsScopeMyShows": "Dizilerim",
+    "@calendarSettingsScopeMyShows": {
+        "description": "Calendar Show choice that lists only series the user favorited or started watching"
+    },
+    "calendarSettingsUnmonitored": "Takip edilmeyenleri dahil et",
+    "@calendarSettingsUnmonitored": {
+        "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+    },
+    "calendarSettingsUnmonitoredSubtitle": "Sonarr ve Radarr'ın indirmeye ayarlı olmadığı bölümleri ve filmleri de listele",
+    "@calendarSettingsUnmonitoredSubtitle": {
+        "description": "Subtitle of the Include unmonitored calendar setting"
+    },
+    "calendarSettingsSpecials": "Özel bölümler",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsSpecialsSubtitle": "Ekstralar ve özel gün bölümleri gibi 0. sezon bölümleri",
+    "@calendarSettingsSpecialsSubtitle": {
+        "description": "Subtitle of the Specials calendar setting"
+    },
+    "calendarSettingsBadges": "Prömiyer ve final etiketleri",
+    "@calendarSettingsBadges": {
+        "description": "Calendar setting that marks premieres and finales on the calendar"
+    },
+    "calendarSettingsBadgesSubtitle": "Prömiyerleri, finalleri ve yeni sezonları işaretle",
+    "@calendarSettingsBadgesSubtitle": {
+        "description": "Subtitle of the Premiere and finale tags calendar setting"
+    },
+    "calendarSettingsColorBy": "Renklendirme ölçütü",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+    },
+    "calendarSettingsColorByDescription": "Tip, bölümleri filmlerden ayırır. Durum ise kütüphanenizde olanları, yaklaşanları veya eksik olanları gösterir.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "calendarSettingsColorByType": "Tip",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "calendarSettingsImageType": "Kart görseli",
+    "@calendarSettingsImageType": {
+        "description": "Calendar setting for the artwork on the Countdown rows"
+    },
+    "calendarSettingsImageTypeDescription": "Geri sayım satırlarındaki görsel",
+    "@calendarSettingsImageTypeDescription": {
+        "description": "Description of the Card image calendar setting"
+    },
+    "calendarSettingsSpoilerSafe": "Spoiler koruması",
+    "@calendarSettingsSpoilerSafe": {
+        "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Geride kaldığınız dizilerin bölüm başlıklarını ve kare görüntülerini gizle",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "calendarSettingsActions": "Eylemler",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "calendarSettingsSelectAction": "Bir öğe seçildiğinde",
+    "@calendarSettingsSelectAction": {
+        "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+    },
+    "calendarSettingsSelectActionDescription": "Kütüphanenizde zaten olan bir öğede Tamam'a basınca veya dokununca ne olacağı",
+    "@calendarSettingsSelectActionDescription": {
+        "description": "Description of the Selecting an item calendar setting"
+    },
+    "calendarSettingsSelectDetails": "Ayrıntıları aç",
+    "@calendarSettingsSelectDetails": {
+        "description": "Selecting an item choice that opens the details page"
+    },
+    "calendarSettingsSelectPlay": "Kütüphanede varsa oynat",
+    "@calendarSettingsSelectPlay": {
+        "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+    },
+    "calendarSettingsRequestButton": "Talep düğmesi",
+    "@calendarSettingsRequestButton": {
+        "description": "Calendar setting that shows the request button on missing titles"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Eksik filmlerde ve sezonlarda Seerr talep düğmesini göster",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "calendarSettingsReminders": "Hatırlatıcılar",
+    "@calendarSettingsReminders": {
+        "description": "Calendar setting that offers the Remind me button"
+    },
+    "calendarSettingsRemindersSubtitle": "Bir yapım kütüphanenize eklendiğinde bildirim gönderen Bana hatırlat düğmesini göster",
+    "@calendarSettingsRemindersSubtitle": {
+        "description": "Subtitle of the Reminders calendar setting"
+    },
+    "calendarRowSeeAll": "Tümünü Gör kartı",
+    "@calendarRowSeeAll": {
+        "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+    },
+    "calendarRowSeeAllSubtitle": "Yaklaşanlar satırlarını takvimi açan bir kartla bitir",
+    "@calendarRowSeeAllSubtitle": {
+        "description": "Subtitle of the See All card setting"
+    },
+    "showNextAirDate": "Sonunda sonraki yayın tarihi",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "showNextAirDateSubtitle": "Sonraki bölüm henüz kütüphanenizde değilse, bölüm sonu kartında ne zaman yayınlanacağı gösterilir",
+    "@showNextAirDateSubtitle": {
+        "description": "Subtitle of the Next air date at the end setting"
     }
 }

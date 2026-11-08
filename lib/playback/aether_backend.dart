@@ -21,6 +21,7 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_fonts.dart';
 
 /// Playback backend driving the native AetherEngine wrapper over a method
 /// channel on iOS and macOS. Serves main playback there: video, live TV,
@@ -728,6 +729,11 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     await _invoke<void>('configureSubtitleStyle', {
       'textColor': textColor,
@@ -736,6 +742,11 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       'fontSize': fontSize,
       'fontWeight': fontWeight,
       'verticalOffset': verticalOffset,
+      'strokeScale': strokeScale,
+      'shadowColor': shadowColor,
+      'shadowOffset': shadowOffset,
+      'shadowBlur': shadowBlur,
+      ...await subtitleFontPaths(fontFamily),
     });
   }
 

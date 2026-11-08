@@ -2,6 +2,7 @@ import 'package:custom_tv_text_field/custom_tv_text_field.dart'
     show KeyboardStyle;
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
+import '../../playback/subtitle_fonts.dart';
 import '../../preference/preference_constants.dart' as prefs;
 import '../../preference/user_preferences.dart';
 import '../../ui/widgets/navigation_layout.dart';
@@ -171,8 +172,9 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('seasonalRowEnabled', UserPreferences.seasonalRowEnabled, SyncCodec.boolean),
   SyncedField('seasonalRowCountry', UserPreferences.seasonalRowCountry, SyncCodec.text, normalize: UserPreferences.parseSeasonalRowCountry),
   SyncedField('seasonalRowHiddenHolidays', UserPreferences.seasonalRowHiddenHolidays, SyncCodec.csvList),
+  SyncedField('seasonalRowAllYear', UserPreferences.seasonalRowAllYear, SyncCodec.boolean),
   SyncedField('mediaBarItemCount', UserPreferences.mediaBarItemCount, SyncCodec.textAsInt, fallbackInt: 10),
-  SyncedField('mediaBarSourceType', UserPreferences.mediaBarSourceType, SyncCodec.text),
+  SyncedField('mediaBarSourceType', UserPreferences.mediaBarSourceType, SyncCodec.text, normalize: UserPreferences.normalizeMediaBarSourceType),
   SyncedField('mediaBarNewReleaseBanner', UserPreferences.mediaBarNewReleaseBanner, SyncCodec.boolean),
   SyncedField('mediaBarNewReleaseDays', UserPreferences.mediaBarNewReleaseDays, SyncCodec.integer),
   SyncedField('mediaBarOpacity', UserPreferences.mediaBarOverlayOpacity, SyncCodec.integer),
@@ -245,6 +247,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('cinemaModeSkipEnabled', UserPreferences.cinemaModeSkipEnabled, SyncCodec.boolean),
   SyncedField('clockBehavior', UserPreferences.clockBehavior, SyncCodec.enumName, enumValues: prefs.ClockBehavior.values),
   SyncedField('confirmExit', UserPreferences.confirmExit, SyncCodec.boolean),
+  SyncedField('controlsHideDelay', UserPreferences.controlsHideDelay, SyncCodec.integer),
+  SyncedField('hdrControlsDimming', UserPreferences.hdrControlsDimming, SyncCodec.integer),
   SyncedField('crashReportsEnabled', UserPreferences.crashReportsEnabled, SyncCodec.boolean),
   SyncedField('defaultAudioLanguage', UserPreferences.defaultAudioLanguage, SyncCodec.text),
   SyncedField('defaultDownloadQuality', UserPreferences.defaultDownloadQuality, SyncCodec.text),
@@ -380,6 +384,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('screensaverComponent', UserPreferences.screensaverComponent, SyncCodec.enumName, enumValues: prefs.ScreensaverComponent.values),
   SyncedField('screensaverContentType', UserPreferences.screensaverContentType, SyncCodec.text),
   SyncedField('screensaverDimming', UserPreferences.screensaverDimming, SyncCodec.integer),
+  SyncedField('screensaverDuringAudio', UserPreferences.screensaverDuringAudio, SyncCodec.boolean),
   SyncedField('screensaverEnabled', UserPreferences.screensaverEnabled, SyncCodec.boolean),
   SyncedField('screensaverExcludedGenres', UserPreferences.screensaverExcludedGenres, SyncCodec.csvList),
   SyncedField('screensaverLibraryIds', UserPreferences.screensaverLibraryIds, SyncCodec.csvList),
@@ -393,6 +398,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('seerrRowsSortBy', UserPreferences.seerrRowsSortBy, SyncCodec.enumName, enumValues: prefs.ExternalRowSortBy.values),
   SyncedField('seerrRowsSortOrder', UserPreferences.seerrRowsSortOrder, SyncCodec.enumName, enumValues: prefs.SortDirection.values),
   SyncedField('showBookDiscoverTab', UserPreferences.showBookDiscoverTab, SyncCodec.boolean),
+  SyncedField('bookFoldersAsSeries', UserPreferences.bookFoldersAsSeries, SyncCodec.boolean),
   SyncedField('showDescriptionOnPause', UserPreferences.showDescriptionOnPause, SyncCodec.boolean),
   SyncedField('showLoadingAnimationText', UserPreferences.showLoadingAnimationText, SyncCodec.boolean),
   SyncedField('showMediaDetailsOnLibraryPage', UserPreferences.showMediaDetailsOnLibraryPage, SyncCodec.boolean),
@@ -408,6 +414,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('sinceYouWatched5Enabled', UserPreferences.sinceYouWatched5Enabled, SyncCodec.boolean),
   SyncedField('skipBackLength', UserPreferences.skipBackLength, SyncCodec.integer),
   SyncedField('skipForwardLength', UserPreferences.skipForwardLength, SyncCodec.integer),
+  SyncedField('sleepAfterIdle', UserPreferences.sleepAfterIdle, SyncCodec.integer),
   SyncedField('sonarrCalendarHideDownloaded', UserPreferences.sonarrCalendarHideDownloaded, SyncCodec.boolean),
   SyncedField('sonarrCalendarShowDate', UserPreferences.sonarrCalendarShowDate, SyncCodec.boolean),
   SyncedField('sonarrCalendarShowEpisodeInfo', UserPreferences.sonarrCalendarShowEpisodeInfo, SyncCodec.boolean),
@@ -415,6 +422,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('subtitleMode', UserPreferences.subtitleMode, SyncCodec.enumName, enumValues: prefs.SubtitleMode.values),
   SyncedField('subtitleTextStrokeColor', UserPreferences.subtitleTextStrokeColor, SyncCodec.colorAsText),
   SyncedField('subtitlesBackgroundColor', UserPreferences.subtitlesBackgroundColor, SyncCodec.colorAsText),
+  SyncedField('subtitlesFont', UserPreferences.subtitlesFont, SyncCodec.text, normalize: knownSubtitleFont),
   SyncedField('subtitlesHdrBackgroundColor', UserPreferences.subtitlesHdrBackgroundColor, SyncCodec.colorAsText),
   SyncedField('subtitlesHdrOffsetPosition', UserPreferences.subtitlesHdrOffsetPosition, SyncCodec.decimal),
   SyncedField('subtitlesHdrSeparate', UserPreferences.subtitlesHdrSeparate, SyncCodec.boolean),
@@ -423,6 +431,11 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('subtitlesHdrTextStrokeColor', UserPreferences.subtitlesHdrTextStrokeColor, SyncCodec.colorAsText),
   SyncedField('subtitlesHdrTextWeight', UserPreferences.subtitlesHdrTextWeight, SyncCodec.integer),
   SyncedField('subtitlesOffsetPosition', UserPreferences.subtitlesOffsetPosition, SyncCodec.decimal),
+  SyncedField('subtitlesShadow', UserPreferences.subtitlesShadow, SyncCodec.boolean),
+  SyncedField('subtitlesShadowBlur', UserPreferences.subtitlesShadowBlur, SyncCodec.integer),
+  SyncedField('subtitlesShadowIntensity', UserPreferences.subtitlesShadowIntensity, SyncCodec.integer),
+  SyncedField('subtitlesShadowOffset', UserPreferences.subtitlesShadowOffset, SyncCodec.integer),
+  SyncedField('subtitlesStrokeWidth', UserPreferences.subtitlesStrokeWidth, SyncCodec.integer),
   SyncedField('subtitlesTextColor', UserPreferences.subtitlesTextColor, SyncCodec.colorAsText),
   SyncedField('subtitlesTextSize', UserPreferences.subtitlesTextSize, SyncCodec.decimal),
   SyncedField('subtitlesTextWeight', UserPreferences.subtitlesTextWeight, SyncCodec.integer),
@@ -457,6 +470,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('unpauseRewindDuration', UserPreferences.unpauseRewindDuration, SyncCodec.integer),
   SyncedField('updateNotificationsEnabled', UserPreferences.updateNotificationsEnabled, SyncCodec.boolean),
   SyncedField('use24HourClock', UserPreferences.use24HourClock, SyncCodec.boolean),
+  SyncedField('dateFormat', UserPreferences.dateFormat, SyncCodec.enumName, enumValues: prefs.DateFormatSetting.values),
   SyncedField('videoStartDelay', UserPreferences.videoStartDelay, SyncCodec.integer),
 ];
 

@@ -22,6 +22,7 @@ import androidx.media3.extractor.text.CuesWithTiming
 import androidx.media3.extractor.text.Subtitle
 import androidx.media3.extractor.text.SubtitleParser
 import io.github.peerless2012.ass.AssFrame
+import io.github.peerless2012.ass.AssRender
 import io.github.peerless2012.ass.AssTex
 import io.github.peerless2012.ass.AssTexType
 import io.github.peerless2012.ass.media.AssHandler
@@ -139,6 +140,29 @@ class MoonfinAssOverlayView(
         invalidate()
     }
 
+    // The size setting as a multiple of the track's own sizes.
+    @Volatile private var fontScale = 1f
+
+    // Render thread only. A renderer is built per media item, so a new one
+    // gets the scale before its first frame.
+    private var scaledRender: AssRender? = null
+    private var appliedFontScale = 1f
+
+    fun setFontScale(scale: Float) {
+        if (!(scale > 0f) || scale == fontScale) return
+        fontScale = scale
+        // A paused player sends no clock callbacks.
+        redrawCurrentAssFrame()
+    }
+
+    private fun applyFontScale(render: AssRender?) {
+        if (render == null) return
+        if (render === scaledRender && appliedFontScale == fontScale) return
+        render.setFontScale(fontScale)
+        scaledRender = render
+        appliedFontScale = fontScale
+    }
+
     // Called while holding the assHandler lock, both from its track listener
     // and before rendering. Off keeps the last native track identity so
     // reselecting it while paused can reuse an unchanged libass image.
@@ -242,6 +266,7 @@ class MoonfinAssOverlayView(
                 if (released || track == null) {
                     null
                 } else {
+                    applyFontScale(assHandler.render)
                     assHandler.render?.renderFrame(timeUs / 1000, AssTexType.BITMAP_ALPHA)
                 }
             } catch (error: Throwable) {

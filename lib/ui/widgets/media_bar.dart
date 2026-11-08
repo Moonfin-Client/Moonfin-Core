@@ -53,6 +53,7 @@ import 'mediabar/bookshelf_layout.dart';
 import 'mediabar/aya_media_bar.dart';
 import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
+import 'mediabar/media_bar_nav_arrow.dart';
 import 'mediabar/media_bar_status_focus.dart';
 import 'mediabar/media_bar_new_release_label.dart';
 import 'mediabar/media_bar_title.dart';
@@ -236,10 +237,35 @@ class _MediaBarState extends State<MediaBar>
   late bool _lastHardwareDecodingEnabled;
   late bool _lastUseMedia3TrailerEngine;
 
-  bool get _hideLeftNavArrowForSidebar {
-    if (PlatformDetection.useMobileUi) return false;
-    return widget.prefs.get(UserPreferences.navbarPosition) ==
-        NavbarPosition.left;
+  // The left sidebar is drawn over the media bar, so content starts past it.
+  double get _sidebarInset =>
+      !PlatformDetection.useMobileUi &&
+          widget.prefs.get(UserPreferences.navbarPosition) ==
+              NavbarPosition.left
+      ? 56.0
+      : 0.0;
+
+  /// Fades the backdrop out toward the bar's bottom edge, so the rows below
+  /// it, or one peeking up into it, meet a soft fade instead of a hard line.
+  /// Desktop and web only, since the mask redraws with every frame of the
+  /// backdrop's slow zoom.
+  Widget _fadeBackdropBottom(Widget backdrop) {
+    if (!PlatformDetection.useDesktopUi) return backdrop;
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (bounds) {
+        final fade = widget.rowPeek > 0
+            ? widget.rowPeek * 1.5
+            : bounds.height * 0.2;
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: const [Colors.white, Colors.transparent],
+          stops: [(1 - fade / bounds.height).clamp(0.0, 1.0), 1.0],
+        ).createShader(bounds);
+      },
+      child: backdrop,
+    );
   }
 
   Color _mediaBarOverlayColor() {
@@ -816,35 +842,16 @@ class _MediaBarState extends State<MediaBar>
   List<Widget> _buildNavArrows(
     BuildContext context,
     int itemCount, {
-    double nextRightInset = 0,
-  }) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final prevArrow = _NavArrow(
-      icon: Icons.chevron_left,
-      onTap: _currentIndex > 0 ? () => _goToPage(_currentIndex - 1) : null,
-    );
-    final nextArrow = _NavArrow(
-      icon: Icons.chevron_right,
-      onTap: () => _goToPage((_currentIndex + 1) % itemCount),
-    );
-    final leftArrow = isRtl ? nextArrow : prevArrow;
-    final rightArrow = isRtl ? prevArrow : nextArrow;
-    return [
-      if (!_hideLeftNavArrowForSidebar)
-        Positioned(
-          left: 0,
-          top: 0,
-          bottom: widget.rowPeek,
-          child: Center(child: leftArrow),
-        ),
-      Positioned(
-        right: nextRightInset,
-        top: 0,
-        bottom: widget.rowPeek,
-        child: Center(child: rightArrow),
-      ),
-    ];
-  }
+    double leftInset = 0,
+    double rightInset = 0,
+  }) => mediaBarNavArrows(
+    context,
+    onPrevious: _currentIndex > 0 ? () => _goToPage(_currentIndex - 1) : null,
+    onNext: () => _goToPage((_currentIndex + 1) % itemCount),
+    leftInset: leftInset,
+    rightInset: rightInset,
+    bottomInset: widget.rowPeek,
+  );
 
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
@@ -2075,9 +2082,8 @@ class _MediaBarState extends State<MediaBar>
                   AnimatedOpacity(
                     opacity: hasVisibleTrailerVideo ? 0 : 1,
                     duration: const Duration(milliseconds: 250),
-                    child: _BackdropLayer(
-                      items: items,
-                      currentIndex: _currentIndex,
+                    child: _fadeBackdropBottom(
+                      _BackdropLayer(items: items, currentIndex: _currentIndex),
                     ),
                   ),
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
@@ -2214,7 +2220,11 @@ class _MediaBarState extends State<MediaBar>
                       ),
                     ),
                   if (items.length > 1 && !PlatformDetection.useMobileUi)
-                    ..._buildNavArrows(context, items.length),
+                    ..._buildNavArrows(
+                      context,
+                      items.length,
+                      leftInset: _sidebarInset,
+                    ),
                 ],
               ),
             ),
@@ -2290,12 +2300,14 @@ class _MediaBarState extends State<MediaBar>
                     AnimatedOpacity(
                       opacity: hasVisibleTrailerVideo ? 0 : 1,
                       duration: const Duration(milliseconds: 250),
-                      child: _BackdropLayer(
-                        items: items,
-                        currentIndex: _currentIndex,
-                        zoomDuration: Duration(
-                          milliseconds: widget.prefs.get(
-                            UserPreferences.mediaBarIntervalMs,
+                      child: _fadeBackdropBottom(
+                        _BackdropLayer(
+                          items: items,
+                          currentIndex: _currentIndex,
+                          zoomDuration: Duration(
+                            milliseconds: widget.prefs.get(
+                              UserPreferences.mediaBarIntervalMs,
+                            ),
                           ),
                         ),
                       ),
@@ -2393,7 +2405,7 @@ class _MediaBarState extends State<MediaBar>
                               contentHeight * 0.56,
                             );
                         return Positioned(
-                          left: isMobile ? null : 50,
+                          left: isMobile ? null : 50 + _sidebarInset,
                           top: isMobile ? mobileLogoTop : logoTop,
                           child: AnimatedOpacity(
                             opacity: _isTrailerPlaying ? 0 : 1,
@@ -2479,7 +2491,7 @@ class _MediaBarState extends State<MediaBar>
                     ),
                   if (currentItem != null)
                     Positioned(
-                      left: isMobile ? 0 : 50,
+                      left: isMobile ? 0 : 50 + _sidebarInset,
                       right: isMobile ? 0 : null,
                       bottom: isMobile ? 24 : 20 + widget.rowPeek,
                       child: AnimatedOpacity(
@@ -2551,7 +2563,8 @@ class _MediaBarState extends State<MediaBar>
                     ..._buildNavArrows(
                       context,
                       items.length,
-                      nextRightInset: 44,
+                      leftInset: _sidebarInset,
+                      rightInset: 44,
                     ),
                 ],
               ),
@@ -2708,6 +2721,7 @@ class _MediaBarState extends State<MediaBar>
             activeRatings: activeRatings,
             activeTrailer: activeTrailer,
             trailerActive: trailerVisible,
+            leftInset: _sidebarInset,
           );
 
     return MouseRegion(
@@ -2845,6 +2859,9 @@ class _MediaBarState extends State<MediaBar>
             focusExpansionEnabled: widget.prefs.get(
               UserPreferences.cardFocusExpansion,
             ),
+            navArrows: items.length > 1 && PlatformDetection.useDesktopUi
+                ? _buildNavArrows(context, items.length)
+                : const <Widget>[],
             trailerOverlay: trailerOverlays.isEmpty
                 ? null
                 : Stack(fit: StackFit.expand, children: trailerOverlays),
@@ -3273,48 +3290,6 @@ class _KenBurnsImageState extends State<_KenBurnsImage>
   Widget build(BuildContext context) {
     return ClipRect(
       child: ScaleTransition(scale: _scale, child: widget.child),
-    );
-  }
-}
-
-class _NavArrow extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  const _NavArrow({required this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          canRequestFocus: false,
-          customBorder: const CircleBorder(),
-          child: AnimatedOpacity(
-            opacity: onTap != null ? 1.0 : 0.3,
-            duration: const Duration(milliseconds: 200),
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColorScheme.scrim.withValues(alpha: 0.4),
-                border: Border.fromBorderSide(
-                  ThemeRegistry.active.borders.cardBorder,
-                ),
-              ),
-              child: Icon(
-                icon,
-                color: AppColorScheme.onSurface.withValues(alpha: 0.9),
-                size: 28,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

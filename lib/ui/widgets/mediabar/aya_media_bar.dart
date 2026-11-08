@@ -49,6 +49,7 @@ class AyaMediaBar extends StatefulWidget {
   final EdgeInsets padding;
   final bool focusExpansionEnabled;
   final Widget? trailerOverlay;
+  final List<Widget> navArrows;
   final ValueChanged<String?>? onAmbientArtworkChanged;
 
   const AyaMediaBar({
@@ -59,6 +60,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.padding,
     required this.focusExpansionEnabled,
     this.trailerOverlay,
+    this.navArrows = const <Widget>[],
     this.onAmbientArtworkChanged,
   });
 
@@ -272,6 +274,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                       _buildAnimatedSlide(context, theme, item),
                       if (widget.trailerOverlay != null) widget.trailerOverlay!,
                       if (widget.items.length > 1) _buildIndicators(),
+                      ...widget.navArrows,
                     ],
                   ),
                 ),

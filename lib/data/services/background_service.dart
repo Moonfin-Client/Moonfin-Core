@@ -51,7 +51,11 @@ class BackgroundService {
 
     _blurContext = context;
     _blurContextController.add(context);
+    _loadBackgrounds(backdropUrlsFor(item));
+  }
 
+  /// The artwork [setBackground] would show behind [item], best first.
+  List<String> backdropUrlsFor(AggregatedItem item) {
     final client = GetIt.instance<MediaServerClientFactory>()
         .clientForServerOrActive(item.serverId);
     final urls = <String>[];
@@ -128,7 +132,7 @@ class BackgroundService {
       }
     }
 
-    _loadBackgrounds(urls);
+    return urls;
   }
 
   void setBackgroundUrl(String url, {BlurContext context = BlurContext.browsing}) {

@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../services/row_data_source.dart';
@@ -200,14 +202,7 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     notifyListeners();
     final l10n = currentAppLocalizations();
 
-    try {
-      final itemData = await _client.itemsApi.getItem(libraryId);
-      _libraryName = itemData['Name'] as String? ?? l10n.books;
-      final fetchedType = (itemData['CollectionType'] as String?)?.toLowerCase();
-      if (fetchedType != null && fetchedType.isNotEmpty) {
-        _collectionType = fetchedType;
-      }
-    } catch (_) {}
+    await _loadLibraryInfo();
 
     // The grid asks for the library's types, so it starts once they're known.
     unawaited(reloadPane());
@@ -360,12 +355,26 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
   List<AggregatedItem> seriesBooks(AggregatedItem series) {
     final ids = {...?(series.rawData['MemberIds'] as List?)};
     return _titles.where((title) => ids.contains(title.id)).toList()
-      ..sort((a, b) {
-        final (x, y) = (a.indexNumber, b.indexNumber);
-        if (x != null && y != null && x != y) return x.compareTo(y);
-        if ((x == null) != (y == null)) return x == null ? 1 : -1;
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      });
+      ..sort(_readingOrder);
+  }
+
+  /// The series called [name] and its books in reading order, for a series
+  /// page. Only the titles are fetched, and every book carrying the name
+  /// counts, however few there are and whichever folders hold them. Null when
+  /// no book does.
+  Future<({AggregatedItem series, List<AggregatedItem> books})?> loadSeries(
+    String name,
+  ) async {
+    await _loadLibraryInfo();
+    final books = [
+      for (final title in await _loadTitles(overview: true))
+        if (title.seriesName?.trim() == name) title,
+    ]..sort(_readingOrder);
+    if (books.isEmpty) return null;
+    return (
+      series: _seriesEntry('bookSeries:$name', name, books, null),
+      books: books,
+    );
   }
 
   /// The titles crediting [author].
@@ -588,9 +597,22 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
     super.dispose();
   }
 
+  /// The library's name, and its type, which decides the titles it asks for.
+  Future<void> _loadLibraryInfo() async {
+    try {
+      final itemData = await _client.itemsApi.getItem(libraryId);
+      _libraryName =
+          itemData['Name'] as String? ?? currentAppLocalizations().books;
+      final fetchedType = (itemData['CollectionType'] as String?)?.toLowerCase();
+      if (fetchedType != null && fetchedType.isNotEmpty) {
+        _collectionType = fetchedType;
+      }
+    } catch (_) {}
+  }
+
   /// Every title in the library, with the fields the counts, series and
   /// authors need.
-  Future<List<AggregatedItem>> _loadTitles() async {
+  Future<List<AggregatedItem>> _loadTitles({bool overview = false}) async {
     final types = combinedTypes;
     Future<Map<String, dynamic>> fetch({required bool typed}) =>
         _client.itemsApi.getItems(
@@ -605,7 +627,8 @@ class BookBrowseViewModel extends ChangeNotifier with BookLibraryHelpers {
           sortOrder: 'Ascending',
           fields:
               'SeriesName,ParentId,Path,People,AlbumArtist,Artists,Genres,'
-              'DateCreated,ProductionYear,RunTimeTicks',
+              'DateCreated,ProductionYear,RunTimeTicks'
+              '${overview ? ',Overview' : ''}',
           enableImageTypes: 'Primary',
           imageTypeLimit: 1,
           enableTotalRecordCount: false,
@@ -997,9 +1020,10 @@ List<AggregatedItem> bookSeriesEntries({
   };
   final byFolder = <String, List<AggregatedItem>>{};
   final byName = <String, List<AggregatedItem>>{};
+  final bookFoldersAsSeries = GetIt.instance<UserPreferences>().get(UserPreferences.bookFoldersAsSeries);
   for (final book in books) {
     final parent = book.parentId;
-    if (book.isComic && seriesFolders.containsKey(parent)) {
+    if (bookFoldersAsSeries && seriesFolders.containsKey(parent)) {
       byFolder.putIfAbsent(parent!, () => []).add(book);
     }
     final name = book.seriesName?.trim();
@@ -1017,6 +1041,14 @@ List<AggregatedItem> bookSeriesEntries({
           !members.every((m) => byFolder.containsKey(m.parentId)))
         _seriesEntry('bookSeries:$name', name, members, null),
   ]..sort((a, b) => a.name.compareTo(b.name));
+}
+
+/// Series books by number, then by name.
+int _readingOrder(AggregatedItem a, AggregatedItem b) {
+  final (x, y) = (a.indexNumber, b.indexNumber);
+  if (x != null && y != null && x != y) return x.compareTo(y);
+  if ((x == null) != (y == null)) return x == null ? 1 : -1;
+  return a.name.toLowerCase().compareTo(b.name.toLowerCase());
 }
 
 AggregatedItem _seriesEntry(
