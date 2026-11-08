@@ -2846,13 +2846,10 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
     final list = _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
     if (_item?.type == 'Episode') {
+      final l10n = currentAppLocalizations();
       return list.map((p) {
-        final role = p['Role']?.toString().trim();
-        final formattedRole = (role != null &&
-                role.isNotEmpty &&
-                !role.toLowerCase().contains('director'))
-            ? '$role (Episode Director)'
-            : 'Episode Director';
+        final role = p['Role']?.toString();
+        final formattedRole = formatEpisodeDirectorRole(l10n, role);
         return <String, dynamic>{...p, 'Role': formattedRole};
       }).toList();
     }
@@ -2866,13 +2863,10 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
     final list = _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
     if (_item?.type == 'Episode') {
+      final l10n = currentAppLocalizations();
       return list.map((p) {
-        final role = p['Role']?.toString().trim();
-        final formattedRole = (role != null &&
-                role.isNotEmpty &&
-                !role.toLowerCase().contains('writer'))
-            ? '$role (Episode Writer)'
-            : 'Episode Writer';
+        final role = p['Role']?.toString();
+        final formattedRole = formatEpisodeWriterRole(l10n, role);
         return <String, dynamic>{...p, 'Role': formattedRole};
       }).toList();
     }

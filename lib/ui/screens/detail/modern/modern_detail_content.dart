@@ -1743,8 +1743,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _crewTab(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
     final isEpisode = item.type == 'Episode';
-    final fallbackDirector = isEpisode ? 'Episode Director' : l10n.director;
-    final fallbackWriter = isEpisode ? 'Episode Writer' : l10n.writer;
+    final fallbackDirector = isEpisode ? l10n.episodeDirector : l10n.director;
+    final fallbackWriter = isEpisode ? l10n.episodeWriter : l10n.writer;
     final Map<String, Map<String, dynamic>> merged = {};
     for (final d in _vm.directors) {
       final id = d['Id']?.toString() ?? d['Name']?.toString() ?? '';

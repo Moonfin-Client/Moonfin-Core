@@ -394,8 +394,8 @@ class _SpotlightCardsBuilder {
     }
 
     final isEpisode = item.type == 'Episode';
-    final fallbackDirector = isEpisode ? 'Episode Director' : l10n.director;
-    final fallbackWriter = isEpisode ? 'Episode Writer' : l10n.writer;
+    final fallbackDirector = isEpisode ? l10n.episodeDirector : l10n.director;
+    final fallbackWriter = isEpisode ? l10n.episodeWriter : l10n.writer;
     for (final d in vm.directors) {
       add(d, fallbackDirector);
     }
