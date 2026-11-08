@@ -245,6 +245,29 @@ class _MediaBarState extends State<MediaBar>
       ? 56.0
       : 0.0;
 
+  /// Fades the backdrop out toward the bar's bottom edge, so the rows below
+  /// it, or one peeking up into it, meet a soft fade instead of a hard line.
+  /// Desktop and web only, since the mask redraws with every frame of the
+  /// backdrop's slow zoom.
+  Widget _fadeBackdropBottom(Widget backdrop) {
+    if (!PlatformDetection.useDesktopUi) return backdrop;
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (bounds) {
+        final fade = widget.rowPeek > 0
+            ? widget.rowPeek * 1.5
+            : bounds.height * 0.2;
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: const [Colors.white, Colors.transparent],
+          stops: [(1 - fade / bounds.height).clamp(0.0, 1.0), 1.0],
+        ).createShader(bounds);
+      },
+      child: backdrop,
+    );
+  }
+
   Color _mediaBarOverlayColor() {
     return OverlayColorPalette.resolveColor(
       widget.prefs.get(UserPreferences.mediaBarOverlayColor),
@@ -2059,9 +2082,8 @@ class _MediaBarState extends State<MediaBar>
                   AnimatedOpacity(
                     opacity: hasVisibleTrailerVideo ? 0 : 1,
                     duration: const Duration(milliseconds: 250),
-                    child: _BackdropLayer(
-                      items: items,
-                      currentIndex: _currentIndex,
+                    child: _fadeBackdropBottom(
+                      _BackdropLayer(items: items, currentIndex: _currentIndex),
                     ),
                   ),
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
@@ -2278,12 +2300,14 @@ class _MediaBarState extends State<MediaBar>
                     AnimatedOpacity(
                       opacity: hasVisibleTrailerVideo ? 0 : 1,
                       duration: const Duration(milliseconds: 250),
-                      child: _BackdropLayer(
-                        items: items,
-                        currentIndex: _currentIndex,
-                        zoomDuration: Duration(
-                          milliseconds: widget.prefs.get(
-                            UserPreferences.mediaBarIntervalMs,
+                      child: _fadeBackdropBottom(
+                        _BackdropLayer(
+                          items: items,
+                          currentIndex: _currentIndex,
+                          zoomDuration: Duration(
+                            milliseconds: widget.prefs.get(
+                              UserPreferences.mediaBarIntervalMs,
+                            ),
                           ),
                         ),
                       ),
