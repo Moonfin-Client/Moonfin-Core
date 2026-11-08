@@ -38,11 +38,14 @@ import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
+import 'package:moonfin/ui/screens/home/home_backdrop.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/settings/subtitle_customization_screen.dart';
 import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
 import 'package:moonfin/ui/screensaver/screensaver_gradient_backdrops.dart';
+import 'package:moonfin/ui/widgets/bounded_network_image.dart';
+import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
@@ -106,12 +109,14 @@ class _Items implements ItemsApi {
 }
 
 /// Items with no artwork URLs, so images fall back to drawn placeholders and
-/// nothing touches the network.
-List<MediaBarSlideItem> _fakeItems() => [
+/// nothing touches the network. [backdrops] gives each one a backdrop address
+/// that loads nothing, for counting where the backdrop is drawn.
+List<MediaBarSlideItem> _fakeItems({bool backdrops = false}) => [
   for (var i = 0; i < 4; i++)
     MediaBarSlideItem(
       itemId: 'item$i',
       serverId: 'server',
+      backdropUrl: backdrops ? 'http://server/backdrop$i.jpg' : null,
       title: 'Sample Title $i',
       overview: 'An overview long enough to wrap over a couple of lines.',
       officialRating: 'PG-13',
@@ -1458,6 +1463,102 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('Home draws its backdrop in the style tried or saved', (
+      tester,
+    ) async {
+      for (final key in [
+        UserPreferences.homeBackdropEnabled.key,
+        UserPreferences.homeBackdropStyle.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.home,
+        );
+      }
+      final prefs = GetIt.instance<UserPreferences>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Home Screen Backdrop',
+            prefKey: 'pref_home_backdrop_style',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await pumpPreview(tester, controller);
+      String? drawn() {
+        final backdrop = find.byType(HomeBackdrop);
+        return backdrop.evaluate().isEmpty
+            ? null
+            : tester.widget<HomeBackdrop>(backdrop).style;
+      }
+
+      expect(drawn(), UserPreferences.homeBackdropFullScreen);
+      for (final style in [
+        UserPreferences.homeBackdropCorner,
+        UserPreferences.homeBackdropTop,
+      ]) {
+        controller.tryValue('pref_home_backdrop_style', style);
+        await tester.pump();
+        expect(drawn(), style);
+      }
+      controller.tryValue(
+        'pref_home_backdrop_style',
+        UserPreferences.homeBackdropOff,
+      );
+      await tester.pump();
+      expect(drawn(), isNull);
+
+      // Saving Off turns the switch off too, and a style tried from there
+      // still shows before it's saved.
+      controller.clearTry('pref_home_backdrop_style');
+      await prefs.set(
+        UserPreferences.homeBackdropStyle,
+        UserPreferences.homeBackdropOff,
+      );
+      await prefs.set(UserPreferences.homeBackdropEnabled, false);
+      await tester.pump();
+      expect(drawn(), isNull);
+      controller.tryValue(
+        'pref_home_backdrop_style',
+        UserPreferences.homeBackdropCorner,
+      );
+      await tester.pump();
+      expect(drawn(), UserPreferences.homeBackdropCorner);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the details backdrop switch takes the picture away in every '
+        'style', (tester) async {
+      final prefs = GetIt.instance<UserPreferences>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Details Screen Backdrop',
+            prefKey: 'pref_show_details_backdrop',
+          ),
+        );
+      addTearDown(controller.dispose);
+      SetupPreviewData.debugOverride = ValueNotifier(
+        _fakeItems(backdrops: true),
+      );
+      final pictures = find.byWidgetPredicate(
+        (widget) =>
+            widget is BoundedNetworkImage &&
+            widget.imageUrl.startsWith('http://server/backdrop'),
+      );
+      for (final style in DetailScreenStyle.values) {
+        controller.tryValue('pref_detail_screen_style', style);
+        await prefs.set(UserPreferences.detailsBackdropEnabled, true);
+        await pumpPreview(tester, controller);
+        final shown = pictures.evaluate().length;
+
+        await prefs.set(UserPreferences.detailsBackdropEnabled, false);
+        await tester.pump();
+        expect(pictures.evaluate().length, lessThan(shown), reason: style.name);
+      }
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('the sidebar stays a rail whatever Always Expand says', (
       tester,
     ) async {
@@ -2766,6 +2867,42 @@ void main() {
       verifyNever(
         () => backdrops.setBackground(any(), context: any(named: 'context')),
       );
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('hiding library backdrops takes the backdrop away', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [library('films', 'movies')];
+      when(() => backdrops.backdropUrlsFor(any()))
+          .thenReturn(const ['http://server/backdrop.jpg']);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Hide Backdrops in Libraries',
+            prefKey: 'pref_hide_backdrops_in_libraries',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final backdrop = find.byType(FullscreenBackdropSwitcher);
+      expect(backdrop, findsOneWidget);
+
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.hideBackdropsInLibraries,
+        true,
+      );
+      await tester.pump();
+      expect(backdrop, findsNothing);
       await tester.pumpWidget(const SizedBox());
     });
   });

@@ -84,6 +84,8 @@ class SettingsPreviewController extends ChangeNotifier {
     'homeRowsShowRatingLabels': SettingsPreviewScene.home,
     'homeRowsShowRatingBadges': SettingsPreviewScene.home,
     'pref_hide_home_media_description': SettingsPreviewScene.home,
+    'pref_show_home_backdrop': SettingsPreviewScene.home,
+    'pref_home_backdrop_style': SettingsPreviewScene.home,
     'seasonal_surprise': SettingsPreviewScene.home,
     'seasonal_density': SettingsPreviewScene.home,
     'pref_detail_screen_style': SettingsPreviewScene.details,

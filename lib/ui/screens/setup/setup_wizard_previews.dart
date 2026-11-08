@@ -53,6 +53,7 @@ import '../../widgets/user_avatar_image.dart';
 import '../detail/detail_buttons.dart';
 import '../detail/detail_layout_metrics.dart';
 import '../detail/frost/frost_detail_content.dart' show frostStageSize;
+import '../home/home_backdrop.dart';
 
 /// The artwork behind every preview, shared with the home screen.
 ///
@@ -1892,7 +1893,10 @@ Widget settingsHomePreview() {
           HomeRowsStyle.v2;
       // Modern rows hold the first card in focus, the way Home looks with a
       // row in focus, so the card's grown state and its details show.
-      return switch (previewValue(context, UserPreferences.navbarPosition)) {
+      final home = switch (previewValue(
+        context,
+        UserPreferences.navbarPosition,
+      )) {
         NavbarPosition.top => _topNavbarPreview(
           context,
           items,
@@ -1913,9 +1917,44 @@ Widget settingsHomePreview() {
           focusFirst: modern,
         ),
       };
+      final backdrop = _homeBackdropStyle(context);
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (backdrop != UserPreferences.homeBackdropOff)
+            HomeBackdrop(
+              url: items.first.backdropUrl,
+              blurAmount: previewValue(
+                context,
+                UserPreferences.browsingBackgroundBlurAmount,
+              ).toDouble(),
+              style: backdrop,
+            ),
+          const HomeGradientScrim(),
+          home,
+        ],
+      );
     },
     fallback: _fallbackNavbar(position),
   );
+}
+
+/// The backdrop Home draws. A phone only has the switch and always fills the
+/// screen, and a style the picker is trying shows before the switch follows it.
+String _homeBackdropStyle(BuildContext context) {
+  final enabled = previewValue(context, UserPreferences.homeBackdropEnabled);
+  if (_phone) {
+    return enabled
+        ? UserPreferences.homeBackdropFullScreen
+        : UserPreferences.homeBackdropOff;
+  }
+  final trying =
+      SettingsPreviewScope.maybeOf(context)
+          ?.isTrying(UserPreferences.homeBackdropStyle.key) ??
+      false;
+  return enabled || trying
+      ? previewValue(context, UserPreferences.homeBackdropStyle)
+      : UserPreferences.homeBackdropOff;
 }
 
 /// [body] as a screen under the navbar the live preview draws over Home, for a
@@ -3182,17 +3221,19 @@ List<Widget> _techChips(BuildContext context, {double gap = 6}) {
   ];
 }
 
-/// The backdrop shown whole under the toolbar when a phone has Backdrop Size
-/// on Fit.
-Widget _detailBackdropFit(BuildContext context, Widget art) =>
-    DetailBackdropFit(
-      prefs: GetIt.instance<UserPreferences>(),
-      fits:
-          _phone &&
-          previewValue(context, UserPreferences.detailsBackdropSize) ==
-              UserPreferences.detailsBackdropFit,
-      child: art,
-    );
+/// The details backdrop as its settings draw it: left out when it's switched
+/// off, and shown whole under the toolbar when a phone has Backdrop Size on Fit.
+Widget _detailBackdrop(BuildContext context, Widget art) =>
+    previewValue(context, UserPreferences.detailsBackdropEnabled)
+    ? DetailBackdropFit(
+        prefs: GetIt.instance<UserPreferences>(),
+        fits:
+            _phone &&
+            previewValue(context, UserPreferences.detailsBackdropSize) ==
+                UserPreferences.detailsBackdropFit,
+        child: art,
+      )
+    : const SizedBox.shrink();
 
 /// The details background setting from 0 to 1. Classic blurs its backdrop by
 /// it and every other style dims its backdrop by it instead.
@@ -3299,7 +3340,7 @@ Widget _detailPreviewScaffold(
     fit: StackFit.expand,
     children: [
       ColoredBox(color: base),
-      _detailBackdropFit(
+      _detailBackdrop(
         context,
         _artwork(
           item.backdropUrl,
@@ -3588,9 +3629,8 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      if (item.backdropUrl != null &&
-          previewValue(context, UserPreferences.detailsBackdropEnabled))
-        _detailBackdropFit(
+      if (item.backdropUrl != null)
+        _detailBackdrop(
           context,
           sigma > 0
               ? ImageFiltered(
@@ -3855,7 +3895,7 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      _detailBackdrop(context, _artwork(item.backdropUrl)),
       ColoredBox(
         color: AppColors.black.withValues(
           alpha: 0.35 + 0.5 * _detailBackgroundAmount(context),
@@ -4066,7 +4106,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      _detailBackdrop(context, _artwork(item.backdropUrl)),
       ColoredBox(
         color: AppColors.black.withValues(
           alpha: 0.55 + 0.3 * _detailBackgroundAmount(context),
@@ -4107,7 +4147,7 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
     fit: StackFit.expand,
     children: [
       ColoredBox(color: base),
-      _detailBackdropFit(
+      _detailBackdrop(
         context,
         _artwork(item.backdropUrl, alignment: Alignment.topCenter),
       ),
@@ -4270,11 +4310,13 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
     columns: true,
     columnTextScale: _phone ? 1 : 1.3,
   );
+  final showArt = previewValue(context, UserPreferences.detailsBackdropEnabled);
   final environment = [
-    ImageFiltered(
-      imageFilter: ui.ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-      child: _artwork(item.backdropUrl),
-    ),
+    if (showArt)
+      ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: _artwork(item.backdropUrl),
+      ),
     ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
   ];
 
@@ -4297,7 +4339,9 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
               colors: [Colors.white, Colors.white, Colors.transparent],
               stops: [0, 0.62, 1],
             ).createShader(rect),
-            child: _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+            child: showArt
+                ? _artwork(item.backdropUrl, alignment: Alignment.topCenter)
+                : const SizedBox.shrink(),
           ),
         ),
         Positioned(
@@ -4442,7 +4486,7 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
       fit: StackFit.expand,
       children: [
         const ColoredBox(color: Color(0x5C1C1C20)),
-        _artwork(item.backdropUrl),
+        if (showArt) _artwork(item.backdropUrl),
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -4616,13 +4660,16 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
     AppColorScheme.background,
   );
   final inset = landscape ? 28.0 : 20.0;
+  final showArt = previewValue(context, UserPreferences.detailsBackdropEnabled);
 
   final panel = ColoredBox(
     color: surface,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (landscape)
+        if (landscape && !showArt)
+          const SizedBox(height: 64)
+        else if (landscape)
           SizedBox(
             height: 230,
             child: Stack(

@@ -85,11 +85,11 @@ import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/top_toolbar.dart';
 import '../../navigation/home_refresh_bus.dart';
 import '../../widgets/bounded_network_image.dart';
-import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../../util/game_library.dart';
+import 'home_backdrop.dart';
 import 'home_row_prefetch.dart';
 import 'home_row_shift.dart';
 import 'home_view_model.dart';
@@ -180,10 +180,6 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static Future<String?> seeAllRoute(HomeRow row) =>
       _ContentRowsState._seeAllRoute(row);
-
-  @visibleForTesting
-  static Widget topBackdrop(Widget backdrop) =>
-      const _Backdrop(blurAmount: 0)._top(backdrop);
 
   @override
   Widget build(BuildContext context) {
@@ -627,7 +623,7 @@ class _HomeShellState extends State<_HomeShell>
                     ValueListenableBuilder<String?>(
                       valueListenable: _backdropUrlNotifier,
                       builder: (context, url, _) {
-                        return _Backdrop(
+                        return HomeBackdrop(
                           url: url,
                           blurAmount: blurAmount,
                           useMakdBackdropFx: useMakdBackdropFx,
@@ -637,7 +633,7 @@ class _HomeShellState extends State<_HomeShell>
                         );
                       },
                     ),
-                  const _GradientScrim(),
+                  const HomeGradientScrim(),
                   Positioned.fill(
                     child: _ContentRows(
                       key: _contentRowsKey,
@@ -692,188 +688,6 @@ class _HomeShellState extends State<_HomeShell>
     }
     final navContext = appRouter.routerDelegate.navigatorKey.currentContext;
     await showExitConfirmationDialog(navContext ?? context);
-  }
-}
-
-class _GradientScrim extends StatelessWidget {
-  const _GradientScrim();
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColorScheme.scrim.withValues(alpha: 0.8),
-              AppColorScheme.scrim.withValues(alpha: 0.4),
-              AppColorScheme.scrim.withValues(alpha: 0.8),
-            ],
-            stops: [0.0, 0.3, 1.0],
-          ),
-        ),
-        child: SizedBox.expand(),
-      ),
-    );
-  }
-}
-
-class _Backdrop extends StatelessWidget {
-  final String? url;
-  final double blurAmount;
-  final bool useMakdBackdropFx;
-
-  /// Where it goes: behind the whole screen, in the top right corner fading
-  /// into the background toward the left and the bottom the way the Google TV
-  /// home screen does, or only its top half fading out toward the middle.
-  final String style;
-
-  const _Backdrop({
-    this.url,
-    required this.blurAmount,
-    this.useMakdBackdropFx = false,
-    this.style = UserPreferences.homeBackdropFullScreen,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final switcher = FullscreenBackdropSwitcher(
-      imageUrl: url,
-      duration: BackgroundService.transitionDuration,
-      imageBuilder: (imageUrl) {
-        final image = _blurredImage(context, imageUrl, blurAmount);
-        if (!useMakdBackdropFx) {
-          return image;
-        }
-
-        return ClipRect(
-          child: TweenAnimationBuilder<double>(
-            key: ValueKey('makd_home_backdrop_$imageUrl'),
-            tween: Tween(begin: 1.0, end: 1.08),
-            duration: const Duration(seconds: 10),
-            curve: Curves.easeOut,
-            builder: (context, scale, child) {
-              return Transform.scale(
-                scale: scale,
-                alignment: Alignment.center,
-                child: child,
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                image,
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.scrim.withValues(alpha: 0.26),
-                  ),
-                  child: const SizedBox.expand(),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    return RepaintBoundary(
-      child: switch (style) {
-        UserPreferences.homeBackdropCorner => _corner(switcher),
-        UserPreferences.homeBackdropTop => _top(switcher),
-        _ => switcher,
-      },
-    );
-  }
-
-  // Eased stops, so the image melts into the background rather than ending
-  // on a visible line.
-  LinearGradient _fade(Alignment start, Alignment end) {
-    final fade = _homeBackground;
-    return LinearGradient(
-      begin: start,
-      end: end,
-      colors: [
-        fade,
-        fade.withValues(alpha: 0.85),
-        fade.withValues(alpha: 0.5),
-        fade.withValues(alpha: 0.15),
-        fade.withValues(alpha: 0),
-      ],
-      stops: const [0, 0.12, 0.3, 0.48, 0.6],
-    );
-  }
-
-  Widget _corner(Widget backdrop) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: FractionallySizedBox(
-        widthFactor: 0.7,
-        heightFactor: 0.75,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            backdrop,
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: _fade(Alignment.centerLeft, Alignment.centerRight),
-              ),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: _fade(Alignment.bottomCenter, Alignment.topCenter),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Leaves the picture where the full screen one sits, fades it out toward
-  /// the middle and hides the bottom half.
-  Widget _top(Widget backdrop) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        backdrop,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: _fade(Alignment.bottomCenter, Alignment.topCenter),
-                ),
-              ),
-            ),
-            Expanded(child: ColoredBox(color: _homeBackground)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _blurredImage(BuildContext context, String imageUrl, double blur) {
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final pixelRatio = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
-    final targetPxWidth =
-        (blur > 0
-                ? viewportWidth * pixelRatio * 0.6
-                : viewportWidth * pixelRatio)
-            .round();
-    final maxWidth = targetPxWidth < 480
-        ? 480
-        : (targetPxWidth > 1280 ? 1280 : targetPxWidth);
-    return BoundedNetworkImage(
-      imageUrl: imageUrl,
-      scale: blur > 0 ? 0.3 : 1.0,
-      minWidth: 320,
-      maxWidth: maxWidth,
-      blurSigma: blur > 0 ? GlassSettings.decorativeSigma(blur) : 0,
-      priority: ImageFetchPriority.high,
-      errorBuilder: (_, _, _) => const SizedBox.shrink(),
-    );
   }
 }
 
