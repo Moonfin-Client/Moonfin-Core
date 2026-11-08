@@ -9881,5 +9881,399 @@
     "accountActive": "Activo",
     "@accountActive": {
         "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 tag} otro{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 studio} otro{{count} studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 chapter} otro{{count} chapters}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} otro{{count} extras}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 season} otro{{count} seasons}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episode} otro{{count} episodes}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 movie} otro{{count} movies}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 show} otro{{count} shows}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 track} otro{{count} tracks}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 item} otro{{count} items}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 album} otro{{count} albums}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, =1{1 collection} otro{{count} collections}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, =1{1 title} otro{{count} titles}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleStage": "Escenario",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Estreno",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "detailScreenStyleQuickLook": "Vistazo rápido",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Helado",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Abrir página completa",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Volver a cerrar",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} de {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "rendererModeSkia": "Skia",
+    "@rendererModeSkia": {
+        "description": "Renderer option: always use the Skia renderer"
+    },
+    "queuedMoreCount": "{count, plural, =1{1 more queued} otro{{count} mas queued}}",
+    "@queuedMoreCount": {
+        "description": "Row under the active downloads list standing in for queued items not shown individually",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "noOtherAudioTracks": "No hay otras pistas de audio",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "Solo emisiones iniciales, sin repeticiones",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "Configuración de la serie",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "Grabación de serie actualizada",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "No es posible actualizar la grabación de la serie",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "recordCurrentEpisode": "Grabar este episodio",
+    "@recordCurrentEpisode": {
+        "description": "Live TV player action to record only the current episode"
+    },
+    "recordCurrentProgram": "Grabar este programa",
+    "@recordCurrentProgram": {
+        "description": "Live TV player action to record only the current program"
+    },
+    "cancelCurrentRecording": "Cancelar esta grabación",
+    "@cancelCurrentRecording": {
+        "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
+    },
+    "recordSeries": "Grabar serie",
+    "@recordSeries": {
+        "description": "Button label to record every showing of a live TV series"
+    },
+    "seriesSetToRecord": "Series programadas para grabar",
+    "@seriesSetToRecord": {
+        "description": "Snackbar confirmation after scheduling a live TV series recording"
+    },
+    "seriesRecordingCancelled": "Grabación de la serie cancelada",
+    "@seriesRecordingCancelled": {
+        "description": "Snackbar confirmation after cancelling a live TV series recording"
+    },
+    "unableToCreateSeriesRecording": "No es posible crear una grabación de serie",
+    "@unableToCreateSeriesRecording": {
+        "description": "Error when creating a live TV series recording fails"
+    },
+    "watchChannelLive": "Ver el canal en directo",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "playbackStreamLost": "La reproducción se detuvo y no pudo reanudarse.",
+    "@playbackStreamLost": {
+        "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+    },
+    "playbackVideoUnsupported": "Este dispositivo no puede reproducir el formato de este video. Prueba con un reproductor externo.",
+    "@playbackVideoUnsupported": {
+        "description": "Shown when the player can't show an item's video and no transcode is left to try, instead of playing the audio over a black screen"
+    },
+    "liveReconnecting": "Reconectando… ({attempt} de {total})",
+    "@liveReconnecting": {
+        "description": "Overlay shown while a live channel's bounded recovery is retrying",
+        "placeholders": {
+            "attempt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "playerMatchingDisplayRate": "Ajustando la pantalla a {fps} fps…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "activeDownloads": "Descargas activas",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
+    },
+    "savedMediaCount": "{count, plural, =1{1 item} otro{{count} items}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOfLimit": "{used} de {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Seleccionar elementos",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Aún no hay nada guardado",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Las descargas que inicias aparecen aquí y se pueden reproducir sin conexión.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "No se está descargando nada en este momento",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "No hay descargas que coincidan con esa búsqueda",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Reproducir desde el principio",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Ir a Detalles",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "Eliminar Descarga",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteSeason": "Eliminar {season}",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} otro{Delete {count} episodes}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Abrir programa",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Reproducir siguiente no visto",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaRead": "Leer",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "savedMediaCancelDownload": "Cancelar descarga",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Tamaño",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByName": "Nombre",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "sortByDateAdded": "Fecha añadida",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "settingsSearchHint": "Configuración de búsqueda",
+    "@settingsSearchHint": {
+        "description": "Hint text in the settings search field"
+    },
+    "showPosterLabels": "Etiquetas para carteles",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "showPosterLabelsSubtitle": "Muestra las etiquetas en los carteles, como 4K o HDR.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "mixedRowsOnly": "Solo filas mixtas",
+    "@mixedRowsOnly": {
+        "description": "Option: only show the label on rows holding both movies and series"
+    },
+    "loadingAnimation": "Cargando animación",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationImageMoonfinLogo": "Logo de Moonfin",
+    "@loadingAnimationImageMoonfinLogo": {
+        "description": "Loading animation image option: Moonfin Logo"
+    },
+    "loadingAnimationImageSpinner": "Spinner",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Runner",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Fases Lunares",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Fases de Moonfin",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Fases de Neonfin",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
     }
 }
