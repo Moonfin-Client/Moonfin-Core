@@ -26485,6 +26485,60 @@ abstract class AppLocalizations {
   /// **'White is much brighter in HDR than in SDR, so a dimmer style here avoids the glare'**
   String get subtitleHdrSeparateSubtitle;
 
+  /// Toggle that draws subtitles in a bold weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold Text'**
+  String get subtitleBold;
+
+  /// Setting for how thick the outline around subtitle text is.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Stroke Width'**
+  String get subtitleStrokeWidth;
+
+  /// Setting for which font subtitles are drawn in.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get subtitleFont;
+
+  /// Explains that subtitle fonts are not built in and are downloaded when chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Fonts are downloaded from Google Fonts the first time you pick them'**
+  String get subtitleFontDescription;
+
+  /// Shown when a subtitle font could not be downloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t download {font}'**
+  String subtitleFontDownloadFailed(String font);
+
+  /// Toggle for a drop shadow behind subtitle text.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Shadow'**
+  String get subtitleShadow;
+
+  /// How dark the subtitle drop shadow is.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow Intensity'**
+  String get subtitleShadowIntensity;
+
+  /// How far the subtitle drop shadow sits from the text.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow Offset'**
+  String get subtitleShadowOffset;
+
+  /// How soft the edge of the subtitle drop shadow is.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow Blur'**
+  String get subtitleShadowBlur;
+
   /// Title of the desktop setting that scales mouse wheel scrolling.
   ///
   /// In en, this message translates to:
