@@ -405,6 +405,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   AggregatedItem? _nextUp;
   AggregatedItem? get nextUp => _nextUp;
 
+  /// Counts Next Up requests, so an older answer that arrives late can't
+  /// replace the one a refresh asked for after it.
+  int _nextUpRequest = 0;
+
   Map<String, double> _ratings = const {};
   Map<String, double> get ratings => _ratings;
 
@@ -1352,7 +1356,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadNextUp() async {
-    final previousId = _nextUp?.id;
+    final request = ++_nextUpRequest;
     AggregatedItem? nextUp;
     try {
       final data = await _client.itemsApi.getNextUp(
@@ -1374,6 +1378,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
     } catch (_) {}
 
+    if (_isDisposed || request != _nextUpRequest) return;
+    final previousId = _nextUp?.id;
     _nextUp = nextUp;
     if (previousId != _nextUp?.id) {
       notifyListeners();

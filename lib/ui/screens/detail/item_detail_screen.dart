@@ -9665,10 +9665,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               // Next Up arrives on its own future, so fall back to whatever is part
               // way through. First unwatched can sit behind the user, since a
               // skipped episode or a special counts as unwatched. A Next Up
-              // marked played since is stale until the page refetches it.
+              // marked played since is stale until the page refetches it, so
+              // go on from the first unwatched episode after it.
               final nextUp = viewModel.nextUp;
+              AggregatedItem? afterPlayedNextUp;
+              if (nextUp != null && nextUp.isPlayed) {
+                final at = allEpisodes.indexWhere((e) => e.id == nextUp.id);
+                if (at >= 0) {
+                  for (final e in allEpisodes.skip(at + 1)) {
+                    if (!e.isPlayed) {
+                      afterPlayedNextUp = e;
+                      break;
+                    }
+                  }
+                }
+              }
               targetEpisode =
                   (nextUp != null && !nextUp.isPlayed ? nextUp : null) ??
+                  afterPlayedNextUp ??
                   allEpisodes.firstWhere(
                     (e) => !e.isPlayed && (e.playedPercentage ?? 0) > 0,
                     orElse: () => allEpisodes.firstWhere(
