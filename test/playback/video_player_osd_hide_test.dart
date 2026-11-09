@@ -26,10 +26,21 @@ import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
+import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
 import '../util/media_segment_fakes.dart';
+
+class _Images extends Fake implements ImageApi {
+  @override
+  String getChapterImageUrl(
+    String itemId, {
+    required int index,
+    int? maxWidth,
+    String? tag,
+  }) => 'https://server/$itemId/chapter/$index?tag=$tag';
+}
 
 class _Client extends Fake implements MediaServerClient {
   final items = FakeItemsApi();
@@ -39,6 +50,9 @@ class _Client extends Fake implements MediaServerClient {
 
   @override
   ItemsApi get itemsApi => items;
+
+  @override
+  ImageApi get imageApi => _Images();
 
   @override
   TrickplayApi? get trickplayApi => null;
@@ -514,6 +528,69 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 10));
     expect(find.byType(Slider), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('chapters open as a row on the one playing, and seek', (
+    tester,
+  ) async {
+    manager.queueService.setQueue([
+      const AggregatedItem(
+        id: 'movie',
+        serverId: 'server',
+        rawData: {
+          'Id': 'movie',
+          'RunTimeTicks': 6000000000,
+          'Chapters': [
+            {'Name': 'Opening', 'StartPositionTicks': 0},
+            {
+              'Name': 'Heist',
+              'StartPositionTicks': 1200000000,
+              'ImageTag': 'abc',
+            },
+            {
+              'Name': 'Escape through the asteroid field with the cruiser behind',
+              'StartPositionTicks': 3600000000,
+            },
+          ],
+        },
+      ),
+    ]);
+    await mountPlayer(tester);
+    manager.state.setPosition(const Duration(minutes: 3));
+    await tester.tap(find.byIcon(Icons.bookmark_outline_rounded));
+    await tester.pumpAndSettle();
+
+    final row = tester.widget<ListView>(
+      find.descendant(of: find.byType(Dialog), matching: find.byType(ListView)),
+    );
+    expect(row.scrollDirection, Axis.horizontal);
+    expect(Focus.of(tester.element(find.text('Heist'))).hasFocus, isTrue);
+    expect(tester.widget<MarqueeText>(find.byType(MarqueeText)).text, 'Heist');
+    expect(find.text('2:00'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Image &&
+            w.image is NetworkImage &&
+            (w.image as NetworkImage).url ==
+                'https://server/movie/chapter/1?tag=abc',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(
+      tester.widget<MarqueeText>(find.byType(MarqueeText)).text,
+      startsWith('Escape'),
+      reason: 'only the focused card scrolls its name',
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    expect(manager.seeks.last, const Duration(minutes: 6));
 
     await tester.pumpWidget(const SizedBox());
   });

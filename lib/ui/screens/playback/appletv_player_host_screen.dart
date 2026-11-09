@@ -967,6 +967,31 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     mediaSourceId: _manager?.currentResolution?.mediaSourceId,
   );
 
+  /// [chapters] with each one's frame for the native chapter row, or an
+  /// empty url where the server has none.
+  List<Map<String, dynamic>> _withChapterImages(
+    dynamic item,
+    List<Map<String, dynamic>> chapters,
+  ) {
+    final imageApi = _clientForQueueItem(item)?.imageApi;
+    if (item is! AggregatedItem || imageApi == null) return chapters;
+    final raw = itemChaptersForSource(
+      item,
+      _manager?.currentResolution?.mediaSourceId,
+    );
+    return [
+      for (var i = 0; i < chapters.length; i++)
+        {
+          ...chapters[i],
+          'imageUrl': switch (i < raw.length ? raw[i]['ImageTag'] : null) {
+            final String tag when tag.isNotEmpty => imageApi
+                .getChapterImageUrl(item.id, index: i, maxWidth: 480, tag: tag),
+            _ => '',
+          },
+        },
+    ];
+  }
+
   /// Hands the current item's chapter starts to the manager, which steps
   /// previous and next through them before it steps through the queue. Runs
   /// per item, so one with none clears the last.
@@ -1308,7 +1333,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     backend.setUiMetadata(
       topTitle: topTitle,
       topSubtitle: topSubtitle,
-      chapters: chapters,
+      chapters: _withChapterImages(item, chapters),
       showChapterMarkers: _prefBool(
         UserPreferences.showChapterMarkers,
         defaultValue: false,

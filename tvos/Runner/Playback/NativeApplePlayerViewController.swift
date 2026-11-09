@@ -379,7 +379,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private let pauseTitleLabel = UILabel()
     private let pauseTextLabel = UILabel()
 
-    private var chapters: [(title: String, startMs: Int)] = []
+    private var chapters: [(title: String, startMs: Int, imageUrl: String)] = []
     private var showChapterMarkers = false
 
     private var timeSlots = TimeSlotConfig()
@@ -1537,7 +1537,9 @@ final class NativeApplePlayerViewController: UIViewController {
                 return nil
             }
             let title = (entry["title"] as? String) ?? ""
-            return (title: title, startMs: startMs)
+            return (
+                title: title, startMs: startMs,
+                imageUrl: (entry["imageUrl"] as? String) ?? "")
         }
 
         // Gates the scrubber marks alone. The chapters array still arrives in
@@ -3379,19 +3381,29 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func presentChapterMenu() {
-        let sheet = self.makePlayerMenu(
-            title: "Chapters", message: nil, preferredStyle: .actionSheet)
-        for chapter in chapters {
-            let stamp = formatTime(Double(chapter.startMs) / 1000.0)
-            sheet.addAction(
-                self.makePlayerAction(title: "\(chapter.title) · \(stamp)", style: .default) {
-                    [weak self] _ in
-                    self?.seekDirect(toMs: chapter.startMs)
-                    self?.showOsd()
-                })
+        let chapters = self.chapters
+        guard !chapters.isEmpty else { return }
+        let positionMs = Int(player.currentTime * 1000)
+        let panel = CardRowPanelViewController(
+            title: "Chapters",
+            cards: chapters.map {
+                (
+                    title: $0.title, subtitle: formatTime(Double($0.startMs) / 1000.0),
+                    imageUrl: $0.imageUrl)
+            },
+            itemSize: CGSize(width: 400, height: 300),
+            imageHeight: 225,
+            currentIndex: chapters.lastIndex { $0.startMs <= positionMs } ?? 0,
+            accent: themeAccent,
+            placeholderSymbol: "film"
+        ) { [weak self] index in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.seekDirect(toMs: chapters[index].startMs)
+                self.showOsd()
+            }
         }
-        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
-        presentSheet(sheet, from: .chapters)
+        presentPanel(panel)
     }
 
     private func presentSpeedMenu() {
@@ -3480,8 +3492,18 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func presentCastPanel() {
-        let panel = CastPanelViewController(people: castPeople) { [weak self] personId in
-            guard let self else { return }
+        let people = castPeople
+        let panel = CardRowPanelViewController(
+            title: "Cast & Crew",
+            cards: people.map { (title: $0.name, subtitle: $0.subtitle, imageUrl: $0.imageUrl) },
+            itemSize: CGSize(width: 240, height: 360),
+            imageHeight: 280,
+            currentIndex: nil,
+            accent: themeAccent,
+            placeholderSymbol: "person.fill"
+        ) { [weak self] index in
+            let personId = people[index].personId
+            guard let self, !personId.isEmpty else { return }
             self.dismiss(animated: true) {
                 self.onOpenCastPerson?(personId)
             }
@@ -4424,18 +4446,39 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
     }
 }
 
-private final class CastPanelViewController: UIViewController, RemotePlayerNavigable, UICollectionViewDataSource,
-    UICollectionViewDelegate
+/// A row of cards over the player, used by the cast and chapter panels.
+/// It opens on the card at `currentIndex` and marks it with the accent.
+private final class CardRowPanelViewController: UIViewController, RemotePlayerNavigable,
+    UICollectionViewDataSource, UICollectionViewDelegate
 {
-    private let people: [(name: String, subtitle: String, imageUrl: String, personId: String)]
-    private let onSelect: (String) -> Void
+    private let panelTitle: String
+    private let cards: [(title: String, subtitle: String, imageUrl: String)]
+    private let itemSize: CGSize
+    private let imageHeight: CGFloat
+    private let currentIndex: Int?
+    private let accent: UIColor
+    private let placeholderSymbol: String
+    private let onSelect: (Int) -> Void
     private var collectionView: UICollectionView!
+    private var scrolledToCurrent = false
 
     init(
-        people: [(name: String, subtitle: String, imageUrl: String, personId: String)],
-        onSelect: @escaping (String) -> Void
+        title: String,
+        cards: [(title: String, subtitle: String, imageUrl: String)],
+        itemSize: CGSize,
+        imageHeight: CGFloat,
+        currentIndex: Int?,
+        accent: UIColor,
+        placeholderSymbol: String,
+        onSelect: @escaping (Int) -> Void
     ) {
-        self.people = people
+        self.panelTitle = title
+        self.cards = cards
+        self.itemSize = itemSize
+        self.imageHeight = imageHeight
+        self.currentIndex = currentIndex
+        self.accent = accent
+        self.placeholderSymbol = placeholderSymbol
         self.onSelect = onSelect
         super.init(nibName: nil, bundle: nil)
     }
@@ -4450,14 +4493,14 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
 
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = "Cast & Crew"
+        title.text = panelTitle
         title.font = .systemFont(ofSize: 40, weight: .bold)
         title.textColor = .white
         view.addSubview(title)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 240, height: 360)
+        layout.itemSize = itemSize
         layout.minimumLineSpacing = 36
         layout.sectionInset = UIEdgeInsets(top: 0, left: 90, bottom: 0, right: 90)
 
@@ -4466,7 +4509,7 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(CastCell.self, forCellWithReuseIdentifier: "cast")
+        collectionView.register(CardRowCell.self, forCellWithReuseIdentifier: "card")
         view.addSubview(collectionView)
 
         NSLayoutConstraint.activate([
@@ -4475,38 +4518,53 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 40),
-            collectionView.heightAnchor.constraint(equalToConstant: 420),
+            collectionView.heightAnchor.constraint(equalToConstant: itemSize.height + 60),
         ])
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard !scrolledToCurrent, let currentIndex, currentIndex < cards.count else { return }
+        scrolledToCurrent = true
+        collectionView.layoutIfNeeded()
+        collectionView.scrollToItem(
+            at: IndexPath(item: currentIndex, section: 0), at: .centeredHorizontally,
+            animated: false)
+    }
+
+    func indexPathForPreferredFocusedView(in collectionView: UICollectionView) -> IndexPath? {
+        cards.isEmpty ? nil : IndexPath(item: currentIndex ?? 0, section: 0)
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int)
         -> Int
     {
-        people.count
+        cards.count
     }
 
     func collectionView(
         _ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell =
-            collectionView.dequeueReusableCell(withReuseIdentifier: "cast", for: indexPath)
-            as! CastCell
-        let person = people[indexPath.item]
-        cell.configure(name: person.name, subtitle: person.subtitle, imageUrl: person.imageUrl)
+            collectionView.dequeueReusableCell(withReuseIdentifier: "card", for: indexPath)
+            as! CardRowCell
+        let card = cards[indexPath.item]
+        cell.configure(
+            name: card.title, subtitle: card.subtitle, imageUrl: card.imageUrl,
+            imageHeight: imageHeight, placeholderSymbol: placeholderSymbol,
+            isCurrent: indexPath.item == currentIndex, accent: accent)
         return cell
     }
 
     func collectionView(
         _ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath
     ) {
-        let person = people[indexPath.item]
-        guard !person.personId.isEmpty else { return }
-        onSelect(person.personId)
+        onSelect(indexPath.item)
     }
 
     func handleRemoteNavigation(_ command: String) {
         if command == "back" { dismiss(animated: true); return }
-        guard !people.isEmpty else { return }
+        guard !cards.isEmpty else { return }
         let system = UIFocusSystem.focusSystem(for: view)
         let cell = system?.focusedItem as? UICollectionViewCell
         let focused = cell.flatMap { collectionView.indexPath(for: $0) }
@@ -4515,7 +4573,8 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
             return
         }
         let delta = command == "moveleft" ? -1 : command == "moveright" ? 1 : 0
-        let index = focused.map { min(people.count - 1, max(0, $0.item + delta)) } ?? 0
+        let index =
+            focused.map { min(cards.count - 1, max(0, $0.item + delta)) } ?? (currentIndex ?? 0)
         let target = IndexPath(item: index, section: 0)
         collectionView.scrollToItem(at: target, at: .centeredHorizontally, animated: false)
         collectionView.layoutIfNeeded()
@@ -4534,11 +4593,15 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
     }
 }
 
-private final class CastCell: UICollectionViewCell {
+private final class CardRowCell: UICollectionViewCell {
     private let imageView = UIImageView()
     private let nameLabel = UILabel()
     private let roleLabel = UILabel()
     private var imageUrl = ""
+    private var imageHeight: NSLayoutConstraint!
+    private var placeholder: UIImage?
+    private var isCurrent = false
+    private var accent = UIColor.white
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -4548,12 +4611,16 @@ private final class CastCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 12
         imageView.backgroundColor = UIColor(white: 0.2, alpha: 1)
+        imageView.tintColor = UIColor(white: 1, alpha: 0.5)
         contentView.addSubview(imageView)
 
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.font = .systemFont(ofSize: 24, weight: .semibold)
         nameLabel.textColor = .white
         nameLabel.numberOfLines = 1
+        #if os(tvOS)
+        nameLabel.enablesMarqueeWhenAncestorFocused = true
+        #endif
         contentView.addSubview(nameLabel)
 
         roleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -4562,11 +4629,12 @@ private final class CastCell: UICollectionViewCell {
         roleLabel.numberOfLines = 1
         contentView.addSubview(roleLabel)
 
+        imageHeight = imageView.heightAnchor.constraint(equalToConstant: 280)
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 280),
+            imageHeight,
 
             nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -4582,21 +4650,41 @@ private final class CastCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(name: String, subtitle: String, imageUrl: String) {
+    func configure(
+        name: String, subtitle: String, imageUrl: String, imageHeight: CGFloat,
+        placeholderSymbol: String, isCurrent: Bool, accent: UIColor
+    ) {
         nameLabel.text = name
         roleLabel.text = subtitle
         roleLabel.isHidden = subtitle.isEmpty
+        self.imageHeight.constant = imageHeight
+        self.isCurrent = isCurrent
+        self.accent = accent
+        placeholder = UIImage(
+            systemName: placeholderSymbol,
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 56))
+        updateBorder()
         self.imageUrl = imageUrl
-        imageView.image = nil
+        show(nil)
         guard !imageUrl.isEmpty, let url = URL(string: imageUrl) else { return }
         let expected = imageUrl
         MoonfinURLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             let image = data.flatMap { UIImage(data: $0) }
             DispatchQueue.main.async {
                 guard let self, self.imageUrl == expected else { return }
-                self.imageView.image = image
+                self.show(image)
             }
         }.resume()
+    }
+
+    private func show(_ image: UIImage?) {
+        imageView.image = image ?? placeholder
+        imageView.contentMode = image == nil ? .center : .scaleAspectFill
+    }
+
+    private func updateBorder() {
+        imageView.layer.borderWidth = isFocused || isCurrent ? 4 : 0
+        imageView.layer.borderColor = (isFocused ? UIColor.white : accent).cgColor
     }
 
     override func didUpdateFocus(
@@ -4606,8 +4694,7 @@ private final class CastCell: UICollectionViewCell {
             let focused = self.isFocused
             self.imageView.transform =
                 focused ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
-            self.imageView.layer.borderWidth = focused ? 4 : 0
-            self.imageView.layer.borderColor = UIColor.white.cgColor
+            self.updateBorder()
         }
     }
 }
