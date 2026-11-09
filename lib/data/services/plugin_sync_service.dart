@@ -321,11 +321,7 @@ class PluginSyncService extends ChangeNotifier {
     // home rows, no Seerr proxy, no plugin push enrollment. The messages flag
     // is cleared too, since only a ping would otherwise reset it after a
     // session on a server that had the plugin.
-    final features = FeatureDetector(
-      serverType: client.serverType,
-      serverVersion: '',
-    );
-    if (!features.supportsMoonfinPlugin) {
+    if (!client.features.supportsMoonfinPlugin) {
       _stopSettingsStream();
       _messages?.setSupported(false);
       _setPluginSeerrEnabled(client, false);
@@ -737,7 +733,7 @@ class PluginSyncService extends ChangeNotifier {
     // session websocket instead. Moonbase for Silo and Plex can't stream, so
     // settings arrive at sign-in and on a manual sync. Don't loop on 501
     // reconnects here.
-    if (client.serverType != ServerType.jellyfin) return;
+    if (!client.features.supportsPluginSettingsStream) return;
 
     if (!_pluginAvailable || !_prefs.get(UserPreferences.pluginSyncEnabled)) {
       return;

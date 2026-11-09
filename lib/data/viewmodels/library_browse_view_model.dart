@@ -1702,17 +1702,14 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get supportsVideoFilters =>
       !isMusicBrowse && !isBookLibrary && !isPlaylistBrowse;
 
-  /// Emby's items query takes no 4K flag and its series status holds only
-  /// continuing and ended, so those two options stay out of the picker rather
-  /// than sitting there doing nothing. Silo filters 4K by resolution.
-  bool get supportsUhdFilter => _client.serverType != ServerType.emby;
+  /// Options the server can't filter on stay out of the picker rather than
+  /// sitting there doing nothing.
+  bool get supportsUhdFilter => _client.features.supportsUhdFilter;
 
-  /// Plex keeps no series status, likes, 3D, extras or disc source to filter
-  /// on, so those stay out of the picker for the same reason.
-  bool get supportsExtraFilters => _client.serverType != ServerType.plex;
+  bool get supportsExtraFilters => _client.features.supportsExtraLibraryFilters;
 
   bool get supportsUnreleasedSeriesFilter =>
-      _client.serverType == ServerType.jellyfin;
+      _client.features.supportsUnreleasedSeriesFilter;
 
   List<LibrarySortBy> get sortOptions => LibrarySortBy.optionsFor(
     isSongsBrowse: isSongsBrowse,

@@ -132,7 +132,7 @@ class ItemMembershipService {
     final isSameServerItem =
         serverId.isEmpty || currentUser?.serverId == serverId;
     final requiresCollectionPermission =
-        client.serverType == ServerType.jellyfin && isSameServerItem;
+        client.features.collectionsNeedPermission && isSameServerItem;
     return !requiresCollectionPermission ||
         currentUser?.canManageCollections == true ||
         isAdminUser;

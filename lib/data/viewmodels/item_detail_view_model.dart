@@ -554,18 +554,14 @@ class ItemDetailViewModel extends ChangeNotifier {
   bool get supportsNumericUserRatings =>
       _client.userLibraryApi.supportsNumericUserRatings;
 
-  /// Plex has no likes, and its own rating already stands in for favorites.
-  bool get supportsPersonalRating => _client.serverType != ServerType.plex;
+  bool get supportsPersonalRating => _client.features.supportsPersonalRatings;
 
-  /// Plex can only favorite media, never people, and Silo keeps no person
-  /// favorites.
-  bool get supportsPersonFavorites =>
-      _client.serverType != ServerType.plex &&
-      _client.serverType != ServerType.silo;
+  bool get supportsPersonFavorites => _client.features.supportsPersonFavorites;
 
   /// Plex keeps no YouTube links, so a trailer it doesn't have is searched
   /// for on YouTube instead.
-  bool get searchesYouTubeForTrailer => _client.serverType == ServerType.plex;
+  bool get searchesYouTubeForTrailer =>
+      !_client.features.supportsRemoteTrailers;
 
   /// Whether this collection's cards offer "Remove from collection". A
   /// server can limit editing to some collections (Silo: the profile's own
