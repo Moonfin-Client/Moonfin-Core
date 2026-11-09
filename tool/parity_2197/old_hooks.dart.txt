@@ -1,0 +1,12 @@
+  // Parity hooks: expose the old private helpers to tool/parity_2197.
+  static String? parityRowUrl(AggregatedItem i, ImageApi a, double h, ImageType t, bool s, double r, bool m) =>
+      _ContentRowsState._resolveRowImageUrl(i, a, h, t, s, r, isMyMediaRow: m);
+  static String? parityPrimary(AggregatedItem i, ImageApi a, int? mh, int? mw) =>
+      _ContentRowsState._resolvePrimaryImageUrl(i, a, maxHeight: mh, maxWidth: mw);
+  static ImageType parityImageType(HomeRow row, UserPreferences p) => _ContentRowsState._homeRowImageTypeForRow(row, p);
+  static double parityAspect(AggregatedItem i, HomeRow row, ImageType t) => _ContentRowsState._aspectRatioForRowItem(i, row, t);
+  static bool parityModern(HomeRow row, UserPreferences p) => _ContentRowsState._isRowModern(row, p);
+  static bool parityStatic(HomeRow row, UserPreferences p) => _ContentRowsState._isModernMyMediaStatic(row, p);
+  static bool paritySeerr(HomeRow row) => _ContentRowsState._isSeerrFilterRow(row);
+  static String? parityTmdb(String? path, int w) => _ContentRowsState._seerrTmdbImageUrl(path, w);
+  static String? parityTag(AggregatedItem i, String t) => _ContentRowsState._tagForType(i, t);

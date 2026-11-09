@@ -1,0 +1,18 @@
+import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/models/home_row.dart';
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/home/home_screen.dart';
+import 'package:server_core/server_core.dart' show ImageApi;
+
+String? fRowUrl(AggregatedItem i, ImageApi a, double h, ImageType t, bool s, double r, bool m) =>
+    HomeScreen.parityRowUrl(i, a, h, t, s, r, m);
+String? fPrimary(AggregatedItem i, ImageApi a, int? mh, int? mw) =>
+    HomeScreen.parityPrimary(i, a, mh, mw);
+ImageType fImageType(HomeRow row, UserPreferences p) => HomeScreen.parityImageType(row, p);
+double fAspect(AggregatedItem i, HomeRow row, ImageType t) => HomeScreen.parityAspect(i, row, t);
+bool fModern(HomeRow row, UserPreferences p) => HomeScreen.parityModern(row, p);
+bool fStatic(HomeRow row, UserPreferences p) => HomeScreen.parityStatic(row, p);
+bool fSeerr(HomeRow row) => HomeScreen.paritySeerr(row);
+String? fTmdb(String? path, int w) => HomeScreen.parityTmdb(path, w);
+String? fTag(AggregatedItem i, String t) => HomeScreen.parityTag(i, t);

@@ -1,0 +1,18 @@
+import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/models/home_row.dart';
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
+import 'package:server_core/server_core.dart' show ImageApi;
+
+String? fRowUrl(AggregatedItem i, ImageApi a, double h, ImageType t, bool s, double r, bool m) =>
+    resolveRowImageUrl(i, a, h, t, s, r, isMyMediaRow: m);
+String? fPrimary(AggregatedItem i, ImageApi a, int? mh, int? mw) =>
+    resolvePrimaryImageUrl(i, a, maxHeight: mh, maxWidth: mw);
+ImageType fImageType(HomeRow row, UserPreferences p) => homeRowImageTypeForRow(row, p);
+double fAspect(AggregatedItem i, HomeRow row, ImageType t) => aspectRatioForRowItem(i, row, t);
+bool fModern(HomeRow row, UserPreferences p) => isHomeRowModern(row, p);
+bool fStatic(HomeRow row, UserPreferences p) => isHomeRowModernMyMediaStatic(row, p);
+bool fSeerr(HomeRow row) => isSeerrFilterRow(row);
+String? fTmdb(String? path, int w) => seerrTmdbImageUrl(path, w);
+String? fTag(AggregatedItem i, String t) => tagForType(i, t);
