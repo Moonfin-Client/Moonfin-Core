@@ -6999,8 +6999,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           GetIt.instance<PluginSyncService>().seerrAvailable;
       final favoriteFocusNode = widget.tvPlayFocusNode ?? _primaryFocusNode(0);
       // Autofocus alone tries once, and misses while the row is still held
-      // back.
-      if (canFavorite && autofocusPlay) {
+      // back. With no heart Display has this node, so it needs the same help.
+      if (autofocusPlay) {
         _ensureTvPlayFocus(item.id, node: favoriteFocusNode);
       }
       final normalizedPrimaryButtons = [

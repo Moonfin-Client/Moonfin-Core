@@ -1239,8 +1239,12 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _settleActions(List<Future> inputs) async {
     if (!_actionsSettled) {
+      // Each input swallows its own error: Future.wait gives up on the first
+      // one, which would show the row before the slower inputs are back.
       try {
-        await Future.wait(inputs).timeout(actionsWaitCap);
+        await Future.wait(
+          inputs.map((f) => f.catchError((_) {})),
+        ).timeout(actionsWaitCap);
       } catch (_) {}
     }
     if (_isDisposed || _actionsSettled) return;
