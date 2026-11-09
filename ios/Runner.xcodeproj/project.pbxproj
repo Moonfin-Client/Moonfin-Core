@@ -22,6 +22,7 @@
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		37206C100E6D00CCDFC3D5BF /* ChannelCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404F43B1C55A457B8CDF7516 /* ChannelCarousel.swift */; };
 		38309433A5B9EC8501A2A40F /* EpisodeBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2668020730B6FAE7A05244 /* EpisodeBrowser.swift */; };
+		57A7C9A300000000000000C3 /* WatchPartyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A7C9A400000000000000C4 /* WatchPartyOverlay.swift */; };
 		38F3A10FD19E5334AB53BDE4 /* AppleTvThemeMusicChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556C2E3BDD198B9966DFC2C /* AppleTvThemeMusicChannel.swift */; };
 		A7C5D1000000000000000002 /* AppleArcadeSoundChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C5D1000000000000000001 /* AppleArcadeSoundChannel.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -124,6 +125,7 @@
 		B6A0D1E2F3C4B5A69788A003 /* BackgroundRefreshSchedulerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshSchedulerTests.swift; sourceTree = "<group>"; };
 		BA90E277C62118D7E411055C /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BE2668020730B6FAE7A05244 /* EpisodeBrowser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EpisodeBrowser.swift; path = ../../../tvos/Runner/Playback/EpisodeBrowser.swift; sourceTree = "<group>"; };
+		57A7C9A400000000000000C4 /* WatchPartyOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchPartyOverlay.swift; path = ../../../tvos/Runner/Playback/WatchPartyOverlay.swift; sourceTree = "<group>"; };
 		DB9113DAFEDA0B5665CF4345 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		DF0D8653B27B2686B96A913C /* EngineTrustPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EngineTrustPolicy.swift; path = ../../../tvos/Runner/Playback/Aether/EngineTrustPolicy.swift; sourceTree = "<group>"; };
 		ED4194B90E5A396C83331F7A /* IosPiPController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IosPiPController.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				404F43B1C55A457B8CDF7516 /* ChannelCarousel.swift */,
 				4D1300D33EC1330BEEB8B382 /* ChannelCarouselOverlay.swift */,
 				BE2668020730B6FAE7A05244 /* EpisodeBrowser.swift */,
+				57A7C9A400000000000000C4 /* WatchPartyOverlay.swift */,
 				B43803CCF1D9787347AF7A13 /* MoonfinTvosStubs.swift */,
 			);
 			name = Playback;
@@ -542,6 +545,7 @@
 				37206C100E6D00CCDFC3D5BF /* ChannelCarousel.swift in Sources */,
 				EF61741809D3CB902A964B0B /* ChannelCarouselOverlay.swift in Sources */,
 				38309433A5B9EC8501A2A40F /* EpisodeBrowser.swift in Sources */,
+				57A7C9A300000000000000C3 /* WatchPartyOverlay.swift in Sources */,
 				C4B055F383D161397353F3F9 /* MoonfinTvosStubs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

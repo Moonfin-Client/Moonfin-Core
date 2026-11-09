@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -369,6 +370,18 @@ void main() {
       'K7Q29M',
     );
     expect(MoonbaseWatchPartyApi.displayCode('K7Q29M'), 'K7Q 29M');
+  });
+
+  testWidgets('the native player gets each reaction as a square PNG', (
+    tester,
+  ) async {
+    for (final kind in WatchPartyReaction.kinds) {
+      final png = await tester.runAsync(() => watchPartyReactionPng(kind, 64));
+      expect(png!.sublist(1, 4), utf8.encode('PNG'), reason: kind);
+      final codec = await tester.runAsync(() => ui.instantiateImageCodec(png));
+      final frame = await tester.runAsync(() => codec!.getNextFrame());
+      expect([frame!.image.width, frame.image.height], [64, 64], reason: kind);
+    }
   });
 
   test('room calls carry the room token, and errors keep their code', () async {
