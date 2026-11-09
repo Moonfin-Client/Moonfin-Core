@@ -472,6 +472,9 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('use24HourClock', UserPreferences.use24HourClock, SyncCodec.boolean),
   SyncedField('dateFormat', UserPreferences.dateFormat, SyncCodec.enumName, enumValues: prefs.DateFormatSetting.values),
   SyncedField('videoStartDelay', UserPreferences.videoStartDelay, SyncCodec.integer),
+  SyncedField('watchPartyAlerts', UserPreferences.watchPartyAlerts, SyncCodec.boolean),
+  SyncedField('watchPartyChatOverlay', UserPreferences.watchPartyChatOverlay, SyncCodec.boolean),
+  SyncedField('watchPartyService', UserPreferences.watchPartyService, SyncCodec.enumName, enumValues: prefs.WatchPartyServiceChoice.values),
 ];
 
 /// The per-row image types travel as one list of row:type pairs, for example

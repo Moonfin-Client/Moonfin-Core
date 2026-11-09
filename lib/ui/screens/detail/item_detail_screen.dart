@@ -130,6 +130,7 @@ import '../../../playback/server_shuffle_queue.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
 import '../watch_party/silo_watch_party_screen.dart';
+import '../watch_party/watch_together_route.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/detail_trailer.dart';
 import '../../../util/download_utils.dart';
@@ -8686,12 +8687,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
   }
 
-  /// On Silo the host picks what a Watch Party watches; anyone else can open
-  /// a party by picking.
+  /// On Silo and Moonbase the host picks what a watch party watches, and
+  /// anyone else can open a party by picking. A Jellyfin user who starts
+  /// SyncPlay groups picks through SyncPlay instead.
   bool _canPickForWatchParty() {
     try {
       final party = GetIt.instance<SiloWatchPartyManager>();
-      if (party.activeSiloClient == null) return false;
+      final moonbase =
+          party.isMoonbase || (party.moonbaseAvailable && !startsSyncPlay());
+      if (party.activeSiloClient == null && !moonbase) return false;
       return party.room?.isHost ?? true;
     } catch (_) {
       return false;

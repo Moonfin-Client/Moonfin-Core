@@ -76,9 +76,23 @@ class HomeViewModel extends ChangeNotifier {
   final TvChannelsService _tvChannels = TvChannelsService();
 
   List<HomeRow> _rows = [];
-  List<HomeRow> get rows => _emptySectionIds.isEmpty
-      ? _rows
-      : _rows.where((row) => !_isEmptySectionPlaceholder(row)).toList();
+  List<HomeRow> get rows {
+    final base = _emptySectionIds.isEmpty
+        ? _rows
+        : _rows.where((row) => !_isEmptySectionPlaceholder(row)).toList();
+    final party = _watchPartyRow;
+    return party == null ? base : [party, ...base];
+  }
+
+  /// The Watch Parties row, first while rooms exist. It isn't one of the
+  /// layout's sections, so it never reaches the row cache.
+  HomeRow? _watchPartyRow;
+
+  void setWatchPartyRow(HomeRow? row) {
+    if (identical(row, _watchPartyRow)) return;
+    _watchPartyRow = row;
+    notifyListeners();
+  }
 
   /// Placeholder ids of sections expected to come back empty, because their
   /// last load did or a cold start found nothing cached for them. Their

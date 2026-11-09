@@ -93,6 +93,14 @@ import 'home_backdrop.dart';
 import 'home_row_prefetch.dart';
 import 'home_row_shift.dart';
 import 'home_view_model.dart';
+import '../../../watch_party/silo_watch_party_manager.dart';
+import '../../../l10n/current_app_localizations.dart';
+import '../../../watch_party/moonbase_watch_party_api.dart';
+import '../../../watch_party/watch_party_rooms_service.dart';
+import '../../widgets/watch_party/watch_party_home_card.dart';
+import '../watch_party/silo_watch_party_screen.dart';
+import '../watch_party/watch_together_route.dart';
+import '../syncplay/syncplay_screen.dart';
 import '../../widgets/seerr/seerr_genre_label.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
@@ -295,6 +303,44 @@ class _HomeShellState extends State<_HomeShell>
     _connectivity?.addListener(_onServerReachabilityChanged);
     _maybeRegisterThemeMusic();
     _viewModel.load(preserveExisting: _viewModel.rows.isNotEmpty);
+    _partyRooms?.addListener(_onPartyRoomsChanged);
+    _onPartyRoomsChanged();
+    _partyRooms?.setHomeVisible(_isHomeRouteActive());
+  }
+
+  final WatchPartyRoomsService? _partyRooms =
+      GetIt.instance.isRegistered<WatchPartyRoomsService>()
+      ? GetIt.instance<WatchPartyRoomsService>()
+      : null;
+
+  /// The Watch Parties row leads Home while there are rooms to join.
+  void _onPartyRoomsChanged() {
+    final rooms = _partyRooms;
+    if (rooms == null || !rooms.hasRooms) {
+      _viewModel.setWatchPartyRow(null);
+      return;
+    }
+    _viewModel.setWatchPartyRow(
+      HomeRow(
+        id: 'watch_parties',
+        title: currentAppLocalizations().watchParties,
+        rowType: HomeRowType.watchParties,
+        items: [
+          for (final room in rooms.rooms)
+            AggregatedItem(
+              id: 'watch-party:${room.roomId}',
+              serverId: '',
+              rawData: {'Name': room.contentTitle ?? room.hostName},
+            ),
+          for (final group in rooms.groups)
+            AggregatedItem(
+              id: 'syncplay:${group.groupId}',
+              serverId: '',
+              rawData: {'Name': group.groupName ?? ''},
+            ),
+        ],
+      ),
+    );
   }
 
   /// The rows on screen were built before the watched state changed, so patch
@@ -318,6 +364,8 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   void dispose() {
+    _partyRooms?.removeListener(_onPartyRoomsChanged);
+    _partyRooms?.setHomeVisible(false);
     if (_observedRoute != null) {
       routeLifecycleObserver.unsubscribe(this);
       _observedRoute = null;
@@ -355,6 +403,12 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _partyRooms?.setForeground(true);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _partyRooms?.setForeground(false);
+    }
     if (state == AppLifecycleState.resumed) {
       _viewModel.refresh(preserveExisting: true);
     } else if (state == AppLifecycleState.paused ||
@@ -529,6 +583,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastObservedPath = path;
 
     final onHome = _isHomeRouteActive();
+    _partyRooms?.setHomeVisible(onHome);
     if (!onHome) {
       if (_themeMusicRegistered) {
         _themeMusicService.unregisterDetailScreen(this);
@@ -546,6 +601,7 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   void didPushNext() {
+    _partyRooms?.setHomeVisible(false);
     _contentRowsKey.currentState?.noteLeavingHome();
     if (_themeMusicRegistered) {
       _themeMusicService.unregisterDetailScreen(this);
@@ -557,6 +613,7 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   void didPopNext() {
+    _partyRooms?.setHomeVisible(_isHomeRouteActive());
     if (!_isHomeRouteActive()) {
       _themeMusicService.fadeOutAndStop();
       return;
@@ -3109,6 +3166,7 @@ class _ContentRowsState extends State<_ContentRows>
     double childHeight = 0.0;
     if (row.isLoading) {
       if (row.rowType == HomeRowType.liveTv ||
+          row.rowType == HomeRowType.watchParties ||
           row.rowType == HomeRowType.libraryTilesSmall) {
         final squarePosterSide = _squarePosterSide(posterSize);
         childHeight = squarePosterSide + (56 * metadataScale);
@@ -3136,6 +3194,7 @@ class _ContentRowsState extends State<_ContentRows>
             headroom;
       }
     } else if (row.rowType == HomeRowType.liveTv ||
+        row.rowType == HomeRowType.watchParties ||
         row.rowType == HomeRowType.libraryTilesSmall) {
       final squarePosterSide = _squarePosterSide(posterSize);
       final headroom = _focusHeadroom(
@@ -3184,6 +3243,7 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
     final hasSubtitle = subtitle != null &&
         (row.rowType != HomeRowType.liveTv &&
+            row.rowType != HomeRowType.watchParties &&
             row.rowType != HomeRowType.libraryTilesSmall);
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
@@ -3491,7 +3551,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     return switch (row.rowType) {
-      HomeRowType.liveTv => true,
+      HomeRowType.liveTv || HomeRowType.watchParties => true,
       _ => row.items.isNotEmpty,
     };
   }
@@ -4130,6 +4190,7 @@ class _ContentRowsState extends State<_ContentRows>
         metadataScale: metadataScale,
       );
     } else if (row.rowType == HomeRowType.liveTv ||
+        row.rowType == HomeRowType.watchParties ||
         row.rowType == HomeRowType.libraryTilesSmall) {
       final squarePosterSide = _squarePosterSide(posterSize);
       final rowHeight = squarePosterSide + (56 * metadataScale);
@@ -4827,6 +4888,14 @@ class _ContentRowsState extends State<_ContentRows>
                         isLoading: true,
                         children: const [],
                       );
+                    } else if (row.rowType == HomeRowType.watchParties) {
+                      rowChild = _buildWatchPartiesRow(
+                        row,
+                        focusColor,
+                        posterSize: posterSize,
+                        rowIndex: rowIndex,
+                        rows: rows,
+                      );
                     } else if (row.rowType == HomeRowType.liveTv) {
                       rowChild = _buildLiveTvRow(
                         row,
@@ -5075,6 +5144,133 @@ class _ContentRowsState extends State<_ContentRows>
             );
           },
         ),
+    );
+  }
+
+  /// Rooms to join, newest first, then SyncPlay's groups on Jellyfin, then
+  /// a card to start one.
+  Widget _buildWatchPartiesRow(
+    HomeRow row,
+    Color focusColor, {
+    required PosterSize posterSize,
+    required int rowIndex,
+    required List<HomeRow> rows,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final metadataScale = _desktopUiScaleFactor();
+    final side = _squarePosterSide(posterSize);
+    final rowHeight = side + (56 * metadataScale);
+    final width = side * 1.6;
+    final service = GetIt.instance<WatchPartyRoomsService>();
+    final client = GetIt.instance<MediaServerClient>();
+    final labels = client.serverType == ServerType.jellyfin;
+    final cards = <Object?>[...service.rooms, ...service.groups, null];
+
+    void open(Object? card) {
+      if (card is MoonbaseRoomSummary) {
+        unawaited(joinListedRoom(context, card));
+      } else if (card is SyncPlayGroupInfo) {
+        unawaited(joinSyncPlayGroup(context, card));
+      } else if (startsSyncPlay()) {
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const SyncPlayScreen()),
+          ),
+        );
+      } else {
+        final navigator = Navigator.of(context);
+        unawaited(
+          GetIt.instance<SiloWatchPartyManager>().create().then((_) {
+            if (!navigator.mounted) return;
+            navigator.push(
+              MaterialPageRoute<void>(
+                builder: (_) => const SiloWatchPartyScreen(),
+              ),
+            );
+          }),
+        );
+      }
+    }
+
+    return _buildTitledRow(
+      key: _rowContainerKey(rowIndex),
+      title: l10n.watchParties,
+      rowIndex: rowIndex,
+      hasItems: true,
+      height: rowHeight,
+      child: LockedFocusRow<Object?>(
+        key: _rowKey(rowIndex),
+        items: cards,
+        hubKey: _hubKeyForRow(row),
+        controller: _rowHorizontalController(rowIndex),
+        height: rowHeight,
+        itemExtent: width,
+        itemSpacing: _rowItemSpacing(side, false),
+        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+        clipBehavior: Clip.hardEdge,
+        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+        onIndexChanged: (_, _) => _onHomeRowTileFocused(null),
+        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+          rowIndex: rowIndex,
+          rows: rows,
+          isUp: isUp,
+        ),
+        onLeftEdge: _onRowLeftEdge,
+        onTap: (_, card) => open(card),
+        itemBuilder: (ctx, card, idx, isFocused) {
+          final Widget body;
+          if (card is MoonbaseRoomSummary) {
+            final contentId = card.selectedContentId;
+            body = WatchPartyHomeCard(
+              width: width,
+              height: side,
+              focused: isFocused,
+              focusColor: focusColor,
+              chips: [
+                if (labels)
+                  WatchPartyChip(label: l10n.watchParty, accent: true),
+                if (card.hasPin)
+                  WatchPartyChip(
+                    label: l10n.siloPinHint,
+                    icon: Icons.lock_outline_rounded,
+                  ),
+              ],
+              imageUrl: contentId == null
+                  ? null
+                  : client.imageApi.getBackdropImageUrl(
+                      contentId,
+                      maxWidth: 480,
+                    ),
+              title: watchPartyRoomTitle(l10n, card),
+              line: watchPartyRoomLine(l10n, card),
+              onTap: () => open(card),
+            );
+          } else if (card is SyncPlayGroupInfo) {
+            body = WatchPartyHomeCard(
+              width: width,
+              height: side,
+              focused: isFocused,
+              focusColor: focusColor,
+              chips: [WatchPartyChip(label: l10n.syncPlay)],
+              title: card.groupName ?? l10n.syncPlayGroupFallbackName,
+              line: l10n.watchPartyWatchingCount(card.participants.length),
+              onTap: () => open(card),
+            );
+          } else {
+            body = WatchPartyHomeCard(
+              width: width,
+              height: side,
+              focused: isFocused,
+              focusColor: focusColor,
+              icon: Icons.add_rounded,
+              title: l10n.watchPartyStart,
+              onTap: () => open(card),
+            );
+          }
+          return Align(alignment: Alignment.topCenter, child: body);
+        },
+      ),
     );
   }
 
@@ -6877,6 +7073,7 @@ class _ContentRowsState extends State<_ContentRows>
         !row.isLoading &&
         row.items.isNotEmpty &&
         row.rowType != HomeRowType.liveTv &&
+        row.rowType != HomeRowType.watchParties &&
         row.rowType != HomeRowType.libraryTilesSmall;
 
     ({String? url, double width, double aspectRatio}) imageOf(

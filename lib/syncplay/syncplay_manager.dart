@@ -183,8 +183,14 @@ class SyncPlayManager extends ChangeNotifier {
 
   MediaServerClient? get _currentClient {
     if (_currentClientRef != null) return _currentClientRef;
+    // The signed-in session's server. The factory's newest client can be
+    // another saved server when a device has several.
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<MediaServerClient>()) {
+      return getIt<MediaServerClient>();
+    }
     try {
-      final factory = GetIt.instance<MediaServerClientFactory>();
+      final factory = getIt<MediaServerClientFactory>();
       return factory.getActiveClient();
     } catch (_) {
       return null;

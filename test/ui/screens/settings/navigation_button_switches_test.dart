@@ -128,6 +128,8 @@ void main() {
     tester,
   ) async {
     signIn(canDownload: true);
+    // Watch Parties are on by default, so this starts from off.
+    await prefs.set(UserPreferences.syncPlayEnabled, false);
     await pump(tester);
     expect(find.text(l10n.settingsSyncplayButton), findsNothing);
 

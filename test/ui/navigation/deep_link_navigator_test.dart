@@ -9,7 +9,7 @@ void main() {
   GoRouter buildRouter() => GoRouter(
     initialLocation: '/search',
     routes: [
-      for (final path in ['/home', '/search', '/item/1'])
+      for (final path in ['/home', '/search', '/item/1', '/watch-party'])
         GoRoute(
           path: path,
           builder: (_, _) => Scaffold(body: Text(path)),
@@ -38,6 +38,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('/home'), findsOneWidget);
     expect(router.canPop(), isFalse);
+  });
+
+  testWidgets('a watch party link opens over Home, so it has a way back', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    unawaited(openLinkedRoute(router, '/watch-party?code=K7Q29M'));
+    await tester.pumpAndSettle();
+    expect(find.text('/watch-party'), findsOneWidget);
+    expect(router.canPop(), isTrue);
   });
 
   testWidgets('other links replace the stack', (tester) async {

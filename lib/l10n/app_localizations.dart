@@ -3274,6 +3274,42 @@ abstract class AppLocalizations {
   /// **'WRITERS'**
   String get writers;
 
+  /// Role label for an episode director
+  ///
+  /// In en, this message translates to:
+  /// **'Episode Director'**
+  String get episodeDirector;
+
+  /// Role label formatting an episode director with an existing role description
+  ///
+  /// In en, this message translates to:
+  /// **'{role} (Episode Director)'**
+  String episodeDirectorWithRole(String role);
+
+  /// Role label for an episode writer
+  ///
+  /// In en, this message translates to:
+  /// **'Episode Writer'**
+  String get episodeWriter;
+
+  /// Role label formatting an episode writer with an existing role description
+  ///
+  /// In en, this message translates to:
+  /// **'{role} (Episode Writer)'**
+  String episodeWriterWithRole(String role);
+
+  /// Role label for a guest star
+  ///
+  /// In en, this message translates to:
+  /// **'Guest Star'**
+  String get guestStar;
+
+  /// Role label formatting a character role as a guest star
+  ///
+  /// In en, this message translates to:
+  /// **'{role} (Guest Star)'**
+  String guestStarWithRole(String role);
+
   /// Metadata label for studio
   ///
   /// In en, this message translates to:
@@ -6955,7 +6991,7 @@ abstract class AppLocalizations {
   /// Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group
   ///
   /// In en, this message translates to:
-  /// **'Only shows while you\'re in a SyncPlay group'**
+  /// **'Only shows while you\'re in a watch party'**
   String get buttonShownInSyncPlayGroup;
 
   /// Player button that locks the screen orientation
@@ -21049,7 +21085,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSyncplaySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Synchronization logic for group sessions'**
+  /// **'Watch with friends on this server, everyone in step'**
   String get settingsSyncplaySubtitle;
 
   /// No description provided for @settingsSkipIntrosAndOutros.
@@ -21415,85 +21451,85 @@ abstract class AppLocalizations {
   /// No description provided for @settingsOpenGroups.
   ///
   /// In en, this message translates to:
-  /// **'Open Groups'**
+  /// **'Open Watch Parties'**
   String get settingsOpenGroups;
 
   /// No description provided for @settingsOpenGroupsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create, join, or manage SyncPlay groups'**
+  /// **'Start one or join one in progress'**
   String get settingsOpenGroupsSubtitle;
 
   /// No description provided for @settingsSyncplayEnabled.
   ///
   /// In en, this message translates to:
-  /// **'SyncPlay Enabled'**
+  /// **'Watch Parties'**
   String get settingsSyncplayEnabled;
 
   /// No description provided for @settingsSyncplayEnabledSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable group watching features'**
+  /// **'Watch with friends on this server, everyone in step'**
   String get settingsSyncplayEnabledSubtitle;
 
   /// No description provided for @settingsSyncplayButton.
   ///
   /// In en, this message translates to:
-  /// **'SyncPlay Button'**
+  /// **'Watch Parties button'**
   String get settingsSyncplayButton;
 
   /// No description provided for @settingsSyncplayButtonSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Show the SyncPlay button on the navigation bar'**
+  /// **'Show the Watch Parties button on the navigation bar'**
   String get settingsSyncplayButtonSubtitle;
 
   /// No description provided for @settingsSyncplayAdvancedCorrection.
   ///
   /// In en, this message translates to:
-  /// **'Advanced Correction'**
+  /// **'Advanced correction'**
   String get settingsSyncplayAdvancedCorrection;
 
   /// No description provided for @settingsSyncplayAdvancedCorrectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable fine-grained sync logic'**
+  /// **'Delays and extra offset'**
   String get settingsSyncplayAdvancedCorrectionSubtitle;
 
   /// No description provided for @settingsSyncplaySyncCorrection.
   ///
   /// In en, this message translates to:
-  /// **'Sync Correction'**
+  /// **'Sync correction'**
   String get settingsSyncplaySyncCorrection;
 
   /// No description provided for @settingsSyncplaySyncCorrectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Automatically adjust playback to stay in sync'**
+  /// **'Keep this device in step with the room'**
   String get settingsSyncplaySyncCorrectionSubtitle;
 
   /// No description provided for @settingsSyncplaySpeedToSync.
   ///
   /// In en, this message translates to:
-  /// **'Speed to Sync'**
+  /// **'Speed to sync'**
   String get settingsSyncplaySpeedToSync;
 
   /// No description provided for @settingsSyncplaySpeedToSyncSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Use playback speed adjustment to sync'**
+  /// **'Play a little faster or slower to catch up'**
   String get settingsSyncplaySpeedToSyncSubtitle;
 
   /// No description provided for @settingsSyncplaySkipToSync.
   ///
   /// In en, this message translates to:
-  /// **'Skip to Sync'**
+  /// **'Skip to sync'**
   String get settingsSyncplaySkipToSync;
 
   /// No description provided for @settingsSyncplaySkipToSyncSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Use seeking to sync'**
+  /// **'Jump ahead when it\'s too far off'**
   String get settingsSyncplaySkipToSyncSubtitle;
 
   /// No description provided for @settingsSyncplayMinimumSpeedDelay.
@@ -23137,7 +23173,7 @@ abstract class AppLocalizations {
   /// Button that opens a new Watch Party room
   ///
   /// In en, this message translates to:
-  /// **'Start a Watch Party'**
+  /// **'Start a watch party'**
   String get watchPartyStart;
 
   /// How a Watch Party host picks what to watch
@@ -23200,6 +23236,12 @@ abstract class AppLocalizations {
   /// **'The earliest point anyone here has reached.'**
   String get watchPartyResumeEarliest;
 
+  /// Note under the Watch Party resume button when it resumes from the host's own progress
+  ///
+  /// In en, this message translates to:
+  /// **'Where you left off. Everyone starts from there.'**
+  String get watchPartyResumeYours;
+
   /// Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start
   ///
   /// In en, this message translates to:
@@ -23221,7 +23263,7 @@ abstract class AppLocalizations {
   /// Host button that closes the Watch Party room for everyone
   ///
   /// In en, this message translates to:
-  /// **'End Watch Party'**
+  /// **'End for everyone'**
   String get watchPartyEnd;
 
   /// Shown when the Watch Party room was closed
@@ -23241,6 +23283,516 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Up next: {title}'**
   String watchPartyUpNext(String title);
+
+  /// Name of the feature: the settings page, the screen with the room list and the Home row
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Parties'**
+  String get watchParties;
+
+  /// Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group
+  ///
+  /// In en, this message translates to:
+  /// **'Start parties with'**
+  String get watchPartyStartWith;
+
+  /// Line under the Watch Party choice of the Start parties with setting
+  ///
+  /// In en, this message translates to:
+  /// **'Chat, reactions and voting. Runs on Moonbase.'**
+  String get watchPartyServiceMoonbaseHint;
+
+  /// Line under the SyncPlay choice of the Start parties with setting
+  ///
+  /// In en, this message translates to:
+  /// **'Jellyfin\'s own. Friends on other Jellyfin apps can join.'**
+  String get watchPartyServiceSyncPlayHint;
+
+  /// Note under the Start parties with setting
+  ///
+  /// In en, this message translates to:
+  /// **'You can join rooms of both kinds. This only picks what you start.'**
+  String get watchPartyServiceNote;
+
+  /// Section heading on the Watch Parties settings page
+  ///
+  /// In en, this message translates to:
+  /// **'During a party'**
+  String get watchPartyDuringParty;
+
+  /// Watch Parties setting: show new chat messages over the video for a few seconds
+  ///
+  /// In en, this message translates to:
+  /// **'Show chat over the video'**
+  String get watchPartyChatOverlay;
+
+  /// Line under the Show chat over the video setting
+  ///
+  /// In en, this message translates to:
+  /// **'New messages show for a few seconds'**
+  String get watchPartyChatOverlaySubtitle;
+
+  /// Watch Parties setting: tell the user when someone on the server starts a party
+  ///
+  /// In en, this message translates to:
+  /// **'Party alerts'**
+  String get watchPartyAlerts;
+
+  /// Line under the Party alerts setting
+  ///
+  /// In en, this message translates to:
+  /// **'Tell me when someone on this server starts one'**
+  String get watchPartyAlertsSubtitle;
+
+  /// TV button on the Watch Parties screen that opens the room code field
+  ///
+  /// In en, this message translates to:
+  /// **'Join with a code'**
+  String get watchPartyJoinWithCode;
+
+  /// Heading of the list of rooms on the Watch Parties screen
+  ///
+  /// In en, this message translates to:
+  /// **'On this server'**
+  String get watchPartyOnThisServer;
+
+  /// TV heading of the Watch Parties screen: how many rooms the user can join
+  ///
+  /// In en, this message translates to:
+  /// **'{count} on this server'**
+  String watchPartyCountOnServer(int count);
+
+  /// Note under the room list on the Watch Parties screen
+  ///
+  /// In en, this message translates to:
+  /// **'You need access to the item to join. A room closes when its last person leaves.'**
+  String get watchPartyRoomsHint;
+
+  /// Empty room list on the Watch Parties screen
+  ///
+  /// In en, this message translates to:
+  /// **'Parties you can watch show up here. Got a code from someone? Pick Join with a code.'**
+  String get watchPartyRoomsEmpty;
+
+  /// Hint under the room code field on the Watch Parties screen
+  ///
+  /// In en, this message translates to:
+  /// **'Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.'**
+  String get watchPartyPasteHint;
+
+  /// How many people are in a room, on room cards
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} watching} other{{count} watching}}'**
+  String watchPartyWatchingCount(int count);
+
+  /// Who hosts a room, on room cards and in the player, like "Maya's party"
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s party'**
+  String watchPartyHostsParty(String name);
+
+  /// Room card tag: every member can play, pause and skip
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone controls'**
+  String get watchPartyEveryoneControlsShort;
+
+  /// Room card line: the lobby is voting on what to watch
+  ///
+  /// In en, this message translates to:
+  /// **'Voting on what to watch'**
+  String get watchPartyVotingNow;
+
+  /// Title when the server has no Moonbase plugin to host watch parties
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Parties need Moonbase on this server'**
+  String get watchPartyNeedsMoonbase;
+
+  /// Body under the Watch Parties need Moonbase title
+  ///
+  /// In en, this message translates to:
+  /// **'Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.'**
+  String get watchPartyNeedsMoonbaseHint;
+
+  /// Join error: wrong room PIN
+  ///
+  /// In en, this message translates to:
+  /// **'That PIN didn\'t work. Try again.'**
+  String get watchPartyWrongPin;
+
+  /// Join error: too many wrong PINs
+  ///
+  /// In en, this message translates to:
+  /// **'Too many tries. Wait a minute.'**
+  String get watchPartyTooManyTries;
+
+  /// Join error: the room has no space left
+  ///
+  /// In en, this message translates to:
+  /// **'This party is full.'**
+  String get watchPartyFull;
+
+  /// Join error: no room with that code
+  ///
+  /// In en, this message translates to:
+  /// **'No room has that code.'**
+  String get watchPartyNoSuchCode;
+
+  /// Join error, and a notice in the room, when the user cannot play the room's item
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have access to what they\'re watching.'**
+  String get watchPartyNoAccess;
+
+  /// Shown after the host removed this member
+  ///
+  /// In en, this message translates to:
+  /// **'The host removed you from the party.'**
+  String get watchPartyRemoved;
+
+  /// Title of the lobby and party controls
+  ///
+  /// In en, this message translates to:
+  /// **'Your watch party'**
+  String get watchPartyYours;
+
+  /// Hint under Copy invite link in the lobby
+  ///
+  /// In en, this message translates to:
+  /// **'Paste it in any chat. It opens a page on this server with an Open in Moonfin button.'**
+  String get watchPartyInviteHint;
+
+  /// TV lobby heading over the invite QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Send the invite'**
+  String get watchPartySendInvite;
+
+  /// TV lobby line next to the invite QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with your phone to get the invite link, then send it from there. Or just share the code.'**
+  String get watchPartyScanInvite;
+
+  /// Lobby note on how a party starts
+  ///
+  /// In en, this message translates to:
+  /// **'Play waits for everyone\'s player, 10 seconds at most, then counts down 3, 2, 1.'**
+  String get watchPartyStartsTogether;
+
+  /// Member status in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'In sync'**
+  String get watchPartyStatusInSync;
+
+  /// Member status in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Catching up'**
+  String get watchPartyStatusCatchingUp;
+
+  /// Member status in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Buffering'**
+  String get watchPartyStatusBuffering;
+
+  /// Member status in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Not watching'**
+  String get watchPartyStatusNotWatching;
+
+  /// Member status in a watch party lobby
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get watchPartyStatusReady;
+
+  /// Member status in a watch party lobby
+  ///
+  /// In en, this message translates to:
+  /// **'Joining'**
+  String get watchPartyStatusJoining;
+
+  /// Tag on the host in a watch party's people list
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get watchPartyHost;
+
+  /// Shown while a party waits for one member's player to load
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {name}\'s player'**
+  String watchPartyWaitingFor(String name);
+
+  /// Shown while a party waits for several members' players to load
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}'**
+  String watchPartyWaitingForCount(int count);
+
+  /// Countdown until the party starts without the players still loading
+  ///
+  /// In en, this message translates to:
+  /// **'Starting anyway in {seconds} s'**
+  String watchPartyStartingAnyway(int seconds);
+
+  /// Under the 3, 2, 1 countdown when a party starts
+  ///
+  /// In en, this message translates to:
+  /// **'Starting together'**
+  String get watchPartyStartingTogether;
+
+  /// Toast in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'{name} paused'**
+  String watchPartyToastPaused(String name);
+
+  /// Toast in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'{name} resumed'**
+  String watchPartyToastResumed(String name);
+
+  /// Toast in a watch party, the time like 1:14:02
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped to {time}'**
+  String watchPartyToastSkipped(String name, String time);
+
+  /// Toast and chat line in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'{name} joined'**
+  String watchPartyToastJoined(String name);
+
+  /// Toast and chat line in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'{name} left'**
+  String watchPartyToastLeft(String name);
+
+  /// Toast and chat line when the host picks another item
+  ///
+  /// In en, this message translates to:
+  /// **'{name} switched to {title}'**
+  String watchPartyToastSwitched(String name, String title);
+
+  /// Toast in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re the host now'**
+  String get watchPartyToastYouAreHost;
+
+  /// Toast in a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is the host now'**
+  String watchPartyToastNewHost(String name);
+
+  /// Toast when the host lets everyone control playback
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone can control playback now'**
+  String get watchPartyToastEveryoneControls;
+
+  /// Toast when the host takes playback control back
+  ///
+  /// In en, this message translates to:
+  /// **'Only the host controls playback now'**
+  String get watchPartyToastHostControls;
+
+  /// Toast when a Watch Party guest presses play, pause or skip while only the host may
+  ///
+  /// In en, this message translates to:
+  /// **'Only the host can control playback.'**
+  String get watchPartyOnlyHostControls;
+
+  /// Toast when the connection to the room drops
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting to the party...'**
+  String get watchPartyToastReconnecting;
+
+  /// Toast when the connection to the room is back
+  ///
+  /// In en, this message translates to:
+  /// **'Back in the party'**
+  String get watchPartyToastReconnected;
+
+  /// Toast when the host closes the room
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ended the party'**
+  String watchPartyToastEnded(String name);
+
+  /// Tab and button for a watch party's chat
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get watchPartyChat;
+
+  /// Hint in the watch party chat field
+  ///
+  /// In en, this message translates to:
+  /// **'Send to the party'**
+  String get watchPartySendToParty;
+
+  /// TV hint on the watch party quick bar
+  ///
+  /// In en, this message translates to:
+  /// **'Back to close'**
+  String get watchPartyBackToClose;
+
+  /// TV quick bar button that opens the keyboard to type a chat message
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get watchPartyType;
+
+  /// TV quick reply in a watch party chat
+  ///
+  /// In en, this message translates to:
+  /// **'Haha'**
+  String get watchPartyReplyHaha;
+
+  /// TV quick reply in a watch party chat
+  ///
+  /// In en, this message translates to:
+  /// **'No way'**
+  String get watchPartyReplyNoWay;
+
+  /// TV quick reply in a watch party chat
+  ///
+  /// In en, this message translates to:
+  /// **'Pause please'**
+  String get watchPartyReplyPausePlease;
+
+  /// TV quick reply in a watch party chat, short for be right back
+  ///
+  /// In en, this message translates to:
+  /// **'Brb'**
+  String get watchPartyReplyBrb;
+
+  /// TV quick reply in a watch party chat
+  ///
+  /// In en, this message translates to:
+  /// **'Again!'**
+  String get watchPartyReplyAgain;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Love'**
+  String get watchPartyReactionLove;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Haha'**
+  String get watchPartyReactionHaha;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Wow'**
+  String get watchPartyReactionWow;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get watchPartyReactionSad;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Fire'**
+  String get watchPartyReactionFire;
+
+  /// Name of a watch party reaction
+  ///
+  /// In en, this message translates to:
+  /// **'Popcorn'**
+  String get watchPartyReactionPopcorn;
+
+  /// Host action on a member of the watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Make host'**
+  String get watchPartyMakeHost;
+
+  /// Host setting of a watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone can control playback'**
+  String get watchPartyEveryoneControls;
+
+  /// Line under Everyone can control playback
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone can play, pause and skip'**
+  String get watchPartyEveryoneControlsHint;
+
+  /// Host setting of a watch party, and the title of the PIN dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Room PIN'**
+  String get watchPartyRoomPin;
+
+  /// Line under Room PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a PIN before anyone joins'**
+  String get watchPartyRoomPinHint;
+
+  /// Hint in the room PIN field
+  ///
+  /// In en, this message translates to:
+  /// **'4 to 8 digits'**
+  String get watchPartyPinDigits;
+
+  /// Button that leaves the watch party
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get watchPartyLeave;
+
+  /// Host button that leaves, naming who takes over
+  ///
+  /// In en, this message translates to:
+  /// **'Leave · {name} hosts'**
+  String watchPartyLeaveHandsOver(String name);
+
+  /// Party alert title
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started a watch party'**
+  String watchPartyStartedBy(String name);
+
+  /// Party alert body
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}'**
+  String watchPartyInLobbyCount(String title, int count);
+
+  /// Line on the TV party alert banner
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s first in Watch Parties on Home'**
+  String get watchPartyFirstOnHome;
+
+  /// Dialog when a party link names a server the app does not have
+  ///
+  /// In en, this message translates to:
+  /// **'This invite is for a server you have not added yet, {address}. Add it and sign in to join.'**
+  String watchPartyAddServerQuestion(String address);
 
   /// No description provided for @disk.
   ///
@@ -27902,7 +28454,7 @@ abstract class AppLocalizations {
   /// Subtitle for the Playback settings root entry
   ///
   /// In en, this message translates to:
-  /// **'Player, quality, audio, subtitles, skipping, and SyncPlay'**
+  /// **'Player, quality, audio, subtitles, skipping, and watch parties'**
   String get settingsPlaybackSubtitle;
 
   /// Subtitle for the Storage & Downloads settings root entry
@@ -27980,7 +28532,7 @@ abstract class AppLocalizations {
   /// Section header on the Playback settings screen for SyncPlay
   ///
   /// In en, this message translates to:
-  /// **'Watch Together'**
+  /// **'Watch Parties'**
   String get settingsWatchTogetherSection;
 
   /// Section header on the Playback settings screen
@@ -29091,6 +29643,12 @@ abstract class AppLocalizations {
   /// **'Unlock'**
   String get siloPinUnlock;
 
+  /// Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to
+  ///
+  /// In en, this message translates to:
+  /// **'Remember PIN on this device'**
+  String get siloPinRemember;
+
   /// Shown in the Silo profile PIN dialog when the PIN doesn't match
   ///
   /// In en, this message translates to:
@@ -29114,12 +29672,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The PIN couldn\'t be checked. Try again.'**
   String get siloPinFailed;
-
-  /// Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out of the Silo account'**
-  String get siloSignOutAccount;
 
   /// How many trailers the trailer picker lists, shown in its header
   ///

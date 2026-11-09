@@ -105,6 +105,7 @@ import '../../widgets/syncplay/watch_party_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
 import '../watch_party/silo_watch_party_screen.dart';
+import '../../widgets/watch_party/watch_party_player_overlay.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import '../../../playback/media3_player_backend.dart';
@@ -342,6 +343,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _isInPiP = false;
   final GlobalKey _videoSurfaceKey = GlobalKey();
   bool _forcedLandscape = false;
+  // The party's wait and countdown sit where the center controls would.
+  // The player often opens partway through the wait, so it starts from
+  // where the party is.
+  bool _partyHoldsStart = false;
+  bool get _partyHolding =>
+      _watchParty?.waitingSince != null || _watchParty?.countdownTo != null;
   double _playerVolume = 100.0;
   static const double _scrollWheelNotch = 40.0;
   double _scrollWheelAccumulated = 0.0;
@@ -870,6 +877,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
     _syncPlayManager?.addListener(_onSyncPlayChanged);
     _followingWatchParty = _watchParty?.controlsPlayback == true;
+    _partyHoldsStart = _partyHolding;
     _watchParty?.addListener(_onWatchPartyChanged);
     _prefs.addListener(_onPlaybackPrefsChanged);
     _castChanges.addListener(_onCastChanged);
@@ -879,10 +887,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _startEndsAtTicker();
     setImmersive(true);
     if (PlatformDetection.isMobile) {
-      _forcedLandscape = true;
+      // In a Moonbase party a phone held upright shows the chat under the
+      // video, so the player doesn't lock it sideways.
+      _forcedLandscape =
+          _watchParty?.isMoonbase != true || _watchParty?.room == null;
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
+        if (!_forcedLandscape) DeviceOrientation.portraitUp,
       ]);
     } else if (!PlatformDetection.isTV) {
       SystemChrome.setPreferredOrientations([
@@ -2355,6 +2367,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _onWatchPartyChanged() {
     final party = _watchParty;
     if (party == null || !mounted) return;
+    final holding = _partyHolding;
+    if (holding != _partyHoldsStart) {
+      setState(() => _partyHoldsStart = holding);
+    }
     if (party.controlsPlayback) {
       if (!_followingWatchParty) setState(() => _followingWatchParty = true);
       return;
@@ -3372,6 +3388,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _resumeWithConfiguredRewind();
   }
 
+  // A Watch Party's drift nudge sets rates like 1.0399999618530273, so the
+  // label rounds to two places.
+  String get _speedLabel =>
+      ((_state.playbackSpeed * 100).round() / 100).toString();
+
   bool _isTvTemporarySpeedKey(LogicalKeyboardKey key) {
     return key == LogicalKeyboardKey.mediaPause;
   }
@@ -4217,7 +4238,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   // re-sent by HdrOverlayCapture.
                                   _buildTopOverlay(context),
                                   if (!PlatformDetection.useLeanbackUi &&
-                                      !_transportDocked)
+                                      !_transportDocked &&
+                                      !_partyHoldsStart)
                                     Positioned.fill(
                                       child: Center(
                                         child: _buildCenterTransportControls(),
@@ -4245,6 +4267,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           child: _buildSubtitleLoadingIndicator(
                             standalone: true,
                           ),
+                        ),
+                      if (_followingWatchParty)
+                        WatchPartyPlayerOverlay(
+                          bottomInset: _controlsVisible
+                              ? _bottomOverlayHeight ?? 0
+                              : 0,
                         ),
                       _buildBufferingIndicator(),
                       _buildVolumeOverlay(),
@@ -6000,7 +6028,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               _showSpeedSelector();
             },
             child: Text(
-              '${_state.playbackSpeed}x',
+              '${_speedLabel}x',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: secondaryTextSize,
@@ -7333,7 +7361,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           },
           child: Center(
             child: Text(
-              '${_state.playbackSpeed}x',
+              '${_speedLabel}x',
               style: TextStyle(color: Colors.white, fontSize: textSize),
             ),
           ),

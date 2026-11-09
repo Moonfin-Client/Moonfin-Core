@@ -2067,7 +2067,7 @@ List<_NavButton> _navButtons(
     if (!kids &&
         on(UserPreferences.syncPlayEnabled) &&
         on(UserPreferences.showSyncPlayButton))
-      icon(Icons.groups_rounded, l10n.syncPlay),
+      icon(Icons.groups_rounded, l10n.watchParties),
     if (!kids && on(UserPreferences.showSeerrButton) && _seerrAvailable)
       (
         icon: (size, color) => SeerrIcon(size: size, color: color),

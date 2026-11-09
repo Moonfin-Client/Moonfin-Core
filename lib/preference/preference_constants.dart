@@ -207,6 +207,9 @@ enum AutoHdrSwitchingBehavior {
   always,
 }
 
+/// What a Jellyfin user starts from Watch Parties. Synced as the plain name.
+enum WatchPartyServiceChoice { moonbase, syncplay }
+
 /// How phones and tablets are held while a game plays. [auto] follows the
 /// device, so the system rotation lock applies.
 enum GamePlaybackOrientation {

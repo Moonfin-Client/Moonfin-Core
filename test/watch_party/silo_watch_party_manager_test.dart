@@ -80,6 +80,21 @@ void main() {
     expect(SiloWatchPartyManager.rateFor(-0.6), closeTo(1.025, 1e-9));
   });
 
+  test('a seek lead learns how far seeks land behind', () {
+    // The first seek landed half a second behind: aim that far ahead.
+    expect(SiloWatchPartyManager.nextSeekLeadMs(null, -0.5), 500);
+    // With 500 ahead it landed 0.1 s ahead: 400 was needed, evened to 450.
+    expect(SiloWatchPartyManager.nextSeekLeadMs(500, 0.1), 450);
+    // Never a negative lead.
+    expect(SiloWatchPartyManager.nextSeekLeadMs(null, 0.3), 0);
+    // Over a second off is a stall, not a seek to learn from.
+    expect(SiloWatchPartyManager.nextSeekLeadMs(450, -3), 450);
+    expect(SiloWatchPartyManager.nextSeekLeadMs(450, -1.5), 450);
+    // And it never aims more than a second ahead.
+    expect(SiloWatchPartyManager.nextSeekLeadMs(null, -0.9), 900);
+    expect(SiloWatchPartyManager.nextSeekLeadMs(900, -0.9), 950);
+  });
+
   test('a start\'s delay is the time before its position moved', () {
     // resume() at 1000 from 60 s. At 2000 it has played 400 ms, so it
     // started moving at 1600.

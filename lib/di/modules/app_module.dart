@@ -72,6 +72,7 @@ import '../../ui/screens/home/home_view_model.dart';
 import '../../ui/screens/setup/setup_wizard_gate.dart';
 import '../../ui/widgets/finished_download_dialog.dart';
 import '../../watch_party/silo_watch_party_manager.dart';
+import '../../watch_party/watch_party_rooms_service.dart';
 
 final _getIt = GetIt.instance;
 
@@ -109,6 +110,9 @@ void resetUserScopedSingletons() {
   // A Watch Party room belongs to the session that joined it.
   if (_getIt.isRegistered<SiloWatchPartyManager>()) {
     _getIt<SiloWatchPartyManager>().onSessionChanged();
+  }
+  if (_getIt.isRegistered<WatchPartyRoomsService>()) {
+    _getIt<WatchPartyRoomsService>().reset();
   }
 
   _registerUserScopedSingletons();

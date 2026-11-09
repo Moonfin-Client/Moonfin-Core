@@ -43,6 +43,18 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
       store,
       UserPreferences.syncPlayExtraTimeOffset,
     );
+    // The Start parties with setting only shows on Jellyfin once Moonbase
+    // answers.
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<MediaServerClient>() &&
+        getIt.isRegistered<SiloWatchPartyManager>() &&
+        getIt<MediaServerClient>().serverType == ServerType.jellyfin) {
+      unawaited(
+        getIt<SiloWatchPartyManager>().availability().then((_) {
+          if (mounted) setState(() {});
+        }),
+      );
+    }
   }
 
   @override
@@ -63,30 +75,13 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
         MediaQuery.paddingOf(context).bottom;
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.syncPlay)),
+      appBar: buildSettingsAppBar(context, Text(l10n.watchParties)),
       body: FocusScope(
         node: _syncPlayScope,
         autofocus: true,
         child: ListView(
           padding: EdgeInsets.only(bottom: bottomPad),
           children: [
-            const _SectionHeader('Active Sessions'),
-            adaptiveListSection(
-              children: [
-                _TvSettingsListTile(
-                  autofocus: true,
-                  leading: const Icon(Icons.group_work),
-                  title: Text(l10n.settingsOpenGroups),
-                  subtitle: Text(l10n.settingsOpenGroupsSubtitle),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => watchTogetherScreen(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const _SectionHeader('SyncPlay Options'),
             adaptiveListSection(
               children: [
                 SwitchPreferenceTile(
@@ -95,12 +90,57 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
                   subtitle: l10n.settingsSyncplayEnabledSubtitle,
                   icon: Icons.groups,
                 ),
-                SwitchPreferenceTile(
-                  preference: UserPreferences.syncPlayAdvancedCorrectionEnabled,
-                  title: l10n.settingsSyncplayAdvancedCorrection,
-                  subtitle: l10n.settingsSyncplayAdvancedCorrectionSubtitle,
-                  icon: Icons.tune,
+                if (offersWatchPartyChoice())
+                  EnumPreferenceTile<WatchPartyServiceChoice>(
+                    preference: UserPreferences.watchPartyService,
+                    title: l10n.watchPartyStartWith,
+                    description: l10n.watchPartyServiceNote,
+                    icon: Icons.hub_outlined,
+                    labelOf: (v) => switch (v) {
+                      WatchPartyServiceChoice.moonbase => l10n.watchParty,
+                      WatchPartyServiceChoice.syncplay => l10n.syncPlay,
+                    },
+                    dialogSubtitleOf: (v) => switch (v) {
+                      WatchPartyServiceChoice.moonbase =>
+                        l10n.watchPartyServiceMoonbaseHint,
+                      WatchPartyServiceChoice.syncplay =>
+                        l10n.watchPartyServiceSyncPlayHint,
+                    },
+                  ),
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.group_work),
+                  title: Text(l10n.settingsOpenGroups),
+                  subtitle: Text(l10n.settingsOpenGroupsSubtitle),
+                  // Full screen above settings, not inside its list column,
+                  // and Back comes straight back here.
+                  onTap: () => Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => watchTogetherScreen(),
+                    ),
+                  ),
                 ),
+              ],
+            ),
+            _SectionHeader(l10n.watchPartyDuringParty),
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.watchPartyChatOverlay,
+                  title: l10n.watchPartyChatOverlay,
+                  subtitle: l10n.watchPartyChatOverlaySubtitle,
+                  icon: Icons.chat_bubble_outline,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.watchPartyAlerts,
+                  title: l10n.watchPartyAlerts,
+                  subtitle: l10n.watchPartyAlertsSubtitle,
+                  icon: Icons.notifications_active_outlined,
+                ),
+              ],
+            ),
+            _SectionHeader(l10n.settingsSyncplaySyncCorrection),
+            adaptiveListSection(
+              children: [
                 SwitchPreferenceTile(
                   preference: UserPreferences.syncPlayEnableSyncCorrection,
                   title: l10n.settingsSyncplaySyncCorrection,
@@ -118,6 +158,12 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
                   title: l10n.settingsSyncplaySkipToSync,
                   subtitle: l10n.settingsSyncplaySkipToSyncSubtitle,
                   icon: Icons.skip_next,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.syncPlayAdvancedCorrectionEnabled,
+                  title: l10n.settingsSyncplayAdvancedCorrection,
+                  subtitle: l10n.settingsSyncplayAdvancedCorrectionSubtitle,
+                  icon: Icons.tune,
                 ),
                 _DoubleSliderTile(
                   title: l10n.settingsSyncplayMinimumSpeedDelay,

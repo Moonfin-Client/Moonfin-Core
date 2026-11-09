@@ -76,7 +76,7 @@ class _PlaybackCategoryScreen extends StatelessWidget {
                 children: [
                   _TvSettingsListTile(
                     leading: const Icon(Icons.groups),
-                    title: Text(l10n.syncPlay),
+                    title: Text(l10n.watchParties),
                     subtitle: Text(l10n.settingsSyncplaySubtitle),
                     onTap: () => context.pushSettingsScreen(
                       const _SyncPlaySettingsScreen(),

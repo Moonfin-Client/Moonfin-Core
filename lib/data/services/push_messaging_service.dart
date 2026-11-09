@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../firebase_options.dart';
 import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/deep_link_navigator.dart';
 import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'plugin_sync_service.dart';
@@ -220,6 +221,6 @@ class PushMessagingService {
       return;
     }
 
-    appRouter.go(trimmed);
+    unawaited(openLinkedRoute(appRouter, trimmed));
   }
 }
