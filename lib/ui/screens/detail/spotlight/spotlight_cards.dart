@@ -393,11 +393,14 @@ class _SpotlightCardsBuilder {
       }
     }
 
+    final isEpisode = item.type == 'Episode';
+    final fallbackDirector = isEpisode ? l10n.episodeDirector : l10n.director;
+    final fallbackWriter = isEpisode ? l10n.episodeWriter : l10n.writer;
     for (final d in vm.directors) {
-      add(d, l10n.director);
+      add(d, fallbackDirector);
     }
     for (final w in vm.writers) {
-      add(w, l10n.writer);
+      add(w, fallbackWriter);
     }
     return merged.values
         .map(

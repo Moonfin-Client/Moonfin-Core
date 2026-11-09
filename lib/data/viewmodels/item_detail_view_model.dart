@@ -21,6 +21,7 @@ import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
 import '../repositories/seerr_repository.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/episode_cast_utils.dart';
 import '../utils/playlist_utils.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../util/episode_playability.dart';
@@ -929,6 +930,8 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> load({String? mediaSourceId}) async {
     _similarInitialLoadComplete = false;
     _state = ItemDetailState.loading;
+    _castLoadGeneration++;
+    _parentActors = const [];
     _collectionItems = const [];
     _missingCollectionItems = const [];
     _parentCollections = const [];
@@ -1168,11 +1171,13 @@ class ItemDetailViewModel extends ChangeNotifier {
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
+      futures.add(_loadSeasonCast());
       futures.add(_loadFeatures());
     } else if (type == 'Episode') {
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
+      futures.add(_loadParentCast());
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
     } else if (type == 'MusicArtist') {
@@ -1305,6 +1310,42 @@ class ItemDetailViewModel extends ChangeNotifier {
     _seriesEpisodesRequested = false;
     _seriesEpisodesLoaded = false;
     return loadAllSeriesEpisodes();
+  }
+
+  int _castLoadGeneration = 0;
+  List<Map<String, dynamic>> _parentActors = const [];
+  List<Map<String, dynamic>> get parentActors => _parentActors;
+
+  Future<void> _loadParentCast() async {
+    final item = _item;
+    if (item == null) return;
+    final generation = ++_castLoadGeneration;
+    final actors = await resolveParentCast(
+      client: _client,
+      seasonId: item.seasonId,
+      seriesId: item.seriesId,
+    );
+    if (_isDisposed || generation != _castLoadGeneration || actors.isEmpty) return;
+    _parentActors = actors;
+    notifyListeners();
+  }
+
+  Future<void> _loadSeasonCast() async {
+    final item = _item;
+    if (item == null) return;
+    final hasActors = item.people.any((p) {
+      final t = p['Type'] as String?;
+      return t == 'Actor' || t == 'GuestStar';
+    });
+    if (hasActors) return;
+    final generation = ++_castLoadGeneration;
+    final actors = await resolveParentCast(
+      client: _client,
+      seriesId: item.seriesId,
+    );
+    if (_isDisposed || generation != _castLoadGeneration || actors.isEmpty) return;
+    _parentActors = actors;
+    notifyListeners();
   }
 
   Future<void> _loadNextUp() async {
@@ -2799,12 +2840,47 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {}
   }
 
+  List<Map<String, dynamic>>? _cachedEpisodeDirectors;
+  List<Map<String, dynamic>>? _cachedEpisodeWriters;
+  AggregatedItem? _cachedEpisodeCrewItem;
+
+  void _ensureEpisodeCrew() {
+    if (identical(_cachedEpisodeCrewItem, _item)) return;
+    _cachedEpisodeCrewItem = _item;
+    final item = _item;
+    if (item?.type != 'Episode') {
+      _cachedEpisodeDirectors = null;
+      _cachedEpisodeWriters = null;
+      return;
+    }
+    final l10n = currentAppLocalizations();
+    _cachedEpisodeDirectors = item!.people
+        .where((p) => p['Type'] == 'Director')
+        .map((p) => <String, dynamic>{
+              ...p,
+              'Role': formatEpisodeDirectorRole(l10n, p['Role']?.toString()),
+            })
+        .toList(growable: false);
+    _cachedEpisodeWriters = item.people
+        .where((p) => p['Type'] == 'Writer')
+        .map((p) => <String, dynamic>{
+              ...p,
+              'Role': formatEpisodeWriterRole(l10n, p['Role']?.toString()),
+            })
+        .toList(growable: false);
+  }
+
   List<Map<String, dynamic>> get directors {
     if (_item?.type == 'BoxSet') {
       _ensureBoxSetPeople();
       return _boxSetDirectors;
     }
-    return _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
+    final list = _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
+    if (_item?.type == 'Episode') {
+      _ensureEpisodeCrew();
+      return _cachedEpisodeDirectors ?? list;
+    }
+    return list;
   }
 
   List<Map<String, dynamic>> get writers {
@@ -2812,7 +2888,12 @@ class ItemDetailViewModel extends ChangeNotifier {
       _ensureBoxSetPeople();
       return _boxSetWriters;
     }
-    return _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
+    final list = _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
+    if (_item?.type == 'Episode') {
+      _ensureEpisodeCrew();
+      return _cachedEpisodeWriters ?? list;
+    }
+    return list;
   }
 
   List<Map<String, dynamic>> get actors {
@@ -2823,13 +2904,26 @@ class ItemDetailViewModel extends ChangeNotifier {
     final list = _item?.people ?? const [];
     final dirNames = directors.map((d) => d['Name'] as String?).toSet();
     final writNames = writers.map((w) => w['Name'] as String?).toSet();
-    return list.where((p) {
+    final rawActors = list.where((p) {
       final type = p['Type'] as String?;
       if (type != 'Actor' && type != 'GuestStar') return false;
       final name = p['Name'] as String?;
       if (dirNames.contains(name) || writNames.contains(name)) return false;
       return true;
     }).toList();
+
+    if (_item?.type == 'Episode') {
+      return mergeEpisodeCast(
+        episodeActors: rawActors,
+        parentActors: _parentActors,
+      );
+    }
+
+    if (_item?.type == 'Season' && rawActors.isEmpty) {
+      return _parentActors;
+    }
+
+    return rawActors;
   }
 
   List<AggregatedItem> get filmographyMovies =>

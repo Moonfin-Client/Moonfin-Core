@@ -23,6 +23,7 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../data/utils/chapter_markers.dart';
+import '../../../data/utils/episode_cast_utils.dart';
 import '../../../data/utils/server_trickplay.dart';
 import '../../../data/utils/trickplay_headers.dart';
 import '../../../playback/subtitle_style.dart';
@@ -7821,6 +7822,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _hasCastCrew(dynamic item) {
     if (item is! AggregatedItem) return false;
     if (item.people.isNotEmpty) return true;
+    if (item.type == 'Episode' &&
+        ((item.seriesId != null && item.seriesId!.isNotEmpty) ||
+            (item.seasonId != null && item.seasonId!.isNotEmpty))) {
+      return true;
+    }
     return item.id == _castPeopleItemId && _castPeople.isNotEmpty;
   }
 
@@ -7845,29 +7851,51 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future<List<Map<String, dynamic>>> _resolveCastPeople(
     AggregatedItem item,
   ) async {
-    if (item.people.isNotEmpty) {
-      return item.people;
-    }
     if (item.id == _castPeopleItemId && _castPeople.isNotEmpty) {
       return _castPeople;
     }
 
-    // An episode keeps its cast on the series, everything else on itself.
-    final id = item.type == 'Episode' ? (item.seriesId ?? '') : item.id;
-    if (id.isEmpty) {
+    if (item.type != 'Episode') {
+      if (item.people.isNotEmpty) {
+        return item.people;
+      }
+      if (item.type == 'Season' &&
+          item.seriesId != null &&
+          item.seriesId!.isNotEmpty) {
+        final client = _clientForItem(item);
+        final parentCast = await resolveParentCast(
+          client: client,
+          seriesId: item.seriesId,
+        );
+        if (parentCast.isNotEmpty) return parentCast;
+      }
+      if (item.type == 'Movie' && item.id.isNotEmpty) {
+        try {
+          final client = _clientForItem(item);
+          final data = await client.itemsApi.getItem(item.id);
+          final people = (data['People'] as List?)
+              ?.whereType<Map>()
+              .map((p) => p.cast<String, dynamic>())
+              .toList(growable: false);
+          if (people != null && people.isNotEmpty) {
+            return people;
+          }
+        } catch (_) {}
+      }
       return const <Map<String, dynamic>>[];
     }
 
-    try {
-      final client = _clientForItem(item);
-      final data = await client.itemsApi.getItem(id);
-      final people = (data['People'] as List?)
-          ?.cast<Map<String, dynamic>>()
-          .toList(growable: false);
-      return people ?? const <Map<String, dynamic>>[];
-    } catch (_) {
-      return const <Map<String, dynamic>>[];
-    }
+    final client = _clientForItem(item);
+    final parentActors = await resolveParentCast(
+      client: client,
+      seasonId: item.seasonId,
+      seriesId: item.seriesId,
+    );
+
+    return mergeEpisodePeople(
+      episodePeople: item.people,
+      parentActors: parentActors,
+    );
   }
 
   Future<void> _showCast() async {
@@ -7926,15 +7954,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       await showStyledPlayerDialog<void>(
         context,
         title: AppLocalizations.of(context).castAndCrew,
-        maxWidth: 640,
+        maxWidth: 680,
         builder: (dialogCtx) => SizedBox(
           height: 210,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.spaceLg,
+              AppSpacing.spaceXl,
               AppSpacing.spaceSm,
-              AppSpacing.spaceLg,
+              AppSpacing.space2xl,
               AppSpacing.spaceSm,
             ),
             itemCount: people.length,
