@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
@@ -8,6 +9,37 @@ import '../services/seerr/seerr_discover_sliders.dart';
 import '../services/seerr/seerr_http_client.dart';
 import '../services/seerr/seerr_models.dart';
 import '../services/seerr/silo_seerr_http_client.dart';
+
+/// The kinds the search screen opens a page for.
+const _videoSearchMediaTypes = {'movie', 'tv', 'person', 'collection'};
+
+/// The parser needs a numeric id. A result that never said what kind it is
+/// used to be shown, so it stays when its id is a number.
+bool _isRenderableSearchResult(Object? result) {
+  if (result is! Map) return false;
+  final mediaType = result['mediaType'];
+  return (mediaType == null || _videoSearchMediaTypes.contains(mediaType)) &&
+      result['id'] is num;
+}
+
+/// Drops the search results the app has no page for. A Seerr fork that also
+/// indexes music and books mixes in albums, artists, books and authors, and
+/// their string ids threw in [SeerrDiscoverItem]'s parser, which took every
+/// Seerr result in the search down with them. The totals stay the server's,
+/// as in [SeerrRepository.getSliderPage].
+@visibleForTesting
+Map<String, dynamic> keepVideoSearchResults(Map<String, dynamic> page) {
+  final results = page['results'];
+  if (results is! List) return page;
+
+  final kept = [
+    for (final result in results)
+      if (_isRenderableSearchResult(result)) result,
+  ];
+  if (kept.length == results.length) return page;
+
+  return {...page, 'results': kept};
+}
 
 class SeerrRepository {
   final PreferenceStore _store;
@@ -591,7 +623,14 @@ class SeerrRepository {
     int offset = 0,
   }) => _withClient(
     (c) async => SeerrDiscoverPage.fromJson(
-      await c.search(query, mediaType: mediaType, limit: limit, offset: offset),
+      keepVideoSearchResults(
+        await c.search(
+          query,
+          mediaType: mediaType,
+          limit: limit,
+          offset: offset,
+        ),
+      ),
     ),
   );
 
