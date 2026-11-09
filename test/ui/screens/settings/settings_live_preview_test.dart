@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/foundation.dart';
@@ -2397,6 +2398,84 @@ void main() {
       expect(line('oíste'), findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
+
+    for (final layout in [
+      InterfaceLayout.tv,
+      InterfaceLayout.desktop,
+      InterfaceLayout.phone,
+    ]) {
+      testWidgets('on $layout the subtitle clears the seek bar while the '
+          'controls show', (tester) async {
+        if (layout == InterfaceLayout.desktop) {
+          debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+        }
+        PlatformDetection.setInterfaceLayout(layout);
+        final controller = SettingsPreviewController()
+          ..tryValue(
+            'playback_engine_preference',
+            PlaybackEnginePreference.media3,
+          )
+          ..tryValue('subtitles_offset_position', 0.1)
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Zoom',
+              prefKey: 'player_zoom_mode',
+            ),
+          );
+        await pumpPlayer(tester, controller);
+        expect(find.byType(Slider), findsOneWidget);
+
+        final text = line('hear');
+        double bottom() => tester
+            .widget<Positioned>(
+              find.ancestor(of: text, matching: find.byType(Positioned)).first,
+            )
+            .bottom!;
+        // The canvas is scaled to fit the preview, so gaps are measured in
+        // its own units.
+        double gapTo(Finder finder) =>
+            (tester.getRect(finder).top - tester.getRect(text).bottom) /
+            (tester.getRect(text).width / tester.getSize(text).width);
+        final height = tester
+            .getSize(find.ancestor(of: text, matching: find.byType(Stack)).first)
+            .height;
+        final endsAt = find.byWidgetPredicate(
+          (widget) => widget is PlaybackTimeRow && widget.bold,
+        );
+        expect(endsAt, findsOneWidget);
+        expect(gapTo(endsAt), closeTo(8, 0.01));
+        expect(gapTo(find.byType(Slider)), greaterThan(8));
+        final lifted = bottom();
+        expect(lifted, greaterThan(0.1 * height));
+
+        // With nothing above the bar it sits just over the bar.
+        controller.tryValue('playback_time_above_right', PlaybackTimeSlot.none);
+        await pumpPlayer(tester, controller);
+        expect(endsAt, findsNothing);
+        expect(gapTo(find.byType(Slider)), closeTo(8, 0.01));
+
+        // An offset already higher than that is kept.
+        controller
+          ..clearTry('playback_time_above_right')
+          ..tryValue('subtitles_offset_position', 0.36);
+        await pumpPlayer(tester, controller);
+        expect(bottom(), closeTo(math.max(0.36 * height, lifted), 0.001));
+
+        // With the controls down the line keeps its own offset.
+        controller
+          ..tryValue('subtitles_offset_position', 0.1)
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Size',
+              prefKey: 'subtitles_text_size',
+            ),
+          );
+        await pumpPlayer(tester, controller);
+        expect(find.byType(Slider), findsNothing);
+        expect(bottom(), closeTo(0.1 * height, 0.001));
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
 
     testWidgets('the subtitle look screen reports its tiles and tries colors', (
       tester,

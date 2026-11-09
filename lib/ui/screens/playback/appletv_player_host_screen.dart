@@ -13,6 +13,7 @@ import 'package:server_core/server_core.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/chapter_markers.dart';
+import '../../../data/utils/episode_cast_utils.dart';
 import '../../../data/utils/server_trickplay.dart';
 import '../../../data/utils/trickplay_headers.dart';
 import '../../../data/models/trickplay_info.dart';
@@ -688,8 +689,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (item is! AggregatedItem) return false;
     if (item.people.isNotEmpty) return true;
     return item.type == 'Episode' &&
-        item.seriesId != null &&
-        item.seriesId!.isNotEmpty;
+        ((item.seriesId != null && item.seriesId!.isNotEmpty) ||
+            (item.seasonId != null && item.seasonId!.isNotEmpty));
   }
 
   bool _canFavorite(dynamic item) {
@@ -915,12 +916,18 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }();
   }
 
-  List<Map<String, dynamic>> _castPeople(dynamic item) {
+  List<Map<String, dynamic>> _castPeople(
+    dynamic item, {
+    bool resolveCast = true,
+  }) {
     final imageApi = _clientForQueueItem(item)?.imageApi;
     if (imageApi == null) return const [];
     final itemId = _itemIdForQueueItem(item);
     if (itemId != null && _castCache.containsKey(itemId)) {
       return _castCache[itemId]!;
+    }
+    if (resolveCast && item is AggregatedItem && item.type == 'Episode') {
+      _resolveCastAsync(item);
     }
     final raw = _rawDataForQueueItem(item);
     final people = (raw?['People'] as List?)?.cast<Map<String, dynamic>>();
@@ -931,14 +938,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _resolveCastAsync(dynamic item) {
     if (item is! AggregatedItem) return;
     final itemId = item.id;
-    if (_castCache.containsKey(itemId) ||
-        _castResolving == itemId ||
-        item.people.isNotEmpty) {
+    if (_castCache.containsKey(itemId) || _castResolving == itemId) {
       return;
     }
     if (item.type != 'Episode' ||
-        item.seriesId == null ||
-        item.seriesId!.isEmpty) {
+        ((item.seriesId == null || item.seriesId!.isEmpty) &&
+            (item.seasonId == null || item.seasonId!.isEmpty))) {
       return;
     }
     final client = _clientForQueueItem(item);
@@ -946,17 +951,23 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _castResolving = itemId;
     () async {
       try {
-        final seriesData = await client.itemsApi.getItem(item.seriesId!);
-        final people = (seriesData['People'] as List?)
-            ?.cast<Map<String, dynamic>>();
-        _castCache[itemId] = (people == null || people.isEmpty)
-            ? const []
-            : _mapPeople(people, client.imageApi);
+        final parentActors = await resolveParentCast(
+          client: client,
+          seasonId: item.seasonId,
+          seriesId: item.seriesId,
+        );
+        final merged = mergeEpisodePeople(
+          episodePeople: item.people,
+          parentActors: parentActors,
+        );
+        if (merged.isNotEmpty || item.people.isNotEmpty) {
+          _castCache[itemId] = _mapPeople(merged, client.imageApi);
+        }
       } catch (_) {
-        _castCache[itemId] = const [];
+        // Leave uncached on error so a subsequent playback event can retry
       } finally {
         _castResolving = null;
-        if (mounted) _pushMetadata();
+        if (mounted) _pushMetadata(skipCastResolutionForId: itemId);
       }
     }();
   }
@@ -1247,12 +1258,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     return options;
   }
 
-  void _pushMetadata() {
+  void _pushMetadata({String? skipCastResolutionForId}) {
     final manager = _manager;
     final backend = _backend;
     if (manager == null || backend == null) return;
 
     final item = manager.queueService.currentItem;
+    final resolveCast =
+        skipCastResolutionForId == null ||
+        _itemIdForQueueItem(item) != skipCastResolutionForId;
     final chapters = _currentChapters();
 
     String topTitle = '';
@@ -1371,7 +1385,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       ).playbackInfoDroppedFrames,
       trickplay: _trickplayPayload(item, manager),
       hasCast: _hasCastCrew(item),
-      castPeople: _castPeople(item),
+      castPeople: _castPeople(item, resolveCast: resolveCast),
       pauseMeta: _pauseMetaPayload(item),
       selectedBitrateMbps: manager.maxBitrateOverrideMbps ?? -1,
       canFavorite: _canFavorite(item),
@@ -1383,7 +1397,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       transportDocked: _transportDocked(),
     );
 
-    _resolveCastAsync(item);
+    if (resolveCast) _resolveCastAsync(item);
   }
 
   int _prefInt(Preference<int> pref, {required int defaultValue}) {

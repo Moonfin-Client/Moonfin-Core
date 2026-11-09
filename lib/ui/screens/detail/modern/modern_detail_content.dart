@@ -1742,12 +1742,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Widget _crewTab(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
+    final isEpisode = item.type == 'Episode';
+    final fallbackDirector = isEpisode ? l10n.episodeDirector : l10n.director;
+    final fallbackWriter = isEpisode ? l10n.episodeWriter : l10n.writer;
     final Map<String, Map<String, dynamic>> merged = {};
     for (final d in _vm.directors) {
       final id = d['Id']?.toString() ?? d['Name']?.toString() ?? '';
       if (id.isEmpty) continue;
       final roleStr = d['Role']?.toString().trim();
-      final role = (roleStr != null && roleStr.isNotEmpty) ? roleStr : l10n.director;
+      final role = (roleStr != null && roleStr.isNotEmpty) ? roleStr : fallbackDirector;
       merged[id] = {
         ...d,
         'Roles': <String>{role},
@@ -1757,7 +1760,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final id = w['Id']?.toString() ?? w['Name']?.toString() ?? '';
       if (id.isEmpty) continue;
       final roleStr = w['Role']?.toString().trim();
-      final role = (roleStr != null && roleStr.isNotEmpty) ? roleStr : l10n.writer;
+      final role = (roleStr != null && roleStr.isNotEmpty) ? roleStr : fallbackWriter;
       if (merged.containsKey(id)) {
         final roles = merged[id]!['Roles'] as Set<String>;
         roles.add(role);

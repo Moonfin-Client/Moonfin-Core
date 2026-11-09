@@ -2423,6 +2423,45 @@
   "@writers": {
     "description": "Metadata label for writers"
   },
+  "episodeDirector": "Episode Director",
+  "@episodeDirector": {
+    "description": "Role label for an episode director"
+  },
+  "episodeDirectorWithRole": "{role} (Episode Director)",
+  "@episodeDirectorWithRole": {
+    "description": "Role label formatting an episode director with an existing role description",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeWriter": "Episode Writer",
+  "@episodeWriter": {
+    "description": "Role label for an episode writer"
+  },
+  "episodeWriterWithRole": "{role} (Episode Writer)",
+  "@episodeWriterWithRole": {
+    "description": "Role label formatting an episode writer with an existing role description",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "guestStar": "Guest Star",
+  "@guestStar": {
+    "description": "Role label for a guest star"
+  },
+  "guestStarWithRole": "{role} (Guest Star)",
+  "@guestStarWithRole": {
+    "description": "Role label formatting a character role as a guest star",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "studio": "STUDIO",
   "@studio": {
     "description": "Metadata label for studio"
