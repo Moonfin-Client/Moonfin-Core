@@ -630,7 +630,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _refreshPosterSizeFromScope();
 
       await imageTypeSync;
-      await _fetchPage(0);
+      await _fetchPage(0, generation: generation);
       if (generation != _listGeneration) return;
       _state = LibraryBrowseState.ready;
     } catch (e) {
@@ -734,7 +734,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     final previouslyFetched = _fetchedCount;
     final generation = _listGeneration;
     try {
-      await _fetchPage(_fetchedCount, pageSizeOverride: pageSizeOverride);
+      await _fetchPage(
+        _fetchedCount,
+        generation: generation,
+        pageSizeOverride: pageSizeOverride,
+      );
       // Stop on a page the server had nothing left for, not on one that only
       // repeated what is already shown, which a random sort does by chance.
       // A reload in the meantime reset the count, so it says nothing here.
@@ -752,8 +756,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  Future<void> _fetchPage(int startIndex, {int? pageSizeOverride}) async {
-    final generation = _listGeneration;
+  /// [generation] is the list the caller started for: [load] reaches this
+  /// only after awaits of its own, by when a newer load may have begun.
+  Future<void> _fetchPage(
+    int startIndex, {
+    required int generation,
+    int? pageSizeOverride,
+  }) async {
     final pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
     final filters = <String>[];
     if (_playedFilter == PlayedStatusFilter.watched) {

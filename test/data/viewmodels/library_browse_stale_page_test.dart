@@ -79,12 +79,18 @@ class _HeldItemsApi implements ItemsApi {
     };
   }
 
+  /// When set, the library lookup waits for it as well.
+  Completer<void>? heldItem;
+
   @override
   Future<Map<String, dynamic>> getItem(
     String itemId, {
     String? mediaSourceId,
     String? fields,
-  }) async => <String, dynamic>{'Name': 'Movies'};
+  }) async {
+    await heldItem?.future;
+    return <String, dynamic>{'Name': 'Movies'};
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -192,6 +198,29 @@ void main() {
     // Paging carries on from the reloaded list's own offset.
     expect(api.requestedStartIndexes.last, 4);
     expect(_ids(vm).last, 'item-30');
+  });
+
+  test('a reload started during the library lookup keeps one first page', () async {
+    final api = _HeldItemsApi()..heldItem = Completer<void>();
+    final vm = await _viewModel(api);
+    addTearDown(vm.dispose);
+
+    // Both loads wait on the library lookup before asking for their page.
+    final first = vm.load();
+    await pumpEventQueue();
+    final second = vm.load();
+    await pumpEventQueue();
+    api.heldItem!.complete();
+    await _requests(api, 2);
+
+    // The newer page lands first, then the superseded one with the same ids.
+    api.pending[1].complete([1, 2]);
+    api.pending[0].complete([1, 2]);
+    await second;
+    await first;
+
+    expect(_ids(vm), ['item-1', 'item-2']);
+    expect(vm.state, LibraryBrowseState.ready);
   });
 
   test('the reloaded list can page while the old page is still out', () async {
