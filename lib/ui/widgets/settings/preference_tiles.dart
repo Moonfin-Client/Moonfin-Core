@@ -1083,6 +1083,14 @@ class _StringPickerPreferenceTileState
       widget.preference,
       oldWidget.preference,
     );
+    // Several tiles can write one preference (the media segment actions),
+    // so re-read it when a sibling changed it rather than keep the value
+    // read in initState.
+    final store = GetIt.instance<PreferenceStore>();
+    if (_binding.value != store.get(widget.preference)) {
+      _binding.dispose();
+      _binding = PreferenceBinding(store, widget.preference);
+    }
   }
 
   @override
