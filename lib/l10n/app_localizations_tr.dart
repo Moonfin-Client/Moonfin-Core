@@ -11767,20 +11767,20 @@ class AppLocalizationsTr extends AppLocalizations {
       'Saatin gösterildiği her yerde 24 saat biçimini kullan';
 
   @override
-  String get settingsDateFormat => 'Date Format';
+  String get settingsDateFormat => 'Tarih Formatı';
 
   @override
   String get settingsDateFormatDescription =>
-      'Choose between month-day, day-month, or locale default for calendar and release dates';
+      'Takvim ve çıkış tarihleri için ay-gün, gün-ay veya yerel ayar varsayılanı arasında seçim yapın';
 
   @override
-  String get dateFormatSystem => 'Locale Default';
+  String get dateFormatSystem => 'Yerel Varsayılan';
 
   @override
-  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+  String get dateFormatMonthDay => 'Ay / Gün (10 Kas)';
 
   @override
-  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+  String get dateFormatDayMonth => 'Gün / Ay (10 Kas)';
 
   @override
   String get settingsShowShuffleButtonInNavigation =>

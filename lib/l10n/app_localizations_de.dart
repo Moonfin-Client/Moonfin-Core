@@ -86,31 +86,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quickConnectScanHint =>
-      'Or scan this with a phone that\'s signed in to your server';
+      'Oder scanne dies mit einem Smartphone, das bei deinem Server angemeldet ist';
 
   @override
   String get quickConnectTapOrScanHint =>
-      'Tap to approve in your browser, or scan this with another device';
+      'Tippe in deinem Browser auf „Genehmigen“ oder scanne dies mit einem anderen Gerät';
 
   @override
-  String get timesUpTitle => 'Time\'s up';
+  String get timesUpTitle => 'Die Zeit ist abgelaufen';
 
   @override
-  String get timesUpMessage => 'Dieses Konto ist derzeit nicht verfügbar.';
+  String get timesUpMessage => 'Dieses Konto ist derzeit nicht verfügbar';
 
   @override
   String timesUpResumesToday(String time) {
-    return 'You can use it again today at $time.';
+    return 'Du kannst es heute wieder um $time verwenden';
   }
 
   @override
   String timesUpResumesTomorrow(String time) {
-    return 'You can use it again tomorrow at $time.';
+    return 'Du kannst es morgen um $time wieder verwenden';
   }
 
   @override
   String timesUpResumesOn(String day, String time) {
-    return 'You can use it again on $day at $time.';
+    return 'Du kannst es am $day um $time wieder verwenden';
   }
 
   @override
@@ -127,7 +127,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get loginForbidden =>
-      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+      'Mit diesem Konto kann derzeit keine Anmeldung erfolgen. Möglicherweise liegt der Zeitpunkt außerhalb der zulässigen Nutzungszeiten, oder das Konto ist gesperrt beziehungsweise deaktiviert. Versuche es später noch einmal oder wende dich an einen Administrator.';
 
   @override
   String quickConnectUnavailable(String detail) {
@@ -143,31 +143,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get whosWatching => 'Wer schaut?';
 
   @override
-  String get signedInOnThisDevice => 'Signed in on this device';
+  String get signedInOnThisDevice => 'Auf diesem Gerät angemeldet';
 
   @override
-  String get pinRequired => 'PIN required';
+  String get pinRequired => 'PIN erforderlich';
 
   @override
-  String get passwordRequired => 'Password required';
+  String get passwordRequired => 'Passwort erforderlich';
 
   @override
   String continueAsUser(String name) {
-    return 'Continue as $name';
+    return 'Als $name fortfahren';
   }
 
   @override
   String switchToUser(String name) {
-    return 'Switch to $name';
+    return 'Zu $name wechseln';
   }
 
   @override
   String signedInAsOnServer(String user, String server) {
-    return 'Signed in as $user on $server';
+    return 'Angemeldet als $user auf $server';
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Aktiv';
 
   @override
   String get addUser => 'Benutzer hinzufügen';

@@ -1761,7 +1761,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get downloadAllQuality => 'Lataa kaikki – Laatu';
 
   @override
-  String get downloadQuality => 'Lataa laatu';
+  String get downloadQuality => 'Lataamisen Laatu';
 
   @override
   String get originalFileNoReencoding =>
@@ -2505,7 +2505,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get themeSystem => 'Teema: Järjestelmä';
 
   @override
-  String get themeLight => 'Teema: Valo';
+  String get themeLight => 'Teema: Vaalea';
 
   @override
   String get themeDark => 'Teema: Tumma';
@@ -11824,20 +11824,20 @@ class AppLocalizationsFi extends AppLocalizations {
       'Käytä 24 tunnin ajan muotoilua kaikkialla, missä kello näkyy';
 
   @override
-  String get settingsDateFormat => 'Date Format';
+  String get settingsDateFormat => 'Päivämäärämuoto';
 
   @override
   String get settingsDateFormatDescription =>
-      'Choose between month-day, day-month, or locale default for calendar and release dates';
+      'Valitse kalenterin ja julkaisupäivien osalta joko kuukausi-päivä-, päivä-kuukausi- tai paikallisen oletusasetuksen';
 
   @override
-  String get dateFormatSystem => 'Locale Default';
+  String get dateFormatSystem => 'Kieliasetuksen oletusarvo';
 
   @override
-  String get dateFormatMonthDay => 'Month / Day (Nov 10)';
+  String get dateFormatMonthDay => 'Kuukausi / Päivä (10. marraskuuta)';
 
   @override
-  String get dateFormatDayMonth => 'Day / Month (10 Nov)';
+  String get dateFormatDayMonth => 'Päivä / Kuukausi (10. marraskuuta)';
 
   @override
   String get settingsShowShuffleButtonInNavigation =>

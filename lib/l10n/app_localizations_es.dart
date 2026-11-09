@@ -62,7 +62,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signIn => 'Iniciar sesión';
 
   @override
-  String get signingIn => 'Signing in...';
+  String get signingIn => 'Iniciando sesión...';
 
   @override
   String get empty => 'Vacío';
@@ -147,31 +147,31 @@ class AppLocalizationsEs extends AppLocalizations {
   String get whosWatching => '¿Quién está viendo?';
 
   @override
-  String get signedInOnThisDevice => 'Signed in on this device';
+  String get signedInOnThisDevice => 'Sesión iniciada en este dispositivo';
 
   @override
-  String get pinRequired => 'PIN required';
+  String get pinRequired => 'Se requiere PIN';
 
   @override
-  String get passwordRequired => 'Password required';
+  String get passwordRequired => 'Se requiere Contraseña';
 
   @override
   String continueAsUser(String name) {
-    return 'Continue as $name';
+    return 'Continuar como $name';
   }
 
   @override
   String switchToUser(String name) {
-    return 'Switch to $name';
+    return 'Cambiar a $name';
   }
 
   @override
   String signedInAsOnServer(String user, String server) {
-    return 'Signed in as $user on $server';
+    return 'Sesión iniciada como $user en $server';
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Activo';
 
   @override
   String get addUser => 'Añadir usuario';
@@ -246,7 +246,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Clásico es el diseño centrado original de moonfin. Moderno es un diseño cinematográfico adaptable. Foco es un diseño que pone la imagen principal en el primer plano, con tarjetas de contenido emergentes. Nuevo es un diseño a pantalla completa, con secciones apiladas verticalmente a lo largo de la página. Minimalista muestra la ilustración, un botón de reproducción y los episodios.';
+      'El aspecto que tiene una película o serie al abrirla.';
 
   @override
   String get detailScreenStyleMoonfin => 'Clásico';
@@ -468,26 +468,26 @@ class AppLocalizationsEs extends AppLocalizations {
   String get detailScreenStyleMinimalist => 'Minimalista';
 
   @override
-  String get detailScreenStyleStage => 'Stage';
+  String get detailScreenStyleStage => 'Escenario';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'Estreno';
 
   @override
-  String get detailScreenStyleQuickLook => 'Quick Look';
+  String get detailScreenStyleQuickLook => 'Vistazo rápido';
 
   @override
-  String get detailScreenStyleFrost => 'Frost';
+  String get detailScreenStyleFrost => 'Helado';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Abrir página completa';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Volver a cerrar';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
-    return '$played of $total';
+    return '$played de $total';
   }
 
   @override
@@ -1606,7 +1606,7 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count more queued',
+      other: '$count mas queued',
       one: '1 more queued',
     );
     return '$_temp0';
@@ -1713,7 +1713,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get audioTrack => 'Pista de audio';
 
   @override
-  String get noOtherAudioTracks => 'No other audio tracks';
+  String get noOtherAudioTracks => 'No hay otras pistas de audio';
 
   @override
   String get subtitleTrack => 'Pista de subtítulos';
@@ -2675,26 +2675,26 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get seriesRecordingNewEpisodesOnlyDescription =>
-      'First airings only, no repeats';
+      'Solo emisiones iniciales, sin repeticiones';
 
   @override
-  String get seriesRecordingSettings => 'Series Settings';
+  String get seriesRecordingSettings => 'Configuración de la serie';
 
   @override
-  String get seriesRecordingUpdated => 'Series recording updated';
+  String get seriesRecordingUpdated => 'Grabación de serie actualizada';
 
   @override
   String get failedToUpdateSeriesRecording =>
-      'Unable to update series recording';
+      'No es posible actualizar la grabación de la serie';
 
   @override
-  String get recordCurrentEpisode => 'Record This Episode';
+  String get recordCurrentEpisode => 'Grabar este episodio';
 
   @override
-  String get recordCurrentProgram => 'Record This Program';
+  String get recordCurrentProgram => 'Grabar este programa';
 
   @override
-  String get cancelCurrentRecording => 'Cancel This Recording';
+  String get cancelCurrentRecording => 'Cancelar esta grabación';
 
   @override
   String get cancelRecordingAction => 'Cancelar grabación';
@@ -2709,23 +2709,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unableToCreateRecording => 'No se puede crear la grabación';
 
   @override
-  String get recordSeries => 'Record Series';
+  String get recordSeries => 'Grabar serie';
 
   @override
-  String get seriesSetToRecord => 'Series set to record';
+  String get seriesSetToRecord => 'Series programadas para grabar';
 
   @override
-  String get seriesRecordingCancelled => 'Series recording cancelled';
+  String get seriesRecordingCancelled => 'Grabación de la serie cancelada';
 
   @override
   String get unableToCreateSeriesRecording =>
-      'Unable to create series recording';
+      'No es posible crear una grabación de serie';
 
   @override
   String get watch => 'Ver';
 
   @override
-  String get watchChannelLive => 'Watch channel live';
+  String get watchChannelLive => 'Ver el canal en directo';
 
   @override
   String get close => 'Cerrar';
@@ -2737,20 +2737,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get playbackStreamLost =>
-      'Playback stopped and could not be recovered.';
+      'La reproducción se detuvo y no pudo reanudarse.';
 
   @override
   String get playbackVideoUnsupported =>
-      'This device can\'t play this video\'s format. Try an external player.';
+      'Este dispositivo no puede reproducir el formato de este video. Prueba con un reproductor externo.';
 
   @override
   String liveReconnecting(int attempt, int total) {
-    return 'Reconnecting… ($attempt of $total)';
+    return 'Reconectando… ($attempt de $total)';
   }
 
   @override
   String playerMatchingDisplayRate(String fps) {
-    return 'Matching display to $fps fps…';
+    return 'Ajustando la pantalla a $fps fps…';
   }
 
   @override
@@ -2971,7 +2971,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get downloadedItems => 'Elementos descargados';
 
   @override
-  String get activeDownloads => 'Active Downloads';
+  String get activeDownloads => 'Descargas activas';
 
   @override
   String savedMediaCount(int count) {
@@ -2986,37 +2986,39 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String savedMediaOfLimit(String used, String limit) {
-    return '$used of $limit';
+    return '$used de $limit';
   }
 
   @override
-  String get savedMediaSelectItems => 'Select items';
+  String get savedMediaSelectItems => 'Seleccionar elementos';
 
   @override
-  String get savedMediaNoDownloads => 'Nothing saved yet';
+  String get savedMediaNoDownloads => 'Aún no hay nada guardado';
 
   @override
   String get savedMediaNoDownloadsDetail =>
-      'Downloads you start appear here and play without a connection.';
+      'Las descargas que inicias aparecen aquí y se pueden reproducir sin conexión.';
 
   @override
-  String get savedMediaNoActiveDownloads => 'Nothing downloading right now';
+  String get savedMediaNoActiveDownloads =>
+      'No se está descargando nada en este momento';
 
   @override
-  String get savedMediaNoResults => 'No downloads match that search';
+  String get savedMediaNoResults =>
+      'No hay descargas que coincidan con esa búsqueda';
 
   @override
-  String get savedMediaPlayFromStart => 'Play from start';
+  String get savedMediaPlayFromStart => 'Reproducir desde el principio';
 
   @override
-  String get savedMediaGoToDetails => 'Go to details';
+  String get savedMediaGoToDetails => 'Ir a Detalles';
 
   @override
-  String get savedMediaDeleteDownload => 'Delete download';
+  String get savedMediaDeleteDownload => 'Eliminar Descarga';
 
   @override
   String savedMediaDeleteSeason(String season) {
-    return 'Delete $season';
+    return 'Eliminar $season';
   }
 
   @override
@@ -3031,25 +3033,25 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get savedMediaOpenShow => 'Open show';
+  String get savedMediaOpenShow => 'Abrir programa';
 
   @override
-  String get savedMediaPlayNextUnwatched => 'Play next unwatched';
+  String get savedMediaPlayNextUnwatched => 'Reproducir siguiente no visto';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'Leer';
 
   @override
-  String get savedMediaCancelDownload => 'Cancel download';
+  String get savedMediaCancelDownload => 'Cancelar descarga';
 
   @override
-  String get sortBySize => 'Size';
+  String get sortBySize => 'Tamaño';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'Nombre';
 
   @override
-  String get sortByDateAdded => 'Date added';
+  String get sortByDateAdded => 'Fecha añadida';
 
   @override
   String get storageLimit => 'Límite de almacenamiento';
@@ -3093,7 +3095,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings => 'Ajustes';
 
   @override
-  String get settingsSearchHint => 'Search settings';
+  String get settingsSearchHint => 'Configuración de búsqueda';
 
   @override
   String get authentication => 'Autenticación';
@@ -3182,17 +3184,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get watchedIndicators => 'Indicadores de visto';
 
   @override
-  String get showPosterLabels => 'Poster Labels';
+  String get showPosterLabels => 'Etiquetas para carteles';
 
   @override
   String get showPosterLabelsSubtitle =>
-      'Show the labels on posters, such as 4K or HDR.';
+      'Muestra las etiquetas en los carteles, como 4K o HDR.';
 
   @override
   String get always => 'Siempre';
 
   @override
-  String get mixedRowsOnly => 'Mixed rows only';
+  String get mixedRowsOnly => 'Solo filas mixtas';
 
   @override
   String get hideUnwatched => 'Ocultar no vistos';
@@ -3244,7 +3246,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Efectos visuales y decoraciones de temporada';
 
   @override
-  String get loadingAnimation => 'Loading Animation';
+  String get loadingAnimation => 'Cargando animación';
 
   @override
   String get loadingAnimationDescription =>
@@ -3257,7 +3259,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loadingAnimationImage => 'Image';
 
   @override
-  String get loadingAnimationImageMoonfinLogo => 'Moonfin Logo';
+  String get loadingAnimationImageMoonfinLogo => 'Logo de Moonfin';
 
   @override
   String get loadingAnimationImageSpinner => 'Spinner';
@@ -3266,13 +3268,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loadingAnimationImageRunner => 'Runner';
 
   @override
-  String get loadingAnimationImageMoonPhases => 'Moon Phases';
+  String get loadingAnimationImageMoonPhases => 'Fases Lunares';
 
   @override
-  String get loadingAnimationImageMoonfinPhases => 'Moonfin Phases';
+  String get loadingAnimationImageMoonfinPhases => 'Fases de Moonfin';
 
   @override
-  String get loadingAnimationImageNeonfinPhases => 'Neonfin Phases';
+  String get loadingAnimationImageNeonfinPhases => 'Fases de Neonfin';
 
   @override
   String get loadingAnimationSize => 'Animation Size';
@@ -25206,12 +25208,66 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   AppLocalizationsEsAr() : super('es_AR');
 
   @override
+  String get appTitle => 'Moonfin';
+
+  @override
+  String get animeMarkerFiller => 'Relleno';
+
+  @override
+  String get animeMarkerMixed => 'Mixto';
+
+  @override
+  String get animeMarkerAnimeCanon => 'Canon de Anime';
+
+  @override
+  String get animeMarkerMangaCanon => 'Canon de Manga';
+
+  @override
+  String get animeMarkerSubbed => 'Subtitulado';
+
+  @override
+  String get animeMarkerDubbed => 'Doblado';
+
+  @override
+  String get animeMarkerSubbedAndDubbed => 'Subtitulado/Doblado';
+
+  @override
+  String get animeMarkerSubbedShort => 'Subt.';
+
+  @override
+  String get animeMarkerDubbedShort => 'Dobl.';
+
+  @override
+  String get animeMarkerSubbedAndDubbedShort => 'Subt/Dobl';
+
+  @override
+  String get animeMarkerPending => 'Pendiente';
+
+  @override
+  String get animeMarkerRecap => 'Resumen';
+
+  @override
+  String get interfaceLanguage => 'Idioma de la interfaz';
+
+  @override
+  String get systemLanguageDefault => 'Predeterminado del sistema';
+
+  @override
   String get signIn => 'Iniciar sesión';
+
+  @override
+  String get signingIn => 'Iniciando sesión...';
+
+  @override
+  String get empty => 'Vacío';
 
   @override
   String connectingToServer(String serverName) {
     return 'Conectándose a $serverName';
   }
+
+  @override
+  String get quickConnect => 'Conexión Rápida';
 
   @override
   String get password => 'Contraseña';
@@ -25225,6 +25281,31 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get quickConnectInstruction =>
       'Ingrese este código en el panel web de su servidor:';
+
+  @override
+  String get quickConnectScanHint =>
+      'O escanealo con un celular que tenga la sesión iniciada en tu servidor';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tocá para aprobar en tu navegador, o escanealo con otro dispositivo';
+
+  @override
+  String get timesUpTitle => 'Se terminó el tiempo';
+
+  @override
+  String get timesUpMessage =>
+      'Esta cuenta no está disponible en este momento.';
+
+  @override
+  String timesUpResumesToday(String time) {
+    return 'Podés volver a usarla hoy a las $time.';
+  }
+
+  @override
+  String timesUpResumesTomorrow(String time) {
+    return 'Podés volver a usarla mañana a las $time.';
+  }
 
   @override
   String get waitingForAuthorization => 'Esperando autorización...';
