@@ -10758,7 +10758,7 @@
             }
         }
     },
-    "timesUpResumesOn": "Du kannst es am {Tag} um {Uhrzeit} wieder verwenden",
+    "timesUpResumesOn": "Du kannst es am {day} um {time} wieder verwenden",
     "@timesUpResumesOn": {
         "description": "When access returns, on the Time's up screen, for a time on a later day",
         "placeholders": {
