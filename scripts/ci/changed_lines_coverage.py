@@ -238,19 +238,22 @@ def merge(into, hits):
 def own_tests_stage(root, runner, tests, lib_files, packages):
     """Stage 1: the branch's own test files, one flutter test per directory
     (the app's, or a package's), plus the imports test in the app's. Returns
-    (hits, tests passed, tests failed); the imports test isn't counted."""
+    (hits, tests passed, tests failed, whether some run wrote no coverage);
+    the imports test isn't counted."""
     groups = {}
     for path in tests:
         pkg = TEST_FILE.match(path).group(1)
         cwd = os.path.join(root, 'packages', pkg) if pkg else root
         groups.setdefault(cwd, []).append(os.path.relpath(os.path.join(root, path), cwd))
-    hits, passed, failed = {}, 0, 0
+    hits, passed, failed, lost = {}, 0, 0, False
     imports_test = write_imports_test(root, lib_files, packages)
     try:
         if imports_test:
             groups.setdefault(root, []).append(imports_test)
         for cwd, files in sorted(groups.items()):
             h, events = runner.run(cwd, files)
+            if h is None:
+                lost = True
             merge(hits, h)
             for name, result, suite in results(events, cwd, root):
                 # If the imports test fails to load, its files just stay unloaded.
@@ -263,7 +266,7 @@ def own_tests_stage(root, runner, tests, lib_files, packages):
     finally:
         if imports_test:
             os.remove(os.path.join(root, imports_test))
-    return hits, passed, failed
+    return hits, passed, failed, lost
 
 
 def needs_own_process(text):
@@ -513,7 +516,7 @@ def main():
             runner = Runner(root, packages, tmp)
             own = tests if tests and len(tests) <= MAX_OWN_TEST_FILES else []
             result['own_tests'] = 'ran' if own else 'none' if not tests else 'too_many'
-            own_hits, result['tests_passed'], result['tests_failed'] = own_tests_stage(
+            own_hits, result['tests_passed'], result['tests_failed'], own_lost = own_tests_stage(
                 root, runner, own, lib_files, packages)
             # Stage 1 can have nothing to run, when only part files changed
             # and no tests. That's no crash: they show as unloaded and stage
@@ -527,7 +530,8 @@ def main():
             summarize(result, ranges, hits, own_hits if own else None)
 
             # Any test can only add to what the branch's own tests ran, so
-            # when they ran every changed line there's nothing to add.
+            # when they ran every changed line there's nothing to add, even if
+            # one of their runs wrote no coverage.
             if result['lines_run'] < result['lines'] or result['unloaded']:
                 result['partial'] = 'stopped'
                 write(args.out, result)
@@ -535,7 +539,9 @@ def main():
                     root, runner, set(own), lib_files, packages)
                 merge(hits, suite_hits)
                 result['suite_ran'] = True
-                result['partial'] = 'lost' if lost else None
+                # Stage 2 skips the branch's own tests, so coverage a stage 1
+                # run lost stays lost.
+                result['partial'] = 'lost' if lost or own_lost else None
             gaps_by_file = summarize(result, ranges, hits, own_hits if own else None)
             if args.annotate:
                 result['annotated'] = annotate(gaps_by_file, args.annotate, root)
