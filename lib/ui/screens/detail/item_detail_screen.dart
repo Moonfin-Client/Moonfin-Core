@@ -6955,8 +6955,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           prefs,
         );
 
+  // Held back until the late lookups land, so the row shows with every button
+  // at once instead of growing one after the rest. It still lays out, so
+  // nothing below it moves when it fades in.
   @override
   Widget build(BuildContext context) {
+    final settled = viewModel.actionsSettled;
+    return IgnorePointer(
+      ignoring: !settled,
+      child: AnimatedOpacity(
+        opacity: settled ? 1 : 0,
+        duration: const Duration(milliseconds: 150),
+        child: _buildActions(context),
+      ),
+    );
+  }
+
+  Widget _buildActions(BuildContext context) {
     final featuredBook = viewModel.seriesFeaturedBook;
     final item = featuredBook ?? viewModel.item!;
     final l10n = AppLocalizations.of(context);

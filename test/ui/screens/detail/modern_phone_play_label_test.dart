@@ -72,6 +72,7 @@ void main() {
   Future<void> pumpButtons(
     WidgetTester tester, {
     bool labelsUnderCircles = false,
+    bool actionsSettled = true,
   }) async {
     final vm = _ViewModel();
     when(() => vm.item).thenReturn(
@@ -83,6 +84,7 @@ void main() {
     );
     when(() => vm.isSeerrOnly).thenReturn(false);
     when(() => vm.supportsPersonalRating).thenReturn(false);
+    when(() => vm.actionsSettled).thenReturn(actionsSettled);
     when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.features).thenReturn(const []);
 
@@ -136,5 +138,26 @@ void main() {
       ),
     );
     expect(label.style?.color, AppColorScheme.onAccent);
+  });
+
+  // The row waits for the late lookups so a button doesn't pop in after the
+  // rest, and nothing in it can be pressed while it's invisible.
+  testWidgets('the row stays hidden and untappable until its actions settle', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await pumpButtons(tester, actionsSettled: false);
+
+    final row = find.byType(DetailActionButtons);
+    final opacity = tester.widget<AnimatedOpacity>(
+      find.descendant(of: row, matching: find.byType(AnimatedOpacity)).first,
+    );
+    expect(opacity.opacity, 0);
+    final ignore = tester.widget<IgnorePointer>(
+      find.descendant(of: row, matching: find.byType(IgnorePointer)).first,
+    );
+    expect(ignore.ignoring, isTrue);
+    // Still laid out, so the content below doesn't move when it fades in.
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
   });
 }
