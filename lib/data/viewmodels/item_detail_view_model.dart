@@ -1171,13 +1171,13 @@ class ItemDetailViewModel extends ChangeNotifier {
       return load;
     }
 
-    unawaited(_loadProbedMediaSources());
+    unawaited(forActions(_loadProbedMediaSources()));
     // Deliberately outside the Future.wait below, so a slow Seerr server never
     // holds up library content that is already here.
     unawaited(forActions(_loadSeerrOverlay()));
     if (type == 'Person') {
       futures.add(_loadFilmography());
-      futures.add(_loadPersonAccounts());
+      futures.add(forActions(_loadPersonAccounts()));
     } else if (type == 'Series') {
       unawaited(_loadReviews());
       unawaited(_syncSeriesTrackChoices());

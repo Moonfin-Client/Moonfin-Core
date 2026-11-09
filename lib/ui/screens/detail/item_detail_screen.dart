@@ -6477,19 +6477,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     });
   }
 
-  void _ensureTvPlayFocus(String itemId) {
+  /// [node] defaults to Play's; a person page leads with Favorite instead.
+  void _ensureTvPlayFocus(String itemId, {FocusNode? node}) {
     if (PlatformDetection.useMobileUi) return;
     if (_tvPlayFocusAppliedForItemId == itemId) return;
-    _tryRequestPlayFocus(itemId, 0);
+    _tryRequestPlayFocus(itemId, 0, node);
   }
 
-  void _tryRequestPlayFocus(String itemId, int attempt) {
+  void _tryRequestPlayFocus(String itemId, int attempt, FocusNode? target) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       // Inside the retry rather than on the way in, since it runs for
       // seconds and a panel can open partway through it.
       if (!canClaimInitialFocus(context)) return;
-      final node = _tvPlayFocusNode;
+      final node = target ?? _tvPlayFocusNode;
       if (node.context != null && node.canRequestFocus) {
         node.requestFocus();
         if (node.hasFocus) {
@@ -6501,7 +6502,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
-        _tryRequestPlayFocus(itemId, attempt + 1);
+        _tryRequestPlayFocus(itemId, attempt + 1, target);
       });
     });
   }
@@ -6957,16 +6958,21 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   // Held back until the late lookups land, so the row shows with every button
   // at once instead of growing one after the rest. It still lays out, so
-  // nothing below it moves when it fades in.
+  // nothing below it moves when it fades in. Focus is kept out too, or OK on
+  // a remote would press an invisible Play; the rebuild that shows the row
+  // asks for Play's focus again.
   @override
   Widget build(BuildContext context) {
     final settled = viewModel.actionsSettled;
-    return IgnorePointer(
-      ignoring: !settled,
-      child: AnimatedOpacity(
-        opacity: settled ? 1 : 0,
-        duration: const Duration(milliseconds: 150),
-        child: _buildActions(context),
+    return ExcludeFocus(
+      excluding: !settled,
+      child: IgnorePointer(
+        ignoring: !settled,
+        child: AnimatedOpacity(
+          opacity: settled ? 1 : 0,
+          duration: const Duration(milliseconds: 150),
+          child: _buildActions(context),
+        ),
       ),
     );
   }
@@ -6991,13 +6997,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           compact &&
           (item.tmdbId?.isNotEmpty ?? false) &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
+      final favoriteFocusNode = widget.tvPlayFocusNode ?? _primaryFocusNode(0);
+      // Autofocus alone tries once, and misses while the row is still held
+      // back.
+      if (canFavorite && autofocusPlay) {
+        _ensureTvPlayFocus(item.id, node: favoriteFocusNode);
+      }
       final normalizedPrimaryButtons = [
         if (canFavorite)
           _DetailActionButton(
             label: item.isFavorite ? l10n.favorited : l10n.favorite,
             icon: Icons.favorite,
             isPrimary: !compact,
-            focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+            focusNode: favoriteFocusNode,
             autofocus: autofocusPlay,
             onPressed: viewModel.toggleFavorite,
             isActive: item.isFavorite,
