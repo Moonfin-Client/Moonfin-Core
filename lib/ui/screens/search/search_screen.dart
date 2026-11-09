@@ -697,13 +697,13 @@ class _SearchScreenState extends State<SearchScreen>
     return l10n.voiceSearchUnavailable;
   }
 
-  /// Starting voice search unfocuses everything, and only a final result puts
-  /// focus back. On TV a start that fails, or a recognizer error, would
-  /// otherwise leave no focused control, and the next D-pad press lands
-  /// wherever the traversal starts. Hands it back to the mic button unless
-  /// something else took it.
+  /// Starting voice search takes focus from everything and only a result gives
+  /// it back, so on TV a failed start or a recognizer error would leave the
+  /// D-pad with nothing focused. Hands it back to the mic button unless
+  /// something else took it or another screen covers this one.
   void _restoreFocusAfterVoiceFailure() {
     if (!mounted || !PlatformDetection.isTV) return;
+    if (ModalRoute.of(context)?.isCurrent == false) return;
     final current = FocusManager.instance.primaryFocus;
     if (current != null && current is! FocusScopeNode) return;
     _voiceFocus.requestFocus();

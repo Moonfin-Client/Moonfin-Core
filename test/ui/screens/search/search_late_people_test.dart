@@ -335,4 +335,78 @@ void main() {
     await tester.pump();
     expect(micFocused(), isFalse);
   });
+
+  /// TV search with the mic in focus, and the recognizer answering whether
+  /// it exists through [initialize]. Windows asks for no microphone permission.
+  Future<FocusNode> focusTvMic(
+    WidgetTester tester,
+    Future<bool> Function() initialize,
+  ) async {
+    const speech = MethodChannel('plugin.csdcorp.com/speech_to_text');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      speech,
+      (call) async => call.method == 'initialize' ? initialize() : null,
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        speech,
+        null,
+      ),
+    );
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    tester.view.physicalSize = const Size(1920, 1080);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const SearchScreen(),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    // Held on to, since the button shows a spinner while it starts.
+    final mic = Focus.of(tester.element(find.byIcon(Icons.mic_none)));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(mic.hasPrimaryFocus, isTrue);
+    return mic;
+  }
+
+  testWidgets('TV gives the mic its focus back when voice search cant start', (
+    tester,
+  ) async {
+    final mic = await focusTvMic(tester, () async => false);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(mic.hasPrimaryFocus, isTrue);
+    // Lets the error's snackbar run out.
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pumpAndSettle();
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  testWidgets('a voice search failing under another screen leaves it alone', (
+    tester,
+  ) async {
+    final answer = Completer<bool>();
+    final mic = await focusTvMic(tester, () => answer.future);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    unawaited(
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .push(MaterialPageRoute<void>(builder: (_) => const Scaffold())),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    final covering = FocusManager.instance.primaryFocus;
+
+    answer.complete(false);
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(mic.hasPrimaryFocus, isFalse);
+    expect(FocusManager.instance.primaryFocus, covering);
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pumpAndSettle();
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 }

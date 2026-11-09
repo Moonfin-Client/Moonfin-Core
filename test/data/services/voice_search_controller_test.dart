@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/voice_search_controller.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -76,5 +77,15 @@ void main() {
 
     speech.statusListener!(stt.SpeechToText.notListeningStatus);
     expect(controller.isListening, isFalse);
+  });
+
+  test('a Fire TV has no voice search', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => PlatformDetection.setMediaCodecCapabilities(null));
+    PlatformDetection.setMediaCodecCapabilities({'deviceModel': 'AFTKM'});
+    expect(VoiceSearchController.isSupported, isFalse);
+
+    PlatformDetection.setMediaCodecCapabilities({'deviceModel': 'Chromecast'});
+    expect(VoiceSearchController.isSupported, isTrue);
   });
 }
