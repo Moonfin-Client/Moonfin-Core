@@ -761,6 +761,7 @@ class SettingsPlayerPreview extends StatelessWidget {
               if (subtitles)
                 _PlayerSubtitles(
                   hdr: focusedKey?.startsWith('subtitles_hdr_') ?? false,
+                  controls: moment != _PlayerMoment.watching,
                 ),
               if (trickplay == TrickplayMode.full)
                 Positioned.fill(
@@ -942,11 +943,13 @@ class SettingsPlayerPreview extends StatelessWidget {
 /// The subtitle line the way the player puts it on screen: the saved look, or
 /// the HDR one while an HDR setting has focus, at the size and height this
 /// device's renderer draws it, with the secondary line stacked above it while
-/// secondary subtitles are on.
+/// secondary subtitles are on. While the [controls] show, it moves up clear of
+/// the seek bar so they don't cover it.
 class _PlayerSubtitles extends StatelessWidget {
   final bool hdr;
+  final bool controls;
 
-  const _PlayerSubtitles({required this.hdr});
+  const _PlayerSubtitles({required this.hdr, required this.controls});
 
   @override
   Widget build(BuildContext context) {
@@ -1028,7 +1031,12 @@ class _PlayerSubtitles extends StatelessWidget {
     return Positioned(
       left: view.padding.left,
       right: view.padding.right,
-      bottom: bottom,
+      bottom: controls
+          ? math.max(
+              bottom,
+              _PlayerControls.seekBarTop(context) + AppSpacing.spaceSm,
+            )
+          : bottom,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1077,18 +1085,64 @@ class _PlayerControls extends StatelessWidget {
     required this.trickplay,
   });
 
+  static bool _docked(BuildContext context) =>
+      !PlatformDetection.isTV &&
+      previewValue(context, UserPreferences.playerTransportPosition) ==
+          PlayerTransportPosition.docked;
+
+  static double _scale(BuildContext context) => PlatformDetection.useMobileUi
+      ? 1.0
+      : previewValue(context, UserPreferences.desktopUiScale).scaleFactor;
+
+  /// How far up from the bottom of the screen [build] lays out the seek bar,
+  /// the time row above it included when that row shows.
+  static double seekBarTop(BuildContext context) {
+    double timeRow({bool bold = false}) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: '',
+          style: DefaultTextStyle.of(context).style.merge(
+            TextStyle(
+              fontSize: AppTypography.fontSizeXs,
+              fontWeight: bold ? FontWeight.w600 : null,
+            ),
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      final height = painter.height;
+      painter.dispose();
+      return height;
+    }
+
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final above = [
+      UserPreferences.playbackTimeAboveLeft,
+      UserPreferences.playbackTimeAboveCenter,
+      UserPreferences.playbackTimeAboveRight,
+    ].any((slot) => previewValue(context, slot) != PlaybackTimeSlot.none);
+    return AppSpacing.spaceSm +
+        osdRowButtonSize(landscape: landscape).extent * _scale(context) +
+        // osdDockedTransport pads itself 8 above and below.
+        (PlatformDetection.isTV || _docked(context) ? 16 : 0) +
+        AppSpacing.spaceXs +
+        timeRow() +
+        // The slider is as tall as its thumb's overlay.
+        osdSeekBarTheme(
+          thumbFocused: true,
+        ).overlayShape!.getPreferredSize(true, false).height +
+        (above ? AppSpacing.spaceXs + timeRow(bold: true) : 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
     final tv = PlatformDetection.isTV;
-    final docked =
-        !tv &&
-        previewValue(context, UserPreferences.playerTransportPosition) ==
-            PlayerTransportPosition.docked;
-    final scale = PlatformDetection.useMobileUi
-        ? 1.0
-        : previewValue(context, UserPreferences.desktopUiScale).scaleFactor;
+    final docked = _docked(context);
+    final scale = _scale(context);
     final landscape =
         MediaQuery.orientationOf(context) == Orientation.landscape;
 
