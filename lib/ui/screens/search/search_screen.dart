@@ -697,11 +697,24 @@ class _SearchScreenState extends State<SearchScreen>
     return l10n.voiceSearchUnavailable;
   }
 
+  /// Starting voice search takes focus from everything and only a result gives
+  /// it back, so on TV a failed start or a recognizer error would leave the
+  /// D-pad with nothing focused. Hands it back to the mic button unless
+  /// something else took it or another screen covers this one.
+  void _restoreFocusAfterVoiceFailure() {
+    if (!mounted || !PlatformDetection.isTV) return;
+    if (ModalRoute.of(context)?.isCurrent == false) return;
+    final current = FocusManager.instance.primaryFocus;
+    if (current != null && current is! FocusScopeNode) return;
+    _voiceFocus.requestFocus();
+  }
+
   void _showVoiceSearchError(
     String message, {
     bool showSettingsAction = false,
   }) async {
     if (!mounted) return;
+    _restoreFocusAfterVoiceFailure();
 
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
