@@ -145,4 +145,46 @@ void main() {
 
     expect(vm.nextUp?.id, 'e4');
   });
+
+  test('a failed Next Up refresh keeps the card already shown', () async {
+    when(
+      () => itemsApi.getItem(
+        'series-1',
+        mediaSourceId: any(named: 'mediaSourceId'),
+      ),
+    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
+    var fail = false;
+    when(
+      () => itemsApi.getNextUp(
+        seriesId: 'series-1',
+        limit: 1,
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer((_) async {
+      if (fail) throw Exception('connection dropped');
+      return {
+        'Items': [_episode('e3', 3)],
+      };
+    });
+
+    final vm = ItemDetailViewModel(
+      itemId: 'series-1',
+      client: client,
+      mutations: ItemMutationRepository(client),
+      mdbListRepository: MdbListRepository(client, TmdbRepository(client)),
+      tmdbRepository: TmdbRepository(client),
+    );
+    addTearDown(vm.dispose);
+    await vm.load();
+    for (var i = 0; i < 100 && vm.nextUp == null; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(vm.nextUp?.id, 'e3');
+
+    fail = true;
+    userDataSync.publish('e2', {'Played': true, 'PlaybackPositionTicks': 0});
+    await vm.syncUserDataIfStale();
+
+    expect(vm.nextUp?.id, 'e3');
+  });
 }

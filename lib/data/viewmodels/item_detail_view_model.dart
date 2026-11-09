@@ -1376,7 +1376,10 @@ class ItemDetailViewModel extends ChangeNotifier {
           nextUp = candidate;
         }
       }
-    } catch (_) {}
+    } catch (_) {
+      // A failed refresh keeps the Next Up already shown.
+      return;
+    }
 
     if (_isDisposed || request != _nextUpRequest) return;
     final previousId = _nextUp?.id;
