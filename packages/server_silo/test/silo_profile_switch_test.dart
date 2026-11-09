@@ -82,4 +82,28 @@ void main() {
 
     expect(libraryReads(s), 2);
   });
+
+  test('a refused PIN proof is reported once', () async {
+    final s = FixtureServer({
+      '/api/v2/user/libraries': (_) => FixtureServer.problem(
+        403,
+        'profile_verification_required',
+        'The PIN changed',
+      ),
+    });
+    final client = siloTestClient(s)
+      ..profileId = 'p2'
+      ..profileToken = 'pvt_old';
+    var reported = 0;
+    client.onProfileProofRejected = () => reported++;
+
+    for (var i = 0; i < 2; i++) {
+      await expectLater(
+        client.userViewsApi.getUserViews(),
+        throwsA(anything),
+      );
+    }
+
+    expect(reported, 1);
+  });
 }

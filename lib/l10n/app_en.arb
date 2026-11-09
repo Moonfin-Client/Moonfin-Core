@@ -15834,6 +15834,10 @@
   "@siloPinUnlock": {
     "description": "Button in the Silo profile PIN dialog that checks the PIN"
   },
+  "siloPinRemember": "Remember PIN on this device",
+  "@siloPinRemember": {
+    "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+  },
   "siloPinWrong": "That PIN isn't right.",
   "@siloPinWrong": {
     "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
@@ -15854,10 +15858,6 @@
   "siloPinFailed": "The PIN couldn't be checked. Try again.",
   "@siloPinFailed": {
     "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
-  },
-  "siloSignOutAccount": "Sign out of the Silo account",
-  "@siloSignOutAccount": {
-    "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
   },
   "trailerCount": "{count, plural, =1{1 trailer} other{{count} trailers}}",
   "@trailerCount": {

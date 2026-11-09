@@ -4,6 +4,7 @@ import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/auth/services/silo_token_storage.dart';
 import 'package:moonfin/auth/store/authentication_preferences.dart';
 import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:moonfin/auth/store/credential_store.dart';
@@ -165,13 +166,30 @@ void main() {
     expect(repo.activeUserId, isNull);
   });
 
+  test('signing out of a profile whose PIN is asked every time locks it',
+      () async {
+    await store.putServer(_server);
+    await store.putSiloTokens('s1', '9', _pair);
+    await store.putUser(_profile('teen', pin: true));
+    await store.putUser(_profile('kid', pin: true));
+    final storage = SiloTokenStorage(store);
+    final teen = store.getUser('s1', 'teen')!;
+    await storage.saveProfileToken(teen, 'pvt_teen', remember: false);
+    repo.setActiveSessionForTest('s1', 'teen');
+
+    await repo.destroyCurrentSession();
+
+    expect(storage.needsPin(teen), isTrue);
+    expect(storage.remembersPin(teen), isFalse);
+  });
+
   group('signing out', () {
     test('one profile: it stays listed with its siblings, and the login '
         'stays', () async {
       await store.putUser(_profile('brady'));
       await store.putUser(_profile('kid'));
       repo.setActiveSessionForTest('s1', 'brady');
-      expect(repo.activeUserHasSiloSiblings, isTrue);
+      expect(repo.activeSiloSiblingCount, 1);
 
       await repo.destroyCurrentSession();
 
@@ -183,7 +201,7 @@ void main() {
     test('the last profile ends the login', () async {
       await store.putUser(_profile('brady'));
       repo.setActiveSessionForTest('s1', 'brady');
-      expect(repo.activeUserHasSiloSiblings, isFalse);
+      expect(repo.activeSiloSiblingCount, 0);
 
       await repo.destroyCurrentSession();
 
@@ -213,7 +231,7 @@ void main() {
       await store.putUser(_profile('other', account: '10'));
       repo.setActiveSessionForTest('s1', 'brady');
 
-      expect(repo.activeUserHasSiloSiblings, isFalse);
+      expect(repo.activeSiloSiblingCount, 0);
       await repo.destroyCurrentSession();
 
       expect(factory.client.authApiFake.logouts, 1);

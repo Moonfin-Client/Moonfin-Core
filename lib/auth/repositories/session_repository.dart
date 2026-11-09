@@ -320,6 +320,8 @@ class SessionRepository {
       accessToken: accessToken,
       onEnded: () => _onSiloLoginEnded(serverId, userId, user.name),
     );
+    siloClientOf(client)?.onProfileProofRejected = () =>
+        _onSiloProofRejected(serverId, userId);
     client.userId = userId;
 
     // A stored token can be long dead, and everything past this point fires
@@ -334,6 +336,7 @@ class SessionRepository {
           _logger.w('Stored access token was rejected. Logging out.');
           // Point the teardown at this session so it removes the right
           // stored credentials.
+          _forgetUnrememberedPinOfActive();
           _activeServerId = serverId;
           _activeUserId = userId;
           await destroyCurrentSession(tokenKnownInvalid: true);
@@ -365,6 +368,9 @@ class SessionRepository {
     userDataSync.bindTo(_socketHandler.events, userId: userId);
     _refreshCarBrowseTree(signedIn: true);
 
+    if (serverId != _activeServerId || userId != _activeUserId) {
+      _forgetUnrememberedPinOfActive();
+    }
     _activeServerId = serverId;
     _activeUserId = userId;
 
@@ -689,6 +695,29 @@ class SessionRepository {
     }());
   }
 
+  /// Silo no longer takes the active profile's PIN proof (its PIN was set,
+  /// changed or reset elsewhere). The proof goes, and the server's profiles
+  /// open, where picking the profile asks for the PIN again.
+  void _onSiloProofRejected(String serverId, String userId) {
+    if (_activeServerId != serverId || _activeUserId != userId) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user == null) return;
+    _logger.w('Silo refused the profile\'s PIN proof. Asking for the PIN.');
+    unawaited(() async {
+      try {
+        await _siloTokens.forgetProfileToken(user);
+      } catch (e) {
+        _logger.w('Forgetting the refused PIN proof failed: $e');
+      }
+      final silo = _clientFactory.getClientIfExists(serverId);
+      if (silo != null) siloClientOf(silo)?.profileToken = null;
+      _router.go('${Destinations.server}?serverId=$serverId');
+    }());
+  }
+
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
   List<PrivateUser> _siloSiblings(String serverId, String? userId) {
@@ -710,13 +739,24 @@ class SessionRepository {
     }
   }
 
-  /// Whether the active user is a Silo profile with other profiles of its
-  /// account stored here, so "Sign out of the account" means more than
-  /// "Sign out".
-  bool get activeUserHasSiloSiblings {
+  /// How many other profiles of the active user's Silo account are stored
+  /// here. "Sign out" takes them too.
+  int get activeSiloSiblingCount {
     final serverId = _activeServerId;
-    return serverId != null &&
-        _siloSiblings(serverId, _activeUserId).isNotEmpty;
+    return serverId == null ? 0 : _siloSiblings(serverId, _activeUserId).length;
+  }
+
+  /// Leaving a Silo profile whose PIN is asked for every time locks it
+  /// again, however it is left: a switch, a sign-out or a rejected token.
+  void _forgetUnrememberedPinOfActive() {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (serverId == null || userId == null) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user != null) _siloTokens.forgetUnrememberedPin(user);
   }
 
   /// Signs the whole Silo account out on this device: every stored
@@ -746,6 +786,7 @@ class SessionRepository {
   }
 
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+    _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
     _remoteNavigationGeneration++;
