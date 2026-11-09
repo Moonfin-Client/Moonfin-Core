@@ -1181,4 +1181,103 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
   }
+
+  /// Opens the player over another route, so leaving it can pop back there.
+  Future<void> pushPlayer(WidgetTester tester) async {
+    // Leaving playback resets the orientations, which waits on this channel.
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (_) async => null,
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(path: '/home', builder: (_, _) => const SizedBox()),
+        GoRoute(path: '/play', builder: (_, _) => const VideoPlayerScreen()),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+      ),
+    );
+    router.push('/play');
+    await tester.pumpAndSettle();
+  }
+
+  // With nothing queued after it, skipping the credits closed the player even
+  // when they end well before the file does, so a scene after them was never
+  // shown.
+  testWidgets('an automatic credits skip plays what follows the credits', (
+    tester,
+  ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.mediaSegmentActions,
+      'outro:skip',
+    );
+    client.items.segments = [
+      segmentJson(id: 'credits', type: 'Outro', startMs: 3000, endMs: 4000),
+      segmentJson(id: 'end', type: 'Outro', startMs: 12000, endMs: 15000),
+    ];
+    manager.queueService.setQueue([
+      AggregatedItem(
+        id: 'ep1',
+        serverId: 'server',
+        rawData: <String, dynamic>{'Id': 'ep1', 'Type': 'Episode'},
+      ),
+    ]);
+    await pushPlayer(tester);
+    manager.state.setDuration(const Duration(seconds: 20));
+
+    manager.state.setPosition(const Duration(milliseconds: 3500));
+    await tester.pump();
+    expect(manager.seeks, [const Duration(seconds: 4)]);
+    expect(manager.stopCalls, 0);
+    expect(find.byType(VideoPlayerScreen), findsOneWidget);
+
+    // Credits that end 5 seconds before the end still close the player.
+    manager.state.setPosition(const Duration(milliseconds: 12500));
+    await tester.pumpAndSettle();
+    expect(manager.seeks, [const Duration(seconds: 4)]);
+    expect(find.byType(VideoPlayerScreen), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Skip on the credits plays what follows them', (tester) async {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    client.items.segments = [
+      segmentJson(id: 'credits', type: 'Outro', startMs: 3000, endMs: 6000),
+    ];
+    manager.queueService.setQueue([
+      AggregatedItem(
+        id: 'ep1',
+        serverId: 'server',
+        rawData: <String, dynamic>{'Id': 'ep1', 'Type': 'Episode'},
+      ),
+    ]);
+    await pushPlayer(tester);
+    manager.state.setDuration(const Duration(seconds: 12));
+
+    manager.state.setPosition(const Duration(milliseconds: 3500));
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(SkipSegmentOverlay), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pumpAndSettle();
+    expect(manager.seeks, [const Duration(seconds: 6)]);
+    expect(manager.stopCalls, 0);
+    expect(find.byType(VideoPlayerScreen), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
 }

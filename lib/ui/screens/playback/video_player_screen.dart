@@ -178,6 +178,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   static const _scrubSeekConvergeTolerance = Duration(milliseconds: 800);
   static const _scrubSeekConvergeTimeout = Duration(seconds: 2);
 
+  /// Credits that end this close to the end of the item run to it: skipping
+  /// them closes the player instead of seeking to the last few seconds. The
+  /// playback manager treats the same margin as the end of an item.
+  static const _outroEndSlack = Duration(seconds: 5);
+
   final _manager = GetIt.instance<PlaybackManager>();
   // media_kit isn't registered on platforms that run a different backend, so
   // ask the container rather than listing them.
@@ -2446,7 +2451,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _presentNextUpOverlay();
         return;
       }
-      if (isOutro && !_hasDistinctQueueNextItem()) {
+      if (isOutro &&
+          !_hasDistinctQueueNextItem() &&
+          _outroRunsToEnd(result.skipTo)) {
         unawaited(_exitPlayback());
         return;
       }
@@ -2636,6 +2643,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return true;
   }
 
+  /// Whether credits ending at [skipTo] leave nothing to watch after them, so
+  /// skipping them closes the player. When more of the item follows, such as
+  /// a scene after the credits, the skip seeks past them instead. An unknown
+  /// duration or target counts as running to the end.
+  bool _outroRunsToEnd(Duration? skipTo) {
+    final duration = _state.duration;
+    return skipTo == null ||
+        duration <= Duration.zero ||
+        duration - skipTo <= _outroEndSlack;
+  }
+
   AggregatedItem? _nextUpCandidate() {
     if (!_hasDistinctQueueNextItem()) {
       return null;
@@ -2786,7 +2804,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _presentNextUpOverlay();
       return;
     }
-    if (isOutro && !_hasDistinctQueueNextItem()) {
+    if (isOutro && !_hasDistinctQueueNextItem() && _outroRunsToEnd(_skipTo)) {
       unawaited(_exitPlayback());
       return;
     }
