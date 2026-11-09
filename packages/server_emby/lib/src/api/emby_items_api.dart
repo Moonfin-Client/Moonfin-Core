@@ -13,17 +13,24 @@ class EmbyItemsApi implements ItemsApi {
   /// already come back on Emby's items by name results.
   static const _unknownToEmbyFields = <String>{'ItemCounts'};
 
+  /// Emby leaves LastPlayedDate out of UserData unless it's asked for by this
+  /// name. Continue Watching sorts on it, and a hidden item comes back once
+  /// it's been played since it was hidden.
+  static const _lastPlayedDateField = 'UserDataLastPlayedDate';
+
   static String? _knownFields(String? fields) {
     if (fields == null) return null;
-    if (!_unknownToEmbyFields.any(fields.contains)) return fields;
     final kept = fields
         .split(',')
         .map((field) => field.trim())
         .where(
           (field) => field.isNotEmpty && !_unknownToEmbyFields.contains(field),
         )
-        .join(',');
-    return kept.isEmpty ? null : kept;
+        .toList();
+    if (kept.contains('UserData') && !kept.contains(_lastPlayedDateField)) {
+      kept.add(_lastPlayedDateField);
+    }
+    return kept.isEmpty ? null : kept.join(',');
   }
 
   bool _shouldRetryCollectionFallback(int statusCode) {

@@ -83,6 +83,34 @@ void main() {
     expect(request()?.queryParameters['Fields'], 'PrimaryImageTag,ImageTags');
   });
 
+  test('asking for UserData also asks for the last played date', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(
+      dio,
+      () => 'user-1',
+    ).getResumeItems(mediaTypes: 'Video', fields: 'UserData,Overview');
+
+    expect(
+      request()?.queryParameters['Fields'],
+      'UserData,Overview,UserDataLastPlayedDate',
+    );
+  });
+
+  test('the last played date is not asked for twice', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(dio, () => 'user-1').getResumeItems(
+      mediaTypes: 'Video',
+      fields: 'UserData,UserDataLastPlayedDate',
+    );
+
+    expect(
+      request()?.queryParameters['Fields'],
+      'UserData,UserDataLastPlayedDate',
+    );
+  });
+
   test('grouping into collections uses the name Emby reads', () async {
     final (dio, request) = _recordingDio();
 
