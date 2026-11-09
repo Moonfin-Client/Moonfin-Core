@@ -3371,7 +3371,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final showRatingBadges = Preference(
     key: 'showRatingBadges',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final enabledRatings = Preference(

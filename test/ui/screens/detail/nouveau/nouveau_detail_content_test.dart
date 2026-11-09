@@ -298,6 +298,7 @@ void main() {
 
   testWidgets('the label and badge switches reach the hero', (tester) async {
     await prefs.set(UserPreferences.showRatingLabels, false);
+    await prefs.set(UserPreferences.showRatingBadges, true);
 
     final vm = viewModel('Movie', data: ratedMovie(community: 7.8));
     await pumpContent(tester, vm);
