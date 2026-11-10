@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
@@ -1457,24 +1458,33 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<HomeRow>> _loadSection(HomeSectionType section, {bool forceRefresh = false}) async {
+  /// [section] as Home loads it, sorted by [sortBy] and [sortOrder] rather
+  /// than the saved sort, so the settings preview can show a sort before
+  /// it's picked.
+  Future<List<HomeRow>> loadSectionSorted(
+    HomeSectionType section, {
+    required LibrarySortBy sortBy,
+    required SortDirection sortOrder,
+  }) => _loadSection(section, sort: (sortBy, sortOrder));
+
+  Future<List<HomeRow>> _loadSection(
+    HomeSectionType section, {
+    bool forceRefresh = false,
+    (LibrarySortBy, SortDirection)? sort,
+  }) async {
+    String sortBy(Preference<LibrarySortBy> saved) =>
+        (sort?.$1 ?? _prefs.get<LibrarySortBy>(saved)).apiValue;
+    String sortOrder(Preference<SortDirection> saved) =>
+        (sort?.$2 ?? _prefs.get<SortDirection>(saved)).apiValue;
     final l10n = currentAppLocalizations();
-    final favoritesSortBy = _prefs
-        .get(UserPreferences.favoritesRowSortBy)
-        .apiValue;
-    final favoritesSortOrder = _prefs
-        .get(UserPreferences.favoritesRowSortOrder)
-        .apiValue;
-    final collectionsSortBy = _prefs
-        .get(UserPreferences.collectionsRowSortBy)
-        .apiValue;
-    final collectionsSortOrder = _prefs
-        .get(UserPreferences.collectionsRowSortOrder)
-        .apiValue;
-    final genresSortBy = _prefs.get(UserPreferences.genresRowSortBy).apiValue;
-    final genresSortOrder = _prefs
-        .get(UserPreferences.genresRowSortOrder)
-        .apiValue;
+    final favoritesSortBy = sortBy(UserPreferences.favoritesRowSortBy);
+    final favoritesSortOrder = sortOrder(UserPreferences.favoritesRowSortOrder);
+    final collectionsSortBy = sortBy(UserPreferences.collectionsRowSortBy);
+    final collectionsSortOrder = sortOrder(
+      UserPreferences.collectionsRowSortOrder,
+    );
+    final genresSortBy = sortBy(UserPreferences.genresRowSortBy);
+    final genresSortOrder = sortOrder(UserPreferences.genresRowSortOrder);
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
         .includeItemTypes;
@@ -1499,12 +1509,10 @@ class HomeViewModel extends ChangeNotifier {
             ? await _multiServerRepo.getAggregatedLatestMediaRows()
             : _loadLatestMediaRows();
       case HomeSectionType.playlists:
-        final playlistsSortBy = _prefs
-            .get(UserPreferences.playlistsRowSortBy)
-            .apiValue;
-        final playlistsSortOrder = _prefs
-            .get(UserPreferences.playlistsRowSortOrder)
-            .apiValue;
+        final playlistsSortBy = sortBy(UserPreferences.playlistsRowSortBy);
+        final playlistsSortOrder = sortOrder(
+          UserPreferences.playlistsRowSortOrder,
+        );
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedPlaylists(
@@ -1518,12 +1526,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioArtists:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioArtists(
@@ -1537,12 +1541,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioAlbums:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioAlbums(
@@ -1556,12 +1556,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioPlaylists:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioPlaylists(
@@ -1632,8 +1628,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.studios:
-        final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
-        final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
+        final studiosSortBy = sortBy(UserPreferences.studiosRowSortBy);
+        final studiosSortOrder = sortOrder(UserPreferences.studiosRowSortOrder);
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
         final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();
         final studiosRow = _multiServerEnabled

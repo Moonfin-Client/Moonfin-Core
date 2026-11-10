@@ -255,7 +255,7 @@ class PreviewRowSamples extends ChangeNotifier {
           sortBy: sortBy,
           sortOrder: sortOrder,
         ),
-        _ => throw UnsupportedError('${query.section}'),
+        _ => _loadFromHome(query),
       };
     }
     final rows = GetIt.instance<RowDataSource>();
@@ -281,7 +281,18 @@ class PreviewRowSamples extends ChangeNotifier {
         sortBy: sortBy,
         sortOrder: sortOrder,
       ),
-      _ => throw UnsupportedError('${query.section}'),
+      _ => _loadFromHome(query),
     };
+  }
+
+  /// Rows only Home knows how to ask for, such as the favorites with their own
+  /// titles and filters, loaded by Home itself with the sort passed in.
+  static Future<HomeRow> _loadFromHome(PreviewRowQuery query) async {
+    final rows = await GetIt.instance<HomeViewModel>().loadSectionSorted(
+      query.section,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder,
+    );
+    return rows.first;
   }
 }

@@ -1051,6 +1051,89 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('Peek Home Rows lifts the first row over the bar', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Peek Home Rows',
+            prefKey: 'mediaBarRowPeek',
+          ),
+        )
+        ..tryValue('mediaBarMode', UserPreferences.mediaBarModeMoonfin)
+        ..tryValue('mediaBarRowPeek', false);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(find.text(l10n.continueWatching), findsNothing);
+
+      controller.tryValue('mediaBarRowPeek', true);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.continueWatching), findsOneWidget);
+
+      // Banner keeps its own row under the card and has no room for a
+      // peeking one, as on Home.
+      controller.tryValue('mediaBarMode', UserPreferences.mediaBarModeBanner);
+      await pumpPreview(tester, controller);
+      final banner = tester.widgetList(find.text(l10n.continueWatching)).length;
+      controller.tryValue('mediaBarRowPeek', false);
+      await pumpPreview(tester, controller);
+      expect(
+        tester.widgetList(find.text(l10n.continueWatching)).length,
+        banner,
+      );
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Info Overlay puts the band over Classic rows on desktop', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.homeRowsStyle,
+        HomeRowsStyle.v1,
+      );
+      final title = find.text(_fakeItems().first.title);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Clock',
+            prefKey: 'pref_clock_behavior',
+          ),
+        )
+        ..tryValue('pref_home_row_info_overlay', false);
+      await pumpPreview(tester, controller);
+      final without = tester.widgetList(title).length;
+
+      controller.tryValue('pref_home_row_info_overlay', true);
+      await pumpPreview(tester, controller);
+      expect(tester.widgetList(title).length, without + 1);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    test('the Home row and card settings show on Home', () {
+      for (final key in [
+        UserPreferences.homeSectionsJson.key,
+        UserPreferences.homeRowImageType(HomeSectionType.resume).key,
+        UserPreferences.favoritesRowSortBy.key,
+        UserPreferences.studiosRowSortOrder.key,
+        UserPreferences.hideHomeWatchProgress.key,
+        UserPreferences.watchedIndicatorBehavior.key,
+        UserPreferences.classicHomeRowsPadding.key,
+        UserPreferences.homeRowInfoOverlay.key,
+        UserPreferences.mediaBarRowPeek.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.home,
+          reason: key,
+        );
+      }
+    });
+
     testWidgets('each surface draws its own rating settings', (tester) async {
       final controller = SettingsPreviewController()
         ..focus(
@@ -1271,6 +1354,10 @@ void main() {
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.homeRowsStyle,
         HomeRowsStyle.v1,
+      );
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.homeRowInfoOverlay,
+        false,
       );
       final controller = SettingsPreviewController()
         ..focus(
@@ -3254,6 +3341,7 @@ void main() {
         final prefs = GetIt.instance<UserPreferences>();
         await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
         await prefs.set(UserPreferences.displayAudioRows, true);
+        await prefs.set(UserPreferences.displayGenresRows, true);
         await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
         home([genres]);
         final controller = SettingsPreviewController()
@@ -3406,6 +3494,7 @@ void main() {
       tv();
       final prefs = GetIt.instance<UserPreferences>();
       await prefs.set(UserPreferences.displayAudioRows, true);
+      await prefs.set(UserPreferences.displayGenresRows, true);
       await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
       final viewModel = home([genres]);
       final controller = SettingsPreviewController()
@@ -3608,6 +3697,132 @@ void main() {
       await show(tester, controller);
       expect(card(tester, 'Abyss').externalIsFocused, isTrue);
       expect(find.text('Zed'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    AggregatedItem watched(String name, Map<String, Object> userData) =>
+        AggregatedItem(
+          id: name,
+          serverId: 'server',
+          rawData: {
+            'Id': name,
+            'Name': name,
+            'Type': 'Movie',
+            'UserData': userData,
+          },
+        );
+
+    testWidgets('a card setting shows Home from the first row it changes', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await homeRows([HomeSectionType.genres, HomeSectionType.resume]);
+      home([
+        genres,
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [
+            watched('Dune', {'PlayedPercentage': 40}),
+          ],
+        ),
+      ]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Hide Watch Progress',
+            prefKey: 'pref_hide_home_watch_progress',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+
+      // Genres comes first on Home, but the row with progress is the one
+      // brought into focus.
+      expect(card(tester, 'Dune').externalIsFocused, isTrue);
+      expect(card(tester, 'Dune').playedPercentage, 40);
+      expect(find.text('Comedy'), findsNothing);
+
+      await prefs.set(UserPreferences.hideHomeWatchProgress, true);
+      await show(tester, controller);
+      expect(card(tester, 'Dune').playedPercentage, isNull);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a row\'s image type being tried draws on that row', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await homeRows([HomeSectionType.resume]);
+      home([
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [watched('Dune', const {})],
+        ),
+      ]);
+      final key = UserPreferences.homeRowImageType(HomeSectionType.resume).key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Continue Watching', prefKey: key))
+        ..tryValue(key, ImageType.poster);
+      addTearDown(controller.dispose);
+      expect(controller.scene, SettingsPreviewScene.home);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+      expect(card(tester, 'Dune').aspectRatio, lessThan(1));
+
+      controller.tryValue(key, ImageType.thumb);
+      await show(tester, controller);
+      expect(card(tester, 'Dune').aspectRatio, greaterThan(1));
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a Favorites sort being tried loads the favorites in it', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await homeRows([HomeSectionType.favoriteMovies]);
+      home(const []);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Favorites Sort',
+            prefKey: 'pref_favorites_row_sort_by',
+          ),
+        )
+        ..tryValue('pref_favorites_row_sort_by', LibrarySortBy.dateAdded);
+      addTearDown(controller.dispose);
+      final asked = <PreviewRowQuery>[];
+      serve(
+        controller,
+        (query) async => HomeRow(
+          id: 'favoriteMovies',
+          title: 'Favorite Movies',
+          rowType: HomeRowType.favorites,
+          items: [item('Sorted by ${query.sortBy.name}', 'Movie')],
+        ),
+        asked: asked,
+      );
+      await show(tester, controller);
+      expect(asked.single.section, HomeSectionType.favoriteMovies);
+      expect(asked.single.sortBy, LibrarySortBy.dateAdded);
+      // Without artwork the card writes its title over the art and under it.
+      final sorted = find.widgetWithText(MediaCard, 'Sorted by dateAdded');
+      expect(tester.widget<MediaCard>(sorted.first).externalIsFocused, isTrue);
       await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });

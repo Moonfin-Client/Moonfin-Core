@@ -420,25 +420,60 @@ double _overlayOpacity(BuildContext context) =>
 // ---------------------------------------------------------------------------
 
 Widget mediaBarPreview(String mode) => _liveOrFallback(
-  live: (context, titles) => _mediaBarModePreview(
-    context,
-    mode,
-    _withNewReleasePreview(context, titles),
-  ),
+  live: (context, titles) {
+    final items = _withNewReleasePreview(context, titles);
+    final peek = _rowPeekCover(context, mode);
+    final bar = _mediaBarModePreview(context, mode, items, rowPeek: peek);
+    if (peek == 0) return bar;
+    return ClipRect(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          bar,
+          Positioned(
+            left: 0,
+            right: 0,
+            top: _designSize().height - peek,
+            child: _homeRowsColumn(
+              context,
+              items,
+              modern:
+                  previewValue(context, UserPreferences.homeRowsStyle) ==
+                  HomeRowsStyle.v2,
+              infoArea: false,
+            ),
+          ),
+        ],
+      ),
+    );
+  },
   fallback: _fallbackMediaBar(mode),
   fallbackAspect: 16 / 7,
 );
 
+/// [mode]'s bar. Moonfin and MakD keep their backdrop under a row peeking
+/// [rowPeek] up into the bar and lift their content above it, and the others
+/// shrink to what's left, as on Home.
 Widget _mediaBarModePreview(
   BuildContext context,
   String mode,
-  List<MediaBarSlideItem> items,
-) => switch (mode) {
-  UserPreferences.mediaBarModeMakd => _makdBar(context, items),
-  UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
-  UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
+  List<MediaBarSlideItem> items, {
+  double rowPeek = 0,
+}) => switch (mode) {
+  UserPreferences.mediaBarModeMakd => _makdBar(context, items, rowPeek),
+  UserPreferences.mediaBarModeBookshelf => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _bookshelfBar(context, items),
+  ),
+  UserPreferences.mediaBarModeGallery => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _galleryBar(context, items),
+  ),
   UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
-  UserPreferences.mediaBarModeAya => _ayaBar(context, items),
+  UserPreferences.mediaBarModeAya => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _ayaBar(context, items),
+  ),
   // The rows carry the whole screen with the bar off, so the preview packs
   // them tighter than the style default to show more than one.
   UserPreferences.mediaBarModeOff => _homeRowsScreen(
@@ -447,7 +482,7 @@ Widget _mediaBarModePreview(
     modern: !_phone,
     rowGapOverride: 24,
   ),
-  _ => _moonfinBar(context, items),
+  _ => _moonfinBar(context, items, rowPeek),
 };
 
 /// The titles the preview draws, with the new release banner on the first one
@@ -614,7 +649,11 @@ Widget _metadataWrap(
   );
 }
 
-Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _moonfinBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -691,7 +730,7 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 0,
         right: 0,
-        bottom: 0,
+        bottom: rowPeek,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -719,7 +758,7 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 0,
         right: 0,
-        bottom: 8,
+        bottom: 8 + rowPeek,
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -747,7 +786,11 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
   return _phone ? _phoneBarScreen(context, items, bar) : bar;
 }
 
-Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _makdBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -878,7 +921,7 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       Positioned(
         left: 50,
-        bottom: 20,
+        bottom: 20 + rowPeek,
         width: contentWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -915,7 +958,7 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       Positioned(
         right: 20,
-        bottom: 24,
+        bottom: 24 + rowPeek,
         child: _dots(
           count: 5,
           active: 9,
@@ -2713,12 +2756,49 @@ bool _showSampleLabels(BuildContext context) {
   return previewValue(context, UserPreferences.showPosterLabels);
 }
 
+/// The sample rows' poster and thumb heights at the card size being looked at.
+(double, double) _sampleCardHeights(
+  BuildContext context, {
+  required bool modern,
+}) {
+  final posterSize = previewValue(context, UserPreferences.posterSize);
+  return (
+    (modern ? 240.0 : 150.0) *
+        _rowScale *
+        posterSize.portraitHeight /
+        PosterSize.medium.portraitHeight,
+    110.0 *
+        _rowScale *
+        posterSize.landscapeHeight /
+        PosterSize.medium.landscapeHeight,
+  );
+}
+
+/// How much of the media bar the first Home row covers while Peek Home Rows
+/// is on: its title and the top half of its cards, as on Home. Zero where
+/// Home doesn't peek.
+double _rowPeekCover(BuildContext context, String mode) {
+  if (_phone ||
+      !previewValue(context, UserPreferences.mediaBarRowPeek) ||
+      !UserPreferences.mediaBarModeAllowsRowPeek(mode) ||
+      previewValue(context, UserPreferences.fullScreenRows)) {
+    return 0;
+  }
+  final modern =
+      previewValue(context, UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+  final (poster, thumb) = _sampleCardHeights(context, modern: modern);
+  // The title band's padding and line of text, then the cards' top padding.
+  final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
+  return header + (modern ? poster : thumb) / 2;
+}
+
 Widget _homeRowsColumn(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
   bool focusFirst = false,
   double? rowGapOverride,
+  bool infoArea = true,
 }) {
   final l10n = AppLocalizations.of(context);
   final scale = _rowScale;
@@ -2877,15 +2957,10 @@ Widget _homeRowsColumn(
     ),
   );
 
-  final posterSize = previewValue(context, UserPreferences.posterSize);
-  final posterScale =
-      posterSize.portraitHeight / PosterSize.medium.portraitHeight;
-  final posterHeight = (modern ? 240.0 : 150.0) * scale * posterScale;
-  final thumbHeight =
-      110.0 *
-      scale *
-      posterSize.landscapeHeight /
-      PosterSize.medium.landscapeHeight;
+  final (posterHeight, thumbHeight) = _sampleCardHeights(
+    context,
+    modern: modern,
+  );
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
   final showOverview = !previewValue(
     context,
@@ -3017,9 +3092,14 @@ Widget _homeRowsColumn(
     );
   }
 
-  // Classic TV keeps the info overlay band above the rows, so its preview
-  // starts with one. Modern shows its metadata under the focused card instead.
-  final infoOverlay = !modern && _tv
+  // Classic keeps the info overlay band above the rows while Info Overlay is
+  // on, so its preview starts with one. Modern shows its metadata under the
+  // focused card instead.
+  final infoOverlay =
+      infoArea &&
+          !modern &&
+          !_phone &&
+          previewValue(context, UserPreferences.homeRowInfoOverlay)
       ? Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
           child: SizedBox(

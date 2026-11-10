@@ -16794,6 +16794,10 @@
   "@settingsPreviewAudioRowsEmpty": {
     "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
   },
+  "settingsPreviewRowsEmpty": "There's nothing to show in these rows, so Home leaves them out.",
+  "@settingsPreviewRowsEmpty": {
+    "description": "Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out"
+  },
   "settingsPreviewCollectionsEmpty": "There are no collections to show, so Home leaves this row out.",
   "@settingsPreviewCollectionsEmpty": {
     "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"

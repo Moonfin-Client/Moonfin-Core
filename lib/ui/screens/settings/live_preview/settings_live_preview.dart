@@ -315,7 +315,8 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
         'mediaBarShowRatingLabels' ||
         'mediaBarShowRatingBadges' ||
         'mediaBarNewReleaseBanner' ||
-        'mediaBarNewReleaseDays' => Builder(
+        'mediaBarNewReleaseDays' ||
+        'mediaBarRowPeek' => Builder(
           builder: (context) => mediaBarPreview(
             previewValue(context, UserPreferences.mediaBarMode),
           ),
@@ -346,6 +347,8 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
             group: RowOptionsGroup.forKey(key)!,
             focusedKey: key,
           ),
+        final key? when drawsHomeRows(key) =>
+          PreviewRowOptionsHome(focusedKey: key),
         final key? when key.startsWith('pref_screensaver_') => Builder(
           builder: (context) =>
               previewValue(context, UserPreferences.screensaverEnabled)

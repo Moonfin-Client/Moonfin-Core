@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/models/home_row.dart';
 import '../../../../data/services/background_service.dart';
 import '../../../../data/services/row_data_source.dart';
+import '../../../../data/utils/media_type_badges.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/home_section_config.dart';
 import '../../../../preference/preference_constants.dart';
@@ -36,7 +38,20 @@ enum RowOptionsGroup {
     HomeSectionType.audioArtists,
     HomeSectionType.audioPlaylists,
   }),
-  collections({HomeSectionType.collections});
+  collections({HomeSectionType.collections}),
+  favorites({
+    HomeSectionType.favoriteMovies,
+    HomeSectionType.favoriteSeries,
+    HomeSectionType.favoriteEpisodes,
+    HomeSectionType.favoritePeople,
+    HomeSectionType.favoriteArtists,
+    HomeSectionType.favoriteMusicVideos,
+    HomeSectionType.favoriteAlbums,
+    HomeSectionType.favoriteSongs,
+  }),
+  genres({HomeSectionType.genres}),
+  playlists({HomeSectionType.playlists}),
+  studios({HomeSectionType.studios});
 
   const RowOptionsGroup(this.sections);
 
@@ -46,16 +61,28 @@ enum RowOptionsGroup {
   Preference<bool> get display => switch (this) {
     audio => UserPreferences.displayAudioRows,
     collections => UserPreferences.displayCollectionsRows,
+    favorites => UserPreferences.displayFavoritesRows,
+    genres => UserPreferences.displayGenresRows,
+    playlists => UserPreferences.displayPlaylistsRows,
+    studios => UserPreferences.displayStudiosRows,
   };
 
   Preference<LibrarySortBy> get sortBy => switch (this) {
     audio => UserPreferences.audioRowsSortBy,
     collections => UserPreferences.collectionsRowSortBy,
+    favorites => UserPreferences.favoritesRowSortBy,
+    genres => UserPreferences.genresRowSortBy,
+    playlists => UserPreferences.playlistsRowSortBy,
+    studios => UserPreferences.studiosRowSortBy,
   };
 
   Preference<SortDirection> get sortOrder => switch (this) {
     audio => UserPreferences.audioRowsSortOrder,
     collections => UserPreferences.collectionsRowSortOrder,
+    favorites => UserPreferences.favoritesRowSortOrder,
+    genres => UserPreferences.genresRowSortOrder,
+    playlists => UserPreferences.playlistsRowSortOrder,
+    studios => UserPreferences.studiosRowSortOrder,
   };
 
   /// The group a Row Options setting belongs to, or null for any other key.
@@ -67,6 +94,18 @@ enum RowOptionsGroup {
     'pref_collections_row_sort_by' ||
     'pref_collections_row_sort_order' ||
     'pref_collections_row_show_episodes' => collections,
+    'pref_display_favorites_rows' ||
+    'pref_favorites_row_sort_by' ||
+    'pref_favorites_row_sort_order' => favorites,
+    'pref_display_genres_rows' ||
+    'pref_genres_row_sort_by' ||
+    'pref_genres_row_sort_order' => genres,
+    'pref_display_playlists_rows' ||
+    'pref_playlists_row_sort_by' ||
+    'pref_playlists_row_sort_order' => playlists,
+    'pref_display_studios_rows' ||
+    'pref_studios_row_sort_by' ||
+    'pref_studios_row_sort_order' => studios,
     _ => null,
   };
 
@@ -74,13 +113,37 @@ enum RowOptionsGroup {
       values.firstWhereOrNull((group) => group.sections.contains(type));
 }
 
+/// Whether the preview draws the Home setting [key] on Home's own rows, since
+/// the sample rows can't show it.
+bool drawsHomeRows(String? key) =>
+    key != null &&
+    (key.startsWith('homeRowImageType_') || _homeRowsKeys.contains(key));
+
+const _homeRowsKeys = {
+  'home_sections_config',
+  'pref_merge_continue_watching_next_up',
+  'pref_merge_recent_rows_by_type',
+  'pref_display_rewatch_row',
+  'pref_display_since_you_watched_rows',
+  'seasonal_row_enabled',
+  'pref_hide_home_watch_progress',
+  'pref_hide_home_unwatched_count',
+  'pref_watched_indicator_behavior',
+  'pref_media_type_badge_behavior',
+  'pref_enable_series_thumbnails',
+  'pref_card_focus_expansion',
+  'pref_classic_home_rows_padding',
+  'pref_modern_home_rows_padding',
+  'pref_home_row_info_overlay',
+};
+
 /// Home's rows as the preview found them the first time a Row Options
 /// setting showed with Home fully loaded, kept for the rest of the settings
 /// visit. Every Row Options change reloads Home behind Settings, and a list
 /// caught mid-reload is placeholders and fresh random artwork, so the rows
 /// around the edited ones come from here and don't move. It's taken again
 /// when the rows Home shows change (Rows, Kids Mode, Multi-Server, the
-/// Display switches).
+/// merges, the Display switches).
 class _HomeSnapshot {
   final String layout;
   final List<HomeRow> rows;
@@ -108,6 +171,11 @@ class _HomeSnapshot {
     prefs.get(UserPreferences.homeSectionsJson),
     prefs.get(UserPreferences.kidsModeEnabled),
     prefs.get(UserPreferences.enableMultiServerLibraries),
+    prefs.get(UserPreferences.mergeContinueWatchingNextUp),
+    prefs.get(UserPreferences.mergeRecentRowsByType),
+    prefs.get(UserPreferences.displayRewatchRow),
+    prefs.get(UserPreferences.displaySinceYouWatchedRows),
+    prefs.get(UserPreferences.seasonalRowEnabled),
     for (final group in RowOptionsGroup.values) prefs.get(group.display),
   ].join('|');
 
@@ -180,16 +248,13 @@ class _Plan {
 /// being edited: that row where Home brings a focused row to rest, its first
 /// card focused the way Home draws it, the backdrop from that card, and
 /// Home's rows below it in Home's order. The edited rows load with the sort
-/// being looked at; a new sort swaps in once its artwork is ready.
+/// being looked at. A new sort swaps in once its artwork is ready. Without a
+/// group it's Home's own rows, from the first one [focusedKey] changes.
 class PreviewRowOptionsHome extends StatefulWidget {
-  final RowOptionsGroup group;
+  final RowOptionsGroup? group;
   final String? focusedKey;
 
-  const PreviewRowOptionsHome({
-    super.key,
-    required this.group,
-    this.focusedKey,
-  });
+  const PreviewRowOptionsHome({super.key, this.group, this.focusedKey});
 
   @override
   State<PreviewRowOptionsHome> createState() => _PreviewRowOptionsHomeState();
@@ -271,14 +336,11 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
   }
 
   _Rows _rowsFor(BuildContext context, _Plan plan) {
-    final key = ValueKey(plan.signature);
+    final frame = _HomeFrame.of(context);
+    final key = ValueKey('${plan.signature}|${frame.look(plan.rows!)}');
     final kept = _rows;
     if (kept != null && kept.key == key) return kept;
-    return _rows = _Rows(
-      key: key,
-      rows: plan.rows!,
-      frame: _HomeFrame.of(context),
-    );
+    return _rows = _Rows(key: key, rows: plan.rows!, frame: frame);
   }
 
   /// Takes [plan] on, at once when it draws Home unchanged or nothing new,
@@ -363,24 +425,21 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
     final prefs = GetIt.instance<UserPreferences>();
     final group = widget.group;
     final configs = prefs.activeHomeSectionConfigs;
-    final groupConfigs = configs
-        .where((c) => c.isBuiltin && group.sections.contains(c.type))
-        .toList();
     final showEpisodes =
         widget.focusedKey == UserPreferences.collectionsRowShowEpisodes.key
         ? l10n.settingsPreviewShowEpisodesNote
         : null;
 
-    if (groupConfigs.isEmpty) {
+    if (group != null &&
+        !configs.any((c) => c.isBuiltin && group.sections.contains(c.type))) {
       final on = previewValue(context, group.display);
       final setting = _displaySwitchName(l10n, group);
       // The Rows screen lists turned-off rows in groups under Disabled, and
       // only lists these once the Display switch is on, so the notice gives
       // the steps in that order and names the group to open.
-      final rowsGroup = switch (group) {
-        RowOptionsGroup.audio => l10n.general,
-        RowOptionsGroup.collections => l10n.collections,
-      };
+      final rowsGroup = group == RowOptionsGroup.collections
+          ? l10n.collections
+          : l10n.general;
       return _Plan.home(
         group: group,
         blocked: true,
@@ -408,10 +467,12 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
               rowsGroup,
               l10n.disabled,
             ),
+          (_, _, true) => l10n.settingsPreviewNeedsRowInRows(l10n.disabled),
+          (_, _, false) => l10n.settingsPreviewNeedsSwitchAndRow(setting),
         },
       );
     }
-    if (!previewValue(context, group.display)) {
+    if (group != null && !previewValue(context, group.display)) {
       return _Plan.home(group: group, caption: showEpisodes);
     }
 
@@ -419,6 +480,9 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
     // visit is drawn where Home puts it even though Home hadn't loaded it
     // when the snapshot was taken.
     final snapshot = _HomeSnapshot.of(controller, prefs);
+    // With nothing being edited, the rows are Home's own, which have to have
+    // finished loading.
+    if (group == null && !snapshot.complete) return null;
     final multiServer = prefs.get(UserPreferences.enableMultiServerLibraries);
     final serverId = PreviewRowSamples.activeServerId;
     final queries = <HomeSectionType, PreviewRowQuery>{};
@@ -457,7 +521,7 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
       final query = config.isBuiltin ? queries[config.type] : null;
       if (query != null) {
         final sample = samples.sampleFor(query);
-        final inGroup = group.sections.contains(config.type);
+        final inGroup = group?.sections.contains(config.type) ?? false;
         if (sample == null || sample.status == PreviewRowStatus.loading) {
           if (inGroup) groupLoading = true;
           continue;
@@ -488,7 +552,11 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
     // Wait for every row of the group, or the focused row would jump from
     // one to the next as each arrives.
     if (groupLoading) return null;
-    if (focusedAt < 0) {
+    if (group == null) {
+      if (rows.isEmpty) return _Plan.home();
+      final target = _rowShowing(widget.focusedKey, configs);
+      focusedAt = target == null ? 0 : math.max(0, rows.indexWhere(target));
+    } else if (focusedAt < 0) {
       return _Plan.home(
         group: group,
         blocked: !groupFailed,
@@ -498,6 +566,7 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
                 RowOptionsGroup.audio => l10n.settingsPreviewAudioRowsEmpty,
                 RowOptionsGroup.collections =>
                   l10n.settingsPreviewCollectionsEmpty,
+                _ => l10n.settingsPreviewRowsEmpty,
               },
       );
     }
@@ -513,6 +582,31 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
       caption: showEpisodes,
     );
   }
+}
+
+/// What the Home setting [key] changes on a row, so the preview brings the
+/// first such row into focus. Null for a setting that shows on any row.
+bool Function(HomeRow row)? _rowShowing(
+  String? key,
+  List<HomeSectionConfig> configs,
+) {
+  if (key != null && key.startsWith('homeRowImageType_')) {
+    return (row) {
+      final section = HomeViewModel.sectionConfigForRow(row, configs)?.type;
+      return section != null &&
+          UserPreferences.homeRowImageType(section).key == key;
+    };
+  }
+  final bool Function(AggregatedItem item)? shows = switch (key) {
+    'pref_hide_home_watch_progress' => (i) => (i.playedPercentage ?? 0) > 0,
+    'pref_hide_home_unwatched_count' => (i) => (i.unplayedItemCount ?? 0) > 0,
+    'pref_watched_indicator_behavior' =>
+      (i) => i.isPlayed || (i.unplayedItemCount ?? 0) > 0,
+    'pref_media_type_badge_behavior' => (i) => i.seerrMediaType != null,
+    'pref_enable_series_thumbnails' => (i) => i.type == 'Episode',
+    _ => null,
+  };
+  return shows == null ? null : (row) => row.items.any(shows);
 }
 
 enum _OffReason { rows, kidsMode }
@@ -531,6 +625,10 @@ String _displaySwitchName(AppLocalizations l10n, RowOptionsGroup group) =>
     switch (group) {
       RowOptionsGroup.audio => l10n.displayAudioRows,
       RowOptionsGroup.collections => l10n.displayCollectionsRows,
+      RowOptionsGroup.favorites => l10n.displayFavoritesRows,
+      RowOptionsGroup.genres => l10n.displayGenresRows,
+      RowOptionsGroup.playlists => l10n.displayPlaylistsRows,
+      RowOptionsGroup.studios => l10n.displayStudiosRows,
     };
 
 /// For the inspector: why the Row Options setting [key] can't change Home
@@ -671,6 +769,7 @@ class _Notice extends StatelessWidget {
 class _HomeFrame {
   final Size size;
   final UserPreferences prefs;
+  final SettingsPreviewController? controller;
   final bool phone;
   final bool tv;
   final bool modern;
@@ -686,6 +785,7 @@ class _HomeFrame {
   _HomeFrame._({
     required this.size,
     required this.prefs,
+    required this.controller,
     required this.phone,
     required this.tv,
     required this.modern,
@@ -703,8 +803,8 @@ class _HomeFrame {
     final prefs = GetIt.instance<UserPreferences>();
     final phone = PlatformDetection.useMobileUi;
     final tv = PlatformDetection.useLeanbackUi;
-    // Read straight from the saved settings: a Row Options setting never
-    // tries these, and the rows built from them are kept between builds.
+    // Read straight from the saved settings, since none of these is tried in
+    // a picker.
     final modern = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
     final desktopScale = prefs.get(UserPreferences.desktopUiScale).scaleFactor;
     final navbarTop =
@@ -738,6 +838,7 @@ class _HomeFrame {
     return _HomeFrame._(
       size: setupPreviewSize(),
       prefs: prefs,
+      controller: SettingsPreviewScope.maybeOf(context),
       phone: phone,
       tv: tv,
       modern: modern,
@@ -751,6 +852,43 @@ class _HomeFrame {
       focusTop: focusTop,
     );
   }
+
+  /// [preference] as the preview draws it: the value a picker is trying, else
+  /// the saved one.
+  T value<T>(Preference<T> preference) {
+    final tried = controller;
+    if (tried != null && tried.isTrying(preference.key)) {
+      final value = tried.tryingValue(preference.key);
+      if (value is T) return value;
+    }
+    return prefs.get(preference);
+  }
+
+  ImageType _perRowImageType(HomeSectionType section) =>
+      value(UserPreferences.homeRowImageType(section));
+
+  ImageType _imageType(HomeRow row) =>
+      homeRowImageTypeForRow(row, prefs, perRow: _perRowImageType);
+
+  /// Everything the cards are drawn from, so rows kept between builds are
+  /// built again once one of them changes.
+  String look(List<HomeRow> rows) => [
+    modern,
+    desktopScale,
+    posterSize,
+    cardExpansion,
+    infoArea,
+    focusTop,
+    _useSeriesThumbs,
+    prefs.get(UserPreferences.fullScreenRows),
+    prefs.get(UserPreferences.classicHomeRowsPadding),
+    prefs.get(UserPreferences.modernHomeRowsPadding),
+    prefs.get(UserPreferences.hideHomeWatchProgress),
+    prefs.get(UserPreferences.hideHomeUnwatchedCount),
+    value(UserPreferences.watchedIndicatorBehavior),
+    value(UserPreferences.mediaTypeBadgeBehavior),
+    for (final row in rows) _imageType(row),
+  ].join('|');
 
   /// The server's artwork for [item], the way Home asks for it.
   ImageApi? _apiFor(AggregatedItem item) {
@@ -828,11 +966,7 @@ class _HomeFrame {
     if (api == null) {
       final ar = rowModern
           ? (row.isAudio ? 1.0 : 2 / 3)
-          : aspectRatioForRowItem(
-              item,
-              row,
-              homeRowImageTypeForRow(row, prefs),
-            );
+          : aspectRatioForRowItem(item, row, _imageType(row));
       final height = rowModern
           ? modernHeight
           : (ar > 1 ? posterSize.landscapeHeight : posterSize.portraitHeight) *
@@ -848,6 +982,7 @@ class _HomeFrame {
       requestScale: 1.0,
       platformScale: platformScale,
       imageApi: api,
+      perRowImageType: _perRowImageType,
     );
   }
 
@@ -868,9 +1003,7 @@ class _HomeFrame {
   double maxImageHeight(HomeRow row) => _tallest[row] ??= () {
     if (isSquareRow(row)) return _squareSide;
     if (isModern(row)) return modernHeight;
-    final type = isSeerrFilterRow(row)
-        ? ImageType.thumb
-        : homeRowImageTypeForRow(row, prefs);
+    final type = isSeerrFilterRow(row) ? ImageType.thumb : _imageType(row);
     var tallest = 0.0;
     for (final item in row.items) {
       final ar = aspectRatioForRowItem(item, row, type);
@@ -1272,8 +1405,16 @@ class _Row extends StatelessWidget {
       playedPercentage: prefs.get(UserPreferences.hideHomeWatchProgress)
           ? null
           : item.playedPercentage,
-      watchedBehavior: prefs.get(UserPreferences.watchedIndicatorBehavior),
+      watchedBehavior: frame.value(UserPreferences.watchedIndicatorBehavior),
       itemType: item.type,
+      seerrMediaType:
+          showsMediaTypeBadges(
+            frame.value(UserPreferences.mediaTypeBadgeBehavior),
+            row.items,
+          )
+          ? item.seerrMediaType
+          : null,
+      seerrStatus: item.seerrStatus,
       focusColor: Color(
         previewValue(context, UserPreferences.focusColor).colorValue,
       ),

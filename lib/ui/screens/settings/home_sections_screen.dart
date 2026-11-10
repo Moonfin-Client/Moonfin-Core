@@ -29,6 +29,7 @@ import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/signed_in_server_features.dart';
@@ -2024,17 +2025,23 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             ),
           ],
         ),
-        body: ExcludeFocus(
-          excluding: _isLoading,
-          child: IgnorePointer(
-            ignoring: _isLoading,
-            child: Stack(
-              children: [
-                PlatformDetection.isTV
-                    ? _buildTvList(l10n)
-                    : _buildReorderableList(l10n),
-                if (_showOverlay) _buildLoadingOverlay(context),
-              ],
+        body: SettingsPreviewReporter(
+          describe: () => SettingsPreviewEntry(
+            title: l10n.homeRows,
+            prefKey: UserPreferences.homeSectionsJson.key,
+          ),
+          child: ExcludeFocus(
+            excluding: _isLoading,
+            child: IgnorePointer(
+              ignoring: _isLoading,
+              child: Stack(
+                children: [
+                  PlatformDetection.isTV
+                      ? _buildTvList(l10n)
+                      : _buildReorderableList(l10n),
+                  if (_showOverlay) _buildLoadingOverlay(context),
+                ],
+              ),
             ),
           ),
         ),
