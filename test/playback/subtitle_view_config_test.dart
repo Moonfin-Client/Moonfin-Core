@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -140,10 +142,32 @@ void main() {
   });
 
   test('a wider stroke pushes the outline ring out', () {
-    final normal = subtitleShadows(_style(), 40)!.last.offset;
-    final large = subtitleShadows(_style(strokeScale: 2), 40)!.last.offset;
+    double reach(List<Shadow> shadows) => shadows
+        .map((s) => math.max(s.offset.dx.abs(), s.offset.dy.abs()))
+        .reduce(math.max);
 
-    expect(large, normal * 2);
+    expect(
+      reach(subtitleShadows(_style(strokeScale: 2), 40)!),
+      reach(subtitleShadows(_style(), 40)!) * 2,
+    );
+  });
+
+  test('a wide stroke fills in rather than drawing spaced copies', () {
+    final offsets = [
+      for (final shadow in subtitleShadows(_style(strokeScale: 4), 40)!)
+        shadow.offset,
+    ];
+
+    // At 40 the outline reaches 10 out and the copies sit at most 2.5 apart,
+    // under a stem, so no spot in the band is left showing through.
+    for (var x = -10.0; x <= 10; x += 0.5) {
+      for (var y = -10.0; y <= 10; y += 0.5) {
+        final nearest = offsets
+            .map((o) => (o - Offset(x, y)).distance)
+            .reduce(math.min);
+        expect(nearest, lessThanOrEqualTo(2.5), reason: '($x, $y)');
+      }
+    }
   });
 
   test('no outline and no shadow leaves the text bare', () {

@@ -27,6 +27,7 @@ import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/saved_media_presence.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/playback/subtitle_fonts.dart';
 import 'package:moonfin/preference/home_section_config.dart';
@@ -76,6 +77,8 @@ import 'package:server_core/server_core.dart'
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Users extends Mock implements UserRepository {}
+
+class _Saved extends Mock implements SavedMediaPresence {}
 
 class _Client extends Mock implements MediaServerClient {}
 
@@ -1173,8 +1176,8 @@ void main() {
       }
 
       // Messages shows with its switch though the server has none right now.
-      // Friends still needs the server's friends feature, and Downloads a
-      // user who may download.
+      // Friends still needs the server's friends feature, and Downloads
+      // something saved, as on the real bar.
       controller
         ..tryValue('pref_show_downloads_button', true)
         ..tryValue('pref_show_server_messages_button', true)
@@ -1186,19 +1189,9 @@ void main() {
       expect(find.byIcon(Icons.download_for_offline), findsNothing);
       expect(find.byIcon(Icons.movie_rounded), findsNothing);
 
-      // Nothing is saved yet, and Downloads shows all the same.
-      final users = _Users();
-      when(() => users.currentUser).thenReturn(
-        PrivateUser(
-          id: 'user',
-          name: 'moonfin',
-          serverId: 'server',
-          accessToken: 'token',
-          lastUsed: DateTime(2026),
-          canDownload: true,
-        ),
-      );
-      GetIt.instance.registerSingleton<UserRepository>(users);
+      final saved = _Saved();
+      when(() => saved.hasSavedMedia).thenReturn(true);
+      GetIt.instance.registerSingleton<SavedMediaPresence>(saved);
       controller.tryValue('pref_show_downloads_button', true);
       await pumpPreview(tester, controller);
       expect(find.byIcon(Icons.download_for_offline), findsOneWidget);
@@ -2330,6 +2323,41 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('the subtitle line sits on the picture, not a letterbox bar', (
+      tester,
+    ) async {
+      BoxFit pictureFit() => tester
+          .widget<FittedBox>(
+            find
+                .ancestor(
+                  of: find.byWidgetPredicate(
+                    (w) => w is SizedBox && w.width == 2390,
+                  ),
+                  matching: find.byType(FittedBox),
+                )
+                .first,
+          )
+          .fit;
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Stroke',
+            prefKey: 'subtitles_stroke_width',
+          ),
+        )
+        ..tryValue('player_zoom_mode', ZoomMode.fit);
+      await pumpPlayer(tester, controller);
+      expect(pictureFit(), BoxFit.cover);
+
+      // Away from the subtitle look the wide film keeps its bars.
+      controller.focus(
+        const SettingsPreviewEntry(title: 'Zoom', prefKey: 'player_zoom_mode'),
+      );
+      await pumpPlayer(tester, controller);
+      expect(pictureFit(), BoxFit.contain);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('an HDR setting shows the HDR look while it has focus', (
       tester,
     ) async {
@@ -2537,9 +2565,13 @@ void main() {
         ..tryValue('subtitles_stroke_width', 200);
       await pumpPlayer(tester, controller);
       final styled = lineStyle(tester, 'hear').shadows!;
-      expect(styled, hasLength(plain.length + 1));
       expect(styled.first.color.a, closeTo(0.8, 0.01));
-      expect(styled.last.offset, plain.last.offset * 2);
+      // The outline reaches twice as far, with more copies so it stays solid.
+      double reach(Iterable<Shadow> shadows) => shadows
+          .map((s) => math.max(s.offset.dx.abs(), s.offset.dy.abs()))
+          .reduce(math.max);
+      expect(reach(styled.skip(1)), closeTo(reach(plain) * 2, 0.001));
+      expect(styled.length - 1, greaterThan(plain.length));
       debugDefaultTargetPlatformOverride = null;
     });
 

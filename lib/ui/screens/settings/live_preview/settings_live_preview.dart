@@ -764,7 +764,12 @@ class SettingsPlayerPreview extends StatelessWidget {
             children: [
               ClipRect(
                 child: FittedBox(
-                  fit: zoomModeToBoxFit(zoom),
+                  // The subtitle settings fill the frame, since the wide
+                  // film's bars would put the line where a black outline or
+                  // shadow can't be seen.
+                  fit: moment == _PlayerMoment.watching
+                      ? BoxFit.cover
+                      : zoomModeToBoxFit(zoom),
                   child: SizedBox(
                     width: 2390,
                     height: 1000,

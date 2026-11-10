@@ -95,13 +95,42 @@ abstract final class SetupPreviewData {
     final override = debugOverride;
     if (override != null) return override.value;
     final loaded = _viewModel?.items ?? const [];
-    return loaded.isNotEmpty ? loaded : _fallbackItems.value;
+    return _drawn = keepDrawn(
+      _drawn,
+      loaded.isNotEmpty ? loaded : _fallbackItems.value,
+    );
+  }
+
+  /// The titles the previews last drew. A change to the bar's style or to what
+  /// it shows reloads it with a fresh random pick, and following that would
+  /// swap the sample under the person looking at it.
+  static List<MediaBarSlideItem> _drawn = const [];
+
+  /// [drawn] kept in its order, each title swapped for its newer copy when
+  /// [next] still has it, then topped up from [next] or cut to its count.
+  @visibleForTesting
+  static List<MediaBarSlideItem> keepDrawn(
+    List<MediaBarSlideItem> drawn,
+    List<MediaBarSlideItem> next,
+  ) {
+    if (drawn.isEmpty || next.isEmpty) return next;
+    final fresh = {
+      for (final item in next) (item.serverId, item.itemId): item,
+    };
+    return [
+      for (final item in drawn)
+        fresh.remove((item.serverId, item.itemId)) ?? item,
+      ...fresh.values,
+    ].take(next.length).toList();
   }
 
   static bool _loading = false;
   static bool _loadingLibraries = false;
 
   static Future<void> ensureLoaded() async {
+    // Each screen of previews starts from the bar's current titles, which
+    // also drops the last server's after a switch.
+    _drawn = const [];
     if (debugOverride != null) return;
     unawaited(loadLibraries());
     if (_loading) return;
@@ -1990,9 +2019,10 @@ bool get _calendarAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().calendarAvailable;
 
+/// The real bar waits for something saved, so it never offers a way into an
+/// empty screen.
 bool get _downloadsAvailable =>
-    GetIt.instance.isRegistered<UserRepository>() &&
-    DownloadsNavSlot.isAvailable();
+    DownloadsNavSlot.isSupported() && DownloadsNavSlot.hasSavedMedia();
 
 /// The user's libraries for a navbar that lists them one by one, minus the
 /// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
