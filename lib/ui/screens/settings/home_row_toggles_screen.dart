@@ -15,6 +15,7 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../detail/playlist_sort_filter_bar.dart';
 import '../../../util/signed_in_server_features.dart';
 import 'settings_app_bar.dart';
@@ -720,22 +721,33 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     onChanged: _onStudiosRowsToggleChanged,
                   ),
                   if (showStudiosRows) ...[
-                    TvFocusHighlight(
-                      builder: (_, focused) => ListTile(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        leading: buildSettingsLeadingIconShell(
-                          context,
-                          icon: const Icon(Icons.checklist),
-                          focused: focused,
-                          iconColor: focused
-                              ? AppColors.black.withValues(alpha: 0.87)
-                              : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                    SettingsPreviewReporter(
+                      describe: () => SettingsPreviewEntry(
+                        prefKey: UserPreferences.studiosRowSelectedIds.key,
+                        title: l10n.selectStudiosToInclude,
+                        description: l10n.selectStudiosToIncludeDescription,
+                      ),
+                      child: TvFocusHighlight(
+                        builder: (_, focused) => ListTile(
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          leading: buildSettingsLeadingIconShell(
+                            context,
+                            icon: const Icon(Icons.checklist),
+                            focused: focused,
+                            iconColor: focused
+                                ? AppColors.black.withValues(alpha: 0.87)
+                                : AppColorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
+                          ),
+                          title: Text(l10n.selectStudiosToInclude),
+                          subtitle: Text(
+                            l10n.selectStudiosToIncludeDescription,
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => _openStudioSelectionDialog(context),
                         ),
-                        title: Text(l10n.selectStudiosToInclude),
-                        subtitle: Text(l10n.selectStudiosToIncludeDescription),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => _openStudioSelectionDialog(context),
                       ),
                     ),
                     EnumPreferenceTile<LibrarySortBy>(

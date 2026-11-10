@@ -23,6 +23,7 @@ import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
+import 'package:moonfin/data/repositories/tmdb_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
@@ -104,6 +105,8 @@ class _Home extends Mock implements HomeViewModel {}
 class _Connectivity extends Mock implements ConnectivityService {}
 
 class _MultiServer extends Mock implements MultiServerRepository {}
+
+class _Tmdb extends Mock implements TmdbRepository {}
 
 /// Two films in a library called Films, whatever the call asks for.
 class _Items implements ItemsApi {
@@ -3187,6 +3190,7 @@ void main() {
         final prefs = GetIt.instance<UserPreferences>();
         await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
         await prefs.set(UserPreferences.displayAudioRows, true);
+        await prefs.set(UserPreferences.displayGenresRows, true);
         await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
         home([genres]);
         final controller = SettingsPreviewController()
@@ -3339,6 +3343,7 @@ void main() {
       tv();
       final prefs = GetIt.instance<UserPreferences>();
       await prefs.set(UserPreferences.displayAudioRows, true);
+      await prefs.set(UserPreferences.displayGenresRows, true);
       await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
       final viewModel = home([genres]);
       final controller = SettingsPreviewController()
@@ -3564,6 +3569,7 @@ void main() {
         final prefs = GetIt.instance<UserPreferences>();
         await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
         await prefs.set(UserPreferences.displayFavoritesRows, true);
+        await prefs.set(UserPreferences.displayGenresRows, true);
         await homeRows([
           HomeSectionType.favoriteSeries,
           HomeSectionType.favoriteMovies,
@@ -3838,6 +3844,641 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(MediaCard), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    HomeRow genresRow(List<String> names) => HomeRow(
+      id: 'genres',
+      title: 'Genres',
+      rowType: HomeRowType.genres,
+      items: [for (final name in names) item(name, 'Genre')],
+    );
+
+    HomeRow playlistsRow(List<String> names) => HomeRow(
+      id: 'playlists',
+      title: 'Playlists',
+      rowType: HomeRowType.playlists,
+      items: [for (final name in names) item(name, 'Playlist')],
+    );
+
+    HomeRow studiosRow(List<String> names) => HomeRow(
+      id: 'studios',
+      title: 'Studios',
+      rowType: HomeRowType.studios,
+      items: [for (final name in names) item(name, 'Studio')],
+    );
+
+    /// The card for [title], by its own title: a focused title too long for
+    /// its card is drawn twice to scroll, which the text lookup counts twice.
+    MediaCard titled(WidgetTester tester, String title) => tester
+        .widgetList<MediaCard>(find.byType(MediaCard))
+        .singleWhere((card) => card.title == title);
+
+    HomeRow rowFor(HomeSectionType section) => switch (section) {
+      HomeSectionType.genres => genresRow(['Comedy', 'Drama']),
+      HomeSectionType.playlists => playlistsRow(['Road Trip', 'Sunday']),
+      _ => studiosRow(['Pixar', 'Ghibli']),
+    };
+
+    testWidgets(
+      'a Genres setting focuses the Genres row with the item types tried',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayGenresRows, true);
+        await homeRows([HomeSectionType.genres]);
+        home(const []);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Genres Row Items',
+              prefKey: 'pref_genres_row_item_filter',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) async => genresRow(
+            query.genresItems == GenresRowItemFilter.series
+                ? ['Drama', 'Comedy']
+                : ['Comedy', 'Drama'],
+          ),
+          asked: asked,
+        );
+        await show(tester, controller);
+        // Home prints a genre's name across the artwork it borrowed for it.
+        expect(titled(tester, 'Comedy').externalIsFocused, isTrue);
+        expect(titled(tester, 'Comedy').isGenreFallback, isTrue);
+        expect(asked.single.genresItems, GenresRowItemFilter.both);
+
+        controller.tryValue(
+          'pref_genres_row_item_filter',
+          GenresRowItemFilter.series,
+        );
+        await show(tester, controller);
+        // Past the cross-fade, which draws both orders at once.
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(asked.last.genresItems, GenresRowItemFilter.series);
+        expect(asked.length, 2);
+        expect(titled(tester, 'Drama').externalIsFocused, isTrue);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'the Genres row Home loaded stands in only for the item types it loaded',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.displayGenresRows, true);
+        await homeRows([HomeSectionType.genres]);
+        home([genres]);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Genres Row Items',
+              prefKey: 'pref_genres_row_item_filter',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) async => genresRow(['Western']),
+          asked: asked,
+        );
+        await show(tester, controller);
+        expect(titled(tester, 'Comedy').externalIsFocused, isTrue);
+        expect(asked, isEmpty);
+
+        controller.tryValue(
+          'pref_genres_row_item_filter',
+          GenresRowItemFilter.movies,
+        );
+        await show(tester, controller);
+        expect(asked.single.genresItems, GenresRowItemFilter.movies);
+        expect(titled(tester, 'Western').externalIsFocused, isTrue);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('scrubbing the Genres sorts loads one Genres row at a time', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await homeRows([HomeSectionType.genres]);
+      home(const []);
+      final asked = <PreviewRowQuery>[];
+      final loads = <Completer<HomeRow>>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Genres Row Sorting',
+            prefKey: 'pref_genres_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) {
+        loads.add(Completer<HomeRow>());
+        return loads.last.future;
+      }, asked: asked);
+      await show(tester, controller);
+      for (final sort in [
+        LibrarySortBy.dateAdded,
+        LibrarySortBy.premiereDate,
+        LibrarySortBy.random,
+      ]) {
+        controller.tryValue('pref_genres_row_sort_by', sort);
+        await show(tester, controller);
+      }
+      // Only the first has gone out. The ones passed over never do, and the
+      // one the picker stopped on goes once the first is back.
+      expect(asked.map((q) => q.sortBy), [LibrarySortBy.name]);
+      loads.single.complete(genresRow(['Comedy']));
+      await show(tester, controller);
+      expect(asked.map((q) => q.sortBy), [
+        LibrarySortBy.name,
+        LibrarySortBy.random,
+      ]);
+      loads.last.complete(genresRow(['Drama']));
+      await show(tester, controller);
+      expect(titled(tester, 'Drama').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Genres, Playlists and Studios rows load the way Home loads '
+        'them', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await prefs.set(UserPreferences.displayPlaylistsRows, true);
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await prefs.set(
+        UserPreferences.genresRowItemFilter,
+        GenresRowItemFilter.movies,
+      );
+      await prefs.set(UserPreferences.studiosRowSelectedIds, 'Pixar,Ghibli');
+      await homeRows([
+        HomeSectionType.studios,
+        HomeSectionType.genres,
+        HomeSectionType.playlists,
+      ]);
+      home(const []);
+      final rows = _Rows();
+      when(
+        () => rows.loadGenres(
+          any(),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.genres));
+      when(
+        () => rows.loadPlaylists(
+          any(),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.playlists));
+      when(
+        () => rows.loadStudios(
+          any(),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          selectedIds: any(named: 'selectedIds'),
+          title: any(named: 'title'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.studios));
+      GetIt.instance.registerSingleton<RowDataSource>(rows);
+      final tmdb = _Tmdb();
+      when(
+        tmdb.getStudioLogoUrls,
+      ).thenAnswer((_) async => {'pixar': 'https://logos.example/pixar.png'});
+      GetIt.instance.registerSingleton<TmdbRepository>(tmdb);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Studio Row Sorting',
+            prefKey: 'pref_studios_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      controller.tryValue('pref_studios_row_sort_by', LibrarySortBy.dateAdded);
+      PreviewRowSamples.debugSet(controller, PreviewRowSamples());
+      await show(tester, controller);
+      verify(
+        () => rows.loadGenres(
+          any(),
+          sortBy: LibrarySortBy.name.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+          includeItemTypes: ['Movie'],
+        ),
+      ).called(1);
+      verify(
+        () => rows.loadPlaylists(
+          any(),
+          sortBy: LibrarySortBy.playlistOrder.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+        ),
+      ).called(1);
+      verify(
+        () => rows.loadStudios(
+          any(),
+          sortBy: LibrarySortBy.dateAdded.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+          selectedIds: 'Pixar,Ghibli',
+          title: 'Studios',
+        ),
+      ).called(1);
+      // The row shows once its logo has loaded, or after the longest it
+      // waits on one.
+      await tester.pump(const Duration(seconds: 2));
+      // Studios stay wide logo cards in Modern too, with Moonbase's logo
+      // where it has one.
+      final pixar = card(tester, 'Pixar');
+      expect(pixar.externalIsFocused, isTrue);
+      expect(pixar.aspectRatio, closeTo(16 / 9, 0.001));
+      expect(pixar.imageUrl, 'https://logos.example/pixar.png');
+      expect(find.text('Comedy'), findsOneWidget);
+      expect(find.text('Road Trip'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('with Multi-Server on, Genres, Playlists and Studios rows load '
+        'from every server', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await prefs.set(UserPreferences.displayPlaylistsRows, true);
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await prefs.set(UserPreferences.enableMultiServerLibraries, true);
+      await homeRows([
+        HomeSectionType.playlists,
+        HomeSectionType.genres,
+        HomeSectionType.studios,
+      ]);
+      home(const []);
+      final repo = _MultiServer();
+      when(
+        () => repo.getAggregatedGenres(
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.genres));
+      when(
+        () => repo.getAggregatedPlaylists(
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.playlists));
+      when(
+        () => repo.getAggregatedStudios(
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          selectedIds: any(named: 'selectedIds'),
+          title: any(named: 'title'),
+        ),
+      ).thenAnswer((_) async => rowFor(HomeSectionType.studios));
+      GetIt.instance.registerSingleton<MultiServerRepository>(repo);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Sort Order',
+            prefKey: 'pref_playlists_row_sort_order',
+          ),
+        );
+      addTearDown(controller.dispose);
+      controller.tryValue(
+        'pref_playlists_row_sort_order',
+        SortDirection.descending,
+      );
+      PreviewRowSamples.debugSet(controller, PreviewRowSamples());
+      await show(tester, controller);
+      verify(
+        () => repo.getAggregatedGenres(
+          sortBy: LibrarySortBy.name.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+          includeItemTypes: ['Movie', 'Series'],
+        ),
+      ).called(1);
+      verify(
+        () => repo.getAggregatedPlaylists(
+          sortBy: LibrarySortBy.playlistOrder.apiValue,
+          sortOrder: SortDirection.descending.apiValue,
+        ),
+      ).called(1);
+      verify(
+        () => repo.getAggregatedStudios(
+          sortBy: LibrarySortBy.name.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+          selectedIds: '',
+          title: 'Studios',
+        ),
+      ).called(1);
+      expect(card(tester, 'Road Trip').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Genres and Playlists off in Home Rows name their group on '
+        'the Rows screen', (tester) async {
+      tv();
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.displayGenresRows,
+        true,
+      );
+      await homeRows([HomeSectionType.resume]);
+      home(const []);
+      final asked = <PreviewRowQuery>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Display Genres Rows',
+            prefKey: 'pref_display_genres_rows',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) async => rowFor(query.section), asked: asked);
+      await show(tester, controller);
+      expect(
+        find.text(
+          'The Genres row is turned off. To show it, go to Rows, open Genres '
+          'and Studios under Disabled, and turn it on.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Turn on a row in Rows, under Disabled'),
+        findsOneWidget,
+      );
+
+      // Rows only lists the Playlists row once its switch is on.
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Display Playlist Rows',
+          prefKey: 'pref_display_playlists_rows',
+        ),
+      );
+      await show(tester, controller);
+      expect(
+        find.text(
+          l10n.settingsPreviewPlaylistsOffInHomeRowsSwitchOff(
+            l10n.displayPlaylistsRows,
+            l10n.playlists,
+            l10n.disabled,
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          l10n.settingsPreviewNeedsSwitchAndRow(l10n.displayPlaylistsRows),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(MediaCard), findsNothing);
+      expect(asked, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Display Studio Row turns the row on in Rows itself, so only '
+        'a row turned off there needs explaining', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await homeRows([HomeSectionType.resume]);
+      home(const []);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Display Studio Row',
+            prefKey: 'pref_display_studios_rows',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) async => rowFor(query.section));
+      await show(tester, controller);
+      expect(find.byIcon(Icons.info_outline), findsNothing);
+      expect(
+        find.text(
+          l10n.settingsPreviewNeedsSwitchAndRow(l10n.displayStudiosRows),
+        ),
+        findsNothing,
+      );
+      expect(find.text('Shows on the Home preview'), findsOneWidget);
+
+      // On, with the row turned off again on the Rows screen.
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await show(tester, controller);
+      expect(
+        find.text(
+          'The Studios row is turned off. To show it, go to Rows, open Genres '
+          'and Studios under Disabled, and turn it on.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Turn on a row in Rows, under Disabled'),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('with nothing in the row Home stays as it is and says why', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await prefs.set(UserPreferences.displayPlaylistsRows, true);
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await homeRows([
+        HomeSectionType.genres,
+        HomeSectionType.playlists,
+        HomeSectionType.studios,
+      ]);
+      home(const []);
+      final controller = SettingsPreviewController();
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => rowFor(query.section).copyWith(items: const []),
+      );
+      for (final (key, reason) in [
+        (
+          'pref_genres_row_sort_by',
+          'There are no genres to show, so Home leaves this row out.',
+        ),
+        (
+          'pref_playlists_row_sort_by',
+          'There are no playlists to show, so Home leaves this row out.',
+        ),
+        (
+          'pref_studios_row_selected_ids',
+          'There are no studios to show, so Home leaves this row out.',
+        ),
+      ]) {
+        controller.focus(SettingsPreviewEntry(title: key, prefKey: key));
+        await show(tester, controller);
+        expect(find.text(reason), findsOneWidget);
+        expect(find.byType(MediaCard), findsNothing);
+      }
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Show Individual Episodes under Playlists says what it '
+        'changes', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayPlaylistsRows, true);
+      await homeRows([HomeSectionType.playlists]);
+      home(const []);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Show Individual Episodes',
+            prefKey: 'pref_playlists_row_show_episodes',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) async => rowFor(query.section));
+      await show(tester, controller);
+      expect(card(tester, 'Road Trip').externalIsFocused, isTrue);
+      expect(
+        find.text(
+          'This only changes rows for a single playlist added in Rows. The '
+          'Playlists row looks the same.',
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('with Kids Mode on, Display Studio Row says Kids Mode keeps '
+        'the row off Home', (tester) async {
+      tv();
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.kidsModeEnabled,
+        true,
+      );
+      await homeRows([HomeSectionType.resume]);
+      home(const []);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Display Studio Row',
+            prefKey: 'pref_display_studios_rows',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) async => rowFor(query.section));
+      await show(tester, controller);
+      expect(
+        find.text(
+          "Kids Mode keeps these rows off Home, so these settings don't "
+          'change it.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Kids Mode keeps this off Home'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a Genres row still loading doesn\'t hold up the Studios row', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await prefs.set(UserPreferences.studiosRowSelectedIds, 'Pixar,Ghibli');
+      await homeRows([HomeSectionType.genres, HomeSectionType.studios]);
+      home(const []);
+      final asked = <PreviewRowQuery>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Genres Row Sorting',
+            prefKey: 'pref_genres_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      // Genres never comes back.
+      serve(
+        controller,
+        (query) => query.section == HomeSectionType.genres
+            ? Completer<HomeRow>().future
+            : Future.value(rowFor(query.section)),
+        asked: asked,
+      );
+      await show(tester, controller);
+      // The Genres row is asked for first, as it's the one being edited.
+      expect(asked.first.section, HomeSectionType.genres);
+
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Studio Row Sorting',
+          prefKey: 'pref_studios_row_sort_by',
+        ),
+      );
+      await show(tester, controller);
+      await tester.pump(const Duration(seconds: 2));
+      expect(titled(tester, 'Pixar').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      // The Genres load times out after the preview is gone.
+      await tester.pump(const Duration(seconds: 9));
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the Studios row Home loaded stands in only for the studios '
+        'it was loaded with', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayStudiosRows, true);
+      await prefs.set(UserPreferences.studiosRowSelectedIds, 'Pixar');
+      await homeRows([HomeSectionType.studios]);
+      home([studiosRow(['Pixar'])]);
+      final asked = <PreviewRowQuery>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Select Studios to Include',
+            prefKey: 'pref_studios_row_selected_ids',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => studiosRow(['Ghibli']),
+        asked: asked,
+      );
+      await show(tester, controller);
+      expect(asked, isEmpty);
+      expect(titled(tester, 'Pixar').externalIsFocused, isTrue);
+
+      // A new selection saved from the picker, which tries nothing first.
+      await prefs.set(UserPreferences.studiosRowSelectedIds, 'Ghibli');
+      await show(tester, controller);
+      await tester.pump(const Duration(seconds: 2));
+      expect(asked.single.studioIds, 'Ghibli');
+      expect(titled(tester, 'Ghibli').externalIsFocused, isTrue);
       await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });

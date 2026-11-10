@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/settings/home_row_toggles_screen.dart';
+import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,5 +116,38 @@ void main() {
       RecentlyReleasedSeriesType.season,
     );
     verify(() => home.load(preserveExisting: false)).called(1);
+  });
+
+  // It isn't one of the preference tiles, which report themselves, so the
+  // live preview only knows it has focus because the screen says so.
+  testWidgets('Select Studios to Include tells the live preview it has focus', (
+    tester,
+  ) async {
+    await prefs.set(UserPreferences.displayStudiosRows, true);
+    final controller = SettingsPreviewController();
+    addTearDown(controller.dispose);
+    tester.view.physicalSize = const Size(1200, 8000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SettingsPreviewScope(
+          controller: controller,
+          child: const HomeRowTogglesScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(find.text('Select Studios to Include')));
+    await tester.pump();
+
+    expect(controller.focused?.prefKey, 'pref_studios_row_selected_ids');
+    expect(controller.scene, SettingsPreviewScene.home);
   });
 }

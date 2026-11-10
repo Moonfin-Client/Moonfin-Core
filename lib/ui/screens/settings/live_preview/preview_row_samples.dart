@@ -6,6 +6,7 @@ import 'package:server_core/server_core.dart' show MediaServerClient;
 
 import '../../../../data/models/home_row.dart';
 import '../../../../data/repositories/multi_server_repository.dart';
+import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/connectivity_service.dart';
 import '../../../../data/services/row_data_source.dart';
 import '../../../../l10n/current_app_localizations.dart';
@@ -23,12 +24,21 @@ class PreviewRowQuery {
   final bool multiServer;
   final String serverId;
 
+  /// What the Genres row counts a genre by. Null for every other row.
+  final GenresRowItemFilter? genresItems;
+
+  /// The studios the Studios row is kept to, as the setting stores them.
+  /// Empty for every studio, and for every other row.
+  final String studioIds;
+
   const PreviewRowQuery({
     required this.section,
     required this.sortBy,
     required this.sortOrder,
     required this.multiServer,
     required this.serverId,
+    this.genresItems,
+    this.studioIds = '',
   });
 
   @override
@@ -38,11 +48,20 @@ class PreviewRowQuery {
       other.sortBy == sortBy &&
       other.sortOrder == sortOrder &&
       other.multiServer == multiServer &&
-      other.serverId == serverId;
+      other.serverId == serverId &&
+      other.genresItems == genresItems &&
+      other.studioIds == studioIds;
 
   @override
-  int get hashCode =>
-      Object.hash(section, sortBy, sortOrder, multiServer, serverId);
+  int get hashCode => Object.hash(
+    section,
+    sortBy,
+    sortOrder,
+    multiServer,
+    serverId,
+    genresItems,
+    studioIds,
+  );
 }
 
 enum PreviewRowStatus { loading, ready, failed }
@@ -132,7 +151,8 @@ class PreviewRowSamples extends ChangeNotifier {
   /// [settle].
   void want(Set<PreviewRowQuery> rows) {
     if (_disposed) return;
-    if (setEquals(rows, _wanted)) return;
+    // The order counts too: rows load in the order they're asked for.
+    if (listEquals(rows.toList(), _wanted.toList())) return;
     _wanted = rows;
     // A row that failed gets one more try each time the request changes,
     // never on its own, so an unreachable server isn't asked in a loop.
@@ -171,9 +191,21 @@ class PreviewRowSamples extends ChangeNotifier {
     );
     for (final query in queue.toList()) {
       if (_inFlight.length >= _maxInFlight) break;
+      if (_isHeavy(query) &&
+          _inFlight.any((q) => _isHeavy(q) && q.section == query.section)) {
+        continue;
+      }
       unawaited(_fetch(query));
     }
   }
+
+  /// Rows that take many requests to load: Genres asks for artwork a genre
+  /// at a time, and Studios kept to a chosen few pages through every studio
+  /// to find them. One of each loads at a time, so a picker scrubbed through
+  /// them doesn't stack up loads that then time each other out.
+  static bool _isHeavy(PreviewRowQuery query) =>
+      query.section == HomeSectionType.genres ||
+      (query.section == HomeSectionType.studios && query.studioIds.isNotEmpty);
 
   Future<void> _fetch(PreviewRowQuery query) async {
     // Without the server there's nothing to ask, and Home's own check skips
@@ -261,6 +293,23 @@ class PreviewRowSamples extends ChangeNotifier {
           sortBy: sortBy,
           sortOrder: sortOrder,
         ),
+        HomeSectionType.genres => repo.getAggregatedGenres(
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          includeItemTypes: query.genresItems?.includeItemTypes,
+        ),
+        HomeSectionType.playlists => repo.getAggregatedPlaylists(
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+        ),
+        HomeSectionType.studios => _withStudioLogos(
+          () => repo.getAggregatedStudios(
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            selectedIds: query.studioIds,
+            title: currentAppLocalizations().studios,
+          ),
+        ),
         _ => throw UnsupportedError('${query.section}'),
       };
     }
@@ -287,8 +336,41 @@ class PreviewRowSamples extends ChangeNotifier {
         sortBy: sortBy,
         sortOrder: sortOrder,
       ),
+      HomeSectionType.genres => rows.loadGenres(
+        serverId,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        includeItemTypes: query.genresItems?.includeItemTypes,
+      ),
+      HomeSectionType.playlists => rows.loadPlaylists(
+        serverId,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+      ),
+      HomeSectionType.studios => _withStudioLogos(
+        () => rows.loadStudios(
+          serverId,
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          selectedIds: query.studioIds,
+          title: currentAppLocalizations().studios,
+        ),
+      ),
       _ => throw UnsupportedError('${query.section}'),
     };
+  }
+
+  /// The Studios row from [load] with Moonbase's logos on its studios, which
+  /// Home asks for alongside the row.
+  static Future<HomeRow> _withStudioLogos(
+    Future<HomeRow> Function() load,
+  ) async {
+    final logoUrls = GetIt.instance.isRegistered<TmdbRepository>()
+        ? GetIt.instance<TmdbRepository>().getStudioLogoUrls()
+        : null;
+    final row = await load();
+    if (logoUrls != null) attachStudioLogoUrls(row.items, await logoUrls);
+    return row;
   }
 
   /// A Favorites row, with the id, title and item types Home gives it.

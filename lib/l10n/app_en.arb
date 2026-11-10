@@ -16794,6 +16794,84 @@
       }
     }
   },
+  "settingsPreviewGenresOffInHomeRows": "The Genres row is turned off. To show it, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewGenresOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while a Genres Row Options setting has focus and the Genres section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Genres and Studios"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewGenresOffInHomeRowsSwitchOff": "To see the Genres row on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewGenresOffInHomeRowsSwitchOff": {
+    "description": "Notice over the dimmed Settings live preview while a Genres Row Options setting has focus, Display Genres Rows is off, and the Genres section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Genres row once the switch is on, so it gives the steps in that order",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Genres Rows"
+      },
+      "group": {
+        "type": "String",
+        "example": "Genres and Studios"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewPlaylistsOffInHomeRows": "The Playlists row is turned off. To show it, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewPlaylistsOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while a Playlists Row Options setting has focus and the Playlists section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Playlists"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewPlaylistsOffInHomeRowsSwitchOff": "To see the Playlists row on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewPlaylistsOffInHomeRowsSwitchOff": {
+    "description": "Notice over the dimmed Settings live preview while a Playlists Row Options setting has focus, Display Playlist Rows is off, and the Playlists section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Playlists row once the switch is on, so it gives the steps in that order",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Playlist Rows"
+      },
+      "group": {
+        "type": "String",
+        "example": "Playlists"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewStudiosOffInHomeRows": "The Studios row is turned off. To show it, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewStudiosOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while a Studios Row Options setting has focus and the Studios section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Genres and Studios"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
   "settingsPreviewRowsOffInKidsMode": "Kids Mode keeps these rows off Home, so these settings don't change it.",
   "@settingsPreviewRowsOffInKidsMode": {
     "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
@@ -16834,9 +16912,25 @@
   "@settingsPreviewFavoritesEmpty": {
     "description": "Note over the Settings live preview while a Favorites Row Options setting has focus and none of the Favorites rows turned on in Rows has anything to show, so Home shows no Favorites row"
   },
+  "settingsPreviewGenresEmpty": "There are no genres to show, so Home leaves this row out.",
+  "@settingsPreviewGenresEmpty": {
+    "description": "Note over the Settings live preview while a Genres Row Options setting has focus and no genre has anything of the kind Genres Row Items asks for, so Home shows no Genres row"
+  },
+  "settingsPreviewPlaylistsEmpty": "There are no playlists to show, so Home leaves this row out.",
+  "@settingsPreviewPlaylistsEmpty": {
+    "description": "Note over the Settings live preview while a Playlists Row Options setting has focus and there are no playlists to show, so Home shows no Playlists row"
+  },
+  "settingsPreviewStudiosEmpty": "There are no studios to show, so Home leaves this row out.",
+  "@settingsPreviewStudiosEmpty": {
+    "description": "Note over the Settings live preview while a Studios Row Options setting has focus and there are no studios to show, or none of the ones picked in Select Studios to Include, so Home shows no Studios row"
+  },
   "settingsPreviewShowEpisodesNote": "This only changes rows for a single collection added in Rows. The Collections row looks the same.",
   "@settingsPreviewShowEpisodesNote": {
     "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+  },
+  "settingsPreviewPlaylistEpisodesNote": "This only changes rows for a single playlist added in Rows. The Playlists row looks the same.",
+  "@settingsPreviewPlaylistEpisodesNote": {
+    "description": "Note over the Settings live preview while the Show Individual Episodes setting under Playlists in Row Options has focus, explaining that it doesn't change the Playlists row the preview shows"
   },
   "settingsPreviewSaved": "Saved",
   "@settingsPreviewSaved": {

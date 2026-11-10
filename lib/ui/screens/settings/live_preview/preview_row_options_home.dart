@@ -46,7 +46,10 @@ enum RowOptionsGroup {
     HomeSectionType.favoriteMusicVideos,
     HomeSectionType.favoriteAlbums,
     HomeSectionType.favoriteSongs,
-  });
+  }),
+  genres({HomeSectionType.genres}),
+  playlists({HomeSectionType.playlists}),
+  studios({HomeSectionType.studios});
 
   const RowOptionsGroup(this.sections);
 
@@ -57,18 +60,31 @@ enum RowOptionsGroup {
     audio => UserPreferences.displayAudioRows,
     collections => UserPreferences.displayCollectionsRows,
     favorites => UserPreferences.displayFavoritesRows,
+    genres => UserPreferences.displayGenresRows,
+    playlists => UserPreferences.displayPlaylistsRows,
+    studios => UserPreferences.displayStudiosRows,
   };
+
+  /// Whether the Display switch also turns the group's row on and off in
+  /// Rows, so with the switch off there's nothing to go and turn on there.
+  bool get switchSetsRow => this == studios;
 
   Preference<LibrarySortBy> get sortBy => switch (this) {
     audio => UserPreferences.audioRowsSortBy,
     collections => UserPreferences.collectionsRowSortBy,
     favorites => UserPreferences.favoritesRowSortBy,
+    genres => UserPreferences.genresRowSortBy,
+    playlists => UserPreferences.playlistsRowSortBy,
+    studios => UserPreferences.studiosRowSortBy,
   };
 
   Preference<SortDirection> get sortOrder => switch (this) {
     audio => UserPreferences.audioRowsSortOrder,
     collections => UserPreferences.collectionsRowSortOrder,
     favorites => UserPreferences.favoritesRowSortOrder,
+    genres => UserPreferences.genresRowSortOrder,
+    playlists => UserPreferences.playlistsRowSortOrder,
+    studios => UserPreferences.studiosRowSortOrder,
   };
 
   /// The group a Row Options setting belongs to, or null for any other key.
@@ -83,8 +99,41 @@ enum RowOptionsGroup {
     'pref_display_favorites_rows' ||
     'pref_favorites_row_sort_by' ||
     'pref_favorites_row_sort_order' => favorites,
+    'pref_display_genres_rows' ||
+    'pref_genres_row_sort_by' ||
+    'pref_genres_row_sort_order' ||
+    'pref_genres_row_item_filter' => genres,
+    'pref_display_playlists_rows' ||
+    'pref_playlists_row_sort_by' ||
+    'pref_playlists_row_sort_order' ||
+    'pref_playlists_row_show_episodes' => playlists,
+    'pref_display_studios_rows' ||
+    'pref_studios_row_selected_ids' ||
+    'pref_studios_row_sort_by' ||
+    'pref_studios_row_sort_order' => studios,
     _ => null,
   };
+
+  /// The group's row for [section] as [read] has its settings, which is the
+  /// saved values or the ones being looked at.
+  PreviewRowQuery query(
+    HomeSectionType section,
+    T Function<T>(Preference<T> preference) read, {
+    required bool multiServer,
+    required String serverId,
+  }) => PreviewRowQuery(
+    section: section,
+    sortBy: read(sortBy),
+    sortOrder: read(sortOrder),
+    multiServer: multiServer,
+    serverId: serverId,
+    genresItems: this == genres
+        ? read(UserPreferences.genresRowItemFilter)
+        : null,
+    studioIds: this == studios
+        ? read(UserPreferences.studiosRowSelectedIds)
+        : '',
+  );
 
   static RowOptionsGroup? forSection(HomeSectionType type) =>
       values.firstWhereOrNull((group) => group.sections.contains(type));
@@ -101,22 +150,15 @@ class _HomeSnapshot {
   final String layout;
   final List<HomeRow> rows;
 
-  /// The sort each group's rows were loaded with, so only a request for that
-  /// same sort is filled from [rows].
-  final Map<RowOptionsGroup, (LibrarySortBy, SortDirection)> sorts;
-  final bool multiServer;
+  /// What Home loaded each Row Options row with, so only a request for the
+  /// same sort, item types and studios is filled from [rows].
+  final Map<HomeSectionType, PreviewRowQuery> loadedWith;
 
   /// Whether Home had finished loading, so [rows] can stand in for it. A
   /// snapshot taken mid-load fills nothing.
   final bool complete;
 
-  _HomeSnapshot._(
-    this.layout,
-    this.rows,
-    this.sorts,
-    this.multiServer,
-    this.complete,
-  );
+  _HomeSnapshot._(this.layout, this.rows, this.loadedWith, this.complete);
 
   static final _byController = Expando<_HomeSnapshot>();
 
@@ -146,16 +188,18 @@ class _HomeSnapshot {
     // Home counts as loaded once its own load is done, whatever they show.
     final complete =
         viewModel != null && !viewModel.isLoading && loaded.isNotEmpty;
-    final snapshot = _HomeSnapshot._(
-      layout,
-      loaded,
-      {
-        for (final group in RowOptionsGroup.values)
-          group: (prefs.get(group.sortBy), prefs.get(group.sortOrder)),
-      },
-      prefs.get(UserPreferences.enableMultiServerLibraries),
-      complete,
-    );
+    final multiServer = prefs.get(UserPreferences.enableMultiServerLibraries);
+    final serverId = PreviewRowSamples.activeServerId;
+    final snapshot = _HomeSnapshot._(layout, loaded, {
+      for (final group in RowOptionsGroup.values)
+        for (final section in group.sections)
+          section: group.query(
+            section,
+            prefs.get,
+            multiServer: multiServer,
+            serverId: serverId,
+          ),
+    }, complete);
     // Home part way through loading is no picture of Home, so the next
     // build looks again.
     if (complete) _byController[controller] = snapshot;
@@ -382,13 +426,22 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
     final groupConfigs = configs
         .where((c) => c.isBuiltin && group.sections.contains(c.type))
         .toList();
+    final focusedKey = widget.focusedKey;
     final showEpisodes =
-        widget.focusedKey == UserPreferences.collectionsRowShowEpisodes.key
+        focusedKey == UserPreferences.collectionsRowShowEpisodes.key
         ? l10n.settingsPreviewShowEpisodesNote
+        : focusedKey == UserPreferences.playlistsRowShowEpisodes.key
+        ? l10n.settingsPreviewPlaylistEpisodesNote
         : null;
 
     if (groupConfigs.isEmpty) {
       final on = previewValue(context, group.display);
+      final reason = _offReason(prefs, group);
+      // Turning the switch on is all this row needs, so there's nothing to
+      // explain while it's off.
+      if (!on && group.switchSetsRow && reason == _OffReason.rows) {
+        return _Plan.home(group: group);
+      }
       final setting = _displaySwitchName(l10n, group);
       // The Rows screen lists turned-off rows in groups under Disabled, and
       // only lists these once the Display switch is on, so the notice gives
@@ -397,11 +450,14 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
         RowOptionsGroup.audio => l10n.general,
         RowOptionsGroup.collections => l10n.collections,
         RowOptionsGroup.favorites => l10n.favorites,
+        RowOptionsGroup.genres ||
+        RowOptionsGroup.studios => l10n.homeRowsGenresAndStudios,
+        RowOptionsGroup.playlists => l10n.playlists,
       };
       return _Plan.home(
         group: group,
         blocked: true,
-        caption: switch ((_offReason(prefs, group), group, on)) {
+        caption: switch ((reason, group, on)) {
           (_OffReason.kidsMode, _, _) => l10n.settingsPreviewRowsOffInKidsMode,
           (_, RowOptionsGroup.audio, true) =>
             l10n.settingsPreviewAudioRowsOffInHomeRows(
@@ -436,6 +492,27 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
               rowsGroup,
               l10n.disabled,
             ),
+          (_, RowOptionsGroup.genres, true) =>
+            l10n.settingsPreviewGenresOffInHomeRows(rowsGroup, l10n.disabled),
+          (_, RowOptionsGroup.genres, false) =>
+            l10n.settingsPreviewGenresOffInHomeRowsSwitchOff(
+              setting,
+              rowsGroup,
+              l10n.disabled,
+            ),
+          (_, RowOptionsGroup.playlists, true) =>
+            l10n.settingsPreviewPlaylistsOffInHomeRows(
+              rowsGroup,
+              l10n.disabled,
+            ),
+          (_, RowOptionsGroup.playlists, false) =>
+            l10n.settingsPreviewPlaylistsOffInHomeRowsSwitchOff(
+              setting,
+              rowsGroup,
+              l10n.disabled,
+            ),
+          (_, RowOptionsGroup.studios, _) =>
+            l10n.settingsPreviewStudiosOffInHomeRows(rowsGroup, l10n.disabled),
         },
       );
     }
@@ -455,18 +532,15 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
           ? RowOptionsGroup.forSection(config.type)
           : null;
       if (owner == null || !previewValue(context, owner.display)) continue;
-      final query = PreviewRowQuery(
-        section: config.type,
-        sortBy: previewValue(context, owner.sortBy),
-        sortOrder: previewValue(context, owner.sortOrder),
+      final query = owner.query(
+        config.type,
+        <T>(preference) => previewValue(context, preference),
         multiServer: multiServer,
         serverId: serverId,
       );
       queries[config.type] = query;
-      // Home's rows are only good for the sort Home loaded them with.
-      if (snapshot.complete &&
-          (query.sortBy, query.sortOrder) == snapshot.sorts[owner] &&
-          multiServer == snapshot.multiServer) {
+      // Home's rows are only good for the settings Home loaded them with.
+      if (snapshot.complete && query == snapshot.loadedWith[config.type]) {
         final loaded = snapshot.rows.firstWhereOrNull(
           (row) =>
               HomeViewModel.sectionConfigForRow(row, configs)?.type ==
@@ -475,7 +549,15 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
         if (loaded != null) samples.seed(query, loaded);
       }
     }
-    samples.want(_asked = queries.values.toSet());
+    // The group being edited loads first, so the rows of another group
+    // don't hold up the one on screen.
+    samples.want(
+      _asked = {
+        for (final query in queries.values)
+          if (group.sections.contains(query.section)) query,
+        ...queries.values,
+      },
+    );
 
     final rows = <HomeRow>[];
     var focusedAt = -1;
@@ -527,6 +609,9 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
                 RowOptionsGroup.collections =>
                   l10n.settingsPreviewCollectionsEmpty,
                 RowOptionsGroup.favorites => l10n.settingsPreviewFavoritesEmpty,
+                RowOptionsGroup.genres => l10n.settingsPreviewGenresEmpty,
+                RowOptionsGroup.playlists => l10n.settingsPreviewPlaylistsEmpty,
+                RowOptionsGroup.studios => l10n.settingsPreviewStudiosEmpty,
               },
       );
     }
@@ -551,7 +636,12 @@ _OffReason? _offReason(UserPreferences prefs, RowOptionsGroup group) {
   bool inGroup(HomeSectionConfig c) =>
       c.isBuiltin && group.sections.contains(c.type);
   if (prefs.activeHomeSectionConfigs.any(inGroup)) return null;
-  return prefs.homeSectionsConfig.any((c) => c.enabled && inGroup(c))
+  if (prefs.homeSectionsConfig.any((c) => c.enabled && inGroup(c))) {
+    return _OffReason.kidsMode;
+  }
+  // The Studios switch turns its row on in Rows by itself, so with the switch
+  // off its row is off there too, and Kids Mode would still keep it off Home.
+  return group.switchSetsRow && prefs.get(UserPreferences.kidsModeEnabled)
       ? _OffReason.kidsMode
       : _OffReason.rows;
 }
@@ -561,6 +651,9 @@ String _displaySwitchName(AppLocalizations l10n, RowOptionsGroup group) =>
       RowOptionsGroup.audio => l10n.displayAudioRows,
       RowOptionsGroup.collections => l10n.displayCollectionsRows,
       RowOptionsGroup.favorites => l10n.displayFavoritesRows,
+      RowOptionsGroup.genres => l10n.displayGenresRows,
+      RowOptionsGroup.playlists => l10n.displayPlaylistsRows,
+      RowOptionsGroup.studios => l10n.displayStudiosRows,
     };
 
 /// For the inspector: why the Row Options setting [key] can't change Home
@@ -575,11 +668,27 @@ String? rowOptionsBlockedReason(BuildContext context, String? key) {
   final l10n = AppLocalizations.of(context);
   return switch (_offReason(GetIt.instance<UserPreferences>(), group)) {
     _OffReason.rows when !previewValue(context, group.display) =>
-      l10n.settingsPreviewNeedsSwitchAndRow(_displaySwitchName(l10n, group)),
+      group.switchSetsRow
+          ? null
+          : l10n.settingsPreviewNeedsSwitchAndRow(
+              _displaySwitchName(l10n, group),
+            ),
     _OffReason.rows => l10n.settingsPreviewNeedsRowInRows(l10n.disabled),
     _OffReason.kidsMode => l10n.settingsPreviewKeptOffByKidsMode,
     null => null,
   };
+}
+
+/// Home's own Genres row, not a plugin row for one genre.
+bool _isHomeGenresRow(HomeRow row) =>
+    row.rowType == HomeRowType.genres && row.id == 'genres';
+
+/// Whether Home prints [item]'s name across its card in [row]: a genre in
+/// the Genres row, unless it has portrait artwork of its own.
+bool _isGenreFallback(HomeRow row, AggregatedItem item) {
+  if (!_isHomeGenresRow(row)) return false;
+  final primaryAspect = item.rawData['PrimaryImageAspectRatio'] as num?;
+  return primaryAspect == null || primaryAspect >= 1.0;
 }
 
 Duration _fade(BuildContext context) => MediaQuery.disableAnimationsOf(context)
@@ -680,7 +789,7 @@ class _Notice extends StatelessWidget {
               Text(
                 text,
                 textAlign: TextAlign.center,
-                maxLines: narrow ? 9 : 5,
+                maxLines: narrow ? 11 : 5,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: narrow ? 10.5 : 13,
@@ -1197,7 +1306,12 @@ class _Row extends StatelessWidget {
           padding: EdgeInsetsDirectional.only(end: spacing),
           child: focused
               ? _focusedRowCard(context, item, image, isFocused, x, rightEdge)
-              : _LightCard(item: item, image: image, classicLabel: !modern),
+              : _LightCard(
+                  item: item,
+                  image: image,
+                  classicLabel: !modern,
+                  genreLabel: _isGenreFallback(row, item),
+                ),
         ),
       );
       x += image.width + spacing;
@@ -1304,7 +1418,10 @@ class _Row extends StatelessWidget {
           : item.playedPercentage,
       watchedBehavior: prefs.get(UserPreferences.watchedIndicatorBehavior),
       itemType: item.type,
-      focusColor: Color(prefs.get(UserPreferences.focusColor).colorValue),
+      isGenreFallback: _isGenreFallback(row, item),
+      focusColor: _isHomeGenresRow(row)
+          ? ThemeRegistry.active.borders.focusBorder.color
+          : Color(prefs.get(UserPreferences.focusColor).colorValue),
       cardFocusExpansion: modern ? false : frame.cardExpansion,
       externalIsFocused: isFocused,
       suppressFocusGlow: ThemeRegistry.active.borders.focusGlow.isNotEmpty,
@@ -1340,10 +1457,15 @@ class _LightCard extends StatelessWidget {
   final HomeRowCardImage image;
   final bool classicLabel;
 
+  /// Whether the item's name goes across its artwork, as on a real genre
+  /// card.
+  final bool genreLabel;
+
   const _LightCard({
     required this.item,
     required this.image,
     required this.classicLabel,
+    this.genreLabel = false,
   });
 
   @override
@@ -1369,6 +1491,7 @@ class _LightCard extends StatelessWidget {
     final url = image.url;
     final height = image.width / image.aspectRatio;
     final contain = item.type == 'Studio' || item.type == 'Network';
+    final genreFontSize = MediaCard.genreLabelFontSize(image.width);
     return SizedBox(
       width: image.width,
       child: Column(
@@ -1384,11 +1507,45 @@ class _LightCard extends StatelessWidget {
                   ? ColoredBox(
                       color: AppColorScheme.onSurface.withValues(alpha: 0.1),
                     )
-                  : BoundedNetworkImage(
-                      imageUrl: url,
-                      fit: contain ? BoxFit.contain : BoxFit.cover,
-                      fadeInDuration: Duration.zero,
-                      maxWidth: MediaCard.decodeMaxWidthFor(image.aspectRatio),
+                  : Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        BoundedNetworkImage(
+                          imageUrl: url,
+                          fit: contain ? BoxFit.contain : BoxFit.cover,
+                          fadeInDuration: Duration.zero,
+                          maxWidth: MediaCard.decodeMaxWidthFor(
+                            image.aspectRatio,
+                          ),
+                        ),
+                        if (genreLabel) ...[
+                          const ColoredBox(color: Color(0x73000000)),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  item.name.toUpperCase(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: genreFontSize,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing:
+                                        MediaCard.genreLabelLetterSpacing(
+                                          genreFontSize,
+                                        ),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.9),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
             ),
           ),
