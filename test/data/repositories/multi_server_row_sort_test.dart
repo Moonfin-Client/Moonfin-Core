@@ -290,4 +290,57 @@ void main() {
       'Party',
     ]);
   });
+
+  test('loading more keeps the playlists the first row left out', () async {
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.set(
+      UserPreferences.playlistsRowSortBy,
+      LibrarySortBy.dateAdded,
+    );
+    await prefs.set(
+      UserPreferences.playlistsRowSortOrder,
+      SortDirection.descending,
+    );
+    String day(int n) => '2025-01-${n.toString().padLeft(2, '0')}';
+    // Server a has the odd days and server b the even ones, so the newest 15
+    // of their 30 interleave and each server loses some of its first page.
+    stubItems('a', 'Playlist', [
+      for (var i = 0; i < 15; i++) ('a${2 * i + 1}', day(2 * i + 1)),
+    ], total: 16);
+    stubItems('b', 'Playlist', [
+      for (var i = 0; i < 15; i++) ('b${2 * i + 2}', day(2 * i + 2)),
+    ], total: 16);
+    final firstPage = await multiServer.getAggregatedPlaylists(
+      sortBy: 'DateCreated,SortName',
+      sortOrder: 'Descending',
+    );
+    expect(firstPage.items, hasLength(15));
+
+    stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
+    stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
+    final (items, _) = await multiServer.loadMore(row: firstPage);
+
+    for (final id in ['a', 'b']) {
+      final startIndexes = verify(
+        () => itemsApis[id]!.getItems(
+          includeItemTypes: any(named: 'includeItemTypes'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          recursive: any(named: 'recursive'),
+          startIndex: captureAny(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          isFavorite: any(named: 'isFavorite'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).captured;
+      expect(startIndexes, [null, 15], reason: 'server $id');
+    }
+    expect(items.map((item) => item.name), [
+      for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
+      'b-old',
+      'a-old',
+    ]);
+  });
 }

@@ -71,10 +71,14 @@ class MultiServerRepository {
   DateTime _cacheExpiry = DateTime(0);
   final Map<String, int> _rowOffsets = {};
   final Map<String, int> _rowTotals = {};
+  // Playlists a server returned on the first page that didn't make the cut
+  // for the merged row. Loading more adds them back.
+  final Map<String, List<AggregatedItem>> _rowHeldBack = {};
 
   void clearOffsets() {
     _rowOffsets.clear();
     _rowTotals.clear();
+    _rowHeldBack.clear();
   }
 
   MultiServerRepository(
@@ -367,6 +371,24 @@ class MultiServerRepository {
     }
 
     final takenItems = all.take(limit).toList();
+    // The merged row keeps only [limit] of all the servers' first pages, so
+    // hold the rest back for loading more, which starts past those pages.
+    final taken = {
+      for (final item in takenItems) '${item.serverId}_${item.id}',
+    };
+    for (var i = 0; i < sessions.length; i++) {
+      final cacheKey = '${cacheKeyPrefix}_${sessions[i].server.id}';
+      final heldBack = results[i]
+          .where((item) => !taken.contains('${item.serverId}_${item.id}'))
+          .toList();
+      if (heldBack.isEmpty) {
+        _rowHeldBack.remove(cacheKey);
+        _rowOffsets.remove(cacheKey);
+      } else {
+        _rowHeldBack[cacheKey] = heldBack;
+        _rowOffsets[cacheKey] = limit;
+      }
+    }
     final totalCount = sessions.fold<int>(0, (sum, session) {
       return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
     });
@@ -677,7 +699,7 @@ class MultiServerRepository {
               );
               _rowTotals[cacheKey] =
                   response['TotalRecordCount'] as int? ?? items.length;
-              return items;
+              return [...?_rowHeldBack.remove(cacheKey), ...items];
             case HomeRowType.audioPlaylists:
               final pageCount = (startIndex / _defaultLimit).ceil();
               final targetStartIndex = pageCount * _defaultLimit;
@@ -707,7 +729,7 @@ class MultiServerRepository {
               );
               _rowTotals[cacheKey] =
                   response['TotalRecordCount'] as int? ?? items.length;
-              return items;
+              return [...?_rowHeldBack.remove(cacheKey), ...items];
             case HomeRowType.audioArtists:
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
               final sortBy =
