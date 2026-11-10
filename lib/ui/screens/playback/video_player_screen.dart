@@ -306,6 +306,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
   Duration? _lastScrubCommitTarget;
+  // Target of the last skip made from a scrub target, kept until the player
+  // reports it, so a quick second skip builds on it.
+  Duration? _lastSkipTarget;
   int _scrubSeekCommitId = 0;
   bool _wasPlayingBeforeScrubPause = false;
   // True for a paused scrub session's whole lifetime; unlike
@@ -499,17 +502,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (_pendingScrubSeekTarget == null && !_isPausedScrubActive) {
         // A released scrub can still be converging, with _state.position
         // reading pre-seek: skip from where it is headed.
-        final base = _isSeeking ? _lastScrubCommitTarget : null;
+        final skipTarget = _lastSkipTarget;
+        final skipPending =
+            skipTarget != null &&
+            _lastSeekTime != null &&
+            DateTime.now().difference(_lastSeekTime!) <
+                const Duration(seconds: 3) &&
+            (_state.position - skipTarget).abs() > const Duration(seconds: 1);
+        final base = _isSeeking
+            ? _lastScrubCommitTarget
+            : (skipPending ? skipTarget : null);
         if (base != null) {
           _noteViewerActivity();
           _suppressSeekPrompts();
           final target = base + Duration(milliseconds: ms);
           final max = _state.duration;
-          _seekDirect(
-            target < Duration.zero ? Duration.zero : (target > max ? max : target),
-          );
+          final clamped =
+              target < Duration.zero ? Duration.zero : (target > max ? max : target);
+          _seekDirect(clamped);
+          _lastSkipTarget = clamped;
           _lastSeekTime = DateTime.now();
         } else {
+          _lastSkipTarget = null;
           _seekRelative(ms, showControls: false);
         }
       } else {

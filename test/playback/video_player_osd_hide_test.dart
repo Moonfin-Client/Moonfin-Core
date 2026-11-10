@@ -1339,6 +1339,14 @@ void main() {
       expect(manager.seeks, hasLength(2));
       expect(manager.seeks.last, committed + const Duration(seconds: 30));
       expect(manager.transport, isEmpty, reason: 'a tap never pauses');
+
+      // A second tap before the player reports the first must build on it.
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, hasLength(3));
+      expect(manager.seeks.last, committed + const Duration(seconds: 60));
       await tester.pump(const Duration(seconds: 3));
       await tester.pumpWidget(const SizedBox());
     }, variant: android);
