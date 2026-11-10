@@ -68,6 +68,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_server_messages_button': SettingsPreviewScene.home,
     'navbarColor': SettingsPreviewScene.home,
     'navbarOpacity': SettingsPreviewScene.home,
+    'focus_color': SettingsPreviewScene.home,
     'pref_home_rows_style': SettingsPreviewScene.home,
     'pref_home_rows_fullscreen': SettingsPreviewScene.home,
     'poster_size': SettingsPreviewScene.home,

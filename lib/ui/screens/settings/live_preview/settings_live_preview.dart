@@ -355,6 +355,7 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
                 )
               : settingsHomePreview(),
         ),
+        'focus_color' => settingsHomePreview(focusCard: true),
         _ => settingsHomePreview(),
       },
       SettingsPreviewScene.details => Builder(

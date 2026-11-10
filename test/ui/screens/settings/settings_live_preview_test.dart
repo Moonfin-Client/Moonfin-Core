@@ -1012,6 +1012,45 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('a tried focus color rings the focused card', (tester) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(title: 'Focus', prefKey: 'focus_color'),
+        )
+        ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+        ..tryValue('focus_color', AppTheme.purple);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.home);
+
+      bool rings(Widget widget) {
+        final decoration = widget is DecoratedBox ? widget.decoration : null;
+        return decoration is BoxDecoration &&
+            decoration.border?.top.color == Color(AppTheme.purple.colorValue);
+      }
+
+      expect(find.byWidgetPredicate(rings), findsOneWidget);
+
+      // Classic rows hold their first card in focus for Focus Color too.
+      controller.tryValue('pref_home_rows_style', HomeRowsStyle.v1);
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsOneWidget);
+
+      controller.clearTry('focus_color');
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsNothing);
+
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Clock',
+          prefKey: 'pref_clock_behavior',
+        ),
+      );
+      controller.tryValue('focus_color', AppTheme.purple);
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('each surface draws its own rating settings', (tester) async {
       final controller = SettingsPreviewController()
         ..focus(

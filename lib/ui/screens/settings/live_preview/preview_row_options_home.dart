@@ -1274,7 +1274,9 @@ class _Row extends StatelessWidget {
           : item.playedPercentage,
       watchedBehavior: prefs.get(UserPreferences.watchedIndicatorBehavior),
       itemType: item.type,
-      focusColor: Color(prefs.get(UserPreferences.focusColor).colorValue),
+      focusColor: Color(
+        previewValue(context, UserPreferences.focusColor).colorValue,
+      ),
       cardFocusExpansion: modern ? false : frame.cardExpansion,
       externalIsFocused: isFocused,
       suppressFocusGlow: ThemeRegistry.active.borders.focusGlow.isNotEmpty,
