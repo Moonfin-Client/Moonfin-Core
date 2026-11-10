@@ -600,6 +600,18 @@ class ItemDetailViewModel extends ChangeNotifier {
   SeerrMediaDetailViewModel? _seerr;
   SeerrMediaDetailViewModel? get seerr => _seerr;
 
+  /// Longest the action row waits on its late inputs. Long enough for the
+  /// server's own lookups, short enough that the row still feels instant. A
+  /// slower Seerr answer adds its buttons when it lands.
+  static const actionsWaitCap = Duration(milliseconds: 250);
+
+  /// Whether everything that adds, removes or relabels an action button has
+  /// come back (or [actionsWaitCap] ran out), so the row can show complete
+  /// rather than gaining a button a moment later. Stays true for reloads of
+  /// the same item, so switching version doesn't hide the row again.
+  bool _actionsSettled = false;
+  bool get actionsSettled => _actionsSettled;
+
   /// Whether this screen stands in for a title that is not in the library, in
   /// which case there is nothing to play, mark watched or download.
   bool _isSeerrOnly = false;
@@ -866,6 +878,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _seasons = _seerrSeasons(state);
     _seasonsLoaded = true;
     _state = ItemDetailState.ready;
+    _actionsSettled = true;
     notifyListeners();
 
     // Everything else in _loadSecondary needs a library id, but ratings and
@@ -1160,49 +1173,58 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadSecondary() async {
     final type = _item?.type;
     final futures = <Future>[];
-    unawaited(_loadProbedMediaSources());
+    // The loads that change which action buttons show or what they say. Only
+    // quick ones belong here: parent collections stay out, since finding them
+    // can mean scanning every collection in the library.
+    final actionInputs = <Future>[];
+    Future<void> forActions(Future<void> load) {
+      actionInputs.add(load);
+      return load;
+    }
+
+    unawaited(forActions(_loadProbedMediaSources()));
     // Deliberately outside the Future.wait below, so a slow Seerr server never
     // holds up library content that is already here.
-    unawaited(_loadSeerrOverlay());
+    unawaited(forActions(_loadSeerrOverlay()));
     if (type == 'Person') {
       futures.add(_loadFilmography());
-      futures.add(_loadPersonAccounts());
+      futures.add(forActions(_loadPersonAccounts()));
     } else if (type == 'Series') {
       unawaited(_loadReviews());
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
-      futures.add(_loadSeasons());
-      futures.add(_loadNextUp());
+      futures.add(forActions(_loadSeasons()));
+      futures.add(forActions(_loadNextUp()));
       futures.add(_loadSimilar());
-      futures.add(_loadFeatures());
+      futures.add(forActions(_loadFeatures()));
       futures.add(_loadParentCollection());
       unawaited(_loadUpcomingEpisode());
     } else if (type == 'Season') {
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
-      futures.add(_loadEpisodes());
+      futures.add(forActions(_loadEpisodes()));
       futures.add(_loadSeasonCast());
-      futures.add(_loadFeatures());
+      futures.add(forActions(_loadFeatures()));
     } else if (type == 'Episode') {
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
       futures.add(_loadParentCast());
       futures.add(_loadSimilar());
-      futures.add(_loadFeatures());
+      futures.add(forActions(_loadFeatures()));
     } else if (type == 'MusicArtist') {
-      futures.add(_loadAlbums());
-      futures.add(_loadTracks(artistId: itemId));
+      futures.add(forActions(_loadAlbums()));
+      futures.add(forActions(_loadTracks(artistId: itemId)));
       futures.add(_loadSimilar());
     } else if (type == 'MusicAlbum' || type == 'Playlist') {
-      futures.add(_loadTracks());
+      futures.add(forActions(_loadTracks()));
     } else if (type == 'AudioBook') {
       futures.add(_loadRatings());
       futures.add(_loadSimilar());
     } else if (type == 'Audio') {
       futures.add(_loadLyrics());
     } else if (type == 'BoxSet') {
-      futures.add(_loadCollectionItems());
+      futures.add(forActions(_loadCollectionItems()));
       // Deliberately not awaited, so a slow Seerr server never holds the
       // collection's own members back.
       unawaited(_loadBoxSetSeerrItems());
@@ -1213,7 +1235,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         type == 'Video') {
       futures.add(_loadRatings());
       futures.add(_loadSimilar());
-      futures.add(_loadFeatures());
+      futures.add(forActions(_loadFeatures()));
       if (type != 'MusicVideo') {
         futures.add(_loadParentCollection());
       }
@@ -1222,7 +1244,23 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadRatings());
       futures.add(_loadSimilar());
     }
+    unawaited(_settleActions(actionInputs));
     await Future.wait(futures);
+  }
+
+  Future<void> _settleActions(List<Future> inputs) async {
+    if (!_actionsSettled) {
+      // Each input swallows its own error: Future.wait gives up on the first
+      // one, which would show the row before the slower inputs are back.
+      try {
+        await Future.wait(
+          inputs.map((f) => f.catchError((_) {})),
+        ).timeout(actionsWaitCap);
+      } catch (_) {}
+    }
+    if (_isDisposed || _actionsSettled) return;
+    _actionsSettled = true;
+    notifyListeners();
   }
 
   Future<void> _loadSeasons() async {

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../preference/user_preferences.dart';
 import 'log_service.dart';
 import 'media_server_client_factory.dart';
+import 'moonbase_client_log_api.dart';
 
 /// Holds crash reports captured by the global error handlers until a server
 /// that accepts them is available, then uploads and removes them.
@@ -77,8 +78,8 @@ class CrashReportService {
 
   /// Uploads every pending report to the active server, removing each one
   /// only after its upload succeeds. Quietly does nothing when uploads are
-  /// disabled, no server is signed in, or the server has no client log
-  /// endpoint, which is the Emby case.
+  /// disabled, no server is signed in, or the server has nowhere to take
+  /// them, which is the case on Emby, Plex and Silo without Moonbase.
   Future<void> flushPending() async {
     if (!_uploadEnabled || _flushing) return;
     _flushing = true;
@@ -88,7 +89,7 @@ class CrashReportService {
 
       final ClientLogApi? api;
       try {
-        api = _clientFactory.getActiveClient().clientLogApi;
+        api = clientLogApiOf(_clientFactory.getActiveClient());
       } on StateError {
         return;
       }
@@ -109,8 +110,8 @@ class CrashReportService {
     }
   }
 
-  /// An Emby server without the Moonfin plugin has nothing to post to, so the
-  /// reports wait for a server that does rather than spending a 404 per launch.
+  /// Only Jellyfin takes reports without Moonbase, so elsewhere they wait for a
+  /// server that has it rather than spending a 404 per launch.
   bool _serverAcceptsReports() {
     if (!GetIt.instance.isRegistered<LogService>()) return true;
     return GetIt.instance<LogService>().canUploadToServer;

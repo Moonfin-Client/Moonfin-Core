@@ -147,6 +147,7 @@ void main() {
       vm = _ViewModel();
       when(() => vm.item).thenReturn(_person());
       when(() => vm.supportsPersonFavorites).thenReturn(true);
+      when(() => vm.actionsSettled).thenReturn(true);
       when(() => vm.personAccounts).thenReturn(_jackBlack);
     });
 

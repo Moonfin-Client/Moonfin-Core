@@ -33,6 +33,7 @@ import 'data/services/topshelf_service.dart';
 import 'data/services/watch_next_service.dart';
 import 'di/providers.dart';
 import 'l10n/app_localizations.dart';
+import 'l10n/current_app_localizations.dart';
 import 'preference/preference_constants.dart' show GlassSettledQuality;
 import 'preference/user_preferences.dart';
 import 'syncplay/syncplay_manager.dart';
@@ -252,21 +253,8 @@ class _MoonfinAppState extends State<MoonfinApp> {
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: _lastResolvedLocale,
-              localeResolutionCallback: (locale, supportedLocales) {
-                // Prefer exact match (language + country/script)
-                for (final supported in supportedLocales) {
-                  if (supported == locale) {
-                    return supported;
-                  }
-                }
-                // Fall back to language-only match
-                for (final supported in supportedLocales) {
-                  if (supported.languageCode == locale?.languageCode) {
-                    return supported;
-                  }
-                }
-                return const Locale('en');
-              },
+              localeResolutionCallback: (locale, _) =>
+                  resolveAppUiLocale(locale),
               builder: (context, child) {
                 final l10n = AppLocalizations.of(context);
                 CustomKeyboard.strings = KeyboardStrings(
