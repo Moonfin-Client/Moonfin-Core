@@ -224,7 +224,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         _syncCinemaSkip();
       });
       _positionSub = manager.state.positionStream.listen((position) {
-        if (!_isCinemaPreroll || !_cinemaSkip.enabled) {
+        if (!_exiting && (!_isCinemaPreroll || !_cinemaSkip.enabled)) {
           _prompts?.onPositionTick(position, manager.state.duration);
         }
         _syncCinemaSkip();
