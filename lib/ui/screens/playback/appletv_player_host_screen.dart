@@ -67,6 +67,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<bool>? _reconnectingSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   bool _exiting = false;
+  bool _exitFinished = false;
   final Map<String, List<Map<String, dynamic>>> _castCache = {};
   String? _castResolving;
   AppleTvPlaybackPromptController? _prompts;
@@ -223,7 +224,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         _syncCinemaSkip();
       });
       _positionSub = manager.state.positionStream.listen((position) {
-        if (!_isCinemaPreroll || !_cinemaSkip.enabled) {
+        if (!_exiting && (!_isCinemaPreroll || !_cinemaSkip.enabled)) {
           _prompts?.onPositionTick(position, manager.state.duration);
         }
         _syncCinemaSkip();
@@ -1864,7 +1865,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         return;
       case 'skipSegment':
         // Ignore regular Skip Segment events during Cinema Mode trailers.
-        if (!_isCinemaPreroll || !_cinemaSkip.enabled) {
+        if (!_exiting && (!_isCinemaPreroll || !_cinemaSkip.enabled)) {
           _prompts?.handleSkipSegment();
         }
       case 'next':
@@ -1961,9 +1962,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     Future<void>.delayed(const Duration(milliseconds: 300), _pushMetadata);
   }
 
-  void _handleExit() {
+  void _handleExit({bool finished = false}) {
     if (_exiting || !mounted) return;
     _exiting = true;
+    _exitFinished = finished;
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     if (context.canPop()) {
       context.pop();
@@ -2001,7 +2003,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     try {
       final manager = GetIt.instance<PlaybackManager>();
       if (!manager.playbackDeferredToExternalPlayer) {
-        manager.stop(userInitiated: true);
+        if (_exitFinished) {
+          manager.stopAsFinished();
+        } else {
+          manager.stop(userInitiated: true);
+        }
       }
     } catch (_) {}
     super.dispose();
@@ -2115,7 +2121,8 @@ class _HostPromptCommands implements AppleTvPromptCommands {
       _host._manager?.nextInQueue() ?? Future<void>.value();
 
   @override
-  Future<void> exitPlayback() async => _host._handleExit();
+  Future<void> exitPlayback({bool finished = false}) async =>
+      _host._handleExit(finished: finished);
 
   @override
   void setSuppressAutoNext(bool value) {
