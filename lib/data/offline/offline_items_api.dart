@@ -654,10 +654,14 @@ class OfflineItemsApi implements ItemsApi {
     int? imageTypeLimit,
     // The downloaded catalog is flat, so there is nothing to recurse into.
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     var scope = _scope(parentId, includeItemTypes: includeItemTypes);
     if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
       scope = scope.where((e) => includeItemTypes.contains(e.type)).toList();
+    }
+    if (hideWatched == true) {
+      scope = scope.where((e) => e.metadata['UserData']?['Played'] != true).toList();
     }
     final dated =
         scope.where((e) => _date(e.metadata, 'PremiereDate') != null).toList()

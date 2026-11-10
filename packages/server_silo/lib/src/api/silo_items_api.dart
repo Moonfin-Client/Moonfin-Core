@@ -2349,6 +2349,7 @@ class SiloItemsApi
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final libraryId = _libraryIdOf(parentId);
     if (parentId != null && libraryId == null) return _empty(0);
@@ -2360,7 +2361,7 @@ class SiloItemsApi
     if (scope == null) return _empty(0);
     final today = _clock().toLocal();
     final tomorrow = DateTime(today.year, today.month, today.day + 1);
-    final hideWatched = await _hidesWatchedOnHome();
+    final shouldHideWatched = (hideWatched ?? false) || await _hidesWatchedOnHome();
     return _page(
       {
         'library_id': ?libraryId,
@@ -2377,7 +2378,7 @@ class SiloItemsApi
               },
             ],
           },
-          if (hideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
+          if (shouldHideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
         ]),
         'image_size': siloListImageSize,
       },

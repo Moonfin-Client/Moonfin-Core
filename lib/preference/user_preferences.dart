@@ -399,6 +399,11 @@ class UserPreferences extends ChangeNotifier {
       };
       _setIfMissing(subtitleMode, mode);
     }
+
+    if (!containsPreference(hideWatchedInRecentRows, scopedOnly: true) &&
+        config.hidePlayedInLatest) {
+      _setIfMissing(hideWatchedInRecentRows, true);
+    }
   }
 
   String? _activeProfileScopeSuffix() {
@@ -707,6 +712,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_next_up_max_days',
     'enable_multi_server_libraries',
     'pref_merge_recent_rows_by_type',
+    'pref_hide_watched_in_recent_rows',
+    'pref_hide_upgrades_in_recent_rows',
     'seasonal_surprise',
     'seasonal_density',
     'seasonal_follower',
@@ -2191,6 +2198,14 @@ class UserPreferences extends ChangeNotifier {
   );
   static final mergeRecentRowsByType = Preference(
     key: 'pref_merge_recent_rows_by_type',
+    defaultValue: false,
+  );
+  static final hideWatchedInRecentRows = Preference(
+    key: 'pref_hide_watched_in_recent_rows',
+    defaultValue: false,
+  );
+  static final hideUpgradesInRecentRows = Preference(
+    key: 'pref_hide_upgrades_in_recent_rows',
     defaultValue: false,
   );
 

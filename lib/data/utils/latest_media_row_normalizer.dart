@@ -74,19 +74,37 @@ String genericDescriptorForCollectionType(
   };
 }
 
+bool _isItemWatchedForRecentRow(AggregatedItem item) {
+  if (item.isPlayed) return true;
+  if ((item.type == 'Series' || item.type == 'Season') &&
+      item.unplayedItemCount != null &&
+      item.unplayedItemCount! <= 0 &&
+      (item.childCount == null || item.childCount! > 0)) {
+    return true;
+  }
+  return false;
+}
+
 List<AggregatedItem> normalizeLatestMediaItems(
   List<AggregatedItem> items, {
   String? collectionType,
   required int limit,
+  bool hideWatched = false,
 }) {
+  final sourceItems = hideWatched
+      ? items.where((item) => !_isItemWatchedForRecentRow(item)).toList()
+      : items;
+
   // Paging asks without a collection type, so a row that opened with series
   // cards would start handing back seasons part way along.
   final shouldCollapse =
       _isTvCollectionType(collectionType) ||
       (collectionType == null &&
-          items.any((i) => i.type == 'Episode' || i.type == 'Season'));
+          sourceItems.any((i) => i.type == 'Episode' || i.type == 'Season'));
 
-  final normalized = shouldCollapse ? _collapseLatestTvItems(items) : items;
+  final normalized = shouldCollapse
+      ? _collapseLatestTvItems(sourceItems)
+      : sourceItems;
 
   if (normalized.length <= limit) {
     return normalized;

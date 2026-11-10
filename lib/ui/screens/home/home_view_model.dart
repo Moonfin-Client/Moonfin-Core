@@ -1929,6 +1929,7 @@ class HomeViewModel extends ChangeNotifier {
         allItems,
         collectionType: collectionType,
         limit: _mergedRowItemLimit,
+        hideWatched: _prefs.get(UserPreferences.hideWatchedInRecentRows),
       );
       if (items.isEmpty) continue;
 

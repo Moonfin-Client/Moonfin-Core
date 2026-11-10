@@ -912,6 +912,9 @@ class MultiServerRepository {
                   final items = normalizeLatestMediaItems(
                     _parseItems(response, serverId),
                     limit: targetLimit,
+                    hideWatched:
+                        prefs?.get(UserPreferences.hideWatchedInRecentRows) ??
+                        false,
                   );
                   if (items.length <= existingCount) {
                     _rowTotals[cacheKey] = items.length;
@@ -1136,9 +1139,13 @@ class MultiServerRepository {
     final hasMultiple = sessions.length > 1;
     final rows = <HomeRow>[];
 
-    final mergeByType = GetIt.instance<UserPreferences>().get(
-      UserPreferences.mergeRecentRowsByType,
-    );
+    final prefs = GetIt.instance.isRegistered<UserPreferences>()
+        ? GetIt.instance<UserPreferences>()
+        : null;
+    final mergeByType =
+        prefs?.get(UserPreferences.mergeRecentRowsByType) ?? false;
+    final hideWatched =
+        prefs?.get(UserPreferences.hideWatchedInRecentRows) ?? false;
     final groupedItems = <String, List<AggregatedItem>>{};
 
     for (final session in sessions) {
@@ -1197,6 +1204,7 @@ class MultiServerRepository {
               parsed,
               collectionType: collectionType,
               limit: _defaultLimit,
+              hideWatched: hideWatched,
             );
             if (items.isEmpty) continue;
 
@@ -1255,6 +1263,7 @@ class MultiServerRepository {
         allItems,
         collectionType: collectionType,
         limit: _defaultLimit,
+        hideWatched: hideWatched,
       );
       if (items.isEmpty) continue;
 

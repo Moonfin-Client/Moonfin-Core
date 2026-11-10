@@ -432,6 +432,7 @@ class MediaBarRepository {
     String? parentId,
   }) async {
     try {
+      final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
       final response =
           sourceType == UserPreferences.mediaBarSourceRecentlyReleased
           ? await _client.itemsApi
@@ -442,6 +443,7 @@ class MediaBarRepository {
                   limit: _poolSize,
                   fields: _fields,
                   enableImageTypes: 'Backdrop,Logo,Banner',
+                  hideWatched: hideWatched ? true : null,
                 )
                 .timeout(const Duration(seconds: 15))
           : await _client.itemsApi
@@ -454,8 +456,12 @@ class MediaBarRepository {
                 )
                 .timeout(const Duration(seconds: 15));
 
-      final rawItems = response['Items'] as List? ?? [];
-      return rawItems.cast<Map<String, dynamic>>();
+      final rawItems = (response['Items'] as List? ?? [])
+          .cast<Map<String, dynamic>>();
+      if (!hideWatched) return rawItems;
+      return rawItems
+          .where((item) => (item['UserData'] as Map?)?['Played'] != true)
+          .toList();
     } catch (error) {
       final statusCode = error is DioException
           ? (error.response?.statusCode ?? 0)

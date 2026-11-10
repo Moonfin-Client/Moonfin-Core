@@ -60,6 +60,38 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     GetIt.instance<HomeViewModel>().load(preserveExisting: false);
   }
 
+  void _onHideWatchedInRecentRowsChanged() {
+    _pushPersonalizationSync();
+    _reloadHomeRows();
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+    final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
+    unawaited(() async {
+      try {
+        final config = await client.usersApi.getUserConfiguration();
+        if (config.hidePlayedInLatest != hideWatched) {
+          await client.usersApi.updateUserConfiguration(
+            config.copyWith(hidePlayedInLatest: hideWatched),
+          );
+          _reloadHomeRows();
+        }
+      } catch (_) {}
+    }());
+  }
+
+  void _onHideUpgradesInRecentRowsChanged() {
+    final syncService = GetIt.instance<PluginSyncService>();
+    if (syncService.pluginAvailable &&
+        GetIt.instance.isRegistered<MediaServerClient>()) {
+      final client = GetIt.instance<MediaServerClient>();
+      unawaited(
+        syncService.pushSettings(client).whenComplete(_reloadHomeRows),
+      );
+      return;
+    }
+    _reloadHomeRows();
+  }
+
   void _onFavoritesRowsToggleChanged() {
     _pushPersonalizationSync();
     _reloadHomeRows();
@@ -362,9 +394,23 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ],
               ),
 
-              _SectionHeader(l10n.recentlyAdded),
+              _SectionHeader(l10n.recentlyAddedAndReleased),
               adaptiveListSection(
                 children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.hideWatchedInRecentRows,
+                    title: l10n.hideWatchedInRecentRows,
+                    subtitle: l10n.hideWatchedInRecentRowsDescription,
+                    icon: Icons.visibility_off_outlined,
+                    onChanged: _onHideWatchedInRecentRowsChanged,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.hideUpgradesInRecentRows,
+                    title: l10n.hideUpgradesInRecentRows,
+                    subtitle: l10n.hideUpgradesInRecentRowsDescription,
+                    icon: Icons.history_toggle_off,
+                    onChanged: _onHideUpgradesInRecentRowsChanged,
+                  ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.mergeRecentRowsByType,
                     title: l10n.mergeRecentRowsByType,

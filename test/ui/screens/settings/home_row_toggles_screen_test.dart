@@ -86,6 +86,24 @@ void main() {
     });
   }
 
+  testWidgets('Hide Watched and Hide Upgrades reload Home', (tester) async {
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+    await prefs.set(UserPreferences.hideUpgradesInRecentRows, false);
+    await pump(tester);
+
+    expect(find.text('RECENTLY ADDED AND RELEASED'), findsOneWidget);
+
+    await tester.tap(find.text('Hide Watched'));
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+    verify(() => home.load(preserveExisting: false)).called(1);
+
+    await tester.tap(find.text('Hide Upgrades'));
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.hideUpgradesInRecentRows), isTrue);
+    verify(() => home.load(preserveExisting: false)).called(1);
+  });
+
   testWidgets('Merge Recent Rows by Type reloads Home', (tester) async {
     await prefs.set(UserPreferences.mergeRecentRowsByType, false);
     await pump(tester);
