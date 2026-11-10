@@ -6477,7 +6477,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     });
   }
 
-  /// [node] defaults to Play's; a person page leads with Favorite instead.
+  /// [node] defaults to Play's. A person page leads with Favorite instead.
   void _ensureTvPlayFocus(String itemId, {FocusNode? node}) {
     if (PlatformDetection.useMobileUi) return;
     if (_tvPlayFocusAppliedForItemId == itemId) return;
@@ -6956,11 +6956,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           prefs,
         );
 
-  // Held back until the late lookups land, so the row shows with every button
-  // at once instead of growing one after the rest. It still lays out, so
-  // nothing below it moves when it fades in. Focus is kept out too, or OK on
-  // a remote would press an invisible Play; the rebuild that shows the row
-  // asks for Play's focus again.
+  // Held back for a moment while the late lookups land, so the row shows with
+  // its buttons at once instead of growing one after the rest. It still lays
+  // out, so nothing below it moves when it fades in. Focus is kept out too, or
+  // OK on a remote would press an invisible Play. The rebuild that shows the
+  // row asks for Play's focus again.
   @override
   Widget build(BuildContext context) {
     final settled = viewModel.actionsSettled;
@@ -6970,7 +6970,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ignoring: !settled,
         child: AnimatedOpacity(
           opacity: settled ? 1 : 0,
-          duration: const Duration(milliseconds: 150),
+          duration: const Duration(milliseconds: 100),
           child: _buildActions(context),
         ),
       ),

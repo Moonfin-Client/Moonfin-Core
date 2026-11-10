@@ -600,9 +600,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   SeerrMediaDetailViewModel? _seerr;
   SeerrMediaDetailViewModel? get seerr => _seerr;
 
-  /// Longest the action row waits on its late inputs, so a slow Seerr server
-  /// can't keep the buttons hidden.
-  static const actionsWaitCap = Duration(seconds: 1);
+  /// Longest the action row waits on its late inputs. Long enough for the
+  /// server's own lookups, short enough that the row still feels instant. A
+  /// slower Seerr answer adds its buttons when it lands.
+  static const actionsWaitCap = Duration(milliseconds: 250);
 
   /// Whether everything that adds, removes or relabels an action button has
   /// come back (or [actionsWaitCap] ran out), so the row can show complete
