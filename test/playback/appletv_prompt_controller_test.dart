@@ -641,7 +641,60 @@ void main() {
       expect(h.commands.lastSeekTarget, const Duration(milliseconds: 2399000));
     });
 
-    test('skipping an outro with no next item exits playback', () async {
+    test('skipping an outro that runs to the end with no next item exits',
+        () async {
+      final prefs = await testPrefs();
+      final h = _Harness(prefs);
+      h.snapshot = _snapshot(hasNext: false);
+      h.segmentService = await segmentServiceWith(prefs, [
+        segmentJson(
+          id: 's1',
+          type: 'Outro',
+          startMs: 2300000,
+          endMs: 2395000,
+        ),
+      ]);
+
+      h.controller.onPositionTick(
+        const Duration(milliseconds: 2310000),
+        const Duration(milliseconds: 2400000),
+      );
+      h.controller.handleSkipSegment();
+
+      expect(h.commands.count('markPlayed'), 1);
+      expect(h.commands.count('exitPlayback:finished'), 1);
+      expect(h.commands.count('exitPlayback'), 0);
+      expect(h.commands.count('advanceNext'), 0);
+    });
+
+    test('an auto-skip outro that runs to the end with no next item exits',
+        () async {
+      final prefs = await testPrefs();
+      await prefs.set(UserPreferences.mediaSegmentActions, 'outro:skip');
+      final h = _Harness(prefs);
+      h.snapshot = _snapshot(hasNext: false);
+      h.segmentService = await segmentServiceWith(prefs, [
+        segmentJson(
+          id: 's1',
+          type: 'Outro',
+          startMs: 2300000,
+          endMs: 2400000,
+        ),
+      ]);
+
+      h.controller.onPositionTick(
+        const Duration(milliseconds: 2310000),
+        const Duration(milliseconds: 2400000),
+      );
+
+      expect(h.commands.count('markPlayed'), 1);
+      expect(h.commands.lastMarkedPlayedId, 'ep1');
+      expect(h.commands.count('exitPlayback:finished'), 1);
+      expect(h.commands.count('seekTo'), 0);
+    });
+
+    test('skipping an outro that ends early with no next item seeks past it',
+        () async {
       final prefs = await testPrefs();
       final h = _Harness(prefs);
       h.snapshot = _snapshot(hasNext: false);
@@ -661,12 +714,12 @@ void main() {
       h.controller.handleSkipSegment();
 
       expect(h.commands.count('markPlayed'), 1);
-      expect(h.commands.count('exitPlayback:finished'), 1);
-      expect(h.commands.count('exitPlayback'), 0);
-      expect(h.commands.count('advanceNext'), 0);
+      expect(h.commands.lastSeekTarget, const Duration(milliseconds: 2380000));
+      expect(h.commands.count('exitPlayback:finished'), 0);
     });
 
-    test('an auto-skip outro with no next item leaves it finished', () async {
+    test('an auto-skip outro that ends early with no next item seeks past it',
+        () async {
       final prefs = await testPrefs();
       await prefs.set(UserPreferences.mediaSegmentActions, 'outro:skip');
       final h = _Harness(prefs);
@@ -686,9 +739,8 @@ void main() {
       );
 
       expect(h.commands.count('markPlayed'), 1);
-      expect(h.commands.lastMarkedPlayedId, 'ep1');
-      expect(h.commands.count('exitPlayback:finished'), 1);
-      expect(h.commands.count('seekTo'), 0);
+      expect(h.commands.lastSeekTarget, const Duration(milliseconds: 2380000));
+      expect(h.commands.count('exitPlayback:finished'), 0);
     });
 
     test('an auto-skip outro with a next item marks it played and seeks',

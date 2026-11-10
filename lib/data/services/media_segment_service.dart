@@ -126,6 +126,14 @@ Duration skipLandingBeforeEnd(Duration target, Duration duration) {
   return latest > Duration.zero && target > latest ? latest : target;
 }
 
+/// Whether credits ending at [skipTo] leave nothing to watch after them, so
+/// skipping them closes the player instead of seeking. The 5 seconds match
+/// the margin the playback manager treats as the item having finished.
+bool outroRunsToEnd(Duration? skipTo, Duration duration) =>
+    skipTo == null ||
+    duration <= Duration.zero ||
+    duration - skipTo <= const Duration(seconds: 5);
+
 class SegmentCheckResult {
   final MediaSegmentAction action;
   final MediaSegment? segment;

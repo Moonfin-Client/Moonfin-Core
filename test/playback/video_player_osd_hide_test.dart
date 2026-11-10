@@ -1307,38 +1307,6 @@ void main() {
     }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
   }
 
-  /// Opens the player over another route, so leaving it can pop back there.
-  Future<void> pushPlayer(WidgetTester tester) async {
-    // Leaving playback resets the orientations, which waits on this channel.
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (_) async => null,
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
-    final router = GoRouter(
-      initialLocation: '/home',
-      routes: [
-        GoRoute(path: '/home', builder: (_, _) => const SizedBox()),
-        GoRoute(path: '/play', builder: (_, _) => const VideoPlayerScreen()),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      MaterialApp.router(
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: const [Locale('en')],
-      ),
-    );
-    router.push('/play');
-    await tester.pumpAndSettle();
-  }
-
   // With nothing queued after it, skipping the credits closed the player even
   // when they end well before the file does, so a scene after them was never
   // shown.
@@ -1360,7 +1328,7 @@ void main() {
         rawData: <String, dynamic>{'Id': 'ep1', 'Type': 'Episode'},
       ),
     ]);
-    await pushPlayer(tester);
+    await mountRoutedPlayer(tester);
     manager.state.setDuration(const Duration(seconds: 20));
 
     manager.state.setPosition(const Duration(milliseconds: 3500));
@@ -1390,7 +1358,7 @@ void main() {
         rawData: <String, dynamic>{'Id': 'ep1', 'Type': 'Episode'},
       ),
     ]);
-    await pushPlayer(tester);
+    await mountRoutedPlayer(tester);
     manager.state.setDuration(const Duration(seconds: 12));
 
     manager.state.setPosition(const Duration(milliseconds: 3500));

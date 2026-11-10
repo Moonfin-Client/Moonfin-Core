@@ -121,9 +121,11 @@ class AppleTvPlaybackPromptController {
   MediaSegmentType? _skipSegmentType;
   Completer<bool>? _stillWatchingCompleter;
   bool _disposed = false;
+  Duration _duration = Duration.zero;
 
   void onPositionTick(Duration position, Duration duration) {
     if (_disposed) return;
+    _duration = duration;
     _checkSegments(position, duration);
     _checkNextUp(position, duration);
   }
@@ -348,7 +350,9 @@ class AppleTvPlaybackPromptController {
         _presentNextUp();
         return;
       }
-      if (isOutro && !_hasDistinctNext(_queueSnapshot())) {
+      if (isOutro &&
+          !_hasDistinctNext(_queueSnapshot()) &&
+          outroRunsToEnd(result.skipTo, duration)) {
         unawaited(_commands.exitPlayback(finished: true));
         return;
       }
@@ -429,7 +433,9 @@ class AppleTvPlaybackPromptController {
       return;
     }
 
-    if (isOutro && !_hasDistinctNext(_queueSnapshot())) {
+    if (isOutro &&
+        !_hasDistinctNext(_queueSnapshot()) &&
+        outroRunsToEnd(_skipTo, _duration)) {
       unawaited(_commands.exitPlayback(finished: true));
       return;
     }
