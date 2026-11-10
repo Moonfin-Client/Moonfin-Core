@@ -32,6 +32,7 @@ import 'data/services/media_server_client_factory.dart';
 import 'data/services/crash_report_service.dart';
 import 'data/services/log_service.dart';
 import 'data/services/storage_path_service.dart';
+import 'util/macos_touch_input.dart';
 import 'util/scroll_sensitivity_binding.dart';
 import 'util/silo_image_hooks.dart';
 import 'util/webview_environment.dart';
@@ -851,6 +852,7 @@ Future<void> autoDownloadBackgroundMain() =>
 void main() async {
   configureHttpOverrides();
   ScrollSensitivityBinding.ensureInitialized();
+  MacosTouchInput.install();
 
   // Pre-warms the liquid_glass_widgets shader programs so the first glass
   // pane doesn't white-flash. Cheap no-op on tiers where the package
