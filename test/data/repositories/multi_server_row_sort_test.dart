@@ -357,6 +357,9 @@ void main() {
     stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
     final (items, _) = await multiServer.loadMore(row: firstPage);
 
+    for (final id in ['a', 'b']) {
+      expect(startIndexesAskedOf(id), [null, 15, 15], reason: 'server $id');
+    }
     expect(items.map((item) => item.name), [
       for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
       'b-old',

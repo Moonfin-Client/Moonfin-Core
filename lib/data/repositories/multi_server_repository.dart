@@ -656,6 +656,7 @@ class MultiServerRepository {
       itemsByServer.putIfAbsent(item.serverId, () => []).add(item);
     }
 
+    final nextOffsets = <String, int>{};
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
@@ -677,7 +678,7 @@ class MultiServerRepository {
 
           switch (row.rowType) {
             case HomeRowType.playlists:
-              _rowOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
+              nextOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
                   _defaultSortBy;
@@ -704,7 +705,7 @@ class MultiServerRepository {
                   response['TotalRecordCount'] as int? ?? items.length;
               return [...?_rowHeldBack[cacheKey], ...items];
             case HomeRowType.audioPlaylists:
-              _rowOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
+              nextOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
                   _defaultSortBy;
@@ -732,7 +733,7 @@ class MultiServerRepository {
                   response['TotalRecordCount'] as int? ?? items.length;
               return [...?_rowHeldBack[cacheKey], ...items];
             case HomeRowType.audioArtists:
-              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              nextOffsets[cacheKey] = startIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
                   _defaultSortBy;
@@ -756,7 +757,7 @@ class MultiServerRepository {
                   response['TotalRecordCount'] as int? ?? items.length;
               return items;
             case HomeRowType.audioAlbums:
-              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              nextOffsets[cacheKey] = startIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
                   _defaultSortBy;
@@ -787,7 +788,7 @@ class MultiServerRepository {
               final sortOrder =
                   prefs?.get(UserPreferences.favoritesRowSortOrder).apiValue ??
                   _defaultSortOrder;
-              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              nextOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: favoriteFilter.itemTypes,
@@ -812,7 +813,7 @@ class MultiServerRepository {
               final sortOrder =
                   prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
                   _defaultSortOrder;
-              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              nextOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['BoxSet'],
@@ -845,7 +846,7 @@ class MultiServerRepository {
               if (row.id == 'genres') {
                 final pageCount = (startIndex / _defaultLimit).ceil();
                 final targetStartIndex = pageCount * _defaultLimit;
-                _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
+                nextOffsets[cacheKey] = targetStartIndex + _defaultLimit;
 
                 final response = await session.client.itemsApi.getGenres(
                   sortBy: sortBy,
@@ -865,7 +866,7 @@ class MultiServerRepository {
                     response['TotalRecordCount'] as int? ?? items.length;
                 return items;
               } else {
-                _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+                nextOffsets[cacheKey] = startIndex + _defaultLimit;
 
                 final response = await session.client.itemsApi.getItems(
                   genreIds: [row.id],
@@ -893,7 +894,7 @@ class MultiServerRepository {
                   final parentId = parts[2];
                   if (serverId != rowServerId) return const <AggregatedItem>[];
 
-                  _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+                  nextOffsets[cacheKey] = startIndex + _defaultLimit;
                   final targetLimit = startIndex + _defaultLimit;
 
                   final response = await session.client.itemsApi.getLatestItems(
@@ -923,8 +924,10 @@ class MultiServerRepository {
         }, label: 'loadMore ${row.rowType} from ${session.server.name}'),
       ),
     );
-    // Every server answered, so the held-back playlists are in this page.
-    // Dropping them only now keeps them for the next try when one fails.
+    // Every server answered, so this page counts. Moving the offsets on and
+    // dropping the held-back playlists only now means a failed load tries the
+    // same pages again.
+    _rowOffsets.addAll(nextOffsets);
     for (final session in sessions) {
       _rowHeldBack.remove('${row.id}_${session.server.id}');
     }
