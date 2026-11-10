@@ -6145,7 +6145,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   /// Focuses the nearest mounted button along [nodeAt], scanning from [from] by
   /// [step]. Skips slots that currently render nothing (unattached focus node),
   /// e.g. the hidden delete-download action, so the d-pad chain is never
-  /// stranded on an invisible button.
+  /// stranded on an invisible button. A node keeps its context after its
+  /// button goes away, so check that the context is still mounted.
   bool _focusAdjacent(
     FocusNode Function(int) nodeAt,
     int from,
@@ -6154,7 +6155,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   ) {
     for (var i = from; i >= 0 && i < count; i += step) {
       final node = nodeAt(i);
-      if (node.context != null) {
+      if (node.context?.mounted == true) {
         node.requestFocus();
         return true;
       }

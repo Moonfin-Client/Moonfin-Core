@@ -179,6 +179,18 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     verify(() => vm.togglePlayed()).called(1);
     verifyNever(() => vm.toggleFavorite());
+
+    // Restart's node outlives its button. The d-pad must move between the
+    // buttons still on screen and come back to Watched.
+    await tester.pumpWidget(app());
+    await tester.pump();
+    final watchedNode = FocusManager.instance.primaryFocus;
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus?.context?.mounted, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus, same(watchedNode));
   }
 
   testWidgets('focus stays on Watched when Restart leaves the row', (
