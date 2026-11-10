@@ -2452,7 +2452,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _presentNextUpOverlay();
         return;
       }
-      if (isOutro && !_hasDistinctQueueNextItem()) {
+      if (isOutro &&
+          !_hasDistinctQueueNextItem() &&
+          outroRunsToEnd(result.skipTo, _state.duration)) {
         unawaited(_exitPlayback(finished: true));
         return;
       }
@@ -2796,7 +2798,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _presentNextUpOverlay();
       return;
     }
-    if (isOutro && !_hasDistinctQueueNextItem()) {
+    if (isOutro &&
+        !_hasDistinctQueueNextItem() &&
+        outroRunsToEnd(_skipTo, _state.duration)) {
       unawaited(_exitPlayback(finished: true));
       return;
     }
