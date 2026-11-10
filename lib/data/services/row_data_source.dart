@@ -2404,8 +2404,9 @@ class RowDataSource {
   /// (`LocalItemId`, sent by the Moonfin plugin) for the library items, so the
   /// card shows the server's own artwork. A tap on an outside entry already
   /// ends up on the library page once Seerr reports the title as available;
-  /// the library item goes there directly, without Seerr. One request covers
-  /// the whole row. An entry whose library copy doesn't come
+  /// the library item goes there directly, without Seerr. The ids go out in
+  /// batches of [_libraryCopyBatch], so a long chart doesn't outgrow the
+  /// request line a proxy accepts. An entry whose library copy doesn't come
   /// back, because it was removed or the server can't be reached, stays the
   /// outside entry it was.
   Future<List<AggregatedItem>> withLibraryCopies(
@@ -2419,22 +2420,13 @@ class RowDataSource {
     };
     if (ids.isEmpty) return items;
 
-    final Map<String, Map<String, dynamic>> library;
-    try {
-      final response = await _client.itemsApi.getItems(
-        ids: ids.toList(),
-        fields: _fields,
-        enableTotalRecordCount: false,
-      );
-      library = {
-        for (final raw in response['Items'] as List? ?? const [])
-          if (raw is Map && raw['Id'] != null)
-            _libraryIdKey(raw['Id'].toString()): Map<String, dynamic>.from(raw),
-      };
-    } catch (e) {
-      debugPrint('[RowDataSource] Library copies for an outside list failed: $e');
-      return items;
-    }
+    final idList = ids.toList();
+    final batches = await Future.wait([
+      for (var i = 0; i < idList.length; i += _libraryCopyBatch)
+        _libraryCopies(idList.skip(i).take(_libraryCopyBatch).toList()),
+    ]);
+    final library = {for (final batch in batches) ...batch};
+    if (library.isEmpty) return items;
 
     return [
       for (final item in items)
@@ -2451,6 +2443,30 @@ class RowDataSource {
           null => item,
         },
     ];
+  }
+
+  /// How many library ids one lookup asks for. A hundred ids keep the query
+  /// string near 3.5 KB, well below the 8 KB many proxies allow.
+  static const _libraryCopyBatch = 100;
+
+  /// One batch of library items keyed by [_libraryIdKey]. A failed batch
+  /// comes back empty, which leaves only its entries outside.
+  Future<Map<String, Map<String, dynamic>>> _libraryCopies(List<String> ids) async {
+    try {
+      final response = await _client.itemsApi.getItems(
+        ids: ids,
+        fields: _fields,
+        enableTotalRecordCount: false,
+      );
+      return {
+        for (final raw in response['Items'] as List? ?? const [])
+          if (raw is Map && raw['Id'] != null)
+            _libraryIdKey(raw['Id'].toString()): Map<String, dynamic>.from(raw),
+      };
+    } catch (e) {
+      debugPrint('[RowDataSource] Library copies for an outside list failed: $e');
+      return const {};
+    }
   }
 
   /// Jellyfin writes an id with or without dashes, so both forms meet here.

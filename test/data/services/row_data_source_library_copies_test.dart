@@ -128,6 +128,56 @@ void main() {
     expect(await dataSource.withLibraryCopies('srv', row), same(row));
   });
 
+  test('a long chart is looked up in batches of a hundred', () async {
+    when(() => api.getItems(
+          ids: any(named: 'ids'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        )).thenAnswer((call) async => {
+          'Items': [
+            for (final id in call.namedArguments[#ids] as List<String>)
+              {'Id': id, 'Name': 'Library $id', 'Type': 'Movie'},
+          ],
+        });
+
+    final items = await dataSource.withLibraryCopies('srv', [
+      for (var i = 0; i < 250; i++) _outside('tt$i', localItemId: 'id$i'),
+    ]);
+
+    final batches = verify(() => api.getItems(
+          ids: captureAny(named: 'ids'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: false,
+        )).captured.cast<List<String>>();
+    expect(batches.map((b) => b.length), [100, 100, 50]);
+    expect(batches.expand((b) => b).toSet(), hasLength(250));
+    expect(items.map((i) => i.serverId).toSet(), {'srv'});
+    expect(items.map((i) => i.id), [for (var i = 0; i < 250; i++) 'id$i']);
+  });
+
+  test('a failed batch leaves only its own entries outside', () async {
+    when(() => api.getItems(
+          ids: any(named: 'ids'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        )).thenAnswer((call) async {
+      final ids = call.namedArguments[#ids] as List<String>;
+      if (ids.contains('id0')) throw Exception('request line too long');
+      return {
+        'Items': [
+          for (final id in ids) {'Id': id, 'Name': 'Library $id', 'Type': 'Movie'},
+        ],
+      };
+    });
+
+    final items = await dataSource.withLibraryCopies('srv', [
+      for (var i = 0; i < 150; i++) _outside('tt$i', localItemId: 'id$i'),
+    ]);
+
+    expect(items.take(100).map((i) => i.serverId).toSet(), {'seerr'});
+    expect(items.skip(100).map((i) => i.serverId).toSet(), {'srv'});
+  });
+
   group('list entries', () {
     test('carry the library id through the device cache', () {
       final item = ImdbExternalListItem(imdbId: 'tt1', title: 'T', type: 'Movie', localItemId: 'abc');
