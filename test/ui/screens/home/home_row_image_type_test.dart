@@ -5,13 +5,20 @@ import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
-import 'package:moonfin/ui/screens/home/home_screen.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:server_core/server_core.dart' show ImageApi;
 import 'package:shared_preferences/shared_preferences.dart';
 
 HomeRow _row(String id, [HomeRowType rowType = HomeRowType.pluginDynamic]) =>
     HomeRow(id: id, title: id, rowType: rowType);
+
+/// A 200 px tall card at 1x, with series thumbnails off.
+String? _resolveRowImageUrl(
+  AggregatedItem item,
+  ImageApi imageApi,
+  ImageType imageType,
+) => resolveRowImageUrl(item, imageApi, 200, imageType, false, 1);
 
 /// Every built-in section, the way the sections screen fills the list in,
 /// with the media bar first since it also matches recently released rows.
@@ -215,7 +222,7 @@ void main() {
     }
 
     ImageType imageType(HomeRow row, UserPreferences prefs) =>
-        HomeScreen.homeRowImageTypeForRow(row, prefs);
+        homeRowImageTypeForRow(row, prefs);
 
     test('reaches the rows keyed apart from their section id', () async {
       final prefs = await createPreferences();
@@ -259,13 +266,13 @@ void main() {
             selected,
           );
           expect(
-            HomeScreen.isRowModern(standalone, prefs),
-            HomeScreen.isRowModern(resume, prefs),
+            isHomeRowModern(standalone, prefs),
+            isHomeRowModern(resume, prefs),
           );
           expect(imageType(standalone, prefs), selected);
           expect(
-            HomeScreen.isRowModern(bundled, prefs),
-            HomeScreen.isRowModern(resume, prefs),
+            isHomeRowModern(bundled, prefs),
+            isHomeRowModern(resume, prefs),
           );
           expect(imageType(bundled, prefs), ImageType.banner);
         }
@@ -344,7 +351,7 @@ void main() {
 
     test('a poster row falls back to the Thumb Jellyfin gives studios', () {
       expect(
-        HomeScreen.resolveRowImageUrl(
+        _resolveRowImageUrl(
           _studio({'Thumb': 't1'}),
           api,
           ImageType.poster,
@@ -355,7 +362,7 @@ void main() {
 
     test('a network gets the same fallback', () {
       expect(
-        HomeScreen.resolveRowImageUrl(
+        _resolveRowImageUrl(
           _studio({'Thumb': 't1'}, type: 'Network'),
           api,
           ImageType.poster,
@@ -366,14 +373,14 @@ void main() {
 
     test('a studio with no artwork still asks for nothing', () {
       expect(
-        HomeScreen.resolveRowImageUrl(_studio({}), api, ImageType.poster),
+        _resolveRowImageUrl(_studio({}), api, ImageType.poster),
         isNull,
       );
     });
 
     test('a Primary still wins over the Thumb', () {
       expect(
-        HomeScreen.resolveRowImageUrl(
+        _resolveRowImageUrl(
           _studio({'Primary': 'p1', 'Thumb': 't1'}),
           api,
           ImageType.poster,
@@ -384,7 +391,7 @@ void main() {
 
     test('a banner row keeps the Banner ahead of the Thumb', () {
       expect(
-        HomeScreen.resolveRowImageUrl(
+        _resolveRowImageUrl(
           _studio({'Banner': 'b1', 'Thumb': 't1'}),
           api,
           ImageType.banner,
@@ -395,12 +402,12 @@ void main() {
 
     test('a banner row asks for a Primary as wide as the banner card', () {
       final widths = _PrimaryWidthImageApi();
-      HomeScreen.resolveRowImageUrl(
+      _resolveRowImageUrl(
         _studio({'Primary': 'p1'}),
         widths,
         ImageType.poster,
       );
-      HomeScreen.resolveRowImageUrl(
+      _resolveRowImageUrl(
         _studio({'Primary': 'p1'}),
         widths,
         ImageType.banner,

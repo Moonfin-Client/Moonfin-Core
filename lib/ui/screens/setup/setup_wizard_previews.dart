@@ -215,7 +215,7 @@ double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
           .scaleFactor
     : 1.0;
 
-/// TV rows render at 0.8 of the desktop size, same as _rowPlatformScale.
+/// TV rows render at 0.8 of the desktop size, same as homeRowPlatformScale.
 double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);

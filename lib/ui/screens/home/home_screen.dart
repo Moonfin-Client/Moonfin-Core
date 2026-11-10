@@ -63,7 +63,6 @@ import '../../../util/artwork_request_size.dart';
 import '../../../util/device_performance.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
-import '../../../util/tmdb_thumb.dart';
 import '../../navigation/app_router.dart';
 import '../../navigation/destinations.dart';
 import '../../../data/models/media_bar_state.dart';
@@ -90,6 +89,7 @@ import '../../screensaver/screensaver_controller.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../../util/game_library.dart';
 import 'home_backdrop.dart';
+import 'home_row_card_image.dart';
 import 'home_row_prefetch.dart';
 import 'home_row_shift.dart';
 import 'home_view_model.dart';
@@ -150,32 +150,6 @@ double classicHomeRowOverlayClipTop({
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @visibleForTesting
-  static bool isRowModern(HomeRow row, UserPreferences prefs) =>
-      _ContentRowsState._isRowModern(row, prefs);
-
-  @visibleForTesting
-  static bool isModernMyMediaStatic(HomeRow row, UserPreferences prefs) =>
-      _ContentRowsState._isModernMyMediaStatic(row, prefs);
-
-  @visibleForTesting
-  static ImageType homeRowImageTypeForRow(HomeRow row, UserPreferences prefs) =>
-      _ContentRowsState._homeRowImageTypeForRow(row, prefs);
-
-  @visibleForTesting
-  static String? resolveRowImageUrl(
-    AggregatedItem item,
-    ImageApi imageApi,
-    ImageType imageType,
-  ) => _ContentRowsState._resolveRowImageUrl(
-    item,
-    imageApi,
-    200,
-    imageType,
-    false,
-    1,
-  );
 
   @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
@@ -2658,7 +2632,9 @@ class _ContentRowsState extends State<_ContentRows>
     final imageHeight = _rowImageHeight(row, posterSize, prefs);
     final slack = (rowExtents.first - _rowContentHeight(row, posterSize, prefs))
         .clamp(0.0, double.infinity);
-    final extraTopPadding = _isRowModern(row, prefs) ? slack * 0.1 : slack / 2;
+    final extraTopPadding = isHomeRowModern(row, prefs)
+        ? slack * 0.1
+        : slack / 2;
     final header = _rowPeekHeaderRowId == row.id && _rowPeekHeader != null
         ? _rowPeekHeader!
         : _rowHeaderHeight(row);
@@ -2726,16 +2702,16 @@ class _ContentRowsState extends State<_ContentRows>
     PosterSize posterSize,
     UserPreferences prefs,
   ) {
-    final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
-    if (_isRowModern(row, prefs)) {
+    final platformScale = homeRowPlatformScale(_desktopUiScaleFactor());
+    if (isHomeRowModern(row, prefs)) {
       return modernImageHeight(posterSize, platformScale);
     }
-    final rowImageType = _isSeerrFilterRow(row)
+    final rowImageType = isSeerrFilterRow(row)
         ? ImageType.thumb
-        : _homeRowImageTypeForRow(row, prefs);
+        : homeRowImageTypeForRow(row, prefs);
     var maxImageHeight = 0.0;
     for (final item in row.items) {
-      final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
+      final aspectRatio = aspectRatioForRowItem(item, row, rowImageType);
       final imageHeight =
           (aspectRatio > 1
               ? posterSize.landscapeHeight.toDouble()
@@ -3159,9 +3135,9 @@ class _ContentRowsState extends State<_ContentRows>
 
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    final isRowsV2 = _isRowModern(row, prefs);
+    final isRowsV2 = isHomeRowModern(row, prefs);
     final fullScreenRows = _fullScreenRowsEnabled(prefs);
-    final platformScale = _rowPlatformScale(desktopScale);
+    final platformScale = homeRowPlatformScale(desktopScale);
 
     double childHeight = 0.0;
     if (row.isLoading) {
@@ -3203,10 +3179,10 @@ class _ContentRowsState extends State<_ContentRows>
       );
       childHeight = squarePosterSide + (56 * metadataScale) + headroom;
     } else {
-      final isSeerrRowOverride = _isSeerrFilterRow(row);
+      final isSeerrRowOverride = isSeerrFilterRow(row);
       final rowImageType = isSeerrRowOverride
           ? ImageType.thumb
-          : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
+          : (isRowsV2 ? ImageType.poster : homeRowImageTypeForRow(row, prefs));
       var maxCardHeight = 0.0;
       var maxImageHeight = 0.0;
       if (isRowsV2) {
@@ -3216,7 +3192,7 @@ class _ContentRowsState extends State<_ContentRows>
         maxCardHeight = imageHeight + (budget * metadataScale);
       } else {
         for (final item in row.items) {
-          final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
+          final aspectRatio = aspectRatioForRowItem(item, row, rowImageType);
           final imageHeight = (aspectRatio > 1
               ? posterSize.landscapeHeight.toDouble()
               : posterSize.portraitHeight.toDouble()) * platformScale;
@@ -3278,7 +3254,7 @@ class _ContentRowsState extends State<_ContentRows>
     final defaultTop = _overlayBottom + 8.0;
     final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
     if (row == null) return defaultTop;
-    final isRowsV2 = _isRowModern(row, widget.prefs);
+    final isRowsV2 = isHomeRowModern(row, widget.prefs);
 
     final fullScreenRows = _fullScreenRowsEnabled(widget.prefs);
     if (fullScreenRows) {
@@ -4160,9 +4136,6 @@ class _ContentRowsState extends State<_ContentRows>
     return widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 
-  double _rowPlatformScale(double desktopScale) =>
-      PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
-
   double _squarePosterSide(PosterSize posterSize) {
     final scaleFactor = _desktopUiScaleFactor();
     final platformScale = PlatformDetection.isTV
@@ -4197,7 +4170,7 @@ class _ContentRowsState extends State<_ContentRows>
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
       final maxImageHeight = _rowImageHeight(row, posterSize, prefs);
-      final maxCardHeight = _isRowModern(row, prefs)
+      final maxCardHeight = isHomeRowModern(row, prefs)
           ? maxImageHeight + (_v2MetadataBudgetFor(row, prefs) * metadataScale)
           : maxImageHeight +
                 (_classicCardMetadataFor(row) * metadataScale) +
@@ -4233,7 +4206,7 @@ class _ContentRowsState extends State<_ContentRows>
       final desktopScale = _desktopUiScaleFactor();
       final viewportHeight = MediaQuery.sizeOf(context).height;
       final safeTop = MediaQuery.paddingOf(context).top;
-      final isRowsV2 = _isRowModern(row, prefs);
+      final isRowsV2 = isHomeRowModern(row, prefs);
 
       final navbarIsTop =
           prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
@@ -4338,7 +4311,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (_rowImageUrlCache.length > 600) {
       _rowImageUrlCache.clear();
     }
-    final url = _resolveRowImageUrl(
+    final url = resolveRowImageUrl(
       item,
       imageApi,
       height,
@@ -4931,7 +4904,7 @@ class _ContentRowsState extends State<_ContentRows>
 
                     final contentHeight = _rowContentHeight(row, posterSize, prefs);
                     final targetExtent = rowExtents[rowIndex];
-                    final isRowsV2 = _isRowModern(row, prefs);
+                    final isRowsV2 = isHomeRowModern(row, prefs);
                     final extraTopPadding = isRowsV2
                         ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
                         : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity);
@@ -5379,17 +5352,17 @@ class _ContentRowsState extends State<_ContentRows>
       prefs.get(UserPreferences.mediaTypeBadgeBehavior),
       row.items,
     );
-    final isSeerrRowOverride = _isSeerrFilterRow(row);
-    final isRowsV2 = _isRowModern(row, prefs);
-    final isModernMyMediaStatic = _isModernMyMediaStatic(row, prefs);
+    final isSeerrRowOverride = isSeerrFilterRow(row);
+    final isRowsV2 = isHomeRowModern(row, prefs);
+    final isModernMyMediaStatic = isHomeRowModernMyMediaStatic(row, prefs);
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
         : (isRowsV2
             ? (isModernMyMediaStatic ? ImageType.thumb : ImageType.poster)
-            : _homeRowImageTypeForRow(row, prefs));
+            : homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    final platformScale = _rowPlatformScale(desktopScale);
+    final platformScale = homeRowPlatformScale(desktopScale);
     final v2ImageHeight =
         modernImageHeight(posterSize, platformScale);
     final v2MetadataHeightBudget = _v2MetadataBudgetFor(row, prefs);
@@ -5443,7 +5416,7 @@ class _ContentRowsState extends State<_ContentRows>
       }
     } else {
       for (final item in row.items) {
-        final ar = _aspectRatioForRowItem(item, row, rowImageType);
+        final ar = aspectRatioForRowItem(item, row, rowImageType);
         final height =
             (ar > 1
                 ? posterSize.landscapeHeight.toDouble()
@@ -5640,7 +5613,7 @@ class _ContentRowsState extends State<_ContentRows>
               width: firstCardWidth,
               aspectRatio: isRowsV2
                   ? v2PortraitAspect
-                  : _aspectRatioForRowItem(row.items.first, row, rowImageType),
+                  : aspectRatioForRowItem(row.items.first, row, rowImageType),
               isFocused: isFocused,
               isRowsV2: isRowsV2,
               focusColor: focusColor,
@@ -5856,7 +5829,7 @@ class _ContentRowsState extends State<_ContentRows>
                   // Seerr genre cards print their name across the artwork,
                   // the way the Jellyfin genre row does.
                   final isSeerrGenreCard =
-                      _isSeerrFilterRow(row) && item.type == 'Genre';
+                      isSeerrFilterRow(row) && item.type == 'Genre';
                   final isWatchingNow = row.id == 'mdblist_watching_now';
                   final card = MediaCard(
                     animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
@@ -6476,21 +6449,6 @@ class _ContentRowsState extends State<_ContentRows>
     };
   }
 
-  static bool _isSeerrFilterRow(HomeRow row) =>
-      row.id == 'seerr_shortcuts' ||
-      row.id == 'seerr_movie_genres' ||
-      row.id == 'seerr_series_genres' ||
-      row.id == 'seerr_studios' ||
-      row.id == 'seerr_networks';
-
-  /// Rows whose artwork is a wide logo rather than cover art. The modern style
-  /// draws every card portrait, which crops those, so these rows stay on the
-  /// classic layout whichever style is picked.
-  static bool _isWideArtworkRow(HomeRow row) =>
-      _isSeerrFilterRow(row) ||
-      row.id == 'mdblist_watching_now' ||
-      (row.rowType == HomeRowType.studios && row.id == 'studios');
-
   static const _calendarRowIds = {
     'radarr_calendar',
     'sonarr_calendar',
@@ -6593,35 +6551,6 @@ class _ContentRowsState extends State<_ContentRows>
     );
   }
 
-  static bool _isRowModern(HomeRow row, UserPreferences prefs) {
-    if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
-      return false;
-    }
-    if (_isWideArtworkRow(row)) {
-      return false;
-    }
-    return true;
-  }
-
-  static bool _isModernMyMediaStatic(HomeRow row, UserPreferences prefs) {
-    return _isRowModern(row, prefs) &&
-        (row.rowType == HomeRowType.libraryTiles ||
-            row.rowType == HomeRowType.libraryTilesSmall) &&
-        !prefs.get(UserPreferences.modernCardsOnMyMediaRow);
-  }
-
-  static String? _seerrTmdbImageUrl(String? path, int width) {
-    if (path == null || path.isEmpty) return null;
-    if (path.startsWith('http')) return path;
-    return 'https://image.tmdb.org/t/p/w$width$path';
-  }
-
-  static String? _seerrThumbUrl(AggregatedItem item) => seerrThumbUrl(
-        type: item.seerrMediaType,
-        tmdbId: item.tmdbId ?? (int.tryParse(item.id) != null ? item.id : null),
-        imdbId: item.imdbId,
-      );
-
   static void _navigateToSeerrItem(BuildContext context, AggregatedItem item) {
     final shortcut = SeerrShortcut.fromName(
       item.rawData['SeerrShortcut'] as String?,
@@ -6688,85 +6617,6 @@ class _ContentRowsState extends State<_ContentRows>
       item.name,
       serverId: item.serverId,
     ));
-  }
-
-  static String? _resolveImageUrl(
-    AggregatedItem item,
-    ImageApi imageApi,
-    double height,
-    bool useSeriesThumbs,
-    double requestScale,
-  ) {
-    final maxH = artworkRequestWidth(height, requestScale, ArtworkShape.poster);
-    if (useSeriesThumbs && item.type == 'Episode') {
-      final sId = item.seriesId ?? item.parentPrimaryImageItemId;
-      final sTag = item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
-      if (sId != null) {
-        return imageApi.getPrimaryImageUrl(sId, maxHeight: maxH, tag: sTag);
-      }
-    }
-    return _resolvePrimaryImageUrl(item, imageApi, maxHeight: maxH);
-  }
-
-  static String? _resolvePrimaryImageUrl(
-    AggregatedItem item,
-    ImageApi imageApi, {
-    int? maxHeight,
-    int? maxWidth,
-  }) {
-    String? primary(String? id, String? tag) {
-      if (id == null || tag == null) return null;
-      return imageApi.getPrimaryImageUrl(
-        id,
-        maxHeight: maxHeight,
-        maxWidth: maxWidth,
-        tag: tag,
-      );
-    }
-
-    if (item.type == 'Genre' || item.type == 'MusicGenre') {
-      final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
-      if (primaryAr == null || primaryAr >= 1.0) {
-        final repUrl = primary(item.primaryImageItemId, item.primaryImageTagField);
-        if (repUrl != null) return repUrl;
-      }
-    }
-
-    return primary(item.id, item.primaryImageTag) ??
-        primary(item.primaryImageItemId, item.primaryImageTagField) ??
-        primary(item.parentPrimaryImageItemId, item.parentPrimaryImageTag);
-  }
-
-  static String? _resolveLandscapeImageUrl(
-    AggregatedItem item,
-    ImageApi imageApi,
-    double height,
-    double requestScale,
-  ) {
-    final maxW = artworkRequestWidth(
-      height * 16 / 9,
-      requestScale,
-      ArtworkShape.landscape,
-    );
-    if (item.backdropImageTags.isNotEmpty) {
-      return imageApi.getBackdropImageUrl(
-        item.id,
-        maxWidth: maxW,
-        tag: item.backdropImageTags.first,
-      );
-    }
-    if (item.type != 'Video' && item.type != 'MusicVideo') {
-      final parentId = item.parentBackdropItemId;
-      final parentTags = item.parentBackdropImageTags;
-      if (parentId != null && parentTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          parentId,
-          maxWidth: maxW,
-          tag: parentTags.first,
-        );
-      }
-    }
-    return _resolvePrimaryImageUrl(item, imageApi, maxWidth: maxW);
   }
 
   /// Whether a stored path already points at artwork. External rows hold either
@@ -6842,20 +6692,20 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (item.serverId == 'seerr') {
-      final thumb = _seerrThumbUrl(item);
+      final thumb = seerrItemThumbUrl(item);
       if (thumb != null) return thumb;
       if (!isPrefetch) {
         _fetchBackdropIfNeeded(item);
       }
       final dynamicBackdrop = _dynamicBackdrops[item.id];
       if (dynamicBackdrop != null) {
-        return _seerrTmdbImageUrl(dynamicBackdrop, 1280);
+        return seerrTmdbImageUrl(dynamicBackdrop, 1280);
       }
       final backdrop = item.rawData['BackdropPath'] as String?;
       if (_hasSeerrBackdrop(backdrop)) {
-        return _seerrTmdbImageUrl(backdrop, 1280);
+        return seerrTmdbImageUrl(backdrop, 1280);
       }
-      return _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
+      return seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
     }
     final maxW = artworkRequestWidth(
       height * 16 / 9,
@@ -6865,7 +6715,7 @@ class _ContentRowsState extends State<_ContentRows>
     final maxH = artworkRequestWidth(height, requestScale, ArtworkShape.poster);
     if (!useSeriesThumbs) {
       if (item.type == 'Episode') {
-        final episodePrimary = _resolvePrimaryImageUrl(
+        final episodePrimary = resolvePrimaryImageUrl(
           item,
           imageApi,
           maxHeight: maxH,
@@ -6876,7 +6726,7 @@ class _ContentRowsState extends State<_ContentRows>
         }
       }
     }
-    final itemThumbTag = _tagForType(item, 'Thumb');
+    final itemThumbTag = tagForType(item, 'Thumb');
     if (itemThumbTag != null) {
       return imageApi.getThumbImageUrl(
         item.id,
@@ -6913,7 +6763,7 @@ class _ContentRowsState extends State<_ContentRows>
       );
     }
 
-    return _resolvePrimaryImageUrl(
+    return resolvePrimaryImageUrl(
       item,
       imageApi,
       maxHeight: maxH,
@@ -6921,104 +6771,27 @@ class _ContentRowsState extends State<_ContentRows>
     );
   }
 
-  static ImageType _homeRowImageTypeForRow(HomeRow row, UserPreferences prefs) {
-    if (row.isAudio) {
-      return ImageType.poster;
-    }
-    if (_isSeerrFilterRow(row)) {
-      return ImageType.thumb;
-    }
-    if (row.rowType == HomeRowType.latestMedia && _isLatestMusicRow(row)) {
-      return ImageType.poster;
-    }
-
-    if (prefs.get(UserPreferences.homeRowsUniversalOverride)) {
-      return prefs.get(UserPreferences.homeRowsUniversalImageType);
-    }
-
-    final sectionType = _sectionTypeForRow(row, prefs);
-    if (sectionType == null) {
-      return ImageType.poster;
-    }
-    return prefs.get(UserPreferences.homeRowImageType(sectionType));
-  }
-
-  static HomeSectionType? _sectionTypeForRow(HomeRow row, UserPreferences prefs) =>
-      HomeViewModel.sectionConfigForRow(row, prefs.homeSectionsConfig)?.type;
-
-  static bool _isLatestMusicRow(HomeRow row) {
-    if (row.rowType != HomeRowType.latestMedia || row.items.isEmpty) {
-      return false;
-    }
-    return row.items.every(
-      (item) =>
-          item.type == 'Audio' ||
-          item.type == 'MusicAlbum' ||
-          item.type == 'MusicArtist',
-    );
-  }
-
   /// The image an unfocused card in [row] paints for [item], with the width
   /// it paints it at. The item builder and the row prefetch both read this,
   /// so the prefetch always warms the entry the card looks up.
-  ({String? url, double width, double aspectRatio}) _unfocusedCardImage(
+  HomeRowCardImage _unfocusedCardImage(
     HomeRow row,
     AggregatedItem item, {
     required UserPreferences prefs,
     required PosterSize posterSize,
     required bool useSeriesThumbs,
     required double requestScale,
-  }) {
-    final imageApi = widget.viewModel.imageApiForServer(item.serverId);
-    final isRowsV2 = _isRowModern(row, prefs);
-    final isModernMyMediaStatic = _isModernMyMediaStatic(row, prefs);
-    final rowImageType = _isSeerrFilterRow(row)
-        ? ImageType.thumb
-        : (isRowsV2
-              ? (isModernMyMediaStatic ? ImageType.thumb : ImageType.poster)
-              : _homeRowImageTypeForRow(row, prefs));
-    final platformScale = _rowPlatformScale(_desktopUiScaleFactor());
-    final isMyMediaRow = row.rowType == HomeRowType.libraryTiles;
-    if (row.id == 'mdblist_watching_now') {
-      final height = posterSize.landscapeHeight.toDouble() * platformScale;
-      return (
-        url: item.rawData['BackdropPath'] as String?,
-        width: height * (16 / 9),
-        aspectRatio: 16 / 9,
-      );
-    }
-    if (isRowsV2 && !isModernMyMediaStatic) {
-      final v2ImageHeight =
-          modernImageHeight(posterSize, platformScale);
-      final aspect = row.isAudio ? 1.0 : 2 / 3;
-      final url = _cachedRowImageUrl(
-        item,
-        imageApi,
-        v2ImageHeight,
-        ImageType.poster,
-        item.type == 'Episode' ? true : useSeriesThumbs,
-        requestScale,
-        isMyMediaRow: isMyMediaRow,
-      );
-      return (url: url, width: v2ImageHeight * aspect, aspectRatio: aspect);
-    }
-    final ar = _aspectRatioForRowItem(item, row, rowImageType);
-    final height =
-        (ar > 1
-            ? posterSize.landscapeHeight.toDouble()
-            : posterSize.portraitHeight.toDouble()) *
-        platformScale;
-    final url = _cachedRowImageUrl(
-      item,
-      imageApi,
-      height,
-      rowImageType,
-      useSeriesThumbs,
-      requestScale,
-      isMyMediaRow: isMyMediaRow,
-    );
-    return (url: url, width: height * ar, aspectRatio: ar);
-  }
+  }) => homeRowCardImage(
+    row,
+    item,
+    prefs: prefs,
+    posterSize: posterSize,
+    useSeriesThumbs: useSeriesThumbs,
+    requestScale: requestScale,
+    platformScale: homeRowPlatformScale(_desktopUiScaleFactor()),
+    imageApi: widget.viewModel.imageApiForServer(item.serverId),
+    resolveUrl: _cachedRowImageUrl,
+  );
 
   void _scheduleRowPrefetch() {
     if (!mounted || _isBackgrounded) return;
@@ -7131,364 +6904,6 @@ class _ContentRowsState extends State<_ContentRows>
   static Object _rowItemIdentity(AggregatedItem item, int index) =>
       '${item.serverId}|${item.id}';
 
-  static double _aspectRatioForRowItem(
-    AggregatedItem item,
-    HomeRow row,
-    ImageType imageType,
-  ) {
-    if (row.id == 'mdblist_watching_now') {
-      return 16 / 9;
-    }
-    if (row.isAudio) {
-      return 1.0;
-    }
-    if (row.rowType == HomeRowType.liveTvFavorites) {
-      return 1.0;
-    }
-    if (_isSeerrFilterRow(row)) {
-      return 16 / 9;
-    }
-    double thumbAspectRatio() {
-      return switch (item.type) {
-        'MusicAlbum' || 'MusicArtist' || 'Audio' || 'Playlist' || 'Person' => 1,
-        _ => 16 / 9,
-      };
-    }
-
-    return switch (imageType) {
-      ImageType.thumb => thumbAspectRatio(),
-      ImageType.banner => kBannerAspectRatio,
-      ImageType.poster => switch (item.type) {
-        'MusicAlbum' ||
-        'MusicArtist' ||
-        'Audio' ||
-        'Playlist' ||
-        'Person' => 1.0,
-        'Studio' || 'Network' => 16 / 9,
-        _ => 2 / 3,
-      },
-    };
-  }
-
-  static String? _resolveRowImageUrl(
-    AggregatedItem item,
-    ImageApi imageApi,
-    double height,
-    ImageType imageType,
-    bool useSeriesThumbs,
-    double requestScale, {
-    bool isMyMediaRow = false,
-  }) {
-    if (imageType == ImageType.poster && isMyMediaRow) {
-      final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
-      if (primaryAr != null && primaryAr >= 1.0) {
-        return null;
-      }
-    }
-
-    final studioLogo = item.rawData[studioLogoUrlKey];
-    if (studioLogo is String) return studioLogo;
-
-    if (item.type == 'Studio' || item.type == 'Network') {
-      final maxW = artworkRequestWidth(
-        height * (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9),
-        requestScale,
-        ArtworkShape.landscape,
-      );
-      final primaryUrl = _resolvePrimaryImageUrl(
-        item,
-        imageApi,
-        maxHeight: artworkRequestWidth(
-          height,
-          requestScale,
-          ArtworkShape.poster,
-        ),
-        maxWidth: maxW,
-      );
-      if (primaryUrl != null) return primaryUrl;
-      // Jellyfin studios usually have only a Thumb, so a poster row would
-      // otherwise have nothing to show. Thumb and banner rows reach it below.
-      if (imageType == ImageType.poster) {
-        final thumbTag = _tagForType(item, 'Thumb');
-        if (thumbTag != null) {
-          return imageApi.getThumbImageUrl(
-            item.id,
-            maxWidth: maxW,
-            tag: thumbTag,
-          );
-        }
-      }
-    }
-
-    if (item.serverId == 'seerr') {
-      final backdrop = _seerrTmdbImageUrl(
-        item.rawData['BackdropPath'] as String?,
-        1280,
-      );
-      final poster = _seerrTmdbImageUrl(
-        item.rawData['PosterPath'] as String?,
-        300,
-      );
-      if (imageType == ImageType.thumb) {
-        return _seerrThumbUrl(item) ?? backdrop ?? poster;
-      }
-      if (imageType == ImageType.banner) return backdrop ?? poster;
-      return poster ?? backdrop;
-    }
-
-    if (Destinations.isLiveTvChannelType(item.type)) {
-      final logoTag = item.logoImageTag;
-      if (logoTag != null) {
-        return imageApi.getLogoImageUrl(
-          item.id,
-          maxWidth: artworkRequestWidth(
-            height,
-            requestScale,
-            ArtworkShape.poster,
-          ),
-          tag: logoTag,
-        );
-      }
-    }
-
-    final itemThumbTag = _tagForType(item, 'Thumb');
-    final itemBannerTag = _tagForType(item, 'Banner');
-    final parentThumbItemId = item.rawData['ParentThumbItemId']?.toString();
-    final parentThumbTag = item.rawData['ParentThumbImageTag'] as String?;
-
-    // Episodes have no poster of their own, so a poster row falls back to the
-    // series poster even when the series-thumb preference is off.
-    if (item.type == 'Episode' &&
-        (useSeriesThumbs || imageType == ImageType.poster)) {
-      final seriesImage = _resolveSeriesImageForRowType(
-        item,
-        imageApi,
-        height,
-        imageType,
-        requestScale,
-      );
-      if (seriesImage != null) {
-        return seriesImage;
-      }
-    }
-
-    if (imageType == ImageType.banner) {
-      // Ask for the banner ratio. At 16/9 the artwork comes back about three
-      // times too narrow for the card and has to be upscaled.
-      final maxW = artworkRequestWidth(
-        height * kBannerAspectRatio,
-        requestScale,
-        ArtworkShape.landscape,
-      );
-      if (isMyMediaRow) {
-        final myMediaPrimary = _resolvePrimaryImageUrl(
-          item,
-          imageApi,
-          maxWidth: maxW,
-        );
-        if (myMediaPrimary != null) {
-          return myMediaPrimary;
-        }
-      }
-      if (itemBannerTag != null) {
-        return imageApi.getBannerImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: itemBannerTag,
-        );
-      }
-      if (itemThumbTag != null) {
-        return imageApi.getThumbImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: itemThumbTag,
-        );
-      }
-      if (item.backdropImageTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: item.backdropImageTags.first,
-        );
-      }
-      return _resolveImageUrl(
-        item,
-        imageApi,
-        height,
-        useSeriesThumbs,
-        requestScale,
-      );
-    }
-
-    if (imageType == ImageType.thumb) {
-      final maxW = artworkRequestWidth(
-        height * 16 / 9,
-        requestScale,
-        ArtworkShape.landscape,
-      );
-      final maxH = artworkRequestWidth(
-        height,
-        requestScale,
-        ArtworkShape.poster,
-      );
-      if (!useSeriesThumbs ||
-          item.type == 'Video' ||
-          item.type == 'MusicVideo') {
-        if (item.type == 'Episode' ||
-            item.type == 'Video' ||
-            item.type == 'MusicVideo') {
-          final videoPrimary = _resolvePrimaryImageUrl(
-            item,
-            imageApi,
-            maxHeight: maxH,
-            maxWidth: maxW,
-          );
-          if (videoPrimary != null) {
-            return videoPrimary;
-          }
-        }
-      }
-      if (itemThumbTag != null) {
-        return imageApi.getThumbImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: itemThumbTag,
-        );
-      }
-      if (item.backdropImageTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: item.backdropImageTags.first,
-        );
-      }
-      if (useSeriesThumbs || item.type != 'Episode') {
-        if (parentThumbItemId != null && parentThumbTag != null) {
-          return imageApi.getThumbImageUrl(
-            parentThumbItemId,
-            maxWidth: maxW,
-            tag: parentThumbTag,
-          );
-        }
-        if (item.parentBackdropItemId != null &&
-            item.parentBackdropImageTags.isNotEmpty) {
-          return imageApi.getBackdropImageUrl(
-            item.parentBackdropItemId!,
-            maxWidth: maxW,
-            tag: item.parentBackdropImageTags.first,
-          );
-        }
-      }
-      return _resolveLandscapeImageUrl(item, imageApi, height, requestScale);
-    }
-
-    return _resolveImageUrl(
-      item,
-      imageApi,
-      height,
-      useSeriesThumbs,
-      requestScale,
-    );
-  }
-
-  static String? _resolveSeriesImageForRowType(
-    AggregatedItem item,
-    ImageApi imageApi,
-    double height,
-    ImageType imageType,
-    double requestScale,
-  ) {
-    // The banner branch below shares this width, so it has to account for the
-    // banner ratio or that artwork comes back too narrow.
-    final maxW =
-        (height *
-                (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9) *
-                requestScale)
-            .toInt();
-    final maxH = artworkRequestWidth(height, requestScale, ArtworkShape.poster);
-    final seriesId = item.seriesId;
-    final seriesPrimaryTag = item.seriesPrimaryImageTag;
-    final parentThumbItemId = item.rawData['ParentThumbItemId']?.toString();
-    final parentThumbTag = item.rawData['ParentThumbImageTag'] as String?;
-    final parentBackdropItemId = item.parentBackdropItemId;
-    final parentBackdropTags = item.parentBackdropImageTags;
-
-    if (imageType == ImageType.poster) {
-      final sId = seriesId ?? item.parentPrimaryImageItemId;
-      final sTag = seriesPrimaryTag ?? item.parentPrimaryImageTag;
-      if (sId != null) {
-        return imageApi.getPrimaryImageUrl(sId, maxHeight: maxH, tag: sTag);
-      }
-      return null;
-    }
-
-    if (imageType == ImageType.thumb) {
-      if (parentThumbItemId != null && parentThumbTag != null) {
-        return imageApi.getThumbImageUrl(
-          parentThumbItemId,
-          maxWidth: maxW,
-          tag: parentThumbTag,
-        );
-      }
-      if (parentBackdropItemId != null && parentBackdropTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          parentBackdropItemId,
-          maxWidth: maxW,
-          tag: parentBackdropTags.first,
-        );
-      }
-      if (seriesId != null && seriesPrimaryTag != null) {
-        return imageApi.getPrimaryImageUrl(
-          seriesId,
-          maxWidth: maxW,
-          tag: seriesPrimaryTag,
-        );
-      }
-      return null;
-    }
-
-    if (imageType == ImageType.banner) {
-      final seriesBannerTag =
-          (item.rawData['SeriesImageTags'] as Map?)?['Banner'] as String?;
-      if (seriesId != null && seriesBannerTag != null) {
-        return imageApi.getBannerImageUrl(
-          seriesId,
-          maxWidth: maxW,
-          tag: seriesBannerTag,
-        );
-      }
-      if (parentThumbItemId != null && parentThumbTag != null) {
-        return imageApi.getThumbImageUrl(
-          parentThumbItemId,
-          maxWidth: maxW,
-          tag: parentThumbTag,
-        );
-      }
-      if (parentBackdropItemId != null && parentBackdropTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          parentBackdropItemId,
-          maxWidth: maxW,
-          tag: parentBackdropTags.first,
-        );
-      }
-      if (seriesId != null && seriesPrimaryTag != null) {
-        return imageApi.getPrimaryImageUrl(
-          seriesId,
-          maxWidth: maxW,
-          tag: seriesPrimaryTag,
-        );
-      }
-      return null;
-    }
-
-    return null;
-  }
-
-  static String? _tagForType(AggregatedItem item, String imageType) {
-    final tags = item.rawData['ImageTags'];
-    if (tags is! Map) return null;
-    return tags[imageType] as String?;
-  }
 }
 
 class _LiveTvAction {
