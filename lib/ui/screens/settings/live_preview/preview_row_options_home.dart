@@ -1419,9 +1419,10 @@ class _Row extends StatelessWidget {
       watchedBehavior: prefs.get(UserPreferences.watchedIndicatorBehavior),
       itemType: item.type,
       isGenreFallback: _isGenreFallback(row, item),
+      // Home rings a genre card in the theme's own colour, not Focus Color.
       focusColor: _isHomeGenresRow(row)
           ? ThemeRegistry.active.borders.focusBorder.color
-          : Color(prefs.get(UserPreferences.focusColor).colorValue),
+          : Color(previewValue(context, UserPreferences.focusColor).colorValue),
       cardFocusExpansion: modern ? false : frame.cardExpansion,
       externalIsFocused: isFocused,
       suppressFocusGlow: ThemeRegistry.active.borders.focusGlow.isNotEmpty,

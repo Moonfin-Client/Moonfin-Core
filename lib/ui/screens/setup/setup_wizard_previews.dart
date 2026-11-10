@@ -95,13 +95,42 @@ abstract final class SetupPreviewData {
     final override = debugOverride;
     if (override != null) return override.value;
     final loaded = _viewModel?.items ?? const [];
-    return loaded.isNotEmpty ? loaded : _fallbackItems.value;
+    return _drawn = keepDrawn(
+      _drawn,
+      loaded.isNotEmpty ? loaded : _fallbackItems.value,
+    );
+  }
+
+  /// The titles the previews last drew. A change to the bar's style or to what
+  /// it shows reloads it with a fresh random pick, and following that would
+  /// swap the sample under the person looking at it.
+  static List<MediaBarSlideItem> _drawn = const [];
+
+  /// [drawn] kept in its order, each title swapped for its newer copy when
+  /// [next] still has it, then topped up from [next] or cut to its count.
+  @visibleForTesting
+  static List<MediaBarSlideItem> keepDrawn(
+    List<MediaBarSlideItem> drawn,
+    List<MediaBarSlideItem> next,
+  ) {
+    if (drawn.isEmpty || next.isEmpty) return next;
+    final fresh = {
+      for (final item in next) (item.serverId, item.itemId): item,
+    };
+    return [
+      for (final item in drawn)
+        fresh.remove((item.serverId, item.itemId)) ?? item,
+      ...fresh.values,
+    ].take(next.length).toList();
   }
 
   static bool _loading = false;
   static bool _loadingLibraries = false;
 
   static Future<void> ensureLoaded() async {
+    // Each screen of previews starts from the bar's current titles, which
+    // also drops the last server's after a switch.
+    _drawn = const [];
     if (debugOverride != null) return;
     unawaited(loadLibraries());
     if (_loading) return;
@@ -1882,7 +1911,9 @@ Widget navbarPreview(NavbarPosition position) => _liveOrFallback(
 /// Home as the settings live preview draws it: the navbar where it's set, with
 /// its buttons, labels and clock, over the rows in their set style and size.
 /// Values a settings picker is trying stand in for the saved ones.
-Widget settingsHomePreview() {
+/// [focusCard] holds the first card in focus in Classic rows too, so Focus
+/// Color has a ring to show on.
+Widget settingsHomePreview({bool focusCard = false}) {
   final position = GetIt.instance.isRegistered<UserPreferences>()
       ? GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition)
       : NavbarPosition.top;
@@ -1893,6 +1924,7 @@ Widget settingsHomePreview() {
           HomeRowsStyle.v2;
       // Modern rows hold the first card in focus, the way Home looks with a
       // row in focus, so the card's grown state and its details show.
+      final focusFirst = modern || focusCard;
       final home = switch (previewValue(
         context,
         UserPreferences.navbarPosition,
@@ -1901,20 +1933,20 @@ Widget settingsHomePreview() {
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.left => _leftNavbarPreview(
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.bottom => _bottomNavbarPreview(
           context,
           items,
           previewValue(context, UserPreferences.bottomNavbarStyle),
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
       };
       final backdrop = settingsHomeBackdropStyle(context);
@@ -1990,9 +2022,10 @@ bool get _calendarAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().calendarAvailable;
 
+/// The real bar waits for something saved, so it never offers a way into an
+/// empty screen.
 bool get _downloadsAvailable =>
-    GetIt.instance.isRegistered<UserRepository>() &&
-    DownloadsNavSlot.isAvailable();
+    DownloadsNavSlot.isSupported() && DownloadsNavSlot.hasSavedMedia();
 
 /// The user's libraries for a navbar that lists them one by one, minus the
 /// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
@@ -2704,6 +2737,27 @@ Widget _homeRowsColumn(
     ),
   );
 
+  Widget focusRing() => Positioned(
+    top: -3.5,
+    bottom: -3.5,
+    left: -3.5,
+    right: -3.5,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius:
+            ThemeRegistry.active.borders.cardRadius + AppRadius.circular(3.5),
+        border: Border.fromBorderSide(
+          ThemeRegistry.active.borders.focusBorder.copyWith(
+            color: Color(
+              previewValue(context, UserPreferences.focusColor).colorValue,
+            ),
+            width: 3.0,
+          ),
+        ),
+      ),
+    ),
+  );
+
   Widget card(
     MediaBarSlideItem item, {
     required double height,
@@ -2711,58 +2765,70 @@ Widget _homeRowsColumn(
     String? imageUrl,
     double? progress,
     List<PosterBadge> labels = const [],
+    bool focused = false,
   }) {
     final width = height * aspect;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: width,
-          height: height,
-          child: ClipRRect(
-            borderRadius: ThemeRegistry.active.borders.cardRadius,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _artwork(imageUrl ?? item.posterUrl),
-                if (labels.isNotEmpty)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: PosterBadgeSample(badges: labels, scale: 0.85 * scale),
-                  ),
-                if (progress != null)
-                  Positioned(
-                    left: 6,
-                    right: 6,
-                    bottom: 6,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: SizedBox(
-                        height: 6,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: (progress * 100).round(),
-                              child: ColoredBox(color: AppColorScheme.accent),
-                            ),
-                            Expanded(
-                              flex: 100 - (progress * 100).round(),
-                              child: ColoredBox(
-                                color: AppColorScheme.scrim.withValues(
-                                  alpha: 0.54,
-                                ),
-                              ),
-                            ),
-                          ],
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: width,
+              height: height,
+              child: ClipRRect(
+                borderRadius: ThemeRegistry.active.borders.cardRadius,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _artwork(imageUrl ?? item.posterUrl),
+                    if (labels.isNotEmpty)
+                      Positioned(
+                        top: 6,
+                        left: 6,
+                        child: PosterBadgeSample(
+                          badges: labels,
+                          scale: 0.85 * scale,
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                    if (progress != null)
+                      Positioned(
+                        left: 6,
+                        right: 6,
+                        bottom: 6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: SizedBox(
+                            height: 6,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.accent,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 100 - (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.scrim.withValues(
+                                      alpha: 0.54,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            if (focused) focusRing(),
+          ],
         ),
         const SizedBox(height: 6),
         SizedBox(
@@ -2849,24 +2915,7 @@ Widget _homeRowsColumn(
                 child: _artwork(item.backdropUrl ?? item.posterUrl),
               ),
             ),
-            Positioned(
-              top: -3.5,
-              bottom: -3.5,
-              left: -3.5,
-              right: -3.5,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      ThemeRegistry.active.borders.cardRadius +
-                      AppRadius.circular(3.5),
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.focusBorder.copyWith(
-                      width: 3.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            focusRing(),
           ],
         ),
         const SizedBox(height: 6),
@@ -2946,7 +2995,7 @@ Widget _homeRowsColumn(
     final showLabels = _showSampleLabels(context);
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
-        if (withFocus && i == 0)
+        if (withFocus && i == 0 && modern)
           focusedCard(_itemAt(items, offset))
         else
           card(
@@ -2959,6 +3008,7 @@ Widget _homeRowsColumn(
             labels: !showLabels || i % 3 == 2
                 ? const []
                 : (i % 3 == 0 ? _sampleLabels : _sampleLabels.sublist(0, 1)),
+            focused: withFocus && i == 0,
           ),
     ];
     return Column(
