@@ -755,8 +755,15 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
     final nextUp = userDataSync.applyOrNull(_nextUp);
     if (!identical(nextUp, _nextUp)) {
+      final justPlayed =
+          _nextUp?.isPlayed == false && nextUp?.isPlayed == true;
       _nextUp = nextUp;
       changed = true;
+      // A played mark only lands here once the server has it, so the next
+      // episode can be fetched right away, even when marked from this page.
+      if (justPlayed && !_syncingUserData && _item?.type == 'Series') {
+        unawaited(_loadNextUp());
+      }
     }
 
     List<AggregatedItem> patch(List<AggregatedItem> list) {
@@ -817,13 +824,13 @@ class ItemDetailViewModel extends ChangeNotifier {
     _syncingUserData = true;
     try {
       await userDataSync.refreshFromServer(_client, ids);
-      // A change to an episode's watched state can move the series on, and
-      // only the server knows which episode comes next.
-      if (!_isDisposed && _item?.type == 'Series') await _loadNextUp();
     } finally {
       _syncingUserData = false;
       _userDataStale = false;
     }
+    // A change to an episode's watched state can move the series on, and
+    // only the server knows which episode comes next.
+    if (!_isDisposed && _item?.type == 'Series') await _loadNextUp();
   }
 
   /// Builds the screen for a title that is not in the library at all, out of

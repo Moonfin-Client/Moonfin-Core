@@ -47,6 +47,12 @@ void main() {
     itemsApi = _ItemsApi();
     when(() => client.itemsApi).thenReturn(itemsApi);
     when(() => client.baseUrl).thenReturn('http://server');
+    when(
+      () => itemsApi.getItem(
+        'series-1',
+        mediaSourceId: any(named: 'mediaSourceId'),
+      ),
+    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
   });
 
   tearDown(() async {
@@ -54,26 +60,17 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  test('marking the next up episode played moves the series on', () async {
-    when(
-      () => itemsApi.getItem(
-        'series-1',
-        mediaSourceId: any(named: 'mediaSourceId'),
-      ),
-    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
-    var nextUp = _episode('e3', 3);
+  void answerNextUp(Future<Map<String, dynamic>> Function() answer) {
     when(
       () => itemsApi.getNextUp(
         seriesId: 'series-1',
         limit: 1,
         fields: any(named: 'fields'),
       ),
-    ).thenAnswer(
-      (_) async => {
-        'Items': [nextUp],
-      },
-    );
+    ).thenAnswer((_) => answer());
+  }
 
+  Future<ItemDetailViewModel> loadSeries() async {
     final vm = ItemDetailViewModel(
       itemId: 'series-1',
       client: client,
@@ -83,12 +80,23 @@ void main() {
     );
     addTearDown(vm.dispose);
     await vm.load();
-    for (var i = 0; i < 100 && vm.nextUp == null; i++) {
+    return vm;
+  }
+
+  Future<void> waitUntil(bool Function() done) async {
+    for (var i = 0; i < 100 && !done(); i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
+  }
+
+  test('marking the next up episode played moves the series on', () async {
+    var nextUp = _episode('e3', 3);
+    answerNextUp(() async => {'Items': [nextUp]});
+    final vm = await loadSeries();
+    await waitUntil(() => vm.nextUp != null);
     expect(vm.nextUp?.id, 'e3');
 
-    // The episode page marks it played; the server now has e4 as next up.
+    // The episode page marks it played, and the server now has e4 as next up.
     userDataSync.publish('e3', {'Played': true, 'PlaybackPositionTicks': 0});
     nextUp = _episode('e4', 4);
 
@@ -97,13 +105,22 @@ void main() {
     expect(vm.nextUp?.id, 'e4');
   });
 
-  test('a late answer to the first Next Up request does not replace the refreshed one', () async {
-    when(
-      () => itemsApi.getItem(
-        'series-1',
-        mediaSourceId: any(named: 'mediaSourceId'),
-      ),
-    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
+  test('marking it played from the series page moves it on too', () async {
+    var nextUp = _episode('e3', 3);
+    answerNextUp(() async => {'Items': [nextUp]});
+    final vm = await loadSeries();
+    await waitUntil(() => vm.nextUp != null);
+    expect(vm.nextUp?.id, 'e3');
+
+    // Marks only publish once the server has them, so e4 is already next.
+    nextUp = _episode('e4', 4);
+    userDataSync.publish('e3', {'Played': true, 'PlaybackPositionTicks': 0});
+    await waitUntil(() => vm.nextUp?.id == 'e4');
+
+    expect(vm.nextUp?.id, 'e4');
+  });
+
+  test('a late answer to the first Next Up request doesn\'t replace the refreshed one', () async {
     // The page's own request is still out when the refresh asks again.
     final firstAnswer = Completer<Map<String, dynamic>>();
     final answers = <Future<Map<String, dynamic>>>[
@@ -112,26 +129,9 @@ void main() {
         'Items': [_episode('e4', 4)],
       }),
     ];
-    when(
-      () => itemsApi.getNextUp(
-        seriesId: 'series-1',
-        limit: 1,
-        fields: any(named: 'fields'),
-      ),
-    ).thenAnswer((_) => answers.removeAt(0));
-
-    final vm = ItemDetailViewModel(
-      itemId: 'series-1',
-      client: client,
-      mutations: ItemMutationRepository(client),
-      mdbListRepository: MdbListRepository(client, TmdbRepository(client)),
-      tmdbRepository: TmdbRepository(client),
-    );
-    addTearDown(vm.dispose);
-    await vm.load();
-    for (var i = 0; i < 100 && answers.length > 1; i++) {
-      await Future<void>.delayed(const Duration(milliseconds: 5));
-    }
+    answerNextUp(() => answers.removeAt(0));
+    final vm = await loadSeries();
+    await waitUntil(() => answers.length == 1);
     expect(answers, hasLength(1), reason: 'the page asked for Next Up');
 
     userDataSync.publish('e3', {'Played': true, 'PlaybackPositionTicks': 0});
@@ -147,38 +147,15 @@ void main() {
   });
 
   test('a failed Next Up refresh keeps the card already shown', () async {
-    when(
-      () => itemsApi.getItem(
-        'series-1',
-        mediaSourceId: any(named: 'mediaSourceId'),
-      ),
-    ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
     var fail = false;
-    when(
-      () => itemsApi.getNextUp(
-        seriesId: 'series-1',
-        limit: 1,
-        fields: any(named: 'fields'),
-      ),
-    ).thenAnswer((_) async {
+    answerNextUp(() async {
       if (fail) throw Exception('connection dropped');
       return {
         'Items': [_episode('e3', 3)],
       };
     });
-
-    final vm = ItemDetailViewModel(
-      itemId: 'series-1',
-      client: client,
-      mutations: ItemMutationRepository(client),
-      mdbListRepository: MdbListRepository(client, TmdbRepository(client)),
-      tmdbRepository: TmdbRepository(client),
-    );
-    addTearDown(vm.dispose);
-    await vm.load();
-    for (var i = 0; i < 100 && vm.nextUp == null; i++) {
-      await Future<void>.delayed(const Duration(milliseconds: 5));
-    }
+    final vm = await loadSeries();
+    await waitUntil(() => vm.nextUp != null);
     expect(vm.nextUp?.id, 'e3');
 
     fail = true;
