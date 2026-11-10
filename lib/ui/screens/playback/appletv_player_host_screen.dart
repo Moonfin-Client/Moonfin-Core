@@ -1865,7 +1865,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         return;
       case 'skipSegment':
         // Ignore regular Skip Segment events during Cinema Mode trailers.
-        if (!_isCinemaPreroll || !_cinemaSkip.enabled) {
+        if (!_exiting && (!_isCinemaPreroll || !_cinemaSkip.enabled)) {
           _prompts?.handleSkipSegment();
         }
       case 'next':
