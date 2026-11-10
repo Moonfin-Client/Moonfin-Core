@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../di/injection.dart';
 import '../../playback/headless_session_bootstrap.dart';
 import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/deep_link_navigator.dart';
 import '../repositories/seerr_repository.dart';
 import 'seerr/seerr_http_client.dart';
 import 'seerr/seerr_models.dart';
@@ -85,7 +86,7 @@ String? _requestIdFromPayload(String? payload) {
 
 void _navigate(String? route) {
   if (route == null || route.trim().isEmpty) return;
-  appRouter.go(route.trim());
+  unawaited(openLinkedRoute(appRouter, route.trim()));
 }
 
 /// Approves or declines a request without any UI. Prefers the running app's

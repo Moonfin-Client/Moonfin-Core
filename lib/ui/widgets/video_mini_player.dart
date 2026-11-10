@@ -322,8 +322,13 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     final service = _segments;
     if (service == null || !mounted) return;
     final result = service.checkPosition(position);
-    if (result.shouldSkip && result.skipTo != null) {
-      unawaited(_manager.seekTo(result.skipTo!));
+    var skipTo = result.skipTo;
+    if (skipTo != null &&
+        (PlatformDetection.isApple || PlatformDetection.isAppleTV)) {
+      skipTo = skipLandingBeforeEnd(skipTo, _state.duration);
+    }
+    if (result.shouldSkip && skipTo != null) {
+      unawaited(_manager.seekTo(skipTo));
       if (_askSegment != null) setState(() => _askSegment = null);
       return;
     }
@@ -331,7 +336,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
       if (_askSegment?.id != result.segment!.id) {
         setState(() {
           _askSegment = result.segment;
-          _askSkipTo = result.skipTo;
+          _askSkipTo = skipTo;
         });
       }
     } else if (result.isNone && _askSegment != null) {

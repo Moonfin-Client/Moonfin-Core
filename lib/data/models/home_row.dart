@@ -22,6 +22,9 @@ enum HomeRowType {
   mediaBar,
   pluginDynamic,
   liveTvFavorites,
+
+  /// Watch Parties, shown first while rooms exist. Not a layout section.
+  watchParties,
 }
 
 class HomeRow {

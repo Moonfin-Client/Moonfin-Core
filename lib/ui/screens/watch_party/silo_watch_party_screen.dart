@@ -6,24 +6,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../syncplay/syncplay_manager.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
+import '../../../watch_party/moonbase_watch_party_api.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
+import '../../../watch_party/watch_party_rooms_service.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/overlay_sheet.dart';
 import '../../widgets/user_avatar_image.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../navigation/app_router.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
+import '../syncplay/syncplay_screen.dart';
+import 'watch_together_route.dart';
 
-/// Silo's Watch Party: start a room or join one with its code, then see who
-/// is in it and, as host, start or stop what everyone watches. Jellyfin
-/// servers get [SyncPlayScreen] instead.
+part 'watch_party_parts.dart';
+
+/// Watch Parties on Silo and Moonbase: start a room or join one with its
+/// code, then see who is in it and, as host, start or stop what everyone
+/// watches. Moonbase also lists the rooms on the server, and on Jellyfin
+/// SyncPlay's groups beside them.
 class SiloWatchPartyScreen extends StatefulWidget {
-  const SiloWatchPartyScreen({super.key});
+  const SiloWatchPartyScreen({super.key, this.joinCode, this.service});
+
+  /// A code or invite link to join as the screen opens.
+  final String? joinCode;
+
+  /// What the server offers, when the caller already asked.
+  final WatchPartyService? service;
 
   @override
   State<SiloWatchPartyScreen> createState() => _SiloWatchPartyScreenState();
@@ -33,28 +51,109 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
   final _manager = GetIt.instance<SiloWatchPartyManager>();
   final _codeController = TextEditingController();
   final _codeFocus = FocusNode(debugLabel: 'watch_party_code');
-  late final Future<bool> _supported = _manager.inRoom
-      ? Future.value(true)
-      : _manager.serverSupportsRooms();
+  final _startFocus = FocusNode(debugLabel: 'watch_party_start');
+  final _roomFocus = FocusNode(debugLabel: 'watch_party_room');
+  // Bumped when the player closes, so a TV lands on the room's first control
+  // again instead of the back arrow, where focus restore puts it once the
+  // control it left is gone.
+  int _focusEpoch = 0;
+  // After the host stages the vote's pick on TV, focus goes to Start rather
+  // than to the top, since the tile it was on goes with the vote.
+  final _stageFocus = FocusNode(debugLabel: 'watch_party_stage');
+  bool _focusStage = false;
+  final _player = PlayerRouteObserver.instance.isPlayerActive;
+  late final Future<WatchPartyService> _supported = _manager.inRoom
+      ? Future.value(
+          _manager.isMoonbase
+              ? WatchPartyService.moonbase
+              : WatchPartyService.silo,
+        )
+      : widget.service != null
+      ? Future.value(widget.service)
+      : _manager.availability();
 
   @override
   void initState() {
     super.initState();
     _manager.roomScreenOpened();
+    _player.addListener(_onPlayerRoute);
+    final code = widget.joinCode;
+    if (code != null && code.isNotEmpty && !_manager.inRoom) {
+      _codeController.text = code;
+      unawaited(
+        _supported.then((service) {
+          if (mounted && service == WatchPartyService.moonbase) _join();
+        }),
+      );
+    }
   }
 
   @override
   void dispose() {
+    _player.removeListener(_onPlayerRoute);
     _manager.roomScreenClosed();
     _codeController.dispose();
     _codeFocus.dispose();
+    _startFocus.dispose();
+    _roomFocus.dispose();
+    _stageFocus.dispose();
     super.dispose();
+  }
+
+  void _onPlayerRoute() {
+    if (!PlatformDetection.isTV || _player.value) return;
+    // A pop can land mid-build, so the rebuild waits for the frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _focusEpoch++;
+          _focusStage = false;
+        });
+      }
+    });
+  }
+
+  void _focusStart() {
+    if (!PlatformDetection.isTV || !mounted) return;
+    setState(() {
+      _focusEpoch++;
+      _focusStage = true;
+    });
   }
 
   Future<void> _join() async {
     final code = _codeController.text.trim();
     if (code.isEmpty) return;
-    if (await _manager.join(code)) _codeController.clear();
+    var joined = await _manager.join(code);
+    // A locked Moonbase room asks for its PIN until it's right.
+    while (!joined &&
+        (_manager.errorCode == 'pin_required' ||
+            _manager.errorCode == 'wrong_pin')) {
+      if (!mounted) return;
+      final pin = await askWatchPartyPin(
+        context,
+        error: _manager.errorCode == 'wrong_pin'
+            ? AppLocalizations.of(context).watchPartyWrongPin
+            : null,
+      );
+      if (pin == null) {
+        _manager.clearError();
+        return;
+      }
+      joined = await _manager.join(code, pin: pin);
+    }
+    if (joined) _codeController.clear();
+  }
+
+  /// On Jellyfin a user who starts SyncPlay groups gets SyncPlay's screen.
+  void _start() {
+    if (startsSyncPlay()) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const SyncPlayScreen()),
+      );
+      return;
+    }
+    _manager.create();
   }
 
   @override
@@ -63,15 +162,31 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: AppBar(title: Text(l10n.watchParty)),
-        body: FutureBuilder<bool>(
+        appBar: AppBar(
+          title: ListenableBuilder(
+            listenable: _manager,
+            builder: (context, _) => Text(
+              _manager.inRoom ? l10n.watchPartyYours : l10n.watchParties,
+            ),
+          ),
+        ),
+        body: FutureBuilder<WatchPartyService>(
           future: _supported,
           builder: (context, supported) {
             if (supported.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (supported.data != true) {
-              return _Message(message: l10n.watchPartyUnavailable);
+            switch (supported.data) {
+              case WatchPartyService.silo || WatchPartyService.moonbase:
+                break;
+              case WatchPartyService.noMoonbase
+                  when _manager.activeSiloClient == null:
+                return _Message(
+                  title: l10n.watchPartyNeedsMoonbase,
+                  message: l10n.watchPartyNeedsMoonbaseHint,
+                );
+              default:
+                return _Message(message: l10n.watchPartyUnavailable);
             }
             return ListenableBuilder(
               listenable: _manager,
@@ -86,25 +201,55 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
   Widget _buildBody(BuildContext context, AppLocalizations l10n) {
     final room = _manager.room;
     return RequestInitialFocus(
-      targetNode: PlatformDetection.isTV && room == null ? _codeFocus : null,
-      child: LayoutBuilder(
-        builder: (context, constraints) => ListView(
-          // A column, not a stretch across a TV or desktop window.
-          padding: EdgeInsets.symmetric(
-            horizontal: math.max(16, (constraints.maxWidth - _maxWidth) / 2),
-            vertical: 16,
+      // A fresh one for a Moonbase room, so joining from the list, or
+      // coming back from the player, moves focus in.
+      key: _manager.isMoonbase ? ValueKey((room?.roomId, _focusEpoch)) : null,
+      // Silo's TV screen has always opened on the code field. A Moonbase
+      // room opens on its first control, not the app bar's back arrow.
+      targetNode: !PlatformDetection.isTV
+          ? null
+          : room == null
+          ? (_manager.activeSiloClient != null ? _codeFocus : _startFocus)
+          : _manager.isMoonbase
+          ? (_focusStage ? _stageFocus : _roomFocus)
+          : null,
+      // On TV, Up and Down step through a Moonbase room's controls in
+      // reading order. Directional focus would jump from the code straight
+      // to Leave, the only button lined up below it.
+      child: Shortcuts(
+        shortcuts: PlatformDetection.isTV && room != null && _manager.isMoonbase
+            ? const {
+                SingleActivator(LogicalKeyboardKey.arrowDown):
+                    NextFocusIntent(),
+                SingleActivator(LogicalKeyboardKey.arrowUp):
+                    PreviousFocusIntent(),
+              }
+            : const {},
+        child: LayoutBuilder(
+          builder: (context, constraints) => ListView(
+            // A column, not a stretch across a TV or desktop window.
+            padding: EdgeInsets.symmetric(
+              horizontal: math.max(16, (constraints.maxWidth - _maxWidth) / 2),
+              vertical: 16,
+            ),
+            children: [
+              if (_manager.error case final error?)
+                _Banner(
+                  message:
+                      watchPartyErrorText(l10n, _manager.errorCode) ?? error,
+                ),
+              if (room == null && _manager.endedReason != null)
+                _Banner(
+                  message: switch (_manager.endedReason) {
+                    'closed' => l10n.watchPartyEnded,
+                    'removed' => l10n.watchPartyRemoved,
+                    final reason => reason!,
+                  },
+                ),
+              if (room == null) ..._buildEntry(context, l10n),
+              if (room != null) ..._buildRoom(context, l10n, room),
+            ],
           ),
-          children: [
-            if (_manager.error case final error?) _Banner(message: error),
-            if (room == null && _manager.endedReason != null)
-              _Banner(
-                message: _manager.endedReason == 'closed'
-                    ? l10n.watchPartyEnded
-                    : _manager.endedReason!,
-              ),
-            if (room == null) ..._buildEntry(context, l10n),
-            if (room != null) ..._buildRoom(context, l10n, room),
-          ],
         ),
       ),
     );
@@ -148,8 +293,9 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
+              focusNode: _startFocus,
               style: _primaryButton,
-              onPressed: busy ? null : () => _manager.create(),
+              onPressed: busy ? null : _start,
               icon: const Icon(Icons.add_rounded),
               label: Text(l10n.watchPartyStart),
             ),
@@ -157,11 +303,23 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
         ),
       ),
       _Section(
-        title: l10n.syncPlayJoin,
+        title: PlatformDetection.isTV && _manager.activeSiloClient == null
+            ? l10n.watchPartyJoinWithCode
+            : l10n.syncPlayJoin,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildCodeField(context, l10n),
+            if (_manager.activeSiloClient == null &&
+                !PlatformDetection.isTV) ...[
+              const SizedBox(height: 6),
+              Text(
+                l10n.watchPartyPasteHint,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerRight,
@@ -174,6 +332,7 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
           ],
         ),
       ),
+      if (_manager.activeSiloClient == null) const WatchPartyRoomList(),
     ];
   }
 
@@ -191,6 +350,7 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
     AppLocalizations l10n,
     SiloRoom room,
   ) {
+    if (_manager.isMoonbase) return _buildMoonbaseRoom(context, l10n, room);
     final theme = Theme.of(context);
     final busy = _manager.busy;
     final connectedCount = room.members.where((m) => m.connected).length;
@@ -337,6 +497,114 @@ class _SiloWatchPartyScreenState extends State<SiloWatchPartyScreen> {
                   label: Text(l10n.syncPlayLeaveGroup),
                 ),
         ),
+      ),
+    ];
+  }
+
+  /// The lobby of a Moonbase room: the code and invite, who is in it and
+  /// how ready, what's up next or the vote, and the host's settings.
+  List<Widget> _buildMoonbaseRoom(
+    BuildContext context,
+    AppLocalizations l10n,
+    SiloRoom room,
+  ) {
+    final theme = Theme.of(context);
+    final busy = _manager.busy;
+    final connected = room.members.where((m) => m.connected).length;
+    final muted = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    return [
+      _Section(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Wrap(
+                    spacing: 6,
+                    children: [
+                      if (_labelsRoomKinds)
+                        WatchPartyChip(label: l10n.watchParty, accent: true),
+                      if (room.hasPin)
+                        WatchPartyChip(
+                          label: l10n.siloPinHint,
+                          icon: Icons.lock_outline_rounded,
+                        ),
+                    ],
+                  ),
+                ),
+                _StatusPill(room: room, connected: _manager.connected),
+              ],
+            ),
+            const SizedBox(height: 8),
+            WatchPartyInvite(
+              room: room,
+              invite: _manager.inviteUri,
+              copyFocus: _roomFocus,
+            ),
+          ],
+        ),
+      ),
+      _Section(
+        child: room.selectedContentId != null
+            ? _ItemHero(
+                room: room,
+                busy: busy,
+                manager: _manager,
+                startFocus: _stageFocus,
+              )
+            : room.isVoting && !room.isPlaying
+            ? _VotePanel(manager: _manager, room: room, onPicked: _focusStart)
+            : _EmptyStage(
+                message: room.isHost
+                    ? l10n.watchPartyPickTitle
+                    : l10n.watchPartyWaitingForHost,
+              ),
+      ),
+      if (room.isVoting && !room.isPlaying && room.selectedContentId != null)
+        _Section(
+          child: _VotePanel(
+            manager: _manager,
+            room: room,
+            onPicked: _focusStart,
+          ),
+        ),
+      _Section(
+        title: '${room.isPlaying ? l10n.people : l10n.watchPartyLobby} '
+            '· $connected',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            WatchPartyPeople(room: room),
+            if (!room.isPlaying) ...[
+              const SizedBox(height: 8),
+              Text(l10n.watchPartyStartsTogether, style: muted),
+            ],
+          ],
+        ),
+      ),
+      if (room.isHost)
+        _Section(
+          title: l10n.watchPartyRoomSettings,
+          child: Column(
+            children: [
+              if (!room.isPlaying)
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.how_to_vote_outlined),
+                  title: Text(l10n.watchPartyLetEveryoneVote),
+                  value: room.isVoting,
+                  onChanged: busy ? null : _manager.setVoting,
+                ),
+              WatchPartyHostSettings(room: room),
+            ],
+          ),
+        ),
+      Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Center(child: WatchPartyExitButtons(room: room)),
       ),
     ];
   }
@@ -544,9 +812,13 @@ String? memberAvatarUrl(SiloRoomMember member) {
   // signed-in account can resolve itself (its own profiles).
   final shared = manager.avatarUrlFor(member.profileId);
   if (shared != null) return shared;
-  final url = manager.activeSiloClient?.imageApi.getUserImageUrl(
-    member.profileId,
-  );
+  // A Moonbase member id is a user on one device, so the picture is the
+  // user's.
+  final url = manager.isMoonbase
+      ? member.userId == null
+            ? null
+            : manager.roomClient?.imageApi.getUserImageUrl(member.userId!)
+      : manager.activeSiloClient?.imageApi.getUserImageUrl(member.profileId);
   return url == null || url.isEmpty ? null : url;
 }
 
@@ -606,9 +878,7 @@ class _Poster extends StatelessWidget {
     final id = contentId;
     final url = id == null
         ? null
-        : GetIt.instance<SiloWatchPartyManager>()
-            .activeSiloClient
-            ?.imageApi
+        : GetIt.instance<SiloWatchPartyManager>().roomClient?.imageApi
             .getPrimaryImageUrl(id, maxHeight: (width * 4.5).round());
     final fallback = fallbackId;
     return ClipRRect(
@@ -637,11 +907,15 @@ class _ItemHero extends StatefulWidget {
     required this.room,
     required this.busy,
     required this.manager,
+    this.startFocus,
   });
 
   final SiloRoom room;
   final bool busy;
   final SiloWatchPartyManager manager;
+
+  /// For the first start button, whichever it is.
+  final FocusNode? startFocus;
 
   @override
   State<_ItemHero> createState() => _ItemHeroState();
@@ -705,7 +979,7 @@ class _ItemHeroState extends State<_ItemHero> {
             final series = item?['SeriesName'];
             final name = item?['Name'] as String? ?? '';
             final hasSeries = series is String && series.isNotEmpty;
-            // An episode's still is landscape; its season's poster fits the
+            // An episode's still is landscape, so its season's poster fills the
             // portrait slot, then its series'. Nothing until the item is known,
             // so the still never shows first.
             final isEpisode = item?['Type'] == 'Episode';
@@ -734,6 +1008,7 @@ class _ItemHeroState extends State<_ItemHero> {
                 ),
               if (resume != null) ...[
                 FilledButton.icon(
+                  focusNode: widget.startFocus,
                   style: _primaryButton,
                   onPressed: busy
                       ? null
@@ -752,6 +1027,7 @@ class _ItemHeroState extends State<_ItemHero> {
                 ),
               ] else if (lobby)
                 FilledButton.icon(
+                  focusNode: widget.startFocus,
                   style: _primaryButton,
                   onPressed: busy || looking ? null : manager.startPlayback,
                   icon: const Icon(Icons.play_arrow_rounded),
@@ -850,6 +1126,9 @@ String _resumeHint(
   SiloRoomResumePoint resume,
   SiloRoom room,
 ) {
+  if (resume.profileId != null && resume.profileId == room.selfMemberId) {
+    return l10n.watchPartyResumeYours;
+  }
   String? name;
   for (final m in room.members) {
     if (m.profileId == resume.profileId) name = m.displayName;
@@ -865,10 +1144,13 @@ String _resumeHint(
 /// everyone, and for the host a movie search to add more and a play
 /// button on each.
 class _VotePanel extends StatefulWidget {
-  const _VotePanel({required this.manager, required this.room});
+  const _VotePanel({required this.manager, required this.room, this.onPicked});
 
   final SiloWatchPartyManager manager;
   final SiloRoom room;
+
+  /// After the host's pick is staged.
+  final VoidCallback? onPicked;
 
   @override
   State<_VotePanel> createState() => _VotePanelState();
@@ -883,7 +1165,7 @@ class _VotePanelState extends State<_VotePanel> {
   @override
   void initState() {
     super.initState();
-    // The TV keyboard has no change callback; the controller covers both.
+    // The TV keyboard has no change callback, so the controller covers both.
     _search.addListener(() {
       if (_search.text == _lastSearch) return;
       _lastSearch = _search.text;
@@ -935,7 +1217,7 @@ class _VotePanelState extends State<_VotePanel> {
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
-        // The search stays on top; its results stand in for the list until
+        // The search stays on top, and its results stand in for the list until
         // a movie is added or the search is cleared.
         if (isHost) ...[
           _TvAwareField(
@@ -1014,7 +1296,11 @@ class _VotePanelState extends State<_VotePanel> {
                       icon: const Icon(Icons.play_arrow_rounded),
                       onPressed: manager.busy
                           ? null
-                          : () => manager.pickSuggestion(suggestion),
+                          : () async {
+                              if (await manager.pickSuggestion(suggestion)) {
+                                widget.onPicked?.call();
+                              }
+                            },
                     ),
                     IconButton(
                       tooltip: l10n.remove,
@@ -1048,6 +1334,8 @@ class _TvAwareField extends StatefulWidget {
     required this.hint,
     this.icon,
     this.capitalize = false,
+    this.numeric = false,
+    this.autofocus = false,
     this.onSubmitted,
   });
 
@@ -1056,6 +1344,8 @@ class _TvAwareField extends StatefulWidget {
   final String hint;
   final IconData? icon;
   final bool capitalize;
+  final bool numeric;
+  final bool autofocus;
   final VoidCallback? onSubmitted;
 
   @override
@@ -1096,6 +1386,9 @@ class _TvAwareFieldState extends State<_TvAwareField> {
       return TextField(
         controller: widget.controller,
         focusNode: widget.focusNode,
+        autofocus: widget.autofocus,
+        keyboardType: widget.numeric ? TextInputType.number : null,
+        obscureText: widget.numeric,
         textCapitalization: widget.capitalize
             ? TextCapitalization.characters
             : TextCapitalization.none,
@@ -1110,6 +1403,7 @@ class _TvAwareFieldState extends State<_TvAwareField> {
     final colorScheme = Theme.of(context).colorScheme;
     return Focus(
       focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
       child: ListenableBuilder(
         listenable: widget.focusNode,
         builder: (_, _) {
@@ -1118,13 +1412,19 @@ class _TvAwareFieldState extends State<_TvAwareField> {
             key: _tvKey,
             controller: widget.controller,
             isFocused: focused,
-            inputPurpose: InputPurpose.text,
+            inputPurpose: widget.numeric
+                ? InputPurpose.numeric
+                : InputPurpose.text,
             keyboardStyle: GetIt.instance<UserPreferences>().get(
               UserPreferences.keyboardStyle,
             ),
             hint: widget.hint,
-            textFieldType: TextFieldType.other,
-            keyboardType: KeyboardType.alphabetic,
+            textFieldType: widget.numeric
+                ? TextFieldType.number
+                : TextFieldType.other,
+            keyboardType: widget.numeric
+                ? KeyboardType.numeric
+                : KeyboardType.alphabetic,
             filled: true,
             fillColor: focused
                 ? colorScheme.primaryContainer
@@ -1148,7 +1448,7 @@ class _TvAwareFieldState extends State<_TvAwareField> {
   }
 }
 
-/// The host's subtitles for everyone, as a button showing the choice; a
+/// The host's subtitles for everyone, as a button showing the choice. A
 /// member sees the choice. Members can still turn their own on or off in
 /// the player. Absent without Moonbase to keep the choice. Audio isn't
 /// offered: everyone hears the file's default track.
@@ -1238,9 +1538,10 @@ class _SubtitleButton extends StatelessWidget {
 }
 
 class _Message extends StatelessWidget {
-  const _Message({required this.message});
+  const _Message({required this.message, this.title});
 
   final String message;
+  final String? title;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -1255,6 +1556,14 @@ class _Message extends StatelessWidget {
             color: Theme.of(context).disabledColor,
           ),
           const SizedBox(height: 16),
+          if (title case final title?) ...[
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+          ],
           Text(message, textAlign: TextAlign.center),
         ],
       ),

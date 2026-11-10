@@ -51,6 +51,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
 import '../../watch_party/silo_watch_party_manager.dart';
+import '../../watch_party/watch_party_rooms_service.dart';
 import '../../util/platform_detection.dart';
 import '../../util/episode_playability.dart';
 import '../../util/season_queue_context.dart';
@@ -802,6 +803,13 @@ void registerPlaybackModule() {
   );
   _getIt.registerLazySingleton<SiloWatchPartyManager>(
     () => SiloWatchPartyManager(_getIt<PlaybackManager>()),
+  );
+  _getIt.registerLazySingleton<WatchPartyRoomsService>(
+    () => WatchPartyRoomsService(
+      _getIt<SiloWatchPartyManager>(),
+      _getIt<UserPreferences>(),
+      _getIt<SyncPlayManager>(),
+    ),
   );
 
   _getIt.registerLazySingleton<AudiobookBookmarksService>(

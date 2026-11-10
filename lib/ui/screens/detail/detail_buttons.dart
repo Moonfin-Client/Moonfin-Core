@@ -134,11 +134,11 @@ enum DetailButton {
     try {
       if (GetIt.instance.isRegistered<SyncPlayManager>()) {
         final syncPlay = GetIt.instance<SyncPlayManager>();
-        // Silo has its own Watch Party, under the same Watch Together switch.
+        // Silo and Moonbase have their own rooms, under the same switch.
+        final party = GetIt.instance<SiloWatchPartyManager>();
         return syncPlay.syncPlayEnabled ||
             (syncPlay.syncPlayConfigured &&
-                GetIt.instance<SiloWatchPartyManager>().activeSiloClient !=
-                    null);
+                (party.activeSiloClient != null || party.moonbaseAvailable));
       }
       return GetIt.instance<UserPreferences>().get(UserPreferences.syncPlayEnabled);
     } catch (_) {

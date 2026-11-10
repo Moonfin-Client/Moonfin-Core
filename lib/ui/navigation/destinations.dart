@@ -69,6 +69,10 @@ class Destinations {
 
   // General
   static const home = '/home';
+
+  /// The Watch Parties screen, `?code=` joining a room as it opens. Party
+  /// pushes and invite links land here.
+  static const watchParty = '/watch-party';
   static const search = '/search';
 
   // Browsing

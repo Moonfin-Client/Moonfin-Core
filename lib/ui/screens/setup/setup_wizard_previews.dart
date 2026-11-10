@@ -215,7 +215,7 @@ double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
           .scaleFactor
     : 1.0;
 
-/// TV rows render at 0.8 of the desktop size, same as _rowPlatformScale.
+/// TV rows render at 0.8 of the desktop size, same as homeRowPlatformScale.
 double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
@@ -2067,7 +2067,7 @@ List<_NavButton> _navButtons(
     if (!kids &&
         on(UserPreferences.syncPlayEnabled) &&
         on(UserPreferences.showSyncPlayButton))
-      icon(Icons.groups_rounded, l10n.syncPlay),
+      icon(Icons.groups_rounded, l10n.watchParties),
     if (!kids && on(UserPreferences.showSeerrButton) && _seerrAvailable)
       (
         icon: (size, color) => SeerrIcon(size: size, color: color),

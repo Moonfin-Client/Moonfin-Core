@@ -5337,7 +5337,7 @@
   "@buttonOrderHint": {
     "description": "Explains how to reorder the buttons in a row"
   },
-  "buttonShownInSyncPlayGroup": "Only shows while you're in a SyncPlay group",
+  "buttonShownInSyncPlayGroup": "Only shows while you're in a watch party",
   "@buttonShownInSyncPlayGroup": {
     "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
   },
@@ -11123,7 +11123,7 @@
   "settingsShuffleContentTypeFilter": "Shuffle Content Type Filter",
   "settingsAudioPreferencesSubtitle": "Audio tracks, processing, and passthrough options",
   "settingsAutomationAndQueueSubtitle": "Automated playback and sequencing",
-  "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
+  "settingsSyncplaySubtitle": "Watch with friends on this server, everyone in step",
   "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
   "settingsMediaSegmentTypeAction": "{segment} Segments",
   "@settingsMediaSegmentTypeAction": {
@@ -11239,20 +11239,20 @@
   },
   "settingsLiveTvDirect": "Live TV Direct Play",
   "settingsLiveTvDirectSubtitle": "Enable direct play for Live TV",
-  "settingsOpenGroups": "Open Groups",
-  "settingsOpenGroupsSubtitle": "Create, join, or manage SyncPlay groups",
-  "settingsSyncplayEnabled": "SyncPlay Enabled",
-  "settingsSyncplayEnabledSubtitle": "Enable group watching features",
-  "settingsSyncplayButton": "SyncPlay Button",
-  "settingsSyncplayButtonSubtitle": "Show the SyncPlay button on the navigation bar",
-  "settingsSyncplayAdvancedCorrection": "Advanced Correction",
-  "settingsSyncplayAdvancedCorrectionSubtitle": "Enable fine-grained sync logic",
-  "settingsSyncplaySyncCorrection": "Sync Correction",
-  "settingsSyncplaySyncCorrectionSubtitle": "Automatically adjust playback to stay in sync",
-  "settingsSyncplaySpeedToSync": "Speed to Sync",
-  "settingsSyncplaySpeedToSyncSubtitle": "Use playback speed adjustment to sync",
-  "settingsSyncplaySkipToSync": "Skip to Sync",
-  "settingsSyncplaySkipToSyncSubtitle": "Use seeking to sync",
+  "settingsOpenGroups": "Open Watch Parties",
+  "settingsOpenGroupsSubtitle": "Start one or join one in progress",
+  "settingsSyncplayEnabled": "Watch Parties",
+  "settingsSyncplayEnabledSubtitle": "Watch with friends on this server, everyone in step",
+  "settingsSyncplayButton": "Watch Parties button",
+  "settingsSyncplayButtonSubtitle": "Show the Watch Parties button on the navigation bar",
+  "settingsSyncplayAdvancedCorrection": "Advanced correction",
+  "settingsSyncplayAdvancedCorrectionSubtitle": "Delays and extra offset",
+  "settingsSyncplaySyncCorrection": "Sync correction",
+  "settingsSyncplaySyncCorrectionSubtitle": "Keep this device in step with the room",
+  "settingsSyncplaySpeedToSync": "Speed to sync",
+  "settingsSyncplaySpeedToSyncSubtitle": "Play a little faster or slower to catch up",
+  "settingsSyncplaySkipToSync": "Skip to sync",
+  "settingsSyncplaySkipToSyncSubtitle": "Jump ahead when it's too far off",
   "settingsSyncplayMinimumSpeedDelay": "Minimum Speed Delay",
   "settingsSyncplayMaximumSpeedDelay": "Maximum Speed Delay",
   "settingsSyncplaySpeedDuration": "Speed Duration",
@@ -11776,7 +11776,7 @@
   "@watchPartyRoomCode": {
     "description": "Label for a Watch Party room's join code"
   },
-  "watchPartyStart": "Start a Watch Party",
+  "watchPartyStart": "Start a watch party",
   "@watchPartyStart": {
     "description": "Button that opens a new Watch Party room"
   },
@@ -11830,6 +11830,10 @@
   "@watchPartyResumeEarliest": {
     "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
   },
+  "watchPartyResumeYours": "Where you left off. Everyone starts from there.",
+  "@watchPartyResumeYours": {
+    "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+  },
   "watchPartyResumeNotStarted": "{count, plural, =1{1 person hasn't started it yet.} other{{count} people haven't started it yet.}}",
   "@watchPartyResumeNotStarted": {
     "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
@@ -11847,7 +11851,7 @@
   "@watchPartyGuestsCanPause": {
     "description": "Host switch for guest transport control in a Watch Party"
   },
-  "watchPartyEnd": "End Watch Party",
+  "watchPartyEnd": "End for everyone",
   "@watchPartyEnd": {
     "description": "Host button that closes the Watch Party room for everyone"
   },
@@ -11864,6 +11868,445 @@
     "description": "The item a Watch Party host has staged",
     "placeholders": {
       "title": {
+        "type": "String"
+      }
+    }
+  },
+  "watchParties": "Watch Parties",
+  "@watchParties": {
+    "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+  },
+  "watchPartyStartWith": "Start parties with",
+  "@watchPartyStartWith": {
+    "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+  },
+  "watchPartyServiceMoonbaseHint": "Chat, reactions and voting. Runs on Moonbase.",
+  "@watchPartyServiceMoonbaseHint": {
+    "description": "Line under the Watch Party choice of the Start parties with setting"
+  },
+  "watchPartyServiceSyncPlayHint": "Jellyfin's own. Friends on other Jellyfin apps can join.",
+  "@watchPartyServiceSyncPlayHint": {
+    "description": "Line under the SyncPlay choice of the Start parties with setting"
+  },
+  "watchPartyServiceNote": "You can join rooms of both kinds. This only picks what you start.",
+  "@watchPartyServiceNote": {
+    "description": "Note under the Start parties with setting"
+  },
+  "watchPartyDuringParty": "During a party",
+  "@watchPartyDuringParty": {
+    "description": "Section heading on the Watch Parties settings page"
+  },
+  "watchPartyChatOverlay": "Show chat over the video",
+  "@watchPartyChatOverlay": {
+    "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+  },
+  "watchPartyChatOverlaySubtitle": "New messages show for a few seconds",
+  "@watchPartyChatOverlaySubtitle": {
+    "description": "Line under the Show chat over the video setting"
+  },
+  "watchPartyAlerts": "Party alerts",
+  "@watchPartyAlerts": {
+    "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+  },
+  "watchPartyAlertsSubtitle": "Tell me when someone on this server starts one",
+  "@watchPartyAlertsSubtitle": {
+    "description": "Line under the Party alerts setting"
+  },
+  "watchPartyJoinWithCode": "Join with a code",
+  "@watchPartyJoinWithCode": {
+    "description": "TV button on the Watch Parties screen that opens the room code field"
+  },
+  "watchPartyOnThisServer": "On this server",
+  "@watchPartyOnThisServer": {
+    "description": "Heading of the list of rooms on the Watch Parties screen"
+  },
+  "watchPartyCountOnServer": "{count} on this server",
+  "@watchPartyCountOnServer": {
+    "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyRoomsHint": "You need access to the item to join. A room closes when its last person leaves.",
+  "@watchPartyRoomsHint": {
+    "description": "Note under the room list on the Watch Parties screen"
+  },
+  "watchPartyRoomsEmpty": "Parties you can watch show up here. Got a code from someone? Pick Join with a code.",
+  "@watchPartyRoomsEmpty": {
+    "description": "Empty room list on the Watch Parties screen"
+  },
+  "watchPartyPasteHint": "Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.",
+  "@watchPartyPasteHint": {
+    "description": "Hint under the room code field on the Watch Parties screen"
+  },
+  "watchPartyWatchingCount": "{count, plural, one{{count} watching} other{{count} watching}}",
+  "@watchPartyWatchingCount": {
+    "description": "How many people are in a room, on room cards",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyHostsParty": "{name}'s party",
+  "@watchPartyHostsParty": {
+    "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyEveryoneControlsShort": "Everyone controls",
+  "@watchPartyEveryoneControlsShort": {
+    "description": "Room card tag: every member can play, pause and skip"
+  },
+  "watchPartyVotingNow": "Voting on what to watch",
+  "@watchPartyVotingNow": {
+    "description": "Room card line: the lobby is voting on what to watch"
+  },
+  "watchPartyNeedsMoonbase": "Watch Parties need Moonbase on this server",
+  "@watchPartyNeedsMoonbase": {
+    "description": "Title when the server has no Moonbase plugin to host watch parties"
+  },
+  "watchPartyNeedsMoonbaseHint": "Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.",
+  "@watchPartyNeedsMoonbaseHint": {
+    "description": "Body under the Watch Parties need Moonbase title"
+  },
+  "watchPartyWrongPin": "That PIN didn't work. Try again.",
+  "@watchPartyWrongPin": {
+    "description": "Join error: wrong room PIN"
+  },
+  "watchPartyTooManyTries": "Too many tries. Wait a minute.",
+  "@watchPartyTooManyTries": {
+    "description": "Join error: too many wrong PINs"
+  },
+  "watchPartyFull": "This party is full.",
+  "@watchPartyFull": {
+    "description": "Join error: the room has no space left"
+  },
+  "watchPartyNoSuchCode": "No room has that code.",
+  "@watchPartyNoSuchCode": {
+    "description": "Join error: no room with that code"
+  },
+  "watchPartyNoAccess": "You don't have access to what they're watching.",
+  "@watchPartyNoAccess": {
+    "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+  },
+  "watchPartyRemoved": "The host removed you from the party.",
+  "@watchPartyRemoved": {
+    "description": "Shown after the host removed this member"
+  },
+  "watchPartyYours": "Your watch party",
+  "@watchPartyYours": {
+    "description": "Title of the lobby and party controls"
+  },
+  "watchPartyInviteHint": "Paste it in any chat. It opens a page on this server with an Open in Moonfin button.",
+  "@watchPartyInviteHint": {
+    "description": "Hint under Copy invite link in the lobby"
+  },
+  "watchPartySendInvite": "Send the invite",
+  "@watchPartySendInvite": {
+    "description": "TV lobby heading over the invite QR code"
+  },
+  "watchPartyScanInvite": "Scan with your phone to get the invite link, then send it from there. Or just share the code.",
+  "@watchPartyScanInvite": {
+    "description": "TV lobby line next to the invite QR code"
+  },
+  "watchPartyStartsTogether": "Play waits for everyone's player, 10 seconds at most, then counts down 3, 2, 1.",
+  "@watchPartyStartsTogether": {
+    "description": "Lobby note on how a party starts"
+  },
+  "watchPartyStatusInSync": "In sync",
+  "@watchPartyStatusInSync": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusCatchingUp": "Catching up",
+  "@watchPartyStatusCatchingUp": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusBuffering": "Buffering",
+  "@watchPartyStatusBuffering": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusNotWatching": "Not watching",
+  "@watchPartyStatusNotWatching": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusReady": "Ready",
+  "@watchPartyStatusReady": {
+    "description": "Member status in a watch party lobby"
+  },
+  "watchPartyStatusJoining": "Joining",
+  "@watchPartyStatusJoining": {
+    "description": "Member status in a watch party lobby"
+  },
+  "watchPartyHost": "Host",
+  "@watchPartyHost": {
+    "description": "Tag on the host in a watch party's people list"
+  },
+  "watchPartyWaitingFor": "Waiting for {name}'s player",
+  "@watchPartyWaitingFor": {
+    "description": "Shown while a party waits for one member's player to load",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyWaitingForCount": "{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}",
+  "@watchPartyWaitingForCount": {
+    "description": "Shown while a party waits for several members' players to load",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyStartingAnyway": "Starting anyway in {seconds} s",
+  "@watchPartyStartingAnyway": {
+    "description": "Countdown until the party starts without the players still loading",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyStartingTogether": "Starting together",
+  "@watchPartyStartingTogether": {
+    "description": "Under the 3, 2, 1 countdown when a party starts"
+  },
+  "watchPartyToastPaused": "{name} paused",
+  "@watchPartyToastPaused": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastResumed": "{name} resumed",
+  "@watchPartyToastResumed": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastSkipped": "{name} skipped to {time}",
+  "@watchPartyToastSkipped": {
+    "description": "Toast in a watch party, the time like 1:14:02",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastJoined": "{name} joined",
+  "@watchPartyToastJoined": {
+    "description": "Toast and chat line in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastLeft": "{name} left",
+  "@watchPartyToastLeft": {
+    "description": "Toast and chat line in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastSwitched": "{name} switched to {title}",
+  "@watchPartyToastSwitched": {
+    "description": "Toast and chat line when the host picks another item",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastYouAreHost": "You're the host now",
+  "@watchPartyToastYouAreHost": {
+    "description": "Toast in a watch party"
+  },
+  "watchPartyToastNewHost": "{name} is the host now",
+  "@watchPartyToastNewHost": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastEveryoneControls": "Everyone can control playback now",
+  "@watchPartyToastEveryoneControls": {
+    "description": "Toast when the host lets everyone control playback"
+  },
+  "watchPartyToastHostControls": "Only the host controls playback now",
+  "@watchPartyToastHostControls": {
+    "description": "Toast when the host takes playback control back"
+  },
+  "watchPartyOnlyHostControls": "Only the host can control playback.",
+  "@watchPartyOnlyHostControls": {
+    "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+  },
+  "watchPartyToastReconnecting": "Reconnecting to the party...",
+  "@watchPartyToastReconnecting": {
+    "description": "Toast when the connection to the room drops"
+  },
+  "watchPartyToastReconnected": "Back in the party",
+  "@watchPartyToastReconnected": {
+    "description": "Toast when the connection to the room is back"
+  },
+  "watchPartyToastEnded": "{name} ended the party",
+  "@watchPartyToastEnded": {
+    "description": "Toast when the host closes the room",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyChat": "Chat",
+  "@watchPartyChat": {
+    "description": "Tab and button for a watch party's chat"
+  },
+  "watchPartySendToParty": "Send to the party",
+  "@watchPartySendToParty": {
+    "description": "Hint in the watch party chat field"
+  },
+  "watchPartyBackToClose": "Back to close",
+  "@watchPartyBackToClose": {
+    "description": "TV hint on the watch party quick bar"
+  },
+  "watchPartyType": "Type",
+  "@watchPartyType": {
+    "description": "TV quick bar button that opens the keyboard to type a chat message"
+  },
+  "watchPartyReplyHaha": "Haha",
+  "@watchPartyReplyHaha": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyNoWay": "No way",
+  "@watchPartyReplyNoWay": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyPausePlease": "Pause please",
+  "@watchPartyReplyPausePlease": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyBrb": "Brb",
+  "@watchPartyReplyBrb": {
+    "description": "TV quick reply in a watch party chat, short for be right back"
+  },
+  "watchPartyReplyAgain": "Again!",
+  "@watchPartyReplyAgain": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReactionLove": "Love",
+  "@watchPartyReactionLove": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionHaha": "Haha",
+  "@watchPartyReactionHaha": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionWow": "Wow",
+  "@watchPartyReactionWow": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionSad": "Sad",
+  "@watchPartyReactionSad": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionFire": "Fire",
+  "@watchPartyReactionFire": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionPopcorn": "Popcorn",
+  "@watchPartyReactionPopcorn": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyMakeHost": "Make host",
+  "@watchPartyMakeHost": {
+    "description": "Host action on a member of the watch party"
+  },
+  "watchPartyEveryoneControls": "Everyone can control playback",
+  "@watchPartyEveryoneControls": {
+    "description": "Host setting of a watch party"
+  },
+  "watchPartyEveryoneControlsHint": "Anyone can play, pause and skip",
+  "@watchPartyEveryoneControlsHint": {
+    "description": "Line under Everyone can control playback"
+  },
+  "watchPartyRoomPin": "Room PIN",
+  "@watchPartyRoomPin": {
+    "description": "Host setting of a watch party, and the title of the PIN dialog"
+  },
+  "watchPartyRoomPinHint": "Ask for a PIN before anyone joins",
+  "@watchPartyRoomPinHint": {
+    "description": "Line under Room PIN"
+  },
+  "watchPartyPinDigits": "4 to 8 digits",
+  "@watchPartyPinDigits": {
+    "description": "Hint in the room PIN field"
+  },
+  "watchPartyLeave": "Leave",
+  "@watchPartyLeave": {
+    "description": "Button that leaves the watch party"
+  },
+  "watchPartyLeaveHandsOver": "Leave · {name} hosts",
+  "@watchPartyLeaveHandsOver": {
+    "description": "Host button that leaves, naming who takes over",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyStartedBy": "{name} started a watch party",
+  "@watchPartyStartedBy": {
+    "description": "Party alert title",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}",
+  "@watchPartyInLobbyCount": {
+    "description": "Party alert body",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyFirstOnHome": "It's first in Watch Parties on Home",
+  "@watchPartyFirstOnHome": {
+    "description": "Line on the TV party alert banner"
+  },
+  "watchPartyAddServerQuestion": "This invite is for a server you have not added yet, {address}. Add it and sign in to join.",
+  "@watchPartyAddServerQuestion": {
+    "description": "Dialog when a party link names a server the app does not have",
+    "placeholders": {
+      "address": {
         "type": "String"
       }
     }
@@ -14827,7 +15270,7 @@
   "@settingsDetailsPageSubtitle": {
     "description": "Subtitle for the Details Page entry on the Appearance settings screen"
   },
-  "settingsPlaybackSubtitle": "Player, quality, audio, subtitles, skipping, and SyncPlay",
+  "settingsPlaybackSubtitle": "Player, quality, audio, subtitles, skipping, and watch parties",
   "@settingsPlaybackSubtitle": {
     "description": "Subtitle for the Playback settings root entry"
   },
@@ -14879,7 +15322,7 @@
   "@settingsSkippingAndQueueSection": {
     "description": "Section header on the Playback settings screen"
   },
-  "settingsWatchTogetherSection": "Watch Together",
+  "settingsWatchTogetherSection": "Watch Parties",
   "@settingsWatchTogetherSection": {
     "description": "Section header on the Playback settings screen for SyncPlay"
   },

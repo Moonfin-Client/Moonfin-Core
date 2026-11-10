@@ -114,21 +114,42 @@ class _TestResolver extends MediaStreamResolver {
     bool enableDirectStream = true,
     bool enableTranscoding = true,
   }) async {
-    return const StreamResolutionResult(
+    return StreamResolutionResult(
       streamUrl: 'http://server.test/stream',
       mediaSourceId: 'source-1',
       playSessionId: 'session-1',
       playMethod: StreamPlayMethod.directPlay,
-      mediaStreams: _streams,
+      mediaStreams:
+          (mediaItem as Map)['MediaStreams'] as List<Map<String, dynamic>>,
     );
   }
 }
 
-Map<String, dynamic> _episode(String id) => <String, dynamic>{
-  'Id': id,
-  'Type': 'Episode',
-  'MediaStreams': _streams,
+Map<String, dynamic> _episode(
+  String id, [
+  List<Map<String, dynamic>> streams = _streams,
+]) => <String, dynamic>{'Id': id, 'Type': 'Episode', 'MediaStreams': streams};
+
+Map<String, dynamic> _subtitle(
+  int index,
+  String title, {
+  bool forced = false,
+}) => <String, dynamic>{
+  'Type': 'Subtitle',
+  'Index': index,
+  'Codec': 'subrip',
+  'Language': 'eng',
+  'Title': title,
+  'IsForced': forced,
 };
+
+// The forced track comes first, the way many releases list them.
+final _forcedFirst = <Map<String, dynamic>>[
+  _streams[0],
+  _streams[1],
+  _subtitle(2, 'Signs', forced: true),
+  _subtitle(3, 'Dialogue'),
+];
 
 Future<PlaybackManager> _playingWithSubtitlesOff() async {
   final manager = PlaybackManager()
@@ -161,5 +182,54 @@ void main() {
     await manager.playItems(<dynamic>[_episode('e2')]);
 
     expect(manager.lastExplicitSubtitleEnabled, isNull);
+  });
+
+  group('the picked subtitle carries to the next episode', () {
+    Future<PlaybackManager> pickFullThenNext(
+      List<Map<String, dynamic>> nextStreams, {
+      bool withSelector = false,
+    }) async {
+      final manager = PlaybackManager()
+        ..setBackend(_TestBackend())
+        ..setResolver(_TestResolver());
+      if (withSelector) {
+        manager.subtitleTrackSelector = (subtitles, audio, explicitIndex) =>
+            explicitIndex;
+      }
+      await manager.playItems(<dynamic>[
+        _episode('e1', _forcedFirst),
+        _episode('e2', nextStreams),
+      ]);
+      await manager.changeSubtitleTrack(3);
+      await manager.nextInQueue();
+      return manager;
+    }
+
+    test('not the forced track of the same language listed first', () async {
+      final manager = await pickFullThenNext(_forcedFirst);
+      addTearDown(manager.dispose);
+
+      expect(manager.subtitleStreamIndex, 3);
+    });
+
+    test('nor when the app picks the track', () async {
+      final manager = await pickFullThenNext(_forcedFirst, withSelector: true);
+      addTearDown(manager.dispose);
+
+      expect(manager.subtitleStreamIndex, 3);
+    });
+
+    test('even when the next episode lists its tracks differently', () async {
+      final manager = await pickFullThenNext(<Map<String, dynamic>>[
+        _streams[0],
+        _streams[1],
+        _subtitle(2, 'Signs', forced: true),
+        _subtitle(3, 'Songs', forced: true),
+        _subtitle(4, 'English'),
+      ]);
+      addTearDown(manager.dispose);
+
+      expect(manager.subtitleStreamIndex, 4);
+    });
   });
 }

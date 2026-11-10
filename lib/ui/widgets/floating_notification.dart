@@ -17,6 +17,8 @@ class FloatingNotification {
     String body,
     VoidCallback? onTap, {
     IconData icon = Icons.notifications_active_outlined,
+    Duration duration = displayDuration,
+    List<(String, VoidCallback)> actions = const [],
   }) {
     final overlay = Overlay.maybeOf(context, rootOverlay: true);
     if (overlay == null) return;
@@ -28,6 +30,8 @@ class FloatingNotification {
         body: body,
         icon: icon,
         onTap: onTap,
+        duration: duration,
+        actions: actions,
         onDismissed: () {
           if (entry.mounted) entry.remove();
         },
@@ -50,7 +54,12 @@ class _FloatingNotificationCard extends StatefulWidget {
     required this.icon,
     required this.onTap,
     required this.onDismissed,
+    required this.duration,
+    required this.actions,
   });
+
+  final Duration duration;
+  final List<(String, VoidCallback)> actions;
 
   @override
   State<_FloatingNotificationCard> createState() =>
@@ -78,7 +87,7 @@ class _FloatingNotificationCardState extends State<_FloatingNotificationCard>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
-    _autoDismissTimer = Timer(FloatingNotification.displayDuration, _dismiss);
+    _autoDismissTimer = Timer(widget.duration, _dismiss);
   }
 
   @override
@@ -155,6 +164,22 @@ class _FloatingNotificationCardState extends State<_FloatingNotificationCard>
                       color: AppColorScheme.onSurface.withValues(alpha: 0.8),
                       fontSize: 12,
                     ),
+                  ),
+                ],
+                if (widget.actions.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final (label, onPressed) in widget.actions)
+                        TextButton(
+                          onPressed: () {
+                            onPressed();
+                            _dismiss();
+                          },
+                          child: Text(label),
+                        ),
+                    ],
                   ),
                 ],
               ],

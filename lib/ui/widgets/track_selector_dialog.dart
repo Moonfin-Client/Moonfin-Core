@@ -24,6 +24,7 @@ Future<T?> showStyledPlayerDialog<T>(
   ImageProvider? titleImage,
   bool sidePanel = false,
   Set<LogicalKeyboardKey> closeKeys = const {},
+  Widget Function(BuildContext ctx)? titleBuilder,
 }) {
   return showFocusRestoringDialog<T>(
     context: context,
@@ -48,14 +49,9 @@ Future<T?> showStyledPlayerDialog<T>(
               effectiveBottomInset -
               24;
 
-          final titleText = Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          );
+          final titleText =
+              titleBuilder?.call(dialogContext) ??
+              Text(title, style: playerDialogTitleStyle);
 
           final inner = playerDialogPanel(
             constraints: sidePanel
@@ -143,6 +139,12 @@ Future<T?> showStyledPlayerDialog<T>(
     },
   );
 }
+
+const playerDialogTitleStyle = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+  color: Colors.white,
+);
 
 /// The panel the player's dialogs sit in, on glass when the theme uses it.
 Widget playerDialogPanel({

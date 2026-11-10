@@ -618,6 +618,28 @@ void main() {
       expect(h.commands.lastSeekTarget, const Duration(milliseconds: 2380000));
     });
 
+    test('skipping an outro that runs to the end lands a second short',
+        () async {
+      final prefs = await testPrefs();
+      final h = _Harness(prefs);
+      h.segmentService = await segmentServiceWith(prefs, [
+        segmentJson(
+          id: 's1',
+          type: 'Outro',
+          startMs: 2300000,
+          endMs: 2400000,
+        ),
+      ]);
+
+      h.controller.onPositionTick(
+        const Duration(milliseconds: 2310000),
+        const Duration(milliseconds: 2400000),
+      );
+      h.controller.handleSkipSegment();
+
+      expect(h.commands.lastSeekTarget, const Duration(milliseconds: 2399000));
+    });
+
     test('skipping an outro with no next item exits playback', () async {
       final prefs = await testPrefs();
       final h = _Harness(prefs);

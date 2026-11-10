@@ -142,10 +142,11 @@ Future<void> _navigate(String route, String? pinnedUserId) async {
 
 /// Opens a linked [route]. go() builds a nested route's parents, which would
 /// put the Live TV page, one the app never opens itself, under a Live TV link,
-/// so those open over Home instead, as the in-app entry points do.
-@visibleForTesting
+/// so those open over Home instead, as the in-app entry points do. A watch
+/// party link does the same, so its screen has a way back.
 Future<void> openLinkedRoute(GoRouter router, String route) async {
-  if (!route.startsWith('${Destinations.liveTv}/')) {
+  if (!route.startsWith('${Destinations.liveTv}/') &&
+      !route.startsWith(Destinations.watchParty)) {
     router.go(route);
     return;
   }

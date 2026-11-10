@@ -122,6 +122,7 @@ import '../detail/detail_buttons.dart';
 import '../detail/playlist_sort_filter_bar.dart';
 import '../playback/osd_buttons.dart';
 import '../watch_party/watch_together_route.dart';
+import '../../../watch_party/silo_watch_party_manager.dart';
 
 part 'panel/settings_panel_infra.dart';
 part 'panel/settings_search_field.dart';
@@ -161,6 +162,9 @@ part 'panel/settings_panel_tiles.dart';
 @visibleForTesting
 Widget navigationSettingsScreenForTesting() =>
     const _NavigationCategoryScreen();
+
+@visibleForTesting
+Widget watchPartySettingsScreenForTesting() => const _SyncPlaySettingsScreen();
 
 bool get _showThemeEditorEntry =>
     PlatformDetection.isWeb && webRuntimeConfig.pluginMode;

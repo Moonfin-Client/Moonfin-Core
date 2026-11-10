@@ -390,6 +390,9 @@ void main() {
     'useDetailedSubHeadings',
     'videoStartDelay',
     'visualTheme',
+    'watchPartyAlerts',
+    'watchPartyChatOverlay',
+    'watchPartyService',
     'watchedIndicator',
   };
 

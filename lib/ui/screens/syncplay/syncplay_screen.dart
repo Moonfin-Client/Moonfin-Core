@@ -1253,7 +1253,7 @@ class _CreateGroupSection extends StatelessWidget {
     final name = controller.text.trim().isEmpty
         ? l10n.syncPlayDefaultGroupName
         : controller.text.trim();
-    await _confirmIfNeeded(context, manager, () async {
+    await confirmSyncPlayJoin(context, manager, () async {
       await manager.createGroup(name);
       // fetchGroups clears the error, so keep a failed create's banner up.
       if (manager.errorMessage == null) await manager.fetchGroups();
@@ -1476,8 +1476,8 @@ class _AvailableGroupsSection extends StatelessWidget {
     // where a long name list can't push it out of view.
     final subtitle = wide
         ? who
-        : '${_syncPlayServerStateLabel(g.state?.serverValue, l10n)} • $who';
-    Future<void> join() => _confirmIfNeeded(context, manager, () async {
+        : '${syncPlayServerStateLabel(g.state?.serverValue, l10n)} • $who';
+    Future<void> join() => confirmSyncPlayJoin(context, manager, () async {
       await manager.joinGroup(g.groupId);
       if (manager.errorMessage == null) await manager.fetchGroups();
     });
@@ -1564,7 +1564,7 @@ class _JoinQueueNote extends StatelessWidget {
   }
 }
 
-String _syncPlayServerStateLabel(String? serverValue, AppLocalizations l10n) {
+String syncPlayServerStateLabel(String? serverValue, AppLocalizations l10n) {
   final normalized = serverValue?.trim().toLowerCase();
   return switch (normalized) {
     'idle' => l10n.syncPlayStateIdle,
@@ -1577,7 +1577,9 @@ String _syncPlayServerStateLabel(String? serverValue, AppLocalizations l10n) {
   };
 }
 
-Future<void> _confirmIfNeeded(
+/// Runs [action], first asking when joining would replace a queue that's
+/// playing here.
+Future<void> confirmSyncPlayJoin(
   BuildContext context,
   SyncPlayManager manager,
   Future<void> Function() action,

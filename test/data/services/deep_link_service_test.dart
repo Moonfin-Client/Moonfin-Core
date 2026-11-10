@@ -3,6 +3,28 @@ import 'package:moonfin/data/services/deep_link_service.dart';
 
 void main() {
   group('routeForDeepLink', () {
+    test('a party invite keeps its server id and address for the link '
+        'screen', () {
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse(
+            'moonfin://party?server=s9&code=K7Q29M'
+            '&address=https%3A%2F%2Fjf.example',
+          ),
+        ),
+        '/watch-party?code=K7Q29M&serverId=s9'
+        '&address=https%3A%2F%2Fjf.example',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://party?code=AB')),
+        '/watch-party?code=AB',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://party?server=s1')),
+        isNull,
+      );
+    });
+
     test('returns null for non-moonfin schemes', () {
       expect(
         DeepLinkService.routeForDeepLink(

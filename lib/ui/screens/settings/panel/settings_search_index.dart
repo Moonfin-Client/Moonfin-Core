@@ -413,7 +413,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   );
   final syncplay = _SearchSection(
     slug: 'syncplay',
-    path: [l10n.playback, l10n.syncPlay],
+    path: [l10n.playback, l10n.watchParties],
     icon: Icons.groups,
     open: () => push(const _SyncPlaySettingsScreen()),
   );
@@ -2157,11 +2157,31 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     if (usesNativeGameBackend)
       downloadedGames.screen(keywords: ['roms', 'storage']),
 
-    syncplay.screen(keywords: ['watch together', 'group', 'sync']),
+    syncplay.screen(
+      keywords: ['watch together', 'watch party', 'syncplay', 'group', 'sync'],
+    ),
     syncplay.leaf(
       'pref_syncplay_enabled',
       l10n.settingsSyncplayEnabled,
       subtitle: l10n.settingsSyncplayEnabledSubtitle,
+    ),
+    if (anySignedInServerSupports((f) => f.supportsSyncPlay))
+      syncplay.leaf(
+        'pref_watch_party_service',
+        l10n.watchPartyStartWith,
+        subtitle: l10n.watchPartyServiceNote,
+        keywords: ['syncplay', 'moonbase'],
+      ),
+    syncplay.leaf(
+      'pref_watch_party_chat_overlay',
+      l10n.watchPartyChatOverlay,
+      subtitle: l10n.watchPartyChatOverlaySubtitle,
+    ),
+    syncplay.leaf(
+      'pref_watch_party_alerts',
+      l10n.watchPartyAlerts,
+      subtitle: l10n.watchPartyAlertsSubtitle,
+      keywords: ['notifications', 'banner'],
     ),
 
     if (PlatformDetection.isAndroid ||

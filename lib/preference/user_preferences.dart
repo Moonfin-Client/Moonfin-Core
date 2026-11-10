@@ -531,6 +531,9 @@ class UserPreferences extends ChangeNotifier {
     'pref_syncplay_enabled',
     'pref_tmdb_rows_sort_by',
     'pref_tmdb_rows_sort_order',
+    'pref_watch_party_alerts',
+    'pref_watch_party_chat_overlay',
+    'pref_watch_party_service',
     'showChapterMarkers',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
@@ -3905,8 +3908,28 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_live_direct',
     defaultValue: false,
   );
+  /// The Watch Parties master switch. The key keeps its SyncPlay name.
   static final syncPlayEnabled = Preference(
     key: 'pref_syncplay_enabled',
+    defaultValue: true,
+  );
+
+  /// What a Jellyfin user starts: `moonbase` or `syncplay`. Rooms of both
+  /// kinds can be joined either way.
+  static final watchPartyService = EnumPreference(
+    key: 'pref_watch_party_service',
+    defaultValue: WatchPartyServiceChoice.moonbase,
+    values: WatchPartyServiceChoice.values,
+  );
+
+  static final watchPartyChatOverlay = Preference(
+    key: 'pref_watch_party_chat_overlay',
+    defaultValue: true,
+  );
+
+  /// In-app banners when someone on the server starts a party. Opt-in.
+  static final watchPartyAlerts = Preference(
+    key: 'pref_watch_party_alerts',
     defaultValue: false,
   );
 

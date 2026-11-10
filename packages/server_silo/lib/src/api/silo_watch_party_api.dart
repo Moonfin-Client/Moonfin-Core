@@ -11,6 +11,9 @@ class SiloRoomMember {
     required this.isHost,
     required this.isSelf,
     required this.connected,
+    this.userId,
+    this.status,
+    this.avatarUrl,
   });
 
   factory SiloRoomMember.fromJson(Map<String, dynamic> json) => SiloRoomMember(
@@ -19,6 +22,9 @@ class SiloRoomMember {
     isHost: json['is_host'] == true,
     isSelf: json['is_self'] == true,
     connected: json['connected'] == true,
+    userId: _nonEmpty(json['user_id']),
+    status: _nonEmpty(json['status']),
+    avatarUrl: _nonEmpty(json['avatar_url']),
   );
 
   /// Silo's profile id, which is Moonfin's user id for the profile.
@@ -27,7 +33,20 @@ class SiloRoomMember {
   final bool isHost;
   final bool isSelf;
   final bool connected;
+
+  /// Moonbase only, where [profileId] is the member (a user on one device).
+  final String? userId;
+
+  /// Moonbase only: `joining`, `ready`, `in_sync`, `catching_up`,
+  /// `buffering` or `not_watching`, from the member's own reports.
+  final String? status;
+
+  /// Moonbase only, server-relative.
+  final String? avatarUrl;
 }
+
+String? _nonEmpty(Object? value) =>
+    value is String && value.isNotEmpty ? value : null;
 
 /// A Watch Party room snapshot (`WatchTogetherRoomSnapshot`), as the room
 /// HTTP routes and the room socket's `snapshot` frame send it.
@@ -50,6 +69,12 @@ class SiloRoom {
     required this.attachedSessionId,
     required this.invitePath,
     required this.members,
+    this.anchorAt,
+    this.selfMemberId,
+    this.inviteUrl,
+    this.hasPin = false,
+    this.chatEnabled = false,
+    this.reactionsEnabled = false,
   });
 
   factory SiloRoom.fromJson(Map<String, dynamic> json) {
@@ -88,6 +113,12 @@ class SiloRoom {
         for (final m in json['members'] as List? ?? const [])
           if (asJsonMap(m) case final member?) SiloRoomMember.fromJson(member),
       ],
+      anchorAt: DateTime.tryParse(json['anchor_at'] as String? ?? ''),
+      selfMemberId: _nonEmpty(json['self_member_id']),
+      inviteUrl: _nonEmpty(json['invite_url']),
+      hasPin: json['has_pin'] == true,
+      chatEnabled: json['chat_enabled'] == true,
+      reactionsEnabled: json['reactions_enabled'] == true,
     );
   }
 
@@ -115,7 +146,8 @@ class SiloRoom {
   /// What guests type to join.
   final String code;
 
-  /// `host_only` or `guest_play_pause`.
+  /// `host_only` or `guest_play_pause` on Silo, `host_only`,
+  /// `guests_can_pause` or `everyone` on Moonbase.
   final String guestControlPolicy;
   final bool isPaused;
   final double anchorPositionSeconds;
@@ -134,6 +166,18 @@ class SiloRoom {
   /// Host first.
   final List<SiloRoomMember> members;
 
+  // Moonbase's extensions, which Silo doesn't send.
+
+  /// The server time [anchorPositionSeconds] applies to.
+  final DateTime? anchorAt;
+  final String? selfMemberId;
+
+  /// The invite page as the server publishes it, absolute.
+  final String? inviteUrl;
+  final bool hasPin;
+  final bool chatEnabled;
+  final bool reactionsEnabled;
+
   bool get isPlaying => phase == 'playing';
   bool get isVoting => selectionMode == 'vote';
   bool get isStaged => phase == 'lobby' && selectedContentId != null;
@@ -149,6 +193,9 @@ class SiloRoomCommand {
     required this.positionSeconds,
     required this.executeAt,
     required this.playbackState,
+    this.byMemberId,
+    this.byDisplayName,
+    this.countdown = false,
   });
 
   static SiloRoomCommand? fromJson(Map<String, dynamic> json) {
@@ -164,6 +211,9 @@ class SiloRoomCommand {
       positionSeconds: (json['position_seconds'] as num?)?.toDouble() ?? 0,
       executeAt: executeAt,
       playbackState: json['playback_state'] as String? ?? '',
+      byMemberId: _nonEmpty(json['by_member_id']),
+      byDisplayName: _nonEmpty(json['by_display_name']),
+      countdown: json['countdown'] == true,
     );
   }
 
@@ -184,6 +234,13 @@ class SiloRoomCommand {
 
   /// The room's playback state once the command has run.
   final String playbackState;
+
+  /// Moonbase only: who asked for it.
+  final String? byMemberId;
+  final String? byDisplayName;
+
+  /// Moonbase only: the start after the ready wait, counted down to.
+  final bool countdown;
 }
 
 /// A title put up for a vote in a vote room.

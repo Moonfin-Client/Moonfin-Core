@@ -83,6 +83,7 @@ import '../screens/setup/setup_wizard_screen.dart';
 import 'destinations.dart';
 import 'focus_route_observer.dart';
 import 'route_lifecycle_observer.dart';
+import '../screens/watch_party/watch_together_route.dart';
 
 const _authRoutes = {
   Destinations.startup,
@@ -328,6 +329,15 @@ final appRouter = GoRouter(
         final session = GetIt.instance<SessionRepository>();
         return HomeScreen(key: ValueKey(session.activeUserId ?? ''));
       },
+    ),
+    GoRoute(
+      path: Destinations.watchParty,
+      builder: (context, state) => WatchPartyLinkScreen(
+        code: state.uri.queryParameters['code'],
+        serverId: state.uri.queryParameters['serverId'],
+        address: state.uri.queryParameters['address'],
+        switched: state.uri.queryParameters['userId'] != null,
+      ),
     ),
     GoRoute(
       path: Destinations.search,

@@ -48,6 +48,9 @@ import 'ui/widgets/cast_mini_player.dart';
 import 'ui/widgets/video_mini_player.dart';
 import 'ui/screens/settings/achievements_screen.dart';
 import 'ui/widgets/floating_notification.dart';
+import 'ui/screens/watch_party/silo_watch_party_screen.dart';
+import 'watch_party/moonbase_watch_party_api.dart';
+import 'watch_party/watch_party_rooms_service.dart';
 import 'ui/widgets/offline_banner.dart';
 import 'ui/widgets/playback/playback_tab_title.dart';
 import 'ui/widgets/times_up_gate.dart';
@@ -1128,11 +1131,17 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
   StreamSubscription<ChatThread>? _chatMessageSub;
   StreamSubscription<AchievementUnlocks>? _unlockSub;
   StreamSubscription<SeerrNotificationEvent>? _seerrNotificationSub;
+  StreamSubscription<MoonbaseRoomSummary>? _partyAlertSub;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (GetIt.instance.isRegistered<WatchPartyRoomsService>()) {
+      _partyAlertSub = GetIt.instance<WatchPartyRoomsService>().alerts.listen(
+        _handlePartyAlert,
+      );
+    }
     ref.read(syncPlayRuntimeCoordinatorProvider);
     final manager = ref.read(syncPlayManagerProvider);
     _syncPlayEventsSub = manager.uiEvents.listen(_handleSyncPlayEvent);
@@ -1178,6 +1187,7 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     _chatMessageSub?.cancel();
     _unlockSub?.cancel();
     _seerrNotificationSub?.cancel();
+    _partyAlertSub?.cancel();
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().removeListener(
         _handleServerMessagesChanged,
@@ -1271,6 +1281,55 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     final matches = appRouter.routerDelegate.currentConfiguration.matches;
     final path = matches.isEmpty ? '' : matches.last.matchedLocation;
     return Destinations.isPlayerRoute(path);
+  }
+
+  /// Party alerts: a TV banner that never takes focus and stays 8 seconds,
+  /// with the room first in the Home row, a toast with Join and Not now on
+  /// desktop, and a banner to tap on a phone.
+  void _handlePartyAlert(MoonbaseRoomSummary room) {
+    final navContext = _navigatorContext();
+    if (navContext == null) return;
+    final l10n = AppLocalizations.of(navContext);
+    final title = l10n.watchPartyStartedBy(room.hostName);
+    final body = room.isPlaying
+        ? '${watchPartyRoomTitle(l10n, room)} · '
+              '${l10n.watchPartyWatchingCount(room.memberCount)}'
+        : l10n.watchPartyInLobbyCount(
+            watchPartyRoomTitle(l10n, room),
+            room.memberCount,
+          );
+    void join() {
+      final context = _navigatorContext();
+      if (context != null) unawaited(joinListedRoom(context, room));
+    }
+
+    if (PlatformDetection.useLeanbackUi) {
+      FloatingNotification.show(
+        navContext,
+        title,
+        '$body\n${l10n.watchPartyFirstOnHome}',
+        null,
+        icon: Icons.groups_rounded,
+        duration: const Duration(seconds: 8),
+      );
+    } else if (PlatformDetection.isDesktop) {
+      FloatingNotification.show(
+        navContext,
+        title,
+        body,
+        null,
+        icon: Icons.groups_rounded,
+        actions: [(l10n.notNow, () {}), (l10n.syncPlayJoin, join)],
+      );
+    } else {
+      FloatingNotification.show(
+        navContext,
+        title,
+        body,
+        join,
+        icon: Icons.groups_rounded,
+      );
+    }
   }
 
   /// A banner for a chat message from a friend. Tapping it opens the chat.
