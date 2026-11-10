@@ -381,12 +381,11 @@ class MultiServerRepository {
       final heldBack = results[i]
           .where((item) => !taken.contains('${item.serverId}_${item.id}'))
           .toList();
+      _rowOffsets[cacheKey] = limit;
       if (heldBack.isEmpty) {
         _rowHeldBack.remove(cacheKey);
-        _rowOffsets.remove(cacheKey);
       } else {
         _rowHeldBack[cacheKey] = heldBack;
-        _rowOffsets[cacheKey] = limit;
       }
     }
     final totalCount = sessions.fold<int>(0, (sum, session) {
@@ -669,12 +668,16 @@ class MultiServerRepository {
           if (trackedOffset != null && trackedOffset > existingCount) {
             startIndex = trackedOffset;
           }
+          // A tracked offset is exactly where the server's playlists go on.
+          // Without one, round up to a whole page, since filtering can leave
+          // fewer of them in the row than the server returned.
+          final playlistStartIndex = trackedOffset != null
+              ? startIndex
+              : (startIndex / _defaultLimit).ceil() * _defaultLimit;
 
           switch (row.rowType) {
             case HomeRowType.playlists:
-              final pageCount = (startIndex / _defaultLimit).ceil();
-              final targetStartIndex = pageCount * _defaultLimit;
-              _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
+              _rowOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
                   _defaultSortBy;
@@ -687,7 +690,7 @@ class MultiServerRepository {
                 sortBy: sortBy,
                 sortOrder: sortOrder,
                 recursive: true,
-                startIndex: targetStartIndex,
+                startIndex: playlistStartIndex,
                 limit: _defaultLimit,
                 fields: _fields,
                 enableImageTypes: _imageTypes,
@@ -699,11 +702,9 @@ class MultiServerRepository {
               );
               _rowTotals[cacheKey] =
                   response['TotalRecordCount'] as int? ?? items.length;
-              return [...?_rowHeldBack.remove(cacheKey), ...items];
+              return [...?_rowHeldBack[cacheKey], ...items];
             case HomeRowType.audioPlaylists:
-              final pageCount = (startIndex / _defaultLimit).ceil();
-              final targetStartIndex = pageCount * _defaultLimit;
-              _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
+              _rowOffsets[cacheKey] = playlistStartIndex + _defaultLimit;
               final sortBy =
                   prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
                   _defaultSortBy;
@@ -716,7 +717,7 @@ class MultiServerRepository {
                 sortBy: sortBy,
                 sortOrder: sortOrder,
                 recursive: true,
-                startIndex: targetStartIndex,
+                startIndex: playlistStartIndex,
                 limit: _defaultLimit,
                 fields: _fields,
                 enableImageTypes: _imageTypes,
@@ -729,7 +730,7 @@ class MultiServerRepository {
               );
               _rowTotals[cacheKey] =
                   response['TotalRecordCount'] as int? ?? items.length;
-              return [...?_rowHeldBack.remove(cacheKey), ...items];
+              return [...?_rowHeldBack[cacheKey], ...items];
             case HomeRowType.audioArtists:
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
               final sortBy =
@@ -922,6 +923,11 @@ class MultiServerRepository {
         }, label: 'loadMore ${row.rowType} from ${session.server.name}'),
       ),
     );
+    // Every server answered, so the held-back playlists are in this page.
+    // Dropping them only now keeps them for the next try when one fails.
+    for (final session in sessions) {
+      _rowHeldBack.remove('${row.id}_${session.server.id}');
+    }
 
     final newItems = results.expand((e) => e).toList();
     if (newItems.isEmpty) return (row.items, row.totalCount);

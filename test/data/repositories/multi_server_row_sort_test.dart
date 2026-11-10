@@ -7,6 +7,7 @@ import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:moonfin/auth/store/credential_store.dart';
+import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/preference/preference_constants.dart';
@@ -44,6 +45,21 @@ void main() {
     enableImageTypes: any(named: 'enableImageTypes'),
     imageTypeLimit: any(named: 'imageTypeLimit'),
   );
+
+  List<dynamic> startIndexesAskedOf(String serverId) => verify(
+    () => itemsApis[serverId]!.getItems(
+      includeItemTypes: any(named: 'includeItemTypes'),
+      sortBy: any(named: 'sortBy'),
+      sortOrder: any(named: 'sortOrder'),
+      recursive: any(named: 'recursive'),
+      startIndex: captureAny(named: 'startIndex'),
+      limit: any(named: 'limit'),
+      isFavorite: any(named: 'isFavorite'),
+      fields: any(named: 'fields'),
+      enableImageTypes: any(named: 'enableImageTypes'),
+      imageTypeLimit: any(named: 'imageTypeLimit'),
+    ),
+  ).captured;
 
   // Each server answers already sorted by name, the way a server would for
   // the 'SortName' tie-break, so only the merge decides the final order.
@@ -262,7 +278,7 @@ void main() {
     ]);
   });
 
-  test('loading more playlists keeps the sort', () async {
+  Future<void> sortPlaylistsNewestFirst() async {
     final prefs = GetIt.instance<UserPreferences>();
     await prefs.set(
       UserPreferences.playlistsRowSortBy,
@@ -272,6 +288,27 @@ void main() {
       UserPreferences.playlistsRowSortOrder,
       SortDirection.descending,
     );
+  }
+
+  // Server a has the odd days and server b the even ones, so the newest 15
+  // of their 30 interleave and each server loses some of its first page.
+  Future<HomeRow> interleavedFirstPage() async {
+    await sortPlaylistsNewestFirst();
+    String day(int n) => '2025-01-${n.toString().padLeft(2, '0')}';
+    stubItems('a', 'Playlist', [
+      for (var i = 0; i < 15; i++) ('a${2 * i + 1}', day(2 * i + 1)),
+    ], total: 16);
+    stubItems('b', 'Playlist', [
+      for (var i = 0; i < 15; i++) ('b${2 * i + 2}', day(2 * i + 2)),
+    ], total: 16);
+    return multiServer.getAggregatedPlaylists(
+      sortBy: 'DateCreated,SortName',
+      sortOrder: 'Descending',
+    );
+  }
+
+  test('loading more playlists keeps the sort', () async {
+    await sortPlaylistsNewestFirst();
     stubItems('a', 'Playlist', [('Chill', '2019-01-01')], total: 30);
     stubItems('b', 'Playlist', [('Focus', '2023-01-01')], total: 30);
     final firstPage = await multiServer.getAggregatedPlaylists(
@@ -292,28 +329,7 @@ void main() {
   });
 
   test('loading more keeps the playlists the first row left out', () async {
-    final prefs = GetIt.instance<UserPreferences>();
-    await prefs.set(
-      UserPreferences.playlistsRowSortBy,
-      LibrarySortBy.dateAdded,
-    );
-    await prefs.set(
-      UserPreferences.playlistsRowSortOrder,
-      SortDirection.descending,
-    );
-    String day(int n) => '2025-01-${n.toString().padLeft(2, '0')}';
-    // Server a has the odd days and server b the even ones, so the newest 15
-    // of their 30 interleave and each server loses some of its first page.
-    stubItems('a', 'Playlist', [
-      for (var i = 0; i < 15; i++) ('a${2 * i + 1}', day(2 * i + 1)),
-    ], total: 16);
-    stubItems('b', 'Playlist', [
-      for (var i = 0; i < 15; i++) ('b${2 * i + 2}', day(2 * i + 2)),
-    ], total: 16);
-    final firstPage = await multiServer.getAggregatedPlaylists(
-      sortBy: 'DateCreated,SortName',
-      sortOrder: 'Descending',
-    );
+    final firstPage = await interleavedFirstPage();
     expect(firstPage.items, hasLength(15));
 
     stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
@@ -321,26 +337,52 @@ void main() {
     final (items, _) = await multiServer.loadMore(row: firstPage);
 
     for (final id in ['a', 'b']) {
-      final startIndexes = verify(
-        () => itemsApis[id]!.getItems(
-          includeItemTypes: any(named: 'includeItemTypes'),
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          recursive: any(named: 'recursive'),
-          startIndex: captureAny(named: 'startIndex'),
-          limit: any(named: 'limit'),
-          isFavorite: any(named: 'isFavorite'),
-          fields: any(named: 'fields'),
-          enableImageTypes: any(named: 'enableImageTypes'),
-          imageTypeLimit: any(named: 'imageTypeLimit'),
-        ),
-      ).captured;
-      expect(startIndexes, [null, 15], reason: 'server $id');
+      expect(startIndexesAskedOf(id), [null, 15], reason: 'server $id');
     }
     expect(items.map((item) => item.name), [
       for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
       'b-old',
       'a-old',
     ]);
+  });
+
+  test('a failed load more keeps the playlists the first row left out', () async {
+    final firstPage = await interleavedFirstPage();
+
+    // Server b drops out on the first try, after server a has answered.
+    stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
+    when(() => itemsCall(itemsApis['b']!)).thenThrow(Exception('b is down'));
+    await expectLater(multiServer.loadMore(row: firstPage), throwsException);
+
+    stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
+    final (items, _) = await multiServer.loadMore(row: firstPage);
+
+    expect(items.map((item) => item.name), [
+      for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
+      'b-old',
+      'a-old',
+    ]);
+  });
+
+  test('loading more goes on right after a first page of any size', () async {
+    String day(int n) =>
+        DateTime.utc(2025, 1, n).toIso8601String().substring(0, 10);
+    stubItems('a', 'Playlist', [
+      for (var n = 1; n <= 20; n++) ('a$n', day(2 * n - 1)),
+    ], total: 40);
+    stubItems('b', 'Playlist', [
+      for (var n = 1; n <= 20; n++) ('b$n', day(2 * n)),
+    ], total: 40);
+    final firstPage = await multiServer.getAggregatedPlaylists(
+      limit: 20,
+      sortBy: 'DateCreated,SortName',
+      sortOrder: 'Descending',
+    );
+
+    await multiServer.loadMore(row: firstPage);
+
+    for (final id in ['a', 'b']) {
+      expect(startIndexesAskedOf(id), [null, 20], reason: 'server $id');
+    }
   });
 }
