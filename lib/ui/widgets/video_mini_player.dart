@@ -311,7 +311,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     final client = _clientFor(item);
     final service = MediaSegmentService(
       client,
-      FeatureDetector(serverType: client.serverType, serverVersion: ''),
+      client.features,
       _prefs,
     );
     _segments = service;

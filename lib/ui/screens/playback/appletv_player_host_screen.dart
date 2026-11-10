@@ -1079,7 +1079,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       final prefs = GetIt.instance<UserPreferences>();
       final service = MediaSegmentService(
         client,
-        FeatureDetector(serverType: client.serverType, serverVersion: ''),
+        client.features,
         prefs,
       );
       _segmentService = service;

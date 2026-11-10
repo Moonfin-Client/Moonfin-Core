@@ -1116,7 +1116,7 @@ class _MediaBarState extends State<MediaBar>
     List<Map<String, dynamic>> remoteTrailers = item.remoteTrailers;
     // Plex items never carry trailer links, so there's nothing to fetch and
     // one is searched for instead.
-    if (client.serverType == ServerType.plex) {
+    if (!client.features.supportsRemoteTrailers) {
       if (streamUrl == null) {
         final url = await YouTubeStreamResolver.searchTrailer(
           item.title,

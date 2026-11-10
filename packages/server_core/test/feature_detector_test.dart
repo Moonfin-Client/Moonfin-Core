@@ -115,4 +115,82 @@ void main() {
   test('Silo offers the request screens through its own requests', () {
     expect(_for(ServerType.silo).supportsJellyseerr, isTrue);
   });
+
+  // Each flag answers what the server-type check it replaced did, in the
+  // order Jellyfin, Emby, Plex, Silo.
+  group('flags that replaced server-type checks', () {
+    const types = [
+      ServerType.jellyfin,
+      ServerType.emby,
+      ServerType.plex,
+      ServerType.silo,
+    ];
+    final cases = <String, (bool Function(FeatureDetector), List<bool>)>{
+      'supportsPersonalRatings': (
+        (f) => f.supportsPersonalRatings,
+        [true, true, false, true],
+      ),
+      'supportsPersonFavorites': (
+        (f) => f.supportsPersonFavorites,
+        [true, true, false, false],
+      ),
+      'supportsRemoteTrailers': (
+        (f) => f.supportsRemoteTrailers,
+        [true, true, false, true],
+      ),
+      'supportsTranscodedDownloads': (
+        (f) => f.supportsTranscodedDownloads,
+        [true, true, false, true],
+      ),
+      'supportsUhdFilter': (
+        (f) => f.supportsUhdFilter,
+        [true, false, true, true],
+      ),
+      'supportsExtraLibraryFilters': (
+        (f) => f.supportsExtraLibraryFilters,
+        [true, true, false, true],
+      ),
+      'supportsUnreleasedSeriesFilter': (
+        (f) => f.supportsUnreleasedSeriesFilter,
+        [true, false, false, false],
+      ),
+      'supportsGuideCategoryFilters': (
+        (f) => f.supportsGuideCategoryFilters,
+        [true, true, false, true],
+      ),
+      'collectionsNeedPermission': (
+        (f) => f.collectionsNeedPermission,
+        [true, false, false, false],
+      ),
+      'supportsAchievements': (
+        (f) => f.supportsAchievements,
+        [true, false, false, false],
+      ),
+      'supportsPluginSettingsStream': (
+        (f) => f.supportsPluginSettingsStream,
+        [true, false, false, false],
+      ),
+      'supportsMoonbaseInstall': (
+        (f) => f.supportsMoonbaseInstall,
+        [true, false, false, false],
+      ),
+      'supportsHevcEncodingSetting': (
+        (f) => f.supportsHevcEncodingSetting,
+        [true, false, false, false],
+      ),
+      'supportsBandwidthTest': (
+        (f) => f.supportsBandwidthTest,
+        [true, true, true, false],
+      ),
+      'supportsBookProgressReports': (
+        (f) => f.supportsBookProgressReports,
+        [true, false, false, false],
+      ),
+    };
+    for (final MapEntry(key: name, value: (flag, expected)) in cases.entries) {
+      test(name, () {
+        expect([for (final type in types) flag(_for(type))], expected);
+      });
+    }
+  });
 }

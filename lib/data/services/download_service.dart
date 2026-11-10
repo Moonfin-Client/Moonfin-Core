@@ -2274,9 +2274,9 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
   }
 
-  /// Plex's transcoder makes streams rather than files, so Plex only
-  /// downloads originals.
-  bool get canDownloadTranscoded => _client.serverType != ServerType.plex;
+  /// See [FeatureDetector.supportsTranscodedDownloads].
+  bool get canDownloadTranscoded =>
+      _client.features.supportsTranscodedDownloads;
 
   /// The qualities the server makes for this account, Original first.
   Future<List<DownloadQuality>> offeredQualities() async {

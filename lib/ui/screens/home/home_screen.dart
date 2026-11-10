@@ -5136,7 +5136,7 @@ class _ContentRowsState extends State<_ContentRows>
     final width = side * 1.6;
     final service = GetIt.instance<WatchPartyRoomsService>();
     final client = GetIt.instance<MediaServerClient>();
-    final labels = client.serverType == ServerType.jellyfin;
+    final labels = client.features.supportsSyncPlay;
     final cards = <Object?>[...service.rooms, ...service.groups, null];
 
     void open(Object? card) {

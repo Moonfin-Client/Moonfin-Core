@@ -39,11 +39,7 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
   MediaServerClient client,
   Dio dio,
 ) async {
-  final features = FeatureDetector(
-    serverType: client.serverType,
-    serverVersion: '',
-  );
-  if (!features.supportsMoonfinPlugin) return null;
+  if (!client.features.supportsMoonfinPlugin) return null;
   if (client.serverType == ServerType.plex) return _plexEndpoint(client, dio);
   final silo = siloClientOf(client);
   if (client.serverType == ServerType.silo && silo == null) return null;

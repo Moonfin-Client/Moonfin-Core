@@ -18,7 +18,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
   late final PreferenceBinding<double> _speedDuration;
   late final PreferenceBinding<double> _minDelaySkip;
   late final PreferenceBinding<double> _extraOffset;
-  late final bool _onJellyfin;
+  late final bool _hasSyncPlay;
 
   @override
   void initState() {
@@ -47,10 +47,10 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
     // The Start parties with setting only shows on Jellyfin once Moonbase
     // answers.
     final getIt = GetIt.instance;
-    _onJellyfin =
+    _hasSyncPlay =
         getIt.isRegistered<MediaServerClient>() &&
-        getIt<MediaServerClient>().serverType == ServerType.jellyfin;
-    if (_onJellyfin && getIt.isRegistered<SiloWatchPartyManager>()) {
+        getIt<MediaServerClient>().features.supportsSyncPlay;
+    if (_hasSyncPlay && getIt.isRegistered<SiloWatchPartyManager>()) {
       unawaited(
         getIt<SiloWatchPartyManager>().availability().then((_) {
           if (mounted) setState(() {});
@@ -141,7 +141,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
               ],
             ),
             // Only SyncPlay groups use these, and only Jellyfin has SyncPlay.
-            if (_onJellyfin) ...[
+            if (_hasSyncPlay) ...[
               _SectionHeader(l10n.syncPlay),
               adaptiveListSection(
                 children: [
