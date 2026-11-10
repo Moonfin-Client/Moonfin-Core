@@ -59,6 +59,13 @@ const emptyResume = HomeRow(
   rowType: HomeRowType.resume,
 );
 
+HomeRow resumeWith(String itemId) => HomeRow(
+  id: 'resume',
+  title: 'Continue Watching',
+  rowType: HomeRowType.resume,
+  items: [AggregatedItem(id: itemId, serverId: 'server', rawData: {})],
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -292,6 +299,47 @@ void main() {
     );
     await quick;
     expect(vm.rows.single.items.single.id, 'played-since');
+  });
+
+  test('returning to Home during a load refetches once it ends', () async {
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    final stale = resume;
+    expectResumeLoad();
+
+    final quick = vm.refreshResumeAndNextUp();
+    await pumpEventQueue();
+    expect(resumeStarted.isCompleted, isFalse);
+
+    stale.complete(resumeWith('stale'));
+    await loading;
+    await resumeStarted.future;
+    resume.complete(resumeWith('fresh'));
+    await quick;
+    final resumeRow = vm.rows.firstWhere((r) => r.id == 'resume');
+    expect(resumeRow.items.single.id, 'fresh');
+  });
+
+  test('a merged refresh waits for the merged fetch in flight', () async {
+    await prefs.set(UserPreferences.mergeContinueWatchingNextUp, true);
+    final vm = model();
+    await vm.load();
+    await resumeStarted.future;
+    final stale = resume;
+    expectResumeLoad();
+
+    final quick = vm.refreshResumeAndNextUp();
+    await pumpEventQueue();
+    expect(resumeStarted.isCompleted, isFalse);
+
+    stale.complete(resumeWith('stale'));
+    await resumeStarted.future;
+    resume.complete(resumeWith('fresh'));
+    await quick;
+    final ids = vm.rows.single.items.map((item) => item.id);
+    expect(ids, contains('fresh'));
+    expect(ids, isNot(contains('stale')));
   });
 
   test('a failed load is not taken for an empty section', () async {
