@@ -10,6 +10,7 @@ import '../../../../data/services/connectivity_service.dart';
 import '../../../../data/services/row_data_source.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
+import '../../home/home_view_model.dart';
 
 /// One Home row as the preview asks for it: the section and the sort it's
 /// drawn with, on the server it would load from.
@@ -195,15 +196,8 @@ class PreviewRowSamples extends ChangeNotifier {
 
   /// [row] as Home keeps it: the same empty collections and playlists
   /// dropped.
-  static HomeRow _shown(HomeRow row) => row.copyWith(
-    items: row.items
-        .where(
-          (item) =>
-              !(item.type == 'BoxSet' || item.type == 'Playlist') ||
-              (item.childCount != 0 && item.recursiveItemCount != 0),
-        )
-        .toList(growable: false),
-  );
+  static HomeRow _shown(HomeRow row) =>
+      row.copyWith(items: HomeViewModel.filterEmptyElements(row.items));
 
   void _store(
     PreviewRowQuery query,

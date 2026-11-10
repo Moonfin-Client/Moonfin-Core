@@ -652,7 +652,7 @@ class HomeViewModel extends ChangeNotifier {
         // Cleanup runs even when the load failed, so the section's loading
         // placeholder is cleared instead of spinning forever.
         final loadedRows = sectionRows
-            .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+            .map((r) => r.copyWith(items: filterEmptyElements(r.items)))
             .where(
               (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
             )
@@ -840,7 +840,9 @@ class HomeViewModel extends ChangeNotifier {
         .toList(growable: false);
   }
 
-  List<AggregatedItem> _filterEmptyElements(List<AggregatedItem> items) {
+  /// [items] without the collections and playlists that have nothing in
+  /// them, which Home leaves out.
+  static List<AggregatedItem> filterEmptyElements(List<AggregatedItem> items) {
     return items.where((item) {
       if (item.type == 'BoxSet' || item.type == 'Playlist') {
         if (item.childCount == 0 || item.recursiveItemCount == 0) {
@@ -1137,7 +1139,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     final index = _rows.indexWhere((r) => r.id == rowId);
     if (index < 0) return;
-    final items = _filterEmptyElements(filter(fresh.items));
+    final items = filterEmptyElements(filter(fresh.items));
     // The row is back to its first page, so paging starts over from there.
     _rowOffsets.remove(rowId);
     _rows = List.of(_rows);
@@ -1211,7 +1213,7 @@ class HomeViewModel extends ChangeNotifier {
 
       if (hide != null) {
         final seen = <String>{};
-        final items = _filterEmptyElements(
+        final items = filterEmptyElements(
           hide(result.$1).where((item) => seen.add(item.id)).toList(),
         );
         // Counted from the server's list, so a page that held only hidden
@@ -1227,7 +1229,7 @@ class HomeViewModel extends ChangeNotifier {
         return;
       }
 
-      final filteredItems = _filterEmptyElements(result.$1);
+      final filteredItems = filterEmptyElements(result.$1);
       final newTotalCount = filteredItems.length <= row.items.length
           ? filteredItems.length
           : (result.$2 - (result.$1.length - filteredItems.length));
@@ -2613,7 +2615,7 @@ class HomeViewModel extends ChangeNotifier {
     ]);
     final addedNothing = appended.length == row.items.length;
 
-    final items = _filterEmptyElements(appended);
+    final items = filterEmptyElements(appended);
     final index = _rows.indexWhere((r) => r.id == row.id);
     if (index < 0) return;
     _rows = List.of(_rows);

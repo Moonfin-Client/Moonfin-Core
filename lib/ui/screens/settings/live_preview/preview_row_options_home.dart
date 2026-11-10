@@ -1254,7 +1254,7 @@ class _Row extends StatelessWidget {
     final prefs = frame.prefs;
     final modern = frame.isModern(row);
     final subtitle = modern && isFocused && !row.isAudio
-        ? _modernFocusedMetadataLine(item)
+        ? homeRowModernMetadataLine(item)
         : item.subtitle;
     final card = MediaCard(
       title: item.name,
@@ -1380,38 +1380,4 @@ class _LightCard extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The year, genres and runtime a grown Modern card shows under its title.
-/// A copy of HomeScreen's private _v2MetadataLine and _formatRuntime.
-String _modernFocusedMetadataLine(AggregatedItem item) {
-  final parts = <String>[];
-  if (item.type == 'MusicAlbum' || item.type == 'Audio') {
-    final artist = (item.albumArtist ?? '').trim().isNotEmpty
-        ? item.albumArtist!.trim()
-        : (item.albumArtists.isNotEmpty
-              ? (item.albumArtists.first['Name'] as String?)?.trim()
-              : (item.artists.isNotEmpty ? item.artists.first.trim() : ''));
-    final year = item.productionYear;
-    if (artist != null && artist.isNotEmpty) {
-      parts.add(year != null ? '$artist ($year)' : artist);
-    } else if (year != null) {
-      parts.add('$year');
-    }
-  } else if (item.productionYear case final year?) {
-    parts.add('$year');
-  }
-  final genres = item.genres.take(2).join(' • ');
-  if (genres.isNotEmpty) parts.add(genres);
-  final minutesTotal = item.runtime?.inMinutes ?? 0;
-  if (minutesTotal > 0) {
-    final hours = minutesTotal ~/ 60;
-    final minutes = minutesTotal % 60;
-    parts.add(
-      hours <= 0
-          ? '${minutes}m'
-          : (minutes == 0 ? '${hours}h' : '${hours}h ${minutes}m'),
-    );
-  }
-  return parts.join(' • ');
 }
