@@ -8,6 +8,7 @@ import '../../../../data/models/home_row.dart';
 import '../../../../data/repositories/multi_server_repository.dart';
 import '../../../../data/services/connectivity_service.dart';
 import '../../../../data/services/row_data_source.dart';
+import '../../../../l10n/current_app_localizations.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../widgets/settings/settings_preview_scope.dart';
 import '../../home/home_view_model.dart';
@@ -93,7 +94,9 @@ class PreviewRowSamples extends ChangeNotifier {
     PreviewRowSamples samples,
   ) => _byController[controller] = samples;
 
-  static const _maxEntries = 16;
+  /// Room for every Row Options row with two sorts each, so going back to
+  /// the sort just left still draws at once with all eight Favorites rows on.
+  static const _maxEntries = 32;
   static const _maxInFlight = 3;
 
   final Future<HomeRow> Function(PreviewRowQuery query) _load;
@@ -235,6 +238,9 @@ class PreviewRowSamples extends ChangeNotifier {
   static Future<HomeRow> _loadFromServer(PreviewRowQuery query) {
     final sortBy = query.sortBy.apiValue;
     final sortOrder = query.sortOrder.apiValue;
+    if (HomeViewModel.isFavoriteSectionType(query.section)) {
+      return _loadFavorites(query, sortBy: sortBy, sortOrder: sortOrder);
+    }
     if (query.multiServer &&
         GetIt.instance.isRegistered<MultiServerRepository>()) {
       final repo = GetIt.instance<MultiServerRepository>();
@@ -283,5 +289,40 @@ class PreviewRowSamples extends ChangeNotifier {
       ),
       _ => throw UnsupportedError('${query.section}'),
     };
+  }
+
+  /// A Favorites row, with the id, title and item types Home gives it.
+  static Future<HomeRow> _loadFavorites(
+    PreviewRowQuery query, {
+    required String sortBy,
+    required String sortOrder,
+  }) {
+    final section = query.section;
+    final rowId = HomeViewModel.favoriteRowIdForSection(section);
+    final title = HomeViewModel.favoriteTitleForSection(
+      section,
+      currentAppLocalizations(),
+    );
+    final itemTypes = HomeViewModel.favoriteFilterForSection(
+      section,
+    ).itemTypes;
+    if (query.multiServer &&
+        GetIt.instance.isRegistered<MultiServerRepository>()) {
+      return GetIt.instance<MultiServerRepository>().getAggregatedFavorites(
+        rowId: rowId,
+        title: title,
+        includeItemTypes: itemTypes,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+      );
+    }
+    return GetIt.instance<RowDataSource>().loadFavorites(
+      query.serverId,
+      rowId: rowId,
+      title: title,
+      includeItemTypes: itemTypes,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
   }
 }

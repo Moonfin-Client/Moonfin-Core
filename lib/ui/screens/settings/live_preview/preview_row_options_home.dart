@@ -36,7 +36,17 @@ enum RowOptionsGroup {
     HomeSectionType.audioArtists,
     HomeSectionType.audioPlaylists,
   }),
-  collections({HomeSectionType.collections});
+  collections({HomeSectionType.collections}),
+  favorites({
+    HomeSectionType.favoriteMovies,
+    HomeSectionType.favoriteSeries,
+    HomeSectionType.favoriteEpisodes,
+    HomeSectionType.favoritePeople,
+    HomeSectionType.favoriteArtists,
+    HomeSectionType.favoriteMusicVideos,
+    HomeSectionType.favoriteAlbums,
+    HomeSectionType.favoriteSongs,
+  });
 
   const RowOptionsGroup(this.sections);
 
@@ -46,16 +56,19 @@ enum RowOptionsGroup {
   Preference<bool> get display => switch (this) {
     audio => UserPreferences.displayAudioRows,
     collections => UserPreferences.displayCollectionsRows,
+    favorites => UserPreferences.displayFavoritesRows,
   };
 
   Preference<LibrarySortBy> get sortBy => switch (this) {
     audio => UserPreferences.audioRowsSortBy,
     collections => UserPreferences.collectionsRowSortBy,
+    favorites => UserPreferences.favoritesRowSortBy,
   };
 
   Preference<SortDirection> get sortOrder => switch (this) {
     audio => UserPreferences.audioRowsSortOrder,
     collections => UserPreferences.collectionsRowSortOrder,
+    favorites => UserPreferences.favoritesRowSortOrder,
   };
 
   /// The group a Row Options setting belongs to, or null for any other key.
@@ -67,6 +80,9 @@ enum RowOptionsGroup {
     'pref_collections_row_sort_by' ||
     'pref_collections_row_sort_order' ||
     'pref_collections_row_show_episodes' => collections,
+    'pref_display_favorites_rows' ||
+    'pref_favorites_row_sort_by' ||
+    'pref_favorites_row_sort_order' => favorites,
     _ => null,
   };
 
@@ -380,6 +396,7 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
       final rowsGroup = switch (group) {
         RowOptionsGroup.audio => l10n.general,
         RowOptionsGroup.collections => l10n.collections,
+        RowOptionsGroup.favorites => l10n.favorites,
       };
       return _Plan.home(
         group: group,
@@ -404,6 +421,17 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
             ),
           (_, RowOptionsGroup.collections, false) =>
             l10n.settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+              setting,
+              rowsGroup,
+              l10n.disabled,
+            ),
+          (_, RowOptionsGroup.favorites, true) =>
+            l10n.settingsPreviewFavoritesOffInHomeRows(
+              rowsGroup,
+              l10n.disabled,
+            ),
+          (_, RowOptionsGroup.favorites, false) =>
+            l10n.settingsPreviewFavoritesOffInHomeRowsSwitchOff(
               setting,
               rowsGroup,
               l10n.disabled,
@@ -498,6 +526,7 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
                 RowOptionsGroup.audio => l10n.settingsPreviewAudioRowsEmpty,
                 RowOptionsGroup.collections =>
                   l10n.settingsPreviewCollectionsEmpty,
+                RowOptionsGroup.favorites => l10n.settingsPreviewFavoritesEmpty,
               },
       );
     }
@@ -531,6 +560,7 @@ String _displaySwitchName(AppLocalizations l10n, RowOptionsGroup group) =>
     switch (group) {
       RowOptionsGroup.audio => l10n.displayAudioRows,
       RowOptionsGroup.collections => l10n.displayCollectionsRows,
+      RowOptionsGroup.favorites => l10n.displayFavoritesRows,
     };
 
 /// For the inspector: why the Row Options setting [key] can't change Home

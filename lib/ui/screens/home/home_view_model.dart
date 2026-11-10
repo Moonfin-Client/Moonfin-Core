@@ -216,7 +216,8 @@ class HomeViewModel extends ChangeNotifier {
   /// finished.
   void _saveRowCache() => unawaited(_cacheStore.write(_homeCacheKey(), _rows));
 
-  static bool _isFavoriteSectionType(HomeSectionType type) {
+  /// Whether [type] is one of the Favorites sections.
+  static bool isFavoriteSectionType(HomeSectionType type) {
     return switch (type) {
       HomeSectionType.favoriteMovies ||
       HomeSectionType.favoriteSeries ||
@@ -486,7 +487,7 @@ class HomeViewModel extends ChangeNotifier {
                 // answer are shown.
                 (!offline || _isOfflineCapableSection(c)) &&
                 _belongsToThisServer(c) &&
-                (showFavoritesRows || !_isFavoriteSectionType(c.type)) &&
+                (showFavoritesRows || !isFavoriteSectionType(c.type)) &&
                 (showCollectionsRows ||
                     !((c.isBuiltin && _isCollectionsSectionType(c.type)) ||
                         (c.isPluginDynamic &&
@@ -911,7 +912,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.favoriteAlbums:
       case HomeSectionType.favoriteSongs:
         return row.rowType == HomeRowType.favorites &&
-            row.id == _favoriteRowIdForSection(cfg.type);
+            row.id == favoriteRowIdForSection(cfg.type);
       case HomeSectionType.collections:
         // Only claim the single aggregated collections row (id == 'collections').
         // Individual per-collection plugin rows have stableId-based IDs and
@@ -1582,9 +1583,9 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.favoriteMusicVideos:
       case HomeSectionType.favoriteAlbums:
       case HomeSectionType.favoriteSongs:
-        final favoriteFilter = _favoriteFilterForSection(section);
-        final rowId = _favoriteRowIdForSection(section);
-        final title = _favoriteTitleForSection(section, l10n);
+        final favoriteFilter = favoriteFilterForSection(section);
+        final rowId = favoriteRowIdForSection(section);
+        final title = favoriteTitleForSection(section, l10n);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedFavorites(
@@ -2085,8 +2086,8 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.favoriteAlbums:
       case HomeSectionType.favoriteSongs:
         return HomeRow(
-          id: _favoriteRowIdForSection(section),
-          title: _favoriteTitleForSection(section, l10n),
+          id: favoriteRowIdForSection(section),
+          title: favoriteTitleForSection(section, l10n),
           rowType: HomeRowType.favorites,
           isLoading: true,
         );
@@ -2414,7 +2415,8 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  static FavoriteTypeFilter _favoriteFilterForSection(HomeSectionType type) {
+  /// The item types a Favorites [type] row loads.
+  static FavoriteTypeFilter favoriteFilterForSection(HomeSectionType type) {
     return switch (type) {
       HomeSectionType.favoriteMovies => FavoriteTypeFilter.movie,
       HomeSectionType.favoriteSeries => FavoriteTypeFilter.series,
@@ -2428,7 +2430,8 @@ class HomeViewModel extends ChangeNotifier {
     };
   }
 
-  static String _favoriteRowIdForSection(HomeSectionType type) {
+  /// The id Home gives a Favorites [type] row.
+  static String favoriteRowIdForSection(HomeSectionType type) {
     return switch (type) {
       HomeSectionType.favoriteMovies => 'favorites_movies',
       HomeSectionType.favoriteSeries => 'favorites_series',
@@ -2442,11 +2445,12 @@ class HomeViewModel extends ChangeNotifier {
     };
   }
 
-  static String _favoriteTitleForSection(
+  /// The title Home gives a Favorites [type] row.
+  static String favoriteTitleForSection(
     HomeSectionType type,
     AppLocalizations l10n,
   ) {
-    final filter = _favoriteFilterForSection(type);
+    final filter = favoriteFilterForSection(type);
     return 'Favorite ${filter.displayName}';
   }
 

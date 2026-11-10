@@ -16762,6 +16762,38 @@
       }
     }
   },
+  "settingsPreviewFavoritesOffInHomeRows": "The Favorites rows are all turned off. To show one, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewFavoritesOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while a Favorites Row Options setting has focus and every Favorites section (Favorite Movies, Favorite Series and the rest) is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Favorites"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewFavoritesOffInHomeRowsSwitchOff": "To see a Favorites row on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn one on.",
+  "@settingsPreviewFavoritesOffInHomeRowsSwitchOff": {
+    "description": "Notice over the dimmed Settings live preview while a Favorites Row Options setting has focus, Display Favorites Rows is off, and every Favorites section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Favorites rows once the switch is on, so it gives the steps in that order",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Favorites Rows"
+      },
+      "group": {
+        "type": "String",
+        "example": "Favorites"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
   "settingsPreviewRowsOffInKidsMode": "Kids Mode keeps these rows off Home, so these settings don't change it.",
   "@settingsPreviewRowsOffInKidsMode": {
     "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
@@ -16797,6 +16829,10 @@
   "settingsPreviewCollectionsEmpty": "There are no collections to show, so Home leaves this row out.",
   "@settingsPreviewCollectionsEmpty": {
     "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+  },
+  "settingsPreviewFavoritesEmpty": "There are no favorites to show, so Home leaves these rows out.",
+  "@settingsPreviewFavoritesEmpty": {
+    "description": "Note over the Settings live preview while a Favorites Row Options setting has focus and none of the Favorites rows turned on in Rows has anything to show, so Home shows no Favorites row"
   },
   "settingsPreviewShowEpisodesNote": "This only changes rows for a single collection added in Rows. The Collections row looks the same.",
   "@settingsPreviewShowEpisodesNote": {

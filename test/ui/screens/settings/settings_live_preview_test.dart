@@ -22,6 +22,7 @@ import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
@@ -46,6 +47,7 @@ import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
+import 'package:moonfin/ui/screens/settings/live_preview/preview_row_options_home.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/preview_row_samples.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/settings/subtitle_customization_screen.dart';
@@ -100,6 +102,8 @@ class _Playback extends Mock implements PlaybackManager {}
 class _Home extends Mock implements HomeViewModel {}
 
 class _Connectivity extends Mock implements ConnectivityService {}
+
+class _MultiServer extends Mock implements MultiServerRepository {}
 
 /// Two films in a library called Films, whatever the call asks for.
 class _Items implements ItemsApi {
@@ -3537,6 +3541,303 @@ void main() {
       await show(tester, controller);
       expect(card(tester, 'Abyss').externalIsFocused, isTrue);
       expect(find.text('Zed'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    HomeRow favoritesRow(HomeSectionType section, List<AggregatedItem> items) =>
+        HomeRow(
+          id: HomeViewModel.favoriteRowIdForSection(section),
+          title: 'Favorites',
+          rowType: HomeRowType.favorites,
+          items: items,
+        );
+
+    final movies = [
+      for (final name in ['Alpha', 'Gamma']) item(name, 'Movie'),
+    ];
+
+    testWidgets(
+      'a Favorites setting focuses the first Favorites row Home would show',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayFavoritesRows, true);
+        await homeRows([
+          HomeSectionType.favoriteSeries,
+          HomeSectionType.favoriteMovies,
+          HomeSectionType.genres,
+        ]);
+        home([genres]);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Sort Order',
+              prefKey: 'pref_favorites_row_sort_order',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) async => favoritesRow(
+            query.section,
+            // No favorite shows yet, so Home leaves that row out.
+            query.section == HomeSectionType.favoriteMovies ? movies : const [],
+          ),
+          asked: asked,
+        );
+        await show(tester, controller);
+        expect(card(tester, 'Alpha').externalIsFocused, isTrue);
+        expect(card(tester, 'Alpha').aspectRatio, closeTo(2 / 3, 0.001));
+        expect(find.text('Comedy'), findsOneWidget);
+        expect(
+          asked.map((q) => q.section).toSet(),
+          {HomeSectionType.favoriteSeries, HomeSectionType.favoriteMovies},
+        );
+
+        controller.tryValue(
+          'pref_favorites_row_sort_order',
+          SortDirection.descending,
+        );
+        await show(tester, controller);
+        expect(
+          asked.where((q) => q.sortOrder == SortDirection.descending).length,
+          2,
+        );
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Favorites rows load the way Home loads them', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await homeRows([HomeSectionType.favoriteMovies]);
+      home(const []);
+      final rows = _Rows();
+      when(
+        () => rows.loadFavorites(
+          any(),
+          rowId: any(named: 'rowId'),
+          title: any(named: 'title'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+        ),
+      ).thenAnswer(
+        (_) async => favoritesRow(HomeSectionType.favoriteMovies, movies),
+      );
+      GetIt.instance.registerSingleton<RowDataSource>(rows);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Favorites Row Sorting',
+            prefKey: 'pref_favorites_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      controller.tryValue('pref_favorites_row_sort_by', LibrarySortBy.dateAdded);
+      PreviewRowSamples.debugSet(controller, PreviewRowSamples());
+      await show(tester, controller);
+      verify(
+        () => rows.loadFavorites(
+          any(),
+          rowId: 'favorites_movies',
+          title: 'Favorite Movies',
+          includeItemTypes: ['Movie'],
+          sortBy: LibrarySortBy.dateAdded.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+        ),
+      ).called(1);
+      expect(card(tester, 'Alpha').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('with Multi-Server on, Favorites rows load from every server', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await prefs.set(UserPreferences.enableMultiServerLibraries, true);
+      await homeRows([HomeSectionType.favoriteSeries]);
+      home(const []);
+      final repo = _MultiServer();
+      when(
+        () => repo.getAggregatedFavorites(
+          rowId: any(named: 'rowId'),
+          title: any(named: 'title'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+        ),
+      ).thenAnswer(
+        (_) async => favoritesRow(HomeSectionType.favoriteSeries, movies),
+      );
+      GetIt.instance.registerSingleton<MultiServerRepository>(repo);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Favorites Row Sorting',
+            prefKey: 'pref_favorites_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      PreviewRowSamples.debugSet(controller, PreviewRowSamples());
+      await show(tester, controller);
+      verify(
+        () => repo.getAggregatedFavorites(
+          rowId: 'favorites_series',
+          title: 'Favorite Series',
+          includeItemTypes: ['Series'],
+          sortBy: LibrarySortBy.name.apiValue,
+          sortOrder: SortDirection.ascending.apiValue,
+        ),
+      ).called(1);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('going back to the last sort with every Favorites row on '
+        'fetches nothing', (tester) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await prefs.set(UserPreferences.displayCollectionsRows, true);
+      await homeRows([
+        ...RowOptionsGroup.favorites.sections,
+        ...RowOptionsGroup.audio.sections,
+        HomeSectionType.collections,
+      ]);
+      home(const []);
+      final asked = <PreviewRowQuery>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Sort Order',
+            prefKey: 'pref_favorites_row_sort_order',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => favoritesRow(query.section, movies),
+        asked: asked,
+      );
+      Future<void> settle() async {
+        for (var i = 0; i < 8; i++) {
+          await show(tester, controller);
+        }
+      }
+
+      await settle();
+      controller.tryValue(
+        'pref_favorites_row_sort_order',
+        SortDirection.descending,
+      );
+      await settle();
+      final fetched = asked.length;
+      controller.tryValue(
+        'pref_favorites_row_sort_order',
+        SortDirection.ascending,
+      );
+      await settle();
+      expect(asked.length, fetched);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Favorites rows off in Home Rows name the Favorites group', (
+      tester,
+    ) async {
+      tv();
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.displayFavoritesRows,
+        true,
+      );
+      await homeRows([HomeSectionType.genres]);
+      home([genres]);
+      final asked = <PreviewRowQuery>[];
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Display Favorites Rows',
+            prefKey: 'pref_display_favorites_rows',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => favoritesRow(query.section, movies),
+        asked: asked,
+      );
+      await show(tester, controller);
+      expect(
+        find.text(
+          'The Favorites rows are all turned off. To show one, go to Rows, '
+          'open Favorites under Disabled, and turn it on.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(MediaCard), findsNothing);
+      expect(asked, isEmpty);
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      controller.tryValue('pref_display_favorites_rows', false);
+      await show(tester, controller);
+      expect(
+        find.text(
+          l10n.settingsPreviewFavoritesOffInHomeRowsSwitchOff(
+            l10n.displayFavoritesRows,
+            l10n.favorites,
+            l10n.disabled,
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          l10n.settingsPreviewNeedsSwitchAndRow(l10n.displayFavoritesRows),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('with no favorites yet Home stays as it is and says why', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await homeRows([
+        HomeSectionType.favoriteMovies,
+        HomeSectionType.favoriteSongs,
+      ]);
+      home(const []);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Favorites Row Sorting',
+            prefKey: 'pref_favorites_row_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (query) async => favoritesRow(query.section, const []));
+      await show(tester, controller);
+      expect(
+        find.text(
+          'There are no favorites to show, so Home leaves these rows out.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(MediaCard), findsNothing);
       await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });
