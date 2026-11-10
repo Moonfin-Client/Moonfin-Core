@@ -1183,7 +1183,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       unawaited(_loadReviews());
       unawaited(_syncSeriesTrackChoices());
       futures.add(_loadRatings());
-      futures.add(_loadSeasons());
+      futures.add(forActions(_loadSeasons()));
       futures.add(forActions(_loadNextUp()));
       futures.add(_loadSimilar());
       futures.add(forActions(_loadFeatures()));
@@ -1203,11 +1203,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadSimilar());
       futures.add(forActions(_loadFeatures()));
     } else if (type == 'MusicArtist') {
-      futures.add(_loadAlbums());
-      futures.add(_loadTracks(artistId: itemId));
+      futures.add(forActions(_loadAlbums()));
+      futures.add(forActions(_loadTracks(artistId: itemId)));
       futures.add(_loadSimilar());
     } else if (type == 'MusicAlbum' || type == 'Playlist') {
-      futures.add(_loadTracks());
+      futures.add(forActions(_loadTracks()));
     } else if (type == 'AudioBook') {
       futures.add(_loadRatings());
       futures.add(_loadSimilar());
