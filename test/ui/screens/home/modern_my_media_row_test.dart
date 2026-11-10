@@ -3,7 +3,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
-import 'package:moonfin/ui/screens/home/home_screen.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -40,9 +40,9 @@ void main() {
         rowType: HomeRowType.libraryTiles,
       );
 
-      expect(HomeScreen.isRowModern(resumeRow, prefs), isFalse);
-      expect(HomeScreen.isRowModern(myMediaRow, prefs), isFalse);
-      expect(HomeScreen.isModernMyMediaStatic(myMediaRow, prefs), isFalse);
+      expect(isHomeRowModern(resumeRow, prefs), isFalse);
+      expect(isHomeRowModern(myMediaRow, prefs), isFalse);
+      expect(isHomeRowModernMyMediaStatic(myMediaRow, prefs), isFalse);
     });
 
     test('My Media row uses modern layout with expansion when toggle is enabled in Modern style', () async {
@@ -62,9 +62,9 @@ void main() {
         rowType: HomeRowType.libraryTiles,
       );
 
-      expect(HomeScreen.isRowModern(resumeRow, prefs), isTrue);
-      expect(HomeScreen.isRowModern(myMediaRow, prefs), isTrue);
-      expect(HomeScreen.isModernMyMediaStatic(myMediaRow, prefs), isFalse);
+      expect(isHomeRowModern(resumeRow, prefs), isTrue);
+      expect(isHomeRowModern(myMediaRow, prefs), isTrue);
+      expect(isHomeRowModernMyMediaStatic(myMediaRow, prefs), isFalse);
     });
 
     test('My Media row remains in modern layout with static mirrored thumbnails when toggle is disabled in Modern style', () async {
@@ -90,10 +90,10 @@ void main() {
       );
 
       // Sizing stays in modern engine to mirror the expanded thumbnail dimensions of the next rows
-      expect(HomeScreen.isRowModern(resumeRow, prefs), isTrue);
-      expect(HomeScreen.isRowModern(myMediaRow, prefs), isTrue);
-      expect(HomeScreen.isModernMyMediaStatic(myMediaRow, prefs), isTrue);
-      expect(HomeScreen.isModernMyMediaStatic(myMediaSmallRow, prefs), isTrue);
+      expect(isHomeRowModern(resumeRow, prefs), isTrue);
+      expect(isHomeRowModern(myMediaRow, prefs), isTrue);
+      expect(isHomeRowModernMyMediaStatic(myMediaRow, prefs), isTrue);
+      expect(isHomeRowModernMyMediaStatic(myMediaSmallRow, prefs), isTrue);
     });
   });
 }

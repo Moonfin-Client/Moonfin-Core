@@ -25,7 +25,7 @@ class ServerTranscodeCapabilities {
   Future<void> refresh(MediaServerClient client) async {
     final generation = ++_generation;
     _hevcEncodeAllowed = false;
-    if (client.serverType != ServerType.jellyfin) return;
+    if (!client.features.supportsHevcEncodingSetting) return;
 
     try {
       final config = await client.adminSystemApi.getNamedConfiguration(

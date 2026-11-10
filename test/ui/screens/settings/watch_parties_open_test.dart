@@ -11,6 +11,7 @@ import 'package:moonfin/ui/screens/watch_party/silo_watch_party_screen.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin/watch_party/silo_watch_party_manager.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _NoPlayback extends Fake implements PlaybackManager {}
@@ -26,6 +27,13 @@ class _NoMoonbase implements HttpClientAdapter {
 
   @override
   void close({bool force = false}) {}
+}
+
+class _Server extends Fake implements MediaServerClient {
+  _Server(this.serverType);
+
+  @override
+  final ServerType serverType;
 }
 
 class _Pushes extends NavigatorObserver {
@@ -145,4 +153,24 @@ void main() {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
     await opensFullScreenAndBackReturns(tester, tv: true);
   });
+
+  for (final (type, shown) in [
+    (ServerType.jellyfin, true),
+    (ServerType.emby, false),
+  ]) {
+    testWidgets('SyncPlay correction ${shown ? 'shows' : 'is hidden'} on '
+        '${type.name}', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      GetIt.instance
+        ..unregister<SiloWatchPartyManager>()
+        ..registerSingleton<MediaServerClient>(_Server(type));
+      await pump(tester);
+      await tester.drag(find.byType(ListView), const Offset(0, -3000));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.settingsSyncplayExtraOffset),
+        shown ? findsOneWidget : findsNothing,
+      );
+    });
+  }
 }

@@ -6074,7 +6074,7 @@
     "adminPlaybackTranscodeTempPath": "Transkoodaus lämpötilapolku",
     "adminPlaybackSegmentDeletion": "Salli segmentin poistaminen",
     "adminPlaybackSegmentKeep": "Segmentin säilytys (sekuntia)",
-    "adminPlaybackThrottleBuffering": "Kaasun puskurointi",
+    "adminPlaybackThrottleBuffering": "Puskuroinnin rajoitus",
     "adminResumeMinPct": "Minimi jatkamisprosentti",
     "adminResumeMinPctSubtitle": "Sisältöä on toistettava tämän prosenttiosuuden yli, jotta edistyminen tallentuu",
     "adminResumeMaxPct": "Maksimi jatkamisprosentti",
@@ -8447,7 +8447,7 @@
     "adminNetworkingLocalSubnetsHint": "Pilkulla tai rivinvaihdolla erotettu luettelo IP-osoitteista tai CIDR-aliverkoista, jotka katsotaan lähiverkoksi.",
     "adminNetworkingPublishedUris": "Julkaistut palvelimen URI-osoitteet",
     "adminNetworkingPublishedUriHint": "Yhdistä aliverkko tai osoite julkaistuun URL-osoitteeseen, esim. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Kuristuksen viive (sekuntia)",
+    "adminPlaybackThrottleDelay": "Rajoituksen viive (sekuntia)",
     "adminPlaybackEnableSubtitleExtraction": "Salli tekstitysten purku lennossa",
     "adminGeneralEnableSlowResponse": "Ota hitaiden vastausten varoitukset käyttöön",
     "adminGeneralQuickConnect": "Ota Quick Connect käyttöön",
@@ -17411,5 +17411,639 @@
     "settingsDateFormatDescription": "Valitse kalenterin ja julkaisupäivien osalta joko kuukausi-päivä-, päivä-kuukausi- tai paikallisen oletusasetuksen",
     "dateFormatSystem": "Kieliasetuksen oletusarvo",
     "dateFormatMonthDay": "Kuukausi / Päivä (10. marraskuuta)",
-    "dateFormatDayMonth": "Päivä / Kuukausi (10. marraskuuta)"
+    "dateFormatDayMonth": "Päivä / Kuukausi (10. marraskuuta)",
+    "seasonalRowAllYear": "Näytä koko vuosi",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Näytä lomarivi myös lomapäivien ulkopuolella, jokaiselle päivälle eri merkitty lomapäivä.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "screensaverDuringAudio": "Näytä musiikin ja äänikirjojen aikana",
+    "@screensaverDuringAudio": {
+        "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+    },
+    "screensaverDuringAudioDescription": "Anna näytönsäästäjän käynnistyä äänen soidessa, jotta levyn kansikuva ei jää näkyviin ruudulle tuntikausiksi.",
+    "@screensaverDuringAudioDescription": {
+        "description": "Description under the Show During Music and Audiobooks screensaver setting"
+    },
+    "sleepAfterIdle": "Anna television sammua itsestään",
+    "@sleepAfterIdle": {
+        "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+    },
+    "sleepAfterIdleDescriptionAndroid": "Sulje Moonfin, kun olet ollut näin kauan painamatta mitään painiketta, jotta television oma näytönsäästäjä ja lepotila voivat ottaa ohjat. Kaikki keskeytetyt toistot pysäytetään ensin, jolloin niiden jatkokohta säilyy.",
+    "@sleepAfterIdleDescriptionAndroid": {
+        "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+    },
+    "sleepAfterIdleDescriptionAppleTv": "Kun näytöllä ei ole tapahtunut mitään pitkään aikaan, näyttö palaa Apple TV:n omaan näytönsäästäjään ja lepotilaan. Moonfin pysyy auki, joten voit jatkaa juuri siitä, mihin jäit.",
+    "@sleepAfterIdleDescriptionAppleTv": {
+        "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+    },
+    "syncPlayRepeatSubtitle": "Toista yksi kohde tai koko jono",
+    "@syncPlayRepeatSubtitle": {
+        "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+    },
+    "syncPlayShuffleSubtitle": "Toista kappaleet järjestyksessä tai satunnaisessa järjestyksessä",
+    "@syncPlayShuffleSubtitle": {
+        "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+    },
+    "syncPlayParticipantYou": "Sinä",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "syncPlayGroupSubtitle": "{participants} · {detail}",
+    "@syncPlayGroupSubtitle": {
+        "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+        "placeholders": {
+            "participants": {
+                "type": "String",
+                "example": "3 participants"
+            },
+            "detail": {
+                "type": "String",
+                "example": "nothing queued yet"
+            }
+        }
+    },
+    "syncPlayNothingQueued": "jonossa ei ole vielä mitään",
+    "@syncPlayNothingQueued": {
+        "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+    },
+    "syncPlayOthersCanJoinHint": "Muut voivat liittyä ryhmään SyncPlay-näytöltään niin kauan kuin tämä ryhmä on olemassa.",
+    "@syncPlayOthersCanJoinHint": {
+        "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+    },
+    "syncPlayCreateGroupSubtitle": "Katsotaan yhdessä kaikkien osallistujien kanssa",
+    "@syncPlayCreateGroupSubtitle": {
+        "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+    },
+    "syncPlayAvailableGroupsCount": "Saatavilla olevat ryhmät · {count}",
+    "@syncPlayAvailableGroupsCount": {
+        "description": "Heading of the SyncPlay available groups list with how many there are",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "2"
+            }
+        }
+    },
+    "syncPlayNoGroupsAvailableHint": "Tällä palvelimella muiden käyttäjien luomat ryhmät näkyvät tässä.",
+    "@syncPlayNoGroupsAvailableHint": {
+        "description": "Second line of the empty state in the SyncPlay available groups list"
+    },
+    "syncPlayJoinReplacesQueueNote": "Ryhmään liittyminen saattaa korvata nykyisen toistojonosi.",
+    "@syncPlayJoinReplacesQueueNote": {
+        "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+    },
+    "settingsHideControlsAfter": "Piilota hallintapainikkeet sen jälkeen, kun",
+    "@settingsHideControlsAfter": {
+        "description": "Playback setting for how long the player controls stay on screen after the last input"
+    },
+    "settingsHideControlsAfterDescription": "Kuinka kauan ohjauselementit pysyvät ruudulla viimeisen painikkeen painalluksen, napautuksen tai hiiren liikkeen jälkeen.",
+    "@settingsHideControlsAfterDescription": {
+        "description": "Description under the Hide Controls After playback setting"
+    },
+    "settingsHdrControlsDimming": "HDR tilan himmennysohjaimet",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "Valkoinen näyttää huomattavasti kirkkaammalta HDR-videon vieressä, joten soittimen säätimet himmentävät kuvaa tämän verran videon toiston aikana.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "subtitleBold": "Lihavoitu teksti",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "subtitleStrokeWidth": "Tekstin viivan leveys",
+    "@subtitleStrokeWidth": {
+        "description": "Setting for how thick the outline around subtitle text is."
+    },
+    "subtitleFont": "Fontti",
+    "@subtitleFont": {
+        "description": "Setting for which font subtitles are drawn in."
+    },
+    "subtitleFontDescription": "Fontit ladataan Google Fontsista, kun valitset ne ensimmäisen kerran",
+    "@subtitleFontDescription": {
+        "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+    },
+    "subtitleFontDownloadFailed": "{font} Lataaminen epäonnistui",
+    "@subtitleFontDownloadFailed": {
+        "description": "Shown when a subtitle font could not be downloaded.",
+        "placeholders": {
+            "font": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleShadow": "Tekstin varjo",
+    "@subtitleShadow": {
+        "description": "Toggle for a drop shadow behind subtitle text."
+    },
+    "subtitleShadowIntensity": "Varjon voimakkuus",
+    "@subtitleShadowIntensity": {
+        "description": "How dark the subtitle drop shadow is."
+    },
+    "subtitleShadowOffset": "Varjon siirtymä",
+    "@subtitleShadowOffset": {
+        "description": "How far the subtitle drop shadow sits from the text."
+    },
+    "subtitleShadowBlur": "Varjon sumennus",
+    "@subtitleShadowBlur": {
+        "description": "How soft the edge of the subtitle drop shadow is."
+    },
+    "bookFoldersAsSeries": "Käsittele kirjakansioita sarjoina",
+    "@bookFoldersAsSeries": {
+        "description": "Setting to determine book series based on folders instead of item metadata"
+    },
+    "bookFoldersAsSeriesDescription": "Käsittele kirjoja sisältäviä kansioita sarjoina sen sijaan, että luottaisit yksittäisten kirjojen metatietoihin",
+    "@bookFoldersAsSeriesDescription": {
+        "description": "Explains the setting to determine book series based on folders instead of item metadata"
+    },
+    "removeWatchedAsk": "Kysy minulta",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "deleteFinishedDownloadTitle": "Haluatko poistaa tämän latauksen?",
+    "@deleteFinishedDownloadTitle": {
+        "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+    },
+    "deleteFinishedDownloadMessage": "Olet suorittanut pelin {title}. Poista sen lataustiedosto vapauttaaksesi tilaa, tai säilytä se ja lopeta kyselyt.",
+    "@deleteFinishedDownloadMessage": {
+        "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notNow": "Ei nyt",
+    "@notNow": {
+        "description": "Button that closes a question without answering it, so it can be asked again later"
+    },
+    "afterHoursTitle": "After Hours",
+    "@afterHoursTitle": {
+        "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+    },
+    "afterHoursUnlocked": "After Hours avattu",
+    "@afterHoursUnlocked": {
+        "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+    },
+    "afterHoursPressesLeft": "{count, plural, =1{1 more press} other{{count} more presses}}",
+    "@afterHoursPressesLeft": {
+        "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursTapsLeft": "{count, plural, =1{1 more tap} other{{count} more taps}}",
+    "@afterHoursTapsLeft": {
+        "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlay": "Toista",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursLeaderboards": "Tulostaulukot",
+    "@afterHoursLeaderboards": {
+        "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+    },
+    "afterHoursTop3": "Top 3",
+    "@afterHoursTop3": {
+        "description": "Heading over the three best scores in an arcade game"
+    },
+    "afterHoursScoresFrom": "Tulokset palvelimelta {server}",
+    "@afterHoursScoresFrom": {
+        "description": "Note saying the arcade scores shown come from the named server",
+        "placeholders": {
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "afterHoursScoresOnDevice": "Tämän laitteen tulokset",
+    "@afterHoursScoresOnDevice": {
+        "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+    },
+    "afterHoursGameOver": "Peli päättynyt",
+    "@afterHoursGameOver": {
+        "description": "Shown when a run in an arcade game ends"
+    },
+    "afterHoursNewRank": "Uusi #{rank} tulostaululla",
+    "@afterHoursNewRank": {
+        "description": "Shown when a finished arcade run places in the top 3, with its place",
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlayAgain": "Pelaa uudelleen",
+    "@afterHoursPlayAgain": {
+        "description": "Button that starts a new run of the same arcade game"
+    },
+    "afterHoursBackToArcade": "Takaisin pelihalliin",
+    "@afterHoursBackToArcade": {
+        "description": "Button that leaves a finished game for the arcade menu"
+    },
+    "afterHoursArcade": "Pelihalli",
+    "@afterHoursArcade": {
+        "description": "Short button on a phone that leaves a finished game for the arcade menu"
+    },
+    "afterHoursLandscapeNote": "Muuttuu vaakasuuntaiseksi pelatessasi",
+    "@afterHoursLandscapeNote": {
+        "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+    },
+    "afterHoursTouch": "Kosketus",
+    "@afterHoursTouch": {
+        "description": "Label before the touchscreen controls of an arcade game"
+    },
+    "afterHoursNewTag": "UUSI",
+    "@afterHoursNewTag": {
+        "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+    },
+    "afterHoursNoScores": "Tuloksia ei ole vielä",
+    "@afterHoursNoScores": {
+        "description": "Shown in place of a leaderboard nobody has played yet"
+    },
+    "afterHoursPerfect": "TÄYDELLINEN",
+    "@afterHoursPerfect": {
+        "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+    },
+    "afterHoursBoxSet": "BOX SARJA",
+    "@afterHoursBoxSet": {
+        "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+    },
+    "afterHoursBufferRun": "Puskuri ajo",
+    "@afterHoursBufferRun": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+    },
+    "afterHoursBufferRunGenre": "Loputon juoksupeli, jossa on painovoimakäännös",
+    "@afterHoursBufferRunGenre": {
+        "description": "Kind of game Buffer Run is"
+    },
+    "afterHoursBufferRunPitch": "Latausnäytön juoksija pääsee vihdoin jonnekin. Kaksinkertaisella hypyllä ja painovoimakäännöllä hän pääsee kattoon.",
+    "@afterHoursBufferRunPitch": {
+        "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+    },
+    "afterHoursBufferRunRemote": "OK, hyppää, taas ilmassa kääntyäksesi toiselle puolelle. Liukua alas. Katossa vaihda ylös ja alas.",
+    "@afterHoursBufferRunRemote": {
+        "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursBufferRunTouch": "Napauta hypätäksesi ja napauta uudelleen ilmassa tehdäksesi volttia. Pyyhkäise juoksusuuntaasi kohti liukua varten.",
+    "@afterHoursBufferRunTouch": {
+        "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForward": "Nopea kelaus eteenpäin",
+    "@afterHoursFastForward": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+    },
+    "afterHoursFastForwardGenre": "Kolmiraita-juoksija",
+    "@afterHoursFastForwardGenre": {
+        "description": "Kind of game Fast Forward is"
+    },
+    "afterHoursFastForwardPitch": "Sprintti kolmen aulakäytävän läpi. Hyppää matalien esteiden yli ja muista, että popcorn-kärryt eivät väistä ketään.",
+    "@afterHoursFastForwardPitch": {
+        "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+    },
+    "afterHoursFastForwardRemote": "Ylös ja alas vaihdetaan kaistaa. OK hyppää.",
+    "@afterHoursFastForwardRemote": {
+        "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForwardTouch": "Vaihda kaistaa pyyhkäisemällä ylös tai alas. Napauta hypätäksesi.",
+    "@afterHoursFastForwardTouch": {
+        "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawl": "Cable Crawl",
+    "@afterHoursCableCrawl": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+    },
+    "afterHoursCableCrawlGenre": "Grid crawler",
+    "@afterHoursCableCrawlGenre": {
+        "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+    },
+    "afterHoursCableCrawlPitch": "Vie HDMI kaapeli televisiokaapin takapuolelle ja kytke se signaaliliitäntään. Jokainen palkki pidentää kaapelia.",
+    "@afterHoursCableCrawlPitch": {
+        "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+    },
+    "afterHoursCableCrawlRemote": "Nuolet kääntyvät. Kaapeli ei pysähdy koskaan.",
+    "@afterHoursCableCrawlRemote": {
+        "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawlTouch": "Käännä pyyhkäisemällä.",
+    "@afterHoursCableCrawlTouch": {
+        "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStack": "Case Stack",
+    "@afterHoursCaseStack": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+    },
+    "afterHoursCaseStackGenre": "One-button stacker",
+    "@afterHoursCaseStackGenre": {
+        "description": "Kind of game Case Stack is"
+    },
+    "afterHoursCaseStackPitch": "Rakenna hyllyn korkeinen torni Blu-ray-koteloista, joista jokainen on omaa kokoelmaasi kuuluva teos. Se, mikä ulottuu hyllyn reunan yli, leikataan pois, joten aseta ne täsmälleen paikoilleen.",
+    "@afterHoursCaseStackPitch": {
+        "description": "Two sentence description of the Case Stack arcade game"
+    },
+    "afterHoursCaseStackRemote": "OK keskeyttää tapahtuman.",
+    "@afterHoursCaseStackRemote": {
+        "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStackTouch": "Napauta missä tahansa pudottaaksesi.",
+    "@afterHoursCaseStackTouch": {
+        "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurge": "Pixel Purge",
+    "@afterHoursPixelPurge": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+    },
+    "afterHoursPixelPurgeGenre": "Paddle breaker",
+    "@afterHoursPixelPurgeGenre": {
+        "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+    },
+    "afterHoursPixelPurgePitch": "Huonon koodauksen vuoksi kuva on täynnä ruudullisia häiriöitä, jotka hiipivät hieman alaspäin joka sekunti. Napsauta toistopainiketta hakupalkin kohdalla poistaaksesi ne ennen kuin ne ehtivät sinne.",
+    "@afterHoursPixelPurgePitch": {
+        "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+    },
+    "afterHoursPixelPurgeRemote": "Vasemmalla ja oikealla liu’utat pesukoneen. Pallo lähtee liikkeelle itsestään.",
+    "@afterHoursPixelPurgeRemote": {
+        "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeTouch": "Vedä hiirtä liu'uttaaksesi liukusäädintä.",
+    "@afterHoursPixelPurgeTouch": {
+        "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursHowToPlay": "Kuinka pelata",
+    "@afterHoursHowToPlay": {
+        "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+    },
+    "afterHoursStart": "Aloita",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "afterHoursBackToGame": "Takaisin peliin",
+    "@afterHoursBackToGame": {
+        "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+    },
+    "afterHoursEnemies": "Viholliset",
+    "@afterHoursEnemies": {
+        "description": "Heading over the enemies on an arcade game's How to play card"
+    },
+    "afterHoursObstacles": "Esteet",
+    "@afterHoursObstacles": {
+        "description": "Heading over the obstacles on an arcade game's How to play card"
+    },
+    "afterHoursPowerups": "Powerups",
+    "@afterHoursPowerups": {
+        "description": "Heading over the powerups on an arcade game's How to play card"
+    },
+    "afterHoursCastShieldLine": "Kilpi, joka kestää yhden iskun.",
+    "@afterHoursCastShieldLine": {
+        "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPointsLine": "25 pistettä osalta.",
+    "@afterHoursCastPointsLine": {
+        "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastLagBat": "Lag Bat",
+    "@afterHoursCastLagBat": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastLagBatLine": "Se syöksyy kohti pään korkeudella. Liukahda sen alta.",
+    "@afterHoursCastLagBatLine": {
+        "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGremlin": "Static Gremlin",
+    "@afterHoursCastGremlin": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGremlinLine": "Se hyppii lattiaa tai kattoa pitkin sinua kohti. Hyppää sen yli.",
+    "@afterHoursCastGremlinLine": {
+        "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastCable": "Cable Coil",
+    "@afterHoursCastCable": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastCableLine": "Matalalla lattialla tai katossa. Hyppää sen yli.",
+    "@afterHoursCastCableLine": {
+        "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBanner": "Buffering Banner",
+    "@afterHoursCastBanner": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBannerLine": "Liukahda kyltin alle. Sen pylväs toimii seinänä toisella puolella.",
+    "@afterHoursCastBannerLine": {
+        "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSkipIntro": "Ohita johdanto",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSkipIntroLine": "Kolmen sekunnin vauhti, joka murskaa kaiken.",
+    "@afterHoursCastSkipIntroLine": {
+        "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcorn": "Popcorn",
+    "@afterHoursCastPopcorn": {
+        "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReel": "Loose Reel",
+    "@afterHoursCastRollingReel": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReelLine": "Se vyöryy kaistallasi nopeammin kuin sinä juokset. Hyppää sen yli.",
+    "@afterHoursCastRollingReelLine": {
+        "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastUsher": "Usher",
+    "@afterHoursCastUsher": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastUsherLine": "Kävelee sinua kohti ja vaihtaa kaistaa kerran.",
+    "@afterHoursCastUsherLine": {
+        "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastVelvetRope": "Velvet Rope",
+    "@afterHoursCastVelvetRope": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastVelvetRopeLine": "Matala. Hyppää sen yli tai vaihda kaistaa.",
+    "@afterHoursCastVelvetRopeLine": {
+        "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcornCart": "Popcorn Cart",
+    "@afterHoursCastPopcornCart": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPopcornCartLine": "Liian korkea hyppäämiseen. Vaihda kaistaa.",
+    "@afterHoursCastPopcornCartLine": {
+        "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastFrontRowPass": "Front Row Pass",
+    "@afterHoursCastFrontRowPass": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnet": "Magneetti",
+    "@afterHoursCastMagnet": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnetLine": "Kerää lippuja jokaiselta kaistalta kahdeksan sekunnin ajan.",
+    "@afterHoursCastMagnetLine": {
+        "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTicket": "Lippu",
+    "@afterHoursCastTicket": {
+        "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBug": "Interference Bug",
+    "@afterHoursCastBug": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBugLine": "Wanders at random.",
+    "@afterHoursCastBugLine": {
+        "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTangle": "Tangle",
+    "@afterHoursCastTangle": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastTangleLine": "Se jahtaa hitaasti tulppaasi.",
+    "@afterHoursCastTangleLine": {
+        "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastStatic": "Staattinen",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStaticLine": "Kuollut solu. Yksi ilmestyy joka kolmas signaali.",
+    "@afterHoursCastStaticLine": {
+        "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBrick": "Power Brick",
+    "@afterHoursCastBrick": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBrickLine": "2 × 2-lohko joka viides signaali.",
+    "@afterHoursCastBrickLine": {
+        "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGhost": "Aave",
+    "@afterHoursCastGhost": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGhostLine": "Viisi sekuntia, jonka aikana kuljetaan kaiken läpi paitsi reunan ohi.",
+    "@afterHoursCastGhostLine": {
+        "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSnip": "Snip",
+    "@afterHoursCastSnip": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSnipLine": "Leikkaa kaapeli kahtia, niin saat lisäpisteitä.",
+    "@afterHoursCastSnipLine": {
+        "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSignal": "Signaali",
+    "@afterHoursCastSignal": {
+        "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSignalLine": "Pisteitä ja vielä kaksi osuutta.",
+    "@afterHoursCastSignalLine": {
+        "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastShelfCat": "Shelf Cat",
+    "@afterHoursCastShelfCat": {
+        "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastShelfCatLine": "Lyö palloa sitä mukaa kuin se tulee, jotta se liukuu nopeammin.",
+    "@afterHoursCastShelfCatLine": {
+        "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBluCase": "Blu-ray kotelo",
+    "@afterHoursCastBluCase": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBluCaseLine": "Nimike kirjastostasi. Ylitys leikataan pois.",
+    "@afterHoursCastBluCaseLine": {
+        "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSteelbook": "Steelbook",
+    "@afterHoursCastSteelbook": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSteelbookLine": "Joka kymmenes tapaus. Liukuu paljon nopeammin.",
+    "@afterHoursCastSteelbookLine": {
+        "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPerfect": "Täydellinen pudotus",
+    "@afterHoursCastPerfect": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPerfectLine": "Jos osut juuri oikeaan kohtaan, pino kasvaa hieman.",
+    "@afterHoursCastPerfectLine": {
+        "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBoxSet": "Box Set",
+    "@afterHoursCastBoxSet": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBoxSetLine": "Kolme täydellistä pudotusta peräkkäin laajentaa sitä huomattavasti.",
+    "@afterHoursCastBoxSetLine": {
+        "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastDeadPixel": "Viallinen pikseli",
+    "@afterHoursCastDeadPixel": {
+        "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastDeadPixelLine": "Putoaa puhdistetuista lohkoista. Kun sen nappaa kiinni, puhdistin kutistuu.",
+    "@afterHoursCastDeadPixelLine": {
+        "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastMacroblock": "Makrolohko",
+    "@afterHoursCastMacroblock": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMacroblockLine": "Yksi osuma riittää sen tyhjentämiseen.",
+    "@afterHoursCastMacroblockLine": {
+        "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastKeyframe": "Keyframe",
+    "@afterHoursCastKeyframe": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastKeyframeLine": "Se kestää kolme osumaa ja pudottaa tehostuksen.",
+    "@afterHoursCastKeyframeLine": {
+        "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastHdrLine": "Kahdeksan sekunnin ajan kaksi kertaa niin leveä scrubber.",
+    "@afterHoursCastHdrLine": {
+        "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBufferNet": "Puskuri",
+    "@afterHoursCastBufferNet": {
+        "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBufferNetLine": "scrubberin alla oleva verkko, joka estää yhden ohi menneen pallon.",
+    "@afterHoursCastBufferNetLine": {
+        "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursBufferRunCardTouch": "Napauta hypätäksesi ja napauta uudelleen ilmassa kääntyäksesi toiselle puolelle. Pyyhkäise omaa puoltasi kohti liu’uttaaksesi.",
+    "@afterHoursBufferRunCardTouch": {
+        "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+    },
+    "afterHoursPixelPurgeCardRemote": "Vasemmalle ja oikealle liu’uta scrubberia.",
+    "@afterHoursPixelPurgeCardRemote": {
+        "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    }
 }

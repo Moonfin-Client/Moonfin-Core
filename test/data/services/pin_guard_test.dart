@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/data/services/pin_guard.dart';
 import 'package:moonfin/data/services/server_pin_service.dart';
 import 'package:moonfin/util/pin_code_util.dart';
+import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockService extends Mock implements ServerPinService {}
@@ -199,5 +201,28 @@ void main() {
       expect(pin.isPinEnabled, isFalse);
       verifyNever(() => service.removePinFor(any(), any()));
     });
+  });
+
+  test('only a Plex account asks Moonbase instead of the server', () {
+    ServerPinAccount accountOn(ServerType type) => PinGuard.forAccount(
+      store: store,
+      service: service,
+      userId: 'user',
+      server: Server(
+        id: 'srv',
+        name: 'Home',
+        address: 'https://media.test',
+        version: '1',
+        serverType: type,
+        dateAdded: DateTime(2026),
+      ),
+      accessToken: 'token-1',
+    ).account!;
+
+    expect(accountOn(ServerType.plex).plexServerId, 'srv');
+    for (final type in [ServerType.jellyfin, ServerType.emby, ServerType.silo]) {
+      expect(accountOn(type).plexServerId, isNull, reason: '$type');
+      expect(accountOn(type).baseUrl, 'https://media.test');
+    }
   });
 }

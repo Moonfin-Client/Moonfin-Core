@@ -142,6 +142,14 @@ class NativeApplePlayerBackend
   Future<void> setReconnecting(String? label) =>
       _invoke<void>('setReconnecting', {'label': label});
 
+  /// The watch party the player follows, or null when there's none.
+  Future<void> setWatchParty(Map<String, dynamic>? party) =>
+      _invoke<void>('setWatchParty', {'party': party});
+
+  /// A toast, chat line or reaction to show over the video once.
+  Future<void> showWatchPartyEvent(Map<String, dynamic> event) =>
+      _invoke<void>('showWatchPartyEvent', event);
+
   /// An alert over the player. [actionLabel] adds a button that answers with
   /// a `messageAction` event.
   Future<void> showMessage(
@@ -228,6 +236,10 @@ class NativeApplePlayerBackend
       case 'downloadSubtitle':
       case 'syncplayLeave':
       case 'syncplayIgnoreWait':
+      case 'partyReaction':
+      case 'partyChat':
+      case 'partyLeave':
+      case 'partyEnd':
       case 'openEpisodes':
       case 'selectEpisodesSeason':
       case 'selectEpisode':

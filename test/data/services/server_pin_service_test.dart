@@ -12,6 +12,9 @@ class _Adapter implements HttpClientAdapter {
   final bodies = <String>[];
   int status = 200;
   Object? json;
+
+  /// What a Moonbase ping gets, when set.
+  Object? ping;
   Map<String, List<String>> headers = {};
   bool unreachable = false;
 
@@ -29,6 +32,15 @@ class _Adapter implements HttpClientAdapter {
       throw DioException.connectionError(
         requestOptions: options,
         reason: 'unreachable',
+      );
+    }
+    if (ping != null && options.uri.path == '/Moonfin/Ping') {
+      return ResponseBody.fromString(
+        jsonEncode(ping),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
     return ResponseBody.fromString(
@@ -204,6 +216,78 @@ void main() {
       expect(
         await service.removePinFor(account, 'abc'),
         isA<ServerPinUnavailable>(),
+      );
+    });
+  });
+
+  group('Plex', () {
+    // Where Moonbase was found is kept per server, so each test has its own.
+    ServerPinAccount plex(String host) => ServerPinAccount(
+      baseUrl: 'http://$host:32400',
+      accessToken: 'pms-token',
+      plexServerId: 'plex-$host',
+    );
+
+    test('asks the Moonbase companion with the PMS token', () async {
+      adapter.ping = {'installed': true};
+      adapter.json = {'enabled': true};
+
+      expect(
+        await service.status(plex('192.168.50.71')),
+        ServerPinAvailability.enabled,
+      );
+
+      final request = adapter.requests.last;
+      expect(request.uri.toString(), 'http://192.168.50.71:32500/Moonfin/Pin');
+      expect(request.headers['X-Plex-Token'], 'pms-token');
+      expect(request.headers.containsKey('Authorization'), isFalse);
+    });
+
+    test('every PIN route goes to the companion', () async {
+      adapter.ping = {'installed': true};
+      adapter.json = {'valid': true};
+      final account = plex('192.168.50.73');
+
+      await service.verify(account, '4821');
+      await service.setPin(account, '1111');
+      await service.removePin(account, currentPin: '1111');
+      await service.removePinFor(account, 'abc');
+
+      expect(
+        [
+          for (final r in adapter.requests.skip(1))
+            '${r.method} ${r.uri}',
+        ],
+        [
+          'POST http://192.168.50.73:32500/Moonfin/Pin/Verify',
+          'PUT http://192.168.50.73:32500/Moonfin/Pin',
+          'DELETE http://192.168.50.73:32500/Moonfin/Pin',
+          'DELETE http://192.168.50.73:32500/Moonfin/Users/abc/Pin',
+        ],
+      );
+    });
+
+    test('without the companion the device decides and Plex is not asked',
+        () async {
+      // What Plex itself answers on a path it doesn't know.
+      adapter.ping = {
+        'MediaContainer': {'size': 0},
+      };
+      final account = plex('192.168.50.72');
+
+      expect(await service.status(account), ServerPinAvailability.unavailable);
+      expect(
+        await service.verify(account, '4821'),
+        isA<ServerPinUnavailable>(),
+      );
+      expect(
+        await service.setPin(account, '1111'),
+        isA<ServerPinUnavailable>(),
+      );
+      expect(
+        adapter.requests.map((r) => r.uri.toString()),
+        ['http://192.168.50.72:32500/Moonfin/Ping'],
+        reason: 'a companion known to be missing is not asked again',
       );
     });
   });

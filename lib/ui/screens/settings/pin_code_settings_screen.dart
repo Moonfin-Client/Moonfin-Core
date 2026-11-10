@@ -44,9 +44,9 @@ class _PinCodeSettingsScreenState extends State<PinCodeSettingsScreen> {
       store: store,
       service: _server,
       userId: userId,
-      serverAddress: serverId == null
+      server: serverId == null
           ? null
-          : GetIt.instance<ServerRepository>().getServer(serverId)?.address,
+          : GetIt.instance<ServerRepository>().getServer(serverId),
       accessToken: serverId == null
           ? null
           : GetIt.instance<ServerUserRepository>()

@@ -1,5 +1,7 @@
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:server_core/server_core.dart';
 
+import '../../auth/models/server.dart';
 import '../../util/pin_code_util.dart';
 import 'server_pin_service.dart';
 
@@ -54,17 +56,20 @@ class PinGuard {
     required PreferenceStore store,
     required ServerPinService service,
     required String userId,
-    String? serverAddress,
+    Server? server,
     String? accessToken,
   }) => PinGuard(
     pin: PinCodeUtil(store, userId),
     service: service,
     account:
-        (serverAddress ?? '').isEmpty || (accessToken ?? '').isEmpty
+        (server?.address ?? '').isEmpty || (accessToken ?? '').isEmpty
         ? null
         : ServerPinAccount(
-            baseUrl: serverAddress!,
+            baseUrl: server!.address,
             accessToken: accessToken!,
+            plexServerId: server.serverType == ServerType.plex
+                ? server.id
+                : null,
           ),
   );
 

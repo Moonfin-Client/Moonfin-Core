@@ -62,11 +62,7 @@ class BottomNavController extends ChangeNotifier {
   /// a server.
   static bool get _activeServerHasQuickConnect {
     final client = _maybe<MediaServerClient>();
-    return client != null &&
-        FeatureDetector(
-          serverType: client.serverType,
-          serverVersion: '',
-        ).supportsQuickConnect;
+    return client != null && client.features.supportsQuickConnect;
   }
 
   /// Whether the active server is Silo, whose words for Quick Connect differ

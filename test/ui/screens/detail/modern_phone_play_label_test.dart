@@ -69,9 +69,26 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<void> pumpButtons(
+  Widget buttons(_ViewModel vm, bool labelsUnderCircles) => MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: const [Locale('en')],
+    home: Scaffold(
+      body: SingleChildScrollView(
+        child: DetailActionButtons(
+          viewModel: vm,
+          itemId: 'movie-1',
+          onSelectedMediaSourceChanged: (_) {},
+          modernStyle: true,
+          labelsUnderCircles: labelsUnderCircles,
+        ),
+      ),
+    ),
+  );
+
+  Future<_ViewModel> pumpButtons(
     WidgetTester tester, {
     bool labelsUnderCircles = false,
+    bool actionsSettled = true,
   }) async {
     final vm = _ViewModel();
     when(() => vm.item).thenReturn(
@@ -83,26 +100,12 @@ void main() {
     );
     when(() => vm.isSeerrOnly).thenReturn(false);
     when(() => vm.supportsPersonalRating).thenReturn(false);
+    when(() => vm.actionsSettled).thenReturn(actionsSettled);
     when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.features).thenReturn(const []);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: const [Locale('en')],
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: DetailActionButtons(
-              viewModel: vm,
-              itemId: 'movie-1',
-              onSelectedMediaSourceChanged: (_) {},
-              modernStyle: true,
-              labelsUnderCircles: labelsUnderCircles,
-            ),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(buttons(vm, labelsUnderCircles));
+    return vm;
   }
 
   testWidgets('Play keeps its label under it on a phone in landscape', (
@@ -136,5 +139,56 @@ void main() {
       ),
     );
     expect(label.style?.color, AppColorScheme.onAccent);
+  });
+
+  // The row waits for the late lookups so a button doesn't pop in after the
+  // rest, and nothing in it can be pressed or focused while it's invisible.
+  testWidgets('the row stays hidden and untappable until its actions settle', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await pumpButtons(tester, actionsSettled: false);
+
+    final row = find.byType(DetailActionButtons);
+    final opacity = tester.widget<AnimatedOpacity>(
+      find.descendant(of: row, matching: find.byType(AnimatedOpacity)).first,
+    );
+    expect(opacity.opacity, 0);
+    final ignore = tester.widget<IgnorePointer>(
+      find.descendant(of: row, matching: find.byType(IgnorePointer)).first,
+    );
+    expect(ignore.ignoring, isTrue);
+    // Still laid out, so the content below doesn't move when it fades in.
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+  });
+
+  // OK on a remote mustn't press an invisible Play, and Play still gets the
+  // initial focus once the row shows.
+  testWidgets('Play takes focus only once the row settles', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    final vm = await pumpButtons(tester, actionsSettled: false);
+    await tester.pump();
+
+    bool playFocused() {
+      // With nothing focused the route's scope holds focus, and it wraps
+      // every button.
+      final node = FocusManager.instance.primaryFocus;
+      final focused = node?.context;
+      if (node is FocusScopeNode || focused == null) return false;
+      return find
+          .descendant(
+            of: find.byElementPredicate((e) => e == focused),
+            matching: find.byIcon(Icons.play_arrow),
+          )
+          .evaluate()
+          .isNotEmpty;
+    }
+
+    expect(playFocused(), isFalse);
+
+    when(() => vm.actionsSettled).thenReturn(true);
+    await tester.pumpWidget(buttons(vm, false));
+    await tester.pump();
+    expect(playFocused(), isTrue);
   });
 }

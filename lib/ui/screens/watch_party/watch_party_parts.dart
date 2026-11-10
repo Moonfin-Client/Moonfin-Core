@@ -91,9 +91,10 @@ final ButtonStyle _focusRing = ButtonStyle(
 );
 
 /// Whether rooms are labeled with their kind: only Jellyfin has two.
-bool get _labelsRoomKinds =>
-    GetIt.instance<SiloWatchPartyManager>().roomClient?.serverType ==
-    ServerType.jellyfin;
+bool get _labelsRoomKinds {
+  final client = GetIt.instance<SiloWatchPartyManager>().roomClient;
+  return client != null && client.features.supportsSyncPlay;
+}
 
 /// A small label, like "Watch Party", "SyncPlay" or "PIN".
 class WatchPartyChip extends StatelessWidget {

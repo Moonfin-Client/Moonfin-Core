@@ -147,8 +147,7 @@ class SyncPlayManager extends ChangeNotifier {
   bool get syncPlayServerSupported {
     final client = _currentClient;
     if (client == null) return false;
-    return client.serverType == ServerType.jellyfin &&
-        client.syncPlayApi != null;
+    return client.features.supportsSyncPlay && client.syncPlayApi != null;
   }
 
   bool get syncPlayEnabled => syncPlayConfigured && syncPlayServerSupported;

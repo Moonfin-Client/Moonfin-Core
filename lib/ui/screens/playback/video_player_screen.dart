@@ -656,7 +656,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         : GetIt.instance<MediaServerClient>();
     return MediaSegmentService(
       client,
-      FeatureDetector(serverType: client.serverType, serverVersion: ''),
+      client.features,
       _prefs,
     );
   }
@@ -2436,14 +2436,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
-    if (result.shouldSkip && result.skipTo != null) {
+    var skipTo = result.skipTo;
+    if (skipTo != null &&
+        (PlatformDetection.isApple || PlatformDetection.isAppleTV)) {
+      skipTo = skipLandingBeforeEnd(skipTo, _state.duration);
+    }
+    if (result.shouldSkip && skipTo != null) {
       final isOutro = result.segment?.type == MediaSegmentType.outro;
       if (replaceSkipOutroWithNextUp && isOutro && _showNextUp) {
         return;
       }
       if (isOutro) _markCurrentItemPlayedForOutroSkip();
       if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
-        unawaited(_seekDirect(result.skipTo!));
+        unawaited(_seekDirect(skipTo));
         _presentNextUpOverlay();
         return;
       }
@@ -2451,7 +2456,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(_exitPlayback(finished: true));
         return;
       }
-      _seekDirect(result.skipTo!);
+      _seekDirect(skipTo);
       _clearSkipSegment();
       return;
     }
@@ -2469,7 +2474,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
       setState(() {
         _skipSegment = result.segment;
-        _skipTo = result.skipTo;
+        _skipTo = skipTo;
         _controlsVisible = false;
       });
       _hideTimer?.cancel();

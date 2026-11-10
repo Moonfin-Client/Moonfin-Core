@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,24 @@ const _glyphs = {
   'popcorn':
       '<svg viewBox="0 0 24 24"><circle cx="7.6" cy="9.4" r="2.6" fill="#ffe9a8"/><circle cx="12" cy="7.6" r="3" fill="#fff2c9"/><circle cx="16.4" cy="9.4" r="2.6" fill="#ffe9a8"/><circle cx="10" cy="5.4" r="2.1" fill="#ffe9a8"/><circle cx="14.2" cy="5.6" r="2.1" fill="#fff2c9"/><path d="M5.6 10.4h12.8l-1.7 11H7.3z" fill="#f2f2f2"/><path d="M9.2 10.4l.6 11M12 10.4v11M14.8 10.4l-.6 11" stroke="#e5484d" stroke-width="1.7"/></svg>',
 };
+
+/// A reaction's glyph as a square PNG, for a native player that can't draw
+/// the SVG.
+Future<Uint8List?> watchPartyReactionPng(String reaction, int px) async {
+  final info = await vg.loadPicture(
+    SvgStringLoader(_glyphs[reaction] ?? _glyphs['love']!),
+    null,
+  );
+  final recorder = ui.PictureRecorder();
+  Canvas(recorder)
+    ..scale(px / info.size.width)
+    ..drawPicture(info.picture);
+  info.picture.dispose();
+  final image = await recorder.endRecording().toImage(px, px);
+  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+  image.dispose();
+  return bytes?.buffer.asUint8List();
+}
 
 String watchPartyReactionName(AppLocalizations l10n, String reaction) =>
     switch (reaction) {

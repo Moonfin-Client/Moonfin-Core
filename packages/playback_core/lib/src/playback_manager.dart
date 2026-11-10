@@ -210,6 +210,9 @@ class PlaybackManager implements AudioOwnable {
   int? _lastExplicitAudioIndex;
   String? _lastExplicitAudioTitle;
   String? _lastExplicitSubtitleLanguage;
+  // The track behind _lastExplicitSubtitleLanguage, always written with it and
+  // only read while that is set.
+  Map<String, dynamic>? _lastExplicitSubtitleStream;
   bool? _lastExplicitSubtitleEnabled;
   Duration _lastKnownPosition = Duration.zero;
   Duration _itemKnownDuration = Duration.zero;
@@ -3543,11 +3546,7 @@ class PlaybackManager implements AudioOwnable {
           }
         }
       } else if (_lastExplicitSubtitleLanguage != null) {
-        final matchedIdx = _matchStreamIndexByLanguage(
-          resolution.mediaStreams,
-          _lastExplicitSubtitleLanguage,
-          'Subtitle',
-        );
+        final matchedIdx = _matchLastExplicitSubtitle(resolution.mediaStreams);
         if (matchedIdx != null && _subtitleStreamIndex != matchedIdx) {
           _subtitleStreamIndex = matchedIdx;
           if (resolution.playMethod == StreamPlayMethod.transcode) {
@@ -3627,6 +3626,7 @@ class PlaybackManager implements AudioOwnable {
         );
         if (stream.isNotEmpty) {
           _lastExplicitSubtitleLanguage = _extractLanguage(stream);
+          _lastExplicitSubtitleStream = stream;
         }
       }
     }
@@ -4946,6 +4946,7 @@ class PlaybackManager implements AudioOwnable {
         );
         if (selectedStream.isNotEmpty) {
           _lastExplicitSubtitleLanguage = _extractLanguage(selectedStream);
+          _lastExplicitSubtitleStream = selectedStream;
         }
       }
     } else {
@@ -5763,6 +5764,20 @@ class PlaybackManager implements AudioOwnable {
     return const [];
   }
 
+  // Matching on language alone takes the first track in it, often a forced
+  // one listed ahead of the full track the viewer picked.
+  int? _matchLastExplicitSubtitle(List<Map<String, dynamic>> streams) {
+    final picked = _lastExplicitSubtitleStream;
+    return _matchStreamIndexByLanguage(
+      streams,
+      _lastExplicitSubtitleLanguage,
+      'Subtitle',
+      preferredIndex: picked?['Index'] as int?,
+      preferredTitle: _extractTrackTitle(picked),
+      preferredForced: picked == null ? null : _isForcedStream(picked),
+    );
+  }
+
   void _translateTrackSelectionsForNewItem(dynamic item) {
     final newStreams = _extractMediaStreams(item);
     if (newStreams.isEmpty) {
@@ -5790,11 +5805,7 @@ class PlaybackManager implements AudioOwnable {
     if (_lastExplicitSubtitleEnabled == false) {
       _subtitleStreamIndex = -1;
     } else if (_lastExplicitSubtitleLanguage != null) {
-      _subtitleStreamIndex = _matchStreamIndexByLanguage(
-        newStreams,
-        _lastExplicitSubtitleLanguage,
-        'Subtitle',
-      );
+      _subtitleStreamIndex = _matchLastExplicitSubtitle(newStreams);
     } else {
       _subtitleStreamIndex = null;
     }
@@ -5960,8 +5971,20 @@ int? _matchStreamIndexByLanguage(
   String type, {
   int? preferredIndex,
   String? preferredTitle,
+  bool? preferredForced,
 }) {
-  final candidates = streams.where((s) => s['Type'] == type).toList();
+  var candidates = streams.where((s) => s['Type'] == type).toList();
+  // A forced track only covers the foreign lines, so it can't stand in for a
+  // full one in the same language, nor the other way round.
+  if (preferredForced != null) {
+    final sameKind = candidates
+        .where(
+          (s) =>
+              _isForcedStream(s) == preferredForced && _languagesMatch(s, lang),
+        )
+        .toList();
+    if (sameKind.isNotEmpty) candidates = sameKind;
+  }
   // Tier 1: exact index that also language-matches.
   if (preferredIndex != null) {
     final i = candidates.indexWhere(
@@ -6002,6 +6025,16 @@ String? _extractLanguage(Map? stream) {
     }
   }
   return lang;
+}
+
+// Plenty of files only say forced in the track title and leave the flag off.
+final _forcedTitle = RegExp(r'(?<!non[\s-])\bforced\b');
+
+bool _isForcedStream(Map<dynamic, dynamic> stream) {
+  if (stream['IsForced'] == true) return true;
+  return _forcedTitle.hasMatch(
+    '${stream['DisplayTitle'] ?? ''} ${stream['Title'] ?? ''}'.toLowerCase(),
+  );
 }
 
 /// Returns the most descriptive non-empty title for an audio stream,

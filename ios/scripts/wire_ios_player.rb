@@ -41,6 +41,7 @@ abs_files += [
   File.join(tvos_runner, 'Playback', 'ChannelCarousel.swift'),
   File.join(tvos_runner, 'Playback', 'ChannelCarouselOverlay.swift'),
   File.join(tvos_runner, 'Playback', 'EpisodeBrowser.swift'),
+  File.join(tvos_runner, 'Playback', 'WatchPartyOverlay.swift'),
   File.join(tvos_runner, 'Playback', 'MoonfinTvosStubs.swift'),
 ].select { |f| File.exist?(f) }
 basenames = abs_files.map { |f| File.basename(f) }

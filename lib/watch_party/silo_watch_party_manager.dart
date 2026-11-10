@@ -288,11 +288,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
   /// Null on Silo and servers Moonbase doesn't run on.
   MoonbaseWatchPartyApi? moonbaseFor(MediaServerClient client) {
     if (siloClientOf(client) != null) return null;
-    final features = FeatureDetector(
-      serverType: client.serverType,
-      serverVersion: '',
-    );
-    if (!features.supportsMoonfinPlugin) return null;
+    if (!client.features.supportsMoonfinPlugin) return null;
     if (!identical(_moonbaseClient, client) || _moonbase == null) {
       _moonbaseClient = client;
       _moonbase = MoonbaseWatchPartyApi.forClient(client, _dio);
