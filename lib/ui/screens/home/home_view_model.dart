@@ -3326,18 +3326,21 @@ class HomeViewModel extends ChangeNotifier {
         return const [];
       }
 
-      final aggregatedItems = items.map((item) {
-        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
-        return AggregatedItem(
-          id: itemId,
-          serverId: 'seerr',
-          rawData: {
-            ...item.cardData,
-            'CommunityRating': item.rating,
-            'Popularity': item.popularity,
-          },
-        );
-      }).toList();
+      final aggregatedItems = await _dataSource.withLibraryCopies(
+        _serverId,
+        items.map((item) {
+          final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
+          return AggregatedItem(
+            id: itemId,
+            serverId: 'seerr',
+            rawData: {
+              ...item.cardData,
+              'CommunityRating': item.rating,
+              'Popularity': item.popularity,
+            },
+          );
+        }).toList(),
+      );
 
       return [
         HomeRow(
@@ -3387,18 +3390,21 @@ class HomeViewModel extends ChangeNotifier {
         return const [];
       }
 
-      final aggregatedItems = items.map((item) {
-        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
-        return AggregatedItem(
-          id: itemId,
-          serverId: 'seerr',
-          rawData: {
-            ...item.cardData,
-            'CommunityRating': item.rating,
-            'Popularity': item.popularity,
-          },
-        );
-      }).toList();
+      final aggregatedItems = await _dataSource.withLibraryCopies(
+        _serverId,
+        items.map((item) {
+          final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
+          return AggregatedItem(
+            id: itemId,
+            serverId: 'seerr',
+            rawData: {
+              ...item.cardData,
+              'CommunityRating': item.rating,
+              'Popularity': item.popularity,
+            },
+          );
+        }).toList(),
+      );
 
       return [
         HomeRow(

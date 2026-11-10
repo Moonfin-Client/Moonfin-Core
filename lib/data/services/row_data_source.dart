@@ -2334,17 +2334,20 @@ class RowDataSource {
           } catch (_) {}
           final showUserRatings = rowConfig['show_user_ratings'] == true;
 
-          final aggregatedItems = items.map((item) {
-            return AggregatedItem(
-              id: item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId,
-              serverId: 'seerr',
-              rawData: {
-                ...item.cardData,
-                'UserRating': item.userRating ?? '',
-                'ShowUserRatings': showUserRatings,
-              },
-            );
-          }).toList();
+          final aggregatedItems = await withLibraryCopies(
+            serverId,
+            items.map((item) {
+              return AggregatedItem(
+                id: item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId,
+                serverId: 'seerr',
+                rawData: {
+                  ...item.cardData,
+                  'UserRating': item.userRating ?? '',
+                  'ShowUserRatings': showUserRatings,
+                },
+              );
+            }).toList(),
+          );
           return HomeRow(
             id: rowId,
             title: title,
@@ -2392,6 +2395,66 @@ class RowDataSource {
         );
     }
   }
+
+  /// What an outside list entry keeps when it turns into its library copy:
+  /// the list's own sort and rating fields, which the library item lacks.
+  static const _listOnlyFields = ['Popularity', 'UserRating', 'ShowUserRatings'];
+
+  /// Swaps the outside list entries the server matched to its library
+  /// (`LocalItemId`, sent by the Moonfin plugin) for the library items, so the
+  /// card shows the server's own artwork. A tap on an outside entry already
+  /// ends up on the library page once Seerr reports the title as available;
+  /// the library item goes there directly, without Seerr. One request covers
+  /// the whole row. An entry whose library copy doesn't come
+  /// back, because it was removed or the server can't be reached, stays the
+  /// outside entry it was.
+  Future<List<AggregatedItem>> withLibraryCopies(
+    String serverId,
+    List<AggregatedItem> items,
+  ) async {
+    final ids = <String>{
+      for (final item in items)
+        if (item.rawData['LocalItemId'] case final String id when id.isNotEmpty)
+          id,
+    };
+    if (ids.isEmpty) return items;
+
+    final Map<String, Map<String, dynamic>> library;
+    try {
+      final response = await _client.itemsApi.getItems(
+        ids: ids.toList(),
+        fields: _fields,
+        enableTotalRecordCount: false,
+      );
+      library = {
+        for (final raw in response['Items'] as List? ?? const [])
+          if (raw is Map && raw['Id'] != null)
+            _libraryIdKey(raw['Id'].toString()): Map<String, dynamic>.from(raw),
+      };
+    } catch (e) {
+      debugPrint('[RowDataSource] Library copies for an outside list failed: $e');
+      return items;
+    }
+
+    return [
+      for (final item in items)
+        switch (library[_libraryIdKey(item.rawData['LocalItemId']?.toString() ?? '')]) {
+          final local? => AggregatedItem(
+              id: local['Id'].toString(),
+              serverId: serverId,
+              rawData: {
+                ...local,
+                for (final key in _listOnlyFields)
+                  if (item.rawData[key] != null) key: item.rawData[key],
+              },
+            ),
+          null => item,
+        },
+    ];
+  }
+
+  /// Jellyfin writes an id with or without dashes, so both forms meet here.
+  static String _libraryIdKey(String id) => id.replaceAll('-', '').toLowerCase();
 
   List<AggregatedItem> _parseItems(
     Map<String, dynamic> response,
