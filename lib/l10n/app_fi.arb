@@ -6543,7 +6543,7 @@
     "settingsAutomationAndQueue": "Automaatio ja jono",
     "settingsAutomationAndQueueSubtitle": "Automaattinen toisto ja sekvenssi",
     "settingsOfflineDownloadsSubtitle": "Latausten laatu, tallennusrajat ja jonon koko",
-    "settingsSyncplaySubtitle": "Synkronointilogiikka ryhmäistunnoille",
+    "settingsSyncplaySubtitle": "Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa",
     "settingsAdvancedOptionsSubtitle": "Erikoistuneet soittimen ominaisuudet. Käytä varoen, sillä jotkin vaihtoehdot voivat aiheuttaa toistoongelmia",
     "settingsSkipIntrosAndOutros": "Ohitetaanko introt ja loppupalat?",
     "settingsPromptUser": "Kehota käyttäjää",
@@ -6592,20 +6592,20 @@
     },
     "settingsLiveTvDirect": "Suora TV lähetys",
     "settingsLiveTvDirectSubtitle": "Ota suora toisto käyttöön live TV:ssä",
-    "settingsOpenGroups": "Avaa Ryhmät",
-    "settingsOpenGroupsSubtitle": "Luo SyncPlay ryhmiä, liity niihin tai hallinnoi niitä",
-    "settingsSyncplayEnabled": "SyncPlay käytössä",
-    "settingsSyncplayEnabledSubtitle": "Ota ryhmäkatseluominaisuudet käyttöön",
-    "settingsSyncplayButton": "SyncPlay painike",
-    "settingsSyncplayButtonSubtitle": "Näytä SyncPlay painike navigointipalkissa",
+    "settingsOpenGroups": "Järjestä Watch Partyt",
+    "settingsOpenGroupsSubtitle": "Aloita uusi projekti tai liity jo käynnissä olevaan projektiin",
+    "settingsSyncplayEnabled": "Watch Partyt",
+    "settingsSyncplayEnabledSubtitle": "Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa",
+    "settingsSyncplayButton": "Watch Party painike",
+    "settingsSyncplayButtonSubtitle": "Näytä Watch Parties painike navigointipalkissa",
     "settingsSyncplayAdvancedCorrection": "Edistynyt korjaus",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "Ota hienorakeinen synkronointilogiikka käyttöön",
-    "settingsSyncplaySyncCorrection": "Synkronoinnin korjaus",
-    "settingsSyncplaySyncCorrectionSubtitle": "Säädä toisto automaattisesti pysyäksesi synkronoituna",
-    "settingsSyncplaySpeedToSync": "Synkronointinopeus",
-    "settingsSyncplaySpeedToSyncSubtitle": "Käytä synkronointiin toistonopeuden säätöä",
-    "settingsSyncplaySkipToSync": "Siirry synkronointiin",
-    "settingsSyncplaySkipToSyncSubtitle": "Käytä etsintää synkronointiin",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "Viivästykset ja ylimääräinen siirtymä",
+    "settingsSyncplaySyncCorrection": "Synkronointikorjaus",
+    "settingsSyncplaySyncCorrectionSubtitle": "Sopeuta tämän laitteen toiminta huoneen olosuhteisiin",
+    "settingsSyncplaySpeedToSync": "Synkronoinnin nopeus",
+    "settingsSyncplaySpeedToSyncSubtitle": "Toista hieman nopeammin tai hitaammin, jotta pysyt mukana",
+    "settingsSyncplaySkipToSync": "Ohita synkronointi",
+    "settingsSyncplaySkipToSyncSubtitle": "Siirry eteenpäin, kun se on liian kaukana",
     "settingsSyncplayMinimumSpeedDelay": "Miniminopeusviive",
     "settingsSyncplayMaximumSpeedDelay": "Suurin nopeuden viive",
     "settingsSyncplaySpeedDuration": "Nopeuden kesto",
@@ -9516,7 +9516,7 @@
     "adminMetadataPersonKindDirector": "Ohjaaja",
     "adminMetadataPersonKindComposer": "Säveltäjä",
     "adminMetadataPersonKindWriter": "Kirjailija",
-    "adminMetadataPersonKindGuestStar": "Vierailija",
+    "adminMetadataPersonKindGuestStar": "Vierasnäyttelijä",
     "adminMetadataPersonKindProducer": "Tuottaja",
     "adminMetadataPersonKindConductor": "Kapellimestari",
     "adminMetadataPersonKindLyricist": "Sanoittaja",
@@ -13602,7 +13602,7 @@
     "@settingsDetailsPageSubtitle": {
         "description": "Subtitle for the Details Page entry on the Appearance settings screen"
     },
-    "settingsPlaybackSubtitle": "Toistin, laatu, ääni, tekstitys, kappaleiden ohitus ja SyncPlay",
+    "settingsPlaybackSubtitle": "Toistolaite, laatu, ääni, tekstitys, kohtien ohittaminen ja katselutilaisuudet",
     "@settingsPlaybackSubtitle": {
         "description": "Subtitle for the Playback settings root entry"
     },
@@ -13654,7 +13654,7 @@
     "@settingsSkippingAndQueueSection": {
         "description": "Section header on the Playback settings screen"
     },
-    "settingsWatchTogetherSection": "Katso Yhdessä",
+    "settingsWatchTogetherSection": "Watch Parties",
     "@settingsWatchTogetherSection": {
         "description": "Section header on the Playback settings screen for SyncPlay"
     },
@@ -13940,7 +13940,7 @@
     "@shortcutSkipSegment": {
         "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
     },
-    "buttonShownInSyncPlayGroup": "Näkyy vain, kun olet SyncPlay-ryhmässä",
+    "buttonShownInSyncPlayGroup": "Näkyy vain, kun olet watch partyssä",
     "@buttonShownInSyncPlayGroup": {
         "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
     },
@@ -16150,7 +16150,7 @@
     "@watchPartyRoomCode": {
         "description": "Label for a Watch Party room's join code"
     },
-    "watchPartyStart": "Järjestä Watch Party",
+    "watchPartyStart": "Aloita Watch Party",
     "@watchPartyStart": {
         "description": "Button that opens a new Watch Party room"
     },
@@ -16158,7 +16158,7 @@
     "@watchPartyPickTitle": {
         "description": "How a Watch Party host picks what to watch"
     },
-    "watchPartyWaitingForHost": "Odotan, että isäntä valitsee jotain.",
+    "watchPartyWaitingForHost": "Odotan, että järjestäjä valitsee jotain.",
     "@watchPartyWaitingForHost": {
         "description": "Shown to Watch Party guests before anything is picked"
     },
@@ -16186,7 +16186,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "Watch Party päättäjäiset",
+    "watchPartyEnd": "Päätepiste kaikille",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -18045,5 +18045,491 @@
     "afterHoursPixelPurgeCardRemote": "Vasemmalle ja oikealle liu’uta scrubberia.",
     "@afterHoursPixelPurgeCardRemote": {
         "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "episodeDirector": "Jakson ohjaaja",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (jakson ohjaaja)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Jakson käsikirjoittaja",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (jakson käsikirjoittaja)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Vierasnäyttelijä",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (vierailija)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeYours": "Siitä, mihin jäit. Kaikki aloittavat siitä.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchParties": "Watch Parties",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Aloita Watch Partyt",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Chat, reaktiot ja äänestys. Toimii Moonbase alustalla.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "Jellyfinin oma. Muissa Jellyfin sovelluksissa olevat ystävät voivat liittyä mukaan.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Voit liittyä molempiin huoneisiin. Tämä valitsee vain sen, jonka avaat.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Watch Partyjen aikana",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Näytä keskustelu videon päällä",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Uudet viestit näkyvät muutaman sekunnin ajan",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Watch Party ilmoitukset",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Kerro minulle, kun joku tällä palvelimella aloittaa sellaisen",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    },
+    "watchPartyJoinWithCode": "Liity koodilla",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "Tällä palvelimella",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "{count} tällä palvelimella",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Liittyäksesi sinun on oltava pääsy kyseiseen kohteeseen. Huone sulkeutuu, kun viimeinen henkilö poistuu sieltä.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "Täällä näkyvät ne watch partyt , joita voit seurata. Saitko joltakulta koodin? Valitse ”Liity koodilla”.",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "Kutsulinkin liittäminen tähän toimii myös. Puhelimella linkki avaa Moonfin-sovelluksen suoraan Watch Partyihin.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} watching} other{{count} watching}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "{name}:n Watch Partyt",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Kaikki hallitsevat",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Äänestys siitä, mitä katsotaan",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "Watch Partyt tarvitsevat Moonbasen laajennuksen tällä palvelimella",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Pyydä palvelimen ylläpitäjää asentamaan Moonbase laajennus. Jellyfinissä SyncPlay toimii edelleen ilman sitä.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Tuo PIN-koodi ei toiminut. Yritä uudelleen.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "Liian monta yritystä. Odota hetki.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Tämä Watch Party on täynnä.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Missään huoneessa ei ole kyseistä koodia.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "Sinulla ei ole pääsyä siihen, mitä he katsovat.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "Järjestäjä poisti sinut Watch Party:stä.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "Sinun watch partyt",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Liitä se mihin tahansa keskusteluun. Se avaa tällä palvelimella sivun, jossa on ”Avaa Moonfinissä” painike.",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Lähetä kutsu",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Skannaa koodi puhelimellasi saadaksesi kutsulinkin ja lähetä se sitten sieltä. Tai jaa vain koodi.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "Peli odottaa kaikkien pelaajien vuoroa enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "Synkronoituna",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Kuroa umpeen",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Puskurointi",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "En katso",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "Valmis",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Liittyminen",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Järjestäjä",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "Odotetaan {name}:n liittymistä",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "Aloitetaan joka tapauksessa {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Yhdessä aloittaminen",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} keskeyttänyt",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} jatkoi",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} siirtyi kohtaan {time}",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} liittyi",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} vasen",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} vaihdettiin {title}",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Sinä olet nyt järjestäjä",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "{name} on nyt järjestäjä",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Kaikki voivat nyt hallita toistoa",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Vain järjestäjä hallitsee toistoa nyt",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Vain järjestäjä hallitsee toistoa nyt.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "Yhteyden palauttaminen partyihin...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Takaisin partyihin",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} lopetti partyn",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Chat",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Lähetä Partyihin",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyBackToClose": "Sulkemaan",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "watchPartyType": "Tyyppi",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Odota hetki",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Brb",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Taas!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "Love",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Wow",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Sad",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Fire",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Popcorn",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Nimitä isännäksi",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Jokainen voi hallita toistoa",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Kuka tahansa voi toistaa, keskeyttää ja ohittaa",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "Huoneen PIN",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Pyydä PIN koodia ennen kuin kukaan liittyy ryhmään",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "4–8 numeroa",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Lähde",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Poistu · {name} palvelimelta",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} järjesti watch partyn",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "Ensimmäinen sija Watch Parties osiossa Home sivustolla",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Tämä kutsu koskee palvelinta, jota et ole vielä lisännyt: {address}. Lisää se ja kirjaudu sisään liittyäksesi.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinRemember": "Tallenna PIN koodi tähän laitteeseen",
+    "@siloPinRemember": {
+        "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "watchPartyReplyNoWay": "No way",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
     }
 }
