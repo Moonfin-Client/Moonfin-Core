@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -307,6 +309,13 @@ void main() {
     );
   }
 
+  // All of those playlists newest first, then each server's next page.
+  final interleavedThenOld = [
+    for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
+    'b-old',
+    'a-old',
+  ];
+
   test('loading more playlists keeps the sort', () async {
     await sortPlaylistsNewestFirst();
     stubItems('a', 'Playlist', [('Chill', '2019-01-01')], total: 30);
@@ -339,11 +348,7 @@ void main() {
     for (final id in ['a', 'b']) {
       expect(startIndexesAskedOf(id), [null, 15], reason: 'server $id');
     }
-    expect(items.map((item) => item.name), [
-      for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
-      'b-old',
-      'a-old',
-    ]);
+    expect(items.map((item) => item.name), interleavedThenOld);
   });
 
   test('a failed load more keeps the playlists the first row left out', () async {
@@ -360,11 +365,35 @@ void main() {
     for (final id in ['a', 'b']) {
       expect(startIndexesAskedOf(id), [null, 15, 15], reason: 'server $id');
     }
-    expect(items.map((item) => item.name), [
-      for (var n = 30; n >= 1; n--) n.isOdd ? 'a$n' : 'b$n',
-      'b-old',
-      'a-old',
-    ]);
+    expect(items.map((item) => item.name), interleavedThenOld);
+  });
+
+  test('a load more from before a refresh leaves the new paging alone', () async {
+    final staleRow = await interleavedFirstPage();
+    final held = Completer<Map<String, dynamic>>();
+    when(() => itemsCall(itemsApis['a']!)).thenAnswer((_) => held.future);
+    stubItems('b', 'Playlist', [('b-stale', '2024-01-02')], total: 16);
+    final staleLoad = multiServer.loadMore(row: staleRow);
+    await pumpEventQueue();
+
+    // Home refreshes while that page is still loading.
+    multiServer.clearOffsets();
+    final refreshed = await interleavedFirstPage();
+    held.complete({'Items': <dynamic>[], 'TotalRecordCount': 16});
+    await staleLoad;
+
+    stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
+    stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
+    final (items, _) = await multiServer.loadMore(row: refreshed);
+
+    for (final id in ['a', 'b']) {
+      expect(
+        startIndexesAskedOf(id),
+        [null, 15, null, 15],
+        reason: 'server $id',
+      );
+    }
+    expect(items.map((item) => item.name), interleavedThenOld);
   });
 
   test('loading more goes on right after a first page of any size', () async {

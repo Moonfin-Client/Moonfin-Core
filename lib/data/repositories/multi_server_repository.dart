@@ -74,8 +74,12 @@ class MultiServerRepository {
   // Playlists a server returned on the first page that didn't make the cut
   // for the merged row. Loading more adds them back.
   final Map<String, List<AggregatedItem>> _rowHeldBack = {};
+  // Bumped when the offsets are cleared, so a load more still running from
+  // before a refresh can't change the refreshed rows' paging.
+  int _pagingGeneration = 0;
 
   void clearOffsets() {
+    _pagingGeneration++;
     _rowOffsets.clear();
     _rowTotals.clear();
     _rowHeldBack.clear();
@@ -645,6 +649,7 @@ class MultiServerRepository {
       return (row.items, row.totalCount);
     }
 
+    final generation = _pagingGeneration;
     final prefs = GetIt.instance.isRegistered<UserPreferences>()
         ? GetIt.instance<UserPreferences>()
         : null;
@@ -927,9 +932,11 @@ class MultiServerRepository {
     // Every server answered, so this page counts. Moving the offsets on and
     // dropping the held-back playlists only now means a failed load tries the
     // same pages again.
-    _rowOffsets.addAll(nextOffsets);
-    for (final session in sessions) {
-      _rowHeldBack.remove('${row.id}_${session.server.id}');
+    if (generation == _pagingGeneration) {
+      _rowOffsets.addAll(nextOffsets);
+      for (final session in sessions) {
+        _rowHeldBack.remove('${row.id}_${session.server.id}');
+      }
     }
 
     final newItems = results.expand((e) => e).toList();
