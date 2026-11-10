@@ -126,7 +126,7 @@ List<ItemContextAction> contextActionsFor(
   final isAdminUser = currentUser?.isAdministrator ?? false;
   final isSameServerItem = currentUser?.serverId == item.serverId;
   final requiresCollectionPermission =
-      client.serverType == ServerType.jellyfin && isSameServerItem;
+      client.features.collectionsNeedPermission && isSameServerItem;
   final canManageCollections =
       !requiresCollectionPermission ||
       currentUser?.canManageCollections == true ||

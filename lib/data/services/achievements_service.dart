@@ -127,7 +127,7 @@ class AchievementsService extends ChangeNotifier {
 
   Future<bool> _probe(MediaServerClient client) async {
     // It's a Jellyfin plugin, so an Emby server never carries it.
-    if (client.serverType != ServerType.jellyfin) {
+    if (!client.features.supportsAchievements) {
       debugPrint('[AchievementsService] not probing a ${client.serverType} server');
       return false;
     }
@@ -271,7 +271,7 @@ class AchievementsService extends ChangeNotifier {
   }) async {
     final userId = client.userId;
     if (userId == null || userId.isEmpty) return null;
-    if (client.serverType != ServerType.jellyfin) return null;
+    if (!client.features.supportsAchievements) return null;
 
     final results = await Future.wait<dynamic>([
       _getMap(client, 'users/$userId/summary'),

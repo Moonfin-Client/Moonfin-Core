@@ -179,7 +179,7 @@ class _AccountDialogState extends State<_AccountDialog> {
       store: GetIt.instance<PreferenceStore>(),
       service: GetIt.instance<ServerPinService>(),
       userId: account.user.id,
-      serverAddress: account.server.address,
+      server: account.server,
       accessToken: account.user.accessToken,
     );
     await guard.refresh();

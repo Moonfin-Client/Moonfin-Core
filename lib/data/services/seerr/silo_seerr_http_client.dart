@@ -1230,6 +1230,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     required String username,
     required String password,
     String authType = 'jellyfin',
+    String? authToken,
   }) async {
     final status = await getMoonfinStatus();
     return MoonfinLoginResponse(
@@ -1241,11 +1242,11 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   }
 
   @override
-  Future<MoonfinQuickConnectResult> moonfinQuickConnectLogin({
+  Future<MoonfinSsoResult> moonfinQuickConnectLogin({
     String? username,
   }) async {
     final status = await getMoonfinStatus();
-    return MoonfinQuickConnectResult(
+    return MoonfinSsoResult(
       success: status.authenticated,
       seerrUserId: status.seerrUserId,
       displayName: status.displayName,

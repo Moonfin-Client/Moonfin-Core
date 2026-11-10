@@ -62,18 +62,21 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
 
   void _onFavoritesRowsToggleChanged() {
     _pushPersonalizationSync();
+    _reloadHomeRows();
     if (!mounted) return;
     setState(() {});
   }
 
   void _onCollectionsRowsToggleChanged() {
     _pushPersonalizationSync();
+    _reloadHomeRows();
     if (!mounted) return;
     setState(() {});
   }
 
   void _onGenresRowsToggleChanged() {
     _pushPersonalizationSync();
+    _reloadHomeRows();
     if (!mounted) return;
     setState(() {});
   }
@@ -160,12 +163,14 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
 
   void _onPlaylistsRowsToggleChanged() {
     _pushPersonalizationSync();
+    _reloadHomeRows();
     if (!mounted) return;
     setState(() {});
   }
 
   void _onAudioRowsToggleChanged() {
     _pushPersonalizationSync();
+    _reloadHomeRows();
     if (!mounted) return;
     setState(() {});
   }
@@ -365,7 +370,10 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     title: l10n.mergeRecentRowsByType,
                     subtitle: l10n.mergeRecentRowsByTypeDescription,
                     icon: Icons.library_books,
-                    onChanged: _pushPersonalizationSync,
+                    onChanged: () {
+                      _pushPersonalizationSync();
+                      _reloadHomeRows();
+                    },
                   ),
                   EnumPreferenceTile<RecentlyReleasedSeriesType>(
                     preference: UserPreferences.recentlyReleasedSeriesType,
@@ -377,7 +385,10 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       RecentlyReleasedSeriesType.season => l10n.season,
                       RecentlyReleasedSeriesType.episode => l10n.episode,
                     },
-                    onChanged: _pushPersonalizationSync,
+                    onChanged: () {
+                      _pushPersonalizationSync();
+                      _reloadHomeRows();
+                    },
                   ),
                 ],
               ),

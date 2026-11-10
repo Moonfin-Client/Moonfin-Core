@@ -76,7 +76,9 @@ abstract class AppleTvPromptCommands {
   /// controller never captures a target item, matching the Flutter player.
   Future<void> advanceNext();
 
-  Future<void> exitPlayback();
+  /// [finished] is for leaving by skipping the rest of the item: the stop
+  /// then reports its end, so the server counts it played.
+  Future<void> exitPlayback({bool finished = false});
 
   void setSuppressAutoNext(bool value);
 
@@ -119,10 +121,12 @@ class AppleTvPlaybackPromptController {
   MediaSegmentType? _skipSegmentType;
   Completer<bool>? _stillWatchingCompleter;
   bool _disposed = false;
+  Duration _duration = Duration.zero;
 
   void onPositionTick(Duration position, Duration duration) {
     if (_disposed) return;
-    _checkSegments(position);
+    _duration = duration;
+    _checkSegments(position, duration);
     _checkNextUp(position, duration);
   }
 
@@ -323,7 +327,7 @@ class AppleTvPlaybackPromptController {
     _clearSkipSegment();
   }
 
-  void _checkSegments(Duration position) {
+  void _checkSegments(Duration position, Duration duration) {
     final service = _segmentService();
     if (service == null) return;
 
@@ -331,22 +335,28 @@ class AppleTvPlaybackPromptController {
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
+    final skipTo = result.skipTo == null
+        ? null
+        : skipLandingBeforeEnd(result.skipTo!, duration);
 
-    if (result.shouldSkip && result.skipTo != null) {
+    if (result.shouldSkip && skipTo != null) {
       final isOutro = result.segment?.type == MediaSegmentType.outro;
       if (replaceSkipOutroWithNextUp && isOutro && _showNextUp) {
         return;
       }
+      if (isOutro) _markCurrentPlayed();
       if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUp()) {
-        unawaited(_commands.seekTo(result.skipTo!));
+        unawaited(_commands.seekTo(skipTo));
         _presentNextUp();
         return;
       }
-      if (isOutro && !_hasDistinctNext(_queueSnapshot())) {
-        unawaited(_commands.exitPlayback());
+      if (isOutro &&
+          !_hasDistinctNext(_queueSnapshot()) &&
+          outroRunsToEnd(result.skipTo, duration)) {
+        unawaited(_commands.exitPlayback(finished: true));
         return;
       }
-      unawaited(_commands.seekTo(result.skipTo!));
+      unawaited(_commands.seekTo(skipTo));
       _clearSkipSegment();
       return;
     }
@@ -365,7 +375,7 @@ class AppleTvPlaybackPromptController {
         return;
       }
       _skipSegmentVisible = true;
-      _skipTo = result.skipTo;
+      _skipTo = skipTo;
       _skipSegmentType = result.segment!.type;
       unawaited(
         _commands.showSkipSegment(
@@ -392,6 +402,15 @@ class AppleTvPlaybackPromptController {
     }
   }
 
+  // Skipping the credits counts as finishing, even when they start before the
+  // server's own played threshold.
+  void _markCurrentPlayed() {
+    final currentId = _queueSnapshot().currentId;
+    if (currentId != null && currentId.isNotEmpty) {
+      _commands.markPlayed(currentId);
+    }
+  }
+
   void handleSkipSegment() {
     if (_disposed) return;
     _noteViewerActivity();
@@ -403,12 +422,7 @@ class AppleTvPlaybackPromptController {
         _skipSegmentType == MediaSegmentType.outro ||
         _segmentService()?.activeSegment?.type == MediaSegmentType.outro;
 
-    if (isOutro) {
-      final currentId = _queueSnapshot().currentId;
-      if (currentId != null && currentId.isNotEmpty) {
-        _commands.markPlayed(currentId);
-      }
-    }
+    if (isOutro) _markCurrentPlayed();
 
     if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUp()) {
       final skipTo = _skipTo;
@@ -419,8 +433,10 @@ class AppleTvPlaybackPromptController {
       return;
     }
 
-    if (isOutro && !_hasDistinctNext(_queueSnapshot())) {
-      unawaited(_commands.exitPlayback());
+    if (isOutro &&
+        !_hasDistinctNext(_queueSnapshot()) &&
+        outroRunsToEnd(_skipTo, _duration)) {
+      unawaited(_commands.exitPlayback(finished: true));
       return;
     }
 

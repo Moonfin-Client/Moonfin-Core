@@ -24,8 +24,11 @@ class DownloadsNavSlot extends StatelessWidget {
       GetIt.instance<UserPreferences>().get(
         UserPreferences.showDownloadsButton,
       ) &&
-      PlatformDetection.supportsOfflineDownloads &&
-      !PlatformDetection.isWeb;
+      isSupported();
+
+  /// Whether this device keeps downloads at all.
+  static bool isSupported() =>
+      PlatformDetection.supportsOfflineDownloads && !PlatformDetection.isWeb;
 
   /// Whether this device and the signed in user can download at all.
   static bool isAvailable() => !PlatformDetection.isWeb && userCanDownload();

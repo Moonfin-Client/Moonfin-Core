@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:playback_core/playback_core.dart';
@@ -92,9 +94,9 @@ List<Shadow>? subtitleShadows(SubtitleStyle style, double fontSize) {
   ];
 }
 
-/// 8-direction scaled shadow ring approximating a text stroke. Width scales
-/// with [fontSize] so the outline stays visible at large sizes and extends
-/// past any [TextStyle.backgroundColor] rectangle behind the glyph.
+/// Rings of shadow copies approximating a text stroke. Width scales with
+/// [fontSize] so the outline stays visible at large sizes and extends past any
+/// [TextStyle.backgroundColor] rectangle behind the glyph.
 List<Shadow>? subtitleStrokeShadows(
   Color strokeColor,
   double fontSize, {
@@ -102,14 +104,20 @@ List<Shadow>? subtitleStrokeShadows(
 }) {
   if (strokeColor.a <= 0) return null;
   final w = (fontSize / 16.0).clamp(1.0, 3.0) * scale;
-  return <Shadow>[
-    Shadow(offset: Offset(-w, -w), color: strokeColor),
-    Shadow(offset: Offset(0, -w), color: strokeColor),
-    Shadow(offset: Offset(w, -w), color: strokeColor),
-    Shadow(offset: Offset(-w, 0), color: strokeColor),
-    Shadow(offset: Offset(w, 0), color: strokeColor),
-    Shadow(offset: Offset(-w, w), color: strokeColor),
-    Shadow(offset: Offset(0, w), color: strokeColor),
-    Shadow(offset: Offset(w, w), color: strokeColor),
-  ];
+  // The copies only read as one outline while the gaps between them stay
+  // under a glyph's stem, so a wider stroke gets more of them and inner rings.
+  final step = math.max(1.0, fontSize / 16.0);
+  final shadows = <Shadow>[];
+  for (var r = w; r > step / 2; r -= step) {
+    final perSide = math.max(2, (2 * r / step).ceil());
+    for (var i = 0; i < perSide; i++) {
+      final t = -r + 2 * r * i / perSide;
+      shadows
+        ..add(Shadow(offset: Offset(t, -r), color: strokeColor))
+        ..add(Shadow(offset: Offset(r, t), color: strokeColor))
+        ..add(Shadow(offset: Offset(-t, r), color: strokeColor))
+        ..add(Shadow(offset: Offset(-r, -t), color: strokeColor));
+    }
+  }
+  return shadows;
 }

@@ -10,6 +10,7 @@ import '../../../preference/user_preferences.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../../util/signed_in_server_features.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -206,27 +207,45 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
                   ),
                 ),
                 for (final section in enabledSections)
-                  TvFocusHighlight(
-                    builder: (_, _) => ListTile(
-                      focusColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      leading: const Icon(Icons.image_outlined),
-                      title: Text(_sectionLabel(section.type, l10n)),
-                      subtitle: Text(
-                        _imageTypeLabel(
-                          _prefs.get(
+                  SettingsPreviewReporter(
+                    describe: () => SettingsPreviewEntry(
+                      title: _sectionLabel(section.type, l10n),
+                      prefKey: UserPreferences.homeRowImageType(
+                        section.type,
+                      ).key,
+                      options: [
+                        for (final type in ImageType.values)
+                          _imageTypeLabel(type, l10n),
+                      ],
+                      currentIndex: () => _prefs
+                          .get(UserPreferences.homeRowImageType(section.type))
+                          .index,
+                    ),
+                    child: TvFocusHighlight(
+                      builder: (_, _) => ListTile(
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        leading: const Icon(Icons.image_outlined),
+                        title: Text(_sectionLabel(section.type, l10n)),
+                        subtitle: Text(
+                          _imageTypeLabel(
+                            _prefs.get(
+                              UserPreferences.homeRowImageType(section.type),
+                            ),
+                            l10n,
+                          ),
+                        ),
+                        onTap: () => _showImageTypePicker(
+                          context,
+                          current: _prefs.get(
                             UserPreferences.homeRowImageType(section.type),
                           ),
-                          l10n,
+                          previewKey: UserPreferences.homeRowImageType(
+                            section.type,
+                          ).key,
+                          onSelected: (value) =>
+                              _setPerRowImageType(section.type, value),
                         ),
-                      ),
-                      onTap: () => _showImageTypePicker(
-                        context,
-                        current: _prefs.get(
-                          UserPreferences.homeRowImageType(section.type),
-                        ),
-                        onSelected: (value) =>
-                            _setPerRowImageType(section.type, value),
                       ),
                     ),
                   ),
@@ -241,11 +260,13 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
   Future<void> _showImageTypePicker(
     BuildContext context, {
     required ImageType current,
+    required String previewKey,
     required Future<void> Function(ImageType value) onSelected,
   }) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
     final l10n = AppLocalizations.of(context);
+    final preview = SettingsPreviewScope.maybeOf(context);
     try {
       final result = await showSettingsPicker<ImageType>(
         context,
@@ -253,7 +274,12 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         values: ImageType.values,
         current: current,
         labelOf: (v) => _imageTypeLabel(v, l10n),
+        onTry: preview == null
+            ? null
+            : (value, index) =>
+                  preview.tryValue(previewKey, value, index: index),
       );
+      preview?.clearTry(previewKey);
       if (result != null && result != current) {
         await onSelected(result);
       }

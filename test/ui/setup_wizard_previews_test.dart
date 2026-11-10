@@ -74,6 +74,35 @@ void main() {
     expect(tester.takeException(), isNull);
   }
 
+  test('a reload of the bar keeps the titles the previews drew', () {
+    List<String> ids(List<MediaBarSlideItem> items) => [
+      for (final item in items) item.itemId,
+    ];
+    MediaBarSlideItem item(String id, {double? rating}) => MediaBarSlideItem(
+      itemId: id,
+      serverId: 'server',
+      title: id,
+      communityRating: rating,
+    );
+    final drawn = _fakeItems();
+    // A fresh random pick that still has one drawn title, now with a rating.
+    final reloaded = [
+      item('item3', rating: 9.1),
+      for (var i = 0; i < 4; i++) item('new-item$i'),
+    ];
+
+    final kept = SetupPreviewData.keepDrawn(drawn, reloaded);
+    expect(ids(kept), ['item0', 'item1', 'item2', 'item3', 'new-item0']);
+    expect(kept[3].communityRating, 9.1);
+
+    // A smaller count cuts from the end, so the lead stays.
+    expect(ids(SetupPreviewData.keepDrawn(drawn, reloaded.take(2).toList())), [
+      'item0',
+      'item1',
+    ]);
+    expect(ids(SetupPreviewData.keepDrawn(const [], reloaded)), ids(reloaded));
+  });
+
   for (final layout in [
     InterfaceLayout.tv,
     InterfaceLayout.desktop,

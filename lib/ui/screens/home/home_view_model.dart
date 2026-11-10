@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
@@ -652,7 +653,7 @@ class HomeViewModel extends ChangeNotifier {
         // Cleanup runs even when the load failed, so the section's loading
         // placeholder is cleared instead of spinning forever.
         final loadedRows = sectionRows
-            .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+            .map((r) => r.copyWith(items: filterEmptyElements(r.items)))
             .where(
               (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
             )
@@ -840,7 +841,9 @@ class HomeViewModel extends ChangeNotifier {
         .toList(growable: false);
   }
 
-  List<AggregatedItem> _filterEmptyElements(List<AggregatedItem> items) {
+  /// [items] without the collections and playlists that have nothing in
+  /// them, which Home leaves out.
+  static List<AggregatedItem> filterEmptyElements(List<AggregatedItem> items) {
     return items.where((item) {
       if (item.type == 'BoxSet' || item.type == 'Playlist') {
         if (item.childCount == 0 || item.recursiveItemCount == 0) {
@@ -1137,7 +1140,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     final index = _rows.indexWhere((r) => r.id == rowId);
     if (index < 0) return;
-    final items = _filterEmptyElements(filter(fresh.items));
+    final items = filterEmptyElements(filter(fresh.items));
     // The row is back to its first page, so paging starts over from there.
     _rowOffsets.remove(rowId);
     _rows = List.of(_rows);
@@ -1211,7 +1214,7 @@ class HomeViewModel extends ChangeNotifier {
 
       if (hide != null) {
         final seen = <String>{};
-        final items = _filterEmptyElements(
+        final items = filterEmptyElements(
           hide(result.$1).where((item) => seen.add(item.id)).toList(),
         );
         // Counted from the server's list, so a page that held only hidden
@@ -1227,7 +1230,7 @@ class HomeViewModel extends ChangeNotifier {
         return;
       }
 
-      final filteredItems = _filterEmptyElements(result.$1);
+      final filteredItems = filterEmptyElements(result.$1);
       final newTotalCount = filteredItems.length <= row.items.length
           ? filteredItems.length
           : (result.$2 - (result.$1.length - filteredItems.length));
@@ -1455,24 +1458,33 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<HomeRow>> _loadSection(HomeSectionType section, {bool forceRefresh = false}) async {
+  /// [section] as Home loads it, sorted by [sortBy] and [sortOrder] rather
+  /// than the saved sort, so the settings preview can show a sort before
+  /// it's picked.
+  Future<List<HomeRow>> loadSectionSorted(
+    HomeSectionType section, {
+    required LibrarySortBy sortBy,
+    required SortDirection sortOrder,
+  }) => _loadSection(section, sort: (sortBy, sortOrder));
+
+  Future<List<HomeRow>> _loadSection(
+    HomeSectionType section, {
+    bool forceRefresh = false,
+    (LibrarySortBy, SortDirection)? sort,
+  }) async {
+    String sortBy(Preference<LibrarySortBy> saved) =>
+        (sort?.$1 ?? _prefs.get<LibrarySortBy>(saved)).apiValue;
+    String sortOrder(Preference<SortDirection> saved) =>
+        (sort?.$2 ?? _prefs.get<SortDirection>(saved)).apiValue;
     final l10n = currentAppLocalizations();
-    final favoritesSortBy = _prefs
-        .get(UserPreferences.favoritesRowSortBy)
-        .apiValue;
-    final favoritesSortOrder = _prefs
-        .get(UserPreferences.favoritesRowSortOrder)
-        .apiValue;
-    final collectionsSortBy = _prefs
-        .get(UserPreferences.collectionsRowSortBy)
-        .apiValue;
-    final collectionsSortOrder = _prefs
-        .get(UserPreferences.collectionsRowSortOrder)
-        .apiValue;
-    final genresSortBy = _prefs.get(UserPreferences.genresRowSortBy).apiValue;
-    final genresSortOrder = _prefs
-        .get(UserPreferences.genresRowSortOrder)
-        .apiValue;
+    final favoritesSortBy = sortBy(UserPreferences.favoritesRowSortBy);
+    final favoritesSortOrder = sortOrder(UserPreferences.favoritesRowSortOrder);
+    final collectionsSortBy = sortBy(UserPreferences.collectionsRowSortBy);
+    final collectionsSortOrder = sortOrder(
+      UserPreferences.collectionsRowSortOrder,
+    );
+    final genresSortBy = sortBy(UserPreferences.genresRowSortBy);
+    final genresSortOrder = sortOrder(UserPreferences.genresRowSortOrder);
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
         .includeItemTypes;
@@ -1497,12 +1509,10 @@ class HomeViewModel extends ChangeNotifier {
             ? await _multiServerRepo.getAggregatedLatestMediaRows()
             : _loadLatestMediaRows();
       case HomeSectionType.playlists:
-        final playlistsSortBy = _prefs
-            .get(UserPreferences.playlistsRowSortBy)
-            .apiValue;
-        final playlistsSortOrder = _prefs
-            .get(UserPreferences.playlistsRowSortOrder)
-            .apiValue;
+        final playlistsSortBy = sortBy(UserPreferences.playlistsRowSortBy);
+        final playlistsSortOrder = sortOrder(
+          UserPreferences.playlistsRowSortOrder,
+        );
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedPlaylists(
@@ -1516,12 +1526,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioArtists:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioArtists(
@@ -1535,12 +1541,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioAlbums:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioAlbums(
@@ -1554,12 +1556,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioPlaylists:
-        final audioSortBy = _prefs
-            .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
-        final audioSortOrder = _prefs
-            .get(UserPreferences.audioRowsSortOrder)
-            .apiValue;
+        final audioSortBy = sortBy(UserPreferences.audioRowsSortBy);
+        final audioSortOrder = sortOrder(UserPreferences.audioRowsSortOrder);
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioPlaylists(
@@ -1630,8 +1628,8 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.studios:
-        final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
-        final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
+        final studiosSortBy = sortBy(UserPreferences.studiosRowSortBy);
+        final studiosSortOrder = sortOrder(UserPreferences.studiosRowSortOrder);
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
         final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();
         final studiosRow = _multiServerEnabled
@@ -2613,7 +2611,7 @@ class HomeViewModel extends ChangeNotifier {
     ]);
     final addedNothing = appended.length == row.items.length;
 
-    final items = _filterEmptyElements(appended);
+    final items = filterEmptyElements(appended);
     final index = _rows.indexWhere((r) => r.id == row.id);
     if (index < 0) return;
     _rows = List.of(_rows);

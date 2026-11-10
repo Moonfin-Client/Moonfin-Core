@@ -20,7 +20,7 @@ String moonbaseGuideUrl(ServerType type) =>
 
 /// Moonbase for Plex and Silo can't read the library, so they offer less.
 List<String> moonbaseFeatures(AppLocalizations l10n, ServerType type) {
-  final fullPlugin = type == ServerType.jellyfin || type == ServerType.emby;
+  final fullPlugin = type.features.supportsFullMoonfinPlugin;
   return [
     l10n.moonbaseFeatureSync,
     l10n.moonbaseFeatureRatings,
@@ -97,7 +97,7 @@ class _MoonbaseDialogBodyState extends State<_MoonbaseDialogBody> {
   String _error = '';
 
   bool get _canInstall =>
-      widget.isAdmin && widget.client.serverType == ServerType.jellyfin;
+      widget.isAdmin && widget.client.features.supportsMoonbaseInstall;
 
   Future<void> _install() async {
     setState(() => _stage = _Stage.installing);

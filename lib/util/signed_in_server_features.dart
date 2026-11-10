@@ -15,7 +15,7 @@ bool anyServerTypeSupports(
   final types = serverTypes.toSet();
   if (types.isEmpty) return true;
   return types.any(
-    (type) => feature(FeatureDetector(serverType: type, serverVersion: '')),
+    (type) => feature(type.features),
   );
 }
 
@@ -78,9 +78,7 @@ bool itemServerSupports(
   final client = getIt<MediaServerClientFactory>().clientForServerOrActive(
     serverId,
   );
-  return feature(
-    FeatureDetector(serverType: client.serverType, serverVersion: ''),
-  );
+  return feature(client.features);
 }
 
 /// Whether the active server supports [feature], for actions that act on it
@@ -94,7 +92,5 @@ bool activeServerSupports(bool Function(FeatureDetector features) feature) =>
 /// `${baseUrl}/Moonfin/*` directly check it before sending anything, so
 /// nothing is asked of a server that can never answer (Silo, whose Moonbase
 /// is reached through `moonbaseEndpoint`).
-bool serverHasMoonfinPlugin(MediaServerClient client) => FeatureDetector(
-  serverType: client.serverType,
-  serverVersion: '',
-).supportsFullMoonfinPlugin;
+bool serverHasMoonfinPlugin(MediaServerClient client) =>
+    client.features.supportsFullMoonfinPlugin;

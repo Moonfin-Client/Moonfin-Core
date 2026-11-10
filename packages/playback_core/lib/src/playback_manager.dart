@@ -4336,6 +4336,16 @@ class PlaybackManager implements AudioOwnable {
     await _stopAndReportCurrent();
   }
 
+  /// Stops like `stop(userInitiated: false)`, but reports the stop at the end
+  /// of the item rather than where playback is, as playing to the end would.
+  /// For a viewer who skipped what was left, its credits: the server then
+  /// counts the item played and keeps no resume point.
+  Future<void> stopAsFinished() async {
+    _abandonLiveRecovery('the viewer stopped playback');
+    _viewerPaused = false;
+    await _stopAndReportCurrent(finished: true);
+  }
+
   /// Ends the server/backend ownership of a backgrounded video while keeping
   /// the expected queued item available for a fresh resolution on return.
   Future<bool> stopForBackground(dynamic expectedItem) async {
@@ -5596,6 +5606,7 @@ class PlaybackManager implements AudioOwnable {
     dynamic expectedItem,
     bool releaseServerResources = false,
     bool preserveSubtitleDelay = false,
+    bool finished = false,
   }) async {
     final existingStop = _stopInFlight;
     if (existingStop != null) {
@@ -5661,13 +5672,24 @@ class PlaybackManager implements AudioOwnable {
       final resolution = _currentResolution ?? _lastPlaybackResolution;
       final reportItem = item ?? _lastPlaybackItem;
       final backendPos = _mediaPosition(_backend?.position ?? Duration.zero);
-      final pos = Duration(
+      var pos = Duration(
         microseconds: [
           backendPos.inMicroseconds,
           state.position.inMicroseconds,
           _lastKnownPosition.inMicroseconds,
         ].reduce((a, b) => a > b ? a : b),
       );
+      if (finished) {
+        // Skipping the rest counts as playing to the end, judged by the same
+        // duration as [_onTrackCompleted]. With none known, nothing changes.
+        final backendDuration = _backendMediaDuration;
+        final end = _itemKnownDuration > Duration.zero
+            ? _itemKnownDuration
+            : (backendDuration > Duration.zero
+                  ? backendDuration
+                  : state.duration);
+        if (end > pos) pos = end;
+      }
       final progressGeneration = _progressGeneration;
       if (progressGeneration != null) {
         _retireProgressGeneration(progressGeneration, pos);

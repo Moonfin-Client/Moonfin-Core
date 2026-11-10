@@ -688,7 +688,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         : GetIt.instance<MediaServerClient>();
     return MediaSegmentService(
       client,
-      FeatureDetector(serverType: client.serverType, serverVersion: ''),
+      client.features,
       _prefs,
     );
   }
@@ -2476,21 +2476,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
-    if (result.shouldSkip && result.skipTo != null) {
+    var skipTo = result.skipTo;
+    if (skipTo != null &&
+        (PlatformDetection.isApple || PlatformDetection.isAppleTV)) {
+      skipTo = skipLandingBeforeEnd(skipTo, _state.duration);
+    }
+    if (result.shouldSkip && skipTo != null) {
       final isOutro = result.segment?.type == MediaSegmentType.outro;
       if (replaceSkipOutroWithNextUp && isOutro && _showNextUp) {
         return;
       }
+      if (isOutro) _markCurrentItemPlayedForOutroSkip();
       if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
-        unawaited(_seekDirect(result.skipTo!));
+        unawaited(_seekDirect(skipTo));
         _presentNextUpOverlay();
         return;
       }
-      if (isOutro && !_hasDistinctQueueNextItem()) {
-        unawaited(_exitPlayback());
+      if (isOutro &&
+          !_hasDistinctQueueNextItem() &&
+          outroRunsToEnd(result.skipTo, _state.duration)) {
+        unawaited(_exitPlayback(finished: true));
         return;
       }
-      _seekDirect(result.skipTo!);
+      _seekDirect(skipTo);
       _clearSkipSegment();
       return;
     }
@@ -2508,7 +2516,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
       setState(() {
         _skipSegment = result.segment;
-        _skipTo = result.skipTo;
+        _skipTo = skipTo;
         _controlsVisible = false;
       });
       _hideTimer?.cancel();
@@ -2785,6 +2793,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return true;
   }
 
+  // Skipping the credits counts as finishing, even when they start before the
+  // server's own played threshold.
+  void _markCurrentItemPlayedForOutroSkip() {
+    final item = _queue.currentItem;
+    final itemId = _itemIdForQueueItem(item);
+    if (itemId != null && itemId.isNotEmpty) {
+      try {
+        final mutations = ItemMutationRepository(_clientForQueueItem(item));
+        unawaited(
+          mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
+        );
+        final raw = _rawDataForQueueItem(item);
+        if (raw != null) {
+          final existingUserData = raw['UserData'];
+          final userData = existingUserData is Map<String, dynamic>
+              ? existingUserData
+              : (existingUserData is Map
+                    ? existingUserData.cast<String, dynamic>()
+                    : <String, dynamic>{});
+          userData['Played'] = true;
+          raw['UserData'] = userData;
+        }
+      } catch (_) {}
+    }
+  }
+
   void _skipCurrentSegment() {
     // Ignore a Skip Segment press if Cinema Skip has since taken over.
     if (_isCurrentPreroll && _cinemaSkip.enabled) return;
@@ -2795,29 +2829,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final isOutro =
         _skipSegment?.type == MediaSegmentType.outro ||
         _segmentService.activeSegment?.type == MediaSegmentType.outro;
-    if (isOutro) {
-      final item = _queue.currentItem;
-      final itemId = _itemIdForQueueItem(item);
-      if (itemId != null && itemId.isNotEmpty) {
-        try {
-          final mutations = ItemMutationRepository(_clientForQueueItem(item));
-          unawaited(
-            mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
-          );
-          final raw = _rawDataForQueueItem(item);
-          if (raw != null) {
-            final existingUserData = raw['UserData'];
-            final userData = existingUserData is Map<String, dynamic>
-                ? existingUserData
-                : (existingUserData is Map
-                      ? existingUserData.cast<String, dynamic>()
-                      : <String, dynamic>{});
-            userData['Played'] = true;
-            raw['UserData'] = userData;
-          }
-        } catch (_) {}
-      }
-    }
+    if (isOutro) _markCurrentItemPlayedForOutroSkip();
     if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
       final skipTo = _skipTo;
       if (skipTo != null) {
@@ -2826,8 +2838,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _presentNextUpOverlay();
       return;
     }
-    if (isOutro && !_hasDistinctQueueNextItem()) {
-      unawaited(_exitPlayback());
+    if (isOutro &&
+        !_hasDistinctQueueNextItem() &&
+        outroRunsToEnd(_skipTo, _state.duration)) {
+      unawaited(_exitPlayback(finished: true));
       return;
     }
 
@@ -2894,7 +2908,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  Future<void> _exitPlayback() async {
+  /// [finished] is for leaving by skipping the rest of the item: the stop
+  /// then reports its end, so the server counts it played.
+  Future<void> _exitPlayback({bool finished = false}) async {
     if (_isStopping) return;
     setState(() {
       _isStopping = true;
@@ -2922,7 +2938,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _cancelPopAfterBackKeyUp = runAfterBackKeyUp(_popPlayerRoute);
       });
     }
-    unawaited(_manager.stop(userInitiated: false));
+    unawaited(
+      finished
+          ? _manager.stopAsFinished()
+          : _manager.stop(userInitiated: false),
+    );
   }
 
   /// Shrinks the player into the bar along the bottom of the app. Playback

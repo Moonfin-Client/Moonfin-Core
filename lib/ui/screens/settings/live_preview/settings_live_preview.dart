@@ -60,6 +60,7 @@ import '../../calendar/calendar_controller.dart';
 import '../../calendar/calendar_countdown_view.dart';
 import '../../playback/osd_buttons.dart';
 import '../../setup/setup_wizard_previews.dart';
+import 'preview_row_options_home.dart';
 
 String settingsPreviewSceneName(
   AppLocalizations l10n,
@@ -314,7 +315,8 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
         'mediaBarShowRatingLabels' ||
         'mediaBarShowRatingBadges' ||
         'mediaBarNewReleaseBanner' ||
-        'mediaBarNewReleaseDays' => Builder(
+        'mediaBarNewReleaseDays' ||
+        'mediaBarRowPeek' => Builder(
           builder: (context) => mediaBarPreview(
             previewValue(context, UserPreferences.mediaBarMode),
           ),
@@ -338,6 +340,15 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
         ),
         'seasonal_surprise' || 'seasonal_density' =>
           const SettingsSeasonalPreview(),
+        // Drawn on its own rather than over the media bar's items, so the
+        // rows still show when the bar has nothing to give.
+        final key? when RowOptionsGroup.forKey(key) != null =>
+          PreviewRowOptionsHome(
+            group: RowOptionsGroup.forKey(key)!,
+            focusedKey: key,
+          ),
+        final key? when drawsHomeRows(key) =>
+          PreviewRowOptionsHome(focusedKey: key),
         final key? when key.startsWith('pref_screensaver_') => Builder(
           builder: (context) =>
               previewValue(context, UserPreferences.screensaverEnabled)
@@ -347,6 +358,7 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
                 )
               : settingsHomePreview(),
         ),
+        'focus_color' => settingsHomePreview(focusCard: true),
         _ => settingsHomePreview(),
       },
       SettingsPreviewScene.details => Builder(
@@ -486,6 +498,9 @@ class SettingsPreviewInspector extends StatelessWidget {
     final trying = key != null && controller.isTrying(key) && live != saved;
     final path = controller.focusedPath;
     final detail = path == null ? entry.description : path.join(' › ');
+    // A Row Options setting whose rows are all off can't change Home, so the
+    // line says what it needs rather than that it shows.
+    final blocked = rowOptionsBlockedReason(context, key);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,17 +516,22 @@ class SettingsPreviewInspector extends StatelessWidget {
                 height: 7,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: scene != null ? AppColorScheme.accent : muted,
+                  color: blocked != null
+                      ? Colors.amber
+                      : scene != null
+                      ? AppColorScheme.accent
+                      : muted,
                 ),
               ),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
-                  scene != null
-                      ? l10n.settingsPreviewShowsOn(
-                          settingsPreviewSceneName(l10n, scene),
-                        )
-                      : l10n.settingsPreviewNotShown,
+                  blocked ??
+                      (scene != null
+                          ? l10n.settingsPreviewShowsOn(
+                              settingsPreviewSceneName(l10n, scene),
+                            )
+                          : l10n.settingsPreviewNotShown),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -748,7 +768,12 @@ class SettingsPlayerPreview extends StatelessWidget {
             children: [
               ClipRect(
                 child: FittedBox(
-                  fit: zoomModeToBoxFit(zoom),
+                  // The subtitle settings fill the frame, since the wide
+                  // film's bars would put the line where a black outline or
+                  // shadow can't be seen.
+                  fit: moment == _PlayerMoment.watching
+                      ? BoxFit.cover
+                      : zoomModeToBoxFit(zoom),
                   child: SizedBox(
                     width: 2390,
                     height: 1000,

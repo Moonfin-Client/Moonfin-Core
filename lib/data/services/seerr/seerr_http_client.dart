@@ -65,7 +65,8 @@ class SeerrHttpClient {
 
   Options _authOptions([Options? existing]) {
     final headers = <String, dynamic>{
-      'Authorization': 'MediaBrowser Token="${proxyConfig.jellyfinToken}"',
+      ...(proxyConfig.authHeaders ??
+          {'Authorization': 'MediaBrowser Token="${proxyConfig.jellyfinToken}"'}),
     };
     if (existing != null) {
       return existing.copyWith(headers: {...?existing.headers, ...headers});
@@ -893,14 +894,18 @@ class SeerrHttpClient {
     required String username,
     required String password,
     String authType = 'jellyfin',
+    String? authToken,
   }) async {
     final response = await _dio.post(
       _moonfinUrl('Login'),
-      data: MoonfinLoginRequest(
-        username: username,
-        password: password,
-        authType: authType,
-      ).toJson(),
+      data: {
+        ...MoonfinLoginRequest(
+          username: username,
+          password: password,
+          authType: authType,
+        ).toJson(),
+        'authToken': ?authToken,
+      },
       options: _authJsonOptions(),
     );
     _requireSuccess(response, 'moonfinLogin');
@@ -914,21 +919,27 @@ class SeerrHttpClient {
   /// Attempts the password-less Quick Connect sign in. Never throws on a non
   /// success status so the caller can inspect the plugin's errorCode and tell
   /// an unsupported server apart from a transient failure.
-  Future<MoonfinQuickConnectResult> moonfinQuickConnectLogin({
-    String? username,
-  }) async {
-    final response = await _dio.post(
-      _moonfinUrl('Login'),
-      data: {
+  Future<MoonfinSsoResult> moonfinQuickConnectLogin({String? username}) =>
+      _ssoLogin({
         if (username != null && username.isNotEmpty) 'username': username,
         'authType': 'quickconnect',
-      },
+      });
+
+  /// Signs in to Seerr with the Plex account's plex.tv token, through Moonbase
+  /// for Plex. Never throws on a non success status, like Quick Connect.
+  Future<MoonfinSsoResult> moonfinPlexLogin({required String authToken}) =>
+      _ssoLogin({'authType': 'plex', 'authToken': authToken});
+
+  Future<MoonfinSsoResult> _ssoLogin(Map<String, dynamic> body) async {
+    final response = await _dio.post(
+      _moonfinUrl('Login'),
+      data: body,
       options: _authJsonOptions(),
     );
 
     final data = response.data;
     final map = data is Map<String, dynamic> ? data : const <String, dynamic>{};
-    return MoonfinQuickConnectResult(
+    return MoonfinSsoResult(
       success: response.statusCode == 200 && map['success'] == true,
       errorCode: map['errorCode']?.toString(),
       seerrUserId: (map['seerrUserId'] as num?)?.toInt(),
