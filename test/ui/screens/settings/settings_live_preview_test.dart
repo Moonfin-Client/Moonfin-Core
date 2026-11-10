@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -17,15 +18,18 @@ import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/models/calendar_entry.dart';
+import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
+import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/playback/subtitle_fonts.dart';
+import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -40,7 +44,9 @@ import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
+import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
+import 'package:moonfin/ui/screens/settings/live_preview/preview_row_samples.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/settings/subtitle_customization_screen.dart';
 import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
@@ -48,6 +54,7 @@ import 'package:moonfin/ui/screensaver/screensaver_gradient_backdrops.dart';
 import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
@@ -89,6 +96,10 @@ class _Item extends Fake implements AggregatedItem {}
 class _Rows extends Mock implements RowDataSource {}
 
 class _Playback extends Mock implements PlaybackManager {}
+
+class _Home extends Mock implements HomeViewModel {}
+
+class _Connectivity extends Mock implements ConnectivityService {}
 
 /// Two films in a library called Films, whatever the call asks for.
 class _Items implements ItemsApi {
@@ -3058,5 +3069,476 @@ void main() {
     expect(find.byType(SeasonalEffectsHost), findsNothing);
     expect(seasonalPreviewsRunning.value, 0);
     await tester.pumpWidget(const SizedBox());
+  });
+
+  group('the Row Options rows', () {
+    AggregatedItem item(String name, String type) => AggregatedItem(
+      id: name,
+      serverId: 'server',
+      rawData: {'Id': name, 'Name': name, 'Type': type},
+    );
+
+    final albums = [
+      for (final name in ['Abyss', 'Bloom', 'Crest']) item(name, 'MusicAlbum'),
+    ];
+    final boxSets = [
+      for (final name in ['Sci-Fi', 'Animation']) item(name, 'BoxSet'),
+    ];
+    final genres = HomeRow(
+      id: 'genres',
+      title: 'Genres',
+      rowType: HomeRowType.genres,
+      items: [item('Comedy', 'Genre')],
+    );
+
+    /// Home Rows with [on] switched on in that order.
+    Future<void> homeRows(List<HomeSectionType> on) =>
+        GetIt.instance<UserPreferences>().set(
+          UserPreferences.homeSectionsJson,
+          HomeSectionConfig.toJsonString([
+            for (final (order, type) in on.indexed)
+              HomeSectionConfig(type: type, order: order),
+          ]),
+        );
+
+    /// Home behind Settings, holding [rows].
+    _Home home(List<HomeRow> rows) {
+      final home = _Home();
+      when(() => home.rows).thenReturn(rows);
+      when(() => home.isLoading).thenReturn(false);
+      when(() => home.imageApiForServer(any())).thenReturn(_Images());
+      GetIt.instance.registerSingleton<HomeViewModel>(home);
+      return home;
+    }
+
+    /// Rows that load from [load], counting the calls in [asked].
+    void serve(
+      SettingsPreviewController controller,
+      Future<HomeRow> Function(PreviewRowQuery query) load, {
+      List<PreviewRowQuery>? asked,
+    }) => PreviewRowSamples.debugSet(
+      controller,
+      PreviewRowSamples(
+        load: (query) {
+          asked?.add(query);
+          return load(query);
+        },
+      ),
+    );
+
+    HomeRow audioRow(List<AggregatedItem> items) => HomeRow(
+      id: 'audioAlbums',
+      title: 'Albums',
+      rowType: HomeRowType.audioAlbums,
+      items: items,
+      isAudio: true,
+    );
+
+    Future<void> show(
+      WidgetTester tester,
+      SettingsPreviewController controller,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(
+            width: 960,
+            height: 760,
+            child: Column(
+              children: [
+                Expanded(child: SettingsLivePreview()),
+                SettingsPreviewInspector(),
+              ],
+            ),
+          ),
+        ),
+      );
+      // The settle delay, the load and the swap a frame later.
+      for (var i = 0; i < 4; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(tester.takeException(), isNull);
+    }
+
+    MediaCard card(WidgetTester tester, String title) =>
+        tester.widget<MediaCard>(find.widgetWithText(MediaCard, title));
+
+    void tv() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      // The InfoArea looks for the item's logo on its server.
+      final client = _Client();
+      when(() => client.imageApi).thenReturn(_Images());
+      final factory = _Factory();
+      when(() => factory.getClientIfExists(any())).thenReturn(client);
+      when(() => factory.getActiveClient()).thenReturn(client);
+      GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
+    }
+
+    testWidgets(
+      'an audio setting shows Home with the D-pad on the Albums row',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
+        home([genres]);
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Audio Rows Sorting',
+              prefKey: 'pref_audio_rows_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums));
+        await show(tester, controller);
+
+        // The first album is focused, square like every audio card, and the
+        // InfoArea above the row describes it.
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').aspectRatio, 1.0);
+        expect(card(tester, 'Bloom').externalIsFocused, isFalse);
+        expect(
+          tester.widget<InfoArea>(find.byType(InfoArea)).item?.name,
+          'Abyss',
+        );
+        // Genres comes next on Home, drawn without a real card.
+        expect(find.text('Comedy'), findsOneWidget);
+        expect(find.widgetWithText(MediaCard, 'Comedy'), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'Modern widens a focused collection to 16:9 and keeps audio square',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await prefs.set(UserPreferences.displayCollectionsRows, true);
+        await homeRows([
+          HomeSectionType.collections,
+          HomeSectionType.audioAlbums,
+        ]);
+        home(const []);
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Collections Row Sorting',
+              prefKey: 'pref_collections_row_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) async => query.section == HomeSectionType.collections
+              ? HomeRow(
+                  id: 'collections',
+                  title: 'Collections',
+                  rowType: HomeRowType.collections,
+                  items: boxSets,
+                )
+              : audioRow(albums),
+        );
+        await show(tester, controller);
+        final focused = card(tester, 'Sci-Fi');
+        expect(focused.externalIsFocused, isTrue);
+        expect(focused.aspectRatio, closeTo(16 / 9, 0.001));
+        expect(card(tester, 'Animation').aspectRatio, closeTo(2 / 3, 0.001));
+        expect(find.text('Abyss'), findsOneWidget);
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+        await show(tester, controller);
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').aspectRatio, 1.0);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'a section off in Home Rows leaves Home as it is and says why',
+      (tester) async {
+        tv();
+        await GetIt.instance<UserPreferences>().set(
+          UserPreferences.displayAudioRows,
+          true,
+        );
+        await homeRows([HomeSectionType.genres]);
+        home([genres]);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Display Audio Rows',
+              prefKey: 'pref_display_audio_rows',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums), asked: asked);
+        await show(tester, controller);
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        // It names the group on the Rows screen the audio rows are in.
+        expect(
+          find.text(
+            'Albums, Artists and Audio Playlists are all turned off. To show '
+            'one, go to Rows, open General under Disabled, and turn it on.',
+          ),
+          findsOneWidget,
+        );
+        // The inspector says what the setting needs, not that it shows.
+        expect(
+          find.text('Turn on a row in Rows, under Disabled'),
+          findsOneWidget,
+        );
+        expect(find.byType(MediaCard), findsNothing);
+        expect(asked, isEmpty);
+
+        // Rows only lists the audio rows once the switch is on, so the switch
+        // comes first.
+        controller.tryValue('pref_display_audio_rows', false);
+        await show(tester, controller);
+        expect(
+          find.text(
+            l10n.settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+              l10n.displayAudioRows,
+              l10n.general,
+              l10n.disabled,
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            l10n.settingsPreviewNeedsSwitchAndRow(l10n.displayAudioRows),
+          ),
+          findsOneWidget,
+        );
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Home reloading behind Settings leaves the rows below alone', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
+      final viewModel = home([genres]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => audioRow(albums));
+      await show(tester, controller);
+      expect(find.text('Comedy'), findsOneWidget);
+
+      // A Row Options change sends Home back to loading placeholders.
+      when(() => viewModel.rows).thenReturn([
+        const HomeRow(
+          id: 'genres',
+          title: 'Genres',
+          rowType: HomeRowType.genres,
+          isLoading: true,
+        ),
+      ]);
+      controller.tryValue(
+        'pref_audio_rows_sort_order',
+        SortDirection.descending,
+      );
+      await show(tester, controller);
+      expect(find.text('Comedy'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'a tried sort keeps the old row up until the new one has loaded',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await homeRows([HomeSectionType.audioAlbums]);
+        home(const []);
+        final newest = Completer<HomeRow>();
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Audio Rows Sorting',
+              prefKey: 'pref_audio_rows_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) => query.sortBy == LibrarySortBy.dateAdded
+              ? newest.future
+              : Future.value(audioRow(albums)),
+        );
+        await show(tester, controller);
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+        controller.tryValue('pref_audio_rows_sort_by', LibrarySortBy.dateAdded);
+        await show(tester, controller);
+        // Still loading: the row on screen is the one for the saved sort.
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+        newest.complete(audioRow(albums.reversed.toList()));
+        await show(tester, controller);
+        // Every card moves at once, focus going to the new first one.
+        expect(card(tester, 'Crest').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').externalIsFocused, isFalse);
+        expect(
+          tester.getTopLeft(find.widgetWithText(MediaCard, 'Bloom')).dx,
+          lessThan(
+            tester.getTopLeft(find.widgetWithText(MediaCard, 'Abyss')).dx,
+          ),
+        );
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      "nothing loads while the rows aren't shown or the server is out of reach",
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await homeRows([HomeSectionType.audioAlbums]);
+        home(const []);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Clock',
+              prefKey: 'pref_clock_behavior',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums), asked: asked);
+        await show(tester, controller);
+        expect(asked, isEmpty);
+
+        final connectivity = _Connectivity();
+        when(() => connectivity.canReachServer).thenReturn(false);
+        GetIt.instance.registerSingleton<ConnectivityService>(connectivity);
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+        await show(tester, controller);
+        expect(asked, isEmpty);
+        expect(find.byType(MediaCard), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('a sort saved without trying it shows its own order', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await homeRows([HomeSectionType.audioAlbums]);
+      // Home loaded the albums by name.
+      home([audioRow(albums)]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => audioRow(
+          query.sortBy == LibrarySortBy.dateAdded
+              ? albums.reversed.toList()
+              : albums,
+        ),
+      );
+      await show(tester, controller);
+      expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+      // A tap on a phone saves the option it picks without trying it first,
+      // so Home's rows, loaded by name, are no answer for the new sort.
+      await prefs.set(UserPreferences.audioRowsSortBy, LibrarySortBy.dateAdded);
+      await show(tester, controller);
+      expect(card(tester, 'Crest').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the focused row waits for every audio row of a new sort', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await homeRows([
+        HomeSectionType.audioAlbums,
+        HomeSectionType.audioArtists,
+      ]);
+      home(const []);
+      final artists = [item('Zed', 'MusicArtist')];
+      final albumsLoaded = Completer<HomeRow>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) => query.section == HomeSectionType.audioAlbums
+            ? albumsLoaded.future
+            : Future.value(
+                HomeRow(
+                  id: 'audioArtists',
+                  title: 'Artists',
+                  rowType: HomeRowType.audioArtists,
+                  items: artists,
+                  isAudio: true,
+                ),
+              ),
+      );
+      await show(tester, controller);
+      // Artists came back first, but Albums comes first on Home, so nothing
+      // is focused until it's in.
+      expect(find.byType(MediaCard), findsNothing);
+
+      albumsLoaded.complete(audioRow(albums));
+      await show(tester, controller);
+      expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+      expect(find.text('Zed'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 }
