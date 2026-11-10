@@ -11196,6 +11196,14 @@
   "settingsFortyFiveSeconds": "45 seconds",
   "settingsSixtySeconds": "60 seconds",
   "settingsSkipForwardLengthDescription": "How many seconds to jump forward after pressing the fast forward button.",
+  "remoteScrubRunOn": "Keep Scrubbing After Release",
+  "@remoteScrubRunOn": {
+    "description": "Setting title (TV): holding Left or Right on the remote starts a scrub that keeps going after release"
+  },
+  "remoteScrubRunOnDescription": "Let go of Left or Right and the scrub keeps going. Press Left or Right to change speed, OK to play from there and Back to go back.",
+  "@remoteScrubRunOnDescription": {
+    "description": "Subtitle for remoteScrubRunOn"
+  },
   "settingsHideControlsAfter": "Hide Controls After",
   "@settingsHideControlsAfter": {
     "description": "Playback setting for how long the player controls stay on screen after the last input"
