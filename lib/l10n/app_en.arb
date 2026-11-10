@@ -15330,6 +15330,46 @@
   "@settingsAdvancedSection": {
     "description": "Section header on the Playback settings screen"
   },
+  "settingsDecodingAndRenderingSection": "Decoding & Rendering",
+  "@settingsDecodingAndRenderingSection": {
+    "description": "Section header on the Quality & Decoding settings screen"
+  },
+  "settingsAudioStreamSection": "Audio Stream",
+  "@settingsAudioStreamSection": {
+    "description": "Section header on the Audio settings screen for the default audio track choices"
+  },
+  "settingsAudioOutputSection": "Audio Output",
+  "@settingsAudioOutputSection": {
+    "description": "Section header on the Audio settings screen for the passthrough mode"
+  },
+  "settingsPassthroughSettingsSection": "Passthrough Settings",
+  "@settingsPassthroughSettingsSection": {
+    "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+  },
+  "settingsImdbListsSection": "IMDb Lists",
+  "@settingsImdbListsSection": {
+    "description": "Section header on the IMDb Lists settings screen over the IMDb row switches"
+  },
+  "settingsTmdbListsSection": "TMDB Lists",
+  "@settingsTmdbListsSection": {
+    "description": "Section header on the TMDB Lists settings screen over the TMDB row switches"
+  },
+  "settingsSeerrHomePageRowsSection": "Seerr Home Page Rows",
+  "@settingsSeerrHomePageRowsSection": {
+    "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+  },
+  "settingsSavedCustomHomeRowsSection": "Saved Custom Home Rows",
+  "@settingsSavedCustomHomeRowsSection": {
+    "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+  },
+  "settingsRewatchSection": "Rewatch",
+  "@settingsRewatchSection": {
+    "description": "Section header on the Home Sections settings screen for the Rewatch row"
+  },
+  "favoritesSwitchViewSection": "Switch View",
+  "@favoritesSwitchViewSection": {
+    "description": "Section header in the Favorites display options for choosing between Home and Library view"
+  },
   "playerSettingsSubtitle": "Controls, seeking, player buttons, and trick play",
   "@playerSettingsSubtitle": {
     "description": "Subtitle for the Player entry on the Playback settings screen"

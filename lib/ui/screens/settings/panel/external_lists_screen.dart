@@ -335,7 +335,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                     ),
                   ],
                 ),
-                const _SectionHeader('IMDb Lists'),
+                _SectionHeader(l10n.settingsImdbListsSection),
                 adaptiveListSection(
                   children: [
                     SwitchPreferenceTile(
@@ -594,7 +594,7 @@ class _TmdbListsScreenState extends State<_TmdbListsScreen> {
                     ),
                   ],
                 ),
-                const _SectionHeader('TMDB Lists'),
+                _SectionHeader(l10n.settingsTmdbListsSection),
                 adaptiveListSection(
                   children: [
                     SwitchPreferenceTile(
@@ -1278,7 +1278,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     ),
                   ],
                 ),
-                const _SectionHeader('Seerr Home Page Rows'),
+                _SectionHeader(l10n.settingsSeerrHomePageRowsSection),
                 adaptiveListSection(
                   children: _rows.asMap().entries.map((entry) {
                     final rowIndex = entry.key;
@@ -1527,7 +1527,10 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                   ],
                 ),
                 if (customConfigs.isNotEmpty) ...[
-                  const _SectionHeader('Saved Custom Home Rows'),
+                  _SectionHeader(
+                    AppLocalizations.of(context)
+                        .settingsSavedCustomHomeRowsSection,
+                  ),
                   adaptiveListSection(
                     children: customConfigs.map((config) {
                       Map<String, dynamic> rowConfig = {};
