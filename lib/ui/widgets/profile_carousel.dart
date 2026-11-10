@@ -199,8 +199,8 @@ class ProfileStatusLine extends StatelessWidget {
 }
 
 /// The TV and desktop account picker: the selected profile big in the
-/// middle, with neighbors either side getting smaller and fainter. As many
-/// neighbors show as fit the width.
+/// middle, a fainter neighbor either side, and as many small, faint ones past
+/// those as fit the width.
 ///
 /// Left and Right move the selection, Select activates it. A click on a
 /// neighbor selects it and a click on the middle one activates it.
@@ -232,14 +232,19 @@ class ProfileCarousel extends StatefulWidget {
   static const nearOffset = 188.0;
   static const farOffset = 314.0;
 
-  /// The gap from one outer neighbor to the next.
-  static const farStep = farSize + 40;
+  static const _farGap = 40.0;
 
-  /// How many steps either side of the middle fit in [width].
+  /// From the center of one outer neighbor to the next.
+  static const farStep = farSize + _farGap;
+
+  /// How many steps either side of the middle fit in [width]. The steps past
+  /// the second keep a gap from the edge, for TVs that overscan.
   static int reachFor(double width) {
+    if (!width.isFinite) return 2;
     final room = width / 2 - farOffset - farSize / 2;
     if (room < 0) return 1;
-    return 2 + room ~/ farStep;
+    final extra = room - _farGap;
+    return extra < 0 ? 2 : 2 + extra ~/ farStep;
   }
 
   static double _offsetAt(int distance) => switch (distance) {

@@ -128,29 +128,41 @@ void main() {
     double opacityOf(String initial) =>
         tester.widget<AnimatedOpacity>(avatarOf(initial).first).opacity;
 
-    await tester.pumpWidget(const _Harness(activated: [], width: 800));
-    await tester.pumpAndSettle();
-    // Sam is two steps from Alex.
-    expect(opacityOf('S'), 0.3);
-    expect(opacityOf('K'), 0.0);
+    double offsetOf(String initial) =>
+        tester.getCenter(avatarOf(initial).first).dx -
+        tester.getCenter(find.byType(ProfileCarousel)).dx;
 
-    // Wider, a third step fits.
     await tester.binding.setSurfaceSize(const Size(1200, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(const _Harness(activated: [], width: 1000));
+
+    await tester.pumpWidget(const _Harness(activated: [], width: 800));
+    await tester.pumpAndSettle();
+    // Sam is two steps from Alex. Kids is hidden, waiting one step past him.
+    expect(opacityOf('S'), 0.3);
+    expect(opacityOf('K'), 0.0);
+    expect(offsetOf('K'), ProfileCarousel.farOffset + ProfileCarousel.farStep);
+
+    // Wider, a third step fits.
+    await tester.pumpWidget(const _Harness(activated: [], width: 1100));
     await tester.pumpAndSettle();
     expect(opacityOf('S'), 0.3);
     expect(opacityOf('K'), 0.3);
-    final center = tester.getCenter(find.byType(ProfileCarousel));
-    expect(
-      tester.getCenter(avatarOf('K').first).dx,
-      center.dx + ProfileCarousel.farOffset + ProfileCarousel.farStep,
-    );
+    expect(offsetOf('K'), ProfileCarousel.farOffset + ProfileCarousel.farStep);
 
     await tester.pumpWidget(const _Harness(activated: [], width: 600));
     await tester.pumpAndSettle();
     expect(opacityOf('S'), 0.0);
     expect(opacityOf('J'), 0.55);
+  });
+
+  test('the reach grows with the width and keeps clear of the edge', () {
+    expect(ProfileCarousel.reachFor(699), 1);
+    expect(ProfileCarousel.reachFor(700), 2);
+    // A third step needs its own width plus a gap past it on both sides.
+    expect(ProfileCarousel.reachFor(1003), 2);
+    expect(ProfileCarousel.reachFor(1004), 3);
+    expect(ProfileCarousel.reachFor(1228), 4);
+    expect(ProfileCarousel.reachFor(double.infinity), 2);
   });
 
   testWidgets('the phone hero swipes and the strip selects', (tester) async {
