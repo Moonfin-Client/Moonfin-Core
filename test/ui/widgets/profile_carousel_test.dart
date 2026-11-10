@@ -134,6 +134,19 @@ void main() {
     expect(opacityOf('S'), 0.3);
     expect(opacityOf('K'), 0.0);
 
+    // Wider, a third step fits.
+    await tester.binding.setSurfaceSize(const Size(1200, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _Harness(activated: [], width: 1000));
+    await tester.pumpAndSettle();
+    expect(opacityOf('S'), 0.3);
+    expect(opacityOf('K'), 0.3);
+    final center = tester.getCenter(find.byType(ProfileCarousel));
+    expect(
+      tester.getCenter(avatarOf('K').first).dx,
+      center.dx + ProfileCarousel.farOffset + ProfileCarousel.farStep,
+    );
+
     await tester.pumpWidget(const _Harness(activated: [], width: 600));
     await tester.pumpAndSettle();
     expect(opacityOf('S'), 0.0);

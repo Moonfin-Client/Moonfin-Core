@@ -199,7 +199,8 @@ class ProfileStatusLine extends StatelessWidget {
 }
 
 /// The TV and desktop account picker: the selected profile big in the
-/// middle, with two neighbors either side getting smaller and fainter.
+/// middle, with neighbors either side getting smaller and fainter. As many
+/// neighbors show as fit the width.
 ///
 /// Left and Right move the selection, Select activates it. A click on a
 /// neighbor selects it and a click on the middle one activates it.
@@ -230,6 +231,22 @@ class ProfileCarousel extends StatefulWidget {
   static const farSize = 72.0;
   static const nearOffset = 188.0;
   static const farOffset = 314.0;
+
+  /// The gap from one outer neighbor to the next.
+  static const farStep = farSize + 40;
+
+  /// How many steps either side of the middle fit in [width].
+  static int reachFor(double width) {
+    final room = width / 2 - farOffset - farSize / 2;
+    if (room < 0) return 1;
+    return 2 + room ~/ farStep;
+  }
+
+  static double _offsetAt(int distance) => switch (distance) {
+    0 => 0.0,
+    1 => nearOffset,
+    _ => farOffset + (distance - 2) * farStep,
+  };
 
   @override
   State<ProfileCarousel> createState() => _ProfileCarouselState();
@@ -293,11 +310,7 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final center = constraints.maxWidth / 2;
-                final showFar =
-                    constraints.maxWidth >=
-                    2 *
-                        (ProfileCarousel.farOffset +
-                            ProfileCarousel.farSize / 2);
+                final reach = ProfileCarousel.reachFor(constraints.maxWidth);
                 // Tablets get this layout too, so it takes a swipe.
                 return _SwipeDetector(
                   behavior: HitTestBehavior.translucent,
@@ -311,7 +324,7 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
                     clipBehavior: Clip.none,
                     children: [
                       for (var i = 0; i < entries.length; i++)
-                        _slot(i, selected, center, showFar, accent, onSurface),
+                        _slot(i, selected, center, reach, accent, onSurface),
                     ],
                   ),
                 );
@@ -366,26 +379,22 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
     int index,
     int selected,
     double center,
-    bool showFar,
+    int reach,
     Color accent,
     Color onSurface,
   ) {
     final offset = index - selected;
     final distance = offset.abs();
-    final visible = distance <= 1 || (distance == 2 && showFar);
+    final visible = distance <= reach;
     final size = switch (distance) {
       0 => ProfileCarousel.heroSize,
       1 => ProfileCarousel.nearSize,
       _ => ProfileCarousel.farSize,
     };
+    // The hidden ones wait one step past the last visible one, so they slide
+    // in from just outside it.
     final dx =
-        switch (distance) {
-          0 => 0.0,
-          1 => ProfileCarousel.nearOffset,
-          2 => ProfileCarousel.farOffset,
-          _ => ProfileCarousel.farOffset + ProfileCarousel.farSize + 40,
-        } *
-        offset.sign;
+        ProfileCarousel._offsetAt(visible ? distance : reach + 1) * offset.sign;
     final opacity = !visible
         ? 0.0
         : switch (distance) {
