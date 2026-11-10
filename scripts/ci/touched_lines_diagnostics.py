@@ -32,10 +32,12 @@ def repo_root():
     return os.path.realpath(git('rev-parse', '--show-toplevel').strip())
 
 
-def changed_ranges(base, head, pattern='*.dart', cwd=None):
+def changed_ranges(base, head, pattern='*.dart', cwd=None, ignore_whitespace=False):
     """{path: [(first, last), ...]} of the lines HEAD added or changed since its
-    merge base with BASE. Pure deletions leave no range. Deleted files are left out."""
+    merge base with BASE. Pure deletions leave no range. Deleted files are left out.
+    With ignore_whitespace, a line whose only change is whitespace doesn't count."""
     out = git('diff', '-U0', '--no-color', '--no-ext-diff', '--diff-filter=d',
+              *(['-w'] if ignore_whitespace else []),
               f'{base}...{head}', '--', pattern, cwd=cwd)
     ranges = {}
     path = None
