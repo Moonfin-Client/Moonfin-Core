@@ -40,7 +40,14 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
   Dio dio,
 ) async {
   if (!client.features.supportsMoonfinPlugin) return null;
-  if (client.serverType == ServerType.plex) return _plexEndpoint(client, dio);
+  if (client.serverType == ServerType.plex) {
+    return _plexEndpoint(
+      server: client.baseUrl,
+      pref: plexMoonbasePreference(client),
+      token: client.accessToken,
+      dio: dio,
+    );
+  }
   final silo = siloClientOf(client);
   if (client.serverType == ServerType.silo && silo == null) return null;
   if (silo == null) {
@@ -92,8 +99,11 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
 /// Whether [client]'s server recently answered that it has no Moonbase. On
 /// Silo a server that couldn't be reached doesn't count. On Plex it does,
 /// since most Plex servers have no companion.
-bool moonbaseKnownMissing(MediaServerClient client) {
-  final missingAt = _missingAt[client.baseUrl];
+bool moonbaseKnownMissing(MediaServerClient client) =>
+    _knownMissing(client.baseUrl);
+
+bool _knownMissing(String server) {
+  final missingAt = _missingAt[server];
   return missingAt != null &&
       DateTime.now().difference(missingAt) < _missingRetry;
 }
@@ -107,23 +117,37 @@ void forgetMoonbaseEndpoint(MediaServerClient client) {
   _missingAt.remove(client.baseUrl);
 }
 
-Future<MoonbaseEndpoint?> _plexEndpoint(
-  MediaServerClient client,
-  Dio dio,
-) async {
-  final token = client.accessToken;
+/// The Moonbase endpoint for the account holding [token] on the Plex server
+/// saved as [serverId] at [serverUrl]. That server doesn't have to be the one
+/// signed in to, so a saved account can be asked about before switching to it.
+Future<MoonbaseEndpoint?> plexAccountMoonbaseEndpoint({
+  required String serverId,
+  required String serverUrl,
+  required String token,
+  required Dio dio,
+}) => _plexEndpoint(
+  server: serverUrl,
+  pref: UserPreferences.moonbaseUrlForServer(serverId),
+  token: token,
+  dio: dio,
+);
+
+Future<MoonbaseEndpoint?> _plexEndpoint({
+  required String server,
+  required Preference<String>? pref,
+  required String? token,
+  required Dio dio,
+}) async {
   if (token == null || token.isEmpty) return null;
   final headers = {'X-Plex-Token': token};
-  final pref = plexMoonbasePreference(client);
   final typed = pref != null && GetIt.instance.isRegistered<UserPreferences>()
       ? _normalizeUrl(GetIt.instance<UserPreferences>().get(pref))
       : '';
-  final base = typed.isNotEmpty ? typed : plexMoonbaseDefault(client);
+  final base = typed.isNotEmpty ? typed : _plexDefaultAt(server);
   if (base == null) return null;
 
-  final key = client.baseUrl;
-  if (_plexBases[key] == base) return (base: base, headers: headers);
-  if (moonbaseKnownMissing(client)) return null;
+  if (_plexBases[server] == base) return (base: base, headers: headers);
+  if (_knownMissing(server)) return null;
   try {
     var request = dio.get<dynamic>(
       '$base/Moonfin/Ping',
@@ -135,12 +159,12 @@ Future<MoonbaseEndpoint?> _plexEndpoint(
     // Plex itself answers paths it doesn't know, so the reply has to say
     // Moonbase is there.
     if (data is Map && data['installed'] == true) {
-      _plexBases[key] = base;
-      _missingAt.remove(key);
+      _plexBases[server] = base;
+      _missingAt.remove(server);
       return (base: base, headers: headers);
     }
   } catch (_) {}
-  _missingAt[key] = DateTime.now();
+  _missingAt[server] = DateTime.now();
   return null;
 }
 
@@ -158,8 +182,11 @@ Preference<String>? plexMoonbasePreference(MediaServerClient client) {
 
 /// `http://<Plex host>:32500`, with a plex.direct name turned back into the
 /// address it spells, since the companion has no plex.direct certificate.
-String? plexMoonbaseDefault(MediaServerClient client) {
-  final host = Uri.tryParse(client.baseUrl)?.host ?? '';
+String? plexMoonbaseDefault(MediaServerClient client) =>
+    _plexDefaultAt(client.baseUrl);
+
+String? _plexDefaultAt(String serverUrl) {
+  final host = Uri.tryParse(serverUrl)?.host ?? '';
   if (host.isEmpty) return null;
   return Uri(
     scheme: 'http',

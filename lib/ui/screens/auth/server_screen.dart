@@ -173,7 +173,7 @@ class _ServerScreenState extends State<ServerScreen> {
       store: GetIt.instance<PreferenceStore>(),
       service: GetIt.instance<ServerPinService>(),
       userId: user.id,
-      serverAddress: server.address,
+      server: server,
       accessToken: _userRepo
           .getStoredServerUsers(server.id)
           .where((stored) => stored.id == user.id)

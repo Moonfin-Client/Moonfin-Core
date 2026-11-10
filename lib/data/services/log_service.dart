@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import 'media_server_client_factory.dart';
+import 'moonbase_client_log_api.dart';
 import 'plugin_sync_service.dart';
 
 enum LogLevel { debug, info, warning, error }
@@ -288,7 +289,7 @@ class LogService extends ChangeNotifier {
   }
 
   /// Whether the active server will take a report right now. Jellyfin has an
-  /// endpoint for this, Emby only gets one from the Moonfin plugin.
+  /// endpoint for this, the others only get one from Moonbase.
   bool get canUploadToServer {
     try {
       return _acceptsReports(_clientFactory.getActiveClient());
@@ -298,8 +299,8 @@ class LogService extends ChangeNotifier {
   }
 
   bool _acceptsReports(MediaServerClient client) {
-    if (client.clientLogApi == null) return false;
-    if (client.serverType != ServerType.emby) return true;
+    if (clientLogApiOf(client) == null) return false;
+    if (client.features.supportsClientLog) return true;
     // Tests and background isolates never register the sync service, and the
     // ping never runs there, so treat it as allowed.
     if (!GetIt.instance.isRegistered<PluginSyncService>()) return true;
@@ -314,11 +315,14 @@ class LogService extends ChangeNotifier {
     } on StateError {
       return 'Sign in to a server to send reports.';
     }
-    if (client.serverType == ServerType.emby) {
-      return 'This Emby server needs the Moonfin plugin, with client log '
-          'upload turned on.';
-    }
-    return 'The active server does not support report uploads.';
+    return switch (client.serverType) {
+      ServerType.emby =>
+        'This Emby server needs the Moonfin plugin, with client log upload '
+            'turned on.',
+      ServerType.plex || ServerType.silo =>
+        'This server needs Moonbase, with client log upload turned on.',
+      _ => 'The active server does not support report uploads.',
+    };
   }
 
   /// Uploads the current report to the active server.
@@ -332,7 +336,7 @@ class LogService extends ChangeNotifier {
     } on StateError {
       throw StateError('No active server to send the report to.');
     }
-    final api = client.clientLogApi;
+    final api = clientLogApiOf(client);
     if (api == null || !_acceptsReports(client)) {
       throw StateError(uploadUnavailableReason);
     }
