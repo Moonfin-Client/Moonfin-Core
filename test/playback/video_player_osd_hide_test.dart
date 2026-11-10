@@ -1319,6 +1319,30 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     }, variant: android);
 
+    // Catches: a tap just after a release skipping from the pre-seek position
+    // and dropping the scrub's result.
+    testWidgets('a tap just after a release skips from the scrub target', (
+      tester,
+    ) async {
+      await mountTv(tester, pauseWhileScrubbing: false);
+      await holdRight(tester, const Duration(seconds: 3));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(manager.seeks, hasLength(1));
+      final committed = manager.seeks.single;
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      expect(manager.seeks, hasLength(2));
+      expect(manager.seeks.last, committed + const Duration(seconds: 30));
+      expect(manager.transport, isEmpty, reason: 'a tap never pauses');
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpWidget(const SizedBox());
+    }, variant: android);
+
     // Catches: a tap on the seek bar opening a scrub session, which pauses.
     testWidgets('with the controls up, a tap skips and playback goes on', (
       tester,

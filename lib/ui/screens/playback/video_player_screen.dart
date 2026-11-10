@@ -497,7 +497,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       // A skip would drop an open scrub session, so a session waiting for OK
       // gets its target moved instead.
       if (_pendingScrubSeekTarget == null && !_isPausedScrubActive) {
-        _seekRelative(ms, showControls: false);
+        // A released scrub can still be converging, with _state.position
+        // reading pre-seek: skip from where it is headed.
+        final base = _isSeeking ? _lastScrubCommitTarget : null;
+        if (base != null) {
+          _noteViewerActivity();
+          _suppressSeekPrompts();
+          final target = base + Duration(milliseconds: ms);
+          final max = _state.duration;
+          _seekDirect(
+            target < Duration.zero ? Duration.zero : (target > max ? max : target),
+          );
+          _lastSeekTime = DateTime.now();
+        } else {
+          _seekRelative(ms, showControls: false);
+        }
       } else {
         _seekRelativeAccumulate(ms);
       }

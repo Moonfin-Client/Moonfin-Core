@@ -178,7 +178,9 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 SwitchPreferenceTile(
                   preference: UserPreferences.remoteScrubRunOn,
                   title: l10n.remoteScrubRunOn,
-                  subtitle: l10n.remoteScrubRunOnDescription,
+                  subtitle: PlatformDetection.isAppleTV
+                      ? l10n.remoteScrubRunOnDescriptionAppleTv
+                      : l10n.remoteScrubRunOnDescription,
                   icon: Icons.speed,
                 ),
               IntPickerPreferenceTile(
