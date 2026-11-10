@@ -6,22 +6,28 @@ class MoonfinProxyConfig {
   final String jellyfinBaseUrl;
   final String jellyfinToken;
 
+  /// The headers that sign each call, for a Moonbase that isn't the media
+  /// server itself, like Moonbase for Plex. Null sends the MediaBrowser token.
+  final Map<String, String>? authHeaders;
+
   const MoonfinProxyConfig({
     required this.jellyfinBaseUrl,
     required this.jellyfinToken,
+    this.authHeaders,
   });
 }
 
-/// Outcome of the password-less Quick Connect sign in. Parsed by hand from any
-/// status code so the caller can read the plugin's errorCode, since an old
-/// plugin answers the attempt with a generic 401 body.
-class MoonfinQuickConnectResult {
+/// Outcome of a password-less sign in, through Quick Connect on Jellyfin or the
+/// Plex account on Plex. Parsed by hand from any status code so the caller can
+/// read the plugin's errorCode, since an old plugin answers the attempt with a
+/// generic 401 body.
+class MoonfinSsoResult {
   final bool success;
   final String? errorCode;
   final int? seerrUserId;
   final String? displayName;
 
-  const MoonfinQuickConnectResult({
+  const MoonfinSsoResult({
     this.success = false,
     this.errorCode,
     this.seerrUserId,
