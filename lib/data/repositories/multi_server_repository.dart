@@ -1429,8 +1429,10 @@ class MultiServerRepository {
       return sorted;
     }
 
-    // Items without a value stay last in either direction, and ties fall
-    // back to the name, like the server's SortName tie-break.
+    // Items without a value count as the lowest, the way the server sorts
+    // them: first when the oldest or lowest come first, last when the newest
+    // or highest do. Ties fall back to the name, like the server's SortName
+    // tie-break.
     final descending = sortOrder.toLowerCase() == 'descending';
 
     int compareByName(AggregatedItem a, AggregatedItem b) {
@@ -1497,9 +1499,8 @@ class MultiServerRepository {
     bool descending = false,
   }) {
     if (a == null && b == null) return 0;
-    if (a == null) return 1;
-    if (b == null) return -1;
-    return descending ? b.compareTo(a) : a.compareTo(b);
+    final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
+    return descending ? -ascending : ascending;
   }
 
   static int _compareNullableNum(
@@ -1508,9 +1509,8 @@ class MultiServerRepository {
     bool descending = false,
   }) {
     if (a == null && b == null) return 0;
-    if (a == null) return 1;
-    if (b == null) return -1;
-    return descending ? b.compareTo(a) : a.compareTo(b);
+    final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
+    return descending ? -ascending : ascending;
   }
 
   static int _compareByLastPlayed(AggregatedItem a, AggregatedItem b) {

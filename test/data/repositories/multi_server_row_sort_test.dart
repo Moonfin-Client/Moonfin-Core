@@ -173,7 +173,9 @@ void main() {
       ]);
     });
 
-    test('items without a date stay last when newest comes first', () async {
+    // The server counts a missing value as the lowest, so it trails when the
+    // newest come first and leads when the oldest do.
+    test('items without a date go last when newest comes first', () async {
       stubItems('a', 'BoxSet', [('Alien', '2020-01-01'), ('Undated', null)]);
 
       final row = await multiServer.getAggregatedCollections(
@@ -186,6 +188,22 @@ void main() {
         'Alien',
         'Yojimbo',
         'Undated',
+      ]);
+    });
+
+    test('items without a date go first when oldest comes first', () async {
+      stubItems('a', 'BoxSet', [('Alien', '2020-01-01'), ('Undated', null)]);
+
+      final row = await multiServer.getAggregatedCollections(
+        sortBy: 'DateCreated,SortName',
+        sortOrder: 'Ascending',
+      );
+
+      expect(row.items.map((item) => item.name), [
+        'Undated',
+        'Yojimbo',
+        'Alien',
+        'Batman',
       ]);
     });
 
