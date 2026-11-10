@@ -5755,7 +5755,7 @@ class _ContentRowsState extends State<_ContentRows>
               final row2Text = episodeInfo != null
                   ? '$episodeInfo - ${item.name}'
                   : item.name;
-              final row3Text = _v2MetadataLine(item);
+              final row3Text = homeRowModernMetadataLine(item);
               final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
               final baseTextStyle =
                   Theme.of(context).textTheme.bodySmall ??
@@ -5820,7 +5820,7 @@ class _ContentRowsState extends State<_ContentRows>
                       row.id != 'radarr_calendar' &&
                       row.id != 'sonarr_calendar' &&
                       row.id != 'merged_calendar')
-                  ? _v2MetadataLine(item)
+                  ? homeRowModernMetadataLine(item)
                   : item.subtitle;
             }
             cardSubtitleWidget = null;
@@ -6069,64 +6069,6 @@ class _ContentRowsState extends State<_ContentRows>
         additionalRatings: ratingsByKey[itemKey] ?? const {},
       ),
     );
-  }
-
-  static String _v2MetadataLine(AggregatedItem item) {
-    final parts = <String>[];
-    if (item.type == 'MusicAlbum' || item.type == 'Audio') {
-      final artist = (item.albumArtist ?? '').trim().isNotEmpty
-          ? item.albumArtist!.trim()
-          : (item.albumArtists.isNotEmpty
-              ? (item.albumArtists.first['Name'] as String?)?.trim()
-              : (item.artists.isNotEmpty ? item.artists.first.trim() : ''));
-      final year = item.productionYear;
-      if (artist != null && artist.isNotEmpty) {
-        if (year != null) {
-          parts.add('$artist ($year)');
-        } else {
-          parts.add(artist);
-        }
-      } else if (year != null) {
-        parts.add('$year');
-      }
-    } else {
-      final year = item.productionYear;
-      if (year != null) {
-        parts.add('$year');
-      }
-    }
-    final genreLabel = item.genres.take(2).join(' • ');
-    if (genreLabel.isNotEmpty) {
-      parts.add(genreLabel);
-    }
-
-    final runtimeLabel = _formatRuntime(item.runtime);
-    if (runtimeLabel.isNotEmpty) {
-      parts.add(runtimeLabel);
-    }
-
-    return parts.join(' • ');
-  }
-
-  static String _formatRuntime(Duration? runtime) {
-    if (runtime == null || runtime <= Duration.zero) {
-      return '';
-    }
-
-    final totalMinutes = runtime.inMinutes;
-    if (totalMinutes <= 0) {
-      return '';
-    }
-
-    final hours = totalMinutes ~/ 60;
-    final minutes = totalMinutes % 60;
-    if (hours <= 0) {
-      return '${minutes}m';
-    }
-    if (minutes == 0) {
-      return '${hours}h';
-    }
-    return '${hours}h ${minutes}m';
   }
 
 

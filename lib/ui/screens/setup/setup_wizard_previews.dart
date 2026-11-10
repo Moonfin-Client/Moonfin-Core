@@ -1917,7 +1917,7 @@ Widget settingsHomePreview() {
           focusFirst: modern,
         ),
       };
-      final backdrop = _homeBackdropStyle(context);
+      final backdrop = settingsHomeBackdropStyle(context);
       return Stack(
         fit: StackFit.expand,
         children: [
@@ -1941,7 +1941,7 @@ Widget settingsHomePreview() {
 
 /// The backdrop Home draws. A phone only has the switch and always fills the
 /// screen, and a style the picker is trying shows before the switch follows it.
-String _homeBackdropStyle(BuildContext context) {
+String settingsHomeBackdropStyle(BuildContext context) {
   final enabled = previewValue(context, UserPreferences.homeBackdropEnabled);
   if (_phone) {
     return enabled

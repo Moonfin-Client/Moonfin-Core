@@ -635,3 +635,38 @@ String? tagForType(AggregatedItem item, String imageType) {
   if (tags is! Map) return null;
   return tags[imageType] as String?;
 }
+
+/// The year, genres and runtime a grown Modern card shows under its title,
+/// with the artist ahead of the year for music.
+String homeRowModernMetadataLine(AggregatedItem item) {
+  final parts = <String>[];
+  final year = item.productionYear;
+  if (item.type == 'MusicAlbum' || item.type == 'Audio') {
+    final artist = (item.albumArtist ?? '').trim().isNotEmpty
+        ? item.albumArtist!.trim()
+        : (item.albumArtists.isNotEmpty
+              ? (item.albumArtists.first['Name'] as String?)?.trim()
+              : (item.artists.isNotEmpty ? item.artists.first.trim() : ''));
+    if (artist != null && artist.isNotEmpty) {
+      parts.add(year != null ? '$artist ($year)' : artist);
+    } else if (year != null) {
+      parts.add('$year');
+    }
+  } else if (year != null) {
+    parts.add('$year');
+  }
+  final genres = item.genres.take(2).join(' • ');
+  if (genres.isNotEmpty) parts.add(genres);
+  final runtime = _formatRuntime(item.runtime);
+  if (runtime.isNotEmpty) parts.add(runtime);
+  return parts.join(' • ');
+}
+
+String _formatRuntime(Duration? runtime) {
+  final totalMinutes = runtime?.inMinutes ?? 0;
+  if (totalMinutes <= 0) return '';
+  final hours = totalMinutes ~/ 60;
+  final minutes = totalMinutes % 60;
+  if (hours == 0) return '${minutes}m';
+  return minutes == 0 ? '${hours}h' : '${hours}h ${minutes}m';
+}
