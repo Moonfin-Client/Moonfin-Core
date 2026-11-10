@@ -6478,19 +6478,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     });
   }
 
-  void _ensureTvPlayFocus(String itemId) {
+  /// [node] defaults to Play's. A person page leads with Favorite instead.
+  void _ensureTvPlayFocus(String itemId, {FocusNode? node}) {
     if (PlatformDetection.useMobileUi) return;
     if (_tvPlayFocusAppliedForItemId == itemId) return;
-    _tryRequestPlayFocus(itemId, 0);
+    _tryRequestPlayFocus(itemId, 0, node);
   }
 
-  void _tryRequestPlayFocus(String itemId, int attempt) {
+  void _tryRequestPlayFocus(String itemId, int attempt, FocusNode? target) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       // Inside the retry rather than on the way in, since it runs for
       // seconds and a panel can open partway through it.
       if (!canClaimInitialFocus(context)) return;
-      final node = _tvPlayFocusNode;
+      final node = target ?? _tvPlayFocusNode;
       if (node.context != null && node.canRequestFocus) {
         node.requestFocus();
         if (node.hasFocus) {
@@ -6502,7 +6503,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
-        _tryRequestPlayFocus(itemId, attempt + 1);
+        _tryRequestPlayFocus(itemId, attempt + 1, target);
       });
     });
   }
@@ -6956,8 +6957,28 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           prefs,
         );
 
+  // Held back for a moment while the late lookups land, so the row shows with
+  // its buttons at once instead of growing one after the rest. It still lays
+  // out, so nothing below it moves when it fades in. Focus is kept out too, or
+  // OK on a remote would press an invisible Play. The rebuild that shows the
+  // row asks for Play's focus again.
   @override
   Widget build(BuildContext context) {
+    final settled = viewModel.actionsSettled;
+    return ExcludeFocus(
+      excluding: !settled,
+      child: IgnorePointer(
+        ignoring: !settled,
+        child: AnimatedOpacity(
+          opacity: settled ? 1 : 0,
+          duration: const Duration(milliseconds: 100),
+          child: _buildActions(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActions(BuildContext context) {
     final featuredBook = viewModel.seriesFeaturedBook;
     final item = featuredBook ?? viewModel.item!;
     final l10n = AppLocalizations.of(context);
@@ -6977,13 +6998,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           compact &&
           (item.tmdbId?.isNotEmpty ?? false) &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
+      final favoriteFocusNode = widget.tvPlayFocusNode ?? _primaryFocusNode(0);
+      // Autofocus alone tries once, and misses while the row is still held
+      // back. With no heart Display has this node, so it needs the same help.
+      if (autofocusPlay) {
+        _ensureTvPlayFocus(item.id, node: favoriteFocusNode);
+      }
       final normalizedPrimaryButtons = [
         if (canFavorite)
           _DetailActionButton(
             label: item.isFavorite ? l10n.favorited : l10n.favorite,
             icon: Icons.favorite,
             isPrimary: !compact,
-            focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+            focusNode: favoriteFocusNode,
             autofocus: autofocusPlay,
             onPressed: viewModel.toggleFavorite,
             isActive: item.isFavorite,
@@ -9668,9 +9695,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             } else {
               // Next Up arrives on its own future, so fall back to whatever is part
               // way through. First unwatched can sit behind the user, since a
-              // skipped episode or a special counts as unwatched.
+              // skipped episode or a special counts as unwatched. A Next Up
+              // marked played is stale until its refetch lands, so go on from
+              // the first unwatched episode after it.
+              final shownNextUp = viewModel.nextUp;
+              var nextUp = shownNextUp;
+              if (shownNextUp != null && shownNextUp.isPlayed) {
+                final at = allEpisodes.indexWhere(
+                  (e) => e.id == shownNextUp.id,
+                );
+                nextUp = at < 0
+                    ? null
+                    : allEpisodes
+                          .skip(at + 1)
+                          .where((e) => !e.isPlayed)
+                          .firstOrNull;
+              }
               targetEpisode =
-                  viewModel.nextUp ??
+                  nextUp ??
                   allEpisodes.firstWhere(
                     (e) => !e.isPlayed && (e.playedPercentage ?? 0) > 0,
                     orElse: () => allEpisodes.firstWhere(

@@ -410,12 +410,22 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
               ? l10n.untrustedServerCertificate
               : l10n.unableToConnectToServer;
         });
-        _maybeOpenWebDiagnosticsForFailure(
-          targetUrl: targetUrl,
-          errorType: lastErrorType,
-          statusCode: lastStatusCode,
-          message: lastErrorMessage,
-        );
+        void openDiagnostics() {
+          _maybeOpenWebDiagnosticsForFailure(
+            targetUrl: targetUrl,
+            errorType: lastErrorType,
+            statusCode: lastStatusCode,
+            message: lastErrorMessage,
+          );
+        }
+
+        // The dialog still checks the address for Plex after this, so the
+        // diagnostics wait until it closes without a server.
+        if (_isAddDialogOpen) {
+          _diagnosticsAfterDialog = openDiagnostics;
+          return;
+        }
+        openDiagnostics();
     }
   }
 
@@ -764,10 +774,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   }
 
   bool _isAddDialogOpen = false;
+  VoidCallback? _diagnosticsAfterDialog;
 
   Future<void> _showAddServerDialog() async {
     if (_isAddDialogOpen) return;
     _isAddDialogOpen = true;
+    _diagnosticsAfterDialog = null;
     final defaultAddress = _webDefaultServerUrl;
     _addressController.text = defaultAddress ?? '';
     _addressController.selection = TextSelection.collapsed(
@@ -800,6 +812,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       case null:
         // The dialog may have saved or removed a server.
         setState(() {});
+        _diagnosticsAfterDialog?.call();
     }
   }
 }

@@ -25,27 +25,27 @@ import 'silo_watch_party_screen.dart';
 /// The widget type only depends on the server, so a route that rebuilds
 /// when a party starts or ends keeps its screen, and a join code is only
 /// used once.
-Widget watchTogetherScreen({String? joinCode}) => _onJellyfin
+Widget watchTogetherScreen({String? joinCode}) => _hasSyncPlay
     ? _JellyfinWatchParties(joinCode: joinCode)
     : SiloWatchPartyScreen(joinCode: joinCode);
 
-bool get _onJellyfin {
+bool get _hasSyncPlay {
   final getIt = GetIt.instance;
   return getIt.isRegistered<MediaServerClient>() &&
-      getIt<MediaServerClient>().serverType == ServerType.jellyfin;
+      getIt<MediaServerClient>().features.supportsSyncPlay;
 }
 
 /// Whether the user picks what kind of party they start: Jellyfin with
 /// Moonbase rooms, once Moonbase has answered.
 bool offersWatchPartyChoice() =>
-    _onJellyfin &&
+    _hasSyncPlay &&
     GetIt.instance.isRegistered<SiloWatchPartyManager>() &&
     GetIt.instance<SiloWatchPartyManager>().moonbaseAvailable;
 
 /// Whether starting a party here starts a SyncPlay group instead of a
 /// Moonbase room.
 bool startsSyncPlay() {
-  if (!_onJellyfin) return false;
+  if (!_hasSyncPlay) return false;
   if (!GetIt.instance<SiloWatchPartyManager>().moonbaseAvailable) return true;
   return GetIt.instance<UserPreferences>().get(
         UserPreferences.watchPartyService,

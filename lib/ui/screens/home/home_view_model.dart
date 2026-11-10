@@ -105,6 +105,8 @@ class HomeViewModel extends ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  Future<void> _loadDone = Future<void>.value();
+  Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
   bool _reloadRequestedWhileLoading = false;
@@ -411,6 +413,8 @@ class HomeViewModel extends ChangeNotifier {
     newSectionsOnly = newSectionsOnly && _rows.isNotEmpty;
     if (newSectionsOnly) preserveExisting = true;
     _isLoading = true;
+    final done = Completer<void>();
+    _loadDone = done.future;
     if (!newSectionsOnly) {
       _mediaBarViewModel.load(force: forceRefresh);
       _rowOffsets.clear();
@@ -742,6 +746,7 @@ class HomeViewModel extends ChangeNotifier {
       _tvChannels.update();
     } finally {
       _isLoading = false;
+      done.complete();
       notifyListeners();
       if (_reloadRequestedWhileLoading) {
         final nextPreserveExisting = _pendingReloadPreserveExisting;
@@ -1056,8 +1061,11 @@ class HomeViewModel extends ChangeNotifier {
   /// pagination, scroll, and focus state) untouched. A full [refresh] still runs
   /// on the Home button, pull-to-refresh, cold start, and periodic refresh.
   Future<void> refreshResumeAndNextUp() async {
-    // A full load already covers these rows, so don't compete with it.
-    if (_isLoading) return;
+    // A full load can start before the server has the playback stop and fetch
+    // the old rows, so wait for it to finish and fetch again.
+    while (_isLoading) {
+      await _loadDone;
+    }
 
     // A row that came back empty was dropped, so there's no row to refresh in
     // place. Loading it as a new section brings it back once it has items.
@@ -1070,6 +1078,8 @@ class HomeViewModel extends ChangeNotifier {
     }
 
     if (_prefs.effectiveMergeContinueWatchingNextUp) {
+      // The full load starts a merged fetch of its own, so wait for that first.
+      await _bgMerge;
       await _loadResumeAndNextUpInBackground();
       return;
     }
@@ -2441,7 +2451,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> _loadResumeAndNextUpInBackground() {
     if (_bgMergeInFlight) return Future<void>.value();
     _bgMergeInFlight = true;
-    return () async {
+    return _bgMerge = () async {
       try {
         // Fetched side by side but tolerated separately. A server that is
         // slow to answer one of these must not take the other down with it,

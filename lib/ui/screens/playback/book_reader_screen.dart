@@ -331,7 +331,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   bool get _reportsEpubProgress =>
-      _resolveClient().serverType == ServerType.jellyfin;
+      _resolveClient().features.supportsBookProgressReports;
 
   String get _pdfProgressPrefKey {
     final item = _item;

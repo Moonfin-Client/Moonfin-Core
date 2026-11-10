@@ -747,7 +747,7 @@ class _LoginScreenState extends State<LoginScreen> {
       store: GetIt.instance<PreferenceStore>(),
       service: GetIt.instance<ServerPinService>(),
       userId: userId,
-      serverAddress: _server?.address,
+      server: _server,
       accessToken: serverId == null
           ? null
           : GetIt.instance<ServerUserRepository>()

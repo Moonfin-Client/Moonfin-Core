@@ -470,7 +470,6 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   String get _playerHtml {
     final pointerEvents = widget.ignorePointer ? 'none' : 'auto';
     final playerVars = <String, dynamic>{
-      'autoplay': 1,
       'cc_load_policy': widget.showCaptions ? 1 : 0,
       'controls': widget.showControls ? 1 : 0,
       'disablekb': 1,
@@ -652,11 +651,14 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
       applyMute();
     },
     stop: function() {
-      if (player) {
-        // Mute first so audio dies immediately even if stopVideo lags.
-        try { player.mute(); } catch (_) {}
-        try { player.stopVideo(); } catch (_) {}
+      if (!player) {
+        // Ready hasn't fired yet, so drop the video or Ready would start it.
+        currentVideoId = null;
+        return;
       }
+      // Mute first so audio dies immediately even if stopVideo lags.
+      try { player.mute(); } catch (_) {}
+      try { player.stopVideo(); } catch (_) {}
     }
   };
 
@@ -690,16 +692,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
       host: host,
       width: stageWidth,
       height: stageHeight,
-      videoId: currentVideoId,
       playerVars: playerVars,
       events: {
+        // The video only loads here. Passing it to the constructor too would
+        // load it twice.
         onReady: function() {
           postMessage('Ready', null);
-          if (playerVars.autoplay === 1) {
-            loadCurrentVideo();
-          } else {
-            applyMute();
-          }
+          loadCurrentVideo();
         },
         onApiChange: function() {
           // The captions module reports itself here once it loads, which is the

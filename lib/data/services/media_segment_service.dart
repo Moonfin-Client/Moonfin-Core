@@ -118,6 +118,14 @@ class MediaSegmentService {
   }
 }
 
+/// AetherEngine plays video on Apple platforms and parks a seek into the last
+/// half second as paused without ever reporting the end, so a skip that would
+/// land there stops a second short instead.
+Duration skipLandingBeforeEnd(Duration target, Duration duration) {
+  final latest = duration - const Duration(seconds: 1);
+  return latest > Duration.zero && target > latest ? latest : target;
+}
+
 class SegmentCheckResult {
   final MediaSegmentAction action;
   final MediaSegment? segment;

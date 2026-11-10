@@ -261,6 +261,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String? get selectedCategoryTab => _selectedCategoryTab;
 
   int _pageWalkGeneration = 0;
+
+  /// Bumped by every [load], so a page still in flight for the list it drops
+  /// (a scroll page, or the first page of a filter changed again before it
+  /// came back) leaves the new list alone.
+  int _listGeneration = 0;
   bool _disposed = false;
 
   // Grouping walks every item and sorts the keys, and the grid asks for it
@@ -357,8 +362,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<List<AggregatedItem>> _filterLibraryItems(
-    List<AggregatedItem> items,
-  ) async {
+    List<AggregatedItem> items, {
+    required int generation,
+  }) async {
     items = withoutBlockedItems(items);
     if (!isPlaylistBrowse) return items;
 
@@ -375,6 +381,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
               assumeNonEmptyWhenUnknown: !isMusicBrowse,
             ),
     );
+    // A reload cleared the categories while these were resolving.
+    if (generation != _listGeneration) return const [];
 
     final kept = <AggregatedItem>[];
     for (var i = 0; i < items.length; i++) {
@@ -549,6 +557,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Future<void> load() async {
     // Any page walk still running belongs to the list we are about to drop.
     _pageWalkGeneration++;
+    final generation = ++_listGeneration;
+    // A scroll page still on its way belongs to the old list, so it shouldn't
+    // hold up paging of the new one.
+    _loadingMore = false;
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
@@ -621,9 +633,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _refreshPosterSizeFromScope();
 
       await imageTypeSync;
-      await _fetchPage(0);
+      await _fetchPage(0, generation: generation);
+      if (generation != _listGeneration) return;
       _state = LibraryBrowseState.ready;
     } catch (e) {
+      if (generation != _listGeneration) return;
       _error = e;
       _isNetworkError = isNetworkException(e);
       _state = LibraryBrowseState.error;
@@ -721,21 +735,37 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
 
     final previouslyFetched = _fetchedCount;
+    final generation = _listGeneration;
     try {
-      await _fetchPage(_fetchedCount, pageSizeOverride: pageSizeOverride);
+      await _fetchPage(
+        _fetchedCount,
+        generation: generation,
+        pageSizeOverride: pageSizeOverride,
+      );
       // Stop on a page the server had nothing left for, not on one that only
       // repeated what is already shown, which a random sort does by chance.
-      if (_fetchedCount <= previouslyFetched) {
+      // A reload in the meantime reset the count, so it says nothing here.
+      if (generation == _listGeneration &&
+          _fetchedCount <= previouslyFetched) {
         _totalCount = _items.length;
         _hasMoreFromPageSize = false;
       }
     } catch (_) {}
 
+    // After a reload the flag belongs to the new list, which may already
+    // have a page of its own in flight.
+    if (generation != _listGeneration) return;
     _loadingMore = false;
     if (notify) notifyListeners();
   }
 
-  Future<void> _fetchPage(int startIndex, {int? pageSizeOverride}) async {
+  /// [generation] is the list the caller started for: [load] reaches this
+  /// only after awaits of its own, by when a newer load may have begun.
+  Future<void> _fetchPage(
+    int startIndex, {
+    required int generation,
+    int? pageSizeOverride,
+  }) async {
     final pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
     final filters = <String>[];
     if (_playedFilter == PlayedStatusFilter.watched) {
@@ -987,7 +1017,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         directories = (results.last['Items'] as List?) ?? const [];
       }
     }
-    if (startIndex == 0) _directoryCount = directories.length;
 
     final rawItems = (response['Items'] as List?) ?? [];
     var mapped = [...directories, ...rawItems]
@@ -1005,7 +1034,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         .whereType<AggregatedItem>()
         .toList();
 
-    var filtered = await _filterLibraryItems(mapped);
+    var filtered = await _filterLibraryItems(mapped, generation: generation);
+
+    // A reload while this page was on its way owns the list now. Taking the
+    // page would mark its ids rendered, hiding them from the new list, and
+    // move the paging offset off it.
+    if (generation != _listGeneration) return;
+    if (startIndex == 0) _directoryCount = directories.length;
 
     // Counted for every browse, not just playlists. A dropped item is gone for
     // good, so the total has to shrink with it or the grid keeps asking for
@@ -1702,17 +1737,14 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get supportsVideoFilters =>
       !isMusicBrowse && !isBookLibrary && !isPlaylistBrowse;
 
-  /// Emby's items query takes no 4K flag and its series status holds only
-  /// continuing and ended, so those two options stay out of the picker rather
-  /// than sitting there doing nothing. Silo filters 4K by resolution.
-  bool get supportsUhdFilter => _client.serverType != ServerType.emby;
+  /// Options the server can't filter on stay out of the picker rather than
+  /// sitting there doing nothing.
+  bool get supportsUhdFilter => _client.features.supportsUhdFilter;
 
-  /// Plex keeps no series status, likes, 3D, extras or disc source to filter
-  /// on, so those stay out of the picker for the same reason.
-  bool get supportsExtraFilters => _client.serverType != ServerType.plex;
+  bool get supportsExtraFilters => _client.features.supportsExtraLibraryFilters;
 
   bool get supportsUnreleasedSeriesFilter =>
-      _client.serverType == ServerType.jellyfin;
+      _client.features.supportsUnreleasedSeriesFilter;
 
   List<LibrarySortBy> get sortOptions => LibrarySortBy.optionsFor(
     isSongsBrowse: isSongsBrowse,

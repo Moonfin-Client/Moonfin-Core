@@ -95,6 +95,9 @@ final class NativeApplePlayerViewController: UIViewController {
     var onSelectEpisodesSeason: ((String) -> Void)?
     var onSelectEpisode: ((String) -> Void)?
     var onEpisodesClosed: (() -> Void)?
+    /// In a watch party, play and pause are asked of the room, which moves
+    /// every player, so this one doesn't move itself.
+    var onPartyAction: (([String: Any]) -> Void)?
     var baseSubtitlePos = 92
     private var didAttachSurface = false
     /// Set while the channel takes the player off screen for Flutter UI, so
@@ -142,6 +145,14 @@ final class NativeApplePlayerViewController: UIViewController {
     private var syncPlayGroupName = ""
     private var syncPlayParticipants: [String] = []
     private var syncPlayIgnoreWait = false
+    private var party: WatchPartyState?
+    private let partyOverlay = WatchPartyOverlayView()
+    private weak var partyPanel: WatchPartyPanelViewController?
+    #if os(iOS)
+    /// Set by a key press and cleared by a touch, so the focus ring only shows
+    /// to someone using a keyboard.
+    private var keyboardDriven = false
+    #endif
     private var stillWatchingShown = false
     private var selectedBitrateMbps = -1
     private var logoUrlString = ""
@@ -410,6 +421,18 @@ final class NativeApplePlayerViewController: UIViewController {
         layoutHeader()
         rebuildStats()
         restyleForTheme()
+        setupPartyOverlay()
+    }
+
+    private func setupPartyOverlay() {
+        partyOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(partyOverlay)
+        NSLayoutConstraint.activate([
+            partyOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            partyOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            partyOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            partyOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
     }
 
     func applyThemeConfig(_ args: [String: Any]) {
@@ -438,7 +461,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
-    private static func color(fromARGB value: Int) -> UIColor {
+    nonisolated static func color(fromARGB value: Int) -> UIColor {
         let a = CGFloat((value >> 24) & 0xFF) / 255.0
         let r = CGFloat((value >> 16) & 0xFF) / 255.0
         let g = CGFloat((value >> 8) & 0xFF) / 255.0
@@ -1405,7 +1428,7 @@ final class NativeApplePlayerViewController: UIViewController {
             if !subtitleTracks.isEmpty || canDownloadSubtitles { secondary.append(.subtitles) }
             if audioTracks.count > 1 { secondary.append(.audio) }
             if hasCast { secondary.append(.cast) }
-            if syncPlayEnabled { secondary.append(.syncplay) }
+            if syncPlayEnabled || party != nil { secondary.append(.syncplay) }
             secondary.append(.quality)
             secondary.append(.zoom)
             if !streamInfoSections.isEmpty { secondary.append(.info) }
@@ -1846,14 +1869,30 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
+    #if os(iOS)
+    // A keyboard's presses only reach the first responder.
+    override var canBecomeFirstResponder: Bool { true }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if keyboardDriven {
+            keyboardDriven = false
+            updateFocusHighlight()
+        }
+        super.touchesBegan(touches, with: event)
+    }
+    #endif
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isOnScreen = true
+        #if os(iOS)
+        becomeFirstResponder()
+        #endif
         player.notifySurfaceReady()
         focusedZone = .buttons
         focusedControlIndex = controls.firstIndex(of: .playPause) ?? 0
         updateFocusHighlight()
-        showOsd()
+        if !partyHolding { showOsd() }
         updateTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) {
             [weak self] _ in
             Task { @MainActor in self?.updateOsd() }
@@ -2068,14 +2107,25 @@ final class NativeApplePlayerViewController: UIViewController {
             super.pressesBegan(presses, with: event)
             return
         }
+        #if os(iOS)
+        if presses.contains(where: { $0.key != nil }), !keyboardDriven {
+            keyboardDriven = true
+            updateFocusHighlight()
+        }
+        // Escape has no menu recognizer behind it on iPhone and iPad.
+        if presses.contains(where: { $0.remoteType == .menu }) {
+            handleMenuTap()
+            return
+        }
+        #endif
         if nextUpVisible {
             for press in presses {
-                _ = handleNavigationPress(press.type)
+                _ = handleNavigationPress(press.remoteType)
             }
             return
         }
         for press in presses {
-            if handleNavigationPress(press.type) { return }
+            if handleNavigationPress(press.remoteType) { return }
         }
         super.pressesBegan(presses, with: event)
     }
@@ -2421,7 +2471,7 @@ final class NativeApplePlayerViewController: UIViewController {
         case .favorite:
             onToggleFavorite?()
         case .syncplay:
-            presentSyncPlay()
+            if party != nil { presentWatchParty() } else { presentSyncPlay() }
         case .goLive:
             player.seekToLiveEdge()
             if isPaused() { togglePlayPause() }
@@ -2473,6 +2523,62 @@ final class NativeApplePlayerViewController: UIViewController {
                 self.stillWatchingShown = false
                 self.onStillWatchingStop?()
             })
+        presentPanel(panel)
+    }
+
+    /// The wait and the 3, 2, 1 sit where the transport controls would.
+    private var partyHolding: Bool { party?.waitingTitle != nil || party?.countdownTo != nil }
+
+    func applyWatchParty(_ args: [String: Any]?) {
+        let wasActive = party != nil
+        let wasHolding = partyHolding
+        party = args.map(WatchPartyState.init)
+        partyOverlay.accent = themeAccent
+        partyOverlay.apply(party)
+        // Dismissed like Back does, so a paused player doesn't keep them up.
+        if partyHolding, !wasHolding {
+            osdDismissed = true
+            hideOsd()
+        }
+        if wasActive != (party != nil) { rebuildControls() }
+        if let party {
+            partyPanel?.apply(party)
+        } else if let panel = partyPanel {
+            (panel.parent ?? panel).dismiss(animated: true)
+        }
+    }
+
+    func showWatchPartyEvent(_ args: [String: Any]) {
+        guard party != nil else { return }
+        let text = (args["text"] as? String) ?? ""
+        let name = (args["name"] as? String) ?? ""
+        switch args["type"] as? String {
+        case "toast": partyOverlay.showToast(text: text, icon: (args["icon"] as? String) ?? "")
+        case "chat": partyOverlay.showChat(name: name, text: text)
+        case "reaction": partyOverlay.showReaction(kind: (args["kind"] as? String) ?? "", name: name)
+        default: break
+        }
+    }
+
+    private func presentWatchParty() {
+        guard let party else { return }
+        #if os(iOS)
+        let showsFocus = keyboardDriven
+        #else
+        let showsFocus = true
+        #endif
+        let panel = WatchPartyPanelViewController(
+            state: party,
+            accent: themeAccent,
+            surface: hasThemeConfig ? glassSurface : UIColor(white: 0.1, alpha: 1),
+            showsFocus: showsFocus,
+            onAction: { [weak self] action in self?.onPartyAction?(action) },
+            onClosed: { [weak self] in
+                #if os(iOS)
+                self?.becomeFirstResponder()
+                #endif
+            })
+        partyPanel = panel
         presentPanel(panel)
     }
 
@@ -2533,13 +2639,14 @@ final class NativeApplePlayerViewController: UIViewController {
     private func updateFocusHighlight() {
         for (id, container) in controlViews {
             #if os(tvOS)
-            let isFocused =
-                focusedZone == .buttons && controls.indices.contains(focusedControlIndex)
-                && controls[focusedControlIndex] == id
+            let showsFocus = true
             #else
-            // A touch screen has no focus to show.
-            let isFocused = false
+            // A touch screen has no focus to show until a key is pressed.
+            let showsFocus = keyboardDriven
             #endif
+            let isFocused =
+                showsFocus && focusedZone == .buttons && controls.indices.contains(focusedControlIndex)
+                && controls[focusedControlIndex] == id
             container.backgroundColor =
                 isFocused ? .white : UIColor(white: 1, alpha: 0)
             controlIcons[id]?.tintColor =
@@ -2574,7 +2681,7 @@ final class NativeApplePlayerViewController: UIViewController {
         case .channels: return "Channels"
         case .guide: return "Guide"
         case .favorite: return isFavorite ? "Remove from Favorites" : "Add to Favorites"
-        case .syncplay: return "SyncPlay"
+        case .syncplay: return party?.string("button", "Watch Party") ?? "SyncPlay"
         case .goLive: return "Jump to Live"
         case .record: return liveRecord?.timer == true ? "Cancel Recording" : "Record"
         case .orientation: return orientationLock == true ? "Unlock Orientation" : "Lock Landscape"
@@ -2584,8 +2691,10 @@ final class NativeApplePlayerViewController: UIViewController {
     private func updateTooltip() {
         #if os(iOS)
         // The tooltip names the focused button, and a touch screen has none.
-        tooltipView.isHidden = true
-        return
+        if !keyboardDriven {
+            tooltipView.isHidden = true
+            return
+        }
         #endif
         guard focusedZone == .buttons,
             controls.indices.contains(focusedControlIndex),
@@ -2615,6 +2724,17 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func togglePlayPause() {
+        if party != nil {
+            if scrubTargetMs != nil {
+                commitScrub()
+                return
+            }
+            switch player.state {
+            case .playing, .buffering, .opening: onPartyAction?(["event": "pause"])
+            default: onPartyAction?(["event": "play"])
+            }
+            return
+        }
         // During a paused scrub session play means go to the scrubbed spot
         // and carry on from there, not resume where the video was paused.
         if scrubTargetMs != nil {
@@ -2639,7 +2759,7 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private var pauseDuringScrub: Bool {
-        hasTrickplayPreview && trickplayPauseWhileScrubbing
+        hasTrickplayPreview && trickplayPauseWhileScrubbing && party == nil
     }
 
     // Pauses once per session so the preview has a still frame to sit on,
@@ -2684,7 +2804,8 @@ final class NativeApplePlayerViewController: UIViewController {
         scrubFrozenMs = target
         scrubCommitId += 1
         let commitId = scrubCommitId
-        player.seek(to: Double(target) / 1000.0)
+        // A party moves the room, and the room moves this player.
+        if party == nil { player.seek(to: Double(target) / 1000.0) }
         onUserSeek?(target)
         renderProgress()
         updateTrickplay()
@@ -2767,7 +2888,7 @@ final class NativeApplePlayerViewController: UIViewController {
         abandonScrubSession()
         let durationMs = Int(player.duration * 1000)
         let clamped = durationMs > 0 ? min(durationMs, max(0, ms)) : max(0, ms)
-        player.seek(to: Double(clamped) / 1000.0)
+        if party == nil { player.seek(to: Double(clamped) / 1000.0) }
         onUserSeek?(clamped)
     }
 
@@ -3011,6 +3132,7 @@ final class NativeApplePlayerViewController: UIViewController {
     /// The dim, the top bar, the bottom bar and, on iOS, the centered
     /// transport come and go together.
     private func setOsdAlpha(_ alpha: CGFloat) {
+        partyOverlay.setBottomInset(alpha > 0.5 ? 300 : 0)
         osdScrim.alpha = alpha
         osdContainer.alpha = alpha
         topContainer.alpha = alpha
@@ -3989,7 +4111,7 @@ extension NativeApplePlayerViewController {
     /// for a hold. Live can't run ahead of the broadcast.
     private var canHoldForSpeed: Bool {
         presentedViewController == nil && !nextUpVisible && !cinemaSkipActive && !isLive
-            && !isOsdOnScreen && scrubTargetMs == nil && player.state == .playing
+            && !isOsdOnScreen && scrubTargetMs == nil && player.state == .playing && party == nil
     }
 
     @objc private func handleSpeedHold(_ recognizer: UILongPressGestureRecognizer) {
