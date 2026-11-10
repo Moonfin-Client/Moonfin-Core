@@ -80,6 +80,7 @@ import '../../../playback/hdr_composition.dart';
 import '../../../playback/hdr_output_controller.dart';
 import '../../../playback/hdr_overlay_channel.dart';
 import 'hdr_overlay_capture.dart';
+import '../../../util/device_hinge.dart';
 import '../../../util/focus/back_key_release.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/gamepad/gamepad_key_synthesizer.dart';
@@ -166,7 +167,7 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen>
-    with WidgetsBindingObserver, WindowListener, ImmersiveSystemUi {
+    with WidgetsBindingObserver, WindowListener, ImmersiveSystemUi, HingeAware {
   static const _streamLoadingLabel = 'Loading Stream...';
 
   /// How long away counts as having moved on rather than stepped out.
@@ -4260,7 +4261,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   if (!PlatformDetection.useLeanbackUi &&
                                       !_transportDocked &&
                                       !_partyHoldsStart)
-                                    Positioned.fill(
+                                    Positioned(
+                                      top: DeviceHinge.laptopFoldY(context) ?? 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
                                       child: Center(
                                         child: _buildCenterTransportControls(),
                                       ),
@@ -4474,7 +4479,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Widget _buildVideoSurface() {
     if (PlatformDetection.isApple || PlatformDetection.isAppleTV) {
-      return Positioned.fill(
+      // Half open like a laptop, the picture stays above the fold and the
+      // transport sits below it, under the hands.
+      final fold = DeviceHinge.laptopFoldY(context);
+      return Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: fold == null ? 0 : fold + DeviceHinge.creaseGap / 2,
         child: AetherVideoView(
           key: _videoSurfaceKey,
           zoomMode: _effectiveZoomMode.name,

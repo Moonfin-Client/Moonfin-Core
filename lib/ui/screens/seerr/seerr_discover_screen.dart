@@ -389,7 +389,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
               ),
               Positioned(
                 top: requestsEntryTop,
-                right: 24,
+                // An opened folding phone on its side keeps the clock in
+                // this corner.
+                right: 24 + MediaQuery.paddingOf(context).right,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

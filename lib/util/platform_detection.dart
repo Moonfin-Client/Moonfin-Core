@@ -11,6 +11,12 @@ class PlatformDetection {
 
   static const double _mobileFormFactorBreakpoint = 600;
 
+  /// Whether a touch screen of this size has room for the layouts desktop
+  /// uses, as a tablet or an opened folding phone does. Takes the live size,
+  /// since a fold changes it while the app runs.
+  static bool hasTabletSizedScreen(Size size) =>
+      size.shortestSide >= _mobileFormFactorBreakpoint;
+
   static const bool isAppleTV = bool.fromEnvironment('MOONFIN_TVOS');
 
   /// True for the dedicated Android TV flavor produced by the Android TV
