@@ -215,6 +215,37 @@ class PlaybackManager implements AudioOwnable {
   Map<String, dynamic>? _lastExplicitSubtitleStream;
   bool? _lastExplicitSubtitleEnabled;
   Duration _lastKnownPosition = Duration.zero;
+  Duration? _seekTarget;
+  DateTime? _seekTargetSetAt;
+
+  /// How long [seekTarget] outlives a seek the player never reports.
+  static const seekTargetTimeout = Duration(seconds: 3);
+  static const _seekTargetTolerance = Duration(milliseconds: 1500);
+
+  /// Where the last seek is headed, until the player reports a position near
+  /// it or [seekTargetTimeout] passes; null otherwise. Callers that build a
+  /// new seek on the current position use `seekTarget ?? state.position` so a
+  /// quick second seek does not start from the pre-seek position.
+  Duration? get seekTarget {
+    final setAt = _seekTargetSetAt;
+    if (setAt != null && clock().difference(setAt) >= seekTargetTimeout) {
+      _clearSeekTarget();
+    }
+    return _seekTarget;
+  }
+
+  // The timeout is checked when the target is read, so no timer outlives
+  // the manager.
+  void _setSeekTarget(Duration position) {
+    _seekTarget = position;
+    _seekTargetSetAt = clock();
+  }
+
+  void _clearSeekTarget() {
+    _seekTarget = null;
+    _seekTargetSetAt = null;
+  }
+
   Duration _itemKnownDuration = Duration.zero;
   int? _maxBitrateOverrideMbps;
 
@@ -1457,6 +1488,11 @@ class PlaybackManager implements AudioOwnable {
         final position = _mediaPosition(pos);
         state.setPosition(position);
         if (pos > Duration.zero) _lastKnownPosition = position;
+        final target = seekTarget;
+        if (target != null &&
+            (position - target).abs() <= _seekTargetTolerance) {
+          _clearSeekTarget();
+        }
         // A backend can refuse a speed it was given - bitstreamed audio cannot
         // be time stretched - so track what it actually settled on rather than
         // leaving the UI showing a rate that is not happening.
@@ -3177,6 +3213,7 @@ class PlaybackManager implements AudioOwnable {
     // The shown position is seeded too: an auto-advance keeps the queue, so
     // nothing resets it, and the stop report takes the furthest of the two.
     _lastKnownPosition = startPosition;
+    _clearSeekTarget();
     state.setPosition(startPosition);
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
@@ -4295,6 +4332,7 @@ class PlaybackManager implements AudioOwnable {
     if (userInitiated && await _maybeIntercept(TransportAction.stop)) return;
     _abandonLiveRecovery('the viewer stopped playback');
     _viewerPaused = false;
+    _clearSeekTarget();
     await _stopAndReportCurrent();
   }
 
@@ -4318,6 +4356,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> seekTo(Duration position) async {
+    _setSeekTarget(position);
     if (await _maybeIntercept(TransportAction.seek, position: position)) return;
     _lastKnownPosition = position;
     // While one is being served the stream is being replaced, so a new seek
@@ -5505,6 +5544,7 @@ class PlaybackManager implements AudioOwnable {
     _itemKnownDuration = itemDuration;
     _currentResolution = null;
     _lastKnownPosition = startPosition;
+    _clearSeekTarget();
     state.setPosition(startPosition);
 
     if (queueUrls.isNotEmpty) {

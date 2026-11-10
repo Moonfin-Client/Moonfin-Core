@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1348,6 +1349,49 @@ void main() {
       expect(manager.seeks, hasLength(3));
       expect(manager.seeks.last, committed + const Duration(seconds: 60));
       await tester.pump(const Duration(seconds: 3));
+      await tester.pumpWidget(const SizedBox());
+    }, variant: android);
+
+    // Catches: a skip just after a chapter jump, segment skip or remote seek
+    // building on the pre-seek position.
+    testWidgets('a tap just after any seek skips from the seek target', (
+      tester,
+    ) async {
+      await mountTv(tester, pauseWhileScrubbing: false);
+      const target = Duration(minutes: 5);
+      unawaited(manager.seekTo(target));
+      await tester.pump();
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      expect(manager.seeks.last, target + const Duration(seconds: 30));
+      await tester.pumpWidget(const SizedBox());
+    }, variant: android);
+
+    // Catches: a seek target that never clears, so a later skip starts from
+    // a stale position.
+    testWidgets('a tap after the player catches up skips from the reported '
+        'position', (tester) async {
+      await mountTv(tester, pauseWhileScrubbing: false);
+      var now = DateTime.utc(2026, 11, 10, 12);
+      manager.clock = () => now;
+      unawaited(manager.seekTo(const Duration(minutes: 8)));
+      now = now.add(PlaybackManager.seekTargetTimeout);
+      manager.state.setPosition(const Duration(minutes: 3));
+      await tester.pump();
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      expect(
+        manager.seeks.last,
+        const Duration(minutes: 3, seconds: 30),
+      );
       await tester.pumpWidget(const SizedBox());
     }, variant: android);
 

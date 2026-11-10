@@ -282,6 +282,29 @@ void main() {
     expect(backend.seeks.single, const Duration(minutes: 30));
   });
 
+  test('a seek sets the seek target until the player reports it', () async {
+    manager.setResolver(_PlainResolver());
+    await start();
+    expect(manager.seekTarget, isNull);
+    await manager.seekTo(const Duration(minutes: 30));
+    expect(manager.seekTarget, const Duration(minutes: 30));
+    // The player still reports the old position.
+    backend.emitPosition(const Duration(minutes: 10));
+    expect(manager.seekTarget, const Duration(minutes: 30));
+    backend.emitPosition(const Duration(minutes: 30, seconds: 1));
+    expect(manager.seekTarget, isNull);
+  });
+
+  test('a seek target the player never reports times out', () async {
+    manager.setResolver(_PlainResolver());
+    await start();
+    await manager.seekTo(const Duration(minutes: 30));
+    now = now.add(PlaybackManager.seekTargetTimeout - const Duration(seconds: 1));
+    expect(manager.seekTarget, const Duration(minutes: 30));
+    now = now.add(const Duration(seconds: 1));
+    expect(manager.seekTarget, isNull);
+  });
+
   test('a long pause resumes on a stream opened again', () async {
     await start();
     backend.emitPosition(const Duration(seconds: 3));

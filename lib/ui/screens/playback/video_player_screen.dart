@@ -305,10 +305,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _isSeeking = false;
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
-  Duration? _lastScrubCommitTarget;
-  // Target of the last skip made from a scrub target, kept until the player
-  // reports it, so a quick second skip builds on it.
-  Duration? _lastSkipTarget;
   int _scrubSeekCommitId = 0;
   bool _wasPlayingBeforeScrubPause = false;
   // True for a paused scrub session's whole lifetime; unlike
@@ -500,32 +496,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       // A skip would drop an open scrub session, so a session waiting for OK
       // gets its target moved instead.
       if (_pendingScrubSeekTarget == null && !_isPausedScrubActive) {
-        // A released scrub can still be converging, with _state.position
-        // reading pre-seek: skip from where it is headed.
-        final skipTarget = _lastSkipTarget;
-        final skipPending =
-            skipTarget != null &&
-            _lastSeekTime != null &&
-            DateTime.now().difference(_lastSeekTime!) <
-                const Duration(seconds: 3) &&
-            (_state.position - skipTarget).abs() > const Duration(seconds: 1);
-        final base = _isSeeking
-            ? _lastScrubCommitTarget
-            : (skipPending ? skipTarget : null);
-        if (base != null) {
-          _noteViewerActivity();
-          _suppressSeekPrompts();
-          final target = base + Duration(milliseconds: ms);
-          final max = _state.duration;
-          final clamped =
-              target < Duration.zero ? Duration.zero : (target > max ? max : target);
-          _seekDirect(clamped);
-          _lastSkipTarget = clamped;
-          _lastSeekTime = DateTime.now();
-        } else {
-          _lastSkipTarget = null;
-          _seekRelative(ms, showControls: false);
-        }
+        _seekRelative(ms, showControls: false);
       } else {
         _seekRelativeAccumulate(ms);
       }
@@ -3274,7 +3245,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _seekRelative(int ms, {bool showControls = true}) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    final target = _transportPosition + Duration(milliseconds: ms);
+    final target = _headedPosition + Duration(milliseconds: ms);
     final clamped = Duration(
       milliseconds: target.inMilliseconds.clamp(
         0,
@@ -3292,13 +3263,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _seekRelativeAccumulate(int ms) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    // While a released commit is still converging, the pending target is
-    // already null but _state.position still reads pre-seek - basing a quick
-    // follow-up press on it would jump back to the old position.
-    final basePosition =
-        _pendingScrubSeekTarget ??
-        (_isSeeking ? _lastScrubCommitTarget : null) ??
-        _transportPosition;
+    // The pending target first, then where the last seek is headed.
+    final basePosition = _pendingScrubSeekTarget ?? _headedPosition;
     final target = basePosition + Duration(milliseconds: ms);
     _prefetchTrickplayDirectional(target, forward: ms > 0);
     _accumulateScrub(target);
@@ -3391,7 +3357,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final pendingTarget = _pendingScrubSeekTarget;
     if (pendingTarget == null) return;
     _pendingScrubSeekTarget = null;
-    _lastScrubCommitTarget = pendingTarget;
     unawaited(_commitScrubSeek(pendingTarget));
   }
 
@@ -8206,6 +8171,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   bool get _isPlayingShown =>
       _castOwnsTransport ? _castPlaying : _displayPlaying;
+
+  /// Where playback is headed: the target of a seek still in flight, else the
+  /// reported position. A cast seek goes through the manager's interceptor, so
+  /// it sets the target too.
+  Duration get _headedPosition => _manager.seekTarget ?? _transportPosition;
 
   Duration get _transportPosition => _castOwnsTransport
       ? Duration(microseconds: _castService.remotePositionNotifier.value ~/ 10)
