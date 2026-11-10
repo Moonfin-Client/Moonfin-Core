@@ -20,6 +20,7 @@ import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
+import 'package:moonfin/data/models/media_segment.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
@@ -57,8 +58,10 @@ import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
+import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/trickplay.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/ui/widgets/seasonal/seasonal_effects.dart';
@@ -293,6 +296,10 @@ void main() {
       UserPreferences.trickPlayVerticalPositionPercent.key,
       UserPreferences.trickPlayFollowScrubPosition.key,
       UserPreferences.trickPlayPauseWhileScrubbing.key,
+      UserPreferences.mediaSegmentCountdown.key,
+      UserPreferences.nextUpTimeout.key,
+      UserPreferences.showNextAirDate.key,
+      UserPreferences.replaceSkipOutroWithNextUp.key,
     ]) {
       expect(
         SettingsPreviewController.sceneForKey(key),
@@ -720,7 +727,12 @@ void main() {
       }
       for (final key in [
         'media_segment_actions',
+        'pref_media_segment_countdown',
         'next_up_behavior',
+        'next_up_timeout',
+        'pref_show_next_air_date',
+        'replace_skip_outro_with_next_up',
+        'trickplay_pause_while_scrubbing',
         'showDescriptionOnPause',
         null,
       ]) {
@@ -1527,6 +1539,157 @@ void main() {
       controller.tryValue('trickplay_mode', TrickplayMode.full);
       await pumpPreview(tester, controller);
       expect(tester.widget<Trickplay>(find.byType(Trickplay)).fillFrame, true);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the skip button draws the countdown being tried', (
+      tester,
+    ) async {
+      final key = UserPreferences.mediaSegmentCountdown.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Countdown', prefKey: key))
+        // The countdown still shows on an intro that skips itself.
+        ..tryValue('media_segment_actions', 'intro:skip,outro:askToSkip')
+        ..tryValue(key, MediaSegmentCountdown.both);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.player);
+      final skip = find.byType(SkipSegmentOverlay);
+      final ring = find.descendant(
+        of: skip,
+        matching: find.byType(CircularProgressIndicator),
+      );
+      expect(
+        tester.widget<SkipSegmentOverlay>(skip).segment.type,
+        MediaSegmentType.intro,
+      );
+      // 0:42 into an intro that ends at 1:30, with the seconds in the ring.
+      expect(
+        find.descendant(of: skip, matching: find.text('48')),
+        findsOneWidget,
+      );
+
+      controller.tryValue(key, MediaSegmentCountdown.timer);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsOneWidget);
+      expect(ring, findsNothing);
+
+      controller.tryValue(key, MediaSegmentCountdown.progressBar);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      expect(ring, findsOneWidget);
+
+      controller.tryValue(key, MediaSegmentCountdown.none);
+      await pumpPreview(tester, controller);
+      expect(ring, findsNothing);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Next Up Timeout shows the card counting down from it', (
+      tester,
+    ) async {
+      final key = UserPreferences.nextUpTimeout.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Timeout', prefKey: key))
+        ..tryValue('pref_media_segment_countdown', MediaSegmentCountdown.timer)
+        ..tryValue(key, 15000);
+      await pumpPreview(tester, controller);
+      final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+      expect(card.nextItem, isNotNull);
+      expect(card.countsDown, isFalse);
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+      // The player hides its controls when the card comes up.
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+      // It holds where it starts instead of running out.
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+
+      controller.tryValue(key, 0);
+      await pumpPreview(tester, controller);
+      expect(find.byType(NextUpOverlay), findsOneWidget);
+      expect(find.textContaining(l10n.endsIn('')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'Show Next Air Date draws the air date card, and none when off',
+      (tester) async {
+        final key = UserPreferences.showNextAirDate.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Air Date', prefKey: key))
+          ..tryValue(key, true);
+        await pumpPreview(tester, controller);
+        final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+        expect(card.airDate, isNotNull);
+        expect(card.nextItem, isNull);
+        expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+        controller.tryValue(key, false);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+        controller
+          ..tryValue(key, true)
+          ..tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'Replace Skip Outro puts the Up Next card in the button\'s place',
+      (tester) async {
+        final key = UserPreferences.replaceSkipOutroWithNextUp.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Replace', prefKey: key))
+          ..tryValue(key, false);
+        await pumpPreview(tester, controller);
+        final skip = find.byType(SkipSegmentOverlay);
+        expect(
+          tester.widget<SkipSegmentOverlay>(skip).segment.type,
+          MediaSegmentType.outro,
+        );
+        expect(find.byType(NextUpOverlay), findsNothing);
+
+        controller.tryValue(key, true);
+        await pumpPreview(tester, controller);
+        expect(skip, findsNothing);
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        // With Next Up off there's no card to put there.
+        controller.tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(skip, findsOneWidget);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Pause While Scrubbing shows whether a scrub pauses', (
+      tester,
+    ) async {
+      final key = UserPreferences.trickPlayPauseWhileScrubbing.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Pause', prefKey: key))
+        ..tryValue('trickplay_mode', TrickplayMode.single)
+        ..tryValue(key, true);
+      await pumpPreview(tester, controller);
+      expect(find.byType(Trickplay), findsOneWidget);
+      expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+      controller.tryValue(key, false);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+      // Without trickplay the player never pauses a scrub.
+      controller
+        ..tryValue(key, true)
+        ..tryValue('trickplay_mode', TrickplayMode.disabled);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
       debugDefaultTargetPlatformOverride = null;
     });
 

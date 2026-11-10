@@ -39,6 +39,13 @@ class NextUpOverlay extends StatefulWidget {
   /// Offers Remind me on the air date card.
   final CalendarEntry? reminder;
 
+  /// The countdown to draw in place of the saved one, for the settings preview.
+  final MediaSegmentCountdown? countdown;
+
+  /// False holds the countdown where it starts and never times out, for the
+  /// settings preview.
+  final bool countsDown;
+
   const NextUpOverlay({
     super.key,
     required AggregatedItem this.nextItem,
@@ -50,6 +57,8 @@ class NextUpOverlay extends StatefulWidget {
     this.focusNode,
     this.dismissFocusNode,
     this.isMinimal = false,
+    this.countdown,
+    this.countsDown = true,
   }) : airDate = null,
        airDateTitle = null,
        reminder = null;
@@ -67,6 +76,8 @@ class NextUpOverlay extends StatefulWidget {
     this.focusNode,
     this.dismissFocusNode,
     this.isMinimal = false,
+    this.countdown,
+    this.countsDown = true,
   }) : nextItem = null,
        imageUrl = null,
        onPlayNext = null;
@@ -93,7 +104,9 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       vsync: this,
       duration: Duration(milliseconds: widget.timeoutMs),
       animationBehavior: AnimationBehavior.preserve,
-    )..forward();
+    );
+    if (!widget.countsDown) return;
+    _countdownController.forward();
 
     if (widget.timeoutMs > 0) {
       _timer = Timer(
@@ -160,10 +173,11 @@ class _NextUpOverlayState extends State<NextUpOverlay>
         ? 'S${item.parentIndexNumber ?? '?'}:E${item.indexNumber}'
         : null;
 
-    final prefs = GetIt.instance<UserPreferences>();
-    final mediaSegmentCountdown = prefs.get(
-      UserPreferences.mediaSegmentCountdown,
-    );
+    final mediaSegmentCountdown =
+        widget.countdown ??
+        GetIt.instance<UserPreferences>().get(
+          UserPreferences.mediaSegmentCountdown,
+        );
     final showProgressBar =
         mediaSegmentCountdown == MediaSegmentCountdown.progressBar ||
         mediaSegmentCountdown == MediaSegmentCountdown.both;

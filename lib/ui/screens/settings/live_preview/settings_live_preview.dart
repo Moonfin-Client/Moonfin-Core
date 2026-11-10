@@ -10,10 +10,12 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit_video/media_kit_video.dart' show SubtitleViewState;
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/models/aggregated_library.dart';
 import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../../data/models/media_segment.dart';
 import '../../../../data/models/trickplay_preview_layout.dart';
+import '../../../../data/models/upcoming_episode_info.dart';
 import '../../../../data/repositories/poster_badge_repository.dart';
 import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/voice_search_controller.dart';
@@ -38,10 +40,12 @@ import '../../../widgets/bounded_network_image.dart';
 import '../../../widgets/image_source.dart';
 import '../../../widgets/playback/chapter_marker_track.dart';
 import '../../../widgets/playback/loading_animation_widget.dart';
+import '../../../widgets/playback/next_up_overlay.dart';
 import '../../../widgets/playback/playback_time_row.dart';
 import '../../../widgets/playback/player_loading_overlay.dart';
 import '../../../widgets/playback/player_logo.dart';
 import '../../../widgets/playback/seek_icons.dart';
+import '../../../widgets/playback/skip_segment_overlay.dart';
 import '../../../widgets/playback/trickplay.dart';
 import '../../../widgets/player_volume_control.dart';
 import '../../../widgets/seasonal/seasonal_effects.dart';
@@ -664,7 +668,16 @@ Widget _designCanvas(Size size, Widget child) => FittedBox(
   child: SizedBox.fromSize(size: size, child: child),
 );
 
-enum _PlayerMoment { loading, intro, middle, seeking, paused, end, watching }
+enum _PlayerMoment {
+  loading,
+  intro,
+  middle,
+  seeking,
+  paused,
+  outro,
+  end,
+  watching,
+}
 
 /// The label the player shows while a stream comes up.
 const _streamLoadingLabel = 'Loading Stream...';
@@ -681,12 +694,28 @@ bool _isSubtitleKey(String key) =>
 /// Where the sample episode's chapters start, for the seek bar's marks.
 const _sampleChapterStartsMs = [90000, 236000, 418000, 571000];
 
+const _sampleIntro = MediaSegment(
+  id: 'intro',
+  itemId: 'preview',
+  type: MediaSegmentType.intro,
+  start: Duration(seconds: 12),
+  end: Duration(seconds: 90),
+);
+
+const _sampleOutro = MediaSegment(
+  id: 'outro',
+  itemId: 'preview',
+  type: MediaSegmentType.outro,
+  start: Duration(minutes: 9, seconds: 24),
+  end: Duration(minutes: 9, seconds: 58),
+);
+
 /// The player over a sample episode: its controls up mid-episode for the zoom
 /// mode, the buttons and the time labels, playing with the controls hidden for
 /// the subtitle look, the paused description for its own setting, the intro
-/// prompt at the start and Next Up at the end. The loading animation settings
-/// get the player before the stream starts and the trickplay ones get it
-/// mid-seek.
+/// prompt at the start, the outro's over the credits and Next Up at the end.
+/// The loading animation settings get the player before the stream starts
+/// and the trickplay ones get it mid-seek.
 class SettingsPlayerPreview extends StatelessWidget {
   final String? focusedKey;
 
@@ -702,8 +731,12 @@ class SettingsPlayerPreview extends StatelessWidget {
     final next = items.length > 1 ? items[1] : item;
 
     final moment = switch (focusedKey) {
-      'media_segment_actions' => _PlayerMoment.intro,
-      'next_up_behavior' => _PlayerMoment.end,
+      'media_segment_actions' ||
+      'pref_media_segment_countdown' => _PlayerMoment.intro,
+      'replace_skip_outro_with_next_up' => _PlayerMoment.outro,
+      'next_up_behavior' ||
+      'next_up_timeout' ||
+      'pref_show_next_air_date' => _PlayerMoment.end,
       'showDescriptionOnPause' => _PlayerMoment.paused,
       'show_loading_animation_text' => _PlayerMoment.loading,
       final key? when key.startsWith('loading_animation_') =>
@@ -719,15 +752,53 @@ class SettingsPlayerPreview extends StatelessWidget {
     final trickplay = moment == _PlayerMoment.seeking
         ? previewValue(context, UserPreferences.trickPlayMode)
         : TrickplayMode.disabled;
+    // The player only pauses a scrub that has trickplay to show.
     final scrubPaused =
-        moment == _PlayerMoment.seeking &&
+        trickplay != TrickplayMode.disabled &&
         previewValue(context, UserPreferences.trickPlayPauseWhileScrubbing);
+    final actions = parseMediaSegmentActions(
+      previewValue(context, UserPreferences.mediaSegmentActions),
+    );
     final introAction =
-        parseMediaSegmentActions(
-          previewValue(context, UserPreferences.mediaSegmentActions),
-        )[MediaSegmentType.intro] ??
-        MediaSegmentAction.askToSkip;
+        actions[MediaSegmentType.intro] ?? MediaSegmentAction.askToSkip;
+    final outroAction =
+        actions[MediaSegmentType.outro] ?? MediaSegmentAction.askToSkip;
     final nextUp = previewValue(context, UserPreferences.nextUpBehavior);
+    final countdown = previewValue(
+      context,
+      UserPreferences.mediaSegmentCountdown,
+    );
+    final outroNextUp =
+        moment == _PlayerMoment.outro &&
+        nextUp != NextUpBehavior.disabled &&
+        previewValue(context, UserPreferences.replaceSkipOutroWithNextUp);
+    // The countdown shows on the intro's button whatever the intro does.
+    final skipSegment = switch (moment) {
+      _PlayerMoment.intro
+          when introAction == MediaSegmentAction.askToSkip ||
+              focusedKey == UserPreferences.mediaSegmentCountdown.key =>
+        _sampleIntro,
+      _PlayerMoment.outro
+          when !outroNextUp && outroAction == MediaSegmentAction.askToSkip =>
+        _sampleOutro,
+      _ => null,
+    };
+    final upNext =
+        outroNextUp ||
+        (moment == _PlayerMoment.end && nextUp != NextUpBehavior.disabled);
+    // The sample episode stands in for the newest one the library has, so
+    // the card says when the next one airs.
+    final airDate = focusedKey == UserPreferences.showNextAirDate.key;
+    final upNextCard = upNext && !airDate;
+    final minimal = nextUp == NextUpBehavior.minimal;
+    final timeout = previewValue(context, UserPreferences.nextUpTimeout);
+    final airDateCard =
+        upNext &&
+        airDate &&
+        previewValue(context, UserPreferences.showNextAirDate);
+    // The player hides its controls when the card comes up.
+    final controls =
+        moment != _PlayerMoment.watching && !upNextCard && !airDateCard;
     final paused =
         moment == _PlayerMoment.paused &&
         previewValue(context, UserPreferences.showDescriptionOnPause);
@@ -736,10 +807,11 @@ class SettingsPlayerPreview extends StatelessWidget {
         previewValue(context, UserPreferences.subtitleMode) != SubtitleMode.none;
     final position = switch (moment) {
       _PlayerMoment.intro =>
-        introAction == MediaSegmentAction.skip
+        skipSegment == null && introAction == MediaSegmentAction.skip
             ? const Duration(minutes: 1, seconds: 30)
             : const Duration(seconds: 42),
       _PlayerMoment.seeking => _trickplaySeek,
+      _PlayerMoment.outro => const Duration(minutes: 9, seconds: 31),
       _PlayerMoment.end => const Duration(minutes: 9, seconds: 58),
       _ => const Duration(minutes: 4, seconds: 12),
     };
@@ -786,7 +858,7 @@ class SettingsPlayerPreview extends StatelessWidget {
               if (subtitles)
                 _PlayerSubtitles(
                   hdr: focusedKey?.startsWith('subtitles_hdr_') ?? false,
-                  controls: moment != _PlayerMoment.watching,
+                  controls: controls,
                 ),
               if (trickplay == TrickplayMode.full)
                 Positioned.fill(
@@ -845,107 +917,65 @@ class SettingsPlayerPreview extends StatelessWidget {
                   ),
                 ),
               ],
-              if (moment != _PlayerMoment.watching)
+              if (controls)
                 _PlayerControls(
                   item: item,
                   position: position,
                   playing: moment != _PlayerMoment.paused && !scrubPaused,
-                  seeking: moment == _PlayerMoment.seeking,
+                  // The middle stays up while Pause While Scrubbing has
+                  // focus, so its play button shows what a scrub does.
+                  seeking:
+                      moment == _PlayerMoment.seeking &&
+                      focusedKey !=
+                          UserPreferences.trickPlayPauseWhileScrubbing.key,
                   trickplay: trickplay,
                 ),
-              if (moment == _PlayerMoment.intro &&
-                  introAction == MediaSegmentAction.askToSkip)
-                // Where the player puts it before it has measured its
-                // controls.
-                Positioned(
-                  right: 24,
-                  bottom:
+              if (skipSegment != null)
+                SkipSegmentOverlay(
+                  segment: skipSegment,
+                  onSkip: () {},
+                  onDismiss: () {},
+                  initialPosition: position,
+                  // Where the player puts it before it has measured its
+                  // controls.
+                  bottomInset:
                       TrickplayPreviewLayout.verticalTravelBottomMargin +
                       AppSpacing.spaceXs,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20 * u,
-                      vertical: 10 * u,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: AppRadius.circular(999),
-                    ),
-                    child: Text(
-                      l10n.skipSegment(MediaSegmentType.intro.displayName),
-                      style: TextStyle(
-                        fontSize: 15 * u,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
-                      ),
-                    ),
-                  ),
+                  countdown: countdown,
                 ),
-              if (moment == _PlayerMoment.end &&
-                  nextUp == NextUpBehavior.extended)
-                Positioned(
-                  right: 32 * u,
-                  top: 28 * u,
-                  width: 270 * u,
-                  child: ClipRRect(
-                    borderRadius: AppRadius.circular(12),
-                    child: ColoredBox(
-                      color: Colors.black.withValues(alpha: 0.85),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 140 * u,
-                            width: double.infinity,
-                            child: _art(next?.backdropUrl),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(12 * u),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.upNext.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 11 * u,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColorScheme.accent,
-                                  ),
-                                ),
-                                SizedBox(height: 4 * u),
-                                Text(
-                                  next?.title ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: text(16, weight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              if (upNextCard)
+                NextUpOverlay(
+                  nextItem: AggregatedItem(
+                    id: 'preview-next',
+                    serverId: '',
+                    rawData: {
+                      'Name': next?.title ?? '',
+                      'Type': 'Episode',
+                      'ParentIndexNumber': 1,
+                      'IndexNumber': 6,
+                    },
                   ),
-                ),
-              if (moment == _PlayerMoment.end &&
-                  nextUp == NextUpBehavior.minimal)
-                Positioned(
-                  right: 32 * u,
-                  top: 28 * u,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16 * u,
-                      vertical: 9 * u,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.8),
-                      borderRadius: AppRadius.circular(999),
-                    ),
-                    child: Text(
-                      '${l10n.upNext}: ${next?.title ?? ''}',
-                      style: text(14, weight: FontWeight.w600),
-                    ),
+                  isMinimal: minimal,
+                  imageUrl: minimal ? null : next?.backdropUrl,
+                  timeoutMs: timeout,
+                  onPlayNext: () {},
+                  onDismiss: () {},
+                  countdown: countdown,
+                  countsDown: false,
+                )
+              else if (airDateCard)
+                NextUpOverlay.airDate(
+                  airDate: UpcomingEpisodeInfo(
+                    seasonNumber: 1,
+                    episodeNumber: 6,
+                    airDate: DateTime.now().add(const Duration(days: 3)),
                   ),
+                  airDateTitle: next?.title ?? '',
+                  isMinimal: minimal,
+                  timeoutMs: timeout,
+                  onDismiss: () {},
+                  countdown: countdown,
+                  countsDown: false,
                 ),
             ],
           ),
