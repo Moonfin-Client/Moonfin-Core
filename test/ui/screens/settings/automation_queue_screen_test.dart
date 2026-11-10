@@ -17,8 +17,8 @@ void main() {
   late UserPreferences prefs;
   late AppLocalizations l10n;
 
-  setUp(() async {
-    SharedPreferences.setMockInitialValues({});
+  Future<void> setUpPrefs(Map<String, Object> initial) async {
+    SharedPreferences.setMockInitialValues(initial);
     final store = PreferenceStore();
     await store.init();
     prefs = UserPreferences(store);
@@ -26,7 +26,7 @@ void main() {
       ..registerSingleton<PreferenceStore>(store)
       ..registerSingleton<UserPreferences>(prefs);
     l10n = lookupAppLocalizations(const Locale('en'));
-  });
+  }
 
   tearDown(() async {
     debugDefaultTargetPlatformOverride = null;
@@ -48,8 +48,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('picking a segment action keeps the focus on its row and the '
-      'other rows show the new value', (tester) async {
+  Future<void> pickKeepsFocusAndSiblings(WidgetTester tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
     await pump(tester);
@@ -73,7 +72,7 @@ void main() {
       MediaSegmentAction.skip,
     );
     expect(FocusManager.instance.primaryFocus, same(row));
-    expect(row.context, isNotNull);
+    expect(row.context?.mounted, isTrue);
 
     // The other rows still show their own action, and a pick on one of
     // them must not undo the first one.
@@ -98,5 +97,21 @@ void main() {
     expect(actions[MediaSegmentType.intro], MediaSegmentAction.nothing);
     expect(actions[MediaSegmentType.outro], MediaSegmentAction.skip);
     debugDefaultTargetPlatformOverride = null;
+  }
+
+  testWidgets('picking a segment action keeps the focus on its row and the '
+      'other rows show the new value', (tester) async {
+    await setUpPrefs({});
+    await pickKeepsFocusAndSiblings(tester);
+  });
+
+  // A signed-in profile keeps its own copy of the actions, apart from the
+  // shared value the store reads.
+  testWidgets('the same holds for a signed-in profile', (tester) async {
+    await setUpPrefs({
+      'pref_last_server_id': 'srv1',
+      'pref_last_user_id': 'usr1',
+    });
+    await pickKeepsFocusAndSiblings(tester);
   });
 }

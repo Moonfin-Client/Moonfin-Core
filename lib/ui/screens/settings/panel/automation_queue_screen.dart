@@ -95,8 +95,8 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
                   icon: Icons.skip_next,
                 ),
               // Every type writes to the one preference. The key stays the
-              // same across picks so the tile, and the focus on it, survive;
-              // the tile picks up a sibling's change on rebuild.
+              // same across picks so the tile, and the focus on it, survive.
+              // The tile picks up a sibling's change on rebuild.
               for (final type in configurableMediaSegmentTypes)
                 StringPickerPreferenceTile(
                   key: ValueKey('segmentAction_${type.name}'),
