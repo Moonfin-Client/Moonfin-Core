@@ -47,10 +47,10 @@ final class HingeBridge {
   }
 
   func attach(to view: UIView) {
-    // UIHingeInteraction arrived in the iOS 27.1 SDK. Swift has no check for
-    // an SDK's symbols, so the compiler that ships with that SDK stands in
-    // for it, and older Xcodes build without the hinge.
-    #if compiler(>=6.4)
+    // UIHingeInteraction arrived in the iOS 27.1 SDK, whose UIKit is version
+    // 9127.0.85. Xcode 27.0 has the same compiler without it, so the check is
+    // on the SDK, and older Xcodes build without the hinge.
+    #if canImport(UIKit, _version: 9127.0.85)
       if #available(iOS 27.1, *) {
         let interaction = UIHingeInteraction { [weak self] _, update in
           self?.send(Self.statusName(of: update.hinge))
@@ -67,7 +67,7 @@ final class HingeBridge {
     self.interaction = nil
   }
 
-  #if compiler(>=6.4)
+  #if canImport(UIKit, _version: 9127.0.85)
     @available(iOS 27.1, *)
     private static func statusName(of hinge: UIHinge?) -> String {
       // No hinge means the view left a hierarchy that reports one.
