@@ -362,8 +362,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<List<AggregatedItem>> _filterLibraryItems(
-    List<AggregatedItem> items,
-  ) async {
+    List<AggregatedItem> items, {
+    required int generation,
+  }) async {
     items = withoutBlockedItems(items);
     if (!isPlaylistBrowse) return items;
 
@@ -380,6 +381,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
               assumeNonEmptyWhenUnknown: !isMusicBrowse,
             ),
     );
+    // A reload cleared the categories while these were resolving.
+    if (generation != _listGeneration) return const [];
 
     final kept = <AggregatedItem>[];
     for (var i = 0; i < items.length; i++) {
@@ -555,7 +558,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     // Any page walk still running belongs to the list we are about to drop.
     _pageWalkGeneration++;
     final generation = ++_listGeneration;
-    // A scroll page still on its way belongs to the old list, so it must not
+    // A scroll page still on its way belongs to the old list, so it shouldn't
     // hold up paging of the new one.
     _loadingMore = false;
     _state = LibraryBrowseState.loading;
@@ -1031,7 +1034,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         .whereType<AggregatedItem>()
         .toList();
 
-    var filtered = await _filterLibraryItems(mapped);
+    var filtered = await _filterLibraryItems(mapped, generation: generation);
 
     // A reload while this page was on its way owns the list now. Taking the
     // page would mark its ids rendered, hiding them from the new list, and

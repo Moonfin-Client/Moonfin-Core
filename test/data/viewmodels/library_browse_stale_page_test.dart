@@ -74,10 +74,17 @@ class _HeldItemsApi implements ItemsApi {
       'TotalRecordCount': totalRecordCount,
       'Items': [
         for (final id in page)
-          <String, dynamic>{'Id': 'item-$id', 'Name': 'Item $id'},
+          <String, dynamic>{
+            'Id': 'item-$id',
+            'Name': 'Item $id',
+            ...?itemFields[id],
+          },
       ],
     };
   }
+
+  /// Extra fields for an item, read when its page is answered.
+  final itemFields = <int, Map<String, dynamic>>{};
 
   /// When set, the library lookup waits for it as well.
   Completer<void>? heldItem;
@@ -117,7 +124,10 @@ class _FakeMdbListRepository implements MdbListRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-Future<LibraryBrowseViewModel> _viewModel(_HeldItemsApi api) async {
+Future<LibraryBrowseViewModel> _viewModel(
+  _HeldItemsApi api, {
+  List<String>? includeItemTypes,
+}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
   final store = PreferenceStore();
   await store.init();
@@ -126,6 +136,7 @@ Future<LibraryBrowseViewModel> _viewModel(_HeldItemsApi api) async {
     client: _FakeClient(api),
     prefs: UserPreferences(store),
     mdbListRepository: _FakeMdbListRepository(),
+    includeItemTypes: includeItemTypes,
   );
 }
 
@@ -143,7 +154,7 @@ Future<void> _requests(_HeldItemsApi api, int count) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('a reload answered after a newer one does not replace it', () async {
+  test('a reload answered after a newer one doesn\'t replace it', () async {
     final api = _HeldItemsApi();
     final vm = await _viewModel(api);
     addTearDown(vm.dispose);
@@ -240,12 +251,12 @@ void main() {
     api.pending[2].complete([11, 12, 13, 14]);
     await reload;
 
-    // The old scroll page hasn't answered yet; the new list asks for its own.
+    // The old scroll page is still out, and the new list asks for its own.
     final newPage = vm.loadMore();
     await _requests(api, 4);
     expect(api.requestedStartIndexes.last, 4);
 
-    // The old page landing now must not release the new page's flag either.
+    // The old page landing now shouldn't release the new page's flag either.
     api.pending[1].complete([5, 6, 7, 8]);
     await oldPage;
     expect(vm.loadingMore, isTrue);
@@ -260,5 +271,27 @@ void main() {
       'item-15',
       'item-16',
     ]);
+  });
+
+  test('a superseded page leaves the playlist categories alone', () async {
+    final api = _HeldItemsApi();
+    final vm = await _viewModel(api, includeItemTypes: const ['Playlist']);
+    addTearDown(vm.dispose);
+
+    final first = vm.load();
+    await _requests(api, 1);
+    final second = vm.load();
+    await _requests(api, 2);
+
+    // The older answer reads the same playlist differently, the way a lookup
+    // that failed and fell back would.
+    api.itemFields[1] = {'Type': 'Playlist', 'MediaType': 'Photo'};
+    api.pending[1].complete([1]);
+    await second;
+    api.itemFields[1] = {'Type': 'Playlist', 'MediaType': 'Book'};
+    api.pending[0].complete([1]);
+    await first;
+
+    expect(vm.categoryForPlaylist(vm.items.single), 'Photo');
   });
 }
