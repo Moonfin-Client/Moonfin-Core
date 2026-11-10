@@ -1200,6 +1200,28 @@ void main() {
 
       await tester.pumpWidget(const SizedBox());
     });
+
+    testWidgets('quick repeats with the setting off add up', (tester) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.showControlsOnSeek,
+        false,
+      );
+      await playWithControlsHidden(tester);
+
+      // The position hasn't caught up between the two presses.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [
+        const Duration(seconds: 30),
+        const Duration(seconds: 60),
+      ]);
+      expect(find.text('60 seconds'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 
   // Issue #1335: S, or Enter while the skip button shows, skips the intro.

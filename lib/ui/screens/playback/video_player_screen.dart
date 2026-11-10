@@ -495,6 +495,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Timer? _skipBackwardTimer;
   int _skipForwardAccum = 0;
   int _skipBackwardAccum = 0;
+  // Where the last indicator skip was sent, so quick repeats build on it
+  // instead of on a position that hasn't caught up yet.
+  Duration? _pendingSkipTarget;
+  Timer? _pendingSkipTimer;
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
@@ -1126,6 +1130,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _removeZoomModeToastOverlay();
     _skipForwardTimer?.cancel();
     _skipBackwardTimer?.cancel();
+    _pendingSkipTimer?.cancel();
     _surfaceTaps.cancel();
     _persistVolumeTimer?.cancel();
     if (PlatformDetection.isDesktop) {
@@ -3200,10 +3205,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (mounted) setState(() => _isSeeking = false);
   }
 
-  void _seekRelative(int ms, {bool showControls = true}) {
+  Duration _seekRelative(
+    int ms, {
+    bool showControls = true,
+    Duration? from,
+  }) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    final target = _transportPosition + Duration(milliseconds: ms);
+    final target = (from ?? _transportPosition) + Duration(milliseconds: ms);
     final clamped = Duration(
       milliseconds: target.inMilliseconds.clamp(
         0,
@@ -3216,6 +3225,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (showControls) {
       _showControls();
     }
+    return clamped;
   }
 
   void _seekRelativeAccumulate(int ms) {
@@ -6740,7 +6750,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _skipWithIndicator(int ms) {
-    _seekRelative(ms, showControls: false);
+    _pendingSkipTarget = _seekRelative(
+      ms,
+      showControls: false,
+      from: _pendingSkipTarget,
+    );
+    _pendingSkipTimer?.cancel();
+    _pendingSkipTimer = Timer(
+      const Duration(milliseconds: 600),
+      () => _pendingSkipTarget = null,
+    );
     if (ms > 0) {
       _skipForwardAccum += ms;
       setState(() => _showSkipForward = true);

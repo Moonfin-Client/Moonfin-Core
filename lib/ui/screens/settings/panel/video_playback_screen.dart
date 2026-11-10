@@ -202,11 +202,20 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 icon: Icons.straighten,
               ),
               if (PlatformDetection.isTV)
-                SwitchPreferenceTile(
-                  preference: UserPreferences.showControlsOnSeek,
-                  title: l10n.showControlsOnSeek,
-                  subtitle: l10n.showControlsOnSeekDescription,
-                  icon: Icons.fast_forward_outlined,
+                // The native Apple TV player handles its own seeking.
+                ListenableBuilder(
+                  listenable: prefs,
+                  builder: (context, _) =>
+                      PlatformDetection.isAppleTV &&
+                          prefs.get(UserPreferences.applePlayerUi) ==
+                              ApplePlayerUi.native
+                      ? const SizedBox.shrink()
+                      : SwitchPreferenceTile(
+                          preference: UserPreferences.showControlsOnSeek,
+                          title: l10n.showControlsOnSeek,
+                          subtitle: l10n.showControlsOnSeekDescription,
+                          icon: Icons.fast_forward_outlined,
+                        ),
                 ),
               if (PlatformDetection.useMobileUi) ...[
                 SwitchPreferenceTile(
