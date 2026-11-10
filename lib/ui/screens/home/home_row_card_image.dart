@@ -253,6 +253,21 @@ HomeRowCardImage homeRowCardImage(
     );
     return (url: url, width: v2ImageHeight * aspect, aspectRatio: aspect);
   }
+  if (isModernMyMediaStatic) {
+    // Home draws these at the Modern height with the focused card's 16:9.
+    // Phones cap that width at the row width, which this can't see.
+    final v2ImageHeight = modernImageHeight(posterSize, platformScale);
+    final url = resolveUrl(
+      item,
+      imageApi,
+      v2ImageHeight,
+      ImageType.thumb,
+      false,
+      requestScale,
+      isMyMediaRow: true,
+    );
+    return (url: url, width: v2ImageHeight * 16 / 9, aspectRatio: 16 / 9);
+  }
   final ar = aspectRatioForRowItem(item, row, rowImageType);
   final height =
       (ar > 1

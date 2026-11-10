@@ -185,7 +185,8 @@ void main() {
       expect(lookups.single.isMyMediaRow, isTrue);
     });
 
-    test('My Media without Modern cards draws Classic thumbs', () async {
+    test('My Media without Modern cards draws wide thumbs at the modern '
+        'height', () async {
       final prefs = await createPreferences(
         HomeRowsStyle.v2,
         modernCardsOnMyMedia: false,
@@ -195,11 +196,24 @@ void main() {
         title: 'My Media',
         rowType: HomeRowType.libraryTiles,
       );
-      final card = image(myMedia, _item('l1', 'CollectionFolder'), prefs);
+      final card = homeRowCardImage(
+        myMedia,
+        _item('l1', 'CollectionFolder'),
+        prefs: prefs,
+        posterSize: PosterSize.medium,
+        // Home ignores the series thumbs setting for these cards.
+        useSeriesThumbs: true,
+        requestScale: 1,
+        platformScale: 0.8,
+        imageApi: api,
+        resolveUrl: recordingLookup,
+      );
 
       expect(card.aspectRatio, 16 / 9);
-      expect(card.width, closeTo(110 * 0.8 * 16 / 9, 0.001));
+      expect(card.width, closeTo(150 * 0.8 * 16 / 9, 0.001));
+      expect(lookups.single.height, closeTo(150 * 0.8, 0.001));
       expect(lookups.single.imageType, ImageType.thumb);
+      expect(lookups.single.useSeriesThumbs, isFalse);
       expect(lookups.single.isMyMediaRow, isTrue);
     });
   });
