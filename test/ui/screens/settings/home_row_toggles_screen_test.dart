@@ -10,11 +10,16 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/settings/home_row_toggles_screen.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockHomeViewModel extends Mock implements HomeViewModel {}
 
 class _MockSyncService extends Mock implements PluginSyncService {}
+
+class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+class _MockUsersApi extends Mock implements UsersApi {}
 
 // Returning to Home from settings only refreshes Continue Watching and Next Up,
 // so a setting that changes Home's rows has to reload Home itself, like the
@@ -22,6 +27,11 @@ class _MockSyncService extends Mock implements PluginSyncService {}
 void main() {
   late UserPreferences prefs;
   late _MockHomeViewModel home;
+  late _MockSyncService sync;
+
+  setUpAll(() {
+    registerFallbackValue(const UserConfiguration());
+  });
 
   setUp(() async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
@@ -32,7 +42,7 @@ void main() {
     GetIt.instance.registerSingleton<PreferenceStore>(store);
     GetIt.instance.registerSingleton<UserPreferences>(prefs);
 
-    final sync = _MockSyncService();
+    sync = _MockSyncService();
     when(() => sync.pluginAvailable).thenReturn(false);
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
 
@@ -104,6 +114,44 @@ void main() {
     expect(prefs.get(UserPreferences.hideUpgradesInRecentRows), isTrue);
     verify(() => home.load(preserveExisting: false)).called(1);
   });
+
+  testWidgets(
+    'Hide Watched and Hide Upgrades sync with server when plugin is available',
+    (tester) async {
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      await prefs.set(UserPreferences.hideUpgradesInRecentRows, false);
+
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+      );
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      when(() => sync.pluginAvailable).thenReturn(true);
+      when(() => sync.pushSettings(client)).thenAnswer((_) async {});
+      when(
+        () => sync.pushHideUpgradesPreference(client),
+      ).thenAnswer((_) async {});
+
+      await pump(tester);
+
+      await tester.tap(find.text('Hide Watched'));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+      verifyNever(() => usersApi.updateUserConfiguration(any()));
+      verify(() => home.load(preserveExisting: false)).called(1);
+      clearInteractions(home);
+
+      await tester.tap(find.text('Hide Upgrades'));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.hideUpgradesInRecentRows), isTrue);
+      verify(() => sync.pushHideUpgradesPreference(client)).called(1);
+      verify(() => home.load(preserveExisting: false)).called(1);
+    },
+  );
 
   testWidgets('Merge Recent Rows by Type reloads Home', (tester) async {
     await prefs.set(UserPreferences.mergeRecentRowsByType, false);

@@ -26,9 +26,10 @@ void main() {
     GetIt.instance.registerSingleton<UserPreferences>(prefs);
   }
 
-  Future<({String types, bool recursive})> requestFor(
+  Future<({String types, bool recursive, bool? hideWatched})> requestFor(
     String? collectionType,
   ) async {
+    bool? capturedHideWatched;
     final itemsApi = _MockItemsApi();
     when(
       () => itemsApi.getRecentlyReleasedItems(
@@ -41,7 +42,11 @@ void main() {
         recursive: any(named: 'recursive'),
         hideWatched: any(named: 'hideWatched'),
       ),
-    ).thenAnswer((_) async => {'Items': <dynamic>[], 'TotalRecordCount': 0});
+    ).thenAnswer((invocation) async {
+      capturedHideWatched =
+          invocation.namedArguments[#hideWatched] as bool?;
+      return {'Items': <dynamic>[], 'TotalRecordCount': 0};
+    });
 
     final client = _MockClient();
     when(() => client.itemsApi).thenReturn(itemsApi);
@@ -67,6 +72,7 @@ void main() {
     return (
       types: types.isEmpty ? 'anything' : types.first.join(','),
       recursive: captured.whereType<bool>().first,
+      hideWatched: capturedHideWatched,
     );
   }
 
@@ -118,5 +124,18 @@ void main() {
     final request = await requestFor('movies');
     expect(request.types, 'Movie');
     expect(request.recursive, isTrue);
+    expect(request.hideWatched, isNull);
+  });
+
+  test('forwards hideWatched true when hideWatchedInRecentRows is enabled', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, true);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+    final request = await requestFor('movies');
+    expect(request.hideWatched, isTrue);
   });
 }

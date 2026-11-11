@@ -74,13 +74,20 @@ String genericDescriptorForCollectionType(
   };
 }
 
+int? _toNullableInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
 bool isRawItemWatchedForRecentRow(Map<String, dynamic> rawData) {
   final userData = rawData['UserData'];
   if (userData is! Map) return false;
   if (userData['Played'] == true) return true;
   final type = rawData['Type']?.toString();
-  final unplayedCount = (userData['UnplayedItemCount'] as num?)?.toInt();
-  final childCount = (rawData['ChildCount'] as num?)?.toInt();
+  final unplayedCount = _toNullableInt(userData['UnplayedItemCount']);
+  final childCount = _toNullableInt(rawData['ChildCount']);
   if ((type == 'Series' || type == 'Season') &&
       unplayedCount != null &&
       unplayedCount <= 0 &&
@@ -90,16 +97,8 @@ bool isRawItemWatchedForRecentRow(Map<String, dynamic> rawData) {
   return false;
 }
 
-bool _isItemWatchedForRecentRow(AggregatedItem item) {
-  if (item.isPlayed) return true;
-  if ((item.type == 'Series' || item.type == 'Season') &&
-      item.unplayedItemCount != null &&
-      item.unplayedItemCount! <= 0 &&
-      (item.childCount == null || item.childCount! > 0)) {
-    return true;
-  }
-  return isRawItemWatchedForRecentRow(item.rawData);
-}
+bool _isItemWatchedForRecentRow(AggregatedItem item) =>
+    isRawItemWatchedForRecentRow(item.rawData);
 
 List<AggregatedItem> normalizeLatestMediaItems(
   List<AggregatedItem> items, {
