@@ -117,6 +117,8 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
 
   void _goTo(int index) {
     if (index < 0 || index >= _items.length) return;
+    // A swipe still in progress belongs to the photo it started on.
+    if (_pointerCount > 0) _swipeIgnored = true;
     _transformController.value = Matrix4.identity();
     setState(() => _currentIndex = index);
     _onPhotoShown();
@@ -252,21 +254,21 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
-      body: GestureDetector(
-        onTap: _toggleControls,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: _onPointerDown,
-              onPointerMove: _onPointerMove,
-              onPointerUp: _onPointerUp,
-              onPointerCancel: _onPointerCancel,
-              child: _buildPhotoView(),
-            ),
-            if (_controlsVisible) _buildOverlay(context),
-          ],
+      body: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: _onPointerDown,
+        onPointerMove: _onPointerMove,
+        onPointerUp: _onPointerUp,
+        onPointerCancel: _onPointerCancel,
+        child: GestureDetector(
+          onTap: _toggleControls,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildPhotoView(),
+              if (_controlsVisible) _buildOverlay(context),
+            ],
+          ),
         ),
       ),
     );
