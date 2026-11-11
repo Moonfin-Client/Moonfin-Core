@@ -11653,8 +11653,14 @@ String? codecFromStreams(
   final badges = <String>[];
   final res = resolutionFromStreams(streams) ?? item.videoResolution;
   if (res != null) badges.add(res);
-  final hdr = hdrBadgesFromStreams(streams);
-  badges.addAll(hdr.isNotEmpty ? hdr : hdrBadgesFromStreams(item.mediaStreams));
+  var hdr = hdrBadgesFromStreams(streams);
+  // The item's own streams are its first version's, so they only stand in for
+  // that one.
+  if (hdr.isEmpty &&
+      selectedMediaSource?['Id'] == item.mediaSources.firstOrNull?['Id']) {
+    hdr = hdrBadgesFromStreams(item.mediaStreams);
+  }
+  badges.addAll(hdr);
   final vcodec =
       codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
   if (vcodec != null) badges.add(vcodec);
