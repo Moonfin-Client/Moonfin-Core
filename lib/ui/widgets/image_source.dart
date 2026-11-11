@@ -8,6 +8,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../util/artwork_request_size.dart';
 import '../../util/image_fetch_priority.dart';
+import '../../util/platform_detection.dart';
+import '../navigation/app_router.dart';
+import '../navigation/destinations.dart';
 
 export '../../util/image_fetch_priority.dart' show ImageFetchPriority;
 
@@ -273,6 +276,30 @@ class ArtworkBound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!PlatformDetection.isTV || !PlatformDetection.isAndroid) {
+      return _bounded(context);
+    }
+    return ValueListenableBuilder<bool>(
+      valueListenable: PlayerRouteObserver.instance.isPlayerActive,
+      builder: (context, playing, _) => playing && _underPlayer(context)
+          ? SizedBox(width: _finite(width), height: _finite(height))
+          : _bounded(context),
+    );
+  }
+
+  // The screens a TV box leaves mounted under the player. An Image on one of
+  // them only pauses, keeping its decoded picture on the GPU for the whole
+  // video beside the 4K decoder, so it leaves the tree instead and decodes
+  // again from the disk cache when the player pops. The player's own artwork
+  // and anything opened over it stay.
+  static bool _underPlayer(BuildContext context) {
+    final route = ModalRoute.of(context);
+    if (route == null || route.isCurrent) return false;
+    final name = route.settings.name;
+    return name == null || !Destinations.isPlayerRoute(name);
+  }
+
+  Widget _bounded(BuildContext context) {
     if (memCacheWidth != null ||
         memCacheHeight != null ||
         bound == DecodeBound.none) {
