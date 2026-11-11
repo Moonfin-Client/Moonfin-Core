@@ -12,7 +12,6 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
-import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
@@ -123,22 +122,26 @@ void main() {
     );
   });
 
-  // Neon Pulse colors labels with its accent, which is also the pill's fill.
-  testWidgets('Play inside its accent pill uses the accent text color', (
+  // A labeled Play filled with the accent reads as focused when the accent is
+  // white, beside the circle that really is, so until it has focus it looks
+  // like the circles.
+  testWidgets('a labeled Play without focus is outlined like the circles', (
     tester,
   ) async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-    ThemeRegistry.setActiveById(ThemeRegistry.neonPulseId);
-    addTearDown(() => ThemeRegistry.setActiveById(ThemeRegistry.moonfinId));
     await pumpButtons(tester, labelsUnderCircles: true);
 
-    final label = tester.widget<Text>(
-      find.descendant(
-        of: find.byType(MarqueeText),
-        matching: find.text('Play'),
-      ),
+    final pill = tester.widget<AnimatedContainer>(
+      find
+          .ancestor(
+            of: find.text('Play'),
+            matching: find.byType(AnimatedContainer),
+          )
+          .first,
     );
-    expect(label.style?.color, AppColorScheme.onAccent);
+    final decoration = pill.decoration! as BoxDecoration;
+    expect(decoration.color, isNot(AppColorScheme.accent));
+    expect(decoration.border!.top.color, isNot(Colors.transparent));
   });
 
   // The row waits for the late lookups so a button doesn't pop in after the

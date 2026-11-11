@@ -13286,10 +13286,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       return SizedBox(width: double.infinity, child: pillInner);
     }
 
-    // Only a compact layout or a labeled Play keeps it filled with the
-    // accent. Everywhere else it looks like the buttons beside it until it
-    // has focus.
-    final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
+    // Only a compact layout, which has no focus to show, keeps it filled with
+    // the accent. Everywhere else it looks like the buttons beside it until it
+    // has focus, or a white accent would read as focused next to the one that
+    // is.
+    final accentPrimary = widget.isPrimary && isMobile;
     // On the accent fill the label takes the accent's text color like the
     // icon does, since Neon Pulse's label color is the accent itself.
     final labelOnPill = accentPrimary && !showHighlight
