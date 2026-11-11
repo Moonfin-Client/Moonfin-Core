@@ -1439,8 +1439,18 @@ class PluginSyncService extends ChangeNotifier {
         queryParameters: {'country': ?country, if (allYear) 'allYear': true},
         options: Options(headers: headers),
       );
-      if (response.data is Map<String, dynamic>) {
-        return response.data as Map<String, dynamic>;
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        if (client.serverType != ServerType.plex) return data;
+        // Moonbase for Plex answers with Plex's own metadata.
+        return {
+          ...data,
+          'items': [
+            for (final raw
+                in (data['items'] as List? ?? const []).whereType<Map>())
+              plexItemToJellyfin(raw.cast<String, dynamic>()),
+          ],
+        };
       }
     } catch (e) {
       debugPrint('[PluginSyncService] fetchSeasonalRow failed: $e');
