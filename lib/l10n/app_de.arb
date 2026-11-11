@@ -253,7 +253,7 @@
     "@exitApp": {
         "description": "Title of exit confirmation dialog"
     },
-    "exitAppConfirmation": "Möchtest du die App beenden?",
+    "exitAppConfirmation": "Bist du sicher?",
     "@exitAppConfirmation": {
         "description": "Body text of exit confirmation dialog"
     },
@@ -1091,11 +1091,11 @@
     "@finished": {
         "description": "Status label for a finished book"
     },
-    "favorited": "Favorisiert",
+    "favorited": "Favorit",
     "@favorited": {
         "description": "Status label for a favorited item"
     },
-    "favorite": "Favorisieren",
+    "favorite": "Als Favorit markieren",
     "@favorite": {
         "description": "Action button label to favorite an item"
     },
@@ -6525,19 +6525,19 @@
     "settingsConcurrentDownloads": "Gleichzeitige Downloads",
     "settingsConcurrentDownloadsDescription": "Maximale Anzahl von Elementen, die gleichzeitig heruntergeladen werden können.",
     "settingsAppInfo": "APP-INFO",
-    "settingsReportAnIssue": "Melden Sie ein Problem",
-    "settingsReportAnIssueSubtitle": "Öffnen Sie den Issue-Tracker auf GitHub",
-    "settingsJoinDiscord": "Treten Sie Discord bei",
-    "settingsJoinDiscordSubtitle": "Chatten Sie mit der Community",
-    "settingsJoinTheDiscord": "Treten Sie dem Discord bei",
-    "settingsSupportMoonfin": "Unterstützen Sie Moonfin",
-    "settingsLegal": "RECHTLICH",
+    "settingsReportAnIssue": "Ein Problem melden",
+    "settingsReportAnIssueSubtitle": "Issue-Tracker auf GitHub öffnen",
+    "settingsJoinDiscord": "Discord beitreten",
+    "settingsJoinDiscordSubtitle": "Mit der Community chatten",
+    "settingsJoinTheDiscord": "Discord beitreten",
+    "settingsSupportMoonfin": "Moonfin unterstützen",
+    "settingsLegal": "RECHTLICHES",
     "settingsLicenses": "Lizenzen",
-    "settingsOpenSourceLicenseNotices": "Hinweise zur Open-Source-Lizenz",
+    "settingsOpenSourceLicenseNotices": "Hinweise zur Open-Source-Lizenzen",
     "settingsPrivacyPolicy": "Datenschutzrichtlinie",
-    "settingsPrivacyPolicySubtitle": "Wie Moonfin mit Ihren Daten umgeht",
-    "settingsCheckForUpdates": "Suchen Sie nach Updates",
-    "settingsCheckForUpdatesSubtitle": "Suchen Sie nach der neuesten Moonfin-Version",
+    "settingsPrivacyPolicySubtitle": "Wie Moonfin mit Daten umgeht",
+    "settingsCheckForUpdates": "Nach Updates suchen",
+    "settingsCheckForUpdatesSubtitle": "Nach der neuesten Moonfin-Version suchen",
     "settingsPoweredByFlutter": "Unterstützt von Flutter",
     "settingsLicenseNoticesCount": "{count, plural, one {# Lizenzhinweis} other {# Lizenzhinweise}}",
     "@settingsLicenseNoticesCount": {
@@ -7267,7 +7267,7 @@
     "autoHdrSwitchingDescription": "Aktivieren Sie HDR automatisch für die HDR-Videowiedergabe und stellen Sie den Anzeigemodus beim Beenden wieder her.",
     "whenFullscreen": "Im Vollbildmodus",
     "transcodingLimits": "Transkodierungsgrenzen",
-    "settingsSupportMoonfinSubtitle": "Spenden Sie dem Entwickler einen Kaffee",
+    "settingsSupportMoonfinSubtitle": "Spendiere dem Entwickler einen Kaffee",
     "interfaceStyle": "Darstellungsstil",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
@@ -7329,7 +7329,7 @@
     "@writer": {
         "description": "Metadata label for writer"
     },
-    "showTechnicalDetails": "Technische Details anzeigen?",
+    "showTechnicalDetails": "Technische Details anzeigen",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -7345,7 +7345,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "recommendationsApplyParentalRatingCap": "Altersfreigabe für Empfehlungen begrenzen?",
+    "recommendationsApplyParentalRatingCap": "Altersfreigabe für Empfehlungen begrenzen",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -7357,7 +7357,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "„Klassisch“ ist das ursprüngliche zentrierte Moonfin-Layout.\n„Modern“ ist ein responsives, filmisches Layout.",
+    "detailScreenStyleSubtitle": "Wie Filme und Serien beim Öffnen angezeigt werden.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7377,7 +7377,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Verwenden Sie den lokalen Algorithmus „Moonfin Empfehlungen“ für Ihre Bibliothek oder die Online-Ähnlichkeitswerte von TMDb. Hinweis: Für Online-Empfehlungen ist eine Seerr-Integration erforderlich.",
+    "recommendationSystemSubtitle": "Wähle zwischen dem lokalen Empfehlungsalgorithmus von Moonfin, dem serverseitigen Empfehlungssystem von Jellyfin und den Online-Ähnlichkeitsbewertungen von TMDb. Hinweis: Online-Empfehlungen erfordern eine Seerr-Integration.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -10209,7 +10209,7 @@
     "@spotlightRecommendationsSeerr": {
         "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
     },
-    "recommendationSystemJellyfin": "Jellyfin schlägt vor",
+    "recommendationSystemJellyfin": "Jellyfin Empfehlungen",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -10574,7 +10574,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "detailScreenStyleMinimalist": "minimal",
+    "detailScreenStyleMinimalist": "Minimalistisch",
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
@@ -10819,5 +10819,269 @@
     "accountActive": "Aktiv",
     "@accountActive": {
         "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "animeMarkerAnimeCanon": "Anime-Kanon",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Manga-Kanon",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbedShort": "OmU",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "Synch.",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "OmU/Synch.",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "signingIn": "Anmeldung läuft …",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 Person} other{{count} Personen}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 Fakt} other{{count} Fakten}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 Schlagwort} other{{count} Schlagwörter}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 Studio} other{{count} Studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 Kapitel} other{{count} Kapitel}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 Staffel} other{{count} Staffeln}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 Episode} other{{count} Episoden}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 Film} other{{count} Filme}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 Serie} other{{count} Serien}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 Titel} other{{count} Titel}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 Element} other{{count} Elemente}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 Album} other{{count} Alben}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, =1{1 Sammlung} other{{count} Sammlungen}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, =1{1 Titel} other{{count} Titel}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleStage": "Bühne",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Premiere",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "detailScreenStyleQuickLook": "Schnellansicht",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Frost",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Detailseite öffnen",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Mit Zurück schließen",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} von {total} gesehen",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "sinceYouWatched": "Basierend auf deinen angesehenen Titeln",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "Weil du … gesehen hast",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "Weil du „{title}“ gesehen hast",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Empfehlungen {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Empfehlungen nach Verlauf",
+    "displaySinceYouWatchedRowsSubtitle": "Empfehlungen anhand gesehener Titel auf der Startseite anzeigen und anpassen",
+    "sinceYouWatchedSource": "Empfehlungsquelle",
+    "sinceYouWatchedSourceDescription": "Wähle zwischen dem lokalen Empfehlungsalgorithmus von Moonfin, dem serverseitigen Empfehlungssystem von Jellyfin und den Ähnlichkeitsbewertungen von TMDb. Hinweis: Online-Empfehlungen erfordern eine Seerr-Integration.",
+    "sinceYouWatchedSourceLocal": "Moonfin-Empfehlungen",
+    "sinceYouWatchedSourceServer": "Jellyfin-Empfehlungen",
+    "sinceYouWatchedSourceOnline": "TMDb-Ähnlichkeit",
+    "sinceYouWatchedSourceType": "Inhaltstyp",
+    "sinceYouWatchedSourceTypeDescription": "Wähle aus, welche Arten von Inhalten empfohlen werden sollen",
+    "sinceYouWatchedSourceItem": "Titelauswahl",
+    "sinceYouWatchedSourceItemDescription": "Bestimme die Grundlage für deine Empfehlungen",
+    "sinceYouWatchedRecentlyWatched": "Zuletzt angesehen",
+    "sinceYouWatchedNumRows": "Anzahl der Empfehlungszeilen",
+    "sinceYouWatchedNumRowsDescription": "Wähle aus, wie viele Empfehlungszeilen angezeigt werden sollen",
+    "sinceYouWatchedIncludeWatched": "Bereits angesehene Titel empfehlen",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Zeigt auch Filme und Serien in den Empfehlungen an, die du bereits gesehen hast",
+    "mediaBarNewSeries": "Neue Serie",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Neue Staffel",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Neue Episoden",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "seerrStreamingOn": "Zu sehen bei",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "addServerButtonSubtitle": "Über eine Adresse oder ein Plex- bzw. Emby-Connect-Konto",
+    "@addServerButtonSubtitle": {
+        "description": "Second line of the Add Server button on the server screen"
+    },
+    "addServerChooseHow": "Wähle aus, wie du dich verbinden möchtest",
+    "@addServerChooseHow": {
+        "description": "Subtitle of the first step of the Add Server dialog"
+    },
+    "addServerAddressChoice": "Jellyfin, Emby oder Silo im lokalen Netzwerk oder über das Internet",
+    "@addServerAddressChoice": {
+        "description": "Add Server dialog: what the Server Address option is for"
+    },
+    "addServerPlexChoice": "Mit deinem Plex-Konto nach Servern suchen",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "Dieselbe Adresse wie im Browser, inklusive Port",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
     }
 }
