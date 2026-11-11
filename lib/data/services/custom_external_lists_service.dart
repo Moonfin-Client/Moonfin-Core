@@ -31,10 +31,6 @@ class ImdbExternalListItem {
   final List<String> genres;
   final int? runTimeTicks;
 
-  /// The library copy of this title on the signed-in server, when the server's
-  /// plugin found one this user can see. Null for a title only outside lists have.
-  final String? localItemId;
-
   ImdbExternalListItem({
     required this.imdbId,
     this.tmdbId = '',
@@ -50,7 +46,6 @@ class ImdbExternalListItem {
     this.overview,
     this.genres = const [],
     this.runTimeTicks,
-    this.localItemId,
   });
 
   /// What a Home card reads for the title, in the shape a library item carries it.
@@ -69,7 +64,6 @@ class ImdbExternalListItem {
           if (imdbId.isNotEmpty) 'Imdb': imdbId,
           if (tmdbId.isNotEmpty) 'Tmdb': tmdbId,
         },
-        'LocalItemId': ?localItemId,
       };
 
   Map<String, dynamic> toJson() => {
@@ -87,7 +81,6 @@ class ImdbExternalListItem {
         'overview': overview,
         'genres': genres,
         'runTimeTicks': runTimeTicks,
-        'localItemId': ?localItemId,
       };
 
   factory ImdbExternalListItem.fromJson(Map<String, dynamic> json) =>
@@ -106,7 +99,6 @@ class ImdbExternalListItem {
         overview: json['overview'] as String?,
         genres: [for (final genre in json['genres'] as List? ?? const []) genre.toString()],
         runTimeTicks: (json['runTimeTicks'] as num?)?.toInt(),
-        localItemId: json['localItemId'] as String?,
       );
 }
 
@@ -230,10 +222,6 @@ class CustomExternalListsService {
           // The plugin bypasses and overwrites its canonical cache entry on
           // refresh=true, so all devices see the refreshed list.
           if (forceRefresh) 'refresh': 'true',
-          // Asks the plugin to name each title's library copy, so the row can
-          // show the server's artwork for it. A plugin without the feature
-          // ignores this and answers as before.
-          'includeLocalItemIds': 'true',
         },
         options: Options(
           headers: {
@@ -278,7 +266,6 @@ class CustomExternalListsService {
         final overview = (rawItem['overview'] ?? rawItem['Overview']) as String?;
         final genres = (rawItem['genres'] ?? rawItem['Genres']) as List?;
         final runTimeTicks = ((rawItem['runTimeTicks'] ?? rawItem['RunTimeTicks']) as num?)?.toInt();
-        final localItemId = (rawItem['localItemId'] ?? rawItem['LocalItemId']) as String?;
         // The popularity and rating sort options rely on these two fields.
         final rating =
             ((rawItem['rating'] ?? rawItem['Rating']) as num?)?.toDouble();
@@ -302,7 +289,6 @@ class CustomExternalListsService {
             overview: overview,
             genres: [for (final genre in genres ?? const []) genre.toString()],
             runTimeTicks: runTimeTicks,
-            localItemId: localItemId == null || localItemId.isEmpty ? null : localItemId,
           ));
         }
       }
