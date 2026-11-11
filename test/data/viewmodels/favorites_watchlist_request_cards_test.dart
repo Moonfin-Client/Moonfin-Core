@@ -131,6 +131,34 @@ void main() {
     expect(vm.state, FavoritesState.ready);
   });
 
+  test('a slow detail lookup only holds back its own card', () async {
+    final slow = Completer<SeerrMovieDetails>();
+    when(() => seerr.getMovieDetails(any())).thenAnswer(
+      (call) => call.positionalArguments.first == 1
+          ? slow.future
+          : Future.value(
+              SeerrMovieDetails(
+                id: call.positionalArguments.first as int,
+                title: 'Movie',
+                backdropPath: '/backdrop.jpg',
+              ),
+            ),
+    );
+    when(() => seerr.getWatchlist(page: any(named: 'page'))).thenAnswer(
+      (_) async => _page([_movie(1), _movie(2), _movie(3)]),
+    );
+
+    await vm.load();
+    await pumpEventQueue();
+
+    final backdrops = {
+      for (final item in vm.rowItems[FavoriteTypeFilter.watchlist]!)
+        item.id: item.rawData['BackdropPath'],
+    };
+    expect(backdrops, {'1': '', '2': '/backdrop.jpg', '3': '/backdrop.jpg'});
+    slow.completeError(Exception('offline'));
+  });
+
   test('a reload stops the old batch from starting more detail lookups', () async {
     final held = <Completer<SeerrMovieDetails>>[];
     when(() => seerr.getMovieDetails(any())).thenAnswer((_) {

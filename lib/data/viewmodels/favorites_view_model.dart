@@ -380,9 +380,10 @@ class FavoritesViewModel extends ChangeNotifier {
     );
   }
 
-  /// Reads each waiting request card's detail and swaps the filled-in cards
-  /// into the Watchlist row. A reload since the cards were fetched drops the
-  /// result, and a failed lookup leaves the card as it was.
+  /// Reads each waiting request card's detail and swaps the filled-in card
+  /// into the Watchlist row as soon as it arrives, so a slow lookup only holds
+  /// back its own card. A reload drops the rest of the batch, and a failed
+  /// lookup leaves the card as it was.
   void _enrichRequestCards() {
     final cards = _requestCardsToEnrich;
     _requestCardsToEnrich = const [];
@@ -390,32 +391,30 @@ class FavoritesViewModel extends ChangeNotifier {
     final generation = _loadGeneration;
     bool stale() => _disposed || generation != _loadGeneration;
     unawaited(() async {
-      final List<AggregatedItem?> enriched;
       try {
         final repo = await GetIt.instance.getAsync<SeerrRepository>();
-        enriched = await mapBounded(
-          cards,
-          _requestCardConcurrency,
-          (card) async => stale() ? null : await _withDetail(repo, card),
-        );
-      } catch (_) {
-        return;
-      }
-      if (stale()) return;
-      const type = FavoriteTypeFilter.watchlist;
-      final row = _rowItems[type];
-      if (row == null) return;
-      final byKey = {
-        for (final card in enriched.nonNulls) _requestCardKey(card): card,
-      };
-      _rowItems[type] = withoutBlockedItems([
-        for (final item in row)
-          item.serverId == 'seerr'
-              ? byKey[_requestCardKey(item)] ?? item
-              : item,
-      ]);
-      notifyListeners();
+        await mapBounded(cards, _requestCardConcurrency, (card) async {
+          if (stale()) return null;
+          final filled = await _withDetail(repo, card);
+          if (filled != null && !stale()) _swapRequestCard(filled);
+          return filled;
+        });
+      } catch (_) {}
     }());
+  }
+
+  void _swapRequestCard(AggregatedItem filled) {
+    const type = FavoriteTypeFilter.watchlist;
+    final row = _rowItems[type];
+    if (row == null) return;
+    final key = _requestCardKey(filled);
+    _rowItems[type] = withoutBlockedItems([
+      for (final item in row)
+        item.serverId == 'seerr' && _requestCardKey(item) == key
+            ? filled
+            : item,
+    ]);
+    notifyListeners();
   }
 
   /// [card] with the backdrop, overview, date, age rating and (for a movie)
