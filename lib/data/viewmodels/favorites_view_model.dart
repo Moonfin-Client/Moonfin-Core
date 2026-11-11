@@ -287,9 +287,12 @@ class FavoritesViewModel extends ChangeNotifier {
 
   /// The next page of the watchlist. Silo's first page leads with the
   /// titles the library has; the rest come from the requests watchlist
-  /// (Seerr's, or Silo's titles the library lacks) as request cards.
+  /// (Seerr's, or Silo's titles the library lacks) as request cards. A
+  /// reload while it waits leaves the paging state to the new load.
   Future<(List<AggregatedItem>, int)> _fetchWatchlist() async {
     final type = FavoriteTypeFilter.watchlist;
+    final generation = _loadGeneration;
+    bool stale() => generation != _loadGeneration;
     final library = <AggregatedItem>[];
     if (_client.serverType == ServerType.silo && _watchlistPages == 0) {
       try {
@@ -319,6 +322,7 @@ class FavoritesViewModel extends ChangeNotifier {
           if (raws.length < pageSize) break;
         }
       } catch (_) {}
+      if (stale()) return (library, library.length);
       _rowFetchedCounts[type] = library.length;
     }
     try {
@@ -326,6 +330,7 @@ class FavoritesViewModel extends ChangeNotifier {
       await repo.ensureInitialized();
       if (!repo.isAvailable) return (library, library.length);
       final page = await repo.getWatchlist(page: _watchlistPages + 1);
+      if (stale()) return (library, library.length);
       _watchlistPages = page.page;
       final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
       _rowFetchedCounts[type] = fetched;
@@ -342,8 +347,9 @@ class FavoritesViewModel extends ChangeNotifier {
     }
   }
 
-  static const _requestCardConcurrency = 5;
-  static const _requestDetailTimeout = Duration(seconds: 10);
+  /// Each lookup waits out its own request, so no more than this many hold
+  /// Silo's six request slots at once and the rest stay free for the screen.
+  static const _requestCardConcurrency = 3;
 
   /// A Watchlist card for a title the library lacks, from what the watchlist
   /// lists. Silo's includes the age rating, so the card can be filtered now;
@@ -378,12 +384,17 @@ class FavoritesViewModel extends ChangeNotifier {
     if (cards.isEmpty) return;
     final generation = _loadGeneration;
     unawaited(() async {
-      final repo = await GetIt.instance.getAsync<SeerrRepository>();
-      final enriched = await mapBounded(
-        cards,
-        _requestCardConcurrency,
-        (card) => _withDetail(repo, card),
-      );
+      final List<AggregatedItem?> enriched;
+      try {
+        final repo = await GetIt.instance.getAsync<SeerrRepository>();
+        enriched = await mapBounded(
+          cards,
+          _requestCardConcurrency,
+          (card) => _withDetail(repo, card),
+        );
+      } catch (_) {
+        return;
+      }
       if (_disposed || generation != _loadGeneration) return;
       const type = FavoriteTypeFilter.watchlist;
       final row = _rowItems[type];
@@ -418,18 +429,14 @@ class FavoritesViewModel extends ChangeNotifier {
     double? voteAverage;
     try {
       if (raw['SeerrMediaType'] == 'tv') {
-        final d = await repo
-            .getTvDetails(tmdbId)
-            .timeout(_requestDetailTimeout);
+        final d = await repo.getTvDetails(tmdbId);
         backdropPath = d.backdropPath;
         overview = d.overview;
         date = d.firstAirDate;
         contentRating = d.contentRating;
         voteAverage = d.voteAverage;
       } else {
-        final d = await repo
-            .getMovieDetails(tmdbId)
-            .timeout(_requestDetailTimeout);
+        final d = await repo.getMovieDetails(tmdbId);
         backdropPath = d.backdropPath;
         overview = d.overview;
         date = d.releaseDate;
@@ -480,16 +487,21 @@ class FavoritesViewModel extends ChangeNotifier {
     if (_inFlightPagingRowTypes.contains(type)) return;
 
     _inFlightPagingRowTypes.add(type);
+    final generation = _loadGeneration;
     try {
       final currentOffset = fetched;
       final (newItems, totalCount) = await _fetchRowItems(
         type,
         startIndex: currentOffset,
       );
+      // A reload while this page loaded has its own rows and counts.
+      if (generation != _loadGeneration) return;
       _rowTotalCounts[type] = totalCount;
 
       if (newItems.isNotEmpty) {
-        _rowItems[type] = [...items, ...newItems];
+        // The row as it is now, since filling in request cards can change it
+        // while the page loads.
+        _rowItems[type] = [...(_rowItems[type] ?? items), ...newItems];
         notifyListeners();
         if (type == FavoriteTypeFilter.watchlist) _enrichRequestCards();
       } else {
