@@ -8,6 +8,7 @@ import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../auth/services/silo_token_storage.dart';
 import '../services/moonbase_endpoint.dart';
+import '../services/seerr/arr_queue.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_discover_sliders.dart';
 import '../services/seerr/seerr_http_client.dart';
@@ -1012,6 +1013,21 @@ class SeerrRepository {
 
   Future<List<dynamic>> getSonarrCalendar({String? start, String? end}) =>
       _withClient((c) => c.getSonarrCalendar(start: start, end: end));
+
+  /// Null when Moonbase can't see the arr for this title.
+  Future<ArrQueue?> getArrQueue({int? tmdbId, int? tvdbId}) => _withClient(
+    (c) async {
+      final json = await c.getArrQueue(tmdbId: tmdbId, tvdbId: tvdbId);
+      return json == null ? null : ArrQueue.fromJson(json);
+    },
+  );
+
+  Future<void> removeArrQueueItem({
+    required bool radarr,
+    required int queueId,
+  }) => _withClient(
+    (c) => c.removeArrQueueItem(radarr: radarr, queueId: queueId),
+  );
 
   Future<SeerrStatus> getStatus() => _withClient((c) => c.getStatus());
 

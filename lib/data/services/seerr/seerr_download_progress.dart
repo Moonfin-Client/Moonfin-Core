@@ -1,8 +1,10 @@
+import 'arr_queue.dart';
 import 'seerr_api_models.dart';
 
 /// Where a download stands, read from the Radarr/Sonarr queue status Seerr
-/// passes along. When several downloads make up one request the summary shows
-/// the one that ranks last here. Stalled and failed outrank everything, and
+/// passes along, or from the arr itself when Moonbase can read its queue.
+/// When several downloads make up one request the summary shows the one that
+/// ranks last here. Stalled and failed outrank everything, and
 /// downloading outranks paused and queued, since one active download means
 /// the request is moving.
 enum SeerrDownloadState {
@@ -15,6 +17,10 @@ enum SeerrDownloadState {
 
   /// The queue's "warning", which for a torrent usually means no seeders.
   stalled,
+
+  /// Downloaded, but the arr refuses to import it, for example because the
+  /// release holds an executable. Only the arr's own queue can say this.
+  importBlocked,
   failed,
 }
 
@@ -38,12 +44,25 @@ class SeerrDownloadSummary {
   final int totalBytes;
   final int downloadedBytes;
 
+  /// The arr's own words for what the deciding download is doing, such as
+  /// "qBittorrent cannot resolve magnet link with DHT disabled". Only the
+  /// arr's queue carries them, so it is null for Seerr's download status.
+  final String? reason;
+
+  /// The arr's queue id and release name of the download that decided
+  /// [state], set only when it is stuck, so an admin can swap it out.
+  final int? stuckItemId;
+  final String? stuckRelease;
+
   const SeerrDownloadSummary({
     required this.fraction,
     this.state = SeerrDownloadState.downloading,
     this.timeLeft,
     this.totalBytes = 0,
     this.downloadedBytes = 0,
+    this.reason,
+    this.stuckItemId,
+    this.stuckRelease,
   });
 
   int get percent => (fraction * 100).round();
@@ -55,25 +74,52 @@ class SeerrDownloadSummary {
   /// import, so the UI can label the full bar instead of showing a stuck 100%.
   bool get isWaitingForImport => state == SeerrDownloadState.waitingForImport;
 
+  /// Not going to finish by itself: stalled, refused at import, or failed.
+  bool get isStuck => _isStuck(state);
+
+  static bool _isStuck(SeerrDownloadState state) => switch (state) {
+    SeerrDownloadState.stalled ||
+    SeerrDownloadState.importBlocked ||
+    SeerrDownloadState.failed => true,
+    _ => false,
+  };
+
   static const _statusProcessing = 3;
   static const _statusPartiallyAvailable = 4;
 
   /// Builds a summary for one quality flavor of a media item, or null when
   /// nothing is downloading and the status chip alone should show. The status
   /// gate keeps stale queue entries from drawing a bar after availability.
+  ///
+  /// [arrQueue] is what Moonbase read from the arr, when it could. It replaces
+  /// Seerr's [items], which miss the arr's reasons and are empty altogether
+  /// when Seerr doesn't scan the arr. Moonbase only reads the default arr, so
+  /// a title it doesn't find there went to another one, and Seerr's [items]
+  /// stay the better source.
   static SeerrDownloadSummary? forMedia({
     required int? status,
     required List<SeerrDownloadingItem>? items,
+    ArrQueue? arrQueue,
   }) {
     if (status != _statusProcessing && status != _statusPartiallyAvailable) {
       return null;
+    }
+    if (arrQueue != null && arrQueue.inArr) {
+      return fromArrItems(arrQueue.items);
     }
     return fromItems(items);
   }
 
   /// Summary for a request card, using the request's quality flavor and
   /// skipping requests that can no longer be downloading.
-  static SeerrDownloadSummary? forRequest(SeerrRequest request) {
+  ///
+  /// [arrQueue] is the arr's queue for the title, already narrowed to the
+  /// request's seasons. Moonbase only reads the default non-4K arr, so a 4K
+  /// request ignores it.
+  static SeerrDownloadSummary? forRequest(
+    SeerrRequest request, {
+    ArrQueue? arrQueue,
+  }) {
     if (request.status == SeerrRequest.statusDeclined ||
         request.status == SeerrRequest.statusFailed) {
       return null;
@@ -83,14 +129,61 @@ class SeerrDownloadSummary {
     return forMedia(
       status: request.is4k ? media.status4k : media.status,
       items: request.is4k ? media.downloadStatus4k : media.downloadStatus,
+      arrQueue: request.is4k ? null : arrQueue,
     );
   }
 
-  static SeerrDownloadSummary? fromItems(List<SeerrDownloadingItem>? items) {
-    if (items == null || items.isEmpty) return null;
+  static SeerrDownloadSummary? fromItems(List<SeerrDownloadingItem>? items) =>
+      _summarise([
+        for (final item in items ?? const <SeerrDownloadingItem>[])
+          (
+            downloadId: item.downloadId,
+            size: item.size,
+            sizeLeft: item.sizeLeft,
+            timeLeft: item.timeLeft,
+            stateOf: (bool done) => _stateOf(item.status, done: done),
+            reason: null,
+            healthy: true,
+            queueId: null,
+            release: null,
+          ),
+      ]);
+
+  /// The same summary from the arr's own queue entries, which add the arr's
+  /// verdict on each download and its reason.
+  static SeerrDownloadSummary? fromArrItems(List<ArrQueueItem> items) =>
+      _summarise([
+        for (final item in items)
+          // The arr has stopped tracking an ignored download.
+          if (item.trackedDownloadState?.toLowerCase() != 'ignored')
+            (
+              downloadId: item.downloadId,
+              size: item.size,
+              sizeLeft: item.sizeLeft,
+              timeLeft: item.timeLeft,
+              stateOf: (bool done) => _stateOf(
+                item.status,
+                done: done,
+                tracked: item.trackedDownloadState,
+                trackedStatus: item.trackedDownloadStatus,
+              ),
+              reason: item.reason,
+              healthy: switch (item.trackedDownloadStatus?.toLowerCase()) {
+                null || 'ok' => true,
+                _ => false,
+              },
+              queueId: item.id,
+              release: item.title,
+            ),
+      ]);
+
+  static SeerrDownloadSummary? _summarise(List<_QueueEntry> items) {
+    if (items.isEmpty) return null;
     var total = 0;
     var left = 0;
     SeerrDownloadState? state;
+    _QueueEntry? decider;
+    String? reason;
     Duration? timeLeft;
     var timeLeftKnown = true;
     final seen = <String>{};
@@ -112,12 +205,28 @@ class SeerrDownloadSummary {
       total += size > 0 ? size : 0;
       left += itemLeft;
 
-      final itemState = _stateOf(
-        item,
-        done: size > 0 && sizeLeft != null && itemLeft <= 0,
+      final itemState = item.stateOf(
+        size > 0 && sizeLeft != null && itemLeft <= 0,
       );
-      if (state == null || itemState.index > state.index) state = itemState;
-      if (itemState == SeerrDownloadState.waitingForImport) continue;
+      // The arr's message, unless the download is simply moving along. The
+      // arr fills it for a paused or delayed download too, and that still
+      // says why the bar isn't moving.
+      final itemReason =
+          itemState == SeerrDownloadState.downloading && item.healthy
+          ? null
+          : item.reason;
+      if (state == null ||
+          itemState.index > state.index ||
+          // Of two downloads in the same state, the one that says why.
+          (itemState == state && reason == null && itemReason != null)) {
+        state = itemState;
+        decider = item;
+        reason = itemReason;
+      }
+      if (itemState == SeerrDownloadState.waitingForImport ||
+          itemState == SeerrDownloadState.importBlocked) {
+        continue;
+      }
       // A paused or queued sibling has no end in sight, so the request has
       // none either, however soon the active one finishes.
       final eta = itemState == SeerrDownloadState.downloading
@@ -131,8 +240,10 @@ class SeerrDownloadSummary {
     }
     if (state == null) return null;
     final downloading = state == SeerrDownloadState.downloading;
+    final stuck = _isStuck(state);
     var fraction = total > 0 ? ((total - left) / total).clamp(0.0, 1.0) : 0.0;
-    if (state == SeerrDownloadState.waitingForImport) {
+    if (state == SeerrDownloadState.waitingForImport ||
+        state == SeerrDownloadState.importBlocked) {
       // The client can call a download completed before its byte count
       // settles, and the label says it's done, so the bar does too.
       fraction = 1.0;
@@ -148,14 +259,38 @@ class SeerrDownloadSummary {
       timeLeft: downloading && timeLeftKnown ? timeLeft : null,
       totalBytes: total,
       downloadedBytes: total - left,
+      reason: reason,
+      stuckItemId: stuck ? decider?.queueId : null,
+      stuckRelease: stuck ? decider?.release : null,
     );
   }
 
+  /// [tracked] is the arr's trackedDownloadState, which outranks the download
+  /// client's status: a client calls a blocked import "completed".
+  /// [trackedStatus] is the arr's ok, warning or error on top of that.
   static SeerrDownloadState _stateOf(
-    SeerrDownloadingItem item, {
+    String? rawStatus, {
     required bool done,
+    String? tracked,
+    String? trackedStatus,
   }) {
-    final status = item.status?.toLowerCase();
+    final flagged = switch (trackedStatus?.toLowerCase()) {
+      'warning' || 'error' => true,
+      _ => false,
+    };
+    switch (tracked?.toLowerCase()) {
+      case 'importblocked':
+        return SeerrDownloadState.importBlocked;
+      // Radarr and Sonarr leave a release holding an executable here, with a
+      // warning, until someone steps in, so it is as stuck as a blocked one.
+      case 'importpending' || 'importing' when flagged:
+        return SeerrDownloadState.importBlocked;
+      case 'importpending' || 'importing' || 'imported':
+        return SeerrDownloadState.waitingForImport;
+      case 'failedpending' || 'failed':
+        return SeerrDownloadState.failed;
+    }
+    final status = rawStatus?.toLowerCase();
     if (status == 'failed') return SeerrDownloadState.failed;
     if (done) return SeerrDownloadState.waitingForImport;
     return switch (status) {
@@ -184,3 +319,18 @@ class SeerrDownloadSummary {
     );
   }
 }
+
+/// One download as the summary reads it, from either source. [stateOf] takes
+/// whether the bytes say it finished. [healthy] is false when the arr flags
+/// the download with a warning or an error.
+typedef _QueueEntry = ({
+  String? downloadId,
+  int? size,
+  int? sizeLeft,
+  String? timeLeft,
+  SeerrDownloadState Function(bool done) stateOf,
+  String? reason,
+  bool healthy,
+  int? queueId,
+  String? release,
+});

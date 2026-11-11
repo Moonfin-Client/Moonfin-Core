@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:get_it/get_it.dart';
 
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/plugin_sync_service.dart';
+import '../services/seerr/arr_queue.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_download_progress.dart';
 import '../services/seerr/seerr_error.dart';
@@ -45,6 +48,10 @@ class SeerrQualityStatus {
   final bool canManageRequests;
   final int? currentUserId;
 
+  /// The arr's own queue for this track when Moonbase could read it. Only
+  /// ever set on the HD track, since Moonbase reads the default non-4K arr.
+  final ArrQueue? arrQueue;
+
   /// What Seerr reports per season, when it reports anything. Older servers and
   /// movie payloads leave this empty, which is why [seasonStatus] can fall back
   /// to the request list.
@@ -58,6 +65,7 @@ class SeerrQualityStatus {
     required this.download,
     required this.canManageRequests,
     required this.currentUserId,
+    this.arrQueue,
     this.seasonAvailability = const [],
   });
 
@@ -66,7 +74,9 @@ class SeerrQualityStatus {
     required SeerrMediaInfo? mediaInfo,
     required bool canManageRequests,
     required int? currentUserId,
+    ArrQueue? arrQueue,
   }) {
+    final queue = is4k ? null : arrQueue;
     final status = (is4k ? mediaInfo?.status4k : mediaInfo?.status) ?? 0;
     final requests = (mediaInfo?.requests ?? const <SeerrRequest>[])
         .where((r) => r.is4k == is4k)
@@ -83,9 +93,11 @@ class SeerrQualityStatus {
       download: SeerrDownloadSummary.forMedia(
         status: status,
         items: is4k ? mediaInfo?.downloadStatus4k : mediaInfo?.downloadStatus,
+        arrQueue: queue,
       ),
       canManageRequests: canManageRequests,
       currentUserId: currentUserId,
+      arrQueue: queue,
       seasonAvailability:
           mediaInfo?.seasons ?? const <SeerrSeasonAvailability>[],
     );
@@ -104,6 +116,22 @@ class SeerrQualityStatus {
   bool get hasAnyState => status > 1 || requests.isNotEmpty;
 
   bool get hasExistingRequest => activeRequests.isNotEmpty;
+
+  /// An approved request the arr is watching for, with nothing grabbed yet.
+  /// Seerr calls that processing too, so without the arr's queue it looks
+  /// the same as a download on its way.
+  bool get isNotFoundYet =>
+      isProcessing &&
+      requests.any((r) => r.status == SeerrRequest.statusApproved) &&
+      (arrQueue?.isNotFoundYet ?? false);
+
+  /// The stuck download an admin may swap for another release, or null.
+  SeerrDownloadSummary? get replaceableDownload {
+    final summary = download;
+    if (summary == null || !summary.isStuck) return null;
+    if (summary.stuckItemId == null) return null;
+    return (arrQueue?.canRemove ?? false) ? summary : null;
+  }
 
   /// Whether the title or one of its seasons is still on its way into the
   /// library on this track, waiting on approval, a download or the import.
@@ -220,6 +248,10 @@ class SeerrMediaDetailState {
   final String? watchlistError;
   final String streamingRegion;
 
+  /// The HD track's Radarr/Sonarr queue from Moonbase, or null when the plugin
+  /// can't read it or the title isn't on its way.
+  final ArrQueue? arrQueue;
+
   const SeerrMediaDetailState({
     this.isLoading = false,
     this.error,
@@ -237,6 +269,7 @@ class SeerrMediaDetailState {
     this.onUserWatchlist = false,
     this.watchlistError,
     this.streamingRegion = 'US',
+    this.arrQueue,
   });
 
   bool get isMovie => movie != null;
@@ -313,6 +346,7 @@ class SeerrMediaDetailState {
         mediaInfo: mediaInfo,
         canManageRequests: canManageRequests,
         currentUserId: currentUser?.id,
+        arrQueue: arrQueue,
       );
 
   SeerrQualityStatus get hd => quality(is4k: false);
@@ -355,6 +389,8 @@ class SeerrMediaDetailState {
     bool? onUserWatchlist,
     String? watchlistError,
     String? streamingRegion,
+    ArrQueue? arrQueue,
+    bool clearArrQueue = false,
   }) =>
       SeerrMediaDetailState(
         isLoading: isLoading ?? this.isLoading,
@@ -373,6 +409,7 @@ class SeerrMediaDetailState {
         onUserWatchlist: onUserWatchlist ?? this.onUserWatchlist,
         watchlistError: watchlistError,
         streamingRegion: streamingRegion ?? this.streamingRegion,
+        arrQueue: clearArrQueue ? null : (arrQueue ?? this.arrQueue),
       );
 }
 
@@ -399,6 +436,10 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   Timer? _statusPollTimer;
   Duration? _statusPollInterval;
   bool _isDisposed = false;
+
+  /// Bumped by a removal, so a queue answer that set off before it, and still
+  /// lists the removed download, is thrown away when it lands.
+  int _arrQueueGeneration = 0;
 
   SeerrMediaDetailViewModel(this._repo, this._prefs);
 
@@ -467,11 +508,88 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       } else {
         return;
       }
+      await _refreshArrQueue();
       notifyListeners();
     } catch (_) {
       // Leave the details as-is and let the next tick retry.
     }
     _syncStatusPolling();
+  }
+
+  /// Reads the HD track's queue from the arr through Moonbase, while the
+  /// title is on its way. Anything but a clean answer drops it, which leaves
+  /// the page showing what Seerr reports, as before Moonbase could do this.
+  Future<void> _refreshArrQueue() async {
+    final generation = _arrQueueGeneration;
+    final queue = await _fetchArrQueue(_state);
+    if (_isDisposed || generation != _arrQueueGeneration) return;
+    // copyWith clears the feedback fields it isn't handed, so pass them on.
+    _state = _state.copyWith(
+      arrQueue: queue,
+      clearArrQueue: queue == null,
+      error: _state.error,
+      requestError: _state.requestError,
+      requestErrorKind: _state.requestErrorKind,
+      requestSuccess: _state.requestSuccess,
+      watchlistError: _state.watchlistError,
+    );
+  }
+
+  Future<ArrQueue?> _fetchArrQueue(SeerrMediaDetailState state) async {
+    if (!GetIt.instance.isRegistered<PluginSyncService>() ||
+        !GetIt.instance<PluginSyncService>().arrQueueAvailable) {
+      return null;
+    }
+    final status = state.mediaInfo?.status;
+    if (status != SeerrMediaStatus.processing &&
+        status != SeerrMediaStatus.partiallyAvailable) {
+      return null;
+    }
+    final tmdbId = state.movie?.id;
+    final tvdbId = state.mediaInfo?.tvdbId ?? state.externalIds?.tvdbId;
+    try {
+      if (state.isMovie && tmdbId != null) {
+        return await _repo.getArrQueue(tmdbId: tmdbId);
+      }
+      if (state.isTv && tvdbId != null) {
+        return await _repo.getArrQueue(tvdbId: tvdbId);
+      }
+    } catch (e) {
+      debugPrint('[SeerrDetail] Arr queue failed: $e');
+    }
+    return null;
+  }
+
+  /// Removes the HD track's stuck download and blocklists its release, so the
+  /// arr searches for another, then refreshes the page. Admins only, which
+  /// Moonbase checks too. False when the arr didn't take it.
+  Future<bool> getDifferentRelease() async {
+    final queue = _state.arrQueue;
+    final queueId = _state.hd.replaceableDownload?.stuckItemId;
+    if (queue == null || queueId == null || _state.isRequesting) return false;
+
+    _state = _state.copyWith(
+      isRequesting: true,
+      requestError: null,
+      requestSuccess: null,
+    );
+    _arrQueueGeneration++;
+    notifyListeners();
+    try {
+      await _repo.removeArrQueueItem(
+        radarr: queue.isRadarr,
+        queueId: queueId,
+      );
+    } catch (e) {
+      debugPrint('[SeerrDetail] Removing queue item $queueId failed: $e');
+      _setRequestFailure(e);
+      notifyListeners();
+      return false;
+    }
+    await _refreshArrQueue();
+    await _reloadDetails('Different release requested');
+    notifyListeners();
+    return true;
   }
 
   void clearFeedback() {
@@ -635,6 +753,10 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       _state = SeerrMediaDetailState(error: e);
     }
     notifyListeners();
+    if (_state.error == null) {
+      await _refreshArrQueue();
+      notifyListeners();
+    }
     _syncStatusPolling();
   }
 

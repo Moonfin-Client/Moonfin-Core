@@ -881,6 +881,38 @@ class SeerrHttpClient {
     return response.data as List<dynamic>;
   }
 
+  /// What Radarr (for [tmdbId]) or Sonarr (for [tvdbId]) holds for a title,
+  /// read by Moonbase. Null for any answer but a 200: no admin Seerr session,
+  /// no arr set up, or an arr that didn't answer all mean Moonbase can't see
+  /// it, which is not the same as an empty queue.
+  Future<Map<String, dynamic>?> getArrQueue({int? tmdbId, int? tvdbId}) async {
+    final response = await _dio.get(
+      _moonfinUrl(tmdbId != null ? 'Radarr/Queue' : 'Sonarr/Queue'),
+      queryParameters: tmdbId != null ? {'tmdbId': tmdbId} : {'tvdbId': tvdbId},
+      options: _authOptions(),
+    );
+    final data = response.data;
+    if (response.statusCode != 200 || data is! Map<String, dynamic>) {
+      return null;
+    }
+    return data;
+  }
+
+  /// Removes a download from the client and blocklists its release, so the
+  /// arr searches for another. Admins only. A 404 means the download already
+  /// left the queue, which is the outcome asked for.
+  Future<void> removeArrQueueItem({
+    required bool radarr,
+    required int queueId,
+  }) async {
+    final response = await _dio.delete(
+      _moonfinUrl('${radarr ? 'Radarr' : 'Sonarr'}/Queue/$queueId'),
+      options: _authOptions(),
+    );
+    if (response.statusCode == 404) return;
+    _requireSuccess(response, 'removeArrQueueItem');
+  }
+
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final response = await _dio.get(
       _moonfinUrl('Status'),

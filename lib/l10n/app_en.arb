@@ -7791,6 +7791,46 @@
   "@seerrDownloadFailed": {
     "description": "Label on the Seerr download bar when the download client reports the download as failed"
   },
+  "seerrImportBlocked": "Import blocked",
+  "@seerrImportBlocked": {
+    "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+  },
+  "seerrNotFoundYet": "Not found yet",
+  "@seerrNotFoundYet": {
+    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+  },
+  "seerrGetDifferentRelease": "Get a different release",
+  "@seerrGetDifferentRelease": {
+    "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+  },
+  "seerrGetDifferentReleaseConfirm": "{service} will remove {release} from the download client, block it so it isn't grabbed again, and search for another release.",
+  "@seerrGetDifferentReleaseConfirm": {
+    "description": "Body of the confirm dialog for Get a different release",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      },
+      "release": {
+        "type": "String",
+        "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseDone": "Removed. {service} is searching for another release.",
+  "@seerrGetDifferentReleaseDone": {
+    "description": "Short confirmation after Get a different release removed the stuck download",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseFailed": "Couldn't remove the download",
+  "@seerrGetDifferentReleaseFailed": {
+    "description": "Error shown when Get a different release could not remove the stuck download"
+  },
   "itemsCount": "{count} Items",
   "@itemsCount": {
     "description": "Status bar item count",

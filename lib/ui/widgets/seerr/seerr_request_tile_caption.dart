@@ -33,6 +33,11 @@ class SeerrRequestTileCaption extends StatelessWidget {
   /// Fills the fixed status slot: the download bar or the status pill.
   final Widget status;
 
+  /// Takes the requester's place when set, such as the arr's reason a
+  /// download is stuck. A tile has no height to spare for another line, and
+  /// why a download isn't moving matters more than who asked for it.
+  final String? note;
+
   const SeerrRequestTileCaption({
     super.key,
     required this.title,
@@ -44,6 +49,7 @@ class SeerrRequestTileCaption extends StatelessWidget {
     required this.scale,
     required this.status,
     this.marqueeTitle = false,
+    this.note,
   });
 
   /// Height a tile reserves beyond its poster at scale 1 and system text
@@ -155,16 +161,26 @@ class SeerrRequestTileCaption extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4 * scale),
-          for (final line
-              in splitRequester
-                  ? [requestedByLabel, requester]
-                  : [requestedByLine])
+          if (note case final note?)
+            // As many lines as the requester would have taken, so the tile
+            // keeps the height the grid reserved for it.
             Text(
-              line,
+              note,
               style: subtleStyle,
-              maxLines: 1,
+              maxLines: splitRequester ? 2 : 1,
               overflow: TextOverflow.ellipsis,
-            ),
+            )
+          else
+            for (final line
+                in splitRequester
+                    ? [requestedByLabel, requester]
+                    : [requestedByLine])
+              Text(
+                line,
+                style: subtleStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
           if (date.isNotEmpty)
             Text(
               date,

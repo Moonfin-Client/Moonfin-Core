@@ -92,6 +92,7 @@ import '../../widgets/logo_view.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/seerr/seerr_cancel_request_dialog.dart';
+import '../../widgets/seerr/seerr_different_release_dialog.dart';
 import '../../widgets/seerr/seerr_collection_banner.dart';
 import '../../widgets/seerr/seerr_image_urls.dart';
 import '../../widgets/seerr/seerr_item_chips.dart';
@@ -7578,7 +7579,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
     // Taking a request back rides in the same arrangement slot as the track's
     // request button, so moving or hiding seerrRequest carries its cancel
-    // along with it.
+    // along with it. Swapping a stuck download for another release rides with
+    // Manage Requests the same way, since both are an admin's request tools,
+    // and that keeps the synced button arrangement free of a new id.
     final cancelByButton = <DetailButton, Widget>{
       if (shows(DetailButton.seerrRequest))
         DetailButton.seerrRequest: ?_seerrCancelButton(
@@ -7593,6 +7596,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           seerr,
           l10n,
           is4k: true,
+        ),
+      // Only on the title itself. A season or episode page shows the series'
+      // download, and offering there to swap another season's pack would
+      // surprise.
+      if (seerr != null &&
+          item.type != 'Season' &&
+          item.type != 'Episode' &&
+          seerr.state.hd.replaceableDownload != null &&
+          shows(DetailButton.seerrManage))
+        DetailButton.seerrManage: _DetailActionButton(
+          label: l10n.seerrGetDifferentRelease,
+          icon: Icons.find_replace,
+          onPressed: () =>
+              showSeerrDifferentReleaseDialog(context: context, vm: seerr),
         ),
     };
 
