@@ -326,18 +326,23 @@ class RowDataSource {
     if (items.length < _defaultLimit &&
         rawItems.length >= fetchLimit &&
         fetchLimit < _fullRowFetchLimit) {
-      fetchLimit = _fullRowFetchLimit;
-      response = await _getLatestItemsWithFallback(
-        parentId: parentId,
-        limit: fetchLimit,
-      );
-      rawItems = _parseItems(response, serverId);
-      items = normalizeLatestMediaItems(
-        rawItems,
-        collectionType: collectionType,
-        limit: _defaultLimit,
-        hideWatched: hideWatched,
-      );
+      try {
+        final retryResponse = await _getLatestItemsWithFallback(
+          parentId: parentId,
+          limit: _fullRowFetchLimit,
+        );
+        final retryRawItems = _parseItems(retryResponse, serverId);
+        final retryItems = normalizeLatestMediaItems(
+          retryRawItems,
+          collectionType: collectionType,
+          limit: _defaultLimit,
+          hideWatched: hideWatched,
+        );
+        fetchLimit = _fullRowFetchLimit;
+        response = retryResponse;
+        rawItems = retryRawItems;
+        items = retryItems;
+      } catch (_) {}
     }
     final reportedTotal = response['TotalRecordCount'] as int?;
     final serverMayHaveMore =
@@ -1791,17 +1796,22 @@ class RowDataSource {
               items.length < _maxItems &&
               rawItems.length >= fetchLimit &&
               fetchLimit < _fullRowFetchLimit) {
-            fetchLimit = _fullRowFetchLimit;
-            response = await _getLatestItemsWithFallback(
-              parentId: parentId,
-              limit: fetchLimit,
-            );
-            rawItems = _parseItems(response, serverId);
-            items = normalizeLatestMediaItems(
-              rawItems,
-              limit: wanted > _maxItems ? _maxItems : wanted,
-              hideWatched: hideWatched,
-            );
+            try {
+              final retryResponse = await _getLatestItemsWithFallback(
+                parentId: parentId,
+                limit: _fullRowFetchLimit,
+              );
+              final retryRawItems = _parseItems(retryResponse, serverId);
+              final retryItems = normalizeLatestMediaItems(
+                retryRawItems,
+                limit: wanted > _maxItems ? _maxItems : wanted,
+                hideWatched: hideWatched,
+              );
+              fetchLimit = _fullRowFetchLimit;
+              response = retryResponse;
+              rawItems = retryRawItems;
+              items = retryItems;
+            } catch (_) {}
           }
           final reportedTotal = response['TotalRecordCount'] as int?;
           final serverMayHaveMore =
