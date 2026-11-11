@@ -210,7 +210,7 @@ void main() {
       final store = PreferenceStore();
       await store.init();
       final prefs = UserPreferences(store);
-      // hideWatchedInRecentRows is unset
+      // Hide Watched is never set here.
       GetIt.instance.registerSingleton<UserPreferences>(prefs);
 
       final itemsApi = _MockItemsApi();
@@ -230,7 +230,7 @@ void main() {
         final limit = invocation.namedArguments[#limit] as int? ?? 15;
         requestedLimits.add(limit);
         if (limit == 60) {
-          // 60 episodes from only 5 series (e.g. Silo server filtered watched items)
+          // 60 episodes from only 5 series, as when Silo hides watched items itself.
           final items = [
             for (var i = 0; i < 60; i++)
               <String, dynamic>{
@@ -243,7 +243,7 @@ void main() {
           ];
           return {'Items': items, 'TotalRecordCount': 60};
         } else {
-          // Retry requests full page (limit: 500); returns 100 episodes from 20 series
+          // The 500 item retry brings back 100 episodes from 20 series.
           final items = [
             for (var i = 0; i < 100; i++)
               <String, dynamic>{
@@ -286,7 +286,7 @@ void main() {
           imageTypeLimit: any(named: 'imageTypeLimit'),
         ),
       ).thenAnswer((invocation) async {
-        // Expanded fetch requests 45 items; server has 22 items (4 watched, 18 unwatched).
+        // The expanded read asks for 45 and the server has 22, 4 of them watched.
         final items = [
           for (var i = 0; i < 22; i++)
             <String, dynamic>{
@@ -331,7 +331,7 @@ void main() {
         final limit = invocation.namedArguments[#limit] as int;
         requestedLimits.add(limit);
         if (limit == 30) {
-          // 30 episodes from 20 series -> collapses to 20 series cards (partial page, wanted: 30)
+          // 30 episodes from 20 series fold into 20 cards, short of the 30 wanted.
           final items = [
             for (var i = 0; i < 30; i++)
               <String, dynamic>{
@@ -344,7 +344,7 @@ void main() {
           ];
           return {'Items': items, 'TotalRecordCount': 100};
         } else {
-          // Retry at full row limit (500) fails with a network/server exception
+          // The 500 item retry fails.
           throw Exception('Server timeout during expansion');
         }
       });
@@ -401,7 +401,7 @@ void main() {
         final limit = invocation.namedArguments[#limit] as int;
         requestedLimits.add(limit);
         if (limit == 60) {
-          // TV fetchLimit starts at 60; 60 episodes from 8 series -> collapses to 8 cards (< 15)
+          // A TV row reads 60 first, and 60 episodes from 8 series fold into 8 cards, short of 15.
           final items = [
             for (var i = 0; i < 60; i++)
               <String, dynamic>{
@@ -414,7 +414,6 @@ void main() {
           ];
           return {'Items': items, 'TotalRecordCount': 80};
         } else {
-          // Retry fails
           throw Exception('Server timeout');
         }
       });
@@ -424,6 +423,57 @@ void main() {
       final dataSource = RowDataSource(client);
 
       final row = await dataSource.loadLatestMedia('lib1', 'TV', 'srv1', 'tvshows');
+      expect(requestedLimits, [60, 500]);
+      expect(row.items, hasLength(8));
+      expect(row.totalCount, 80);
+      expect(row.hasMore, isTrue);
+    });
+
+    test('loadRecentlyReleased keeps its first page when the expanded retry fails', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final requestedLimits = <int>[];
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getRecentlyReleasedItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+          recursive: any(named: 'recursive'),
+          hideWatched: any(named: 'hideWatched'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int;
+        requestedLimits.add(limit);
+        if (limit != 60) throw Exception('Server timeout');
+        return {
+          'Items': [
+            for (var i = 0; i < 60; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 8}',
+                'SeriesName': 'Series ${i % 8}',
+              },
+          ],
+          'TotalRecordCount': 80,
+        };
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final row = await dataSource.loadRecentlyReleased('lib1', 'TV', 'srv1', 'tvshows');
       expect(requestedLimits, [60, 500]);
       expect(row.items, hasLength(8));
       expect(row.totalCount, 80);
@@ -473,7 +523,7 @@ void main() {
         final limit = invocation.namedArguments[#limit] as int;
         requestedLimits.add(limit);
         if (limit == 23) {
-          // 23 episodes only cover 3 series -> collapses to 3 cards (< 8 initial cards)
+          // 23 episodes from only 3 series fold into 3 cards, fewer than the 8 already shown.
           final items = [
             for (var i = 0; i < 23; i++)
               <String, dynamic>{
@@ -486,7 +536,6 @@ void main() {
           ];
           return {'Items': items, 'TotalRecordCount': 80};
         } else {
-          // Retry fails
           throw Exception('Server timeout');
         }
       });
@@ -501,7 +550,7 @@ void main() {
       );
 
       expect(requestedLimits, [23, 500]);
-      // Must preserve the 8 original cards instead of shrinking to 3
+      // The 8 cards already shown stay instead of shrinking to 3.
       expect(items, hasLength(8));
       expect(items.map((e) => e.id), initialItems.map((e) => e.id));
       expect(totalCount, 80);
@@ -547,7 +596,7 @@ void main() {
           imageTypeLimit: any(named: 'imageTypeLimit'),
         ),
       ).thenAnswer((invocation) async {
-        // Items removed: returns only 3 items, exhausted (TotalRecordCount == 3 < limit 23)
+        // Items were removed, so the server has only 3 left.
         final items = [
           for (var i = 0; i < 3; i++)
             <String, dynamic>{
@@ -568,7 +617,7 @@ void main() {
         serverId: 'srv1',
       );
 
-      // Shorter exhausted result replaces the stale 8 cards
+      // The shorter, finished result replaces the 8 stale cards.
       expect(items, hasLength(3));
       expect(totalCount, 3);
     });

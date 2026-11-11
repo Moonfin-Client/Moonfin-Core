@@ -743,7 +743,6 @@ class UserPreferences extends ChangeNotifier {
     'enable_multi_server_libraries',
     'pref_merge_recent_rows_by_type',
     'pref_hide_watched_in_recent_rows',
-    'pref_hide_upgrades_in_recent_rows',
     'seasonal_surprise',
     'seasonal_density',
     'seasonal_follower',
@@ -2234,10 +2233,6 @@ class UserPreferences extends ChangeNotifier {
   );
   static final hideWatchedInRecentRows = Preference(
     key: 'pref_hide_watched_in_recent_rows',
-    defaultValue: false,
-  );
-  static final hideUpgradesInRecentRows = Preference(
-    key: 'pref_hide_upgrades_in_recent_rows',
     defaultValue: false,
   );
 

@@ -19,7 +19,7 @@ void main() {
 
       expect(prefs.activeProfileScopeSuffix(), 'server1_userA');
 
-      // User initiates refresh under profile A.
+      // A refresh starts under profile A.
       final originatingScope = prefs.activeProfileScopeSuffix();
       expect(originatingScope, 'server1_userA');
 
@@ -27,11 +27,11 @@ void main() {
       await store.setString('pref_last_user_id', 'userB');
       expect(prefs.activeProfileScopeSuffix(), 'server1_userB');
 
-      // Profile A's response returns with hidePlayedInLatest: true.
+      // Profile A's answer comes back with hidePlayedInLatest on.
       const configA = UserConfiguration(hidePlayedInLatest: true);
       prefs.initLanguagePrefs(configA, expectedProfileScope: originatingScope);
 
-      // Verify profile B was not seeded with profile A's setting.
+      // Profile B didn't pick up profile A's setting.
       expect(prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true), isFalse);
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
     });
@@ -51,7 +51,7 @@ void main() {
       expect(prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true), isFalse);
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
 
-      // But when expectedProfileScope matches active profile, it seeds successfully.
+      // When the expected scope matches the active profile, it seeds.
       prefs.seedHideWatchedFromServer(configA, expectedProfileScope: 'server1_userB');
       expect(prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true), isTrue);
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);

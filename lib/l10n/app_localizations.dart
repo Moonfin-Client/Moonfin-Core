@@ -8518,6 +8518,24 @@ abstract class AppLocalizations {
   /// **'Show libraries from all connected servers'**
   String get showLibrariesFromAllServers;
 
+  /// Section title for Recently Added and Recently Released home row settings
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added and Released'**
+  String get recentlyAddedAndReleased;
+
+  /// Setting to hide watched items from Recently Added and Recently Released home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Watched'**
+  String get hideWatchedInRecentRows;
+
+  /// Description for hiding watched items from Recently Added and Recently Released home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Hide watched content from Recently Added and Recently Released home rows.'**
+  String get hideWatchedInRecentRowsDescription;
+
   /// Setting for merging recently added and recently released libraries by media type
   ///
   /// In en, this message translates to:

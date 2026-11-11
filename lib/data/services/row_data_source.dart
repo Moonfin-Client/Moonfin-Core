@@ -42,6 +42,22 @@ import 'plugin_sync_service.dart';
   return collectionId.isEmpty ? null : (id: collectionId, isCollection: true);
 }
 
+/// A page of a Recently Added or Recently Released row: what the server sent,
+/// and what's left once watched items and collapsed episodes drop out.
+typedef _RecentPage = ({
+  Map<String, dynamic> response,
+  List<AggregatedItem> raw,
+  List<AggregatedItem> items,
+  int fetchLimit,
+});
+
+/// Whether the server may still hold more than a recent row's page brought back.
+typedef _MoreOnServer = ({
+  int? reported,
+  bool serverMayHaveMore,
+  bool mayHaveMore,
+});
+
 class RowDataSource {
   final MediaServerClient _client;
 
@@ -299,6 +315,110 @@ class RowDataSource {
 
   bool get _hideWatchedInRecentRows => _hideWatchedInRecentRowsOrNull ?? false;
 
+  /// Loads a page of a Recently Added or Recently Released row. When the page
+  /// comes up short once watched items and collapsed episodes drop out, it's
+  /// asked for again at the full ceiling, and a failed retry keeps the first
+  /// answer.
+  Future<_RecentPage> _loadRecentPage({
+    required String serverId,
+    required int fetchLimit,
+    required int wanted,
+    required Future<Map<String, dynamic>> Function(int limit) fetch,
+    required List<AggregatedItem> Function(List<AggregatedItem> raw, int limit)
+    normalize,
+  }) async {
+    final response = await fetch(fetchLimit);
+    final raw = _parseItems(response, serverId);
+    final items = normalize(raw, wanted);
+    if (items.length < wanted &&
+        items.length < _maxItems &&
+        raw.length >= fetchLimit &&
+        fetchLimit < _fullRowFetchLimit) {
+      try {
+        final retryResponse = await fetch(_fullRowFetchLimit);
+        final retryRaw = _parseItems(retryResponse, serverId);
+        return (
+          response: retryResponse,
+          raw: retryRaw,
+          items: normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+          fetchLimit: _fullRowFetchLimit,
+        );
+      } catch (_) {}
+    }
+    return (response: response, raw: raw, items: items, fetchLimit: fetchLimit);
+  }
+
+  /// The server may hold more while it filled the page it was asked for, until
+  /// that page reaches the ceiling.
+  _MoreOnServer _moreOnServer(_RecentPage page) {
+    final reported = page.response['TotalRecordCount'] as int?;
+    final serverMayHaveMore =
+        page.raw.length >= page.fetchLimit &&
+        page.fetchLimit < _fullRowFetchLimit;
+    return (
+      reported: reported,
+      serverMayHaveMore: serverMayHaveMore,
+      mayHaveMore:
+          serverMayHaveMore ||
+          (page.fetchLimit < _fullRowFetchLimit &&
+              reported != null &&
+              reported > page.raw.length),
+    );
+  }
+
+  /// The total a recent row shows for [shown] items. While it has more, that's
+  /// the server's total when it fits and isn't just the size of a full page.
+  int _recentRowTotal(
+    _RecentPage page,
+    _MoreOnServer more,
+    int shown,
+    bool hasMore,
+  ) {
+    if (!hasMore) return shown;
+    final reported = more.reported;
+    return reported != null &&
+            reported <= _maxItems &&
+            (!more.serverMayHaveMore || reported > page.raw.length)
+        ? reported
+        : _maxItems;
+  }
+
+  int _firstRecentPageTotal(_RecentPage page) {
+    final more = _moreOnServer(page);
+    final shown = page.items.length;
+    final reported = more.reported;
+    final hasMore =
+        (shown >= _defaultLimit || (shown > 0 && more.mayHaveMore)) &&
+        shown < _maxItems &&
+        (reported == null || reported > shown || more.mayHaveMore);
+    return _recentRowTotal(page, more, shown, hasMore);
+  }
+
+  /// The items and total of a recent row after Load More. A page that brought
+  /// nothing new keeps the cards already shown.
+  (List<AggregatedItem>, int) _nextRecentPage(
+    HomeRow row,
+    _RecentPage page,
+    int wanted,
+  ) {
+    final more = _moreOnServer(page);
+    var items = page.items;
+    if ((more.mayHaveMore || page.raw.length >= page.fetchLimit) &&
+        items.length <= row.items.length) {
+      items = row.items;
+    }
+    final reported = more.reported;
+    final hasMore =
+        ((items.length > row.items.length &&
+                    (items.length >= wanted || more.serverMayHaveMore)) ||
+                more.mayHaveMore) &&
+        items.length < _maxItems &&
+        (reported == null ||
+            reported > items.length ||
+            more.serverMayHaveMore);
+    return (items, _recentRowTotal(page, more, items.length, hasMore));
+  }
+
   Future<HomeRow> loadLatestMedia(
     String parentId,
     String libraryName,
@@ -306,70 +426,30 @@ class RowDataSource {
     String? collectionType,
   ]) async {
     final hideWatched = _hideWatchedInRecentRows;
-    var fetchLimit = latestMediaFetchLimitForCollection(
-      collectionType,
-      defaultLimit: _defaultLimit,
-      maxLimit: _maxItems,
-      hideWatched: hideWatched,
+    final page = await _loadRecentPage(
+      serverId: serverId,
+      fetchLimit: latestMediaFetchLimitForCollection(
+        collectionType,
+        defaultLimit: _defaultLimit,
+        maxLimit: _maxItems,
+        hideWatched: hideWatched,
+      ),
+      wanted: _defaultLimit,
+      fetch: (limit) =>
+          _getLatestItemsWithFallback(parentId: parentId, limit: limit),
+      normalize: (raw, limit) => normalizeLatestMediaItems(
+        raw,
+        collectionType: collectionType,
+        limit: limit,
+        hideWatched: hideWatched,
+      ),
     );
-    var response = await _getLatestItemsWithFallback(
-      parentId: parentId,
-      limit: fetchLimit,
-    );
-    var rawItems = _parseItems(response, serverId);
-    var items = normalizeLatestMediaItems(
-      rawItems,
-      collectionType: collectionType,
-      limit: _defaultLimit,
-      hideWatched: hideWatched,
-    );
-    if (items.length < _defaultLimit &&
-        rawItems.length >= fetchLimit &&
-        fetchLimit < _fullRowFetchLimit) {
-      try {
-        final retryResponse = await _getLatestItemsWithFallback(
-          parentId: parentId,
-          limit: _fullRowFetchLimit,
-        );
-        final retryRawItems = _parseItems(retryResponse, serverId);
-        final retryItems = normalizeLatestMediaItems(
-          retryRawItems,
-          collectionType: collectionType,
-          limit: _defaultLimit,
-          hideWatched: hideWatched,
-        );
-        fetchLimit = _fullRowFetchLimit;
-        response = retryResponse;
-        rawItems = retryRawItems;
-        items = retryItems;
-      } catch (_) {}
-    }
-    final reportedTotal = response['TotalRecordCount'] as int?;
-    final serverMayHaveMore =
-        rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
-    final mayHaveMore =
-        serverMayHaveMore ||
-        (fetchLimit < _fullRowFetchLimit &&
-            reportedTotal != null &&
-            reportedTotal > rawItems.length);
-    final hasMore =
-        (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
-        items.length < _maxItems &&
-        (reportedTotal == null ||
-            reportedTotal > items.length ||
-            mayHaveMore);
     return HomeRow(
       id: 'latest_$parentId',
       title: _l10n.latestLibraryName(libraryName),
-      items: items,
+      items: page.items,
       rowType: HomeRowType.latestMedia,
-      totalCount: hasMore
-          ? (reportedTotal != null &&
-                    reportedTotal <= _maxItems &&
-                    (!serverMayHaveMore || reportedTotal > rawItems.length)
-                ? reportedTotal
-                : _maxItems)
-          : items.length,
+      totalCount: _firstRecentPageTotal(page),
       isAudio: collectionType == 'music',
     );
   }
@@ -473,12 +553,6 @@ class RowDataSource {
     String? collectionType,
   ]) async {
     final hideWatched = _hideWatchedInRecentRows;
-    var fetchLimit = latestMediaFetchLimitForCollection(
-      collectionType,
-      defaultLimit: _defaultLimit,
-      maxLimit: _maxItems,
-      hideWatched: hideWatched,
-    );
     final includeItemTypes = recentlyReleasedItemTypesFor(
       collectionType,
       seriesType: () => GetIt.instance<UserPreferences>().get(
@@ -486,65 +560,35 @@ class RowDataSource {
       ),
     );
     final serverHideWatched = _hideWatchedInRecentRowsOrNull;
-    var response = await _getRecentlyReleasedItemsWithFallback(
-      parentId: parentId,
-      limit: fetchLimit,
-      includeItemTypes: includeItemTypes,
-      recursive: includeItemTypes != null,
-      hideWatched: serverHideWatched,
-    );
-    var rawItems = _parseItems(response, serverId);
-    var items = normalizeLatestMediaItems(
-      rawItems,
-      collectionType: collectionType,
-      limit: _defaultLimit,
-      hideWatched: hideWatched,
-    );
-    if (items.length < _defaultLimit &&
-        rawItems.length >= fetchLimit &&
-        fetchLimit < _fullRowFetchLimit) {
-      fetchLimit = _fullRowFetchLimit;
-      response = await _getRecentlyReleasedItemsWithFallback(
+    final page = await _loadRecentPage(
+      serverId: serverId,
+      fetchLimit: latestMediaFetchLimitForCollection(
+        collectionType,
+        defaultLimit: _defaultLimit,
+        maxLimit: _maxItems,
+        hideWatched: hideWatched,
+      ),
+      wanted: _defaultLimit,
+      fetch: (limit) => _getRecentlyReleasedItemsWithFallback(
         parentId: parentId,
-        limit: fetchLimit,
+        limit: limit,
         includeItemTypes: includeItemTypes,
         recursive: includeItemTypes != null,
         hideWatched: serverHideWatched,
-      );
-      rawItems = _parseItems(response, serverId);
-      items = normalizeLatestMediaItems(
-        rawItems,
+      ),
+      normalize: (raw, limit) => normalizeLatestMediaItems(
+        raw,
         collectionType: collectionType,
-        limit: _defaultLimit,
+        limit: limit,
         hideWatched: hideWatched,
-      );
-    }
-    final reportedTotal = response['TotalRecordCount'] as int?;
-    final serverMayHaveMore =
-        rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
-    final mayHaveMore =
-        serverMayHaveMore ||
-        (fetchLimit < _fullRowFetchLimit &&
-            reportedTotal != null &&
-            reportedTotal > rawItems.length);
-    final hasMore =
-        (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
-        items.length < _maxItems &&
-        (reportedTotal == null ||
-            reportedTotal > items.length ||
-            mayHaveMore);
+      ),
+    );
     return HomeRow(
       id: 'recently_released_$parentId',
       title: _l10n.recentlyReleasedLibraryName(libraryName),
-      items: items,
+      items: page.items,
       rowType: HomeRowType.recentlyReleased,
-      totalCount: hasMore
-          ? (reportedTotal != null &&
-                    reportedTotal <= _maxItems &&
-                    (!serverMayHaveMore || reportedTotal > rawItems.length)
-                ? reportedTotal
-                : _maxItems)
-          : items.length,
+      totalCount: _firstRecentPageTotal(page),
       isAudio: collectionType == 'music',
     );
   }
@@ -1786,71 +1830,24 @@ class RowDataSource {
           final parentId = row.id.substring('latest_'.length);
           final wanted = currentOffset + _defaultLimit;
           final hideWatched = _hideWatchedInRecentRows;
-          var fetchLimit = latestMediaFetchLimitForCollection(
-            null,
-            defaultLimit: wanted,
-            maxLimit: _maxItems,
-            hideWatched: hideWatched,
+          final page = await _loadRecentPage(
+            serverId: serverId,
+            fetchLimit: latestMediaFetchLimitForCollection(
+              null,
+              defaultLimit: wanted,
+              maxLimit: _maxItems,
+              hideWatched: hideWatched,
+            ),
+            wanted: wanted,
+            fetch: (limit) =>
+                _getLatestItemsWithFallback(parentId: parentId, limit: limit),
+            normalize: (raw, limit) => normalizeLatestMediaItems(
+              raw,
+              limit: limit,
+              hideWatched: hideWatched,
+            ),
           );
-          var response = await _getLatestItemsWithFallback(
-            parentId: parentId,
-            limit: fetchLimit,
-          );
-          var rawItems = _parseItems(response, serverId);
-          var items = normalizeLatestMediaItems(
-            rawItems,
-            limit: wanted,
-            hideWatched: hideWatched,
-          );
-          if (items.length < wanted &&
-              items.length < _maxItems &&
-              rawItems.length >= fetchLimit &&
-              fetchLimit < _fullRowFetchLimit) {
-            try {
-              final retryResponse = await _getLatestItemsWithFallback(
-                parentId: parentId,
-                limit: _fullRowFetchLimit,
-              );
-              final retryRawItems = _parseItems(retryResponse, serverId);
-              final retryItems = normalizeLatestMediaItems(
-                retryRawItems,
-                limit: wanted > _maxItems ? _maxItems : wanted,
-                hideWatched: hideWatched,
-              );
-              fetchLimit = _fullRowFetchLimit;
-              response = retryResponse;
-              rawItems = retryRawItems;
-              items = retryItems;
-            } catch (_) {}
-          }
-          final reportedTotal = response['TotalRecordCount'] as int?;
-          final serverMayHaveMore =
-              rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
-          final mayHaveMore =
-              serverMayHaveMore ||
-              (fetchLimit < _fullRowFetchLimit &&
-                  reportedTotal != null &&
-                  reportedTotal > rawItems.length);
-          if ((mayHaveMore || rawItems.length >= fetchLimit) &&
-              items.length <= row.items.length) {
-            items = row.items;
-          }
-          final hasMore =
-              ((items.length > row.items.length &&
-                          (items.length >= wanted || serverMayHaveMore)) ||
-                      mayHaveMore) &&
-              items.length < _maxItems &&
-              (reportedTotal == null ||
-                  reportedTotal > items.length ||
-                  serverMayHaveMore);
-          final totalCount = hasMore
-              ? (reportedTotal != null &&
-                        reportedTotal <= _maxItems &&
-                        (!serverMayHaveMore || reportedTotal > rawItems.length)
-                    ? reportedTotal
-                    : _maxItems)
-              : items.length;
-          return (items, totalCount);
+          return _nextRecentPage(row, page, wanted);
         } else if (row.id.startsWith('favorites_')) {
           final parentId = row.id.substring('favorites_'.length);
           final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
@@ -1979,75 +1976,31 @@ class RowDataSource {
         );
         final wanted = currentOffset + _defaultLimit;
         final hideWatched = _hideWatchedInRecentRows;
-        var fetchLimit = latestMediaFetchLimitForCollection(
-          collectionType,
-          defaultLimit: wanted,
-          maxLimit: _maxItems,
-          hideWatched: hideWatched,
-        );
         final serverHideWatched = _hideWatchedInRecentRowsOrNull;
-        var response = await _getRecentlyReleasedItemsWithFallback(
-          parentId: parentId,
-          limit: fetchLimit,
-          includeItemTypes: includeItemTypes,
-          recursive: includeItemTypes != null,
-          hideWatched: serverHideWatched,
-        );
-        var rawItems = _parseItems(response, serverId);
-        var items = normalizeLatestMediaItems(
-          rawItems,
-          collectionType: collectionType,
-          limit: wanted,
-          hideWatched: hideWatched,
-        );
-        if (items.length < wanted &&
-            items.length < _maxItems &&
-            rawItems.length >= fetchLimit &&
-            fetchLimit < _fullRowFetchLimit) {
-          fetchLimit = _fullRowFetchLimit;
-          response = await _getRecentlyReleasedItemsWithFallback(
+        final page = await _loadRecentPage(
+          serverId: serverId,
+          fetchLimit: latestMediaFetchLimitForCollection(
+            collectionType,
+            defaultLimit: wanted,
+            maxLimit: _maxItems,
+            hideWatched: hideWatched,
+          ),
+          wanted: wanted,
+          fetch: (limit) => _getRecentlyReleasedItemsWithFallback(
             parentId: parentId,
-            limit: fetchLimit,
+            limit: limit,
             includeItemTypes: includeItemTypes,
             recursive: includeItemTypes != null,
             hideWatched: serverHideWatched,
-          );
-          rawItems = _parseItems(response, serverId);
-          items = normalizeLatestMediaItems(
-            rawItems,
+          ),
+          normalize: (raw, limit) => normalizeLatestMediaItems(
+            raw,
             collectionType: collectionType,
-            limit: wanted > _maxItems ? _maxItems : wanted,
+            limit: limit,
             hideWatched: hideWatched,
-          );
-        }
-        final reportedTotal = response['TotalRecordCount'] as int?;
-        final serverMayHaveMore =
-            rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
-        final mayHaveMore =
-            serverMayHaveMore ||
-            (fetchLimit < _fullRowFetchLimit &&
-                reportedTotal != null &&
-                reportedTotal > rawItems.length);
-        if ((mayHaveMore || rawItems.length >= fetchLimit) &&
-            items.length <= row.items.length) {
-          items = row.items;
-        }
-        final hasMore =
-            ((items.length > row.items.length &&
-                        (items.length >= wanted || serverMayHaveMore)) ||
-                    mayHaveMore) &&
-            items.length < _maxItems &&
-            (reportedTotal == null ||
-                reportedTotal > items.length ||
-                serverMayHaveMore);
-        final totalCount = hasMore
-            ? (reportedTotal != null &&
-                      reportedTotal <= _maxItems &&
-                      (!serverMayHaveMore || reportedTotal > rawItems.length)
-                  ? reportedTotal
-                  : _maxItems)
-            : items.length;
-        return (items, totalCount);
+          ),
+        );
+        return _nextRecentPage(row, page, wanted);
       case HomeRowType.libraryTiles:
       case HomeRowType.libraryTilesSmall:
       case HomeRowType.liveTv:

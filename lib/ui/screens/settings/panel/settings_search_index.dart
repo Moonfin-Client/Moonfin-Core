@@ -1136,12 +1136,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['watched', 'played', 'recent', 'recently added', 'recently released'],
     ),
     rowToggles.leaf(
-      'pref_hide_upgrades_in_recent_rows',
-      l10n.hideUpgradesInRecentRows,
-      subtitle: l10n.hideUpgradesInRecentRowsDescription,
-      keywords: ['upgrade', 'replaced', 'quality', 'recent', 'recently added'],
-    ),
-    rowToggles.leaf(
       'pref_merge_recent_rows_by_type',
       l10n.mergeRecentRowsByType,
       subtitle: l10n.mergeRecentRowsByTypeDescription,

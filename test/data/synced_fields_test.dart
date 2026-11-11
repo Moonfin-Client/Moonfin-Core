@@ -134,7 +134,6 @@ void main() {
     'hideHomeMediaDescription',
     'hideHomeUnwatchedCount',
     'hideHomeWatchProgress',
-    'hideUpgradesInRecentRows',
     'hideWatchedInRecentRows',
     'homeBackdropEnabled',
     'homeBackdropStyle',

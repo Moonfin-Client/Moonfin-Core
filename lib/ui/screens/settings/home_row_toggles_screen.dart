@@ -30,7 +30,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
   Future<void> _hideWatchedConfigSync = Future<void>.value();
-  Future<void> _hideUpgradesSync = Future<void>.value();
 
   @override
   void initState() {
@@ -116,21 +115,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
         }
       } catch (_) {}
     });
-  }
-
-  void _onHideUpgradesInRecentRowsChanged() {
-    final syncService = GetIt.instance<PluginSyncService>();
-    if (syncService.pluginAvailable &&
-        GetIt.instance.isRegistered<MediaServerClient>()) {
-      final client = GetIt.instance<MediaServerClient>();
-      _hideUpgradesSync = _hideUpgradesSync.then((_) async {
-        try {
-          await syncService.pushHideUpgradesPreference(client);
-        } catch (_) {}
-      }).whenComplete(_reloadHomeRows);
-      return;
-    }
-    _reloadHomeRows();
   }
 
   void _onFavoritesRowsToggleChanged() {
@@ -444,13 +428,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     subtitle: l10n.hideWatchedInRecentRowsDescription,
                     icon: Icons.visibility_off_outlined,
                     onChanged: _onHideWatchedInRecentRowsChanged,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.hideUpgradesInRecentRows,
-                    title: l10n.hideUpgradesInRecentRows,
-                    subtitle: l10n.hideUpgradesInRecentRowsDescription,
-                    icon: Icons.history_toggle_off,
-                    onChanged: _onHideUpgradesInRecentRowsChanged,
                   ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.mergeRecentRowsByType,

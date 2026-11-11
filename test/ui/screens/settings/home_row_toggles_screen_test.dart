@@ -98,9 +98,8 @@ void main() {
     });
   }
 
-  testWidgets('Hide Watched and Hide Upgrades reload Home', (tester) async {
+  testWidgets('Hide Watched reloads Home', (tester) async {
     await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
-    await prefs.set(UserPreferences.hideUpgradesInRecentRows, false);
     await pump(tester);
 
     expect(find.text('RECENTLY ADDED AND RELEASED'), findsOneWidget);
@@ -109,19 +108,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
     verify(() => home.load(preserveExisting: false)).called(1);
-    clearInteractions(home);
-
-    await tester.tap(find.text('Hide Upgrades'));
-    await tester.pumpAndSettle();
-    expect(prefs.get(UserPreferences.hideUpgradesInRecentRows), isTrue);
-    verify(() => home.load(preserveExisting: false)).called(1);
   });
 
   testWidgets(
-    'Hide Watched and Hide Upgrades sync with server when plugin is available',
+    'Hide Watched syncs with the server when the plugin is available',
     (tester) async {
       await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
-      await prefs.set(UserPreferences.hideUpgradesInRecentRows, false);
 
       final client = _MockMediaServerClient();
       final usersApi = _MockUsersApi();
@@ -136,13 +128,10 @@ void main() {
 
       when(() => sync.pluginAvailable).thenReturn(true);
       when(() => sync.pushSettings(client)).thenAnswer((_) async {});
-      when(
-        () => sync.pushHideUpgradesPreference(client),
-      ).thenAnswer((_) async {});
 
       await pump(tester);
 
-      // Update branch: server returns hidePlayedInLatest: false while user enables Hide Watched.
+      // The server has hidePlayedInLatest off when Hide Watched is turned on, so it's updated.
       await tester.tap(find.text('Hide Watched'));
       await tester.pumpAndSettle();
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
@@ -162,19 +151,12 @@ void main() {
       clearInteractions(usersApi);
       clearInteractions(home);
 
-      // No-update branch: server already matches the new preference value (false).
+      // The server already matches, so nothing is written.
       await tester.tap(find.text('Hide Watched'));
       await tester.pumpAndSettle();
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
       verify(() => usersApi.getUserConfiguration()).called(1);
       verifyNever(() => usersApi.updateUserConfiguration(any()));
-      verify(() => home.load(preserveExisting: false)).called(1);
-      clearInteractions(home);
-
-      await tester.tap(find.text('Hide Upgrades'));
-      await tester.pumpAndSettle();
-      expect(prefs.get(UserPreferences.hideUpgradesInRecentRows), isTrue);
-      verify(() => sync.pushHideUpgradesPreference(client)).called(1);
       verify(() => home.load(preserveExisting: false)).called(1);
     },
   );
@@ -223,15 +205,15 @@ void main() {
       );
       await tester.pump();
 
-      // Switch to profile B while request is in flight
+      // Profile B takes over while the request is in flight.
       await store.setString('pref_last_user_id', 'userB');
       expect(prefs.activeProfileScopeSuffix(), 'server1_userB');
 
-      // Profile A's response returns with hidePlayedInLatest: true
+      // Profile A's answer comes back with hidePlayedInLatest on.
       completer.complete(const UserConfiguration(hidePlayedInLatest: true));
       await tester.pumpAndSettle();
 
-      // Verify profile B was NOT seeded
+      // Profile B wasn't seeded.
       expect(
         prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
         isFalse,
@@ -266,15 +248,15 @@ void main() {
       );
       await tester.pump();
 
-      // Sign out while request is in flight
+      // Signing out while the request is in flight.
       await store.remove('pref_last_user_id');
       expect(prefs.activeProfileScopeSuffix(), isNull);
 
-      // Delayed response returns with hidePlayedInLatest: true
+      // The late answer has hidePlayedInLatest on.
       completer.complete(const UserConfiguration(hidePlayedInLatest: true));
       await tester.pumpAndSettle();
 
-      // Verify base preference key was NOT written
+      // The unscoped key wasn't written.
       expect(
         prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: false),
         isFalse,
@@ -287,10 +269,10 @@ void main() {
     'seeds hideWatchedInRecentRows when unscoped base key exists but scoped profile key is absent',
     (tester) async {
       final store = GetIt.instance<PreferenceStore>();
-      // Write legacy base key directly without scope
+      // An old unscoped key is already stored.
       await store.setBool(UserPreferences.hideWatchedInRecentRows.key, false);
 
-      // Now log in with profile A
+      // Signing in as profile A.
       await store.setString('pref_last_server_id', 'server1');
       await store.setString('pref_last_user_id', 'userA');
 
@@ -314,7 +296,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Scoped key should have been seeded despite the legacy base key existing
+      // The scoped key is still seeded.
       expect(
         prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
         isTrue,
