@@ -98,7 +98,28 @@ void main() {
           'ExtendedVideoType': 'DolbyVision',
           'ExtendedVideoSubType': 'DoviProfile81',
         }),
-        ['DV P8'],
+        ['DV P8', 'HDR10'],
+      );
+      expect(
+        videoRangeBadges({
+          'ExtendedVideoType': 'DolbyVision',
+          'ExtendedVideoSubType': 'DoviProfile84',
+        }),
+        ['DV P8', 'HLG'],
+      );
+      expect(
+        videoRangeBadges({
+          'ExtendedVideoType': 'DolbyVision',
+          'ExtendedVideoSubType': 'DoviProfile100',
+        }),
+        ['DV P10'],
+      );
+    });
+
+    test('keeps the HDR10 under a profile 7 enhancement layer', () {
+      expect(
+        videoRangeBadges({'VideoRangeType': 'DOVIWithEL', 'DvProfile': 7}),
+        ['DV P7', 'HDR10'],
       );
     });
 
@@ -113,8 +134,19 @@ void main() {
       },
     );
 
-    test('reads Dolby Vision the server calls invalid as HDR', () {
-      expect(videoRangeBadges({'VideoRangeType': 'DOVIInvalid'}), ['HDR']);
+    test('reads Dolby Vision the server calls invalid as its VideoRange', () {
+      expect(
+        videoRangeBadges({'VideoRangeType': 'DOVIInvalid', 'VideoRange': 'HDR'}),
+        ['HDR'],
+      );
+      expect(
+        videoRangeBadges({'VideoRangeType': 'DOVIInvalid', 'VideoRange': 'SDR'}),
+        ['SDR'],
+      );
+    });
+
+    test('has no badge for a stream with no range field', () {
+      expect(videoRangeBadges(const <String, dynamic>{}), isEmpty);
     });
 
     test('is the plain range label without Dolby Vision', () {

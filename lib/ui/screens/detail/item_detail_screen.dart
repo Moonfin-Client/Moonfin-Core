@@ -11618,13 +11618,7 @@ String? resolutionFromStreams(List<Map<String, dynamic>> streams) {
 /// when there's no video stream or it carries no range at all.
 List<String> hdrBadgesFromStreams(List<Map<String, dynamic>> streams) {
   final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-  if (video == null) return const [];
-  final hasRange = [
-    video['VideoRangeType'],
-    video['ExtendedVideoType'],
-    video['VideoRange'],
-  ].any((value) => value is String && value.trim().isNotEmpty);
-  return hasRange ? videoRangeBadges(video) : const [];
+  return video == null ? const [] : videoRangeBadges(video);
 }
 
 String? audioLabelFromStreams(List<Map<String, dynamic>> streams) {
@@ -11660,12 +11654,7 @@ String? codecFromStreams(
   final res = resolutionFromStreams(streams) ?? item.videoResolution;
   if (res != null) badges.add(res);
   final hdr = hdrBadgesFromStreams(streams);
-  final itemHdr = item.hdrType;
-  badges.addAll(
-    hdr.isNotEmpty || itemHdr == null
-        ? hdr
-        : videoRangeBadges({'VideoRangeType': itemHdr}),
-  );
+  badges.addAll(hdr.isNotEmpty ? hdr : hdrBadgesFromStreams(item.mediaStreams));
   final vcodec =
       codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
   if (vcodec != null) badges.add(vcodec);
