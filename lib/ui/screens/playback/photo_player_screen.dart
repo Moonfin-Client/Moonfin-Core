@@ -32,7 +32,11 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   int _currentIndex = 0;
   bool _controlsVisible = true;
   Timer? _hideTimer;
+  Offset? _swipeStart;
+  Offset _swipeLast = Offset.zero;
+  bool _swipeMultiTouch = false;
 
+  static const _swipeMinDistance = 50.0;
   static const _slideshowInterval = Duration(seconds: 5);
   static const _photoTransition = Duration(milliseconds: 400);
 
@@ -171,6 +175,37 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     }
   }
 
+  void _onInteractionStart(ScaleStartDetails d) {
+    _swipeStart = d.focalPoint;
+    _swipeLast = d.focalPoint;
+    _swipeMultiTouch = d.pointerCount > 1;
+  }
+
+  void _onInteractionUpdate(ScaleUpdateDetails d) {
+    _swipeLast = d.focalPoint;
+    if (d.pointerCount > 1) _swipeMultiTouch = true;
+  }
+
+  /// A one-finger horizontal swipe on an un-zoomed photo moves to the
+  /// next/previous one; when zoomed in, the drag pans the photo instead.
+  void _onInteractionEnd(ScaleEndDetails d) {
+    final start = _swipeStart;
+    _swipeStart = null;
+    if (start == null || _swipeMultiTouch || _items.length < 2) return;
+    if (_transformController.value.getMaxScaleOnAxis() > 1.01) return;
+    final delta = _swipeLast - start;
+    if (delta.dx.abs() < _swipeMinDistance ||
+        delta.dx.abs() < delta.dy.abs() * 1.5) {
+      return;
+    }
+    _showControlsTemporarily();
+    if (delta.dx < 0) {
+      _next();
+    } else {
+      _previous();
+    }
+  }
+
   void _toggleSlideshow() {
     if (_slideshow.isRunning) {
       _slideshow.stop();
@@ -242,6 +277,9 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
       child: InteractiveViewer(
         key: ValueKey(item.id),
         transformationController: _transformController,
+        onInteractionStart: _onInteractionStart,
+        onInteractionUpdate: _onInteractionUpdate,
+        onInteractionEnd: _onInteractionEnd,
         minScale: 1.0,
         maxScale: 5.0,
         child: Center(
