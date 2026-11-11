@@ -10614,6 +10614,15 @@
   "@kidsModeExitSubtitle": {
     "description": "Explanation under the Exit Kids Mode entry"
   },
+  "kidsModePinToSwitchUser": "Enter the Kids Mode PIN to switch to {name}",
+  "@kidsModePinToSwitchUser": {
+    "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pinIncorrect": "Incorrect PIN",
   "pinTryAgainIn": "Too many attempts. Try again in {wait}.",
   "@pinTryAgainIn": {
