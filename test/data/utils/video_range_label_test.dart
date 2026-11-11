@@ -69,4 +69,57 @@ void main() {
       expect(videoRangeLabel({'VideoRangeType': '   '}), 'SDR');
     });
   });
+
+  group('videoRangeBadges', () {
+    test('names the Dolby Vision profile, then the layer it falls back to', () {
+      expect(
+        videoRangeBadges({
+          'VideoRangeType': 'DOVIWithHDR10Plus',
+          'DvProfile': 8,
+        }),
+        ['DV P8', 'HDR10+'],
+      );
+      expect(
+        videoRangeBadges({'VideoRangeType': 'DOVIWithHDR10', 'DvProfile': 8}),
+        ['DV P8', 'HDR10'],
+      );
+      expect(videoRangeBadges({'VideoRangeType': 'DOVI', 'DvProfile': 5}), [
+        'DV P5',
+      ]);
+      expect(
+        videoRangeBadges({'VideoRangeType': 'DOVIWithHLG', 'DvProfile': 8}),
+        ['DV P8', 'HLG'],
+      );
+    });
+
+    test("reads Emby's profile from ExtendedVideoSubType", () {
+      expect(
+        videoRangeBadges({
+          'ExtendedVideoType': 'DolbyVision',
+          'ExtendedVideoSubType': 'DoviProfile81',
+        }),
+        ['DV P8'],
+      );
+    });
+
+    test(
+      'says DV alone without a profile, and nothing for an SDR fallback',
+      () {
+        expect(videoRangeBadges({'VideoRangeType': 'DOVI'}), ['DV']);
+        expect(
+          videoRangeBadges({'VideoRangeType': 'DOVIWithSDR', 'DvProfile': 8}),
+          ['DV P8'],
+        );
+      },
+    );
+
+    test('reads Dolby Vision the server calls invalid as HDR', () {
+      expect(videoRangeBadges({'VideoRangeType': 'DOVIInvalid'}), ['HDR']);
+    });
+
+    test('is the plain range label without Dolby Vision', () {
+      expect(videoRangeBadges({'VideoRangeType': 'HDR10Plus'}), ['HDR10+']);
+      expect(videoRangeBadges({'VideoRangeType': 'SDR'}), ['SDR']);
+    });
+  });
 }
