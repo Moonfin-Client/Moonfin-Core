@@ -429,5 +429,83 @@ void main() {
       expect(row.totalCount, 80);
       expect(row.hasMore, isTrue);
     });
+
+    test('loadMore preserves existing cards and pagination when cumulative result does not grow', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final initialItems = <AggregatedItem>[
+        for (var i = 0; i < 8; i++)
+          AggregatedItem(
+            id: 'series-$i',
+            serverId: 'srv1',
+            rawData: {
+              'Id': 'series-$i',
+              'Name': 'Series $i',
+              'Type': 'Series',
+            },
+          ),
+      ];
+      final initialRow = HomeRow(
+        id: 'latest_lib1',
+        title: 'TV',
+        rowType: HomeRowType.latestMedia,
+        items: initialItems,
+        totalCount: 80,
+      );
+
+      final requestedLimits = <int>[];
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int;
+        requestedLimits.add(limit);
+        if (limit == 23) {
+          // 23 episodes only cover 3 series -> collapses to 3 cards (< 8 initial cards)
+          final items = [
+            for (var i = 0; i < 23; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 3}',
+                'SeriesName': 'Series ${i % 3}',
+              },
+          ];
+          return {'Items': items, 'TotalRecordCount': 80};
+        } else {
+          // Retry fails
+          throw Exception('Server timeout');
+        }
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final (items, totalCount) = await dataSource.loadMore(
+        row: initialRow,
+        serverId: 'srv1',
+      );
+
+      expect(requestedLimits, [23, 500]);
+      // Must preserve the 8 original cards instead of shrinking to 3
+      expect(items, hasLength(8));
+      expect(items.map((e) => e.id), initialItems.map((e) => e.id));
+      expect(totalCount, 80);
+      expect(totalCount > items.length, isTrue);
+    });
   });
 }

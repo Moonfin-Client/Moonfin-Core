@@ -1825,13 +1825,15 @@ class RowDataSource {
           final mayHaveMore =
               serverMayHaveMore ||
               (reportedTotal != null && reportedTotal > rawItems.length);
+          if (items.length <= row.items.length) {
+            items = row.items;
+          }
           final hasMore =
-              items.length > row.items.length &&
-              (items.length >= wanted || mayHaveMore) &&
+              (items.length > row.items.length || mayHaveMore) &&
               items.length < _maxItems &&
               (reportedTotal == null ||
                   reportedTotal > items.length ||
-                  mayHaveMore);
+                  serverMayHaveMore);
           final totalCount = hasMore
               ? (reportedTotal != null &&
                         reportedTotal <= _maxItems &&
@@ -2015,13 +2017,15 @@ class RowDataSource {
         final mayHaveMore =
             serverMayHaveMore ||
             (reportedTotal != null && reportedTotal > rawItems.length);
+        if (items.length <= row.items.length) {
+          items = row.items;
+        }
         final hasMore =
-            items.length > row.items.length &&
-            (items.length >= wanted || mayHaveMore) &&
+            (items.length > row.items.length || mayHaveMore) &&
             items.length < _maxItems &&
             (reportedTotal == null ||
                 reportedTotal > items.length ||
-                mayHaveMore);
+                serverMayHaveMore);
         final totalCount = hasMore
             ? (reportedTotal != null &&
                       reportedTotal <= _maxItems &&
