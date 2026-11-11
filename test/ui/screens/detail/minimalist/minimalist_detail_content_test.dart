@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -635,15 +636,30 @@ void main() {
         .map((e) => e.id)
         .toList();
     expect(items.indexOf('item-1'), 9);
-    // Focus coming down lands on it, and it's already in view.
-    expect(
-      tester.state<LockedFocusRowState<AggregatedItem>>(rail).focusedIndex,
-      9,
-    );
+    // It's in view before focus gets there.
     final scroll = tester.state<ScrollableState>(
       find.descendant(of: rail, matching: find.byType(Scrollable)).first,
     );
     expect(scroll.position.pixels, greaterThan(0));
+
+    // Two seasons, so the way in is the tabs, and Down from them lands on it.
+    final tabs = tester.widget<SlidingPillTabs>(find.byType(SlidingPillTabs));
+    tabs.focusNode!.requestFocus();
+    await tester.pump();
+    expect(tabs.focusNode!.hasPrimaryFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final railState = tester.state<LockedFocusRowState<AggregatedItem>>(rail);
+    final primary = FocusManager.instance.primaryFocus;
+    expect(
+      primary?.context
+          ?.findAncestorStateOfType<LockedFocusRowState<AggregatedItem>>(),
+      same(railState),
+      reason: 'Down from the tabs should put focus in the rail',
+    );
+    expect(railState.focusedIndex, 9);
   });
 
   const landscape = Size(1600, 900);
