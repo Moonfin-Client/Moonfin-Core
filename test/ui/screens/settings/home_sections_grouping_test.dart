@@ -34,6 +34,9 @@ String _idOf(String collection) =>
 void main() {
   late UserPreferences prefs;
   late _MockSyncService sync;
+  // Whether the plugin can fill the calendar rows. The other external rows
+  // stay unavailable, the way they are with no plugin.
+  var calendarsAvailable = false;
 
   setUpAll(() => registerFallbackValue(HomeSectionType.none));
 
@@ -72,6 +75,24 @@ void main() {
     sync = _MockSyncService();
     when(() => sync.pluginAvailable).thenReturn(false);
     when(() => sync.seerrAvailable).thenReturn(false);
+    calendarsAvailable = false;
+    when(
+      () => sync.externalRowAvailable(
+        any(),
+        serverBuildsSeasonal: any(named: 'serverBuildsSeasonal'),
+      ),
+    ).thenAnswer((call) {
+      final type = call.positionalArguments.first as HomeSectionType;
+      if (type == HomeSectionType.radarrCalendar ||
+          type == HomeSectionType.sonarrCalendar) {
+        return calendarsAvailable;
+      }
+      final external = imdbChartSections.contains(type) ||
+          UserPreferences.isTmdbSectionType(type) ||
+          type == HomeSectionType.mdblistWatchingNow ||
+          type == HomeSectionType.seasonal;
+      return external ? false : null;
+    });
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
   });
 
@@ -198,8 +219,7 @@ void main() {
     tester,
   ) async {
     await prefs.set(UserPreferences.displayStudiosRows, true);
-    await prefs.set(UserPreferences.enableRadarrCalendar, true);
-    await prefs.set(UserPreferences.enableSonarrCalendar, true);
+    calendarsAvailable = true;
     when(() => sync.seerrAvailable).thenReturn(true);
     final seerrPrefs = _MockSeerrPreferences();
     when(() => seerrPrefs.isSeerrHomeRowEnabled(any())).thenAnswer(

@@ -25,7 +25,6 @@ import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
-import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -94,10 +93,8 @@ class HomeSectionsScreen extends StatefulWidget {
   State<HomeSectionsScreen> createState() => _HomeSectionsScreenState();
 }
 
-class _HomeSectionsScreenState extends State<HomeSectionsScreen>
-    with RouteAware {
+class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
-  ModalRoute<dynamic>? _observedRoute;
   late List<HomeSectionConfig> _sections;
   HomeSectionConfig? _mediaBarConfig;
   final _focusNodes = <FocusNode>[];
@@ -553,7 +550,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         section.type == HomeSectionType.sonarrCalendar) {
       return 6;
     }
-    if (section.type == HomeSectionType.mdblistWatchingNow) {
+    if (section.type == HomeSectionType.mdblistWatchingNow ||
+        _isImdbSectionType(section.type) ||
+        _isTmdbSectionType(section.type)) {
       return 7;
     }
     // general builtins (resume, nextUp, etc.)
@@ -575,15 +574,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     }
   }
 
-  bool _isAnyTmdbSectionEnabled() =>
-      UserPreferences.tmdbSectionEnabled.values.any(_prefs.get);
-
-  bool _isTmdbRowEnabled(HomeSectionType type) {
-    final prefKey = UserPreferences.tmdbSectionEnabled[type];
-    if (prefKey == null) return false;
-    return _prefs.get(prefKey);
-  }
-
   void _disableSeerrHomeRow(HomeSectionType type) {
     final seerrType = type.seerrRowType;
     if (seerrType == null) return;
@@ -599,34 +589,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       );
       seerrPrefs.setHomeRowsConfig(configs);
     }
-  }
-
-  bool _isAnyImdbSectionEnabled() {
-    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-  }
-
-  bool _isImdbRowEnabled(HomeSectionType type) {
-    final prefKey = switch (type) {
-      HomeSectionType.imdbTop250Movies =>
-        UserPreferences.imdbTop250MoviesEnabled,
-      HomeSectionType.imdbTop250TvShows =>
-        UserPreferences.imdbTop250TvShowsEnabled,
-      HomeSectionType.imdbMostPopularMovies =>
-        UserPreferences.imdbMostPopularMoviesEnabled,
-      HomeSectionType.imdbMostPopularTvShows =>
-        UserPreferences.imdbMostPopularTvShowsEnabled,
-      HomeSectionType.imdbLowestRatedMovies =>
-        UserPreferences.imdbLowestRatedMoviesEnabled,
-      HomeSectionType.imdbTopEnglishMovies =>
-        UserPreferences.imdbTopEnglishMoviesEnabled,
-      _ => null,
-    };
-    return prefKey != null ? _prefs.get(prefKey) : false;
   }
 
   bool _isImdbSectionType(HomeSectionType type) {
@@ -649,8 +611,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
-    final showImdbRows = _isAnyImdbSectionEnabled();
-    final showTmdbRows = _isAnyTmdbSectionEnabled();
 
     final hiddenByFavorites =
         !showFavoritesRows && _isFavoriteSectionType(section.type);
@@ -683,11 +643,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         (section.type == HomeSectionType.liveTv ||
             section.type == HomeSectionType.onNow ||
             section.type == HomeSectionType.activeRecordings);
-    final hiddenByCalendars =
-        (section.type == HomeSectionType.radarrCalendar &&
-            !_prefs.get(UserPreferences.enableRadarrCalendar)) ||
-        (section.type == HomeSectionType.sonarrCalendar &&
-            !_prefs.get(UserPreferences.enableSonarrCalendar));
     final hiddenBySeerr =
         (_isSeerrSectionType(section.type) &&
             (!showSeerrRows ||
@@ -700,19 +655,14 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (!showSeerrRows ||
                 !section.enabled ||
                 _unshownSeerrSliderIds.contains(section.stableId)));
-    final hiddenByImdb =
-        _isImdbSectionType(section.type) &&
-        (!showImdbRows || !_isImdbRowEnabled(section.type));
-    final hiddenByTmdb =
-        _isTmdbSectionType(section.type) &&
-        (!showTmdbRows || !_isTmdbRowEnabled(section.type));
-    final hiddenBySeasonal =
-        section.type == HomeSectionType.seasonal &&
-        (!GetIt.instance<PluginSyncService>().pluginAvailable ||
-            !_prefs.get(UserPreferences.seasonalRowEnabled));
-    final hiddenByMdblist =
-        section.type == HomeSectionType.mdblistWatchingNow &&
-        !_prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+    final hiddenByExternal =
+        GetIt.instance<PluginSyncService>().externalRowAvailable(
+          section.type,
+          serverBuildsSeasonal: () =>
+              GetIt.instance<MediaServerClient>().itemsApi
+                  is ServerHomeSectionsApi,
+        ) ==
+        false;
 
     final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
     final hiddenByAudio = !showAudioRows && _isAudioSectionType(section.type);
@@ -748,12 +698,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         hiddenByPlaylists ||
         hiddenByStudios ||
         hiddenByLiveTv ||
-        hiddenByCalendars ||
         hiddenBySeerr ||
-        hiddenByImdb ||
-        hiddenByTmdb ||
-        hiddenBySeasonal ||
-        hiddenByMdblist ||
+        hiddenByExternal ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
         hiddenByRewatch ||
@@ -848,12 +794,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         .firstOrNull;
     _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList()
       ..sort((a, b) => a.order.compareTo(b.order));
-    for (var i = 0; i < _sections.length; i++) {
-      final toggle = _toggleAuthoritativeEnabled(_sections[i].type);
-      if (toggle != null) {
-        _sections[i] = _sections[i].copyWith(enabled: toggle);
-      }
-    }
     final addedBuiltins = _ensureBuiltinSectionsPresent();
     _mergeDiscoveredPluginSections();
 
@@ -879,52 +819,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     // no separate call here avoids a double-spinner flash on open.
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final route = ModalRoute.of(context);
-    if (route == null || route == _observedRoute) return;
-    if (_observedRoute != null) {
-      routeLifecycleObserver.unsubscribe(this);
-    }
-    _observedRoute = route;
-    routeLifecycleObserver.subscribe(this, route);
-  }
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-    // The External Lists sub-screen can toggle IMDb rows while this screen is
-    // still on the stack. Those toggles are authoritative in the preference, so
-    // pull them back into our snapshot before the user can save a stale value
-    // over them.
-    if (!mounted) return;
-    var changed = false;
-    for (var i = 0; i < _sections.length; i++) {
-      final enabled = _toggleAuthoritativeEnabled(_sections[i].type);
-      if (enabled == null) continue;
-      if (_sections[i].enabled != enabled) {
-        _sections[i] = _sections[i].copyWith(enabled: enabled);
-        changed = true;
-      }
-    }
-    if (changed) setState(() {});
-  }
-
-  /// The rows whose own toggle outranks the saved layout: the IMDb rows and the
-  /// seasonal row, both switched on from the External Lists screen. Null for
-  /// every other type.
-  bool? _toggleAuthoritativeEnabled(HomeSectionType type) {
-    if (_isImdbSectionType(type)) return _isImdbRowEnabled(type);
-    if (type == HomeSectionType.seasonal) {
-      return _prefs.get(UserPreferences.seasonalRowEnabled);
-    }
-    if (type == HomeSectionType.mdblistWatchingNow) {
-      return _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
-    }
-    return null;
-  }
-
   bool _ensureBuiltinSectionsPresent() {
     final existingTypes = _sections
         .where((s) => s.isBuiltin)
@@ -942,7 +836,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       _addSection(
         HomeSectionConfig(
           type: type,
-          enabled: _toggleAuthoritativeEnabled(type) ?? false,
+          enabled: false,
           order: nextOrder++,
         ),
       );
@@ -1570,7 +1464,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   @override
   void dispose() {
-    routeLifecycleObserver.unsubscribe(this);
     for (final n in _focusNodesByStableId.values) {
       n.dispose();
     }
@@ -1609,6 +1502,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     }
   }
 
+  // Older app versions still show or hide these rows by their own switches,
+  // so each switch keeps following its row.
   void _syncIndividualPreferences() {
     Preference<bool>? mapToPref(HomeSectionType type) {
       final tmdb = UserPreferences.tmdbSectionEnabled[type];
@@ -1640,6 +1535,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           UserPreferences.sinceYouWatched5Enabled,
         HomeSectionType.mdblistWatchingNow =>
           UserPreferences.mdblistWatchingNowEnabled,
+        HomeSectionType.radarrCalendar => UserPreferences.enableRadarrCalendar,
+        HomeSectionType.sonarrCalendar => UserPreferences.enableSonarrCalendar,
         _ => null,
       };
     }

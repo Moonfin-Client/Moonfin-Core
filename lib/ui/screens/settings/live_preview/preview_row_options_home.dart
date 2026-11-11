@@ -175,7 +175,6 @@ class _HomeSnapshot {
     prefs.get(UserPreferences.mergeRecentRowsByType),
     prefs.get(UserPreferences.displayRewatchRow),
     prefs.get(UserPreferences.displaySinceYouWatchedRows),
-    prefs.get(UserPreferences.seasonalRowEnabled),
     for (final group in RowOptionsGroup.values) prefs.get(group.display),
   ].join('|');
 

@@ -16695,13 +16695,9 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Näytä Radarrin/Sonarrin tulevat kalenterit.",
+    "upcomingCalendarsDescription": "Valitse, mitä Radarr- ja Sonarr-rivit näyttävät.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
-    },
-    "enableRadarrCalendar": "Ota Radarrin tulevien tapahtumien kalenteri käyttöön",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
     },
     "radarrCalendarShowCinema": "Näytä tulevat elokuvajulkaisut",
     "@radarrCalendarShowCinema": {
@@ -16722,10 +16718,6 @@
     "radarrCalendarHideDownloaded": "Piilota palvelimella jo olevat elokuvat",
     "@radarrCalendarHideDownloaded": {
         "description": "Leaves out movies Radarr already downloaded from the calendar row"
-    },
-    "enableSonarrCalendar": "Ota Sonarrin tulevien tapahtumien kalenteri käyttöön",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Näytä jakson tiedot",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -16768,10 +16760,6 @@
     "mdblistWatchingNow": "Katsomassa MDBListissä",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "Näytä, mitä MDBList-käyttäjät katsovat parhaillaan",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowWatchersCount": "{count} katselee",
     "@watchingNowWatchersCount": {

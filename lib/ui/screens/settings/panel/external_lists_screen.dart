@@ -9,12 +9,10 @@ class _SeasonalRowScreen extends StatefulWidget {
 
 class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
   final _scope = FocusScopeNode(debugLabel: 'SeasonalRowScope');
-  final _firstFocusNode = FocusNode(debugLabel: 'seasonal_row_enabled');
 
   @override
   void dispose() {
     _scope.dispose();
-    _firstFocusNode.dispose();
     super.dispose();
   }
 
@@ -31,32 +29,6 @@ class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
       UserPreferences.seasonalHolidayIds.where(hidden.contains).join(','),
     );
     if (mounted) setState(() {});
-  }
-
-  /// Switching the row on puts it right after Continue Watching and Next Up,
-  /// where a holiday row gets noticed. Switching it off keeps its place.
-  void _syncSectionState(bool enabled) {
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-    final idx = configs.indexWhere((c) => c.type == HomeSectionType.seasonal);
-    final current = idx >= 0
-        ? configs.removeAt(idx)
-        : const HomeSectionConfig(type: HomeSectionType.seasonal, enabled: false, order: 0);
-
-    var insertAt = idx >= 0 ? idx : configs.length;
-    if (enabled && !current.enabled) {
-      final anchor = configs.lastIndexWhere(
-        (c) => c.isBuiltin &&
-            (c.type == HomeSectionType.resume || c.type == HomeSectionType.nextUp),
-      );
-      insertAt = anchor + 1;
-    }
-    configs.insert(insertAt, current.copyWith(enabled: enabled));
-    for (var i = 0; i < configs.length; i++) {
-      configs[i] = configs[i].copyWith(order: i);
-    }
-    prefs.setHomeSectionsConfig(configs);
-    _pushPersonalizationSync();
   }
 
   String _countryLabel(String code, AppLocalizations l10n) => switch (code) {
@@ -76,7 +48,6 @@ class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
     return withCleanSettingsTypography(
       context,
       RequestInitialFocus(
-        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
         child: Scaffold(
           appBar: buildSettingsAppBar(context, Text(l10n.seasonalRow)),
           body: FocusScope(
@@ -86,14 +57,6 @@ class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
               children: [
                 adaptiveListSection(
                   children: [
-                    SwitchPreferenceTile(
-                      focusNode: _firstFocusNode,
-                      preference: UserPreferences.seasonalRowEnabled,
-                      title: l10n.seasonalRow,
-                      subtitle: seerrBrand(l10n.seasonalRowDescription),
-                      icon: Icons.celebration_outlined,
-                      onChangedValue: _syncSectionState,
-                    ),
                     StringPickerPreferenceTile(
                       preference: UserPreferences.seasonalRowCountry,
                       title: l10n.seasonalRowCountry,
@@ -153,7 +116,6 @@ class _ImdbListsScreen extends StatefulWidget {
 }
 
 class _ImdbListsScreenState extends State<_ImdbListsScreen> {
-  bool _isFetching = false;
   final _scope = FocusScopeNode(debugLabel: 'ImdbListsScope');
   final _firstFocusNode = FocusNode(debugLabel: 'imdb_top_250_movies');
 
@@ -162,115 +124,6 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
     _scope.dispose();
     _firstFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<bool> _fetchAndCacheList(HomeSectionType type, String title) async {
-    if (_isFetching) return false;
-    _isFetching = true;
-
-    var dialogDismissed = false;
-
-    unawaited(
-      showFocusRestoringDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) {
-          return withCleanSettingsTypography(
-            ctx,
-            PopScope(
-              canPop: false,
-              child: AlertDialog(
-                title: Text('Fetching $title'),
-                content: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 8),
-                    SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressIndicator(),
-                    ),
-                    SizedBox(height: 24),
-                    Text(
-                      'Downloading list from Moonbase and saving locally...',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        dialogDismissed = true;
-      }),
-    );
-
-    try {
-      final customService = GetIt.instance<CustomExternalListsService>();
-      final config = HomeSectionConfig.pluginDynamic(
-        serverId: 'seerr', // placeholder
-        pluginSection: type.serializedName,
-        pluginDisplayText: title,
-        pluginSource: HomeSectionPluginSource.custom,
-        pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
-          'type': type.serializedName,
-        }),
-      );
-
-      final items = await customService
-          .fetchCustomRow(config, forceRefresh: true)
-          .timeout(const Duration(seconds: 15));
-      if (items.isEmpty) {
-        throw Exception('Server returned no items.');
-      }
-      return true;
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to fetch $title from Moonbase: '
-              '${describeError(e, AppLocalizations.of(context))}',
-            ),
-          ),
-        );
-      }
-      return false;
-    } finally {
-      _isFetching = false;
-      if (mounted && !dialogDismissed) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-    }
-  }
-
-  void _syncSingleImdbSectionState(HomeSectionType type, bool enabled) {
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-
-    final idx = configs.indexWhere((c) => c.type == type);
-    var changed = false;
-    if (idx >= 0) {
-      if (configs[idx].enabled != enabled) {
-        configs[idx] = configs[idx].copyWith(enabled: enabled);
-        changed = true;
-      }
-    } else {
-      configs.add(HomeSectionConfig(
-        type: type,
-        enabled: enabled,
-        order: configs.length,
-      ));
-      changed = true;
-    }
-
-    if (changed) {
-      prefs.setHomeSectionsConfig(configs);
-    }
-    _pushPersonalizationSync();
   }
 
   void _pushPersonalizationSync() {
@@ -335,155 +188,6 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                     ),
                   ],
                 ),
-                _SectionHeader(l10n.settingsImdbListsSection),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbTop250MoviesEnabled,
-                      title: l10n.imdbTop250Movies,
-                      icon: Icons.movie_outlined,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTop250Movies,
-                            l10n.imdbTop250Movies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTop250MoviesEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTop250Movies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbTop250TvShowsEnabled,
-                      title: l10n.imdbTop250TvShows,
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTop250TvShows,
-                            l10n.imdbTop250TvShows,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTop250TvShowsEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTop250TvShows,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbMostPopularMoviesEnabled,
-                      title: l10n.imdbMostPopularMovies,
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbMostPopularMovies,
-                            l10n.imdbMostPopularMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbMostPopularMoviesEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbMostPopularMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbMostPopularTvShowsEnabled,
-                      title: l10n.imdbMostPopularTvShows,
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbMostPopularTvShows,
-                            l10n.imdbMostPopularTvShows,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbMostPopularTvShowsEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbMostPopularTvShows,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbLowestRatedMoviesEnabled,
-                      title: l10n.imdbLowestRatedMovies,
-                      icon: Icons.trending_down,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbLowestRatedMovies,
-                            l10n.imdbLowestRatedMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbLowestRatedMoviesEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbLowestRatedMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbTopEnglishMoviesEnabled,
-                      title: l10n.imdbTopEnglishMovies,
-                      icon: Icons.language,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTopEnglishMovies,
-                            l10n.imdbTopEnglishMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTopEnglishMoviesEnabled, false);
-                            if (mounted) setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTopEnglishMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -501,7 +205,6 @@ class _TmdbListsScreen extends StatefulWidget {
 }
 
 class _TmdbListsScreenState extends State<_TmdbListsScreen> {
-  bool _isFetching = false;
   final _scope = FocusScopeNode(debugLabel: 'TmdbListsScope');
   final _firstFocusNode = FocusNode(debugLabel: 'tmdb_popular_movies');
 
@@ -510,36 +213,6 @@ class _TmdbListsScreenState extends State<_TmdbListsScreen> {
     _scope.dispose();
     _firstFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<bool> _fetchAndCacheList(HomeSectionType type, String title) async {
-    return true;
-  }
-
-  void _syncSingleTmdbSectionState(HomeSectionType type, bool enabled) {
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-
-    final idx = configs.indexWhere((c) => c.type == type);
-    var changed = false;
-    if (idx >= 0) {
-      if (configs[idx].enabled != enabled) {
-        configs[idx] = configs[idx].copyWith(enabled: enabled);
-        changed = true;
-      }
-    } else {
-      configs.add(HomeSectionConfig(
-        type: type,
-        enabled: enabled,
-        order: configs.length,
-      ));
-      changed = true;
-    }
-
-    if (changed) {
-      prefs.setHomeSectionsConfig(configs);
-    }
-    _pushPersonalizationSync();
   }
 
   @override
@@ -594,323 +267,6 @@ class _TmdbListsScreenState extends State<_TmdbListsScreen> {
                     ),
                   ],
                 ),
-                _SectionHeader(l10n.settingsTmdbListsSection),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbPopularMoviesEnabled,
-                      title: 'Popular Movies',
-                      icon: Icons.movie_outlined,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbPopularMovies,
-                            'Popular Movies',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbPopularMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbPopularMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTopRatedMoviesEnabled,
-                      title: 'Top Rated Movies',
-                      icon: Icons.star_border,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTopRatedMovies,
-                            'Top Rated Movies',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTopRatedMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTopRatedMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbNowPlayingMoviesEnabled,
-                      title: 'Now Playing Movies',
-                      icon: Icons.play_arrow_outlined,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbNowPlayingMovies,
-                            'Now Playing Movies',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbNowPlayingMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbNowPlayingMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbUpcomingMoviesEnabled,
-                      title: 'Upcoming Movies',
-                      icon: Icons.upcoming,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbUpcomingMovies,
-                            'Upcoming Movies',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbUpcomingMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbUpcomingMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbPopularTvEnabled,
-                      title: 'Popular TV',
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbPopularTv,
-                            'Popular TV',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbPopularTvEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbPopularTv,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTopRatedTvEnabled,
-                      title: 'Top Rated TV',
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTopRatedTv,
-                            'Top Rated TV',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTopRatedTvEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTopRatedTv,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbAiringTodayTvEnabled,
-                      title: 'Airing Today TV',
-                      icon: Icons.calendar_today,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbAiringTodayTv,
-                            'Airing Today TV',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbAiringTodayTvEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbAiringTodayTv,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbOnTheAirTvEnabled,
-                      title: 'On The Air TV',
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbOnTheAirTv,
-                            'On The Air TV',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbOnTheAirTvEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbOnTheAirTv,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTrendingMovieDailyEnabled,
-                      title: 'Trending Movies (Daily)',
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTrendingMovieDaily,
-                            'Trending Movies (Daily)',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTrendingMovieDailyEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTrendingMovieDaily,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTrendingMovieWeeklyEnabled,
-                      title: 'Trending Movies (Weekly)',
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTrendingMovieWeekly,
-                            'Trending Movies (Weekly)',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTrendingMovieWeeklyEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTrendingMovieWeekly,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTrendingTvDailyEnabled,
-                      title: 'Trending TV (Daily)',
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTrendingTvDaily,
-                            'Trending TV (Daily)',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTrendingTvDailyEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTrendingTvDaily,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTrendingTvWeeklyEnabled,
-                      title: 'Trending TV (Weekly)',
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTrendingTvWeekly,
-                            'Trending TV (Weekly)',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTrendingTvWeeklyEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTrendingTvWeekly,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.tmdbTrendingAllWeeklyEnabled,
-                      title: 'Trending All (Weekly)',
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.tmdbTrendingAllWeekly,
-                            'Trending All (Weekly)',
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.tmdbTrendingAllWeeklyEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleTmdbSectionState(
-                          HomeSectionType.tmdbTrendingAllWeekly,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -929,7 +285,7 @@ class _UpcomingCalendarsScreen extends StatefulWidget {
 
 class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
   final _scope = FocusScopeNode(debugLabel: 'UpcomingCalendarsScope');
-  final _firstNode = FocusNode(debugLabel: 'radarr_calendar_enable');
+  final _firstNode = FocusNode(debugLabel: 'radarr_calendar_show_cinema');
 
   @override
   void dispose() {
@@ -938,40 +294,15 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
     super.dispose();
   }
 
-  void _syncCalendarSectionState(HomeSectionType type, bool enabled) {
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-
-    final idx = configs.indexWhere((c) => c.type == type);
-    var changed = false;
-    if (idx >= 0) {
-      if (configs[idx].enabled != enabled) {
-        configs[idx] = configs[idx].copyWith(enabled: enabled);
-        changed = true;
-      }
-    } else {
-      configs.add(HomeSectionConfig(
-        type: type,
-        enabled: enabled,
-        order: configs.length,
-      ));
-      changed = true;
-    }
-
-    if (changed) {
-      prefs.setHomeSectionsConfig(configs);
-    }
-    _pushPersonalizationSync();
-  }
-
   @override
   Widget build(BuildContext context) {
     final prefs = GetIt.instance<UserPreferences>();
 
     final l10n = AppLocalizations.of(context);
-    final radarrEnabled = prefs.get(UserPreferences.enableRadarrCalendar);
-    final sonarrEnabled = prefs.get(UserPreferences.enableSonarrCalendar);
-    final calendarsCanMerge = radarrEnabled && sonarrEnabled;
+    bool rowOn(HomeSectionType type) => prefs.homeSectionsConfig
+        .any((c) => c.isBuiltin && c.type == type && c.enabled);
+    final calendarsCanMerge = rowOn(HomeSectionType.radarrCalendar) &&
+        rowOn(HomeSectionType.sonarrCalendar);
 
     if (!calendarsCanMerge && prefs.get(UserPreferences.mergeRadarrSonarrCalendars)) {
       prefs.set(UserPreferences.mergeRadarrSonarrCalendars, false);
@@ -995,97 +326,67 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                 adaptiveListSection(
                   children: [
                     SwitchPreferenceTile(
-                      key: const ValueKey('enableRadarrCalendar'),
+                      key: const ValueKey('radarrCalendarShowCinema'),
                       focusNode: _firstNode,
-                      preference: UserPreferences.enableRadarrCalendar,
-                      title: l10n.enableRadarrCalendar,
-                      icon: Icons.movie_outlined,
-                      onChangedValue: (isEnabled) {
-                        _syncCalendarSectionState(
-                          HomeSectionType.radarrCalendar,
-                          isEnabled,
-                        );
-                        setState(() {});
-                      },
+                      preference: UserPreferences.radarrCalendarShowCinema,
+                      title: l10n.radarrCalendarShowCinema,
+                      icon: Icons.theater_comedy,
+                      onChanged: () => setState(() {}),
                     ),
-                    if (radarrEnabled) ...[
-                      SwitchPreferenceTile(
-                        key: const ValueKey('radarrCalendarShowCinema'),
-                        preference: UserPreferences.radarrCalendarShowCinema,
-                        title: l10n.radarrCalendarShowCinema,
-                        icon: Icons.theater_comedy,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('radarrCalendarShowDigital'),
-                        preference: UserPreferences.radarrCalendarShowDigital,
-                        title: l10n.radarrCalendarShowDigital,
-                        icon: Icons.tv,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('radarrCalendarShowPhysical'),
-                        preference: UserPreferences.radarrCalendarShowPhysical,
-                        title: l10n.radarrCalendarShowPhysical,
-                        icon: Icons.album,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('radarrCalendarShowDate'),
-                        preference: UserPreferences.radarrCalendarShowDate,
-                        title: l10n.calendarShowReleaseDate,
-                        icon: Icons.calendar_month,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('radarrCalendarHideDownloaded'),
-                        preference: UserPreferences.radarrCalendarHideDownloaded,
-                        title: l10n.radarrCalendarHideDownloaded,
-                        icon: Icons.download_done,
-                        onChanged: () => setState(() {}),
-                      ),
-                    ],
+                    SwitchPreferenceTile(
+                      key: const ValueKey('radarrCalendarShowDigital'),
+                      preference: UserPreferences.radarrCalendarShowDigital,
+                      title: l10n.radarrCalendarShowDigital,
+                      icon: Icons.tv,
+                      onChanged: () => setState(() {}),
+                    ),
+                    SwitchPreferenceTile(
+                      key: const ValueKey('radarrCalendarShowPhysical'),
+                      preference: UserPreferences.radarrCalendarShowPhysical,
+                      title: l10n.radarrCalendarShowPhysical,
+                      icon: Icons.album,
+                      onChanged: () => setState(() {}),
+                    ),
+                    SwitchPreferenceTile(
+                      key: const ValueKey('radarrCalendarShowDate'),
+                      preference: UserPreferences.radarrCalendarShowDate,
+                      title: l10n.calendarShowReleaseDate,
+                      icon: Icons.calendar_month,
+                      onChanged: () => setState(() {}),
+                    ),
+                    SwitchPreferenceTile(
+                      key: const ValueKey('radarrCalendarHideDownloaded'),
+                      preference: UserPreferences.radarrCalendarHideDownloaded,
+                      title: l10n.radarrCalendarHideDownloaded,
+                      icon: Icons.download_done,
+                      onChanged: () => setState(() {}),
+                    ),
                   ],
                 ),
                 const _SectionHeader('Sonarr'),
                 adaptiveListSection(
                   children: [
                     SwitchPreferenceTile(
-                      key: const ValueKey('enableSonarrCalendar'),
-                      preference: UserPreferences.enableSonarrCalendar,
-                      title: l10n.enableSonarrCalendar,
-                      icon: Icons.live_tv,
-                      onChangedValue: (isEnabled) {
-                        _syncCalendarSectionState(
-                          HomeSectionType.sonarrCalendar,
-                          isEnabled,
-                        );
-                        setState(() {});
-                      },
+                      key: const ValueKey('sonarrCalendarShowEpisodeInfo'),
+                      preference: UserPreferences.sonarrCalendarShowEpisodeInfo,
+                      title: l10n.sonarrCalendarShowEpisodeInfo,
+                      icon: Icons.info_outline,
+                      onChanged: () => setState(() {}),
                     ),
-                    if (sonarrEnabled) ...[
-                      SwitchPreferenceTile(
-                        key: const ValueKey('sonarrCalendarShowEpisodeInfo'),
-                        preference: UserPreferences.sonarrCalendarShowEpisodeInfo,
-                        title: l10n.sonarrCalendarShowEpisodeInfo,
-                        icon: Icons.info_outline,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('sonarrCalendarShowDate'),
-                        preference: UserPreferences.sonarrCalendarShowDate,
-                        title: l10n.calendarShowReleaseDate,
-                        icon: Icons.calendar_month,
-                        onChanged: () => setState(() {}),
-                      ),
-                      SwitchPreferenceTile(
-                        key: const ValueKey('sonarrCalendarHideDownloaded'),
-                        preference: UserPreferences.sonarrCalendarHideDownloaded,
-                        title: l10n.sonarrCalendarHideDownloaded,
-                        icon: Icons.download_done,
-                        onChanged: () => setState(() {}),
-                      ),
-                    ],
+                    SwitchPreferenceTile(
+                      key: const ValueKey('sonarrCalendarShowDate'),
+                      preference: UserPreferences.sonarrCalendarShowDate,
+                      title: l10n.calendarShowReleaseDate,
+                      icon: Icons.calendar_month,
+                      onChanged: () => setState(() {}),
+                    ),
+                    SwitchPreferenceTile(
+                      key: const ValueKey('sonarrCalendarHideDownloaded'),
+                      preference: UserPreferences.sonarrCalendarHideDownloaded,
+                      title: l10n.sonarrCalendarHideDownloaded,
+                      icon: Icons.download_done,
+                      onChanged: () => setState(() {}),
+                    ),
                   ],
                 ),
                 adaptiveListSection(

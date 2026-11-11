@@ -3592,7 +3592,8 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  /// Every TMDB home section, against the preference that turns it on.
+  /// Every TMDB home section, against its old switch, which older app versions
+  /// still read.
   static final Map<HomeSectionType, Preference<bool>> tmdbSectionEnabled = {
     HomeSectionType.tmdbPopularMovies: tmdbPopularMoviesEnabled,
     HomeSectionType.tmdbTopRatedMovies: tmdbTopRatedMoviesEnabled,

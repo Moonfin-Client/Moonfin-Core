@@ -3956,10 +3956,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Attiva o disattiva i calendari delle uscite di Radarr/Sonarr.';
-
-  @override
-  String get enableRadarrCalendar => 'Abilita Calendario Uscite di Radarr';
+      'Scegli cosa mostrano le righe di Radarr e Sonarr.';
 
   @override
   String get radarrCalendarShowCinema => 'Mostra Uscite al Cinema in Arrivo';
@@ -3976,9 +3973,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get radarrCalendarHideDownloaded => 'Nascondi Film Già sul Server';
-
-  @override
-  String get enableSonarrCalendar => 'Abilita Calendario Uscite di Sonarr';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Mostra Informazioni Episodio';
@@ -5539,10 +5533,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'In Visione su MDBList';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Mostra cosa stanno guardando ora gli utenti di MDBList';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -16609,12 +16599,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsPassthroughSettingsSection => 'Passthrough Settings';
-
-  @override
-  String get settingsImdbListsSection => 'IMDb Lists';
-
-  @override
-  String get settingsTmdbListsSection => 'TMDB Lists';
 
   @override
   String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';

@@ -128,6 +128,34 @@ class PluginSyncService extends ChangeNotifier {
   /// is linked, or the admin kept the calendar to admins.
   bool _calendarAvailable = false;
   bool get calendarAvailable => _pluginAvailable && _calendarAvailable;
+
+  /// Whether the server can fill the external row [type] (IMDb, TMDB, MDBList
+  /// Watching Now, seasonal and the calendars), which decides both whether the
+  /// row picker offers it and whether Home draws it. Null for every other row.
+  /// [serverBuildsSeasonal] says whether the server makes its own seasonal row
+  /// (Silo), and it's only asked when the plugin can't fill that row.
+  bool? externalRowAvailable(
+    prefs.HomeSectionType type, {
+    bool Function()? serverBuildsSeasonal,
+  }) {
+    if (prefs.imdbChartSections.contains(type)) return _pluginAvailable;
+    if (UserPreferences.isTmdbSectionType(type)) {
+      return _pluginAvailable &&
+          (_tmdbAvailable ||
+              _prefs.get(UserPreferences.tmdbApiKey).trim().isNotEmpty);
+    }
+    return switch (type) {
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        _pluginAvailable &&
+            (_mdblistAvailable ||
+                _prefs.get(UserPreferences.mdblistApiKey).trim().isNotEmpty),
+      prefs.HomeSectionType.seasonal =>
+        _pluginAvailable || (serverBuildsSeasonal?.call() ?? false),
+      prefs.HomeSectionType.radarrCalendar ||
+      prefs.HomeSectionType.sonarrCalendar => calendarAvailable,
+      _ => null,
+    };
+  }
   int _calendarDaysBack = 14;
   int get calendarDaysBack => _calendarDaysBack;
   int _calendarDaysAhead = 90;

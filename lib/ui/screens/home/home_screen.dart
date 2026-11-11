@@ -212,8 +212,6 @@ class _HomeShellState extends State<_HomeShell>
   String? _lastObservedPath;
   ModalRoute<dynamic>? _observedRoute;
 
-  bool _lastEnableRadarrCalendar = false;
-  bool _lastEnableSonarrCalendar = false;
   bool _lastMergeRadarrSonarrCalendars = false;
   bool _lastRadarrCalendarShowCinema = false;
   bool _lastRadarrCalendarShowDigital = true;
@@ -258,8 +256,6 @@ class _HomeShellState extends State<_HomeShell>
       UserPreferences.blockedParentalRatings,
     );
     _lastSeerrAvailable = _pluginSyncService.seerrAvailable;
-    _lastEnableRadarrCalendar = _userPrefs.get(UserPreferences.enableRadarrCalendar);
-    _lastEnableSonarrCalendar = _userPrefs.get(UserPreferences.enableSonarrCalendar);
     _lastMergeRadarrSonarrCalendars = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
     _lastRadarrCalendarShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
     _lastRadarrCalendarShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
@@ -427,8 +423,6 @@ class _HomeShellState extends State<_HomeShell>
     );
     final currentHiddenCW = _userPrefs.get(UserPreferences.hiddenContinueWatchingItems);
     final currentHiddenNU = _userPrefs.get(UserPreferences.hiddenNextUpSeries);
-    final currentEnableRadarr = _userPrefs.get(UserPreferences.enableRadarrCalendar);
-    final currentEnableSonarr = _userPrefs.get(UserPreferences.enableSonarrCalendar);
     final currentMerge = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
     final currentShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
     final currentShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
@@ -446,8 +440,6 @@ class _HomeShellState extends State<_HomeShell>
         currentBlocked != _lastBlockedParentalRatings ||
         currentHiddenCW != _lastHiddenCW ||
         currentHiddenNU != _lastHiddenNU ||
-        currentEnableRadarr != _lastEnableRadarrCalendar ||
-        currentEnableSonarr != _lastEnableSonarrCalendar ||
         currentMerge != _lastMergeRadarrSonarrCalendars ||
         currentShowCinema != _lastRadarrCalendarShowCinema ||
         currentShowDigital != _lastRadarrCalendarShowDigital ||
@@ -464,8 +456,6 @@ class _HomeShellState extends State<_HomeShell>
       _lastBlockedParentalRatings = currentBlocked;
       _lastHiddenCW = currentHiddenCW;
       _lastHiddenNU = currentHiddenNU;
-      _lastEnableRadarrCalendar = currentEnableRadarr;
-      _lastEnableSonarrCalendar = currentEnableSonarr;
       _lastMergeRadarrSonarrCalendars = currentMerge;
       _lastRadarrCalendarShowCinema = currentShowCinema;
       _lastRadarrCalendarShowDigital = currentShowDigital;

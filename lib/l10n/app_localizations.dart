@@ -6907,14 +6907,8 @@ abstract class AppLocalizations {
   /// Subtitle of the Upcoming Calendars settings entry
   ///
   /// In en, this message translates to:
-  /// **'Toggle Upcoming Calendars from Radarr/Sonarr.'**
+  /// **'Choose what the Radarr and Sonarr rows show.'**
   String get upcomingCalendarsDescription;
-
-  /// Turns on the Radarr calendar home row
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Radarr\'s Upcoming Calendar'**
-  String get enableRadarrCalendar;
 
   /// Includes cinema release dates in the Radarr calendar row
   ///
@@ -6945,12 +6939,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide Movies Already on the Server'**
   String get radarrCalendarHideDownloaded;
-
-  /// Turns on the Sonarr calendar home row
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Sonarr\'s Upcoming Calendar'**
-  String get enableSonarrCalendar;
 
   /// Shows the season and episode number in the Sonarr calendar row
   ///
@@ -9759,12 +9747,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watching on MDBList'**
   String get mdblistWatchingNow;
-
-  /// Description for the Watching on MDBList setting
-  ///
-  /// In en, this message translates to:
-  /// **'Show what MDBList users are currently watching'**
-  String get mdblistWatchingNowDescription;
 
   /// Badge on Watching on MDBList card showing current watchers count
   ///
@@ -28624,18 +28606,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passthrough Settings'**
   String get settingsPassthroughSettingsSection;
-
-  /// Section header on the IMDb Lists settings screen over the IMDb row switches
-  ///
-  /// In en, this message translates to:
-  /// **'IMDb Lists'**
-  String get settingsImdbListsSection;
-
-  /// Section header on the TMDB Lists settings screen over the TMDB row switches
-  ///
-  /// In en, this message translates to:
-  /// **'TMDB Lists'**
-  String get settingsTmdbListsSection;
 
   /// Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page
   ///

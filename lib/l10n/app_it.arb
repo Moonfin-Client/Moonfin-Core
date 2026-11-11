@@ -12000,13 +12000,9 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Attiva o disattiva i calendari delle uscite di Radarr/Sonarr.",
+    "upcomingCalendarsDescription": "Scegli cosa mostrano le righe di Radarr e Sonarr.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
-    },
-    "enableRadarrCalendar": "Abilita Calendario Uscite di Radarr",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
     },
     "radarrCalendarShowCinema": "Mostra Uscite al Cinema in Arrivo",
     "@radarrCalendarShowCinema": {
@@ -12027,10 +12023,6 @@
     "radarrCalendarHideDownloaded": "Nascondi Film Già sul Server",
     "@radarrCalendarHideDownloaded": {
         "description": "Leaves out movies Radarr already downloaded from the calendar row"
-    },
-    "enableSonarrCalendar": "Abilita Calendario Uscite di Sonarr",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Mostra Informazioni Episodio",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -12449,10 +12441,6 @@
     "mdblistWatchingNow": "In Visione su MDBList",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "Mostra cosa stanno guardando ora gli utenti di MDBList",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowWatchersCount": "{count} in visione",
     "@watchingNowWatchersCount": {

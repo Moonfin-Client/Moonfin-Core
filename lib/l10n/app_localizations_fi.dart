@@ -3954,11 +3954,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Näytä Radarrin/Sonarrin tulevat kalenterit.';
-
-  @override
-  String get enableRadarrCalendar =>
-      'Ota Radarrin tulevien tapahtumien kalenteri käyttöön';
+      'Valitse, mitä Radarr- ja Sonarr-rivit näyttävät.';
 
   @override
   String get radarrCalendarShowCinema => 'Näytä tulevat elokuvajulkaisut';
@@ -3976,10 +3972,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Piilota palvelimella jo olevat elokuvat';
-
-  @override
-  String get enableSonarrCalendar =>
-      'Ota Sonarrin tulevien tapahtumien kalenteri käyttöön';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Näytä jakson tiedot';
@@ -5538,10 +5530,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'Katsomassa MDBListissä';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Näytä, mitä MDBList-käyttäjät katsovat parhaillaan';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -16569,12 +16557,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsPassthroughSettingsSection => 'Passthrough Settings';
-
-  @override
-  String get settingsImdbListsSection => 'IMDb Lists';
-
-  @override
-  String get settingsTmdbListsSection => 'TMDB Lists';
 
   @override
   String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';

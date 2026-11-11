@@ -16617,13 +16617,9 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.",
+    "upcomingCalendarsDescription": "Radarr ve Sonarr satırlarının ne göstereceğini seç.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
-    },
-    "enableRadarrCalendar": "Radarr Gelecek Takvimini Etkinleştir",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
     },
     "radarrCalendarShowCinema": "Gelecek Sinema Vizyonlarını Göster",
     "@radarrCalendarShowCinema": {
@@ -16652,10 +16648,6 @@
     "radarrCalendarHideDownloaded": "Sunucuda Zaten Olan Filmleri Gizle",
     "@radarrCalendarHideDownloaded": {
         "description": "Leaves out movies Radarr already downloaded from the calendar row"
-    },
-    "enableSonarrCalendar": "Sonarr'ın Yaklaşanlar Takvimini Etkinleştir",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Bölüm Bilgilerini Göster",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -16698,10 +16690,6 @@
     "mdblistWatchingNow": "MDBList'te İzleniyor",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "MDBList kullanıcılarının şu anda neler izlediğini göster",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowWatchersCount": "{count} izleyici",
     "@watchingNowWatchersCount": {

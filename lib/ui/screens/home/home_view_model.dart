@@ -291,51 +291,6 @@ class HomeViewModel extends ChangeNotifier {
   static bool _isTmdbSectionType(HomeSectionType type) =>
       UserPreferences.isTmdbSectionType(type);
 
-  bool _isTmdbSectionEnabled(HomeSectionType type) {
-    final pref = UserPreferences.tmdbSectionEnabled[type];
-    return pref != null && _prefs.get(pref);
-  }
-
-  bool _isAnyTmdbSectionEnabled() =>
-      UserPreferences.tmdbSectionEnabled.values.any(_prefs.get);
-
-  static bool _isImdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.imdbTop250Movies ||
-        type == HomeSectionType.imdbTop250TvShows ||
-        type == HomeSectionType.imdbMostPopularMovies ||
-        type == HomeSectionType.imdbMostPopularTvShows ||
-        type == HomeSectionType.imdbLowestRatedMovies ||
-        type == HomeSectionType.imdbTopEnglishMovies;
-  }
-
-  bool _isImdbSectionEnabled(HomeSectionType type) {
-    switch (type) {
-      case HomeSectionType.imdbTop250Movies:
-        return _prefs.get(UserPreferences.imdbTop250MoviesEnabled);
-      case HomeSectionType.imdbTop250TvShows:
-        return _prefs.get(UserPreferences.imdbTop250TvShowsEnabled);
-      case HomeSectionType.imdbMostPopularMovies:
-        return _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled);
-      case HomeSectionType.imdbMostPopularTvShows:
-        return _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled);
-      case HomeSectionType.imdbLowestRatedMovies:
-        return _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled);
-      case HomeSectionType.imdbTopEnglishMovies:
-        return _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-      default:
-        return false;
-    }
-  }
-
-  bool _isAnyImdbSectionEnabled() {
-    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-  }
-
   ImageApi imageApiForServer(String serverId) {
     if (!_multiServerEnabled) return _dataSource.imageApi;
     return _multiServerRepo.getImageApiForServer(serverId);
@@ -469,15 +424,17 @@ class HomeViewModel extends ChangeNotifier {
       final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
       final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
       final seerrPrefs = GetIt.instance<SeerrPreferences>();
-      final showImdbRows = _isAnyImdbSectionEnabled();
-      final showTmdbRows = _isAnyTmdbSectionEnabled();
       final showSinceYouWatched = _prefs.get(UserPreferences.displaySinceYouWatchedRows);
       final sinceYouWatchedNum = _prefs.get(UserPreferences.sinceYouWatchedNumRows).value;
       final showRewatch = _prefs.get(UserPreferences.displayRewatchRow);
       final showStudiosRows = _prefs.get(UserPreferences.displayStudiosRows);
-      final showSeasonal = _prefs.get(UserPreferences.seasonalRowEnabled) &&
-          (GetIt.instance<PluginSyncService>().pluginAvailable ||
-              _client.itemsApi is ServerHomeSectionsApi);
+      final sync = GetIt.instance<PluginSyncService>();
+      bool externalRowShown(HomeSectionType type) =>
+          sync.externalRowAvailable(
+            type,
+            serverBuildsSeasonal: () => _client.itemsApi is ServerHomeSectionsApi,
+          ) ??
+          true;
 
       final offline = _isOffline;
       final visibleConfigsRaw = configs
@@ -507,13 +464,9 @@ class HomeViewModel extends ChangeNotifier {
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
                 (!_isSeerrSectionType(c.type) || (showSeerrRows && seerrPrefs.isSeerrHomeRowEnabled(c.type))) &&
                 (showSeerrRows || !isSeerrSliderSection(c)) &&
-                (!_isImdbSectionType(c.type) || (showImdbRows && _isImdbSectionEnabled(c.type))) &&
-                (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
-                (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
-                (c.type != HomeSectionType.sonarrCalendar || _prefs.get(UserPreferences.enableSonarrCalendar)) &&
+                externalRowShown(c.type) &&
                 (c.type.sinceYouWatchedRow == 0 || (showSinceYouWatched && c.type.sinceYouWatchedRow <= sinceYouWatchedNum)) &&
-                (c.type != HomeSectionType.rewatch || showRewatch) &&
-                (c.type != HomeSectionType.seasonal || showSeasonal),
+                (c.type != HomeSectionType.rewatch || showRewatch),
           )
           .toList(growable: false);
 
@@ -3506,7 +3459,9 @@ class HomeViewModel extends ChangeNotifier {
   void _ensureWatchingNowTimer() {
     if (_watchingNowTimer != null && _watchingNowTimer!.isActive) return;
     _watchingNowTimer = Timer.periodic(const Duration(minutes: 5), (_) {
-      final isConfigured = _prefs.get(UserPreferences.mdblistWatchingNowEnabled) &&
+      final isConfigured = (GetIt.instance<PluginSyncService>()
+                  .externalRowAvailable(HomeSectionType.mdblistWatchingNow) ??
+              false) &&
           _prefs.activeHomeSectionConfigs.any((c) => c.type == HomeSectionType.mdblistWatchingNow);
       if (!isConfigured) {
         _watchingNowTimer?.cancel();
