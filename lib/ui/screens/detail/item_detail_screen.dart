@@ -28,6 +28,7 @@ import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/auto_download_service.dart';
 import '../../../data/services/download_service.dart';
+import '../../../data/utils/video_range_label.dart';
 import '../../../data/models/download_quality.dart';
 import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
@@ -11648,16 +11649,11 @@ String? resolutionFromStreams(List<Map<String, dynamic>> streams) {
   return 'SD';
 }
 
-String? hdrFromStreams(List<Map<String, dynamic>> streams) {
+/// The range badges for the video stream (`DV P8`, `HDR10+`, `SDR`), or none
+/// when there's no video stream or it carries no range at all.
+List<String> hdrBadgesFromStreams(List<Map<String, dynamic>> streams) {
   final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-  if (video == null) {
-    return null;
-  }
-  final hdr = video['VideoRangeType'] as String?;
-  if (hdr == null || hdr.isEmpty) {
-    return null;
-  }
-  return hdr.toUpperCase();
+  return video == null ? const [] : videoRangeBadges(video);
 }
 
 String? audioLabelFromStreams(List<Map<String, dynamic>> streams) {
@@ -11692,8 +11688,14 @@ String? codecFromStreams(
   final badges = <String>[];
   final res = resolutionFromStreams(streams) ?? item.videoResolution;
   if (res != null) badges.add(res);
-  final hdr = hdrFromStreams(streams) ?? item.hdrType;
-  if (hdr != null) badges.add(hdr);
+  var hdr = hdrBadgesFromStreams(streams);
+  // The item's own streams are its first version's, so they only stand in for
+  // that one.
+  if (hdr.isEmpty &&
+      selectedMediaSource?['Id'] == item.mediaSources.firstOrNull?['Id']) {
+    hdr = hdrBadgesFromStreams(item.mediaStreams);
+  }
+  badges.addAll(hdr);
   final vcodec =
       codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
   if (vcodec != null) badges.add(vcodec);
