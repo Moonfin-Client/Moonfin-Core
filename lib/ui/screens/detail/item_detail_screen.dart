@@ -7408,8 +7408,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: () => _isInSyncPlayGroup()
               ? _watchWithGroup(context, item)
               : _pickForWatchParty(context, item),
-          isActive: true,
-          activeColor: AppColorScheme.accent,
         ),
       if (shows(DetailButton.watched))
         DetailButton.watched: _DetailActionButton(
