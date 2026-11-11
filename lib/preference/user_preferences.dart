@@ -369,7 +369,15 @@ class UserPreferences extends ChangeNotifier {
   ///   default), replace it with the server's SubtitleLanguagePreference.
   /// - SubtitleMode: if the local pref has never been explicitly stored (empty
   ///   default), convert it to the closest Moonfin subtitle mode.
-  void initLanguagePrefs(UserConfiguration config) {
+  void initLanguagePrefs(
+    UserConfiguration config, {
+    String? expectedProfileScope,
+  }) {
+    final activeScope = _activeProfileScopeSuffix();
+    if (expectedProfileScope != null && expectedProfileScope != activeScope) {
+      return;
+    }
+
     final sysIso3 = toIso3Language(
       normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode),
     );
@@ -400,7 +408,6 @@ class UserPreferences extends ChangeNotifier {
       _setIfMissing(subtitleMode, mode);
     }
 
-    final activeScope = _activeProfileScopeSuffix();
     if (activeScope != null) {
       seedHideWatchedFromServer(config, expectedProfileScope: activeScope);
     }

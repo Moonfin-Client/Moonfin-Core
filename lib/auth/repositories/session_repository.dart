@@ -526,9 +526,11 @@ class SessionRepository {
       }
 
       // init language prefs if not already set
-      if (serverUser.configuration != null) {
+      if (serverUser.configuration != null &&
+          GetIt.instance.isRegistered<UserPreferences>()) {
         GetIt.instance<UserPreferences>().initLanguagePrefs(
           serverUser.configuration!,
+          expectedProfileScope: '${serverId}_${user.id}',
         );
       }
     } on DioException catch (e) {

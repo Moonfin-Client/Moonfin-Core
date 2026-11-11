@@ -323,11 +323,11 @@ class RowDataSource {
       limit: _defaultLimit,
       hideWatched: hideWatched,
     );
-    while (hideWatched &&
+    if (hideWatched &&
         items.length < _defaultLimit &&
         rawItems.length >= fetchLimit &&
-        fetchLimit < 500) {
-      fetchLimit = fetchLimit + 100 > 500 ? 500 : fetchLimit + 100;
+        fetchLimit < _fullRowFetchLimit) {
+      fetchLimit = _fullRowFetchLimit;
       response = await _getLatestItemsWithFallback(
         parentId: parentId,
         limit: fetchLimit,
@@ -342,7 +342,7 @@ class RowDataSource {
     }
     final reportedTotal = response['TotalRecordCount'] as int?;
     final serverMayHaveMore =
-        rawItems.length >= fetchLimit && fetchLimit < 500;
+        rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
     final hasMore =
         items.length >= _defaultLimit &&
         items.length < _maxItems &&
@@ -1728,12 +1728,12 @@ class RowDataSource {
             limit: wanted,
             hideWatched: hideWatched,
           );
-          while (hideWatched &&
+          if (hideWatched &&
               items.length < wanted &&
               items.length < _maxItems &&
               rawItems.length >= fetchLimit &&
-              fetchLimit < 500) {
-            fetchLimit = fetchLimit + 100 > 500 ? 500 : fetchLimit + 100;
+              fetchLimit < _fullRowFetchLimit) {
+            fetchLimit = _fullRowFetchLimit;
             response = await _getLatestItemsWithFallback(
               parentId: parentId,
               limit: fetchLimit,
@@ -1747,7 +1747,7 @@ class RowDataSource {
           }
           final reportedTotal = response['TotalRecordCount'] as int?;
           final serverMayHaveMore =
-              rawItems.length >= fetchLimit && fetchLimit < 500;
+              rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
           final hasMore =
               items.length > row.items.length &&
               items.length >= wanted &&
