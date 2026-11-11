@@ -349,7 +349,9 @@ class RowDataSource {
         rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
     final mayHaveMore =
         serverMayHaveMore ||
-        (reportedTotal != null && reportedTotal > rawItems.length);
+        (fetchLimit < _fullRowFetchLimit &&
+            reportedTotal != null &&
+            reportedTotal > rawItems.length);
     final hasMore =
         (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
         items.length < _maxItems &&
@@ -522,7 +524,9 @@ class RowDataSource {
         rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
     final mayHaveMore =
         serverMayHaveMore ||
-        (reportedTotal != null && reportedTotal > rawItems.length);
+        (fetchLimit < _fullRowFetchLimit &&
+            reportedTotal != null &&
+            reportedTotal > rawItems.length);
     final hasMore =
         (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
         items.length < _maxItems &&
@@ -1824,13 +1828,17 @@ class RowDataSource {
               rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
           final mayHaveMore =
               serverMayHaveMore ||
-              (reportedTotal != null && reportedTotal > rawItems.length);
+              (fetchLimit < _fullRowFetchLimit &&
+                  reportedTotal != null &&
+                  reportedTotal > rawItems.length);
           if ((mayHaveMore || rawItems.length >= fetchLimit) &&
               items.length <= row.items.length) {
             items = row.items;
           }
           final hasMore =
-              (items.length > row.items.length || mayHaveMore) &&
+              ((items.length > row.items.length &&
+                          (items.length >= wanted || serverMayHaveMore)) ||
+                      mayHaveMore) &&
               items.length < _maxItems &&
               (reportedTotal == null ||
                   reportedTotal > items.length ||
@@ -2017,13 +2025,17 @@ class RowDataSource {
             rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
         final mayHaveMore =
             serverMayHaveMore ||
-            (reportedTotal != null && reportedTotal > rawItems.length);
+            (fetchLimit < _fullRowFetchLimit &&
+                reportedTotal != null &&
+                reportedTotal > rawItems.length);
         if ((mayHaveMore || rawItems.length >= fetchLimit) &&
             items.length <= row.items.length) {
           items = row.items;
         }
         final hasMore =
-            (items.length > row.items.length || mayHaveMore) &&
+            ((items.length > row.items.length &&
+                        (items.length >= wanted || serverMayHaveMore)) ||
+                    mayHaveMore) &&
             items.length < _maxItems &&
             (reportedTotal == null ||
                 reportedTotal > items.length ||

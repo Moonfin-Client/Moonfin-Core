@@ -572,5 +572,71 @@ void main() {
       expect(items, hasLength(3));
       expect(totalCount, 3);
     });
+
+    test('loadMore exhausts row when fixed candidate ceiling of 500 prevents further progress', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final initialItems = <AggregatedItem>[
+        for (var i = 0; i < 80; i++)
+          AggregatedItem(
+            id: 'series-$i',
+            serverId: 'srv1',
+            rawData: {
+              'Id': 'series-$i',
+              'Name': 'Series $i',
+              'Type': 'Series',
+            },
+          ),
+      ];
+      final initialRow = HomeRow(
+        id: 'latest_lib1',
+        title: 'TV',
+        rowType: HomeRowType.latestMedia,
+        items: initialItems,
+        totalCount: 88,
+      );
+
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int;
+        final items = [
+          for (var i = 0; i < limit; i++)
+            <String, dynamic>{
+              'Id': 'ep-$i',
+              'Name': 'Episode $i',
+              'Type': 'Episode',
+              'SeriesId': 'series-${i % 80}',
+              'SeriesName': 'Series ${i % 80}',
+            },
+        ];
+        return {'Items': items, 'TotalRecordCount': 1000};
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final (items, totalCount) = await dataSource.loadMore(
+        row: initialRow,
+        serverId: 'srv1',
+      );
+
+      expect(items, hasLength(80));
+      expect(totalCount, 80);
+    });
   });
 }
