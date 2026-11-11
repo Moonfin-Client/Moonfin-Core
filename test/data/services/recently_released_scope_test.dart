@@ -203,6 +203,68 @@ void main() {
       expect(pagedTotal, 100);
     });
 
+    test('retries short TV row when preference is unset and server collapses episodes to fewer series', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      // hideWatchedInRecentRows is unset
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final itemsApi = _MockItemsApi();
+      final requestedLimits = <int>[];
+      when(
+        () => itemsApi.getRecentlyReleasedItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+          recursive: any(named: 'recursive'),
+          hideWatched: any(named: 'hideWatched'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int? ?? 15;
+        requestedLimits.add(limit);
+        if (limit == 60) {
+          // 60 episodes from only 5 series (e.g. Silo server filtered watched items)
+          final items = [
+            for (var i = 0; i < 60; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 5}',
+                'SeriesName': 'Series ${i % 5}',
+              },
+          ];
+          return {'Items': items, 'TotalRecordCount': 60};
+        } else {
+          // Retry requests full page (limit: 500); returns 100 episodes from 20 series
+          final items = [
+            for (var i = 0; i < 100; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 20}',
+                'SeriesName': 'Series ${i % 20}',
+              },
+          ];
+          return {'Items': items, 'TotalRecordCount': 100};
+        }
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final row = await dataSource.loadRecentlyReleased('lib1', 'TV Shows', 'srv1', 'tvshows');
+      expect(requestedLimits, [60, 500]);
+      expect(row.items.length, 15);
+    });
+
     test('preserves hasMore and reportedTotal for an expanded fetch with additional visible items', () async {
       SharedPreferences.setMockInitialValues({});
       final store = PreferenceStore();

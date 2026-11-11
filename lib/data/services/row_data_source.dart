@@ -491,8 +491,7 @@ class RowDataSource {
       limit: _defaultLimit,
       hideWatched: hideWatched,
     );
-    if (hideWatched &&
-        items.length < _defaultLimit &&
+    if (items.length < _defaultLimit &&
         rawItems.length >= fetchLimit &&
         fetchLimit < _fullRowFetchLimit) {
       fetchLimit = _fullRowFetchLimit;
@@ -508,7 +507,7 @@ class RowDataSource {
         rawItems,
         collectionType: collectionType,
         limit: _defaultLimit,
-        hideWatched: true,
+        hideWatched: hideWatched,
       );
     }
     final reportedTotal = response['TotalRecordCount'] as int?;
@@ -1973,8 +1972,7 @@ class RowDataSource {
           limit: wanted,
           hideWatched: hideWatched,
         );
-        if (hideWatched &&
-            items.length < wanted &&
+        if (items.length < wanted &&
             items.length < _maxItems &&
             rawItems.length >= fetchLimit &&
             fetchLimit < _fullRowFetchLimit) {
@@ -1991,7 +1989,7 @@ class RowDataSource {
             rawItems,
             collectionType: collectionType,
             limit: wanted > _maxItems ? _maxItems : wanted,
-            hideWatched: true,
+            hideWatched: hideWatched,
           );
         }
         final reportedTotal = response['TotalRecordCount'] as int?;

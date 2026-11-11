@@ -41,7 +41,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   }
 
   void _syncHideWatchedFromServerIfUnset() {
-    if (_prefs.containsPreference(UserPreferences.hideWatchedInRecentRows)) {
+    final hasScope = _prefs.activeProfileScopeSuffix() != null;
+    if (_prefs.containsPreference(
+      UserPreferences.hideWatchedInRecentRows,
+      scopedOnly: hasScope,
+    )) {
       return;
     }
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
@@ -55,6 +59,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
         }
         if (!_prefs.containsPreference(
               UserPreferences.hideWatchedInRecentRows,
+              scopedOnly: initialScope != null,
             ) &&
             config.hidePlayedInLatest) {
           _prefs.seedHideWatchedFromServer(

@@ -283,6 +283,46 @@ void main() {
     },
   );
 
+  testWidgets(
+    'seeds hideWatchedInRecentRows when unscoped base key exists but scoped profile key is absent',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      // Write legacy base key directly without scope
+      await store.setBool(UserPreferences.hideWatchedInRecentRows.key, false);
+
+      // Now log in with profile A
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+      );
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Scoped key should have been seeded despite the legacy base key existing
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
+        isTrue,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+    },
+  );
+
   testWidgets('Merge Recent Rows by Type reloads Home', (tester) async {
     await prefs.set(UserPreferences.mergeRecentRowsByType, false);
     await pump(tester);
