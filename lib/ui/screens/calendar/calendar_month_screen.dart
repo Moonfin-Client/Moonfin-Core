@@ -7,6 +7,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/date_format_util.dart';
+import '../../../util/device_hinge.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -19,7 +20,8 @@ import 'calendar_common.dart';
 import 'calendar_controller.dart';
 
 /// The full calendar behind both styles: a month grid with the picked day's
-/// entries under it on phones and beside it on TV and desktop.
+/// entries under it on phones and beside it on TV and desktop. An opened
+/// folding phone and a tablet get the full grid too, with touch controls.
 class CalendarMonthScreen extends StatefulWidget {
   const CalendarMonthScreen({super.key});
 
@@ -28,6 +30,10 @@ class CalendarMonthScreen extends StatefulWidget {
 }
 
 class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
+  /// The share of the screen's width a touch screen gives the day's entries
+  /// beside the grid, since desktop's fixed 400 would squeeze the grid there.
+  static const _touchPanelWidthFactor = 0.36;
+
   final _c = CalendarController();
   late DateTime _selected;
   late DateTime _month;
@@ -131,10 +137,19 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
   @override
   Widget build(BuildContext context) {
     final body = ListenableBuilder(
-      listenable: _c,
-      builder: (context, _) => PlatformDetection.useMobileUi
-          ? _buildMobile(context)
-          : _buildWide(context),
+      listenable: Listenable.merge([_c, DeviceHinge.status]),
+      builder: (context, _) {
+        if (!PlatformDetection.useMobileUi) return _buildWide(context);
+        // The screen size changes as a folding phone opens or closes, so the
+        // layout follows it. The settings preview keeps the phone grid in its
+        // small frame.
+        return !inSettingsPreview(context) &&
+                PlatformDetection.hasTabletSizedScreen(
+                  MediaQuery.sizeOf(context),
+                )
+            ? _buildWide(context, touch: true)
+            : _buildMobile(context);
+      },
     );
     return Scaffold(
       backgroundColor: AppColorScheme.background,
@@ -220,19 +235,23 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     );
   }
 
+  /// The bottom bar layout floats the back button over the content.
+  double _touchTop(EdgeInsets insets) =>
+      insets.top + (NavigationLayout.usesBottomNavbar ? 48 : 0);
+
   Widget _buildMobile(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final days = _gridDays(context);
     final dayEntries = _c.on(_selected);
-    // The bottom bar layout floats the back button over the content.
-    final top =
-        calendarChromeInsets(context).top +
-        (NavigationLayout.usesBottomNavbar ? 48 : 0);
+    final insets = calendarChromeInsets(context);
+    final top = _touchTop(insets);
     return ListView(
+      // The sides clear the clock a closed folding phone keeps beside the
+      // screen, which would cover the Today button.
       padding: EdgeInsets.fromLTRB(
-        16,
+        insets.left,
         top,
-        16,
+        insets.right,
         bottomNavContentPadding(context, 24),
       ),
       children: [
@@ -290,9 +309,23 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     );
   }
 
-  Widget _buildWide(BuildContext context) {
+  Widget _buildWide(BuildContext context, {bool touch = false}) {
     final l10n = AppLocalizations.of(context);
-    final insets = calendarChromeInsets(context);
+    var insets = calendarChromeInsets(context).copyWith(bottom: 24);
+    if (touch) {
+      insets = insets.copyWith(
+        top: _touchTop(insets),
+        bottom: bottomNavContentPadding(context, 24),
+      );
+    }
+    final size = MediaQuery.sizeOf(context);
+    // Upright, the day's entries go under the grid so its cells keep their
+    // width.
+    final layout = !touch || size.width >= size.height
+        ? _WideLayout.sideBySide
+        : DeviceHinge.isLaptopPosture(context)
+        ? _WideLayout.foldSplit
+        : _WideLayout.stacked;
     final days = _gridDays(context);
     final dayEntries = _c.on(_selected);
     final dayName = calendarDayName(context, _selected, _c.today);
@@ -305,123 +338,167 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     final rows = days.length ~/ 7;
     final selectedNode =
         _cellNodes[days.indexOf(_selected).clamp(0, days.length - 1)];
-    return Padding(
-      padding: insets.copyWith(bottom: 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+    final weeks = Column(
+      children: [
+        for (var r = 0; r < rows; r++)
           Expanded(
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _header(context, mobile: false),
-                const SizedBox(height: 12),
-                _weekdays(context, days),
-                const SizedBox(height: 6),
-                Expanded(
-                  child:
-                      state ??
-                      RequestInitialFocus(
-                        key: ValueKey('month-${_month.year}-${_month.month}'),
-                        targetNode: selectedNode,
-                        child: Column(
-                          children: [
-                            for (var r = 0; r < rows; r++)
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    for (final (c, d)
-                                        in days
-                                            .sublist(r * 7, r * 7 + 7)
-                                            .indexed)
-                                      Expanded(
-                                        child: _WideCell(
-                                          day: d,
-                                          inMonth: d.month == _month.month,
-                                          selected: d == _selected,
-                                          today: d == _c.today,
-                                          entries: _c.on(d),
-                                          now: _c.now,
-                                          focusNode: _cellNodes[r * 7 + c],
-                                          onFocus: () => _select(d),
-                                          onOpen: () {
-                                            if (_c.on(d).isNotEmpty) {
-                                              _firstPanelRow.requestFocus();
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                ),
+                for (final (c, d) in days.sublist(r * 7, r * 7 + 7).indexed)
+                  Expanded(
+                    child: _WideCell(
+                      day: d,
+                      inMonth: d.month == _month.month,
+                      selected: d == _selected,
+                      today: d == _c.today,
+                      entries: _c.on(d),
+                      now: _c.now,
+                      focusNode: _cellNodes[r * 7 + c],
+                      onFocus: () => _select(d),
+                      onOpen: () {
+                        if (!touch && _c.on(d).isNotEmpty) {
+                          _firstPanelRow.requestFocus();
+                        }
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
-          const SizedBox(width: 24),
-          SizedBox(
-            width: 400,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  relativeDay ? dayName : fullDate,
-                  style: TextStyle(
-                    color: AppColorScheme.onSurface,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                if (relativeDay) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    fullDate,
-                    style: TextStyle(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                Expanded(
-                  child: dayEntries.isEmpty
-                      ? Center(
-                          child: Text(
-                            l10n.calendarEmptyDay,
-                            style: TextStyle(
-                              color: AppColorScheme.onSurface.withValues(
-                                alpha: 0.6,
-                              ),
-                            ),
-                          ),
-                        )
-                      : ListView(
-                          children: [
-                            for (final (i, e) in dayEntries.indexed)
-                              CalendarAgendaRow(
-                                entry: e,
-                                controller: _c,
-                                mobile: false,
-                                compact: true,
-                                focusNode: i == 0 ? _firstPanelRow : null,
-                                // Back to the picked day, not the cell nearest the panel.
-                                onNavigateLeft: selectedNode.requestFocus,
-                              ),
-                          ],
-                        ),
-                ),
-              ],
+      ],
+    );
+    final grid = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _header(context, mobile: touch),
+        const SizedBox(height: 12),
+        _weekdays(context, days),
+        const SizedBox(height: 6),
+        Expanded(
+          child:
+              state ??
+              // Touch has no focus to place.
+              (touch
+                  ? weeks
+                  : RequestInitialFocus(
+                      key: ValueKey('month-${_month.year}-${_month.month}'),
+                      targetNode: selectedNode,
+                      child: weeks,
+                    )),
+        ),
+      ],
+    );
+    final panel = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          relativeDay ? dayName : fullDate,
+          style: TextStyle(
+            color: AppColorScheme.onSurface,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (relativeDay) ...[
+          const SizedBox(height: 2),
+          Text(
+            fullDate,
+            style: TextStyle(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.55),
+              fontSize: 14,
             ),
           ),
         ],
-      ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: dayEntries.isEmpty
+              ? Center(
+                  child: Text(
+                    l10n.calendarEmptyDay,
+                    style: TextStyle(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                )
+              : ListView(
+                  // A list takes the status bar's inset by default, which this
+                  // panel is already clear of.
+                  padding: EdgeInsets.zero,
+                  children: [
+                    for (final (i, e) in dayEntries.indexed)
+                      CalendarAgendaRow(
+                        entry: e,
+                        controller: _c,
+                        mobile: touch,
+                        compact: true,
+                        focusNode: i == 0 ? _firstPanelRow : null,
+                        // Back to the picked day, not the cell nearest the panel.
+                        onNavigateLeft: selectedNode.requestFocus,
+                      ),
+                  ],
+                ),
+        ),
+      ],
     );
+    final body = switch (layout) {
+      // Half open like a laptop, the month stands on the upper half and the
+      // day's entries lie on the lower one.
+      _WideLayout.foldSplit => DeviceHinge.splitAtFold(
+        context,
+        topOffset: insets.top,
+        upper: grid,
+        lower: panel,
+      ),
+      _WideLayout.stacked => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(flex: 3, child: grid),
+          const SizedBox(height: 16),
+          Expanded(flex: 2, child: panel),
+        ],
+      ),
+      _WideLayout.sideBySide => Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: grid),
+          const SizedBox(width: 24),
+          SizedBox(
+            width: touch
+                ? (size.width * _touchPanelWidthFactor).clamp(260.0, 400.0)
+                : 400,
+            child: panel,
+          ),
+        ],
+      ),
+    };
+    return Padding(padding: insets, child: body);
   }
+}
+
+/// Where the full grid puts the picked day's entries.
+enum _WideLayout {
+  /// Beside the grid, on TV, desktop and a roomy touch screen on its side.
+  sideBySide,
+
+  /// Under the grid, on a roomy touch screen held upright.
+  stacked,
+
+  /// Under the grid and below the fold of a half open folding phone.
+  foldSplit,
+}
+
+/// How many of a day's titles a month cell of [height] shows, two at most. A
+/// cell too short for all of them gives a line to the count of the rest.
+@visibleForTesting
+int calendarCellTitleCount({
+  required int entries,
+  required double height,
+  required double lineHeight,
+}) {
+  final lines = (height / lineHeight).floor();
+  final fit = entries <= lines ? lines : lines - 1;
+  return fit.clamp(0, 2).clamp(0, entries);
 }
 
 bool _hasPremiere(List<CalendarEntry> entries) =>
@@ -543,11 +620,12 @@ class _WideCell extends StatelessWidget {
   final VoidCallback onOpen;
   final FocusNode? focusNode;
 
+  /// A title's row with its gap, which the count line fits in too.
+  static const _lineHeight = 20.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final shown = entries.take(2).toList();
-    final more = entries.length - shown.length;
     return Padding(
       padding: const EdgeInsets.all(3),
       child: FocusableWrapper(
@@ -571,11 +649,15 @@ class _WideCell extends StatelessWidget {
                 : AppColorScheme.onSurface.withValues(
                     alpha: inMonth ? 0.05 : 0.02,
                   ),
-            border: today
-                ? Border.all(color: AppColorScheme.accent, width: 1.5)
-                : null,
             borderRadius: AppRadius.circular(10),
           ),
+          // Drawn over the cell, so today keeps the room the other days have.
+          foregroundDecoration: today
+              ? BoxDecoration(
+                  border: Border.all(color: AppColorScheme.accent, width: 1.5),
+                  borderRadius: AppRadius.circular(10),
+                )
+              : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -594,62 +676,89 @@ class _WideCell extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const Spacer(),
-                  if (_hasPremiere(entries))
-                    CalendarTag(
-                      l10n.calendarBadgeNew,
-                      color: AppColorScheme.accent,
-                    ),
+                  const SizedBox(width: 4),
+                  // A narrow cell shrinks the tag to what is left of the row.
+                  Expanded(
+                    child: _hasPremiere(entries)
+                        ? FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: CalendarTag(
+                              l10n.calendarBadgeNew,
+                              color: AppColorScheme.accent,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
                 ],
               ),
               const SizedBox(height: 4),
               Expanded(
-                child: ClipRect(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final e in shown)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 3,
-                                height: 14,
-                                margin: const EdgeInsets.only(right: 5),
-                                decoration: BoxDecoration(
-                                  color: calendarColor(context, e, now),
-                                  borderRadius: AppRadius.circular(2),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  e.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: AppColorScheme.onSurface.withValues(
-                                      alpha: inMonth ? 0.85 : 0.35,
+                child: LayoutBuilder(
+                  builder: (context, box) {
+                    final lineHeight = MediaQuery.textScalerOf(context)
+                        .scale(_lineHeight);
+                    final shown = entries
+                        .take(
+                          calendarCellTitleCount(
+                            entries: entries.length,
+                            height: box.maxHeight,
+                            lineHeight: lineHeight,
+                          ),
+                        )
+                        .toList();
+                    final more = entries.length - shown.length;
+                    return ClipRect(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final e in shown)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 3,
+                                    height: 14,
+                                    margin: const EdgeInsets.only(right: 5),
+                                    decoration: BoxDecoration(
+                                      color: calendarColor(context, e, now),
+                                      borderRadius: AppRadius.circular(2),
                                     ),
-                                    fontSize: 12,
                                   ),
-                                ),
+                                  Expanded(
+                                    child: Text(
+                                      e.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: AppColorScheme.onSurface
+                                            .withValues(
+                                              alpha: inMonth ? 0.85 : 0.35,
+                                            ),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      if (more > 0)
-                        Text(
-                          l10n.studioMoreCount(more),
-                          style: TextStyle(
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.55,
                             ),
-                            fontSize: 11,
-                          ),
-                        ),
-                    ],
-                  ),
+                          if (more > 0 && box.maxHeight >= lineHeight)
+                            Text(
+                              l10n.studioMoreCount(more),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppColorScheme.onSurface.withValues(
+                                  alpha: 0.55,
+                                ),
+                                fontSize: 11,
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

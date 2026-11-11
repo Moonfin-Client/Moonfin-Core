@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../data/models/calendar_entry.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/date_format_util.dart';
+import '../../../util/device_hinge.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -13,6 +14,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'calendar_common.dart';
 import 'calendar_controller.dart';
 
@@ -27,9 +29,13 @@ class CalendarAgendaView extends StatefulWidget {
   State<CalendarAgendaView> createState() => _CalendarAgendaViewState();
 }
 
-class _CalendarAgendaViewState extends State<CalendarAgendaView> {
+class _CalendarAgendaViewState extends State<CalendarAgendaView>
+    with HingeAware {
   bool _recent = false;
-  CalendarEntry? _focused;
+
+  /// The entry the pane beside the list shows: the focused row on TV and
+  /// desktop, the tapped one on a touch screen.
+  CalendarEntry? _selectedEntry;
   final _firstRow = FocusNode(debugLabel: 'CalendarAgendaFirstRow');
   final _rowNodes = <String, FocusNode>{};
 
@@ -54,7 +60,7 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView> {
     if (recent == _recent) return;
     setState(() {
       _recent = recent;
-      _focused = null;
+      _selectedEntry = null;
     });
   }
 
@@ -73,26 +79,88 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView> {
           : l10n.calendarNothingUpcoming,
     );
     final header = _Header(recent: _recent, onTab: _setTab, mobile: mobile);
+    final shownEntry = calendarShownEntry(list, _selectedEntry);
     if (mobile) {
+      // The settings preview draws this in a small frame but keeps the
+      // screen's own size, so it stays one column there.
+      final roomy = !inSettingsPreview(context);
+      final size = MediaQuery.sizeOf(context);
+      // A tablet or an opened folding phone on its side shows the picked entry
+      // beside the list, and a folding phone half open like a laptop shows it
+      // above the fold.
+      final twoPane =
+          roomy &&
+          PlatformDetection.hasTabletSizedScreen(size) &&
+          size.width > size.height;
+      final laptop = roomy && DeviceHinge.isLaptopPosture(context);
+      final paneEntry = state == null && (twoPane || laptop)
+          ? shownEntry
+          : null;
+      Widget underHeader(Widget child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: header,
+          ),
+          const SizedBox(height: 8),
+          Expanded(child: child),
+        ],
+      );
+      final Widget body;
+      if (paneEntry == null) {
+        body = underHeader(state ?? _buildList(context, list, mobile: true));
+      } else {
+        final detailPane = _Preview(entry: paneEntry, controller: _c);
+        final rows = _buildList(
+          context,
+          list,
+          mobile: true,
+          paneEntry: paneEntry,
+        );
+        body = laptop
+            ? DeviceHinge.splitAtFold(
+                context,
+                topOffset: insets.top,
+                upper: underHeader(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: detailPane,
+                  ),
+                ),
+                lower: rows,
+              )
+            : underHeader(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: rows),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: 16,
+                          bottom: bottomNavContentPadding(context, 24),
+                        ),
+                        child: detailPane,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+      }
+      // An opened folding phone on its side keeps the clock in a top corner,
+      // so the list moves in with the header and the Full calendar button
+      // stays in line with the rows' bells.
+      final safe = MediaQuery.paddingOf(context);
       return Padding(
-        padding: EdgeInsets.only(top: insets.top),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: header,
-            ),
-            const SizedBox(height: 8),
-            Expanded(child: state ?? _buildList(context, list, mobile: true)),
-          ],
+        padding: EdgeInsets.only(
+          top: insets.top,
+          left: safe.left,
+          right: safe.right,
         ),
+        child: body,
       );
     }
-    final focused = _focused != null && list.contains(_focused)
-        ? _focused
-        : null;
-    final preview = focused ?? (list.isEmpty ? null : list.first);
     return Padding(
       padding: insets.copyWith(bottom: 24),
       child: Row(
@@ -118,14 +186,14 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView> {
           ),
           const SizedBox(width: 32),
           Expanded(
-            child: preview == null
+            child: shownEntry == null
                 ? const SizedBox.shrink()
                 : _Preview(
-                    entry: preview,
+                    entry: shownEntry,
                     controller: _c,
                     onBackToList: () => _nodeFor(
-                      preview,
-                      identical(preview, list.first),
+                      shownEntry,
+                      identical(shownEntry, list.first),
                     ).requestFocus(),
                   ),
           ),
@@ -138,6 +206,7 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView> {
     BuildContext context,
     List<CalendarEntry> list, {
     required bool mobile,
+    CalendarEntry? paneEntry,
   }) {
     final rows = <Object>[];
     DateTime? day;
@@ -169,11 +238,19 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView> {
             entry: e,
             controller: _c,
             mobile: mobile,
+            // Beside a pane, the first tap shows the entry there and a tap on
+            // the shown row opens it.
+            selected: identical(paneEntry, e),
+            onTap: paneEntry == null || identical(paneEntry, e)
+                ? null
+                : () => setState(() => _selectedEntry = e),
             focusNode: mobile ? null : _nodeFor(e, first),
             onFocused: mobile
                 ? null
                 : () {
-                    if (!identical(_focused, e)) setState(() => _focused = e);
+                    if (!identical(_selectedEntry, e)) {
+                      setState(() => _selectedEntry = e);
+                    }
                   },
           );
         },
@@ -244,7 +321,13 @@ class _Header extends StatelessWidget {
         Row(
           children: [
             Expanded(child: title),
-            if (mobile) full,
+            // The rows sit 6 in from the list's edge, and the button lines up
+            // with their bells.
+            if (mobile)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 6),
+                child: full,
+              ),
           ],
         ),
         const SizedBox(height: 10),
@@ -354,6 +437,22 @@ class _DayHeader extends StatelessWidget {
   }
 }
 
+/// The entry the pane beside the list shows: [selected] while the list still
+/// holds it, and the first one otherwise. Matched by key, since a reload
+/// builds every entry again.
+@visibleForTesting
+CalendarEntry? calendarShownEntry(
+  List<CalendarEntry> list,
+  CalendarEntry? selected,
+) {
+  if (list.isEmpty) return null;
+  if (selected == null) return list.first;
+  return list.firstWhere(
+    (e) => e.key == selected.key,
+    orElse: () => list.first,
+  );
+}
+
 class CalendarAgendaRow extends StatelessWidget {
   const CalendarAgendaRow({
     super.key,
@@ -364,6 +463,8 @@ class CalendarAgendaRow extends StatelessWidget {
     this.onFocused,
     this.onNavigateLeft,
     this.compact = false,
+    this.onTap,
+    this.selected = false,
   });
 
   final CalendarEntry entry;
@@ -375,6 +476,12 @@ class CalendarAgendaRow extends StatelessWidget {
 
   /// For the month grid's side panel, which is narrower than the list.
   final bool compact;
+
+  /// Replaces opening the entry, for a list that shows it in a pane first.
+  final VoidCallback? onTap;
+
+  /// Marks the row whose entry the pane beside the list shows.
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -470,7 +577,7 @@ class CalendarAgendaRow extends StatelessWidget {
     );
     return FocusableWrapper(
       focusNode: focusNode,
-      onSelect: () => calendarSelect(context, e),
+      onSelect: onTap ?? () => calendarSelect(context, e),
       onNavigateLeft: onNavigateLeft,
       onFocusChange: (f) {
         if (f) onFocused?.call();
@@ -482,7 +589,15 @@ class CalendarAgendaRow extends StatelessWidget {
       semanticLabel: '${e.title}, $subtitle',
       child: MouseRegion(
         onEnter: mobile ? null : (_) => onFocused?.call(),
-        child: row,
+        child: selected
+            ? DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColorScheme.accent.withValues(alpha: 0.16),
+                  borderRadius: AppRadius.circular(10),
+                ),
+                child: row,
+              )
+            : row,
       ),
     );
   }
@@ -493,12 +608,16 @@ class _Preview extends StatelessWidget {
   const _Preview({
     required this.entry,
     required this.controller,
-    required this.onBackToList,
+    this.onBackToList,
   });
 
   final CalendarEntry entry;
   final CalendarController controller;
-  final VoidCallback onBackToList;
+  final VoidCallback? onBackToList;
+
+  /// Under this height at the default text size, the pane drops the synopsis
+  /// to keep its buttons.
+  static const _shortPaneHeight = 340.0;
 
   @override
   Widget build(BuildContext context) {
@@ -575,79 +694,96 @@ class _Preview extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  kicker.toUpperCase(),
-                  style: TextStyle(
-                    color: calendarColor(context, e, c.now),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  e.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: AppColorScheme.onSurface,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.8),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
+          LayoutBuilder(
+            builder: (context, box) {
+              final short =
+                  box.maxHeight <
+                  MediaQuery.textScalerOf(context).scale(_shortPaneHeight);
+              // Reversed, the content sits at the bottom of the pane and
+              // scrolls when the pane is too short for it.
+              return SingleChildScrollView(
+                reverse: true,
+                padding: EdgeInsets.all(short ? 16 : 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (e.network != null)
-                      CalendarTag(
-                        e.network!,
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                    Text(
+                      kicker.toUpperCase(),
+                      style: TextStyle(
+                        color: calendarColor(context, e, c.now),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
                       ),
-                    if (e.runtimeMinutes != null && e.runtimeMinutes! > 0)
-                      CalendarTag(
-                        l10n.minutesShort(e.runtimeMinutes!),
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      e.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColorScheme.onSurface,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ...calendarTags(context, e, c.now),
+                    ),
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        if (e.network != null)
+                          CalendarTag(
+                            e.network!,
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.75,
+                            ),
+                          ),
+                        if (e.runtimeMinutes != null && e.runtimeMinutes! > 0)
+                          CalendarTag(
+                            l10n.minutesShort(e.runtimeMinutes!),
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.75,
+                            ),
+                          ),
+                        ...calendarTags(context, e, c.now),
+                      ],
+                    ),
+                    if (!short && !spoilers && e.overview != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        e.overview!,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.75,
+                          ),
+                          fontSize: 15,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                    if (buttons.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Wrap(spacing: 12, runSpacing: 12, children: buttons),
+                    ],
                   ],
                 ),
-                if (!spoilers && e.overview != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    e.overview!,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-                      fontSize: 15,
-                      height: 1.35,
-                    ),
-                  ),
-                ],
-                if (buttons.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  Wrap(spacing: 12, runSpacing: 12, children: buttons),
-                ],
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),

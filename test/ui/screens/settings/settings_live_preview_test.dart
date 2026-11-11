@@ -45,6 +45,7 @@ import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
 import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_common.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_controller.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
@@ -75,6 +76,7 @@ import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
 import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
+import 'package:moonfin/util/device_hinge.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_core/playback_core.dart'
     show PlaybackManager, QueueService;
@@ -3193,6 +3195,113 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
+
+    /// The test font draws every glyph a full em wide, so the header's tab
+    /// chips run out of room sideways. A vertical overflow still fails.
+    void ignoreSidewaysOverflow() {
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        final message = details.exceptionAsString();
+        if (!message.contains('overflowed') ||
+            !(message.contains('on the right') ||
+                message.contains('on the left'))) {
+          onError?.call(details);
+        }
+      };
+      addTearDown(() => FlutterError.onError = onError);
+    }
+
+    testWidgets('a tablet or an open folding phone keeps the phone calendar '
+        'in the small frame', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      Finder named(String type) =>
+          find.byWidgetPredicate((w) => w.runtimeType.toString() == type);
+
+      for (final (size, hinge) in [
+        (const Size(1194, 834), HingeStatus.unknown),
+        (const Size(669, 951), HingeStatus.partiallyOpen),
+      ]) {
+        tester.view.physicalSize = size;
+        DeviceHinge.debugStatus = hinge;
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Upcoming Show'), findsWidgets, reason: '$size');
+        expect(named('_Preview'), findsNothing, reason: '$size');
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Week',
+            prefKey: 'pref_calendar_week_start',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(named('_MobileCell'), findsWidgets, reason: '$size');
+        expect(named('_WideCell'), findsNothing, reason: '$size');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
+    testWidgets('half open, the picked entry fits the upper half at large '
+        'text', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      tester.view.physicalSize = const Size(669, 951);
+      tester.view.devicePixelRatio = 1.0;
+      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      DeviceHinge.debugStatus = HingeStatus.partiallyOpen;
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      final controller = CalendarController();
+      addTearDown(controller.dispose);
+      unawaited(controller.load());
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: CalendarAgendaView(controller: controller)),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Upcoming Show'), findsWidgets);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
 
     Future<void> settle(WidgetTester tester) async {
       // One frame starts the load and the next draws what it found.

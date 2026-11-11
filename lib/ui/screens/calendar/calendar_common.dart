@@ -30,12 +30,19 @@ UserPreferences get _prefs => GetIt.instance<UserPreferences>();
 
 /// Content insets that clear the top bar or the collapsed left rail.
 EdgeInsets calendarChromeInsets(BuildContext context) {
-  final top = MediaQuery.paddingOf(context).top;
+  final safe = MediaQuery.paddingOf(context);
+  final top = safe.top;
   if (PlatformDetection.useMobileUi) {
     final bar = NavigationLayout.usesBottomNavbar
         ? 0.0
         : TopToolbar.heightFor(context);
-    return EdgeInsets.only(top: top + 8 + bar, left: 16, right: 16);
+    // An opened folding phone on its side keeps the clock in a top corner,
+    // so the sides clear the system's insets too.
+    return EdgeInsets.only(
+      top: top + 8 + bar,
+      left: 16 + safe.left,
+      right: 16 + safe.right,
+    );
   }
   final position = NavigationLayout.sanitizeNavbarPosition(
     _prefs.get(UserPreferences.navbarPosition),
