@@ -594,7 +594,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ),
               ],
 
-              _SectionHeader('REWATCH'),
+              _SectionHeader(l10n.settingsRewatchSection),
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(
@@ -709,7 +709,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                   ],
                 ],
               ),
-              _SectionHeader('STUDIOS'),
+              _SectionHeader(l10n.studios),
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(
