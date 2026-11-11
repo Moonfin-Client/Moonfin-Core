@@ -117,6 +117,7 @@ void main() {
 
   tearDown(() async {
     PlatformDetection.setTvMode(false);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
     router.dispose();
     await GetIt.instance.reset();
   });
@@ -127,6 +128,9 @@ void main() {
     bool tv = false,
   }) async {
     PlatformDetection.setTvMode(tv);
+    PlatformDetection.setInterfaceLayout(
+      tv ? InterfaceLayout.tv : InterfaceLayout.automatic,
+    );
     tester.view.physicalSize = const Size(800, 1200);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -283,7 +287,7 @@ void main() {
     String focusedIcon() {
       final focus = FocusManager.instance.primaryFocus;
       final context = focus?.context;
-      if (context == null) return 'nothing';
+      if (context == null || !context.mounted) return 'nothing';
       final button = context.findAncestorWidgetOfExactType<IconButton>();
       final icon = button?.icon;
       if (icon is AdaptiveIcon) return _names[icon.icon] ?? '${icon.icon}';
