@@ -406,7 +406,13 @@ class UserPreferences extends ChangeNotifier {
   void seedHideWatchedFromServer(UserConfiguration config) {
     if (!containsPreference(hideWatchedInRecentRows, scopedOnly: true) &&
         config.hidePlayedInLatest) {
-      _setIfMissing(hideWatchedInRecentRows, true);
+      final scoped = _scopedPreference(hideWatchedInRecentRows);
+      if (scoped != null) {
+        _store.set(scoped, true);
+      } else {
+        _store.set(hideWatchedInRecentRows, true);
+      }
+      notifyListeners();
     }
   }
 

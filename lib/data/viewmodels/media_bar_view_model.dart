@@ -160,6 +160,7 @@ class MediaBarViewModel extends ChangeNotifier {
     ].map(_prefs.get),
     _prefs.get(UserPreferences.mediaBarNewReleaseBanner),
     _prefs.get(UserPreferences.mediaBarNewReleaseDays),
+    _prefs.get(UserPreferences.hideWatchedInRecentRows),
   ].join('|');
 
   void _onPrefsChanged() {
