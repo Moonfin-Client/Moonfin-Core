@@ -251,8 +251,8 @@ Future<void> _switchUserAndNavigate(String route, String userId) async {
 enum _SwitchOutcome {
   switched,
 
-  /// A dialog was closed, or Kids Mode has no PIN to leave it by, so the
-  /// session is as it was.
+  /// A dialog was closed, a check failed, or Kids Mode has no PIN to leave it
+  /// by, so the session is as it was.
   declined,
 
   /// The person was sent to sign in as that user, so nothing else navigates.
@@ -277,6 +277,8 @@ Future<_SwitchOutcome> _switchWithPrompts(
   _switchingWithPrompts = true;
   try {
     return await _askAndSwitch(serverId, userId, beforePrompt);
+  } catch (_) {
+    return _SwitchOutcome.declined;
   } finally {
     _switchingWithPrompts = false;
   }
