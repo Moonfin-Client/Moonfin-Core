@@ -82,7 +82,8 @@ final class HingeBridge {
     }
   #endif
 
-  /// The hinge also reports every change of angle, which nothing here uses.
+  /// The hinge reports every change of angle too, so only a new status goes
+  /// to Dart.
   private func send(_ status: String) {
     guard status != lastSentStatus else { return }
     lastSentStatus = status

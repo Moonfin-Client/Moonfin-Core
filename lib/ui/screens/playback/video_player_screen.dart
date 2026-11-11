@@ -892,11 +892,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       // video, so the player doesn't lock it sideways.
       _forcedLandscape =
           _watchParty?.isMoonbase != true || _watchParty?.room == null;
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-        if (!_forcedLandscape) DeviceOrientation.portraitUp,
-      ]);
+      _applyMobileOrientations();
     } else if (!PlatformDetection.isTV) {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
@@ -1648,18 +1644,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _toggleOrientationLock() {
     setState(() => _forcedLandscape = !_forcedLandscape);
-    if (_forcedLandscape) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    } else {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
+    _applyMobileOrientations();
+  }
+
+  /// The landscape lock lets go while a folding phone is half open, so the
+  /// window turns with the phone and the picture can sit above the fold.
+  void _applyMobileOrientations() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      if (!_forcedLandscape ||
+          DeviceHinge.status.value == HingeStatus.partiallyOpen)
         DeviceOrientation.portraitUp,
-      ]);
-    }
+    ]);
+  }
+
+  @override
+  void didChangeHinge() {
+    if (PlatformDetection.isMobile) _applyMobileOrientations();
   }
 
   void _onPiPChanged(bool isInPiP) {
@@ -1672,10 +1674,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _didRequestIosPiPForBackground = false;
       setImmersive(true);
       if (PlatformDetection.isMobile && _forcedLandscape) {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
+        _applyMobileOrientations();
       }
       _showControls();
     }
@@ -4261,11 +4260,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   if (!PlatformDetection.useLeanbackUi &&
                                       !_transportDocked &&
                                       !_partyHoldsStart)
-                                    Positioned(
-                                      top: DeviceHinge.laptopFoldY(context) ?? 0,
-                                      left: 0,
-                                      right: 0,
-                                      bottom: 0,
+                                    Positioned.fill(
+                                      top:
+                                          DeviceHinge.laptopFoldY(context) ?? 0,
                                       child: Center(
                                         child: _buildCenterTransportControls(),
                                       ),
@@ -4482,10 +4479,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       // Half open like a laptop, the picture stays above the fold and the
       // transport sits below it, under the hands.
       final fold = DeviceHinge.laptopFoldY(context);
-      return Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
+      return Positioned.fill(
         bottom: fold == null ? 0 : fold + DeviceHinge.creaseGap / 2,
         child: AetherVideoView(
           key: _videoSurfaceKey,

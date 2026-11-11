@@ -14,6 +14,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'calendar_common.dart';
 import 'calendar_controller.dart';
 
@@ -80,101 +81,84 @@ class _CalendarAgendaViewState extends State<CalendarAgendaView>
     final header = _Header(recent: _recent, onTab: _setTab, mobile: mobile);
     final shownEntry = calendarShownEntry(list, _selectedEntry);
     if (mobile) {
-      // An opened folding phone on its side keeps the clock in a top corner,
-      // which would cover the Full calendar button. The list moves in with
-      // the header so the button stays in line with the rows' bells.
-      final safe = MediaQuery.paddingOf(context);
-      // An opened folding phone or a tablet on its side has the room desktop
-      // uses to show the picked entry beside the list.
+      // The settings preview draws this in a small frame but keeps the
+      // screen's own size, so it stays one column there.
+      final roomy = !inSettingsPreview(context);
       final size = MediaQuery.sizeOf(context);
+      // A tablet or an opened folding phone on its side shows the picked entry
+      // beside the list, and a folding phone half open like a laptop shows it
+      // above the fold.
       final twoPane =
+          roomy &&
           PlatformDetection.hasTabletSizedScreen(size) &&
           size.width > size.height;
-      // Half open like a laptop, the picked entry stands on the upper half
-      // and the list lies on the lower one.
-      final laptop = DeviceHinge.isLaptopPosture(context);
-      final paneEntry = twoPane || laptop ? shownEntry : null;
-      final paddedHeader = Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: header,
+      final laptop = roomy && DeviceHinge.isLaptopPosture(context);
+      final paneEntry = state == null && (twoPane || laptop)
+          ? shownEntry
+          : null;
+      Widget underHeader(Widget child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: header,
+          ),
+          const SizedBox(height: 8),
+          Expanded(child: child),
+        ],
       );
-      if (paneEntry == null || state != null) {
-        return Padding(
-          padding: EdgeInsets.only(
-            top: insets.top,
-            left: safe.left,
-            right: safe.right,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              paddedHeader,
-              const SizedBox(height: 8),
-              Expanded(child: state ?? _buildList(context, list, mobile: true)),
-            ],
-          ),
+      final Widget body;
+      if (paneEntry == null) {
+        body = underHeader(state ?? _buildList(context, list, mobile: true));
+      } else {
+        final detailPane = _Preview(entry: paneEntry, controller: _c);
+        final rows = _buildList(
+          context,
+          list,
+          mobile: true,
+          paneEntry: paneEntry,
         );
-      }
-      final detailPane = _Preview(entry: paneEntry, controller: _c);
-      final rows = _buildList(
-        context,
-        list,
-        mobile: true,
-        paneEntry: paneEntry,
-      );
-      if (laptop) {
-        return Padding(
-          padding: EdgeInsets.only(top: insets.top),
-          child: DeviceHinge.splitAtFold(
-            context,
-            topOffset: insets.top,
-            upper: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                paddedHeader,
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Padding(
+        body = laptop
+            ? DeviceHinge.splitAtFold(
+                context,
+                topOffset: insets.top,
+                upper: underHeader(
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: detailPane,
                   ),
                 ),
-              ],
-            ),
-            lower: rows,
-          ),
-        );
+                lower: rows,
+              )
+            : underHeader(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: rows),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: 16,
+                          bottom: bottomNavContentPadding(context, 24),
+                        ),
+                        child: detailPane,
+                      ),
+                    ),
+                  ],
+                ),
+              );
       }
+      // An opened folding phone on its side keeps the clock in a top corner,
+      // so the list moves in with the header and the Full calendar button
+      // stays in line with the rows' bells.
+      final safe = MediaQuery.paddingOf(context);
       return Padding(
         padding: EdgeInsets.only(
           top: insets.top,
           left: safe.left,
           right: safe.right,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            paddedHeader,
-            const SizedBox(height: 8),
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: rows),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: 16,
-                        bottom: bottomNavContentPadding(context, 24),
-                      ),
-                      child: detailPane,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: body,
       );
     }
     return Padding(
@@ -712,9 +696,6 @@ class _Preview extends StatelessWidget {
           ),
           LayoutBuilder(
             builder: (context, box) {
-              // The upper half of a half open folding phone is too short for
-              // the synopsis.
-              // Larger text needs the room sooner.
               final short =
                   box.maxHeight <
                   MediaQuery.textScalerOf(context).scale(_shortPaneHeight);

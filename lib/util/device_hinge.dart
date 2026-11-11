@@ -30,7 +30,7 @@ class DeviceHinge {
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'statusChanged') _applyStatusName(call.arguments);
     });
-    // The first update can land before the handler above is set.
+    // The runner may have sent a status before this handler was set.
     _channel
         .invokeMethod<Object?>('getStatus')
         .then(_applyStatusName)
@@ -97,5 +97,12 @@ mixin HingeAware<T extends StatefulWidget> on State<T> {
     super.dispose();
   }
 
-  void _onHingeChanged() => setState(() {});
+  /// Called before the rebuild when the hinge status changes.
+  @protected
+  void didChangeHinge() {}
+
+  void _onHingeChanged() {
+    didChangeHinge();
+    setState(() {});
+  }
 }

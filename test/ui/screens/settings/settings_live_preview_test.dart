@@ -75,6 +75,7 @@ import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
 import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
+import 'package:moonfin/util/device_hinge.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_core/playback_core.dart'
     show PlaybackManager, QueueService;
@@ -3193,6 +3194,70 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
+
+    testWidgets('a tablet or an open folding phone keeps the phone calendar '
+        'in the small frame', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (!details.exceptionAsString().contains('overflowed')) {
+          onError?.call(details);
+        }
+      };
+      Finder named(String type) =>
+          find.byWidgetPredicate((w) => w.runtimeType.toString() == type);
+
+      for (final (size, hinge) in [
+        (const Size(1194, 834), HingeStatus.unknown),
+        (const Size(669, 951), HingeStatus.partiallyOpen),
+      ]) {
+        tester.view.physicalSize = size;
+        DeviceHinge.debugStatus = hinge;
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Upcoming Show'), findsWidgets, reason: '$size');
+        expect(named('_Preview'), findsNothing, reason: '$size');
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Week',
+            prefKey: 'pref_calendar_week_start',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(named('_MobileCell'), findsWidgets, reason: '$size');
+        expect(named('_WideCell'), findsNothing, reason: '$size');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      }
+      FlutterError.onError = onError;
+    });
 
     Future<void> settle(WidgetTester tester) async {
       // One frame starts the load and the next draws what it found.

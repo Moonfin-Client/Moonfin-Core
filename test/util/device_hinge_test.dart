@@ -32,6 +32,26 @@ Future<double?> _foldY(WidgetTester tester, Size size) async {
   return fold;
 }
 
+class _Probe extends StatefulWidget {
+  const _Probe(this.log);
+
+  final List<String> log;
+
+  @override
+  State<_Probe> createState() => _ProbeState();
+}
+
+class _ProbeState extends State<_Probe> with HingeAware {
+  @override
+  void didChangeHinge() => widget.log.add('hinge');
+
+  @override
+  Widget build(BuildContext context) {
+    widget.log.add('build ${DeviceHinge.status.value.name}');
+    return const SizedBox.shrink();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -72,6 +92,20 @@ void main() {
 
     DeviceHinge.debugStatus = HingeStatus.fullyOpen;
     expect(await _foldY(tester, upright), isNull);
+  });
+
+  testWidgets('tells the state about a change before it rebuilds', (
+    tester,
+  ) async {
+    final log = <String>[];
+    await tester.pumpWidget(_Probe(log));
+    DeviceHinge.debugStatus = HingeStatus.partiallyOpen;
+    await tester.pump();
+    expect(log, ['build unknown', 'hinge', 'build partiallyOpen']);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    DeviceHinge.debugStatus = HingeStatus.closed;
+    expect(log, hasLength(3));
   });
 
   test('a closed folding phone is not a tablet sized screen', () {

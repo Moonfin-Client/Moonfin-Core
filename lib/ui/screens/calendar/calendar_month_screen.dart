@@ -140,11 +140,13 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
       listenable: Listenable.merge([_c, DeviceHinge.status]),
       builder: (context, _) {
         if (!PlatformDetection.useMobileUi) return _buildWide(context);
-        // A folding phone reports its inner screen once it is opened, so
-        // the layout follows the fold as it happens.
-        return PlatformDetection.hasTabletSizedScreen(
-              MediaQuery.sizeOf(context),
-            )
+        // The screen size changes as a folding phone opens or closes, so the
+        // layout follows it. The settings preview keeps the phone grid in its
+        // small frame.
+        return !inSettingsPreview(context) &&
+                PlatformDetection.hasTabletSizedScreen(
+                  MediaQuery.sizeOf(context),
+                )
             ? _buildWide(context, touch: true)
             : _buildMobile(context);
       },
@@ -233,13 +235,16 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     );
   }
 
+  /// The bottom bar layout floats the back button over the content.
+  double _touchTop(EdgeInsets insets) =>
+      insets.top + (NavigationLayout.usesBottomNavbar ? 48 : 0);
+
   Widget _buildMobile(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final days = _gridDays(context);
     final dayEntries = _c.on(_selected);
-    // The bottom bar layout floats the back button over the content.
     final insets = calendarChromeInsets(context);
-    final top = insets.top + (NavigationLayout.usesBottomNavbar ? 48 : 0);
+    final top = _touchTop(insets);
     return ListView(
       // The sides clear the clock a closed folding phone keeps beside the
       // screen, which would cover the Today button.
@@ -308,9 +313,8 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
     final l10n = AppLocalizations.of(context);
     var insets = calendarChromeInsets(context).copyWith(bottom: 24);
     if (touch) {
-      // The bottom bar layout floats the back button over the content.
       insets = insets.copyWith(
-        top: insets.top + (NavigationLayout.usesBottomNavbar ? 48 : 0),
+        top: _touchTop(insets),
         bottom: bottomNavContentPadding(context, 24),
       );
     }
@@ -692,8 +696,6 @@ class _WideCell extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, box) {
-                    // A short cell gives a title's line to the count of the rest.
-                    // Larger text makes each line taller.
                     final lineHeight = MediaQuery.textScalerOf(context)
                         .scale(_lineHeight);
                     final shown = entries

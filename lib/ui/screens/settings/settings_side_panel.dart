@@ -866,25 +866,25 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
         return true;
       },
     );
+    Widget inspector({double? height, ScrollPhysics? physics}) => Container(
+      height: height,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      decoration: BoxDecoration(
+        color: AppColorScheme.surface,
+        borderRadius: AppRadius.circular(18),
+      ),
+      child: SingleChildScrollView(
+        physics: physics,
+        child: const SettingsPreviewInspector(),
+      ),
+    );
     if (sideBySide) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(flex: 3, child: preview),
           const SizedBox(width: 16),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              decoration: BoxDecoration(
-                color: AppColorScheme.surface,
-                borderRadius: AppRadius.circular(18),
-              ),
-              child: const SingleChildScrollView(
-                child: SettingsPreviewInspector(),
-              ),
-            ),
-          ),
+          Expanded(flex: 2, child: inspector()),
         ],
       );
     }
@@ -895,19 +895,11 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
         const SizedBox(height: 16),
         // A fixed height, so the preview above doesn't resize as
         // descriptions get longer or shorter.
-        Container(
+        inspector(
           height:
               _inspectorFixedHeight +
               MediaQuery.textScalerOf(context).scale(_inspectorTextHeight),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-          decoration: BoxDecoration(
-            color: AppColorScheme.surface,
-            borderRadius: AppRadius.circular(18),
-          ),
-          child: const SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
-            child: SettingsPreviewInspector(),
-          ),
+          physics: const NeverScrollableScrollPhysics(),
         ),
       ],
     );
@@ -928,7 +920,8 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
     // uses to keep the preview beside the list.
     final size = MediaQuery.sizeOf(context);
     final twoPane =
-        PlatformDetection.hasTabletSizedScreen(size) && size.width > size.height;
+        PlatformDetection.hasTabletSizedScreen(size) &&
+        size.width > size.height;
     final head = [
       Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 8), child: search),
       if (_categories.length > 1)
@@ -946,27 +939,30 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
         automaticallyImplyLeading: false,
         title: Text(l10n.settings),
       ),
-      // Half open like a laptop, the preview stands on the upper half and
-      // the settings lie on the lower one.
-      body: DeviceHinge.isLaptopPosture(context)
-          ? DeviceHinge.splitAtFold(
-              context,
-              topOffset: MediaQuery.paddingOf(context).top + kToolbarHeight,
-              upper: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                child: _buildPreviewPane(context, sideBySide: true),
-              ),
-              lower: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [...head, Expanded(child: list)],
-              ),
-            )
-          // An opened folding phone on its side keeps the clock in a top
-          // corner, over the end of the search field.
-          : SafeArea(
-              top: false,
-              bottom: false,
-              child: Column(
+      // An opened folding phone keeps the clock in a screen corner, over the
+      // end of the search field.
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        // Half open like a laptop, the preview stands on the upper half and
+        // the settings lie on the lower one.
+        child: DeviceHinge.isLaptopPosture(context)
+            ? DeviceHinge.splitAtFold(
+                context,
+                topOffset: MediaQuery.paddingOf(context).top + kToolbarHeight,
+                upper: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: _buildPreviewPane(context, sideBySide: true),
+                ),
+                lower: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...head,
+                    Expanded(child: list),
+                  ],
+                ),
+              )
+            : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ...head,
@@ -1003,7 +999,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
                   ],
                 ],
               ),
-            ),
+      ),
     );
   }
 
