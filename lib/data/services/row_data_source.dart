@@ -347,12 +347,15 @@ class RowDataSource {
     final reportedTotal = response['TotalRecordCount'] as int?;
     final serverMayHaveMore =
         rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
+    final mayHaveMore =
+        serverMayHaveMore ||
+        (reportedTotal != null && reportedTotal > rawItems.length);
     final hasMore =
-        items.length >= _defaultLimit &&
+        (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
         items.length < _maxItems &&
         (reportedTotal == null ||
             reportedTotal > items.length ||
-            serverMayHaveMore);
+            mayHaveMore);
     return HomeRow(
       id: 'latest_$parentId',
       title: _l10n.latestLibraryName(libraryName),
@@ -517,12 +520,15 @@ class RowDataSource {
     final reportedTotal = response['TotalRecordCount'] as int?;
     final serverMayHaveMore =
         rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
+    final mayHaveMore =
+        serverMayHaveMore ||
+        (reportedTotal != null && reportedTotal > rawItems.length);
     final hasMore =
-        items.length >= _defaultLimit &&
+        (items.length >= _defaultLimit || (items.isNotEmpty && mayHaveMore)) &&
         items.length < _maxItems &&
         (reportedTotal == null ||
             reportedTotal > items.length ||
-            serverMayHaveMore);
+            mayHaveMore);
     return HomeRow(
       id: 'recently_released_$parentId',
       title: _l10n.recentlyReleasedLibraryName(libraryName),
@@ -1816,13 +1822,16 @@ class RowDataSource {
           final reportedTotal = response['TotalRecordCount'] as int?;
           final serverMayHaveMore =
               rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
+          final mayHaveMore =
+              serverMayHaveMore ||
+              (reportedTotal != null && reportedTotal > rawItems.length);
           final hasMore =
               items.length > row.items.length &&
-              items.length >= wanted &&
+              (items.length >= wanted || mayHaveMore) &&
               items.length < _maxItems &&
               (reportedTotal == null ||
                   reportedTotal > items.length ||
-                  serverMayHaveMore);
+                  mayHaveMore);
           final totalCount = hasMore
               ? (reportedTotal != null &&
                         reportedTotal <= _maxItems &&
@@ -2003,13 +2012,16 @@ class RowDataSource {
         final reportedTotal = response['TotalRecordCount'] as int?;
         final serverMayHaveMore =
             rawItems.length >= fetchLimit && fetchLimit < _fullRowFetchLimit;
+        final mayHaveMore =
+            serverMayHaveMore ||
+            (reportedTotal != null && reportedTotal > rawItems.length);
         final hasMore =
             items.length > row.items.length &&
-            items.length >= wanted &&
+            (items.length >= wanted || mayHaveMore) &&
             items.length < _maxItems &&
             (reportedTotal == null ||
                 reportedTotal > items.length ||
-                serverMayHaveMore);
+                mayHaveMore);
         final totalCount = hasMore
             ? (reportedTotal != null &&
                       reportedTotal <= _maxItems &&

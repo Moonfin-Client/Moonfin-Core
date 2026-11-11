@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -304,6 +306,128 @@ void main() {
       final row = await dataSource.loadLatestMedia('lib1', 'Movies', 'srv1', 'movies');
       expect(row.items, hasLength(15));
       expect(row.totalCount, 22);
+    });
+
+    test('loadMore preserves pagination state when expanded retry fails on partial page', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final requestedLimits = <int>[];
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int;
+        requestedLimits.add(limit);
+        if (limit == 30) {
+          // 30 episodes from 20 series -> collapses to 20 series cards (partial page, wanted: 30)
+          final items = [
+            for (var i = 0; i < 30; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 20}',
+                'SeriesName': 'Series ${i % 20}',
+              },
+          ];
+          return {'Items': items, 'TotalRecordCount': 100};
+        } else {
+          // Retry at full row limit (500) fails with a network/server exception
+          throw Exception('Server timeout during expansion');
+        }
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final existingRow = HomeRow(
+        id: 'latest_lib1',
+        title: 'Latest TV',
+        rowType: HomeRowType.latestMedia,
+        items: [
+          for (var i = 0; i < 15; i++)
+            AggregatedItem(
+              id: 'series-$i',
+              serverId: 'srv1',
+              rawData: {'Id': 'series-$i', 'Type': 'Series', 'Name': 'Series $i'},
+            ),
+        ],
+        totalCount: 100,
+      );
+
+      final (items, totalCount) = await dataSource.loadMore(
+        row: existingRow,
+        serverId: 'srv1',
+      );
+      expect(requestedLimits, [30, 500]);
+      expect(items, hasLength(20));
+      expect(totalCount, 100);
+      expect(items.length < totalCount, isTrue);
+    });
+
+    test('loadLatestMedia preserves pagination state when expanded retry fails on partial page', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final requestedLimits = <int>[];
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int;
+        requestedLimits.add(limit);
+        if (limit == 60) {
+          // TV fetchLimit starts at 60; 60 episodes from 8 series -> collapses to 8 cards (< 15)
+          final items = [
+            for (var i = 0; i < 60; i++)
+              <String, dynamic>{
+                'Id': 'ep-$i',
+                'Name': 'Episode $i',
+                'Type': 'Episode',
+                'SeriesId': 'series-${i % 8}',
+                'SeriesName': 'Series ${i % 8}',
+              },
+          ];
+          return {'Items': items, 'TotalRecordCount': 80};
+        } else {
+          // Retry fails
+          throw Exception('Server timeout');
+        }
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final row = await dataSource.loadLatestMedia('lib1', 'TV', 'srv1', 'tvshows');
+      expect(requestedLimits, [60, 500]);
+      expect(row.items, hasLength(8));
+      expect(row.totalCount, 80);
+      expect(row.hasMore, isTrue);
     });
   });
 }
