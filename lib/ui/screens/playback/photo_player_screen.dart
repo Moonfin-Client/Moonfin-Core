@@ -8,6 +8,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/image_fetch_priority.dart';
 import '../../../util/system_ui.dart';
@@ -182,21 +183,34 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
       setState(() {});
     }
     final manager = GetIt.instance<PlaybackManager>();
-    await launchPlayerWhilePreparing(
-      context,
-      manager: manager,
-      destination: Destinations.videoPlayer,
-      startPlayback: (session) async {
-        final data = await _client.itemsApi.getItem(item.id);
-        final full = AggregatedItem(
-          id: data['Id']?.toString() ?? item.id,
-          serverId: data['ServerId']?.toString() ?? item.serverId,
-          rawData: data,
-        );
-        await runPlaybackStart(session, () => manager.playItems([full]));
-        return true;
-      },
-    );
+    try {
+      await launchPlayerWhilePreparing(
+        context,
+        manager: manager,
+        destination: Destinations.videoPlayer,
+        startPlayback: (session) async {
+          final data = await _client.itemsApi.getItem(item.id);
+          final full = AggregatedItem(
+            id: data['Id']?.toString() ?? item.id,
+            serverId: GetIt.instance<MediaServerClientFactory>().serverIdOf(
+              _client,
+            ),
+            rawData: data,
+          );
+          await runPlaybackStart(session, () => manager.playItems([full]));
+          return true;
+        },
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).failedToPlayChannel(item.name),
+          ),
+        ),
+      );
+    }
   }
 
   void _toggleSlideshow() {
