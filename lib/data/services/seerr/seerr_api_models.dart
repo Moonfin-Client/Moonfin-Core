@@ -353,6 +353,9 @@ class SeerrDiscoverItem {
   final int? voteCount;
   final double? popularity;
   final bool adult;
+
+  /// The US age rating. Only Silo's watchlist carries one.
+  final String? contentRating;
   final SeerrMediaInfo? mediaInfo;
   final String? character;
   final String? job;
@@ -376,6 +379,7 @@ class SeerrDiscoverItem {
     this.voteCount,
     this.popularity,
     this.adult = false,
+    this.contentRating,
     this.mediaInfo,
     this.character,
     this.job,
@@ -407,6 +411,9 @@ class SeerrMovieDetails {
   final String? releaseDate;
   final String? status;
   final int? runtime;
+
+  /// The US age rating. Only Silo's detail carries one.
+  final String? contentRating;
   final int? budget;
   final int? revenue;
   final double? voteAverage;
@@ -432,6 +439,7 @@ class SeerrMovieDetails {
     this.releaseDate,
     this.status,
     this.runtime,
+    this.contentRating,
     this.budget,
     this.revenue,
     this.voteAverage,
@@ -468,6 +476,9 @@ class SeerrTvDetails {
   final String? status;
   final int? numberOfSeasons;
   final int? numberOfEpisodes;
+
+  /// The US age rating. Only Silo's detail carries one.
+  final String? contentRating;
   final double? voteAverage;
   final int? voteCount;
   final double? popularity;
@@ -495,6 +506,7 @@ class SeerrTvDetails {
     this.status,
     this.numberOfSeasons,
     this.numberOfEpisodes,
+    this.contentRating,
     this.voteAverage,
     this.voteCount,
     this.popularity,

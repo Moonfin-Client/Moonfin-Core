@@ -15547,6 +15547,11 @@ class DetailSeasonsRow extends StatelessWidget {
   }
 
   String? _seasonImageUrl(AggregatedItem season, {required bool isMobile}) {
+    // A season only Seerr knows of has no server artwork, just its TMDB poster.
+    if (season.serverId == 'seerr') {
+      final path = season.rawData['PosterPath'] as String?;
+      return path == null || path.isEmpty ? null : '$seerrPosterBase$path';
+    }
     final desktopScale = _desktopUiScale(prefs: prefs);
     final primaryHeight = isMobile ? 300 : (400 * desktopScale).round();
     final secondaryWidth = isMobile ? 200 : (260 * desktopScale).round();
