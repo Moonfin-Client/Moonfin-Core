@@ -899,8 +899,9 @@ class SeerrHttpClient {
   }
 
   /// Removes a download from the client and blocklists its release, so the
-  /// arr searches for another. Admins only. A 404 means the download already
-  /// left the queue, which is the outcome asked for.
+  /// arr searches for another. Admins only. A 404 that says the download is
+  /// no longer in the queue is the outcome asked for. Moonbase also answers
+  /// 404 when it can't find the arr at all, and that one is a failure.
   Future<void> removeArrQueueItem({
     required bool radarr,
     required int queueId,
@@ -909,8 +910,15 @@ class SeerrHttpClient {
       _moonfinUrl('${radarr ? 'Radarr' : 'Sonarr'}/Queue/$queueId'),
       options: _authOptions(),
     );
-    if (response.statusCode == 404) return;
+    if (response.statusCode == 404 && _isGoneFromQueue(response.data)) return;
     _requireSuccess(response, 'removeArrQueueItem');
+  }
+
+  /// Moonbase's answer for a queue id the arr no longer lists.
+  static bool _isGoneFromQueue(Object? data) {
+    if (data is! Map) return false;
+    final error = data['error'];
+    return error is String && error.toLowerCase().contains('no longer in the');
   }
 
   Future<MoonfinStatusResponse> getMoonfinStatus() async {

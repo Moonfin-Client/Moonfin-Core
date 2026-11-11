@@ -14,8 +14,10 @@ import 'package:moonfin/data/viewmodels/seerr_requests_view_model.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 
 class _FakeSync extends Fake implements PluginSyncService {
+  bool available = true;
+
   @override
-  bool get arrQueueAvailable => true;
+  bool get arrQueueAvailable => available;
 }
 
 class _FakePrefs extends Fake implements SeerrPreferences {}
@@ -129,7 +131,11 @@ SeerrRequest _request(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() => GetIt.instance.registerSingleton<PluginSyncService>(_FakeSync()));
+  late _FakeSync sync;
+  setUp(() {
+    sync = _FakeSync();
+    GetIt.instance.registerSingleton<PluginSyncService>(sync);
+  });
   tearDown(() => GetIt.instance.reset());
 
   group('detail page', () {
@@ -144,7 +150,7 @@ void main() {
         expect(stuck?.stuckItemId, 41);
         expect(vm.state.hd.download?.reason, _stalled.errorMessage);
 
-        expect(await vm.getDifferentRelease(), isTrue);
+        expect(await vm.getDifferentRelease(queueId: 41), isTrue);
         expect(seerr.removed, [41]);
         expect(vm.state.hd.replaceableDownload, isNull);
         // Radarr has the released movie and nothing queued now.
@@ -164,7 +170,7 @@ void main() {
       await vm.load('10378', 'movie');
       expect(vm.state.hd.download?.reason, _stalled.errorMessage);
       expect(vm.state.hd.replaceableDownload, isNull);
-      expect(await vm.getDifferentRelease(), isFalse);
+      expect(await vm.getDifferentRelease(queueId: 41), isFalse);
       expect(seerr.removed, isEmpty);
       vm.dispose();
     });
@@ -173,7 +179,7 @@ void main() {
       final seerr = _FakeSeerr()..removeError = Exception('HTTP 502');
       final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
       await vm.load('10378', 'movie');
-      expect(await vm.getDifferentRelease(), isFalse);
+      expect(await vm.getDifferentRelease(queueId: 41), isFalse);
       expect(vm.state.isRequesting, isFalse);
       expect(vm.state.hd.replaceableDownload?.stuckItemId, 41);
       vm.dispose();
@@ -195,7 +201,7 @@ void main() {
         seerr.holdQueue = null;
 
         bool? done;
-        vm.getDifferentRelease().then((v) => done = v);
+        vm.getDifferentRelease(queueId: 41).then((v) => done = v);
         async.flushMicrotasks();
         expect(done, isTrue);
 
@@ -204,6 +210,38 @@ void main() {
         expect(vm.state.hd.replaceableDownload, isNull);
         vm.dispose();
       });
+    });
+
+    test('a removal for a download the page no longer shows does nothing', () async {
+      final seerr = _FakeSeerr();
+      final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
+      await vm.load('10378', 'movie');
+      // The dialog named queue entry 40, then a poll swapped in entry 41.
+      expect(await vm.getDifferentRelease(queueId: 40), isFalse);
+      expect(seerr.removed, isEmpty);
+      vm.dispose();
+    });
+
+    test('a queue reply for the previous title is thrown away', () async {
+      final hold = Completer<void>();
+      final seerr = _FakeSeerr()..holdQueue = hold;
+      final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
+      // The first title's queue read is still on its way.
+      unawaited(vm.load('10378', 'movie'));
+      await pumpEventQueue();
+      expect(seerr.queueCalls, ['movie:10378']);
+
+      seerr
+        ..holdQueue = null
+        ..queue = null;
+      await vm.load('20526', 'movie');
+      expect(vm.state.tmdbId, 20526);
+
+      hold.complete();
+      await pumpEventQueue();
+      expect(vm.state.arrQueue, isNull);
+      expect(vm.state.hd.replaceableDownload, isNull);
+      vm.dispose();
     });
 
     test('Moonbase not seeing the title keeps what Seerr reports', () async {
@@ -299,6 +337,76 @@ void main() {
       await vm.load();
       await pumpEventQueue();
       expect(vm.state.isNotFoundYet(vm.state.requests.single), isTrue);
+      vm.dispose();
+    });
+
+    test('a not found yet card keeps checking until the arr grabs one', () {
+      fakeAsync((async) {
+        final seerr = _FakeSeerr()
+          ..queue = const ArrQueue(
+            service: 'radarr',
+            inArr: true,
+            monitored: true,
+            hasFile: false,
+            isAvailable: true,
+          )
+          ..requests = [_request(1)];
+        final vm = SeerrRequestsViewModel(seerr);
+        vm.load();
+        async.flushMicrotasks();
+        expect(vm.state.isNotFoundYet(vm.state.requests.single), isTrue);
+
+        seerr.queue = const ArrQueue(
+          service: 'radarr',
+          inArr: true,
+          canRemove: true,
+          items: [_stalled],
+        );
+        async.elapse(const Duration(seconds: 15));
+        expect(
+          vm.state.downloadFor(vm.state.requests.single)?.state,
+          SeerrDownloadState.stalled,
+        );
+        vm.dispose();
+      });
+    });
+
+    test('queues are dropped once Moonbase stops offering them', () async {
+      final seerr = _FakeSeerr()..requests = [_request(1)];
+      final vm = SeerrRequestsViewModel(seerr);
+      await vm.load();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues, isNotEmpty);
+
+      sync.available = false;
+      await vm.refresh();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues, isEmpty);
+      vm.dispose();
+    });
+
+    test('an older queue reply can\'t replace a newer one', () async {
+      final hold = Completer<void>();
+      final seerr = _FakeSeerr()
+        ..requests = [_request(1)]
+        ..holdQueue = hold;
+      final vm = SeerrRequestsViewModel(seerr);
+      // The load's read answers with the stuck download, but slowly.
+      await vm.load();
+      await pumpEventQueue();
+
+      // The refresh's read answers first: the arr has nothing queued.
+      const empty = ArrQueue(service: 'radarr', inArr: true);
+      seerr
+        ..holdQueue = null
+        ..queue = empty;
+      await vm.refresh();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues['movie:10378']?.items, isEmpty);
+
+      hold.complete();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues['movie:10378']?.items, isEmpty);
       vm.dispose();
     });
 

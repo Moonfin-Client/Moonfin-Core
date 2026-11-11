@@ -17,7 +17,8 @@ Future<void> showSeerrDifferentReleaseDialog({
   final state = vm.state;
   final queue = state.arrQueue;
   final stuck = state.hd.replaceableDownload;
-  if (queue == null || stuck == null) return;
+  final queueId = stuck?.stuckItemId;
+  if (queue == null || stuck == null || queueId == null) return;
 
   final l10n = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.maybeOf(context);
@@ -44,7 +45,7 @@ Future<void> showSeerrDifferentReleaseDialog({
         TextButton(
           onPressed: () async {
             Navigator.pop(ctx);
-            final done = await vm.getDifferentRelease();
+            final done = await vm.getDifferentRelease(queueId: queueId);
             messenger?.showSnackBar(
               SnackBar(
                 content: Text(

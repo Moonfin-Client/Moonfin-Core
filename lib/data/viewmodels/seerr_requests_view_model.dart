@@ -135,6 +135,9 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   Timer? _downloadPollTimer;
   bool _isDisposed = false;
 
+  /// How many queue reads each title has started, keyed like the queues.
+  final Map<String, int> _arrQueueFetches = {};
+
   SeerrRequestsViewModel(this._repo, [this._prefs]);
 
   @override
@@ -151,8 +154,12 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  bool get _hasActiveDownloads =>
-      _state.requests.any((r) => _state.downloadFor(r) != null);
+  /// A card showing a bar, or one waiting for the arr to find a release,
+  /// which the next queue read may turn into a bar.
+  bool _isWatched(SeerrRequest r) =>
+      _state.downloadFor(r) != null || _state.isNotFoundYet(r);
+
+  bool get _hasActiveDownloads => _state.requests.any(_isWatched);
 
   /// Keep a refresh timer running only while something is downloading, so the
   /// progress bars advance without the user pulling to refresh.
@@ -200,12 +207,10 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         _state = _state.copyWith(requests: requests);
         notifyListeners();
       }
-      // Only the cards showing a bar. Every other title is fetched on load
-      // and refresh, which keeps a long list from costing a plugin call per
-      // title on every tick.
-      await _loadArrQueues(
-        _state.requests.where((r) => _state.downloadFor(r) != null).toList(),
-      );
+      // Only the cards showing a bar or Not found yet. Every other title is
+      // fetched on load and refresh, which keeps a long list from costing a
+      // plugin call per title on every tick.
+      await _loadArrQueues(_state.requests.where(_isWatched).toList());
     } catch (_) {
       // Leave the list as-is and let the next tick retry.
     }
@@ -219,6 +224,13 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   Future<void> _loadArrQueues(List<SeerrRequest> requests) async {
     if (!GetIt.instance.isRegistered<PluginSyncService>() ||
         !GetIt.instance<PluginSyncService>().arrQueueAvailable) {
+      // Moonbase stopped offering the queue while the screen was open, so
+      // the cards go back to what Seerr reports.
+      if (_state.arrQueues.isNotEmpty) {
+        _arrQueueFetches.clear();
+        _state = _state.copyWith(arrQueues: const {});
+        notifyListeners();
+      }
       return;
     }
     final wanted = <String, ({int? tmdbId, int? tvdbId})>{};
@@ -240,6 +252,13 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     }
     if (wanted.isEmpty) return;
 
+    // Load, load more and the poll can each ask for the same title at once.
+    // Only the latest ask for a title may land, so an older, slower reply
+    // can't put back a queue a newer one already replaced.
+    final fetches = {
+      for (final key in wanted.keys)
+        key: _arrQueueFetches[key] = (_arrQueueFetches[key] ?? 0) + 1,
+    };
     final results = await Future.wait(
       wanted.entries.map((entry) async {
         try {
@@ -256,7 +275,10 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     );
     if (_isDisposed) return;
     final updated = Map<String, ArrQueue>.from(_state.arrQueues);
+    var changed = false;
     for (final entry in results) {
+      if (_arrQueueFetches[entry.key] != fetches[entry.key]) continue;
+      changed = true;
       final queue = entry.value;
       if (queue == null) {
         updated.remove(entry.key);
@@ -264,6 +286,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         updated[entry.key] = queue;
       }
     }
+    if (!changed) return;
     _state = _state.copyWith(arrQueues: updated);
     notifyListeners();
   }

@@ -359,6 +359,28 @@ void main() {
       expect(summary.reason, isNull);
     });
 
+    test('a stuck entry with no download id still shows', () {
+      final summary = SeerrDownloadSummary.fromArrItems(const [
+        ArrQueueItem(
+          id: 7,
+          status: 'downloadClientUnavailable',
+          title: 'Show.S01.1080p',
+        ),
+      ])!;
+      expect(summary.state, SeerrDownloadState.stalled);
+      expect(summary.stuckItemId, 7);
+    });
+
+    test('a release held back by a delay profile is left out', () {
+      expect(
+        SeerrDownloadSummary.fromArrItems(const [
+          ArrQueueItem(id: 8, status: 'delay', title: 'Show.S01.720p'),
+          ArrQueueItem(id: 9, status: 'fallback', title: 'Show.S01.2160p'),
+        ]),
+        isNull,
+      );
+    });
+
     test('a queue entry with no id has nothing to remove', () {
       final summary = SeerrDownloadSummary.fromArrItems(const [
         ArrQueueItem(status: 'warning', downloadId: 'A'),

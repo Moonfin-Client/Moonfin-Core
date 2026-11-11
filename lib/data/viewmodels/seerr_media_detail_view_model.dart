@@ -521,8 +521,14 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   /// the page showing what Seerr reports, as before Moonbase could do this.
   Future<void> _refreshArrQueue() async {
     final generation = _arrQueueGeneration;
+    final tmdbId = _state.tmdbId;
     final queue = await _fetchArrQueue(_state);
-    if (_isDisposed || generation != _arrQueueGeneration) return;
+    // A reply for a title the page has since moved off belongs to that one.
+    if (_isDisposed ||
+        generation != _arrQueueGeneration ||
+        tmdbId != _state.tmdbId) {
+      return;
+    }
     // copyWith clears the feedback fields it isn't handed, so pass them on.
     _state = _state.copyWith(
       arrQueue: queue,
@@ -563,10 +569,16 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   /// Removes the HD track's stuck download and blocklists its release, so the
   /// arr searches for another, then refreshes the page. Admins only, which
   /// Moonbase checks too. False when the arr didn't take it.
-  Future<bool> getDifferentRelease() async {
+  ///
+  /// [queueId] is the download the viewer confirmed. If a refresh has since
+  /// picked a different stuck download, or none, nothing is removed.
+  Future<bool> getDifferentRelease({required int queueId}) async {
     final queue = _state.arrQueue;
-    final queueId = _state.hd.replaceableDownload?.stuckItemId;
-    if (queue == null || queueId == null || _state.isRequesting) return false;
+    if (queue == null ||
+        _state.hd.replaceableDownload?.stuckItemId != queueId ||
+        _state.isRequesting) {
+      return false;
+    }
 
     _state = _state.copyWith(
       isRequesting: true,
@@ -655,6 +667,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
 
   Future<void> load(String itemId, String mediaType, {String? title}) async {
     _relatedLoadComplete = false;
+    // Drops a queue fetch still on its way for the previous title.
+    _arrQueueGeneration++;
 
     _state = const SeerrMediaDetailState(isLoading: true);
     notifyListeners();

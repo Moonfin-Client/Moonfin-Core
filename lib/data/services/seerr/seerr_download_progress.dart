@@ -154,8 +154,11 @@ class SeerrDownloadSummary {
   static SeerrDownloadSummary? fromArrItems(List<ArrQueueItem> items) =>
       _summarise([
         for (final item in items)
-          // The arr has stopped tracking an ignored download.
-          if (item.trackedDownloadState?.toLowerCase() != 'ignored')
+          // The arr has stopped tracking an ignored download. A delay or
+          // fallback entry is a release the arr is holding back on purpose:
+          // nothing is downloading yet, and it may never be the one grabbed.
+          if (item.trackedDownloadState?.toLowerCase() != 'ignored' &&
+              !_heldBack.contains(item.status?.toLowerCase()))
             (
               downloadId: item.downloadId,
               size: item.size,
@@ -177,6 +180,10 @@ class SeerrDownloadSummary {
             ),
       ]);
 
+  /// Queue statuses of a release the arr is holding back rather than
+  /// downloading: a delay profile's wait, or a preferred protocol's fallback.
+  static const _heldBack = {'delay', 'fallback'};
+
   static SeerrDownloadSummary? _summarise(List<_QueueEntry> items) {
     if (items.isEmpty) return null;
     var total = 0;
@@ -190,11 +197,17 @@ class SeerrDownloadSummary {
     for (final item in items) {
       // Sonarr lists a season pack once per episode, each with the whole
       // pack's size, so a 9 episode pack counted 9 times. Count a download
-      // once. No id means a release Sonarr or Radarr is holding back (a
-      // delay profile): nothing is downloading yet, and it may never be the
-      // release that gets grabbed, so it is left out.
-      final id = item.downloadId;
-      if (id == null || id.isEmpty || !seen.add(id)) continue;
+      // once. An arr entry with no download id still counts once by its
+      // queue id, since it can be stuck too. With neither there is nothing
+      // to tell entries apart, so it is left out.
+      final downloadId = item.downloadId;
+      final queueId = item.queueId;
+      final key = downloadId != null && downloadId.isNotEmpty
+          ? 'download:$downloadId'
+          : queueId != null
+          ? 'queue:$queueId'
+          : null;
+      if (key == null || !seen.add(key)) continue;
       // A magnet with no peers never learns its size, so a sizeless download
       // still counts for its state. It just adds no bytes.
       final size = item.size ?? 0;
