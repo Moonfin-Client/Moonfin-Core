@@ -194,7 +194,7 @@ class FavoritesViewModel extends ChangeNotifier {
     _rowFetchedCounts.clear();
     _watchlistPages = 0;
     _requestCardsToEnrich = const [];
-    _loadGeneration++;
+    final generation = ++_loadGeneration;
     _gridItems = const [];
     _gridTotalCount = 0;
     _gridFetchedCount = 0;
@@ -205,6 +205,9 @@ class FavoritesViewModel extends ChangeNotifier {
         final results = await Future.wait(
           rowTypes.map((type) => _fetchRowItems(type, startIndex: 0)),
         );
+        // A load started while this one waited has its own rows, and this
+        // one's Watchlist stopped short when it saw that.
+        if (generation != _loadGeneration) return;
         final map = <FavoriteTypeFilter, List<AggregatedItem>>{};
         for (var i = 0; i < rowTypes.length; i++) {
           if (results[i].$1.isNotEmpty) {
@@ -219,6 +222,7 @@ class FavoritesViewModel extends ChangeNotifier {
       }
       _state = FavoritesState.ready;
     } catch (e) {
+      if (generation != _loadGeneration) return;
       _error = e;
       _isNetworkError = isNetworkException(e);
       _state = FavoritesState.error;
@@ -334,7 +338,7 @@ class FavoritesViewModel extends ChangeNotifier {
       _watchlistPages = page.page;
       final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
       _rowFetchedCounts[type] = fetched;
-      final requestCards = withoutBlockedItems([
+      final requestCards = withoutUnratedOrBlockedItems([
         for (final item in page.results) _requestCard(item),
       ]);
       _requestCardsToEnrich = requestCards;
@@ -352,8 +356,9 @@ class FavoritesViewModel extends ChangeNotifier {
   static const _requestCardConcurrency = 3;
 
   /// A Watchlist card for a title the library lacks, from what the watchlist
-  /// lists. Silo's includes the age rating, so the card can be filtered now;
-  /// the backdrop and runtime come later from [_enrichRequestCards].
+  /// lists. Silo's includes the age rating, so the card is filtered right
+  /// away, and one with no rating stays out while any rating is blocked. The
+  /// backdrop and runtime come later from [_enrichRequestCards].
   AggregatedItem _requestCard(SeerrDiscoverItem item) {
     final date = _text(item.releaseDate) ?? _text(item.firstAirDate);
     final voteAverage = item.voteAverage;
@@ -383,6 +388,7 @@ class FavoritesViewModel extends ChangeNotifier {
     _requestCardsToEnrich = const [];
     if (cards.isEmpty) return;
     final generation = _loadGeneration;
+    bool stale() => _disposed || generation != _loadGeneration;
     unawaited(() async {
       final List<AggregatedItem?> enriched;
       try {
@@ -390,12 +396,12 @@ class FavoritesViewModel extends ChangeNotifier {
         enriched = await mapBounded(
           cards,
           _requestCardConcurrency,
-          (card) => _withDetail(repo, card),
+          (card) async => stale() ? null : await _withDetail(repo, card),
         );
       } catch (_) {
         return;
       }
-      if (_disposed || generation != _loadGeneration) return;
+      if (stale()) return;
       const type = FavoriteTypeFilter.watchlist;
       final row = _rowItems[type];
       if (row == null) return;
