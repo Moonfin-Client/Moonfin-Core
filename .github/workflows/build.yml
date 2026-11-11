@@ -243,11 +243,12 @@ jobs:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.files }}
 
-  # iOS: an unsigned IPA for releases, or a TestFlight upload
+  # iOS: an unsigned IPA for releases, or a TestFlight upload. It builds with
+  # the iOS 27 SDK so the app fills an iPhone Duo's screen and gets its hinge.
   ios:
     needs: plan
     if: needs.plan.outputs.ios == 'true'
-    runs-on: macos-26
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v5
 
@@ -255,8 +256,8 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Select Xcode 26.3
-        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
 
       - name: Resolve dependencies
         run: |
@@ -973,7 +974,7 @@ jobs:
   apple-tests:
     needs: plan
     if: needs.plan.outputs.apple_tests == 'true'
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
@@ -982,8 +983,8 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Select Xcode 26.3
-        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
 
       # No libretro cores are fetched here, so the game host pod vendors none
       # and the app links for the simulator.
