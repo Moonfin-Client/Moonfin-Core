@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/image_fetch_priority.dart';
 import '../../../util/system_ui.dart';
+import '../../navigation/destinations.dart';
+import '../../navigation/playback_launcher.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/offline_aware_image.dart';
 import 'photo_slideshow_scheduler.dart';
@@ -69,7 +72,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
       if (parentId != null) {
         final siblings = await _client.itemsApi.getItems(
           parentId: parentId,
-          includeItemTypes: ['Photo'],
+          includeItemTypes: ['Photo', 'Video'],
           sortBy: 'SortName',
           sortOrder: 'Ascending',
           limit: 500,
@@ -171,6 +174,31 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     }
   }
 
+  bool _isVideo(AggregatedItem item) => item.type == 'Video';
+
+  Future<void> _playVideo(AggregatedItem item) async {
+    if (_slideshow.isRunning) {
+      _slideshow.stop();
+      setState(() {});
+    }
+    final manager = GetIt.instance<PlaybackManager>();
+    await launchPlayerWhilePreparing(
+      context,
+      manager: manager,
+      destination: Destinations.videoPlayer,
+      startPlayback: (session) async {
+        final data = await _client.itemsApi.getItem(item.id);
+        final full = AggregatedItem(
+          id: data['Id']?.toString() ?? item.id,
+          serverId: data['ServerId']?.toString() ?? item.serverId,
+          rawData: data,
+        );
+        await runPlaybackStart(session, () => manager.playItems([full]));
+        return true;
+      },
+    );
+  }
+
   void _toggleSlideshow() {
     if (_slideshow.isRunning) {
       _slideshow.stop();
@@ -211,6 +239,18 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
           fit: StackFit.expand,
           children: [
             _buildPhotoView(),
+            if (_items.isNotEmpty && _isVideo(_items[_currentIndex]))
+              Center(
+                child: IconButton(
+                  iconSize: 72,
+                  icon: AdaptiveIcon(
+                    Icons.play_circle_fill,
+                    color: AppColorScheme.onSurface,
+                    size: 72,
+                  ),
+                  onPressed: () => _playVideo(_items[_currentIndex]),
+                ),
+              ),
             if (_controlsVisible) _buildOverlay(context),
           ],
         ),
