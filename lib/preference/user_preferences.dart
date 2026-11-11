@@ -957,7 +957,9 @@ class UserPreferences extends ChangeNotifier {
   bool containsPreference<T>(Preference<T> pref, {bool scopedOnly = false}) {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
-      if (scoped == null) return false;
+      if (scoped == null) {
+        return !scopedOnly && _store.containsKey(pref.key);
+      }
       final hasScoped = _store.containsKey(scoped.key);
       if (scopedOnly) {
         return hasScoped;

@@ -127,6 +127,29 @@ void main() {
     expect(request.hideWatched, isNull);
   });
 
+  test('forwards hideWatched null when UserPreferences is registered but unset', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+    final request = await requestFor('movies');
+    expect(request.hideWatched, isNull);
+  });
+
+  test('forwards hideWatched false when hideWatchedInRecentRows is explicitly disabled', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+    final request = await requestFor('movies');
+    expect(request.hideWatched, isFalse);
+  });
+
   test('forwards hideWatched true when hideWatchedInRecentRows is enabled', () async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -137,5 +160,88 @@ void main() {
 
     final request = await requestFor('movies');
     expect(request.hideWatched, isTrue);
+  });
+
+  group('loadLatestMedia and latest_ paging with TotalRecordCount equal to returned list length', () {
+    test('keeps Load More available for a full 15-item movie page and 30-item next page', () async {
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        final limit = invocation.namedArguments[#limit] as int? ?? 15;
+        final items = [
+          for (var i = 0; i < limit; i++)
+            <String, dynamic>{
+              'Id': 'movie-$i',
+              'Name': 'Movie $i',
+              'Type': 'Movie',
+            },
+        ];
+        return {'Items': items, 'TotalRecordCount': items.length};
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final row = await dataSource.loadLatestMedia('lib1', 'Movies', 'srv1', 'movies');
+      expect(row.items, hasLength(15));
+      expect(row.totalCount, 100);
+
+      final (pagedItems, pagedTotal) = await dataSource.loadMore(
+        row: row,
+        serverId: 'srv1',
+      );
+      expect(pagedItems, hasLength(30));
+      expect(pagedTotal, 100);
+    });
+
+    test('preserves hasMore and reportedTotal for an expanded fetch with additional visible items', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, true);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        // Expanded fetch requests 45 items; server has 22 items (4 watched, 18 unwatched).
+        final items = [
+          for (var i = 0; i < 22; i++)
+            <String, dynamic>{
+              'Id': 'movie-$i',
+              'Name': 'Movie $i',
+              'Type': 'Movie',
+              'UserData': {'Played': i < 4},
+            },
+        ];
+        return {'Items': items, 'TotalRecordCount': items.length};
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final row = await dataSource.loadLatestMedia('lib1', 'Movies', 'srv1', 'movies');
+      expect(row.items, hasLength(15));
+      expect(row.totalCount, 22);
+    });
   });
 }

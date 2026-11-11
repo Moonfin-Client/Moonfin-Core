@@ -289,12 +289,13 @@ class RowDataSource {
     return row.copyWith(items: enrichedItems);
   }
 
-  bool? get _hideWatchedInRecentRowsOrNull =>
-      GetIt.instance.isRegistered<UserPreferences>()
-      ? GetIt.instance<UserPreferences>().get(
-          UserPreferences.hideWatchedInRecentRows,
-        )
-      : null;
+  bool? get _hideWatchedInRecentRowsOrNull {
+    if (!GetIt.instance.isRegistered<UserPreferences>()) return null;
+    final prefs = GetIt.instance<UserPreferences>();
+    return prefs.containsPreference(UserPreferences.hideWatchedInRecentRows)
+        ? prefs.get(UserPreferences.hideWatchedInRecentRows)
+        : null;
+  }
 
   bool get _hideWatchedInRecentRows => _hideWatchedInRecentRowsOrNull ?? false;
 
@@ -340,16 +341,22 @@ class RowDataSource {
       );
     }
     final reportedTotal = response['TotalRecordCount'] as int?;
+    final serverMayHaveMore =
+        rawItems.length >= fetchLimit && fetchLimit < _maxItems;
     final hasMore =
         items.length >= _defaultLimit &&
-        (reportedTotal == null || reportedTotal > items.length);
+        (reportedTotal == null ||
+            reportedTotal > items.length ||
+            serverMayHaveMore);
     return HomeRow(
       id: 'latest_$parentId',
       title: _l10n.latestLibraryName(libraryName),
       items: items,
       rowType: HomeRowType.latestMedia,
       totalCount: hasMore
-          ? (reportedTotal != null && reportedTotal <= _maxItems
+          ? (reportedTotal != null &&
+                    reportedTotal <= _maxItems &&
+                    (!serverMayHaveMore || reportedTotal > rawItems.length)
                 ? reportedTotal
                 : _maxItems)
           : items.length,
@@ -1737,12 +1744,18 @@ class RowDataSource {
             );
           }
           final reportedTotal = response['TotalRecordCount'] as int?;
+          final serverMayHaveMore =
+              rawItems.length >= fetchLimit && fetchLimit < _maxItems;
           final hasMore =
               items.length > row.items.length &&
               items.length >= wanted &&
-              (reportedTotal == null || reportedTotal > items.length);
+              (reportedTotal == null ||
+                  reportedTotal > items.length ||
+                  serverMayHaveMore);
           final totalCount = hasMore
-              ? (reportedTotal != null && reportedTotal <= _maxItems
+              ? (reportedTotal != null &&
+                        reportedTotal <= _maxItems &&
+                        (!serverMayHaveMore || reportedTotal > rawItems.length)
                     ? reportedTotal
                     : _maxItems)
               : items.length;

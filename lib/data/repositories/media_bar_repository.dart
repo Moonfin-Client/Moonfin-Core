@@ -433,7 +433,11 @@ class MediaBarRepository {
     String? parentId,
   }) async {
     try {
-      final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
+      final hideWatched = _prefs.containsPreference(
+            UserPreferences.hideWatchedInRecentRows,
+          )
+          ? _prefs.get(UserPreferences.hideWatchedInRecentRows)
+          : null;
       final response =
           sourceType == UserPreferences.mediaBarSourceRecentlyReleased
           ? await _client.itemsApi
@@ -459,7 +463,7 @@ class MediaBarRepository {
 
       final rawItems = (response['Items'] as List? ?? [])
           .cast<Map<String, dynamic>>();
-      if (!hideWatched) return rawItems;
+      if (!(hideWatched ?? false)) return rawItems;
       return rawItems
           .where((item) => !isRawItemWatchedForRecentRow(item))
           .toList();

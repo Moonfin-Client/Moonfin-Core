@@ -36,6 +36,27 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     super.initState();
     _syncService = GetIt.instance<PluginSyncService>();
     _syncService.addListener(_onSyncChanged);
+    _syncHideWatchedFromServerIfUnset();
+  }
+
+  void _syncHideWatchedFromServerIfUnset() {
+    if (_prefs.containsPreference(UserPreferences.hideWatchedInRecentRows)) {
+      return;
+    }
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+    _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
+      try {
+        final config = await client.usersApi.getUserConfiguration();
+        if (!_prefs.containsPreference(
+              UserPreferences.hideWatchedInRecentRows,
+            ) &&
+            config.hidePlayedInLatest) {
+          await _prefs.set(UserPreferences.hideWatchedInRecentRows, true);
+          if (mounted) setState(() {});
+        }
+      } catch (_) {}
+    });
   }
 
   @override

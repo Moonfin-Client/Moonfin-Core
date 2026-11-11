@@ -177,6 +177,24 @@ void main() {
     },
   );
 
+  testWidgets(
+    'Hide Watched aligns with server hidePlayedInLatest when preference is unset',
+    (tester) async {
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+      );
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      await pump(tester);
+
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+    },
+  );
+
   testWidgets('Merge Recent Rows by Type reloads Home', (tester) async {
     await prefs.set(UserPreferences.mergeRecentRowsByType, false);
     await pump(tester);

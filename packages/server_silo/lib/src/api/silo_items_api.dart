@@ -1960,6 +1960,9 @@ class SiloItemsApi
     _changedSeries.clear();
   }
 
+  /// Forgets the cached `home.hide_watched_items` read after settings change.
+  void forgetHideWatched() => _hideWatched.forget();
+
   /// Of [itemIds], those whose user data may have changed: one this client
   /// changed in the last [_changedTtl], or a season or episode of a show
   /// that had something changed (marking an episode moves the season's and
