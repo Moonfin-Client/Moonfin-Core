@@ -213,11 +213,17 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
     var initialIndex = HubFocusMemory.peek(_episodeHubKey);
 
     if (initialIndex == null) {
+      // An episode's page opens the rail on itself, anything else on next up.
+      final onScreen = _vm.item?.type == 'Episode'
+          ? episodes.indexWhere((episode) => episode.id == _vm.item?.id)
+          : -1;
       final nextUpIndex = nextUpEpisode == null
           ? 0
           : episodes.indexWhere((episode) => episode.id == nextUpEpisode.id);
 
-      initialIndex = nextUpIndex < 0 ? 0 : nextUpIndex;
+      initialIndex = onScreen >= 0
+          ? onScreen
+          : (nextUpIndex < 0 ? 0 : nextUpIndex);
 
       HubFocusMemory.set(_episodeHubKey, initialIndex);
     }

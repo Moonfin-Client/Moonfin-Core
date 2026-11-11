@@ -1103,6 +1103,14 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _publishedNavbarTarget;
   final Map<FocusNode, ScrollController> _sectionScrollControllers =
       <FocusNode, ScrollController>{};
+
+  /// Where a row rests when focus enters or leaves it, for a row that doesn't
+  /// start at its first item. An episode's season row starts on that episode.
+  final Map<FocusNode, double> _sectionRestOffsets = <FocusNode, double>{};
+
+  /// The episode whose season row has been scrolled to it, so that happens
+  /// once per episode rather than on every rebuild.
+  String? _episodesRowPlacedFor;
   final Set<FocusNode> _pendingSectionFocusRetries = <FocusNode>{};
   final FocusNode _firstChapterFocusNode = FocusNode(
     debugLabel: 'detailFirstChapter',
@@ -1218,18 +1226,24 @@ class _DetailContentState extends State<_DetailContent> {
     return controller;
   }
 
-  void _resetSectionHorizontalOffset(FocusNode? sectionFocusNode) {
+  /// Returns whether the row was there to move.
+  bool _resetSectionHorizontalOffset(FocusNode? sectionFocusNode) {
     if (sectionFocusNode == null) {
-      return;
+      return false;
     }
     final controller = _sectionScrollControllers[sectionFocusNode];
     if (controller == null || !controller.hasClients) {
-      return;
+      return false;
     }
-    final minOffset = controller.position.minScrollExtent;
-    if (controller.offset != minOffset) {
-      controller.jumpTo(minOffset);
+    final position = controller.position;
+    final restOffset =
+        (position.minScrollExtent +
+                (_sectionRestOffsets[sectionFocusNode] ?? 0))
+            .clamp(position.minScrollExtent, position.maxScrollExtent);
+    if (controller.offset != restOffset) {
+      controller.jumpTo(restOffset);
     }
+    return true;
   }
 
   bool _isLaidOutFocusNode(FocusNode target) {
@@ -1414,7 +1428,12 @@ class _DetailContentState extends State<_DetailContent> {
     }
 
     _scheduleSingleSectionFocusRetry(target, alignment: alignment);
-    return KeyEventResult.ignored;
+    // A row resting past its start can need a frame to build the card it was
+    // just moved to. The press is spoken for meanwhile, so the default
+    // traversal doesn't send focus somewhere else first.
+    return _sectionRestOffsets.containsKey(target)
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
   }
 
   KeyEventResult Function(int index, KeyEvent event)? _buildVerticalRowHandler({
@@ -2769,6 +2788,21 @@ class _DetailContentState extends State<_DetailContent> {
         ? viewModel.episodes[currentEpisodeIndex + 1]
         : null;
 
+    // The season row starts on this episode, both where it rests and where
+    // focus lands coming down into it.
+    final startIndex = currentEpisodeIndex < 0 ? 0 : currentEpisodeIndex;
+    _sectionRestOffsets[episodesFocusNode] =
+        startIndex * _EpisodesRow.strideFor(context);
+    if (startIndex > 0 && _episodesRowPlacedFor != item.id) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Until the row is built there's nothing to move, so a later build
+        // tries again.
+        if (mounted && _resetSectionHorizontalOffset(episodesFocusNode)) {
+          _episodesRowPlacedFor = item.id;
+        }
+      });
+    }
+
     final specs = <_SectionSpec>[
       ?_metadataSpec(item, 'detailEpisodeMetadata'),
       ..._chapterAndExtraSpecs(context, item),
@@ -2797,6 +2831,7 @@ class _DetailContentState extends State<_DetailContent> {
                 ctrl,
               ),
               firstItemFocusNode: episodesFocusNode,
+              focusIndex: startIndex,
               onItemKeyEvent: _sectionRowHandler(
                 episodesFocusNode,
                 links,
@@ -15568,6 +15603,9 @@ class _EpisodesRow extends StatelessWidget {
   final ImageApi imageApi;
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
+
+  /// The card that takes [firstItemFocusNode], so the row is entered there.
+  final int focusIndex;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
   final VoidCallback? onChanged;
 
@@ -15581,10 +15619,28 @@ class _EpisodesRow extends StatelessWidget {
     required this.imageApi,
     this.scrollController,
     this.firstItemFocusNode,
+    this.focusIndex = 0,
     this.onItemKeyEvent,
     this.onChanged,
     this.contextSeasonId,
   });
+
+  static const _compactCardWidth = 180.0;
+  static const _cardWidth = 220.0;
+  static const _compactGap = 8.0;
+  static const _gap = 12.0;
+
+  static double cardWidth({required bool isMobile}) =>
+      isMobile ? _compactCardWidth : _cardWidth * _desktopUiScale();
+
+  static double gap({required bool isMobile}) =>
+      isMobile ? _compactGap : _gap * _desktopUiScale();
+
+  /// One card and the gap after it, as [build] lays them out.
+  static double strideFor(BuildContext context) {
+    final isMobile = _isCompact(context);
+    return cardWidth(isMobile: isMobile) + gap(isMobile: isMobile);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15610,7 +15666,7 @@ class _EpisodesRow extends StatelessWidget {
         padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: episodes.length,
         separatorBuilder: (_, _) =>
-            SizedBox(width: isMobile ? 8 : 12 * desktopScale),
+            SizedBox(width: gap(isMobile: isMobile)),
         itemBuilder: (context, index) {
           final ep = episodes[index];
           final isCurrent = ep.id == currentEpisodeId;
@@ -15619,7 +15675,9 @@ class _EpisodesRow extends StatelessWidget {
             isCurrent: isCurrent,
             imageApi: imageApi,
             isMobile: isMobile,
-            focusNode: index == 0 ? firstItemFocusNode : null,
+            focusNode: index == focusIndex.clamp(0, episodes.length - 1)
+                ? firstItemFocusNode
+                : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (event) => onItemKeyEvent!(index, event),
@@ -15748,7 +15806,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
           onLongPress: _handleLongPress,
           onSecondaryTap: _handleLongPress,
           child: Container(
-            width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
+            width: _EpisodesRow.cardWidth(isMobile: widget.isMobile),
             decoration: BoxDecoration(borderRadius: AppRadius.circular(8)),
             clipBehavior: Clip.antiAlias,
             child: Stack(
