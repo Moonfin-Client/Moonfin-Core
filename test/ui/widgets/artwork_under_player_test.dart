@@ -39,7 +39,15 @@ Future<void> _openPlayer(WidgetTester tester, NavigatorState navigator) async {
 }
 
 void main() {
-  tearDown(() => PlatformDetection.setTvMode(false));
+  // Pin the layout to automatic so setTvMode decides, whatever a previous
+  // test left behind.
+  void reset() {
+    PlatformDetection.setTvMode(false);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+  }
+
+  setUp(reset);
+  tearDown(reset);
 
   testWidgets('drops the artwork under a TV player until it pops', (tester) async {
     PlatformDetection.setTvMode(true);
