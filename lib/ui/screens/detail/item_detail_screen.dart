@@ -13002,8 +13002,8 @@ class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
     final size = compact ? 46.0 : 60.0;
 
     if (widget.isPrimary) {
-      // Filled the way Modern fills its labeled Play, in the accent until it
-      // has focus.
+      // Filled in the accent until it has focus. The circles beside it have
+      // no fill of their own to match, so Play keeps one on the glass.
       final ink = focused
           ? AppColorScheme.onButtonFocused
           : AppColorScheme.onAccent;
@@ -13237,10 +13237,16 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     // wrap beneath); landscape keeps it content-width, inline with them.
     final fullWidth = widget.isPrimary && (host?.fullWidthPrimary ?? false);
 
+    // Only a compact layout, which has no focus to show, keeps Play filled
+    // with the accent. Everywhere else it looks like the buttons beside it
+    // until it has focus, or a white accent would read as focused next to the
+    // one that is.
+    final accentPrimary = widget.isPrimary && isMobile;
+
     if (fullWidth) {
       final fg = showHighlight
           ? AppColorScheme.onButtonFocused
-          : AppColorScheme.onAccent;
+          : (accentPrimary ? AppColorScheme.onAccent : labelColor);
       final heartColor = (widget.icon == Icons.favorite && widget.isActive)
           ? const Color(0xFFE50914)
           : fg;
@@ -13252,11 +13258,17 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         decoration: BoxDecoration(
           color: showHighlight
               ? AppColorScheme.buttonFocused
-              : AppColorScheme.accent,
+              : (accentPrimary
+                    ? AppColorScheme.accent
+                    : Colors.white.withValues(alpha: 0.06)),
           borderRadius: AppRadius.circular(height / 2),
           border: Border.all(
-            color: showHighlight ? focusColor : Colors.transparent,
-            width: 3,
+            color: showHighlight
+                ? focusColor
+                : (accentPrimary
+                      ? Colors.transparent
+                      : AppColorScheme.onSurface.withValues(alpha: 0.35)),
+            width: showHighlight || accentPrimary ? 3 : 1.5,
           ),
         ),
         child: Row(
@@ -13285,17 +13297,6 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       );
       return SizedBox(width: double.infinity, child: pillInner);
     }
-
-    // Only a compact layout, which has no focus to show, keeps it filled with
-    // the accent. Everywhere else it looks like the buttons beside it until it
-    // has focus, or a white accent would read as focused next to the one that
-    // is.
-    final accentPrimary = widget.isPrimary && isMobile;
-    // On the accent fill the label takes the accent's text color like the
-    // icon does, since Neon Pulse's label color is the accent itself.
-    final labelOnPill = accentPrimary && !showHighlight
-        ? AppColorScheme.onAccent
-        : labelColor;
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -13428,13 +13429,13 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     text: widget.label,
                     style:
                         Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: labelOnPill,
+                          color: labelColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,
                         ) ??
                         TextStyle(
-                          color: labelOnPill,
+                          color: labelColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           height: 1.1,

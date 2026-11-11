@@ -68,7 +68,11 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Widget buttons(_ViewModel vm, bool labelsUnderCircles) => MaterialApp(
+  Widget buttons(
+    _ViewModel vm,
+    bool labelsUnderCircles, {
+    bool fullWidthPrimary = false,
+  }) => MaterialApp(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: const [Locale('en')],
     home: Scaffold(
@@ -79,6 +83,7 @@ void main() {
           onSelectedMediaSourceChanged: (_) {},
           modernStyle: true,
           labelsUnderCircles: labelsUnderCircles,
+          fullWidthPrimary: fullWidthPrimary,
         ),
       ),
     ),
@@ -87,6 +92,7 @@ void main() {
   Future<_ViewModel> pumpButtons(
     WidgetTester tester, {
     bool labelsUnderCircles = false,
+    bool fullWidthPrimary = false,
     bool actionsSettled = true,
   }) async {
     final vm = _ViewModel();
@@ -103,7 +109,9 @@ void main() {
     when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.features).thenReturn(const []);
 
-    await tester.pumpWidget(buttons(vm, labelsUnderCircles));
+    await tester.pumpWidget(
+      buttons(vm, labelsUnderCircles, fullWidthPrimary: fullWidthPrimary),
+    );
     return vm;
   }
 
@@ -122,26 +130,53 @@ void main() {
     );
   });
 
-  // A labeled Play filled with the accent reads as focused when the accent is
-  // white, beside the circle that really is, so until it has focus it looks
-  // like the circles.
-  testWidgets('a labeled Play without focus is outlined like the circles', (
-    tester,
-  ) async {
-    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-    await pumpButtons(tester, labelsUnderCircles: true);
+  BoxDecoration nearestDecoration(WidgetTester tester, Finder of) {
+    final box = find
+        .ancestor(
+          of: of,
+          matching: find.byWidgetPredicate(
+            (w) =>
+                (w is AnimatedContainer && w.decoration is BoxDecoration) ||
+                (w is Container && w.decoration is BoxDecoration),
+          ),
+        )
+        .first;
+    final widget = tester.widget(box);
+    return (widget is AnimatedContainer
+            ? widget.decoration
+            : (widget as Container).decoration)!
+        as BoxDecoration;
+  }
 
-    final pill = tester.widget<AnimatedContainer>(
-      find
-          .ancestor(
-            of: find.text('Play'),
-            matching: find.byType(AnimatedContainer),
-          )
-          .first,
-    );
-    final decoration = pill.decoration! as BoxDecoration;
-    expect(decoration.color, isNot(AppColorScheme.accent));
-    expect(decoration.border!.top.color, isNot(Colors.transparent));
+  // A Play filled with the accent reads as focused when the accent is white,
+  // beside the circle that really is, so until it has focus it looks like the
+  // circles. Both the labeled pill and the full-width one Stage uses.
+  for (final fullWidthPrimary in [false, true]) {
+    testWidgets('Play without focus matches the circles '
+        '(${fullWidthPrimary ? 'full width' : 'labeled pill'})', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      await pumpButtons(
+        tester,
+        labelsUnderCircles: true,
+        fullWidthPrimary: fullWidthPrimary,
+      );
+
+      final play = nearestDecoration(tester, find.text('Play'));
+      final circle = nearestDecoration(tester, find.byIcon(Icons.cast));
+      expect(play.color, circle.color);
+      expect(play.border!.top.color, circle.border!.top.color);
+    });
+  }
+
+  // A phone shows no focus, so its Play keeps the accent fill.
+  testWidgets('Play on a phone keeps the accent fill', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await pumpButtons(tester, fullWidthPrimary: true);
+
+    final play = nearestDecoration(tester, find.text('Play'));
+    expect(play.color, AppColorScheme.accent);
   });
 
   // The row waits for the late lookups so a button doesn't pop in after the
