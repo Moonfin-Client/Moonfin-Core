@@ -147,24 +147,32 @@ class UserViewsRepository extends ChangeNotifier {
   Future<Set<String>> getMyMediaExcludes() async =>
       await _excludesFrom(cachedUserConfiguration()) ?? const {};
 
-  Future<UserConfiguration> getUserConfiguration() =>
-      _inFlightConfig ??= _client.usersApi
-          .getUserConfiguration()
-          .then((config) {
-            _cachedConfig = config;
-            if (GetIt.instance.isRegistered<UserPreferences>()) {
-              final prefs = GetIt.instance<UserPreferences>();
-              if (!prefs.containsPreference(
-                    UserPreferences.hideWatchedInRecentRows,
-                    scopedOnly: true,
-                  ) &&
-                  config.hidePlayedInLatest) {
-                prefs.seedHideWatchedFromServer(config);
-              }
+  Future<UserConfiguration> getUserConfiguration() {
+    final initiatingProfileScope =
+        GetIt.instance.isRegistered<UserPreferences>()
+            ? GetIt.instance<UserPreferences>().activeProfileScopeSuffix()
+            : null;
+    return _inFlightConfig ??= _client.usersApi
+        .getUserConfiguration()
+        .then((config) {
+          _cachedConfig = config;
+          if (GetIt.instance.isRegistered<UserPreferences>()) {
+            final prefs = GetIt.instance<UserPreferences>();
+            if (!prefs.containsPreference(
+                  UserPreferences.hideWatchedInRecentRows,
+                  scopedOnly: true,
+                ) &&
+                config.hidePlayedInLatest) {
+              prefs.seedHideWatchedFromServer(
+                config,
+                expectedProfileScope: initiatingProfileScope,
+              );
             }
-            return config;
-          })
-          .whenComplete(() => _inFlightConfig = null);
+          }
+          return config;
+        })
+        .whenComplete(() => _inFlightConfig = null);
+  }
 
   Future<void> updateUserConfiguration(UserConfiguration config) async {
     await _client.usersApi.updateUserConfiguration(config);

@@ -30,6 +30,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
   Future<void> _hideWatchedConfigSync = Future<void>.value();
+  Future<void> _hideUpgradesSync = Future<void>.value();
 
   @override
   void initState() {
@@ -106,11 +107,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     if (syncService.pluginAvailable &&
         GetIt.instance.isRegistered<MediaServerClient>()) {
       final client = GetIt.instance<MediaServerClient>();
-      unawaited(
-        syncService
-            .pushHideUpgradesPreference(client)
-            .whenComplete(_reloadHomeRows),
-      );
+      _hideUpgradesSync = _hideUpgradesSync.then((_) async {
+        try {
+          await syncService.pushHideUpgradesPreference(client);
+        } catch (_) {}
+      }).whenComplete(_reloadHomeRows);
       return;
     }
     _reloadHomeRows();

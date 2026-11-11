@@ -1221,6 +1221,32 @@ class MultiServerRepository {
             var parsed = _parseItems(latestResponse, session.server.id);
             if (parsed.isEmpty) continue;
 
+            if (hideWatched &&
+                parsed.length >= fetchLimit &&
+                fetchLimit < _maxItems) {
+              final unwatchedItems = normalizeLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _defaultLimit,
+                hideWatched: true,
+              );
+              if (unwatchedItems.length < _defaultLimit) {
+                fetchLimit = _maxItems;
+                latestResponse = await _withTimeout(
+                  () => session.client.itemsApi.getLatestItems(
+                    parentId: id,
+                    limit: fetchLimit,
+                    fields: _fields,
+                    enableImageTypes: _imageTypes,
+                    imageTypeLimit: _imageTypeLimit,
+                  ),
+                  label: 'latest $name from ${session.server.name}',
+                );
+                parsed = _parseItems(latestResponse, session.server.id);
+                if (parsed.isEmpty) continue;
+              }
+            }
+
             // Merged rows are built once every server has answered, so the
             // items are only collected here.
             if (mergeByType) {
@@ -1234,29 +1260,6 @@ class MultiServerRepository {
               limit: _defaultLimit,
               hideWatched: hideWatched,
             );
-            if (hideWatched &&
-                items.length < _defaultLimit &&
-                parsed.length >= fetchLimit &&
-                fetchLimit < _maxItems) {
-              fetchLimit = _maxItems;
-              latestResponse = await _withTimeout(
-                () => session.client.itemsApi.getLatestItems(
-                  parentId: id,
-                  limit: fetchLimit,
-                  fields: _fields,
-                  enableImageTypes: _imageTypes,
-                  imageTypeLimit: _imageTypeLimit,
-                ),
-                label: 'latest $name from ${session.server.name}',
-              );
-              parsed = _parseItems(latestResponse, session.server.id);
-              items = normalizeLatestMediaItems(
-                parsed,
-                collectionType: collectionType,
-                limit: _defaultLimit,
-                hideWatched: true,
-              );
-            }
             if (items.isEmpty) continue;
 
             final displayName = hasMultiple

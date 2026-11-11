@@ -220,7 +220,7 @@ class MediaBarViewModel extends ChangeNotifier {
 
     try {
       final nextState = await _repository.loadItems();
-      if (loadGeneration != _loadGeneration) return;
+      if (loadGeneration != _loadGeneration || _reloadAfterLoad) return;
 
       if (nextState is MediaBarError &&
           previousReady != null &&

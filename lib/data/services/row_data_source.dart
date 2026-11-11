@@ -323,11 +323,11 @@ class RowDataSource {
       limit: _defaultLimit,
       hideWatched: hideWatched,
     );
-    if (hideWatched &&
+    while (hideWatched &&
         items.length < _defaultLimit &&
         rawItems.length >= fetchLimit &&
-        fetchLimit < _maxItems) {
-      fetchLimit = _maxItems;
+        fetchLimit < 500) {
+      fetchLimit = fetchLimit + 100 > 500 ? 500 : fetchLimit + 100;
       response = await _getLatestItemsWithFallback(
         parentId: parentId,
         limit: fetchLimit,
@@ -342,9 +342,10 @@ class RowDataSource {
     }
     final reportedTotal = response['TotalRecordCount'] as int?;
     final serverMayHaveMore =
-        rawItems.length >= fetchLimit && fetchLimit < _maxItems;
+        rawItems.length >= fetchLimit && fetchLimit < 500;
     final hasMore =
         items.length >= _defaultLimit &&
+        items.length < _maxItems &&
         (reportedTotal == null ||
             reportedTotal > items.length ||
             serverMayHaveMore);
@@ -1727,11 +1728,12 @@ class RowDataSource {
             limit: wanted,
             hideWatched: hideWatched,
           );
-          if (hideWatched &&
+          while (hideWatched &&
               items.length < wanted &&
+              items.length < _maxItems &&
               rawItems.length >= fetchLimit &&
-              fetchLimit < _maxItems) {
-            fetchLimit = _maxItems;
+              fetchLimit < 500) {
+            fetchLimit = fetchLimit + 100 > 500 ? 500 : fetchLimit + 100;
             response = await _getLatestItemsWithFallback(
               parentId: parentId,
               limit: fetchLimit,
@@ -1739,16 +1741,17 @@ class RowDataSource {
             rawItems = _parseItems(response, serverId);
             items = normalizeLatestMediaItems(
               rawItems,
-              limit: wanted,
+              limit: wanted > _maxItems ? _maxItems : wanted,
               hideWatched: true,
             );
           }
           final reportedTotal = response['TotalRecordCount'] as int?;
           final serverMayHaveMore =
-              rawItems.length >= fetchLimit && fetchLimit < _maxItems;
+              rawItems.length >= fetchLimit && fetchLimit < 500;
           final hasMore =
               items.length > row.items.length &&
               items.length >= wanted &&
+              items.length < _maxItems &&
               (reportedTotal == null ||
                   reportedTotal > items.length ||
                   serverMayHaveMore);

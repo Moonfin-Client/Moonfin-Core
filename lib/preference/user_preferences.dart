@@ -400,21 +400,34 @@ class UserPreferences extends ChangeNotifier {
       _setIfMissing(subtitleMode, mode);
     }
 
-    seedHideWatchedFromServer(config);
+    final activeScope = _activeProfileScopeSuffix();
+    if (activeScope != null) {
+      seedHideWatchedFromServer(config, expectedProfileScope: activeScope);
+    }
   }
 
-  void seedHideWatchedFromServer(UserConfiguration config) {
+  void seedHideWatchedFromServer(
+    UserConfiguration config, {
+    String? expectedProfileScope,
+  }) {
+    final activeScope = _activeProfileScopeSuffix();
+    if (expectedProfileScope != null && expectedProfileScope != activeScope) {
+      return;
+    }
     if (!containsPreference(hideWatchedInRecentRows, scopedOnly: true) &&
         config.hidePlayedInLatest) {
       final scoped = _scopedPreference(hideWatchedInRecentRows);
       if (scoped != null) {
         _store.set(scoped, true);
-      } else {
+        notifyListeners();
+      } else if (expectedProfileScope == null) {
         _store.set(hideWatchedInRecentRows, true);
+        notifyListeners();
       }
-      notifyListeners();
     }
   }
+
+  String? activeProfileScopeSuffix() => _activeProfileScopeSuffix();
 
   String? _activeProfileScopeSuffix() {
     final serverId = (_store.getString(_lastServerIdPreferenceKey) ?? '')
