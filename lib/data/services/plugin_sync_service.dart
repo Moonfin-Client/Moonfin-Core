@@ -135,6 +135,12 @@ class PluginSyncService extends ChangeNotifier {
   bool _calendarReminders = false;
   bool get calendarRemindersAvailable => _pluginAvailable && _calendarReminders;
 
+  /// Whether the plugin can read a title's Radarr/Sonarr queue, which says why
+  /// a download is stuck. Older plugins, and ones without Seerr set up, leave
+  /// it out.
+  bool _arrQueueAvailable = false;
+  bool get arrQueueAvailable => _pluginAvailable && _arrQueueAvailable;
+
   /// Whether the server will take an uploaded diagnostic report. An older
   /// plugin, or none at all, leaves it false.
   bool _clientLogSupported = false;
@@ -275,6 +281,7 @@ class PluginSyncService extends ChangeNotifier {
     _calendarDaysBack = 14;
     _calendarDaysAhead = 90;
     _calendarReminders = false;
+    _arrQueueAvailable = false;
     _clientLogSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
@@ -387,6 +394,7 @@ class PluginSyncService extends ChangeNotifier {
       _calendarDaysBack = _readCount(pingResult, 'calendarDaysBack') ?? 14;
       _calendarDaysAhead = _readCount(pingResult, 'calendarDaysAhead') ?? 90;
       _calendarReminders = _readBool(pingResult, 'calendarReminders') ?? false;
+      _arrQueueAvailable = _readBool(pingResult, 'arrQueueAvailable') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
