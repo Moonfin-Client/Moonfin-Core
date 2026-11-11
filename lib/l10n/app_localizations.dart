@@ -10462,6 +10462,24 @@ abstract class AppLocalizations {
   /// **'Importing'**
   String get seerrImportingStatus;
 
+  /// Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded, waiting for import'**
+  String get seerrWaitingForImport;
+
+  /// Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders
+  ///
+  /// In en, this message translates to:
+  /// **'Stalled'**
+  String get seerrDownloadStalled;
+
+  /// Label on the Seerr download bar when the download client reports the download as failed
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed'**
+  String get seerrDownloadFailed;
+
   /// Status bar item count
   ///
   /// In en, this message translates to:
@@ -28541,6 +28559,66 @@ abstract class AppLocalizations {
   /// **'Advanced'**
   String get settingsAdvancedSection;
 
+  /// Section header on the Quality & Decoding settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding & Rendering'**
+  String get settingsDecodingAndRenderingSection;
+
+  /// Section header on the Audio settings screen for the default audio track choices
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Stream'**
+  String get settingsAudioStreamSection;
+
+  /// Section header on the Audio settings screen for the passthrough mode
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Output'**
+  String get settingsAudioOutputSection;
+
+  /// Section header on the Audio settings screen for the per-codec passthrough switches
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough Settings'**
+  String get settingsPassthroughSettingsSection;
+
+  /// Section header on the IMDb Lists settings screen over the IMDb row switches
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Lists'**
+  String get settingsImdbListsSection;
+
+  /// Section header on the TMDB Lists settings screen over the TMDB row switches
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB Lists'**
+  String get settingsTmdbListsSection;
+
+  /// Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Home Page Rows'**
+  String get settingsSeerrHomePageRowsSection;
+
+  /// Section header on the Custom Rows settings screen over the rows the user already saved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Custom Home Rows'**
+  String get settingsSavedCustomHomeRowsSection;
+
+  /// Section header on the Home Sections settings screen for the Rewatch row
+  ///
+  /// In en, this message translates to:
+  /// **'Rewatch'**
+  String get settingsRewatchSection;
+
+  /// Section header in the Favorites display options for choosing between Home and Library view
+  ///
+  /// In en, this message translates to:
+  /// **'Switch View'**
+  String get favoritesSwitchViewSection;
+
   /// Subtitle for the Player entry on the Playback settings screen
   ///
   /// In en, this message translates to:
@@ -30104,6 +30182,86 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not shown in the preview'**
   String get settingsPreviewNotShown;
+
+  /// Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is on, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off audio rows are
+  ///
+  /// In en, this message translates to:
+  /// **'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open {group} under {disabled}, and turn it on.'**
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled);
+
+  /// Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is off, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the audio rows once the switch is on, so it gives the steps in that order
+  ///
+  /// In en, this message translates to:
+  /// **'To see Albums, Artists or Audio Playlists on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn one on.'**
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  );
+
+  /// Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is
+  ///
+  /// In en, this message translates to:
+  /// **'The Collections row is turned off. To show it, go to Rows, open {group} under {disabled}, and turn it on.'**
+  String settingsPreviewCollectionsOffInHomeRows(String group, String disabled);
+
+  /// Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is off, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Collections row once the switch is on, so it gives the steps in that order
+  ///
+  /// In en, this message translates to:
+  /// **'To see the Collections row on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn it on.'**
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  );
+
+  /// Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change
+  ///
+  /// In en, this message translates to:
+  /// **'Kids Mode keeps these rows off Home, so these settings don\'t change it.'**
+  String get settingsPreviewRowsOffInKidsMode;
+
+  /// Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on a row in Rows, under {disabled}'**
+  String settingsPreviewNeedsRowInRows(String disabled);
+
+  /// Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is off. The Rows screen only lists those rows once the switch is on
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on {setting}, then turn on a row in Rows'**
+  String settingsPreviewNeedsSwitchAndRow(String setting);
+
+  /// Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home
+  ///
+  /// In en, this message translates to:
+  /// **'Kids Mode keeps this off Home'**
+  String get settingsPreviewKeptOffByKidsMode;
+
+  /// Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows
+  ///
+  /// In en, this message translates to:
+  /// **'There\'s no music to show, so Home leaves these rows out.'**
+  String get settingsPreviewAudioRowsEmpty;
+
+  /// Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out
+  ///
+  /// In en, this message translates to:
+  /// **'There\'s nothing to show in these rows, so Home leaves them out.'**
+  String get settingsPreviewRowsEmpty;
+
+  /// Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row
+  ///
+  /// In en, this message translates to:
+  /// **'There are no collections to show, so Home leaves this row out.'**
+  String get settingsPreviewCollectionsEmpty;
+
+  /// Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows
+  ///
+  /// In en, this message translates to:
+  /// **'This only changes rows for a single collection added in Rows. The Collections row looks the same.'**
+  String get settingsPreviewShowEpisodesNote;
 
   /// Tag on the option that is saved while another option is being tried in the Settings live preview
   ///
