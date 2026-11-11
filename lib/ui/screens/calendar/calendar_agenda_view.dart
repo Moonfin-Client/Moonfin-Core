@@ -699,11 +699,13 @@ class _Preview extends StatelessWidget {
               final short =
                   box.maxHeight <
                   MediaQuery.textScalerOf(context).scale(_shortPaneHeight);
-              return Padding(
+              // Reversed, the content sits at the bottom of the pane and
+              // scrolls when the pane is too short for it.
+              return SingleChildScrollView(
+                reverse: true,
                 padding: EdgeInsets.all(short ? 16 : 28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
                       kicker.toUpperCase(),
