@@ -337,6 +337,11 @@ class HomeViewModel extends ChangeNotifier {
     required int freshItemCount,
   }) => pagedDuringLoad && existingItemCount > freshItemCount;
 
+  @visibleForTesting
+  void setRowsForTesting(List<HomeRow> rows) {
+    _rows = rows;
+  }
+
   /// Whether the home has to load again because the server came back.
   ///
   /// Rows built while it was unreachable came from the downloads catalog, so
@@ -1185,7 +1190,7 @@ class HomeViewModel extends ChangeNotifier {
 
       final filteredItems = filterEmptyElements(result.$1);
       final newTotalCount = filteredItems.length <= row.items.length
-          ? filteredItems.length
+          ? (result.$2 > filteredItems.length ? result.$2 : filteredItems.length)
           : (result.$2 - (result.$1.length - filteredItems.length));
       _replaceRowById(
         row.copyWith(items: filteredItems, totalCount: newTotalCount),

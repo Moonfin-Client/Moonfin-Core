@@ -178,4 +178,55 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('loadMoreForRow preserves hasMore and pagination state when cumulative fetch retains cards with larger total', () async {
+    final initialCards = [
+      for (var i = 0; i < 8; i++)
+        AggregatedItem(
+          id: 'series-$i',
+          serverId: 'http://server',
+          rawData: {'Type': 'Series', 'Id': 'series-$i'},
+        ),
+    ];
+    final latestRow = HomeRow(
+      id: 'latest_lib1',
+      title: 'Latest TV',
+      rowType: HomeRowType.latestMedia,
+      items: initialCards,
+      totalCount: 80,
+    );
+
+    when(() => source.loadMore(
+      row: any(named: 'row'),
+      serverId: any(named: 'serverId'),
+      offset: any(named: 'offset'),
+    )).thenAnswer((_) async => (initialCards, 80));
+
+    final client = _Client();
+    when(() => client.userId).thenReturn('user');
+    when(() => client.baseUrl).thenReturn('http://server');
+    final mediaBar = _MediaBar();
+    when(() => mediaBar.load(force: any(named: 'force'))).thenAnswer((_) async {});
+    final vm = HomeViewModel(
+      dataSource: source,
+      prefs: prefs,
+      client: client,
+      mediaBarViewModel: mediaBar,
+      multiServerRepo: _MultiServer(),
+      cacheStore: _Cache(),
+    );
+    addTearDown(vm.dispose);
+
+    vm.setRowsForTesting([latestRow]);
+    final rowIndex = vm.rows.indexWhere((r) => r.id == 'latest_lib1');
+    expect(rowIndex, isNonNegative);
+    expect(vm.rows[rowIndex].hasMore, isTrue);
+
+    await vm.loadMoreForRow(rowIndex);
+
+    final updatedRow = vm.rows.firstWhere((r) => r.id == 'latest_lib1');
+    expect(updatedRow.items, hasLength(8));
+    expect(updatedRow.totalCount, 80);
+    expect(updatedRow.hasMore, isTrue);
+  });
 }

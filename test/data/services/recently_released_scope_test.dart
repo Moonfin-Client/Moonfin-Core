@@ -507,5 +507,70 @@ void main() {
       expect(totalCount, 80);
       expect(totalCount > items.length, isTrue);
     });
+
+    test('loadMore replaces existing cards when response is exhausted with fewer cards', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+      final initialItems = <AggregatedItem>[
+        for (var i = 0; i < 8; i++)
+          AggregatedItem(
+            id: 'movie-$i',
+            serverId: 'srv1',
+            rawData: {
+              'Id': 'movie-$i',
+              'Name': 'Movie $i',
+              'Type': 'Movie',
+            },
+          ),
+      ];
+      final initialRow = HomeRow(
+        id: 'latest_lib1',
+        title: 'Movies',
+        rowType: HomeRowType.latestMedia,
+        items: initialItems,
+        totalCount: 80,
+      );
+
+      final itemsApi = _MockItemsApi();
+      when(
+        () => itemsApi.getLatestItems(
+          parentId: any(named: 'parentId'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          imageTypeLimit: any(named: 'imageTypeLimit'),
+        ),
+      ).thenAnswer((invocation) async {
+        // Items removed: returns only 3 items, exhausted (TotalRecordCount == 3 < limit 23)
+        final items = [
+          for (var i = 0; i < 3; i++)
+            <String, dynamic>{
+              'Id': 'movie-$i',
+              'Name': 'Movie $i',
+              'Type': 'Movie',
+            },
+        ];
+        return {'Items': items, 'TotalRecordCount': 3};
+      });
+
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final dataSource = RowDataSource(client);
+
+      final (items, totalCount) = await dataSource.loadMore(
+        row: initialRow,
+        serverId: 'srv1',
+      );
+
+      // Shorter exhausted result replaces the stale 8 cards
+      expect(items, hasLength(3));
+      expect(totalCount, 3);
+    });
   });
 }

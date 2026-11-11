@@ -1825,7 +1825,8 @@ class RowDataSource {
           final mayHaveMore =
               serverMayHaveMore ||
               (reportedTotal != null && reportedTotal > rawItems.length);
-          if (items.length <= row.items.length) {
+          if ((mayHaveMore || rawItems.length >= fetchLimit) &&
+              items.length <= row.items.length) {
             items = row.items;
           }
           final hasMore =
@@ -2017,7 +2018,8 @@ class RowDataSource {
         final mayHaveMore =
             serverMayHaveMore ||
             (reportedTotal != null && reportedTotal > rawItems.length);
-        if (items.length <= row.items.length) {
+        if ((mayHaveMore || rawItems.length >= fetchLimit) &&
+            items.length <= row.items.length) {
           items = row.items;
         }
         final hasMore =
