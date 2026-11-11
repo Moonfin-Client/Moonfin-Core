@@ -400,6 +400,10 @@ class UserPreferences extends ChangeNotifier {
       _setIfMissing(subtitleMode, mode);
     }
 
+    seedHideWatchedFromServer(config);
+  }
+
+  void seedHideWatchedFromServer(UserConfiguration config) {
     if (!containsPreference(hideWatchedInRecentRows, scopedOnly: true) &&
         config.hidePlayedInLatest) {
       _setIfMissing(hideWatchedInRecentRows, true);

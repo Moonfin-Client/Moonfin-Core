@@ -159,7 +159,7 @@ class UserViewsRepository extends ChangeNotifier {
                     scopedOnly: true,
                   ) &&
                   config.hidePlayedInLatest) {
-                prefs.initLanguagePrefs(config);
+                prefs.seedHideWatchedFromServer(config);
               }
             }
             return config;

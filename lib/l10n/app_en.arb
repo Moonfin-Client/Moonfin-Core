@@ -6394,7 +6394,7 @@
   "@hideUpgradesInRecentRows": {
     "description": "Setting to keep upgraded media at its original date added in Recently Added"
   },
-  "hideUpgradesInRecentRowsDescription": "Keep upgraded files at their original date added instead of moving them to the front of Recently Added.",
+  "hideUpgradesInRecentRowsDescription": "Keep upgraded files at their original date added instead of moving them to the front of Recently Added. Requires an available Moonbase plugin.",
   "@hideUpgradesInRecentRowsDescription": {
     "description": "Description for keeping upgraded media at its original date added in Recently Added"
   },
