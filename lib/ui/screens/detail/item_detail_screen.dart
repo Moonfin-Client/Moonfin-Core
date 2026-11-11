@@ -15549,8 +15549,13 @@ class DetailSeasonsRow extends StatelessWidget {
         backdrop(season.id, season.backdropImageTags) ??
         thumb(season.seriesId, season.seriesThumbImageTag) ??
         thumb(season.parentThumbItemId, season.parentThumbImageTag) ??
-        backdrop(season.parentBackdropItemId, season.parentBackdropImageTags);
+        backdrop(season.parentBackdropItemId, season.parentBackdropImageTags) ??
+        seerrPoster(season.rawData['PosterPath'] as String?);
   }
+
+  /// A season only Seerr knows of has no server artwork, just its TMDB poster.
+  String? seerrPoster(String? path) =>
+      path == null || path.isEmpty ? null : '$seerrPosterBase$path';
 
   String? _progressText(AggregatedItem season) {
     final total = season.childCount;
