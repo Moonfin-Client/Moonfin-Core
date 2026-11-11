@@ -938,6 +938,40 @@ class PluginSyncService extends ChangeNotifier {
     );
   }
 
+  /// Writes the server-side `hideUpgradesInRecentRows` preference to Moonbase
+  /// even when full settings sync (`pluginSyncEnabled`) is disabled, so the
+  /// server-only upgrade date restoration toggle still takes effect without
+  /// pushing unrelated local preferences.
+  Future<void> pushHideUpgradesPreference(MediaServerClient client) async {
+    if (!_pluginAvailable) return;
+    if (_prefs.get(UserPreferences.pluginSyncEnabled)) {
+      await pushSettings(client);
+      return;
+    }
+
+    final profile = syncProfile;
+    if (!supportedProfiles.contains(profile)) return;
+
+    try {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep == null) return;
+      await _dio.post(
+        '${ep.base}/Moonfin/Settings/Profile/$profile',
+        data: {
+          'profile': {
+            'hideUpgradesInRecentRows': _prefs.get(
+              UserPreferences.hideUpgradesInRecentRows,
+            ),
+          },
+          'clientId': 'moonfin-flutter',
+        },
+        options: Options(
+          headers: {...ep.headers, 'Content-Type': 'application/json'},
+        ),
+      );
+    } catch (_) {}
+  }
+
   /// [force] skips the identity check, since an explicit push means overwrite
   /// whatever the server holds. The snapshot only proves what this device sent
   /// last, not what another device has written since.

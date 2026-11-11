@@ -29,6 +29,7 @@ class HomeRowTogglesScreen extends StatefulWidget {
 class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
+  Future<void> _hideWatchedConfigSync = Future<void>.value();
 
   @override
   void initState() {
@@ -65,10 +66,10 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     _reloadHomeRows();
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
-    final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
-    unawaited(() async {
+    _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
       try {
         final config = await client.usersApi.getUserConfiguration();
+        final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
         if (config.hidePlayedInLatest != hideWatched) {
           await client.usersApi.updateUserConfiguration(
             config.copyWith(hidePlayedInLatest: hideWatched),
@@ -76,7 +77,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
           _reloadHomeRows();
         }
       } catch (_) {}
-    }());
+    });
   }
 
   void _onHideUpgradesInRecentRowsChanged() {
@@ -85,7 +86,9 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
         GetIt.instance.isRegistered<MediaServerClient>()) {
       final client = GetIt.instance<MediaServerClient>();
       unawaited(
-        syncService.pushSettings(client).whenComplete(_reloadHomeRows),
+        syncService
+            .pushHideUpgradesPreference(client)
+            .whenComplete(_reloadHomeRows),
       );
       return;
     }

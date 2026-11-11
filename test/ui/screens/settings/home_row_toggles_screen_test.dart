@@ -97,6 +97,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
     verify(() => home.load(preserveExisting: false)).called(1);
+    clearInteractions(home);
 
     await tester.tap(find.text('Hide Upgrades'));
     await tester.pumpAndSettle();

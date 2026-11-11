@@ -19,6 +19,7 @@ import '../services/library_scope_service.dart';
 import '../services/plugin_sync_service.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
+import '../utils/latest_media_row_normalizer.dart';
 import 'tmdb_repository.dart';
 
 class MediaBarRepository {
@@ -443,7 +444,7 @@ class MediaBarRepository {
                   limit: _poolSize,
                   fields: _fields,
                   enableImageTypes: 'Backdrop,Logo,Banner',
-                  hideWatched: hideWatched ? true : null,
+                  hideWatched: hideWatched,
                 )
                 .timeout(const Duration(seconds: 15))
           : await _client.itemsApi
@@ -460,7 +461,7 @@ class MediaBarRepository {
           .cast<Map<String, dynamic>>();
       if (!hideWatched) return rawItems;
       return rawItems
-          .where((item) => (item['UserData'] as Map?)?['Played'] != true)
+          .where((item) => !isRawItemWatchedForRecentRow(item))
           .toList();
     } catch (error) {
       final statusCode = error is DioException

@@ -289,11 +289,14 @@ class RowDataSource {
     return row.copyWith(items: enrichedItems);
   }
 
-  bool get _hideWatchedInRecentRows =>
-      GetIt.instance.isRegistered<UserPreferences>() &&
-      GetIt.instance<UserPreferences>().get(
-        UserPreferences.hideWatchedInRecentRows,
-      );
+  bool? get _hideWatchedInRecentRowsOrNull =>
+      GetIt.instance.isRegistered<UserPreferences>()
+      ? GetIt.instance<UserPreferences>().get(
+          UserPreferences.hideWatchedInRecentRows,
+        )
+      : null;
+
+  bool get _hideWatchedInRecentRows => _hideWatchedInRecentRowsOrNull ?? false;
 
   Future<HomeRow> loadLatestMedia(
     String parentId,
@@ -377,7 +380,7 @@ class RowDataSource {
     List<String> includeItemTypes, {
     int limit = _defaultLimit,
   }) async {
-    final hideWatched = _hideWatchedInRecentRows;
+    final hideWatched = _hideWatchedInRecentRowsOrNull;
     final response = await _client.itemsApi.getRecentlyReleasedItems(
       includeItemTypes: includeItemTypes,
       limit: limit,
@@ -387,10 +390,10 @@ class RowDataSource {
       // No parent to scope to, so without recursion the server only offers
       // the library folders themselves.
       recursive: true,
-      hideWatched: hideWatched ? true : null,
+      hideWatched: hideWatched,
     );
     final items = _parseItems(response, serverId);
-    return hideWatched
+    return (hideWatched ?? false)
         ? normalizeLatestMediaItems(items, limit: limit, hideWatched: true)
         : items;
   }
@@ -412,7 +415,7 @@ class RowDataSource {
         UserPreferences.recentlyReleasedSeriesType,
       ),
     );
-    final hideWatched = _hideWatchedInRecentRows;
+    final hideWatched = _hideWatchedInRecentRowsOrNull;
     final response = await _getRecentlyReleasedItemsWithFallback(
       parentId: parentId,
       limit: fetchLimit,
@@ -424,7 +427,7 @@ class RowDataSource {
       _parseItems(response, serverId),
       collectionType: collectionType,
       limit: _defaultLimit,
-      hideWatched: hideWatched,
+      hideWatched: hideWatched ?? false,
     );
     return HomeRow(
       id: 'recently_released_$parentId',
@@ -1811,7 +1814,7 @@ class RowDataSource {
               UserPreferences.recentlyReleasedSeriesType.defaultValue,
         );
         final wanted = currentOffset + _defaultLimit;
-        final hideWatched = _hideWatchedInRecentRows;
+        final hideWatched = _hideWatchedInRecentRowsOrNull;
         final response = await _getRecentlyReleasedItemsWithFallback(
           parentId: parentId,
           limit: latestMediaFetchLimitForCollection(
@@ -1827,7 +1830,7 @@ class RowDataSource {
           _parseItems(response, serverId),
           collectionType: collectionType,
           limit: wanted,
-          hideWatched: hideWatched,
+          hideWatched: hideWatched ?? false,
         );
         final totalCount = items.length <= row.items.length
             ? items.length
@@ -2183,7 +2186,7 @@ class RowDataSource {
     required int limit,
     List<String>? includeItemTypes,
     bool recursive = false,
-    bool hideWatched = false,
+    bool? hideWatched,
   }) async {
     try {
       final response = await _client.itemsApi.getRecentlyReleasedItems(
@@ -2194,7 +2197,7 @@ class RowDataSource {
         imageTypeLimit: _imageTypeLimit,
         includeItemTypes: includeItemTypes,
         recursive: recursive,
-        hideWatched: hideWatched ? true : null,
+        hideWatched: hideWatched,
       );
       return response;
     } on DioException catch (e) {
@@ -2208,7 +2211,7 @@ class RowDataSource {
         imageTypeLimit: _imageTypeLimit,
         includeItemTypes: includeItemTypes,
         recursive: recursive,
-        hideWatched: hideWatched ? true : null,
+        hideWatched: hideWatched,
       );
       return response;
     }

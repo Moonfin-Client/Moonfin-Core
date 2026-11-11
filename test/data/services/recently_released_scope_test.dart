@@ -39,6 +39,7 @@ void main() {
         enableImageTypes: any(named: 'enableImageTypes'),
         imageTypeLimit: any(named: 'imageTypeLimit'),
         recursive: any(named: 'recursive'),
+        hideWatched: any(named: 'hideWatched'),
       ),
     ).thenAnswer((_) async => {'Items': <dynamic>[], 'TotalRecordCount': 0});
 
@@ -58,6 +59,7 @@ void main() {
         enableImageTypes: any(named: 'enableImageTypes'),
         imageTypeLimit: any(named: 'imageTypeLimit'),
         recursive: captureAny(named: 'recursive'),
+        hideWatched: any(named: 'hideWatched'),
       ),
     ).captured;
     // Named arguments come back in whatever order the call recorded them.

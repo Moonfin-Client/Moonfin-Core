@@ -2361,7 +2361,7 @@ class SiloItemsApi
     if (scope == null) return _empty(0);
     final today = _clock().toLocal();
     final tomorrow = DateTime(today.year, today.month, today.day + 1);
-    final shouldHideWatched = (hideWatched ?? false) || await _hidesWatchedOnHome();
+    final shouldHideWatched = hideWatched ?? await _hidesWatchedOnHome();
     return _page(
       {
         'library_id': ?libraryId,
