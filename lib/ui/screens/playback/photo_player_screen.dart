@@ -32,9 +32,10 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   int _currentIndex = 0;
   bool _controlsVisible = true;
   Timer? _hideTimer;
-  Offset? _swipeStart;
+  int _pointerCount = 0;
+  Offset _swipeStart = Offset.zero;
   Offset _swipeLast = Offset.zero;
-  bool _swipeMultiTouch = false;
+  bool _swipeIgnored = false;
 
   static const _swipeMinDistance = 50.0;
   static const _slideshowInterval = Duration(seconds: 5);
@@ -175,25 +176,36 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     }
   }
 
-  void _onInteractionStart(ScaleStartDetails d) {
-    _swipeStart = d.focalPoint;
-    _swipeLast = d.focalPoint;
-    _swipeMultiTouch = d.pointerCount > 1;
+  /// A swipe is one finger down, moved and lifted, on a photo that isn't
+  /// zoomed in. Raw pointers are tracked rather than the viewer's scale
+  /// callbacks, which only start once the finger has already moved and would
+  /// also report a trackpad scroll.
+  void _onPointerDown(PointerDownEvent e) {
+    if (_pointerCount == 0) {
+      _swipeStart = e.position;
+      _swipeLast = e.position;
+      _swipeIgnored = _transformController.value.getMaxScaleOnAxis() > 1.01;
+    }
+    _pointerCount++;
+    if (_pointerCount > 1) _swipeIgnored = true;
   }
 
-  void _onInteractionUpdate(ScaleUpdateDetails d) {
-    _swipeLast = d.focalPoint;
-    if (d.pointerCount > 1) _swipeMultiTouch = true;
+  void _onPointerMove(PointerMoveEvent e) => _swipeLast = e.position;
+
+  void _onPointerUp(PointerUpEvent e) {
+    _swipeLast = e.position;
+    _onPointerDone(swipe: true);
   }
 
-  /// A one-finger horizontal swipe on an un-zoomed photo moves to the
-  /// next/previous one; when zoomed in, the drag pans the photo instead.
-  void _onInteractionEnd(ScaleEndDetails d) {
-    final start = _swipeStart;
-    _swipeStart = null;
-    if (start == null || _swipeMultiTouch || _items.length < 2) return;
-    if (_transformController.value.getMaxScaleOnAxis() > 1.01) return;
-    final delta = _swipeLast - start;
+  void _onPointerCancel(PointerCancelEvent e) => _onPointerDone(swipe: false);
+
+  void _onPointerDone({required bool swipe}) {
+    if (_pointerCount > 0) _pointerCount--;
+    if (_pointerCount > 0) return;
+    final ignored = _swipeIgnored;
+    _swipeIgnored = false;
+    if (!swipe || ignored || _items.length < 2) return;
+    final delta = _swipeLast - _swipeStart;
     if (delta.dx.abs() < _swipeMinDistance ||
         delta.dx.abs() < delta.dy.abs() * 1.5) {
       return;
@@ -245,7 +257,14 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _buildPhotoView(),
+            Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: _onPointerDown,
+              onPointerMove: _onPointerMove,
+              onPointerUp: _onPointerUp,
+              onPointerCancel: _onPointerCancel,
+              child: _buildPhotoView(),
+            ),
             if (_controlsVisible) _buildOverlay(context),
           ],
         ),
@@ -277,9 +296,6 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
       child: InteractiveViewer(
         key: ValueKey(item.id),
         transformationController: _transformController,
-        onInteractionStart: _onInteractionStart,
-        onInteractionUpdate: _onInteractionUpdate,
-        onInteractionEnd: _onInteractionEnd,
         minScale: 1.0,
         maxScale: 5.0,
         child: Center(
