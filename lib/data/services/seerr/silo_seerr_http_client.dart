@@ -696,6 +696,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     'backdropPath': d['backdrop_path'],
     'overview': d['overview'],
     'status': d['status'],
+    'contentRating': d['content_rating'],
     'voteAverage': d['vote_average'],
     'voteCount': d['vote_count'],
     'genres': [

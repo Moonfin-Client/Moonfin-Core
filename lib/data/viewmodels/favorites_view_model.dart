@@ -9,8 +9,10 @@ import '../../util/network_errors.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/seerr/seerr_api_models.dart';
 import '../services/user_data_sync.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/bounded_concurrency.dart';
 
 enum FavoritesState { loading, ready, error }
 
@@ -315,25 +317,76 @@ class FavoritesViewModel extends ChangeNotifier {
       _watchlistPages = page.page;
       final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
       _rowFetchedCounts[type] = fetched;
-      final items = [
-        ...library,
-        for (final item in page.results)
-          AggregatedItem(
-            id: item.id.toString(),
-            serverId: 'seerr',
-            rawData: {
-              'Name': item.displayTitle,
-              'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-              'PosterPath': item.posterPath ?? '',
-              'BackdropPath': item.backdropPath ?? '',
-              'SeerrMediaType': item.mediaType,
-            },
-          ),
-      ];
+      final requestCards = await mapBounded(
+        page.results,
+        _requestCardConcurrency,
+        (item) => _requestCard(repo, item),
+      );
+      final items = [...library, ...requestCards.whereType<AggregatedItem>()];
       return (items, page.page < page.totalPages ? fetched + 1 : fetched);
     } catch (_) {
       return (library, library.length);
     }
+  }
+
+  static const _requestCardConcurrency = 5;
+
+  /// A Watchlist card for a title the library lacks. The watchlist itself
+  /// leaves out the backdrop, runtime and (on Seerr) age rating, so they come
+  /// from the title's detail; a failed lookup still gives a card.
+  Future<AggregatedItem> _requestCard(
+    SeerrRepository repo,
+    SeerrDiscoverItem item,
+  ) async {
+    String? backdropPath = item.backdropPath;
+    String? overview = item.overview;
+    String? date = item.releaseDate ?? item.firstAirDate;
+    double? voteAverage = item.voteAverage;
+    String? contentRating;
+    int? runtimeMinutes;
+    final tmdbId = item.mediaInfo?.tmdbId ?? item.id;
+    if (tmdbId > 0) {
+      try {
+        if (item.mediaType == 'tv') {
+          final d = await repo.getTvDetails(tmdbId);
+          backdropPath ??= d.backdropPath;
+          overview ??= d.overview;
+          date ??= d.firstAirDate;
+          voteAverage ??= d.voteAverage;
+          contentRating = d.contentRating;
+        } else {
+          final d = await repo.getMovieDetails(tmdbId);
+          backdropPath ??= d.backdropPath;
+          overview ??= d.overview;
+          date ??= d.releaseDate;
+          voteAverage ??= d.voteAverage;
+          contentRating = d.contentRating;
+          runtimeMinutes = d.runtime;
+        }
+      } catch (_) {}
+    }
+    final year = date != null && date.length >= 4
+        ? int.tryParse(date.substring(0, 4))
+        : null;
+    return AggregatedItem(
+      id: item.id.toString(),
+      serverId: 'seerr',
+      rawData: {
+        'Name': item.displayTitle,
+        'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+        'Overview': overview ?? '',
+        'PosterPath': item.posterPath ?? '',
+        'BackdropPath': backdropPath ?? '',
+        'SeerrMediaType': item.mediaType,
+        'ProductionYear': ?year,
+        if (contentRating != null && contentRating.isNotEmpty)
+          'OfficialRating': contentRating,
+        if (runtimeMinutes != null && runtimeMinutes > 0)
+          'RunTimeTicks': runtimeMinutes * 60 * 10000000,
+        if (voteAverage != null && voteAverage > 0)
+          'CommunityRating': voteAverage,
+      },
+    );
   }
 
   Future<void> loadMoreForType(FavoriteTypeFilter type) async {
