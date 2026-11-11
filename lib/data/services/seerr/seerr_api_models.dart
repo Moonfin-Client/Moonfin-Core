@@ -338,6 +338,9 @@ class SeerrDiscoverItem {
   final int? voteCount;
   final double? popularity;
   final bool adult;
+
+  /// The US age rating. Only Silo's watchlist carries one.
+  final String? contentRating;
   final SeerrMediaInfo? mediaInfo;
   final String? character;
   final String? job;
@@ -361,6 +364,7 @@ class SeerrDiscoverItem {
     this.voteCount,
     this.popularity,
     this.adult = false,
+    this.contentRating,
     this.mediaInfo,
     this.character,
     this.job,

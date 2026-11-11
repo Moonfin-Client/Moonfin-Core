@@ -293,6 +293,31 @@ void main() {
     expect(similar.results.single.id, 949);
   });
 
+  test('a watchlist title keeps its age rating and release year', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/watchlist/titles': (
+        200,
+        {
+          'items': [
+            {
+              ..._severance,
+              'content_rating': 'TV-MA',
+              'release_date': '2022-02-18',
+            },
+          ],
+        },
+      ),
+    });
+    final page = SeerrDiscoverPage.fromJson(
+      await _client(silo).getWatchlist(),
+    );
+
+    final item = page.results.single;
+    expect(item.contentRating, 'TV-MA');
+    expect(item.firstAirDate, '2022-02-18');
+  });
+
   test('a request carries the title Silo needs, and keeps Silo ids exact',
       () async {
     final created = {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -93,6 +95,12 @@ class FavoritesViewModel extends ChangeNotifier {
   final Map<FavoriteTypeFilter, int> _rowFetchedCounts = {};
   int _watchlistPages = 0;
 
+  /// Watchlist request cards waiting for their detail, which is read once
+  /// they're in the row so the screen doesn't wait on it.
+  List<AggregatedItem> _requestCardsToEnrich = const [];
+  int _loadGeneration = 0;
+  bool _disposed = false;
+
   bool get hasMoreGrid => _gridFetchedCount < _gridTotalCount;
 
   final Map<FavoriteTypeFilter, int> _rowTotalCounts = {};
@@ -148,6 +156,7 @@ class FavoritesViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     userDataSync.removeListener(_onUserDataChanged);
     super.dispose();
   }
@@ -184,6 +193,8 @@ class FavoritesViewModel extends ChangeNotifier {
     _rowTotalCounts.clear();
     _rowFetchedCounts.clear();
     _watchlistPages = 0;
+    _requestCardsToEnrich = const [];
+    _loadGeneration++;
     _gridItems = const [];
     _gridTotalCount = 0;
     _gridFetchedCount = 0;
@@ -202,6 +213,7 @@ class FavoritesViewModel extends ChangeNotifier {
           }
         }
         _rowItems = map;
+        _enrichRequestCards();
       } else {
         await _fetchGridPage(0);
       }
@@ -317,77 +329,147 @@ class FavoritesViewModel extends ChangeNotifier {
       _watchlistPages = page.page;
       final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
       _rowFetchedCounts[type] = fetched;
-      final requestCards = await mapBounded(
-        page.results,
-        _requestCardConcurrency,
-        (item) => _requestCard(repo, item),
+      final requestCards = withoutBlockedItems([
+        for (final item in page.results) _requestCard(item),
+      ]);
+      _requestCardsToEnrich = requestCards;
+      return (
+        [...library, ...requestCards],
+        page.page < page.totalPages ? fetched + 1 : fetched,
       );
-      final items = [...library, ...requestCards.whereType<AggregatedItem>()];
-      return (items, page.page < page.totalPages ? fetched + 1 : fetched);
     } catch (_) {
       return (library, library.length);
     }
   }
 
   static const _requestCardConcurrency = 5;
+  static const _requestDetailTimeout = Duration(seconds: 10);
 
-  /// A Watchlist card for a title the library lacks. The watchlist itself
-  /// leaves out the backdrop, runtime and (on Seerr) age rating, so they come
-  /// from the title's detail; a failed lookup still gives a card.
-  Future<AggregatedItem> _requestCard(
-    SeerrRepository repo,
-    SeerrDiscoverItem item,
-  ) async {
-    String? backdropPath = item.backdropPath;
-    String? overview = item.overview;
-    String? date = item.releaseDate ?? item.firstAirDate;
-    double? voteAverage = item.voteAverage;
-    String? contentRating;
-    int? runtimeMinutes;
-    final tmdbId = item.mediaInfo?.tmdbId ?? item.id;
-    if (tmdbId > 0) {
-      try {
-        if (item.mediaType == 'tv') {
-          final d = await repo.getTvDetails(tmdbId);
-          backdropPath ??= d.backdropPath;
-          overview ??= d.overview;
-          date ??= d.firstAirDate;
-          voteAverage ??= d.voteAverage;
-          contentRating = d.contentRating;
-        } else {
-          final d = await repo.getMovieDetails(tmdbId);
-          backdropPath ??= d.backdropPath;
-          overview ??= d.overview;
-          date ??= d.releaseDate;
-          voteAverage ??= d.voteAverage;
-          contentRating = d.contentRating;
-          runtimeMinutes = d.runtime;
-        }
-      } catch (_) {}
-    }
-    final year = date != null && date.length >= 4
-        ? int.tryParse(date.substring(0, 4))
-        : null;
+  /// A Watchlist card for a title the library lacks, from what the watchlist
+  /// lists. Silo's includes the age rating, so the card can be filtered now;
+  /// the backdrop and runtime come later from [_enrichRequestCards].
+  AggregatedItem _requestCard(SeerrDiscoverItem item) {
+    final date = _text(item.releaseDate) ?? _text(item.firstAirDate);
+    final voteAverage = item.voteAverage;
     return AggregatedItem(
       id: item.id.toString(),
       serverId: 'seerr',
       rawData: {
         'Name': item.displayTitle,
         'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-        'Overview': overview ?? '',
+        'Overview': item.overview ?? '',
         'PosterPath': item.posterPath ?? '',
-        'BackdropPath': backdropPath ?? '',
+        'BackdropPath': item.backdropPath ?? '',
         'SeerrMediaType': item.mediaType,
-        'ProductionYear': ?year,
-        if (contentRating != null && contentRating.isNotEmpty)
-          'OfficialRating': contentRating,
-        if (runtimeMinutes != null && runtimeMinutes > 0)
-          'RunTimeTicks': runtimeMinutes * 60 * 10000000,
+        'ProductionYear': ?_year(date),
+        'OfficialRating': ?_text(item.contentRating),
         if (voteAverage != null && voteAverage > 0)
           'CommunityRating': voteAverage,
       },
     );
   }
+
+  /// Reads each waiting request card's detail and swaps the filled-in cards
+  /// into the Watchlist row. A reload since the cards were fetched drops the
+  /// result, and a failed lookup leaves the card as it was.
+  void _enrichRequestCards() {
+    final cards = _requestCardsToEnrich;
+    _requestCardsToEnrich = const [];
+    if (cards.isEmpty) return;
+    final generation = _loadGeneration;
+    unawaited(() async {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      final enriched = await mapBounded(
+        cards,
+        _requestCardConcurrency,
+        (card) => _withDetail(repo, card),
+      );
+      if (_disposed || generation != _loadGeneration) return;
+      const type = FavoriteTypeFilter.watchlist;
+      final row = _rowItems[type];
+      if (row == null) return;
+      final byKey = {
+        for (final card in enriched.nonNulls) _requestCardKey(card): card,
+      };
+      _rowItems[type] = withoutBlockedItems([
+        for (final item in row)
+          item.serverId == 'seerr'
+              ? byKey[_requestCardKey(item)] ?? item
+              : item,
+      ]);
+      notifyListeners();
+    }());
+  }
+
+  /// [card] with the backdrop, overview, date, age rating and (for a movie)
+  /// runtime its detail adds, keeping what the watchlist already gave.
+  Future<AggregatedItem?> _withDetail(
+    SeerrRepository repo,
+    AggregatedItem card,
+  ) async {
+    final tmdbId = int.tryParse(card.id) ?? 0;
+    if (tmdbId <= 0) return null;
+    final raw = card.rawData;
+    String? backdropPath;
+    String? overview;
+    String? date;
+    String? contentRating;
+    int? runtimeMinutes;
+    double? voteAverage;
+    try {
+      if (raw['SeerrMediaType'] == 'tv') {
+        final d = await repo
+            .getTvDetails(tmdbId)
+            .timeout(_requestDetailTimeout);
+        backdropPath = d.backdropPath;
+        overview = d.overview;
+        date = d.firstAirDate;
+        contentRating = d.contentRating;
+        voteAverage = d.voteAverage;
+      } else {
+        final d = await repo
+            .getMovieDetails(tmdbId)
+            .timeout(_requestDetailTimeout);
+        backdropPath = d.backdropPath;
+        overview = d.overview;
+        date = d.releaseDate;
+        contentRating = d.contentRating;
+        voteAverage = d.voteAverage;
+        runtimeMinutes = d.runtime;
+      }
+    } catch (_) {
+      return null;
+    }
+    return AggregatedItem(
+      id: card.id,
+      serverId: card.serverId,
+      rawData: {
+        ...raw,
+        'BackdropPath':
+            _text(raw['BackdropPath'] as String?) ?? backdropPath ?? '',
+        'Overview': _text(raw['Overview'] as String?) ?? overview ?? '',
+        'ProductionYear': ?(raw['ProductionYear'] ?? _year(_text(date))),
+        'OfficialRating':
+            ?(_text(raw['OfficialRating'] as String?) ?? _text(contentRating)),
+        if (runtimeMinutes != null && runtimeMinutes > 0)
+          'RunTimeTicks': runtimeMinutes * 60 * 10000000,
+        if (raw['CommunityRating'] == null &&
+            voteAverage != null &&
+            voteAverage > 0)
+          'CommunityRating': voteAverage,
+      },
+    );
+  }
+
+  static String _requestCardKey(AggregatedItem card) =>
+      '${card.rawData['SeerrMediaType'] ?? ''}:${card.id}';
+
+  static String? _text(String? value) =>
+      value == null || value.isEmpty ? null : value;
+
+  static int? _year(String? date) => date != null && date.length >= 4
+      ? int.tryParse(date.substring(0, 4))
+      : null;
 
   Future<void> loadMoreForType(FavoriteTypeFilter type) async {
     final items = _rowItems[type];
@@ -409,6 +491,7 @@ class FavoritesViewModel extends ChangeNotifier {
       if (newItems.isNotEmpty) {
         _rowItems[type] = [...items, ...newItems];
         notifyListeners();
+        if (type == FavoriteTypeFilter.watchlist) _enrichRequestCards();
       } else {
         _rowTotalCounts[type] = items.length;
       }

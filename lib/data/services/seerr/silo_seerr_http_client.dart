@@ -1013,11 +1013,14 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     final items = body['items'] is List ? body['items'] as List : [];
     final results = [
       for (final t in items.whereType<Map>())
-        _discoverItem({
-          ...t,
-          'availability': 'missing',
-          'release_date': t['release_date'],
-        }),
+        {
+          ..._discoverItem({
+            ...t,
+            'availability': 'missing',
+            'release_date': t['release_date'],
+          }),
+          'contentRating': t['content_rating'],
+        },
     ];
     return {
       'page': 1,

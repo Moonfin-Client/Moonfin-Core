@@ -237,6 +237,7 @@ SeerrDiscoverItem _$SeerrDiscoverItemFromJson(Map<String, dynamic> json) =>
       voteCount: (json['voteCount'] as num?)?.toInt(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       adult: json['adult'] as bool? ?? false,
+      contentRating: json['contentRating'] as String?,
       mediaInfo: json['mediaInfo'] == null
           ? null
           : SeerrMediaInfo.fromJson(json['mediaInfo'] as Map<String, dynamic>),
@@ -264,6 +265,7 @@ Map<String, dynamic> _$SeerrDiscoverItemToJson(SeerrDiscoverItem instance) =>
       'voteCount': instance.voteCount,
       'popularity': instance.popularity,
       'adult': instance.adult,
+      'contentRating': instance.contentRating,
       'mediaInfo': instance.mediaInfo,
       'character': instance.character,
       'job': instance.job,
