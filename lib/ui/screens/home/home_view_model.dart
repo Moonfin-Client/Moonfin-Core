@@ -3294,6 +3294,23 @@ class HomeViewModel extends ChangeNotifier {
     return sorted;
   }
 
+  /// The cards of an IMDb or TMDB chart row: outside entries, with the titles
+  /// the library has swapped for their library copies.
+  Future<List<AggregatedItem>> _externalListCards(
+    List<ImdbExternalListItem> items,
+  ) => _dataSource.withLibraryCopies(_serverId, [
+    for (final item in items)
+      AggregatedItem(
+        id: item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId,
+        serverId: 'seerr',
+        rawData: {
+          ...item.cardData,
+          'CommunityRating': item.rating,
+          'Popularity': item.popularity,
+        },
+      ),
+  ]);
+
   Future<List<HomeRow>> _loadImdbRow(
     HomeSectionType sectionType,
     String title,
@@ -3324,18 +3341,7 @@ class HomeViewModel extends ChangeNotifier {
         return const [];
       }
 
-      final aggregatedItems = items.map((item) {
-        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
-        return AggregatedItem(
-          id: itemId,
-          serverId: 'seerr',
-          rawData: {
-            ...item.cardData,
-            'CommunityRating': item.rating,
-            'Popularity': item.popularity,
-          },
-        );
-      }).toList();
+      final aggregatedItems = await _externalListCards(items);
 
       return [
         HomeRow(
@@ -3385,18 +3391,7 @@ class HomeViewModel extends ChangeNotifier {
         return const [];
       }
 
-      final aggregatedItems = items.map((item) {
-        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
-        return AggregatedItem(
-          id: itemId,
-          serverId: 'seerr',
-          rawData: {
-            ...item.cardData,
-            'CommunityRating': item.rating,
-            'Popularity': item.popularity,
-          },
-        );
-      }).toList();
+      final aggregatedItems = await _externalListCards(items);
 
       return [
         HomeRow(
