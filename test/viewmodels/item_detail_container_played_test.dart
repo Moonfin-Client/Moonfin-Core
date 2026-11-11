@@ -38,6 +38,13 @@ class _ItemsApi extends Fake implements ItemsApi {
     }
   }
 
+  /// Jellyfin leaves out the percentage once there is no resume point.
+  void markSeasonUnplayed() {
+    for (final id in userData.keys) {
+      userData[id] = {'Played': false, 'PlaybackPositionTicks': 0};
+    }
+  }
+
   Map<String, dynamic> _episode(String id, int number) => {
     'Id': id,
     'Name': id,
@@ -113,7 +120,21 @@ void main() {
     when(() => userLibraryApi.markPlayed(any())).thenAnswer((_) async {
       itemsApi.markSeasonPlayed();
     });
+    when(() => userLibraryApi.unmarkPlayed(any())).thenAnswer((_) async {
+      itemsApi.markSeasonUnplayed();
+    });
   });
+
+  ItemDetailViewModel seasonPage() {
+    final tmdbRepository = TmdbRepository(client);
+    return ItemDetailViewModel(
+      itemId: 'season-1',
+      client: client,
+      mutations: ItemMutationRepository(client),
+      mdbListRepository: MdbListRepository(client, tmdbRepository),
+      tmdbRepository: tmdbRepository,
+    );
+  }
 
   tearDown(() {
     userDataSync.reset();
@@ -122,14 +143,7 @@ void main() {
 
   test('marking a season played shows its episodes played without waiting '
       'for the socket', () async {
-    final tmdbRepository = TmdbRepository(client);
-    final vm = ItemDetailViewModel(
-      itemId: 'season-1',
-      client: client,
-      mutations: ItemMutationRepository(client),
-      mdbListRepository: MdbListRepository(client, tmdbRepository),
-      tmdbRepository: tmdbRepository,
-    );
+    final vm = seasonPage();
     await vm.load();
     await pumpEventQueue();
     expect(vm.episodes.map((e) => e.id), ['ep-1', 'ep-2', 'ep-3']);
@@ -140,5 +154,25 @@ void main() {
     expect(vm.item?.isPlayed, isTrue);
     expect(vm.episodes.every((e) => e.isPlayed), isTrue);
     expect(vm.episodes[1].playbackPositionTicks, 0);
+  });
+
+  test('marking a season unplayed drops the resume point its play button '
+      'and up next card read', () async {
+    itemsApi.userData['season-1'] = {'Played': true};
+    final vm = seasonPage();
+    await vm.load();
+    await pumpEventQueue();
+    expect(vm.item?.isPlayed, isTrue);
+    expect(vm.episodes[1].playedPercentage, 40);
+
+    await vm.togglePlayed();
+
+    expect(vm.item?.isPlayed, isFalse);
+    // What the season decides Play against Resume, and its up next bar, by.
+    for (final episode in vm.episodes) {
+      expect(episode.isPlayed, isFalse, reason: episode.id);
+      expect(episode.playedPercentage, isNull, reason: episode.id);
+      expect(episode.playbackPositionTicks, 0, reason: episode.id);
+    }
   });
 }
