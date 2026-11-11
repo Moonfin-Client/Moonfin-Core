@@ -9,7 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/home_section_config.dart';
 import '../../util/platform_detection.dart';
-import '../../util/signed_in_server_features.dart';
+import 'moonbase_endpoint.dart';
 
 class ImdbExternalListItem {
   final String imdbId;
@@ -191,15 +191,7 @@ class CustomExternalListsService {
       return loadCustomRowFromCache(config, language: language);
     }
 
-    final baseUrl = client.baseUrl;
-    final token = client.accessToken;
-    // Custom rows are served by the Moonfin plugin, which Silo never has.
-    if (token == null || !serverHasMoonfinPlugin(client)) {
-      return loadCustomRowFromCache(config, language: language);
-    }
-
     final paramsJson = jsonEncode(params);
-    final url = '$baseUrl/Moonfin/CustomRows/Items';
     final lang = language ?? currentAppLocale().toLanguageTag();
 
     // The account that starts the fetch owns the answer: the scope is taken
@@ -209,11 +201,18 @@ class CustomExternalListsService {
     // rather than after the answer, since an empty or failed answer saves
     // nothing and the old row must not outlive it.
     final scope = _cacheScope();
+    // Moonbase for Silo serves no custom rows.
+    final ep = client.serverType == ServerType.silo
+        ? null
+        : await moonbaseEndpoint(client, _dio);
+    if (ep == null) {
+      return loadCustomRowFromCache(config, language: language);
+    }
     await _dropLegacyCacheFor(config, scope);
 
     try {
       final response = await _dio.get(
-        url,
+        '${ep.base}/Moonfin/CustomRows/Items',
         queryParameters: {
           'source': source,
           'type': type,
@@ -223,15 +222,7 @@ class CustomExternalListsService {
           // refresh=true, so all devices see the refreshed list.
           if (forceRefresh) 'refresh': 'true',
         },
-        options: Options(
-          headers: {
-            'Authorization': buildServerAuthorizationHeader(
-              scheme: 'MediaBrowser',
-              deviceInfo: client.deviceInfo,
-              accessToken: token,
-            ),
-          },
-        ),
+        options: Options(headers: ep.headers),
       );
 
       if (_cacheScope() != scope) {

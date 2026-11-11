@@ -66,6 +66,7 @@ void main() {
       expect(f.supportsAdmin, isTrue, reason: '$type');
       expect(f.supportsMoonfinPlugin, isTrue, reason: '$type');
       expect(f.supportsFullMoonfinPlugin, isTrue, reason: '$type');
+      expect(f.supportsRetroGames, isTrue, reason: '$type');
       expect(f.supportsRemoteControl, isTrue, reason: '$type');
       expect(f.supportsLatestItemsExcludes, isTrue, reason: '$type');
     }
@@ -79,6 +80,7 @@ void main() {
     expect(f.supportsAdmin, isFalse);
     expect(f.supportsMoonfinPlugin, isTrue);
     expect(f.supportsFullMoonfinPlugin, isFalse);
+    expect(f.supportsRetroGames, isTrue);
   });
 
   test('Silo has Moonbase for Silo, not the full plugin', () {
@@ -94,6 +96,7 @@ void main() {
     expect(f.supportsInstantMix, isFalse);
     expect(f.supportsAdmin, isFalse);
     expect(f.supportsFullMoonfinPlugin, isFalse);
+    expect(f.supportsRetroGames, isFalse);
     expect(f.supportsRemoteControl, isFalse);
     expect(f.supportsSyncPlay, isFalse);
     expect(f.supportsBifTrickplay, isFalse);
@@ -168,7 +171,11 @@ void main() {
       ),
       'supportsPluginSettingsStream': (
         (f) => f.supportsPluginSettingsStream,
-        [true, false, false, false],
+        [true, false, true, false],
+      ),
+      'supportsPushNotifications': (
+        (f) => f.supportsPushNotifications,
+        [true, true, true, false],
       ),
       'supportsMoonbaseInstall': (
         (f) => f.supportsMoonbaseInstall,

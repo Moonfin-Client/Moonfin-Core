@@ -4,13 +4,13 @@ import 'games_api.dart';
 import '../models/games_models.dart';
 import '../models/server_type.dart';
 
-/// Talks to the Moonbase plugin retro-games (EmulatorJS) endpoints under /Moonfin/Games and
-/// /Moonfin/EmulatorJS. These endpoints are identical on Jellyfin and Emby (the Moonbase
-/// plugin exposes the same routes on both), so this implementation is server-agnostic; the
-/// Jellyfin and Emby clients each construct it with their own Dio + base URL + token.
+/// Talks to Moonbase's retro games (EmulatorJS) routes under /Moonfin/Games and
+/// /Moonfin/EmulatorJS. Jellyfin, Emby and Moonbase for Plex serve the same routes, so each
+/// client builds this with its own Dio, base URL and token.
 ///
-/// ROM / BIOS / save / player URLs embed the access token as a query parameter (ApiKey on
-/// Jellyfin, api_key on Emby) so the WebView's plain requests authenticate.
+/// ROM, BIOS, save and player URLs carry the access token as a query parameter (ApiKey on
+/// Jellyfin, api_key on Emby, X-Plex-Token on Plex), so the WebView's plain requests are
+/// signed in.
 class MoonbaseGamesApi implements GamesApi {
   final Dio _dio;
   final String Function() _baseUrlProvider;

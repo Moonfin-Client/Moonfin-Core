@@ -48,6 +48,41 @@ class _SignedIn extends Fake implements MediaServerClient {
   DeviceInfo get deviceInfo => const DeviceInfo(id: 'phone', name: 'Phone', appName: 'Moonfin', appVersion: 'test');
 }
 
+/// Moonbase for Plex: answers its ping and one row, and keeps each request.
+class _PlexCompanion implements HttpClientAdapter {
+  final requests = <RequestOptions>[];
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    requests.add(options);
+    final body = options.uri.path == '/Moonfin/Ping'
+        ? {'installed': true}
+        : {
+            'success': true,
+            'items': [
+              {'name': 'The Matrix', 'type': 'Movie', 'providerIds': {'Tmdb': '603'}},
+            ],
+          };
+    return ResponseBody.fromString(jsonEncode(body), 200, headers: {
+      Headers.contentTypeHeader: [Headers.jsonContentType],
+    });
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _OnServer extends Fake implements MediaServerClient {
+  _OnServer(this.serverType);
+
+  @override
+  final ServerType serverType;
+  @override
+  String get baseUrl => 'http://plexhost:32400';
+  @override
+  String? get accessToken => 'plex-token';
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -324,6 +359,48 @@ void main() {
       expect(await fetch, isEmpty);
       expect(await service.loadCustomRowFromCache(config('custom_row_switched')), isEmpty);
       expect(await CustomExternalListsService(cacheScope: () => 'adult').loadCustomRowFromCache(config('custom_row_switched')), isEmpty);
+    });
+  });
+
+  group('CustomExternalLists on Plex and Silo', () {
+    HomeSectionConfig config(String section) => HomeSectionConfig.pluginDynamic(
+          serverId: 'custom',
+          pluginSection: section,
+          pluginDisplayText: 'Trending',
+          pluginAdditionalData: jsonEncode({'source': 'tmdb_chart', 'type': 'trending/all/week'}),
+          pluginSource: HomeSectionPluginSource.custom,
+          enabled: true,
+          order: 1,
+        );
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+    });
+
+    test('Plex asks Moonbase for Plex with the Plex token', () async {
+      final companion = _PlexCompanion();
+      final service = CustomExternalListsService(cacheScope: () => 'viewer', dio: Dio()..httpClientAdapter = companion);
+      GetIt.instance.registerSingleton<MediaServerClient>(_OnServer(ServerType.plex));
+      addTearDown(() => GetIt.instance.unregister<MediaServerClient>());
+
+      final items = await service.fetchCustomRow(config('custom_row_plex'));
+
+      final asked = companion.requests.last;
+      expect(asked.uri.toString(), startsWith('http://plexhost:32500/Moonfin/CustomRows/Items?'));
+      expect(asked.headers['X-Plex-Token'], 'plex-token');
+      expect(items.single.tmdbId, '603');
+    });
+
+    test('Silo is never asked', () async {
+      final companion = _PlexCompanion();
+      final service = CustomExternalListsService(cacheScope: () => 'viewer', dio: Dio()..httpClientAdapter = companion);
+      GetIt.instance.registerSingleton<MediaServerClient>(_OnServer(ServerType.silo));
+      addTearDown(() => GetIt.instance.unregister<MediaServerClient>());
+
+      expect(await service.fetchCustomRow(config('custom_row_silo')), isEmpty);
+      expect(companion.requests, isEmpty);
     });
   });
 

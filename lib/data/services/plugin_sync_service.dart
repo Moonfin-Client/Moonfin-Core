@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart' show plexItemToJellyfin;
 import 'package:server_silo/server_silo.dart';
 
 import '../../auth/services/silo_token_storage.dart';
@@ -730,9 +731,9 @@ class PluginSyncService extends ChangeNotifier {
   /// on its own.
   Future<void> _startSettingsStream(MediaServerClient client) async {
     // Emby servers have no SSE endpoint, so plugin events arrive over the
-    // session websocket instead. Moonbase for Silo and Plex can't stream, so
-    // settings arrive at sign-in and on a manual sync. Don't loop on 501
-    // reconnects here.
+    // session websocket instead. Moonbase for Silo can't stream, so settings
+    // arrive at sign-in and on a manual sync. Don't loop on 501 reconnects
+    // here.
     if (!client.features.supportsPluginSettingsStream) return;
 
     if (!_pluginAvailable || !_prefs.get(UserPreferences.pluginSyncEnabled)) {
@@ -1012,7 +1013,7 @@ class PluginSyncService extends ChangeNotifier {
     required String platform,
     required String deviceId,
   }) async {
-    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
+    if (!_pluginAvailable || !client.features.supportsPushNotifications) {
       debugPrint('PluginSync: skip registerPushDevice, plugin unavailable');
       return false;
     }
@@ -1046,7 +1047,9 @@ class PluginSyncService extends ChangeNotifier {
     MediaServerClient client, {
     required String deviceId,
   }) async {
-    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+    if (!_pluginAvailable || !client.features.supportsPushNotifications) {
+      return;
+    }
 
     try {
       final ep = await moonbaseEndpoint(client, _dio);
@@ -1366,8 +1369,18 @@ class PluginSyncService extends ChangeNotifier {
         },
         options: Options(headers: headers),
       );
-      if (response.data is Map<String, dynamic>) {
-        return response.data as Map<String, dynamic>;
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        if (client.serverType != ServerType.plex) return data;
+        // Moonbase for Plex answers with Plex's own metadata.
+        return {
+          ...data,
+          'Items': [
+            for (final raw
+                in (data['Items'] as List? ?? const []).whereType<Map>())
+              plexItemToJellyfin(raw.cast<String, dynamic>()),
+          ],
+        };
       }
     } catch (e) {
       debugPrint('[PluginSyncService] fetchSimilarItems failed: $e');

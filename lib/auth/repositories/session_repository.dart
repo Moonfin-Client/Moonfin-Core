@@ -467,20 +467,17 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
-    // Moonbase for Plex has no push.
-    if (client.serverType != ServerType.plex) {
-      // Register the FCM token now that a session exists. Startup registration
-      // bails before login, so this is where closed-app push actually enrolls.
-      if (PlatformDetection.isMobile) {
-        try {
-          if (GetIt.instance.isRegistered<PushMessagingService>()) {
-            await GetIt.instance<PushMessagingService>()
-                .registerWithCurrentToken();
-          }
-        } catch (_) {}
-      }
-      await _pluginSyncService.syncNotificationPrefs(client);
+    // Register the FCM token now that a session exists. Startup registration
+    // bails before login, so this is where closed-app push actually enrolls.
+    if (PlatformDetection.isMobile) {
+      try {
+        if (GetIt.instance.isRegistered<PushMessagingService>()) {
+          await GetIt.instance<PushMessagingService>()
+              .registerWithCurrentToken();
+        }
+      } catch (_) {}
     }
+    await _pluginSyncService.syncNotificationPrefs(client);
 
     final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
