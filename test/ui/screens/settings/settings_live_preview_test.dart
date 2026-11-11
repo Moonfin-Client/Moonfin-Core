@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin_design/moonfin_design.dart' show AppColorScheme;
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -43,7 +44,9 @@ import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
 import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_common.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
@@ -1980,6 +1983,35 @@ void main() {
       expect(find.text('2020'), findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
+
+    testWidgets('the viewer\'s own score reads in the rating style tried', (
+      tester,
+    ) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Personal Rating Style',
+            prefKey: 'pref_personal_rating_style',
+          ),
+        )
+        ..tryValue('pref_detail_screen_style', DetailScreenStyle.modern);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.details);
+      expect(find.text('8.0'), findsOneWidget);
+
+      controller.tryValue(
+        'pref_personal_rating_style',
+        PersonalRatingStyle.stars,
+      );
+      await pumpPreview(tester, controller);
+      expect(find.text('4.0/5'), findsOneWidget);
+      expect(find.text('8.0'), findsNothing);
+
+      controller.clearTry('pref_personal_rating_style');
+      await pumpPreview(tester, controller);
+      expect(find.text('8.0'), findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   for (final scale in DesktopUiScale.values) {
@@ -2028,6 +2060,64 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
   }
+
+  testWidgets('Home grows with the UI scale a picker tries', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'UI Scale',
+          prefKey: 'pref_desktop_ui_scale',
+        ),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    Finder sizedTo(double height) => find.byWidgetPredicate(
+      (widget) => widget is SizedBox && widget.height == height,
+    );
+    double textScale() => MediaQuery.textScalerOf(
+      tester.element(find.text(_fakeItems().first.title).first),
+    ).scale(1);
+
+    await pump();
+    expect(controller.scene, SettingsPreviewScene.home);
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+
+    const tried = DesktopUiScale.extraLarge;
+    controller.tryValue('pref_desktop_ui_scale', tried);
+    await pump();
+    expect(
+      sizedTo(
+        InfoArea.fixedHeight(isMobile: false, desktopScale: tried.scaleFactor),
+      ),
+      findsOneWidget,
+    );
+    expect(sizedTo(150.0 * (0.8 * tried.scaleFactor)), findsWidgets);
+    expect(textScale(), closeTo(tried.scaleFactor, 1e-9));
+    expect(
+      GetIt.instance<UserPreferences>().get(UserPreferences.desktopUiScale),
+      DesktopUiScale.medium,
+    );
+
+    controller.clearTry('pref_desktop_ui_scale');
+    await pump();
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
@@ -2925,9 +3015,11 @@ void main() {
 
   group('the calendar scene', () {
     late _Sync sync;
+    late _Calendar calendar;
 
     setUp(() {
       registerFallbackValue(DateTime(2026));
+      registerFallbackValue(<String>{});
       sync = _Sync();
       when(() => sync.pluginAvailable).thenReturn(true);
       when(() => sync.seerrAvailable).thenReturn(false);
@@ -2938,7 +3030,7 @@ void main() {
       GetIt.instance.registerSingleton<PluginSyncService>(sync);
 
       final now = DateTime.now();
-      final calendar = _Calendar();
+      calendar = _Calendar();
       when(
         () => calendar.load(
           start: any(named: 'start'),
@@ -2972,7 +3064,21 @@ void main() {
             seasonNumber: 2,
             episodeNumber: 1,
           ),
+          CalendarEntry(
+            key: 'later',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 3)),
+            hasTime: true,
+            title: 'Later Show',
+            seasonNumber: 1,
+            episodeNumber: 2,
+          ),
         ]),
+      );
+      // Only the aired show is one the user follows.
+      when(() => calendar.seriesProgress(any())).thenAnswer(
+        (_) async => {'series': const CalendarSeriesProgress(favorite: true)},
       );
       GetIt.instance.registerSingleton<CalendarRepository>(calendar);
     });
@@ -2980,6 +3086,7 @@ void main() {
     test('its settings show on it, and ones it never draws stay put', () {
       for (final key in [
         UserPreferences.calendarStyle.key,
+        UserPreferences.calendarWeekStart.key,
         UserPreferences.calendarScope.key,
         UserPreferences.calendarShowBadges.key,
         UserPreferences.calendarColorBy.key,
@@ -2993,11 +3100,10 @@ void main() {
           reason: key,
         );
       }
-      // The release types are shared with the Upcoming Movies row, week start
-      // only changes the month grid, and the select action only acts on a press.
+      // The release types are shared with the Upcoming Movies row, and the
+      // select action only acts on a press.
       for (final key in [
         UserPreferences.radarrCalendarShowCinema.key,
-        UserPreferences.calendarWeekStart.key,
         UserPreferences.calendarSelectAction.key,
       ]) {
         expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
@@ -3087,6 +3193,158 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
+
+    Future<void> settle(WidgetTester tester) async {
+      // One frame starts the load and the next draws what it found.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    /// Runs [body] with the desktop preview up, [style] saved and [prefKey]
+    /// in focus.
+    Future<void> withCalendar(
+      WidgetTester tester,
+      String prefKey,
+      Future<void> Function(SettingsPreviewController controller) body, {
+      CalendarStyle style = CalendarStyle.agenda,
+    }) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.calendarStyle,
+        style,
+      );
+      // The test font's glyphs are a full em wide, so the calendar's header
+      // chips only run out of room here. Anything else still fails.
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (!details.exceptionAsString().contains('overflowed')) {
+          onError?.call(details);
+        }
+      };
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      await settle(tester);
+      expect(controller.scene, SettingsPreviewScene.calendar);
+      await body(controller);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      FlutterError.onError = onError;
+      debugDefaultTargetPlatformOverride = null;
+    }
+
+    testWidgets('a tried scope filters the list before it\'s saved', (
+      tester,
+    ) async {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      await withCalendar(tester, 'pref_calendar_scope', (controller) async {
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        controller.tryValue('pref_calendar_scope', CalendarScope.myShows);
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsNothing);
+        expect(find.text(l10n.calendarNothingUpcoming), findsOneWidget);
+        expect(
+          GetIt.instance<UserPreferences>().get(UserPreferences.calendarScope),
+          CalendarScope.everything,
+        );
+
+        controller.clearTry('pref_calendar_scope');
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsWidgets);
+      });
+    });
+
+    testWidgets('a tried Color By colors the calendar before it\'s saved', (
+      tester,
+    ) async {
+      // A film still to come takes the film color by type and the accent by
+      // status, so the two can be told apart.
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'film',
+            kind: CalendarEntryKind.movie,
+            release: CalendarRelease.digital,
+            date: DateTime.now().add(const Duration(days: 2)),
+            hasTime: false,
+            title: 'Upcoming Film',
+          ),
+        ]),
+      );
+      Finder kicker(Color color) => find.byWidgetPredicate(
+        (widget) => widget is Text && widget.style?.color == color,
+      );
+      await withCalendar(tester, 'pref_calendar_color_by', (controller) async {
+        expect(find.text('Upcoming Film'), findsWidgets);
+        expect(kicker(calendarMovieColor), findsOneWidget);
+        expect(kicker(AppColorScheme.accent), findsNothing);
+
+        controller.tryValue('pref_calendar_color_by', CalendarColorBy.status);
+        await settle(tester);
+        expect(kicker(calendarMovieColor), findsNothing);
+        expect(kicker(AppColorScheme.accent), findsOneWidget);
+      });
+    });
+
+    testWidgets('a tried Image Type shapes the week\'s cards before it\'s '
+        'saved', (tester) async {
+      Finder art(double aspectRatio) => find.byWidgetPredicate(
+        (widget) => widget is CalendarArt && widget.aspectRatio == aspectRatio,
+      );
+      await withCalendar(tester, 'pref_calendar_image_type', (
+        controller,
+      ) async {
+        expect(find.text('Later Show'), findsOneWidget);
+        expect(art(2 / 3), findsOneWidget);
+
+        controller.tryValue(
+          'pref_calendar_image_type',
+          CalendarImageType.thumb,
+        );
+        await settle(tester);
+        expect(art(2 / 3), findsNothing);
+        expect(art(16 / 9), findsNWidgets(2));
+      }, style: CalendarStyle.countdown);
+    });
+
+    testWidgets('Week Start draws the month grid from the day tried', (
+      tester,
+    ) async {
+      double left(String day) => tester.getTopLeft(find.text(day)).dx;
+      await withCalendar(tester, 'pref_calendar_week_start', (
+        controller,
+      ) async {
+        expect(find.byType(CalendarMonthScreen), findsOneWidget);
+        // Auto in English starts on Sunday.
+        expect(left('Sun'), lessThan(left('Mon')));
+
+        controller.tryValue(
+          'pref_calendar_week_start',
+          CalendarWeekStart.monday,
+        );
+        await settle(tester);
+        expect(left('Mon'), lessThan(left('Sun')));
+
+        controller.clearTry('pref_calendar_week_start');
+        await settle(tester);
+        expect(left('Sun'), lessThan(left('Mon')));
+      });
+    });
   });
 
   group('the library scene', () {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -7,6 +6,7 @@ import '../../data/services/rating_icon_provider.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/tv_ui_scale.dart';
+import 'settings/settings_preview_scope.dart';
 
 final _textShadows = [
   Shadow(blurRadius: 4, color: AppColors.black.withValues(alpha: 0.54)),
@@ -122,14 +122,9 @@ class RatingsRow extends StatelessWidget {
 
   /// The viewer picked how ratings read on the detail screen, so the row
   /// speaks the same dialect: five-star users see their score out of five.
-  static String _formatPersonal(double value) {
-    var style = PersonalRatingStyle.numeric;
-    if (GetIt.instance.isRegistered<UserPreferences>()) {
-      style = GetIt.instance<UserPreferences>().get(
-        UserPreferences.personalRatingStyle,
-      );
-    }
-    if (style == PersonalRatingStyle.stars) {
+  static String _formatPersonal(BuildContext context, double value) {
+    if (previewValue(context, UserPreferences.personalRatingStyle) ==
+        PersonalRatingStyle.stars) {
       return '${(value / 2).toStringAsFixed(1)}/5';
     }
     return value.toStringAsFixed(1);
@@ -204,7 +199,7 @@ class RatingsRow extends StatelessWidget {
           source: item.key,
           value: item.value,
           valueText: item.key == 'personal'
-              ? _formatPersonal(item.value)
+              ? _formatPersonal(context, item.value)
               : null,
           showLabel: showLabels,
           showBadge: showBadges,
@@ -281,7 +276,10 @@ Widget _columns(Iterable<MapEntry<String, double>> ratings, double scale) =>
                           const SizedBox(height: 3),
                           Text(
                             entry.key == 'personal'
-                                ? RatingsRow._formatPersonal(entry.value)
+                                ? RatingsRow._formatPersonal(
+                                    context,
+                                    entry.value,
+                                  )
                                 : RatingIconProvider.formatRating(
                                     entry.key,
                                     entry.value,

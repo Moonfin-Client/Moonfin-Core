@@ -62,6 +62,7 @@ import '../../browse/reading_room_book_screen.dart';
 import '../../calendar/calendar_agenda_view.dart';
 import '../../calendar/calendar_controller.dart';
 import '../../calendar/calendar_countdown_view.dart';
+import '../../calendar/calendar_month_screen.dart';
 import '../../playback/osd_buttons.dart';
 import '../../setup/setup_wizard_previews.dart';
 import 'preview_row_options_home.dart';
@@ -123,6 +124,31 @@ Widget _onCanvas(BuildContext context, Widget screen) => MediaQuery(
   ),
   child: screen,
 );
+
+/// [scene] with its text at the UI scale a picker is trying. The app scales
+/// all text by the saved one, so the tried one takes its place here.
+Widget _atTriedUiScale(
+  BuildContext context,
+  SettingsPreviewController controller,
+  Widget scene,
+) {
+  final tried = controller.tryingValue(UserPreferences.desktopUiScale.key);
+  if (tried is! DesktopUiScale ||
+      !GetIt.instance.isRegistered<UserPreferences>()) {
+    return scene;
+  }
+  final saved = GetIt.instance<UserPreferences>()
+      .get(UserPreferences.desktopUiScale)
+      .scaleFactor;
+  return MediaQuery(
+    data: MediaQuery.of(context).copyWith(
+      textScaler: TextScaler.linear(
+        MediaQuery.textScalerOf(context).scale(1) * tried.scaleFactor / saved,
+      ),
+    ),
+    child: scene,
+  );
+}
 
 /// The video library in the style being looked at, or the music or book
 /// library while its style has focus. Without a video library it falls back to
@@ -276,7 +302,11 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
                     key: ValueKey(scene),
                     child: ExcludeFocus(
                       child: IgnorePointer(
-                        child: _sceneWidget(controller, scene),
+                        child: _atTriedUiScale(
+                          context,
+                          controller,
+                          _sceneWidget(controller, scene),
+                        ),
                       ),
                     ),
                   ),
@@ -372,7 +402,9 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
       ),
       SettingsPreviewScene.player => SettingsPlayerPreview(focusedKey: key),
       SettingsPreviewScene.search => const SettingsSearchPreview(),
-      SettingsPreviewScene.calendar => const SettingsCalendarPreview(),
+      SettingsPreviewScene.calendar => SettingsCalendarPreview(
+        focusedKey: key,
+      ),
       SettingsPreviewScene.library => _libraryScene(key),
     };
   }
@@ -1856,9 +1888,11 @@ class _SettingsSeasonalPreviewState extends State<SettingsSeasonalPreview> {
 }
 
 /// The Calendar screen in the style being looked at, showing the user's own
-/// calendar.
+/// calendar, or the full month grid while Week Start has focus.
 class SettingsCalendarPreview extends StatefulWidget {
-  const SettingsCalendarPreview({super.key});
+  final String? focusedKey;
+
+  const SettingsCalendarPreview({super.key, this.focusedKey});
 
   @override
   State<SettingsCalendarPreview> createState() =>
@@ -1872,6 +1906,12 @@ class _SettingsCalendarPreviewState extends State<SettingsCalendarPreview> {
   void initState() {
     super.initState();
     unawaited(_controller.load());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.scope = previewValue(context, UserPreferences.calendarScope);
   }
 
   @override
@@ -1889,15 +1929,19 @@ class _SettingsCalendarPreviewState extends State<SettingsCalendarPreview> {
         context: context,
         removeTop: true,
         removeBottom: true,
-        child: ListenableBuilder(
-          listenable: _controller,
-          builder: (context, _) => switch (style) {
-            CalendarStyle.agenda => CalendarAgendaView(controller: _controller),
-            CalendarStyle.countdown => CalendarCountdownView(
-              controller: _controller,
-            ),
-          },
-        ),
+        child: widget.focusedKey == UserPreferences.calendarWeekStart.key
+            ? const CalendarMonthScreen()
+            : ListenableBuilder(
+                listenable: _controller,
+                builder: (context, _) => switch (style) {
+                  CalendarStyle.agenda => CalendarAgendaView(
+                    controller: _controller,
+                  ),
+                  CalendarStyle.countdown => CalendarCountdownView(
+                    controller: _controller,
+                  ),
+                },
+              ),
       ),
     );
   }

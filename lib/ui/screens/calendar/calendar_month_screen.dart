@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -14,6 +13,7 @@ import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'calendar_agenda_view.dart';
 import 'calendar_common.dart';
 import 'calendar_controller.dart';
@@ -58,9 +58,7 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
   }
 
   int _weekStart(BuildContext context) =>
-      switch (GetIt.instance<UserPreferences>().get(
-        UserPreferences.calendarWeekStart,
-      )) {
+      switch (previewValue(context, UserPreferences.calendarWeekStart)) {
         CalendarWeekStart.sunday => DateTime.sunday,
         CalendarWeekStart.monday => DateTime.monday,
         // Material counts from Sunday as 0, DateTime from Monday as 1.
@@ -132,19 +130,23 @@ class _CalendarMonthScreenState extends State<CalendarMonthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final body = ListenableBuilder(
+      listenable: _c,
+      builder: (context, _) => PlatformDetection.useMobileUi
+          ? _buildMobile(context)
+          : _buildWide(context),
+    );
     return Scaffold(
       backgroundColor: AppColorScheme.background,
-      body: NavigationLayout(
-        activeRoute: Destinations.calendar,
-        showBackButton: true,
-        pinTopToolbar: true,
-        child: ListenableBuilder(
-          listenable: _c,
-          builder: (context, _) => PlatformDetection.useMobileUi
-              ? _buildMobile(context)
-              : _buildWide(context),
-        ),
-      ),
+      // The settings preview draws its own navbar around the grid.
+      body: inSettingsPreview(context)
+          ? body
+          : NavigationLayout(
+              activeRoute: Destinations.calendar,
+              showBackButton: true,
+              pinTopToolbar: true,
+              child: body,
+            ),
     );
   }
 
@@ -452,7 +454,10 @@ class _MobileCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final dots = entries.take(3).map((e) => calendarColor(e, now)).toList();
+    final dots = entries
+        .take(3)
+        .map((e) => calendarColor(context, e, now))
+        .toList();
     return InkWell(
       onTap: onTap,
       borderRadius: AppRadius.circular(10),
@@ -613,7 +618,7 @@ class _WideCell extends StatelessWidget {
                                 height: 14,
                                 margin: const EdgeInsets.only(right: 5),
                                 decoration: BoxDecoration(
-                                  color: calendarColor(e, now),
+                                  color: calendarColor(context, e, now),
                                   borderRadius: AppRadius.circular(2),
                                 ),
                               ),

@@ -382,7 +382,7 @@ class CalendarAgendaRow extends StatelessWidget {
     final c = controller;
     final e = entry;
     final spoilers = c.hidesSpoilers(e);
-    final color = calendarColor(e, c.now);
+    final color = calendarColor(context, e, c.now);
     final tags = calendarTags(context, e, c.now);
     final subtitle = calendarSubtitle(l10n, e, hideSpoilers: spoilers);
     final thumbWidth = compact ? 88.0 : (mobile ? 112.0 : 128.0);
@@ -584,7 +584,7 @@ class _Preview extends StatelessWidget {
                 Text(
                   kicker.toUpperCase(),
                   style: TextStyle(
-                    color: calendarColor(e, c.now),
+                    color: calendarColor(context, e, c.now),
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,

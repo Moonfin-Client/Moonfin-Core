@@ -18,6 +18,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/top_toolbar.dart';
 import 'calendar_controller.dart';
 
@@ -116,8 +117,9 @@ String calendarSubtitle(
   ].join(' · ');
 }
 
-Color calendarColor(CalendarEntry e, DateTime now) {
-  if (_prefs.get(UserPreferences.calendarColorBy) == CalendarColorBy.status) {
+Color calendarColor(BuildContext context, CalendarEntry e, DateTime now) {
+  if (previewValue(context, UserPreferences.calendarColorBy) ==
+      CalendarColorBy.status) {
     return switch (e.statusAt(now)) {
       CalendarStatus.ready => calendarReadyColor,
       CalendarStatus.upcoming => AppColorScheme.accent,

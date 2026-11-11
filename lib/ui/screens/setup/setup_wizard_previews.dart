@@ -237,15 +237,13 @@ Size _designSize() {
 bool get _tv => PlatformDetection.useLeanbackUi;
 bool get _phone => PlatformDetection.useMobileUi;
 
-/// The saved UI scale, which Home sizes its rows and info area by.
-double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
-    ? GetIt.instance<UserPreferences>()
-          .get(UserPreferences.desktopUiScale)
-          .scaleFactor
-    : 1.0;
+/// The UI scale, which Home sizes its rows and info area by.
+double _desktopScale(BuildContext context) =>
+    previewValue(context, UserPreferences.desktopUiScale).scaleFactor;
 
 /// TV rows render at 0.8 of the desktop size, same as homeRowPlatformScale.
-double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
+double _rowScale(BuildContext context) =>
+    (_tv ? 0.8 : 1.0) * _desktopScale(context);
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
 
@@ -2764,11 +2762,11 @@ bool _showSampleLabels(BuildContext context) {
   final posterSize = previewValue(context, UserPreferences.posterSize);
   return (
     (modern ? 240.0 : 150.0) *
-        _rowScale *
+        _rowScale(context) *
         posterSize.portraitHeight /
         PosterSize.medium.portraitHeight,
     110.0 *
-        _rowScale *
+        _rowScale(context) *
         posterSize.landscapeHeight /
         PosterSize.medium.landscapeHeight,
   );
@@ -2801,7 +2799,7 @@ Widget _homeRowsColumn(
   bool infoArea = true,
 }) {
   final l10n = AppLocalizations.of(context);
-  final scale = _rowScale;
+  final scale = _rowScale(context);
 
   Widget header(String title) => Padding(
     padding: modern
@@ -3105,7 +3103,7 @@ Widget _homeRowsColumn(
           child: SizedBox(
             height: InfoArea.fixedHeight(
               isMobile: false,
-              desktopScale: _desktopScale,
+              desktopScale: _desktopScale(context),
             ),
             // Right after the UI scale changes, the saved scale can be read
             // here a frame before the text picks it up, so a column that's

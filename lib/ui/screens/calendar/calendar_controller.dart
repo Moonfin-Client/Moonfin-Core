@@ -39,6 +39,18 @@ class CalendarController extends ChangeNotifier {
   bool _loading = true;
   bool _disposed = false;
   String _filterSignature = '';
+  CalendarScope? _scope;
+
+  /// Filters by this in place of the saved scope while it's set, so the
+  /// settings preview can show a scope before it's saved.
+  set scope(CalendarScope? value) {
+    if (value == _scope) return;
+    _scope = value;
+    _onPrefs();
+  }
+
+  CalendarScope get _effectiveScope =>
+      _scope ?? _prefs.get(UserPreferences.calendarScope);
 
   DateTime get now => _clock();
   DateTime get today {
@@ -155,7 +167,7 @@ class CalendarController extends ChangeNotifier {
 
   Future<void> _loadProgress() async {
     final needed =
-        _prefs.get(UserPreferences.calendarScope) == CalendarScope.myShows ||
+        _effectiveScope == CalendarScope.myShows ||
         _prefs.get(UserPreferences.calendarSpoilerSafe);
     if (!needed) return;
     final ids = {
@@ -184,7 +196,7 @@ class CalendarController extends ChangeNotifier {
   }
 
   void _applyFilter() {
-    final scope = _prefs.get(UserPreferences.calendarScope);
+    final scope = _effectiveScope;
     final filter = CalendarFilter(
       showEpisodes: _prefs.get(UserPreferences.calendarShowEpisodes),
       showMovies: _prefs.get(UserPreferences.calendarShowMovies),
@@ -219,7 +231,7 @@ class CalendarController extends ChangeNotifier {
     _prefs.get(UserPreferences.radarrCalendarShowDigital),
     _prefs.get(UserPreferences.radarrCalendarShowPhysical),
     _prefs.get(UserPreferences.calendarLibraryIds),
-    _prefs.get(UserPreferences.calendarScope).name,
+    _effectiveScope.name,
     _prefs.get(UserPreferences.calendarSpoilerSafe),
     _prefs.get(UserPreferences.calendarIncludeUnmonitored),
     _prefs.get(UserPreferences.calendarReminders),
