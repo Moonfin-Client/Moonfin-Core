@@ -12,8 +12,9 @@ int latestMediaFetchLimitForCollection(
   String? collectionType, {
   required int defaultLimit,
   required int maxLimit,
+  bool hideWatched = false,
 }) {
-  if (_isTvCollectionType(collectionType)) {
+  if (_isTvCollectionType(collectionType) || hideWatched) {
     final expandedLimit = defaultLimit * 4;
     if (expandedLimit > maxLimit) {
       return maxLimit;

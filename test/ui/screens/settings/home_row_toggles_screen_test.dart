@@ -125,8 +125,11 @@ void main() {
       final usersApi = _MockUsersApi();
       when(() => client.usersApi).thenReturn(usersApi);
       when(() => usersApi.getUserConfiguration()).thenAnswer(
-        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+        (_) async => const UserConfiguration(hidePlayedInLatest: false),
       );
+      when(
+        () => usersApi.updateUserConfiguration(any()),
+      ).thenAnswer((_) async {});
       GetIt.instance.registerSingleton<MediaServerClient>(client);
 
       when(() => sync.pluginAvailable).thenReturn(true);
@@ -137,9 +140,30 @@ void main() {
 
       await pump(tester);
 
+      // Update branch: server returns hidePlayedInLatest: false while user enables Hide Watched.
       await tester.tap(find.text('Hide Watched'));
       await tester.pumpAndSettle();
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+      verify(
+        () => usersApi.updateUserConfiguration(
+          any(
+            that: isA<UserConfiguration>().having(
+              (c) => c.hidePlayedInLatest,
+              'hidePlayedInLatest',
+              isTrue,
+            ),
+          ),
+        ),
+      ).called(1);
+      verify(() => home.load(preserveExisting: false)).called(2);
+      clearInteractions(usersApi);
+      clearInteractions(home);
+
+      // No-update branch: server already matches the new preference value (false).
+      await tester.tap(find.text('Hide Watched'));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
       verify(() => usersApi.getUserConfiguration()).called(1);
       verifyNever(() => usersApi.updateUserConfiguration(any()));
       verify(() => home.load(preserveExisting: false)).called(1);

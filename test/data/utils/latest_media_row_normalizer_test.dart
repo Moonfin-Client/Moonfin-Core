@@ -74,6 +74,18 @@ void main() {
         equals(15),
       );
     });
+
+    test('expands limit when hideWatched is true', () {
+      expect(
+        latestMediaFetchLimitForCollection(
+          'movies',
+          defaultLimit: 15,
+          maxLimit: 100,
+          hideWatched: true,
+        ),
+        equals(60),
+      );
+    });
   });
 
   group('normalizeLatestMediaItems', () {

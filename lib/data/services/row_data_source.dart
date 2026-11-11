@@ -304,27 +304,55 @@ class RowDataSource {
     String serverId, [
     String? collectionType,
   ]) async {
-    final fetchLimit = latestMediaFetchLimitForCollection(
+    final hideWatched = _hideWatchedInRecentRows;
+    var fetchLimit = latestMediaFetchLimitForCollection(
       collectionType,
       defaultLimit: _defaultLimit,
       maxLimit: _maxItems,
+      hideWatched: hideWatched,
     );
-    final response = await _getLatestItemsWithFallback(
+    var response = await _getLatestItemsWithFallback(
       parentId: parentId,
       limit: fetchLimit,
     );
-    final items = normalizeLatestMediaItems(
-      _parseItems(response, serverId),
+    var rawItems = _parseItems(response, serverId);
+    var items = normalizeLatestMediaItems(
+      rawItems,
       collectionType: collectionType,
       limit: _defaultLimit,
-      hideWatched: _hideWatchedInRecentRows,
+      hideWatched: hideWatched,
     );
+    if (hideWatched &&
+        items.length < _defaultLimit &&
+        rawItems.length >= fetchLimit &&
+        fetchLimit < _maxItems) {
+      fetchLimit = _maxItems;
+      response = await _getLatestItemsWithFallback(
+        parentId: parentId,
+        limit: fetchLimit,
+      );
+      rawItems = _parseItems(response, serverId);
+      items = normalizeLatestMediaItems(
+        rawItems,
+        collectionType: collectionType,
+        limit: _defaultLimit,
+        hideWatched: true,
+      );
+    }
+    final reportedTotal = response['TotalRecordCount'] as int?;
+    final hasMore =
+        items.length >= _defaultLimit &&
+        (reportedTotal == null || reportedTotal > items.length);
     return HomeRow(
       id: 'latest_$parentId',
       title: _l10n.latestLibraryName(libraryName),
       items: items,
       rowType: HomeRowType.latestMedia,
-      totalCount: items.length < _defaultLimit ? items.length : _maxItems,
+      totalCount: hasMore
+          ? (reportedTotal != null && reportedTotal <= _maxItems
+                ? reportedTotal
+                : _maxItems)
+          : items.length,
       isAudio: collectionType == 'music',
     );
   }
@@ -340,13 +368,13 @@ class RowDataSource {
     final isTv =
         includeItemTypes.contains('Series') ||
         includeItemTypes.contains('Episode');
-    final fetchLimit = isTv
-        ? latestMediaFetchLimitForCollection(
-            'tvshows',
-            defaultLimit: limit,
-            maxLimit: _maxItems,
-          )
-        : limit;
+    final hideWatched = _hideWatchedInRecentRows;
+    final fetchLimit = latestMediaFetchLimitForCollection(
+      isTv ? 'tvshows' : null,
+      defaultLimit: limit,
+      maxLimit: _maxItems,
+      hideWatched: hideWatched,
+    );
     final response = await _client.itemsApi.getLatestItems(
       includeItemTypes: includeItemTypes,
       limit: fetchLimit,
@@ -360,10 +388,10 @@ class RowDataSource {
         items,
         collectionType: 'tvshows',
         limit: limit,
-        hideWatched: _hideWatchedInRecentRows,
+        hideWatched: hideWatched,
       );
     }
-    if (_hideWatchedInRecentRows) {
+    if (hideWatched) {
       return normalizeLatestMediaItems(
         items,
         limit: limit,
@@ -1674,18 +1702,50 @@ class RowDataSource {
         }
         if (row.id.startsWith('latest_')) {
           final parentId = row.id.substring('latest_'.length);
-          final response = await _getLatestItemsWithFallback(
+          final wanted = currentOffset + _defaultLimit;
+          final hideWatched = _hideWatchedInRecentRows;
+          var fetchLimit = latestMediaFetchLimitForCollection(
+            null,
+            defaultLimit: wanted,
+            maxLimit: _maxItems,
+            hideWatched: hideWatched,
+          );
+          var response = await _getLatestItemsWithFallback(
             parentId: parentId,
-            limit: currentOffset + _defaultLimit,
+            limit: fetchLimit,
           );
-          final items = normalizeLatestMediaItems(
-            _parseItems(response, serverId),
-            limit: currentOffset + _defaultLimit,
-            hideWatched: _hideWatchedInRecentRows,
+          var rawItems = _parseItems(response, serverId);
+          var items = normalizeLatestMediaItems(
+            rawItems,
+            limit: wanted,
+            hideWatched: hideWatched,
           );
-          final totalCount = items.length <= row.items.length
-              ? items.length
-              : _maxItems;
+          if (hideWatched &&
+              items.length < wanted &&
+              rawItems.length >= fetchLimit &&
+              fetchLimit < _maxItems) {
+            fetchLimit = _maxItems;
+            response = await _getLatestItemsWithFallback(
+              parentId: parentId,
+              limit: fetchLimit,
+            );
+            rawItems = _parseItems(response, serverId);
+            items = normalizeLatestMediaItems(
+              rawItems,
+              limit: wanted,
+              hideWatched: true,
+            );
+          }
+          final reportedTotal = response['TotalRecordCount'] as int?;
+          final hasMore =
+              items.length > row.items.length &&
+              items.length >= wanted &&
+              (reportedTotal == null || reportedTotal > items.length);
+          final totalCount = hasMore
+              ? (reportedTotal != null && reportedTotal <= _maxItems
+                    ? reportedTotal
+                    : _maxItems)
+              : items.length;
           return (items, totalCount);
         } else if (row.id.startsWith('favorites_')) {
           final parentId = row.id.substring('favorites_'.length);
