@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -21,6 +22,7 @@ import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/ui/screens/detail/minimalist/minimalist_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/modern/modern_detail_content.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/ui/widgets/focus/hub_focus_memory.dart';
 import 'package:moonfin/ui/widgets/focus/locked_focus_row.dart';
 import 'package:moonfin/ui/widgets/logo_view.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
@@ -589,6 +591,75 @@ void main() {
       find.byType(LockedFocusRow<AggregatedItem>),
     );
     expect(rail.focusNode, isNull);
+  });
+
+  testWidgets('an episode opens the rail on itself, not the first episode', (
+    tester,
+  ) async {
+    HubFocusMemory.clearAll();
+    addTearDown(HubFocusMemory.clearAll);
+    final data = itemData('Episode')
+      ..['IndexNumber'] = 10
+      ..['ParentIndexNumber'] = 2
+      ..['SeriesId'] = 'series-1';
+    final vm = viewModel('Episode', data: data);
+    when(
+      () => itemsApi.getEpisodes(
+        any(),
+        seasonId: any(named: 'seasonId'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          for (var s = 1; s <= 2; s++)
+            for (var e = 1; e <= 12; e++)
+              {
+                'Id': s == 2 && e == 10 ? 'item-1' : 's${s}e$e',
+                'Name': 'Episode $e',
+                'Type': 'Episode',
+                'IndexNumber': e,
+                'ParentIndexNumber': s,
+                'SeriesId': 'series-1',
+              },
+        ],
+      },
+    );
+
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final rail = find.byType(LockedFocusRow<AggregatedItem>);
+    final items = tester
+        .widget<LockedFocusRow<AggregatedItem>>(rail)
+        .items
+        .map((e) => e.id)
+        .toList();
+    expect(items.indexOf('item-1'), 9);
+    // It's in view before focus gets there.
+    final scroll = tester.state<ScrollableState>(
+      find.descendant(of: rail, matching: find.byType(Scrollable)).first,
+    );
+    expect(scroll.position.pixels, greaterThan(0));
+
+    // Two seasons, so the way in is the tabs, and Down from them lands on it.
+    final tabs = tester.widget<SlidingPillTabs>(find.byType(SlidingPillTabs));
+    tabs.focusNode!.requestFocus();
+    await tester.pump();
+    expect(tabs.focusNode!.hasPrimaryFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final railState = tester.state<LockedFocusRowState<AggregatedItem>>(rail);
+    final primary = FocusManager.instance.primaryFocus;
+    expect(
+      primary?.context
+          ?.findAncestorStateOfType<LockedFocusRowState<AggregatedItem>>(),
+      same(railState),
+      reason: 'Down from the tabs should put focus in the rail',
+    );
+    expect(railState.focusedIndex, 9);
   });
 
   const landscape = Size(1600, 900);
