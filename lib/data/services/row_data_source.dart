@@ -1549,7 +1549,7 @@ class RowDataSource {
     int? offset,
   }) async {
     if (!row.hasMore || row.items.length >= _maxItems) {
-      return (row.items, row.totalCount);
+      return (row.items, row.items.length);
     }
 
     final prefs = GetIt.instance.isRegistered<UserPreferences>()

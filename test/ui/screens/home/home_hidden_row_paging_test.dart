@@ -229,4 +229,55 @@ void main() {
     expect(updatedRow.totalCount, 80);
     expect(updatedRow.hasMore, isTrue);
   });
+
+  test('loadMoreForRow exhausts capped non-recent rows when loadMore returns unchanged items', () async {
+    final items = [
+      for (var i = 0; i < 100; i++)
+        AggregatedItem(
+          id: 'fav-$i',
+          serverId: 'http://server',
+          rawData: {'Type': 'Movie', 'Id': 'fav-$i'},
+        ),
+    ];
+    final favRow = HomeRow(
+      id: 'favorites',
+      title: 'Favorites',
+      rowType: HomeRowType.favorites,
+      items: items,
+      totalCount: 250,
+    );
+
+    when(() => source.loadMore(
+      row: any(named: 'row'),
+      serverId: any(named: 'serverId'),
+      offset: any(named: 'offset'),
+    )).thenAnswer((_) async => (items, 250));
+
+    final client = _Client();
+    when(() => client.userId).thenReturn('user');
+    when(() => client.baseUrl).thenReturn('http://server');
+    final mediaBar = _MediaBar();
+    when(() => mediaBar.load(force: any(named: 'force'))).thenAnswer((_) async {});
+    final vm = HomeViewModel(
+      dataSource: source,
+      prefs: prefs,
+      client: client,
+      mediaBarViewModel: mediaBar,
+      multiServerRepo: _MultiServer(),
+      cacheStore: _Cache(),
+    );
+    addTearDown(vm.dispose);
+
+    vm.setRowsForTesting([favRow]);
+    final rowIndex = vm.rows.indexWhere((r) => r.id == 'favorites');
+    expect(rowIndex, isNonNegative);
+    expect(vm.rows[rowIndex].hasMore, isTrue);
+
+    await vm.loadMoreForRow(rowIndex);
+
+    final updatedRow = vm.rows.firstWhere((r) => r.id == 'favorites');
+    expect(updatedRow.items, hasLength(100));
+    expect(updatedRow.totalCount, 100);
+    expect(updatedRow.hasMore, isFalse);
+  });
 }

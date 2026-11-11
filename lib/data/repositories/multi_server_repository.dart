@@ -646,7 +646,7 @@ class MultiServerRepository {
 
   Future<(List<AggregatedItem>, int)> loadMore({required HomeRow row}) async {
     if (!row.hasMore || row.items.length >= _maxItems) {
-      return (row.items, row.totalCount);
+      return (row.items, row.items.length);
     }
 
     final generation = _pagingGeneration;

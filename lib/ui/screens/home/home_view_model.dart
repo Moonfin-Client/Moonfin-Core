@@ -1189,8 +1189,12 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       final filteredItems = filterEmptyElements(result.$1);
+      final isCumulativeRecentRow = row.rowType == HomeRowType.latestMedia ||
+          row.rowType == HomeRowType.recentlyReleased;
       final newTotalCount = filteredItems.length <= row.items.length
-          ? (result.$2 > filteredItems.length ? result.$2 : filteredItems.length)
+          ? (isCumulativeRecentRow && result.$2 > filteredItems.length
+              ? result.$2
+              : filteredItems.length)
           : (result.$2 - (result.$1.length - filteredItems.length));
       _replaceRowById(
         row.copyWith(items: filteredItems, totalCount: newTotalCount),
