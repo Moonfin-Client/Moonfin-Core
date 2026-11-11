@@ -10480,6 +10480,42 @@ abstract class AppLocalizations {
   /// **'Download failed'**
   String get seerrDownloadFailed;
 
+  /// Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable
+  ///
+  /// In en, this message translates to:
+  /// **'Import blocked'**
+  String get seerrImportBlocked;
+
+  /// Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet
+  ///
+  /// In en, this message translates to:
+  /// **'Not found yet'**
+  String get seerrNotFoundYet;
+
+  /// Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one
+  ///
+  /// In en, this message translates to:
+  /// **'Get a different release'**
+  String get seerrGetDifferentRelease;
+
+  /// Body of the confirm dialog for Get a different release
+  ///
+  /// In en, this message translates to:
+  /// **'{service} will remove {release} from the download client, block it so it isn\'t grabbed again, and search for another release.'**
+  String seerrGetDifferentReleaseConfirm(String service, String release);
+
+  /// Short confirmation after Get a different release removed the stuck download
+  ///
+  /// In en, this message translates to:
+  /// **'Removed. {service} is searching for another release.'**
+  String seerrGetDifferentReleaseDone(String service);
+
+  /// Error shown when Get a different release could not remove the stuck download
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove the download'**
+  String get seerrGetDifferentReleaseFailed;
+
   /// Status bar item count
   ///
   /// In en, this message translates to:
@@ -19887,6 +19923,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your PIN to restore the full app'**
   String get kidsModeExitSubtitle;
+
+  /// Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Kids Mode PIN to switch to {name}'**
+  String kidsModePinToSwitchUser(String name);
 
   /// No description provided for @pinIncorrect.
   ///

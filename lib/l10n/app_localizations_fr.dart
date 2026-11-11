@@ -6002,6 +6002,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seerrDownloadFailed => 'Download failed';
 
   @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
+
+  @override
   String itemsCount(int count) {
     return '$count Articles';
   }
@@ -11459,6 +11481,11 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get kidsModeExitSubtitle =>
       'Saisissez votre PIN pour restaurer l\'application complète';
+
+  @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
 
   @override
   String get pinIncorrect => 'PIN incorrect';

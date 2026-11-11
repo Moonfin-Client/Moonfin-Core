@@ -5792,6 +5792,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrDownloadFailed => 'Download failed';
 
   @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
+
+  @override
   String itemsCount(int count) {
     return '$count개 항목';
   }
@@ -10965,6 +10987,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get kidsModeExitSubtitle => 'PIN을 입력하면 전체 앱으로 돌아갑니다';
+
+  @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
 
   @override
   String get pinIncorrect => '잘못된 PIN';
