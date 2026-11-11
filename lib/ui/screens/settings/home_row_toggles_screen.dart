@@ -46,14 +46,21 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     }
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
+    final initialScope = _prefs.activeProfileScopeSuffix();
     _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
       try {
         final config = await client.usersApi.getUserConfiguration();
+        if (_prefs.activeProfileScopeSuffix() != initialScope) {
+          return;
+        }
         if (!_prefs.containsPreference(
               UserPreferences.hideWatchedInRecentRows,
             ) &&
             config.hidePlayedInLatest) {
-          await _prefs.set(UserPreferences.hideWatchedInRecentRows, true);
+          _prefs.seedHideWatchedFromServer(
+            config,
+            expectedProfileScope: initialScope,
+          );
           if (mounted) setState(() {});
         }
       } catch (_) {}
@@ -88,9 +95,13 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     _reloadHomeRows();
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
+    final initialScope = _prefs.activeProfileScopeSuffix();
     _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
       try {
         final config = await client.usersApi.getUserConfiguration();
+        if (_prefs.activeProfileScopeSuffix() != initialScope) {
+          return;
+        }
         final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
         if (config.hidePlayedInLatest != hideWatched) {
           await client.usersApi.updateUserConfiguration(

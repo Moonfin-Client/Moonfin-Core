@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -192,6 +194,92 @@ void main() {
 
       expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
       verify(() => usersApi.getUserConfiguration()).called(1);
+    },
+  );
+
+  testWidgets(
+    'delayed response during profile switch does not seed new profile preference',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final completer = Completer<UserConfiguration>();
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer((_) => completer.future);
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pump();
+
+      // Switch to profile B while request is in flight
+      await store.setString('pref_last_user_id', 'userB');
+      expect(prefs.activeProfileScopeSuffix(), 'server1_userB');
+
+      // Profile A's response returns with hidePlayedInLatest: true
+      completer.complete(const UserConfiguration(hidePlayedInLatest: true));
+      await tester.pumpAndSettle();
+
+      // Verify profile B was NOT seeded
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
+        isFalse,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
+    },
+  );
+
+  testWidgets(
+    'delayed response after sign-out does not write to base preference key',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final completer = Completer<UserConfiguration>();
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer((_) => completer.future);
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pump();
+
+      // Sign out while request is in flight
+      await store.remove('pref_last_user_id');
+      expect(prefs.activeProfileScopeSuffix(), isNull);
+
+      // Delayed response returns with hidePlayedInLatest: true
+      completer.complete(const UserConfiguration(hidePlayedInLatest: true));
+      await tester.pumpAndSettle();
+
+      // Verify base preference key was NOT written
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: false),
+        isFalse,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
     },
   );
 
