@@ -437,8 +437,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   Duration? _statusPollInterval;
   bool _isDisposed = false;
 
-  /// Bumped by a removal, so a queue answer that set off before it, and still
-  /// lists the removed download, is thrown away when it lands.
+  /// Bumped by every queue read, a removal and a new load, so an answer that
+  /// set off before any of them is thrown away when it lands.
   int _arrQueueGeneration = 0;
 
   SeerrMediaDetailViewModel(this._repo, this._prefs);
@@ -520,7 +520,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   /// title is on its way. Anything but a clean answer drops it, which leaves
   /// the page showing what Seerr reports, as before Moonbase could do this.
   Future<void> _refreshArrQueue() async {
-    final generation = _arrQueueGeneration;
+    final generation = ++_arrQueueGeneration;
     final tmdbId = _state.tmdbId;
     final queue = await _fetchArrQueue(_state);
     // A reply for a title the page has since moved off belongs to that one.

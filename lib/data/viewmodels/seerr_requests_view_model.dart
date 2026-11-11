@@ -225,9 +225,10 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     if (!GetIt.instance.isRegistered<PluginSyncService>() ||
         !GetIt.instance<PluginSyncService>().arrQueueAvailable) {
       // Moonbase stopped offering the queue while the screen was open, so
-      // the cards go back to what Seerr reports.
+      // the cards go back to what Seerr reports, and a read still on its way
+      // is dropped.
+      _arrQueueFetches.updateAll((_, count) => count + 1);
       if (_state.arrQueues.isNotEmpty) {
-        _arrQueueFetches.clear();
         _state = _state.copyWith(arrQueues: const {});
         notifyListeners();
       }

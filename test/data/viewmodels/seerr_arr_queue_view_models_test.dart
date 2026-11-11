@@ -212,6 +212,30 @@ void main() {
       });
     });
 
+    test('an older poll reply can\'t replace a newer one', () {
+      fakeAsync((async) {
+        final seerr = _FakeSeerr();
+        final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
+        vm.load('10378', 'movie');
+        async.flushMicrotasks();
+
+        final hold = Completer<void>();
+        seerr.holdQueue = hold;
+        async.elapse(const Duration(seconds: 15));
+
+        seerr
+          ..holdQueue = null
+          ..queue = const ArrQueue(service: 'radarr', inArr: true);
+        async.elapse(const Duration(seconds: 15));
+        expect(vm.state.hd.replaceableDownload, isNull);
+
+        hold.complete();
+        async.flushMicrotasks();
+        expect(vm.state.hd.replaceableDownload, isNull);
+        vm.dispose();
+      });
+    });
+
     test('a removal for a download the page no longer shows does nothing', () async {
       final seerr = _FakeSeerr();
       final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
@@ -380,6 +404,26 @@ void main() {
 
       sync.available = false;
       await vm.refresh();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues, isEmpty);
+      vm.dispose();
+    });
+
+    test('a read still on its way when queues go away is dropped', () async {
+      final hold = Completer<void>();
+      final seerr = _FakeSeerr()
+        ..requests = [_request(1)]
+        ..holdQueue = hold;
+      final vm = SeerrRequestsViewModel(seerr);
+      await vm.load();
+      await pumpEventQueue();
+      expect(vm.state.arrQueues, isEmpty);
+
+      sync.available = false;
+      await vm.refresh();
+      await pumpEventQueue();
+
+      hold.complete();
       await pumpEventQueue();
       expect(vm.state.arrQueues, isEmpty);
       vm.dispose();
