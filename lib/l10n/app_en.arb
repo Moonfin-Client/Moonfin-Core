@@ -6378,6 +6378,18 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "recentlyAddedAndReleased": "Recently Added and Released",
+  "@recentlyAddedAndReleased": {
+    "description": "Section title for Recently Added and Recently Released home row settings"
+  },
+  "hideWatchedInRecentRows": "Hide Watched",
+  "@hideWatchedInRecentRows": {
+    "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+  },
+  "hideWatchedInRecentRowsDescription": "Hide watched content from Recently Added and Recently Released home rows.",
+  "@hideWatchedInRecentRowsDescription": {
+    "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+  },
   "mergeRecentRowsByType": "Merge Recent Rows by Type",
   "@mergeRecentRowsByType": {
     "description": "Setting for merging recently added and recently released libraries by media type"

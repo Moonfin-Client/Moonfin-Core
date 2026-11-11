@@ -369,7 +369,15 @@ class UserPreferences extends ChangeNotifier {
   ///   default), replace it with the server's SubtitleLanguagePreference.
   /// - SubtitleMode: if the local pref has never been explicitly stored (empty
   ///   default), convert it to the closest Moonfin subtitle mode.
-  void initLanguagePrefs(UserConfiguration config) {
+  void initLanguagePrefs(
+    UserConfiguration config, {
+    String? expectedProfileScope,
+  }) {
+    final activeScope = _activeProfileScopeSuffix();
+    if (expectedProfileScope != null && expectedProfileScope != activeScope) {
+      return;
+    }
+
     final sysIso3 = toIso3Language(
       normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode),
     );
@@ -399,7 +407,34 @@ class UserPreferences extends ChangeNotifier {
       };
       _setIfMissing(subtitleMode, mode);
     }
+
+    if (activeScope != null) {
+      seedHideWatchedFromServer(config, expectedProfileScope: activeScope);
+    }
   }
+
+  void seedHideWatchedFromServer(
+    UserConfiguration config, {
+    String? expectedProfileScope,
+  }) {
+    final activeScope = _activeProfileScopeSuffix();
+    if (expectedProfileScope != null && expectedProfileScope != activeScope) {
+      return;
+    }
+    if (!containsPreference(hideWatchedInRecentRows, scopedOnly: true) &&
+        config.hidePlayedInLatest) {
+      final scoped = _scopedPreference(hideWatchedInRecentRows);
+      if (scoped != null) {
+        _store.set(scoped, true);
+        notifyListeners();
+      } else if (expectedProfileScope == null) {
+        _store.set(hideWatchedInRecentRows, true);
+        notifyListeners();
+      }
+    }
+  }
+
+  String? activeProfileScopeSuffix() => _activeProfileScopeSuffix();
 
   String? _activeProfileScopeSuffix() {
     final serverId = (_store.getString(_lastServerIdPreferenceKey) ?? '')
@@ -707,6 +742,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_next_up_max_days',
     'enable_multi_server_libraries',
     'pref_merge_recent_rows_by_type',
+    'pref_hide_watched_in_recent_rows',
     'seasonal_surprise',
     'seasonal_density',
     'seasonal_follower',
@@ -950,7 +986,9 @@ class UserPreferences extends ChangeNotifier {
   bool containsPreference<T>(Preference<T> pref, {bool scopedOnly = false}) {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
-      if (scoped == null) return false;
+      if (scoped == null) {
+        return !scopedOnly && _store.containsKey(pref.key);
+      }
       final hasScoped = _store.containsKey(scoped.key);
       if (scopedOnly) {
         return hasScoped;
@@ -2191,6 +2229,10 @@ class UserPreferences extends ChangeNotifier {
   );
   static final mergeRecentRowsByType = Preference(
     key: 'pref_merge_recent_rows_by_type',
+    defaultValue: false,
+  );
+  static final hideWatchedInRecentRows = Preference(
+    key: 'pref_hide_watched_in_recent_rows',
     defaultValue: false,
   );
 

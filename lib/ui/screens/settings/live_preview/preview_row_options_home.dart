@@ -173,6 +173,7 @@ class _HomeSnapshot {
     prefs.get(UserPreferences.enableMultiServerLibraries),
     prefs.get(UserPreferences.mergeContinueWatchingNextUp),
     prefs.get(UserPreferences.mergeRecentRowsByType),
+    prefs.get(UserPreferences.hideWatchedInRecentRows),
     prefs.get(UserPreferences.displayRewatchRow),
     prefs.get(UserPreferences.displaySinceYouWatchedRows),
     for (final group in RowOptionsGroup.values) prefs.get(group.display),

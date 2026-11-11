@@ -4716,6 +4716,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showLibrariesFromAllServers => '显示所有已连接服务器的媒体库';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => '按类型合并最近行';
 
   @override
