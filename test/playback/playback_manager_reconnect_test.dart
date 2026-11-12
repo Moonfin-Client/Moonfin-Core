@@ -872,4 +872,94 @@ void main() {
       });
     });
   });
+
+  group('a container error on a direct route', () {
+    const containerError = <String, dynamic>{
+      'event': 'playerError',
+      'kind': 'unsupported_container',
+      'recoverable': true,
+    };
+
+    test('reopens a stream that has been playing instead of transcoding', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        async.elapse(const Duration(seconds: 70));
+        backend.errors.add(containerError);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        final request = resolver.requests.single;
+        expect(request.reason, ReplanReason.trackChange);
+        expect(request.position, const Duration(minutes: 20));
+        expect(request.enableDirectPlay, isTrue);
+        expect(request.enableDirectStream, isTrue);
+        expect(manager.isReconnecting, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.ready);
+      });
+    });
+
+    test('transcodes when the reopened stream fails again straight away', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        async.elapse(const Duration(seconds: 70));
+        backend.errors.add(containerError);
+        async.flushMicrotasks();
+        expect(resolver.requests, hasLength(1));
+
+        async.elapse(const Duration(seconds: 5));
+        backend.errors.add(containerError);
+        async.flushMicrotasks();
+
+        expect(resolver.requests, hasLength(2));
+        expect(resolver.requests.last.reason, ReplanReason.failure);
+        expect(resolver.requests.last.enableDirectPlay, isFalse);
+        expect(resolver.requests.last.enableDirectStream, isFalse);
+      });
+    });
+
+    test('reopens again once the reopened stream has kept playing', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        async.elapse(const Duration(seconds: 70));
+        backend.errors.add(containerError);
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(seconds: 80));
+        backend.errors.add(containerError);
+        async.flushMicrotasks();
+
+        expect(resolver.requests, hasLength(2));
+        expect(resolver.requests.last.reason, ReplanReason.trackChange);
+        expect(resolver.requests.last.enableDirectStream, isTrue);
+      });
+    });
+
+    test('still transcodes a stream that has only just opened', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        async.elapse(const Duration(seconds: 5));
+        backend.errors.add(containerError);
+        async.flushMicrotasks();
+
+        expect(resolver.requests.single.reason, ReplanReason.failure);
+        expect(resolver.requests.single.enableDirectStream, isFalse);
+      });
+    });
+
+    test('still transcodes a video the player cannot decode', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        async.elapse(const Duration(seconds: 70));
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'unsupported_video',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+
+        expect(resolver.requests.single.reason, ReplanReason.failure);
+        expect(resolver.requests.single.enableDirectStream, isFalse);
+      });
+    });
+  });
 }

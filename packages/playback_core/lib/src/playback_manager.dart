@@ -364,6 +364,14 @@ class PlaybackManager implements AudioOwnable {
   static const _reconnectFirstDelay = Duration(seconds: 1);
   static const _reconnectMaxDelay = Duration(seconds: 15);
   static const _reconnectProvenAfter = Duration(seconds: 30);
+
+  /// How long a direct route has to have been open before a container error
+  /// on it is read as a delivery fault rather than a file the player can't
+  /// read. A container the player can't parse fails as it opens, so a stream
+  /// that got this far gets one reopen where it was before the route changes.
+  /// The reopen starts the count again, so one that fails straight away still
+  /// goes to the server.
+  static const _directRouteProvenAfter = Duration(seconds: 30);
   DateTime? _reconnectStartedAt;
   int _reconnectAttempts = 0;
   /// Bumped whenever a reconnect ends, so an attempt that outlives its
@@ -2790,6 +2798,49 @@ class PlaybackManager implements AudioOwnable {
     // and recover when we can actually re-resolve, otherwise let the failure
     // surface.
     if (kind == 'unsupported_container' || kind == 'unsupported_video') {
+      // A direct route that has been playing was not refused by the player:
+      // it read the container and decoded the video until now. What it
+      // reports this late is almost always data that came too slowly (a
+      // remote mount, a proxy), and a transcode reads the same source while
+      // costing the viewer the original picture, Dolby Vision included.
+      // Reopen it where it was first; the count restarts with the reopen, so
+      // a file that is really broken here fails again at once and takes the
+      // transcode below.
+      final openedAt = _playbackStartTime;
+      final openFor = openedAt == null ? null : clock().difference(openedAt);
+      if (kind == 'unsupported_container' &&
+          !_waitingForMedia &&
+          openFor != null &&
+          openFor >= _directRouteProvenAfter &&
+          _canReconnect(resolution) &&
+          canReResolve()) {
+        _diagnosticLogger?.call(
+          'Container error after ${openFor.inSeconds}s on '
+          '${resolution!.playMethod.name}, reopening the stream before '
+          'changing the route',
+        );
+        _suppressNextGenericBackendError = true;
+        _streamRecoveryInFlight = true;
+        final intent = _viewerIntentGeneration;
+        try {
+          // An unchanged track change, not a failure: the route was fine,
+          // and a failure replan would rule it out.
+          await _reResolveAtCurrentPosition(
+            isErrorRecovery: true,
+            replanReason: ReplanReason.trackChange,
+            reason: 'proven-route-reopen',
+            autoPlay: !_viewerPaused,
+            shouldProceed: () => intent == _viewerIntentGeneration,
+          );
+        } catch (_) {
+          if (intent == _viewerIntentGeneration) {
+            emitFailedBringupState('Playback failed.');
+          }
+        } finally {
+          _streamRecoveryInFlight = false;
+        }
+        return;
+      }
       if (!canReResolve()) {
         if (kind == 'unsupported_video' && !_streamRecoveryInFlight) {
           await _stopForUnsupportedVideo();
