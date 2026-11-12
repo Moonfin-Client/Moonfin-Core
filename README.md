@@ -41,11 +41,11 @@ Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers, built with 
 
 ### Silo
 
-Moonfin talks to Silo through its native API (`/api/v2`), not its Jellyfin-compatible service. Add the server by its native address, which is usually port 8090 with Silo's Docker setup. If you enter the Jellyfin-compatible address on port 8096, Moonfin offers to switch to the native one. Silo servers on your local network also show up under Discovered Servers.
+Moonfin talks to Silo through its native API (`/api/v2`), not its Jellyfin-compatible service. Add the server by its native address, which is port 8090 with Silo's Docker Compose setup or 8080 without Docker. If you enter the Jellyfin-compatible address on port 8096, Moonfin offers to connect to Silo directly, or you can keep it as a Jellyfin server. Silo servers on your local network also show up under Discovered Servers, except on web.
 
 Sign-in with a password or a code, Home, libraries, search, favorites, watched state, ratings, collections, playback, skip intro and credits, trickplay, household profiles with their PINs, and downloads with offline progress sync all work.
 
-Requests use Silo's own requests feature in place of Seerr, and Watch Parties use Silo's own watch party rooms. Settings sync, admin defaults, server messages, custom themes and MDBList and TMDB ratings need the [Moonbase plugin](https://github.com/Moonfin-Client/Plugin) installed in Silo.
+Requests use Silo's own requests feature in place of Seerr, and Watch Parties use Silo's own watch party rooms. Settings sync, admin defaults, server messages, custom themes and MDBList and TMDB ratings need [Moonbase](https://github.com/Moonfin-Client/Plugin) for Silo, installed from Plugins > Catalog in Silo's admin pages.
 
 Live TV and DVR, music, playlists, remote control of other devices, the server admin panel (Silo's is in its web app) and retro games aren't available on Silo, so Moonfin hides them while a Silo server is active. Books, audiobooks, 4K requests and Silo's server-side download subscriptions aren't supported yet.
 
@@ -83,7 +83,7 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks, plus custom loading animations and a screensaver on TV.
 - **An integrated admin panel** for Jellyfin and Emby, covering settings, users, libraries, Live TV, logs, devices, and analytics, plus a messages window for notes from your server admin.
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
-- **Smart Search** that finds titles from a plain sentence, and a **Calendar** of what's coming up in Sonarr and Radarr with reminders on phones, both served by the Moonbase plugin.
+- **Smart Search** that finds titles from a plain sentence, **poster labels** like 4K and HDR, and a **Calendar** of what's coming up in Sonarr and Radarr with reminders on phones and tablets, all served by the Moonbase plugin.
 - **Live TV and DVR** with a program guide, rewind on channels that keep a rewind window, a quick channel changer on TV, automatic recovery when a channel stalls, and recording management.
 - **Client certificates (mTLS)** for servers that require one, with a page you open on your phone to send the certificate to a TV.
 - **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
@@ -182,7 +182,7 @@ The deeper reference material lives in the [Wiki](https://github.com/Moonfin-Cli
 | [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games) | Playing server game libraries in-app, cores, controllers, and save states |
 | [Installation](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Installation) | App store links first, then installing a release file by hand on every platform, and how updates work |
 | [Getting Started](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Getting-Started) | Connecting to your server, Quick Connect, the setup wizard, and the settings worth a look on day one |
-| [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | The player on touch, remote and keyboard, Live TV, casting and remote control, Seerr requests, downloads, subtitle downloads, themes, parental controls, and Kids Mode |
+| [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | The player on touch, remote and keyboard, Live TV, casting and remote control, watch parties, Seerr requests, the Calendar, downloads, subtitle downloads, themes, parental controls, and Kids Mode |
 | [Common Problems](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Common-Problems) | Plain fixes for connection, login, playback, sound, subtitle, download and casting trouble |
 | [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs) | Capturing a diagnostic report for a bug report |
 | [Custom mpv Configuration](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Custom-mpv-Configuration) | Tuning playback with your own `mpv.conf`, allowed options, and SVP on Windows |
