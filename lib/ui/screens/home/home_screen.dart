@@ -55,6 +55,7 @@ import '../../../util/app_exit.dart';
 import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
+import '../../widgets/home_row_spacing.dart';
 import '../../widgets/game/game_poster_card.dart';
 import '../../widgets/game/retro_artwork_shape.dart';
 import '../../widgets/focus/row_glide.dart';
@@ -114,17 +115,10 @@ Color get _homeBackground => AppColorScheme.background;
 /// How far the rows have to scroll before the return is worth offering.
 const _kHomeStartThreshold = 20.0;
 
-/// Room for the title, subtitle and gaps that sit under classic card artwork.
-const _classicCardMetadataHeight = 50.0;
-
 /// Watching Now prints its titles on the artwork, so it only needs room for
 /// the focus ring and a gap before the next row.
 double _classicCardMetadataFor(HomeRow row) =>
-    row.id == 'mdblist_watching_now' ? 24.0 : _classicCardMetadataHeight;
-
-/// Room above a row's title. Classic rows on mobile keep a wider gap.
-double _rowHeaderPaddingTop(bool isRowsV2) =>
-    isRowsV2 || !PlatformDetection.useMobileUi ? 6.0 : 16.0;
+    row.id == 'mdblist_watching_now' ? 24.0 : classicCardCaptionHeight;
 
 /// How far a focused card grows past the top of its row. The scale is anchored
 /// at the bottom of the artwork, so all of the growth goes upward.
@@ -1347,7 +1341,7 @@ class _ContentRowsState extends State<_ContentRows>
     final showInfoOverlay = _showHomeRowInfoOverlay();
     final safeTop = MediaQuery.of(context).padding.top;
     final navbarIsTop = prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
-    final fullScreenRows = _fullScreenRowsEnabled(prefs);
+    final fullScreenRows = expandedHomeRows(prefs);
 
     final navbarHeight = PlatformDetection.isTV
         ? (fullScreenRows ? 95.0 : (navbarIsTop ? 45.0 : 15.0))
@@ -2619,7 +2613,7 @@ class _ContentRowsState extends State<_ContentRows>
         !UserPreferences.mediaBarModeAllowsRowPeek(
           prefs.get(UserPreferences.mediaBarMode),
         ) ||
-        _fullScreenRowsEnabled(prefs) ||
+        expandedHomeRows(prefs) ||
         !_isMediaBarIncluded() ||
         rows.isEmpty) {
       return;
@@ -3133,7 +3127,7 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final isRowsV2 = isHomeRowModern(row, prefs);
-    final fullScreenRows = _fullScreenRowsEnabled(prefs);
+    final fullScreenRows = expandedHomeRows(prefs);
     final platformScale = homeRowPlatformScale(desktopScale);
 
     double childHeight = 0.0;
@@ -3204,7 +3198,7 @@ class _ContentRowsState extends State<_ContentRows>
         }
         if (maxCardHeight == 0.0) {
           maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
-          maxCardHeight = maxImageHeight + (_classicCardMetadataHeight * metadataScale);
+          maxCardHeight = maxImageHeight + (classicCardCaptionHeight * metadataScale);
         }
         maxCardHeight += _classicRowPadding(row, prefs);
       }
@@ -3221,7 +3215,7 @@ class _ContentRowsState extends State<_ContentRows>
             row.rowType != HomeRowType.watchParties &&
             row.rowType != HomeRowType.libraryTilesSmall &&
             !isGameHomeRow(row));
-    final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
+    final headerPaddingTop = homeRowHeaderTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
     final subtitleHeight = hasSubtitle ? ((row.id == 'mdblist_watching_now' ? 26.0 : 18.0) * metadataScale) : 0.0;
@@ -3230,15 +3224,10 @@ class _ContentRowsState extends State<_ContentRows>
     var totalHeight = childHeight + headerHeight;
     if (!fullScreenRows) {
       if (isRowsV2) {
-        final customHeight = prefs.get(UserPreferences.modernHomeRowsPadding).toDouble();
-        var offset = (customHeight - 400.0).clamp(-40.0, 200.0);
-        if (PlatformDetection.useMobileUi) {
-          totalHeight += 20.0;
-          offset = offset / 2.0;
-        } else if (_isLibraryRow(row)) {
+        if (!PlatformDetection.useMobileUi && _isLibraryRow(row)) {
           totalHeight += 100.0;
         }
-        totalHeight += offset;
+        totalHeight += modernRowPadding(prefs);
       } else if (_isLibraryRow(row)) {
         final classicPadding = prefs
             .get(UserPreferences.classicHomeRowsPadding)
@@ -3256,7 +3245,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (row == null) return defaultTop;
     final isRowsV2 = isHomeRowModern(row, widget.prefs);
 
-    final fullScreenRows = _fullScreenRowsEnabled(widget.prefs);
+    final fullScreenRows = expandedHomeRows(widget.prefs);
     if (fullScreenRows) {
       final stackRender = context.findRenderObject();
       final viewportHeight = (stackRender is RenderBox && stackRender.hasSize)
@@ -3309,7 +3298,7 @@ class _ContentRowsState extends State<_ContentRows>
   double? _restingOffsetForRow(int rowIndex) {
     if (!_scrollController.hasClients) return null;
     if (rowIndex < 0 || rowIndex >= _rowTopOffsets.length) return null;
-    final useTvBand = _fullScreenRowsEnabled(widget.prefs);
+    final useTvBand = expandedHomeRows(widget.prefs);
     final targetTop = useTvBand
         ? _tvTargetTopForRow(rowIndex)
         : _desktopRowFocusTargetTop();
@@ -4337,10 +4326,6 @@ class _ContentRowsState extends State<_ContentRows>
       row.rowType == HomeRowType.libraryTilesSmall ||
       row.rowType == HomeRowType.libraryTiles;
 
-  bool _fullScreenRowsEnabled(UserPreferences prefs) =>
-      !PlatformDetection.useMobileUi &&
-      prefs.get(UserPreferences.fullScreenRows);
-
   double _v2MetadataBudgetFor(HomeRow row, UserPreferences prefs) =>
       row.rowType == HomeRowType.libraryTiles
       ? _libraryTilesMetadataBudget
@@ -4348,15 +4333,9 @@ class _ContentRowsState extends State<_ContentRows>
 
   /// Extra room the classic rows setting asks for. Library rows are left out,
   /// since their grid sizes itself and padding there overlaps the next row.
-  /// TV and desktop count it from the slider's lowest step, so their rows sit
-  /// a little closer at every setting.
   double _classicRowPadding(HomeRow row, UserPreferences prefs) {
-    if (_fullScreenRowsEnabled(prefs) || _isLibraryRow(row)) return 0.0;
-    final padding = prefs
-        .get(UserPreferences.classicHomeRowsPadding)
-        .toDouble();
-    if (PlatformDetection.useMobileUi) return padding;
-    return (padding - 10).clamp(0.0, double.infinity);
+    if (expandedHomeRows(prefs) || _isLibraryRow(row)) return 0.0;
+    return classicRowPadding(prefs);
   }
 
   Widget _buildShiftedRow({
@@ -5605,7 +5584,7 @@ class _ContentRowsState extends State<_ContentRows>
       maxImageHeight = posterSize.portraitHeight.toDouble() * platformScale;
       maxCardHeight =
           maxImageHeight +
-          (_classicCardMetadataHeight * metadataScale);
+          (classicCardCaptionHeight * metadataScale);
     }
 
     final rowPadding = 5.0 * metadataScale;
@@ -6429,7 +6408,7 @@ class _ContentRowsState extends State<_ContentRows>
           Padding(
             padding: EdgeInsets.fromLTRB(
               _kHomeRowLabelInset,
-              _rowHeaderPaddingTop(isRowsV2),
+              homeRowHeaderTop(isRowsV2),
               8,
               isWatchingNow ? 12.0 : (isRowsV2 ? 1 : 8),
             ),
