@@ -195,6 +195,22 @@ void main() {
       expect(_find(lineup, '007'), ['Seven', 'Lima']);
     });
 
+    test('stored zeros are also searched as written', () {
+      final lineup = [
+        _ch('Ten', '10'),
+        _ch('Seven', '007'),
+        _ch('Oscar', '010'),
+      ];
+      expect(_find(lineup, '00'), ['Seven']);
+      expect(_find(lineup, '01'), ['Oscar']);
+      expect(_find(lineup, '0'), ['Seven', 'Oscar', 'Ten']);
+    });
+
+    test('a number with its zeros dropped still starts with the query', () {
+      final lineup = [_ch('Twelve', '12'), _ch('Papa', '001.5')];
+      expect(_find(lineup, '1'), ['Papa', 'Twelve']);
+    });
+
     test('reads a number sent as a JSON number', () {
       final lineup = [_ch('Fox', 105), _ch('Sept', 7.0), _ch('PBS', 2.1)];
       expect([for (final c in lineup) c.channelNumber], ['105', '7.0', '2.1']);

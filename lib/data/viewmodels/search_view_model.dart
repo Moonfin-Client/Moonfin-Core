@@ -544,9 +544,10 @@ class SearchViewModel extends ChangeNotifier {
 /// channels come in this order, each listed once at its first match: the
 /// number is the query (`7` finds 7 and 007), the name contains it (in lineup
 /// order), the number starts with it (`2` finds 2.1 and 20), the number
-/// contains it (`2` finds 12). Numbers sort by the whole numbers between the
-/// dots, so 2.2 comes before 2.10, and channels on the same number keep their
-/// lineup order.
+/// contains it (`2` finds 12). Those last two read the number both as written
+/// and without its leading zeros, so `00` finds 007 and 001.5 starts with `1`.
+/// Numbers sort by the whole numbers between the dots, so 2.2 comes before
+/// 2.10, and channels on the same number keep their lineup order.
 @visibleForTesting
 List<AggregatedItem> matchChannels(
   List<AggregatedItem> lineup,
@@ -566,16 +567,20 @@ List<AggregatedItem> matchChannels(
       <({_ChannelMatch match, List<int>? number, AggregatedItem channel})>[];
   for (final channel in lineup) {
     final number = _channelNumberSegments(channel.channelNumber);
-    final digits = number?.join('.');
+    // The number as written, so `00` finds 007, and without leading zeros, so
+    // `1` still finds 001.5 among the numbers that start with it.
+    final digits = number == null
+        ? const <String>[]
+        : [channel.channelNumber!.replaceAll('-', '.'), number.join('.')];
     final _ChannelMatch match;
     if (number != null &&
         _compareChannelNumbers(number, wanted.segments) == 0) {
       match = _ChannelMatch.number;
     } else if (foldForSearch(channel.name).contains(q)) {
       match = _ChannelMatch.name;
-    } else if (digits != null && digits.startsWith(wanted.text)) {
+    } else if (digits.any((d) => d.startsWith(wanted.text))) {
       match = _ChannelMatch.numberStart;
-    } else if (digits != null && digits.contains(wanted.text)) {
+    } else if (digits.any((d) => d.contains(wanted.text))) {
       match = _ChannelMatch.numberPart;
     } else {
       continue;
