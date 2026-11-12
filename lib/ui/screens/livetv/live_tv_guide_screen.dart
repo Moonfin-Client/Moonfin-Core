@@ -1256,18 +1256,32 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     VoidCallback? onNavigateDown,
   }) {
     final filters = _vm.filters;
+    // Channel groups follow the filters, named as the server sends them. The
+    // rail selects one chip at a time across both.
+    final groups = _vm.channelGroups;
+    final group = _vm.channelGroup;
     return Padding(
       padding: padding,
       child: EpgFilterRail(
-        labels: [for (final f in filters) _filterLabel(f)],
-        selectedIndex: filters.indexOf(_vm.filter),
+        labels: [for (final f in filters) _filterLabel(f), ...groups],
+        selectedIndex: group == null
+            ? filters.indexOf(_vm.filter)
+            : filters.length + groups.indexOf(group),
         onSelect: (i) {
           _cancelPendingVerticalMove();
-          if (_vm.filter != filters[i]) {
+          final picked = i >= filters.length
+              ? groups[i - filters.length]
+              : null;
+          if (_vm.channelGroup != picked ||
+              (picked == null && _vm.filter != filters[i])) {
             _lastFocusedRowIndex = 0;
             _focusedChannel.value = null;
           }
-          _vm.setFilter(filters[i]);
+          if (picked == null) {
+            _vm.setFilter(filters[i]);
+          } else {
+            _vm.setChannelGroup(picked);
+          }
         },
         apple: _apple,
         focusNodeFor: _filterFocusNodeFor,

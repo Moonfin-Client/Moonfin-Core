@@ -14,10 +14,15 @@ class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 class _MockUserLibraryApi extends Mock implements UserLibraryApi {}
 
-Map<String, dynamic> _channel(String id, {String? number}) => {
+Map<String, dynamic> _channel(
+  String id, {
+  String? number,
+  List<String>? tags,
+}) => {
   'Id': id,
   'Name': 'Ch $id',
   'ChannelNumber': ?number,
+  'Tags': ?tags,
 };
 
 Map<String, dynamic> _program(
@@ -1367,6 +1372,264 @@ void main() {
 
       verify(() => _guide(liveTv, category: GuideFilter.kids)).called(2);
       expect(vm.filteredChannels.map((c) => c.id), ['c5']);
+    });
+  });
+
+  group('channel groups', () {
+    // c1 and c3 share a group whose pipe Jellyfin split; c2 carries only the
+    // tag Jellyfin adds by itself.
+    List<Map<String, dynamic>> groupedLineup() => [
+      _channel('c1', number: '1', tags: ['FR ', ' Sport']),
+      _channel('c2', number: '2', tags: ['Kids']),
+      _channel('c3', number: '3', tags: ['FR ', ' Sport', 'News']),
+      _channel('c4', number: '4'),
+    ];
+
+    List<Map<String, dynamic>> farGroupLineup() => [
+      for (var i = 0; i < 120; i++)
+        _channel('c$i', number: '$i', tags: i == 110 ? ['Far'] : null),
+    ];
+
+    test('the lineup request also asks for the channels\' tags', () async {
+      _stubChannels(liveTv, groupedLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      verify(
+        () => liveTv.getChannels(
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          fields: 'ImageTags,UserData,Tags',
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          userId: any(named: 'userId'),
+        ),
+      ).called(1);
+      expect(vm.channelGroups, ['FR | Sport', 'News']);
+      vm.dispose();
+    });
+
+    test('each group is listed once, sorted by name', () async {
+      _stubChannels(liveTv, [
+        _channel('c1', tags: ['News']),
+        _channel('c2', tags: ['FR ', ' Sport']),
+        _channel('c3', tags: ['news']),
+        _channel('c4', tags: ['b-movies', 'News']),
+      ]);
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      expect(vm.channelGroups, ['b-movies', 'FR | Sport', 'News', 'news']);
+      expect(vm.channelGroup, isNull);
+      vm.dispose();
+    });
+
+    test('without groups the filters and the lineup stay as they were', () async {
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      _stubChannels(liveTv, [
+        _channel('c1', number: '1'),
+        _channel('c2', number: '2', tags: []),
+        _channel('c3', number: '3', tags: ['Kids']),
+      ]);
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      expect(vm.channelGroups, isEmpty);
+      expect(vm.filters, GuideFilter.values);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c2', 'c3']);
+      vm.dispose();
+    });
+
+    test('a group shows its channels in lineup order with every program', () async {
+      _stubChannels(liveTv, groupedLineup());
+      when(() => _guide(liveTv)).thenAnswer(
+        (inv) async => {
+          'Items': [
+            for (final id in _requestedIds(inv)) ...[
+              _program('p-$id', id),
+              _program(
+                's-$id',
+                id,
+                start: DateTime.parse('2026-09-11T10:30:00Z'),
+                isSports: true,
+              ),
+            ],
+          ],
+        },
+      );
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      vm.setChannelGroup('FR | Sport');
+      expect(vm.channelGroup, 'FR | Sport');
+      expect(vm.filter, GuideFilter.all);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c3']);
+      expect(vm.programsForChannel('c3').map((p) => p.id), ['p-c3', 's-c3']);
+      vm.dispose();
+    });
+
+    test('a group far down the lineup gets its programs', () async {
+      _stubChannels(liveTv, farGroupLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      expect(vm.hasProgramsFor('c110'), isFalse);
+
+      vm.setChannelGroup('Far');
+      await Future<void>.delayed(Duration.zero);
+      expect(vm.filteredChannels.map((c) => c.id), ['c110']);
+      expect(vm.hasProgramsFor('c110'), isTrue);
+      vm.dispose();
+    });
+
+    test('a window change or a reload keeps a far group loaded', () async {
+      _stubChannels(liveTv, farGroupLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      vm.setChannelGroup('Far');
+      await Future<void>.delayed(Duration.zero);
+      expect(vm.hasProgramsFor('c110'), isTrue);
+
+      await vm.setWindow(const Duration(hours: 4));
+      expect(vm.state, GuideState.ready);
+      expect(vm.hasProgramsFor('c110'), isTrue);
+
+      await vm.goToNow();
+      expect(vm.state, GuideState.ready);
+      expect(vm.channelGroup, 'Far');
+      expect(vm.hasProgramsFor('c110'), isTrue);
+      vm.dispose();
+    });
+
+    test('a window move while a far group loads still loads the group', () async {
+      _stubChannels(liveTv, farGroupLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      final calls =
+          <({List<String> ids, Completer<Map<String, dynamic>> reply})>[];
+      when(() => _guide(liveTv)).thenAnswer((inv) {
+        final reply = Completer<Map<String, dynamic>>();
+        calls.add((ids: _requestedIds(inv), reply: reply));
+        return reply.future;
+      });
+      vm.setChannelGroup('Far');
+      await pumpEventQueue();
+      expect(calls.map((c) => c.ids), [
+        ['c110'],
+      ]);
+
+      // The move supersedes the group's request still out, and re-fetches only
+      // the rows that were already loaded.
+      final moving = vm.setWindowStart(
+        vm.windowStart.add(const Duration(minutes: 30)),
+      );
+      await pumpEventQueue();
+      expect(calls, hasLength(2));
+      expect(calls[1].ids, hasLength(50));
+
+      calls[0].reply.complete({'Items': <dynamic>[]});
+      await pumpEventQueue();
+      expect(vm.hasProgramsFor('c110'), isFalse);
+      expect(calls, hasLength(3));
+      expect(calls[2].ids, ['c110']);
+
+      calls[1].reply.complete({'Items': <dynamic>[]});
+      await moving;
+      calls[2].reply.complete({'Items': <dynamic>[]});
+      await pumpEventQueue();
+      expect(vm.hasProgramsFor('c110'), isTrue);
+      vm.dispose();
+    });
+
+    test('a built-in chip clears the group', () async {
+      _stubChannels(liveTv, groupedLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+
+      vm.setChannelGroup('News');
+      expect(vm.filteredChannels.map((c) => c.id), ['c3']);
+      vm.setFilter(GuideFilter.all);
+      expect(vm.channelGroup, isNull);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c2', 'c3', 'c4']);
+
+      vm.setChannelGroup('News');
+      vm.setFilter(GuideFilter.favorites);
+      expect(vm.channelGroup, isNull);
+      expect(vm.filter, GuideFilter.favorites);
+      expect(vm.filteredChannels, isEmpty);
+      vm.dispose();
+    });
+
+    test('a group picked while a category loads drops its reply', () async {
+      _stubChannels(liveTv, groupedLineup());
+      final sports = Completer<Map<String, dynamic>>();
+      when(() => _guide(liveTv, category: GuideFilter.sports))
+          .thenAnswer((_) => sports.future);
+
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      vm.setFilter(GuideFilter.sports);
+      expect(vm.state, GuideState.loading);
+      vm.setChannelGroup('News');
+      expect(vm.state, GuideState.ready);
+      expect(vm.filter, GuideFilter.all);
+
+      // A reply that was applied would notify, since it adds its rows to the
+      // category cache and ends the category load.
+      var notified = 0;
+      vm.addListener(() => notified++);
+      sports.complete({
+        'Items': [_program('s1', 'c1', isSports: true)],
+      });
+      await Future<void>.delayed(Duration.zero);
+      expect(notified, 0);
+      expect(vm.state, GuideState.ready);
+      expect(vm.channelGroup, 'News');
+      expect(vm.filteredChannels.map((c) => c.id), ['c3']);
+      vm.dispose();
+    });
+
+    test('a favorite change keeps the channel in its group', () async {
+      _stubChannels(liveTv, groupedLineup());
+      final userLibrary = _MockUserLibraryApi();
+      when(() => client.userLibraryApi).thenReturn(userLibrary);
+      when(() => userLibrary.markFavorite(any())).thenAnswer((_) async {});
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      vm.setChannelGroup('FR | Sport');
+
+      // The user-data sync copy of the channel.
+      userDataSync.publish('c3', {'IsFavorite': true});
+      vm.syncChannelUserData();
+      expect(vm.channelForId('c3')!.isFavorite, isTrue);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c3']);
+
+      // The optimistic copy the toggle makes.
+      await vm.toggleChannelFavorite('c1');
+      expect(vm.channelForId('c1')!.isFavorite, isTrue);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c3']);
+      expect(vm.channelGroups, ['FR | Sport', 'News']);
+      vm.dispose();
+    });
+
+    test('a reload keeps the group, or falls back to All once it is gone', () async {
+      _stubChannels(liveTv, groupedLineup());
+      final vm = LiveTvGuideViewModel(client);
+      await vm.load();
+      vm.setChannelGroup('News');
+
+      await vm.load();
+      expect(vm.channelGroup, 'News');
+      expect(vm.filteredChannels.map((c) => c.id), ['c3']);
+
+      _stubChannels(liveTv, [
+        _channel('c1', number: '1', tags: ['FR ', ' Sport']),
+        _channel('c3', number: '3'),
+      ]);
+      await vm.load();
+      expect(vm.channelGroup, isNull);
+      expect(vm.channelGroups, ['FR | Sport']);
+      expect(vm.filteredChannels.map((c) => c.id), ['c1', 'c3']);
+      vm.dispose();
     });
   });
 

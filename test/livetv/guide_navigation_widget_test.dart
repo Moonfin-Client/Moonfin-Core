@@ -12,6 +12,7 @@ import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
@@ -1161,4 +1162,123 @@ void main() {
       );
     },
   );
+
+  group('channel group chips', () {
+    // ch2 and ch30 share a group whose pipe Jellyfin split; ch5's second tag
+    // is the one Jellyfin adds by itself, so it makes no chip. No group is
+    // named like a built-in chip, which would give two chips one label.
+    const tags = <int, List<String>>{
+      2: ['FR ', ' Sport'],
+      5: ['Infos', 'Kids'],
+      30: ['FR ', ' Sport'],
+    };
+
+    void stubGroupedLineup() {
+      when(
+        () => liveTvApi.getChannels(
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': [
+            for (var i = 0; i < channelCount; i++)
+              {..._channelRaw(i), 'Tags': ?tags[i]},
+          ],
+        },
+      );
+    }
+
+    EpgFilterRail rail(WidgetTester tester) =>
+        tester.widget<EpgFilterRail>(find.byType(EpgFilterRail));
+
+    testWidgets('a lineup without tags keeps the rail as it was', (
+      tester,
+    ) async {
+      await pumpGuide(tester);
+
+      expect(rail(tester).labels, hasLength(GuideFilter.values.length));
+      final labels = tester
+          .widgetList<Focus>(find.byType(Focus))
+          .map((focus) => focus.focusNode?.debugLabel)
+          .toSet();
+      expect(labels, contains('GuideFilter:7'));
+      expect(labels, isNot(contains('GuideFilter:8')));
+    });
+
+    testWidgets('RIGHT from Favorites reaches the groups and Enter picks one', (
+      tester,
+    ) async {
+      stubGroupedLineup();
+      await pumpGuide(tester);
+      final favorites = GuideFilter.values.indexOf(GuideFilter.favorites);
+      expect(rail(tester).labels.skip(favorites + 1).toList(), [
+        'FR | Sport',
+        'Infos',
+      ]);
+
+      // A program cell is selected first, so picking a group has a selection
+      // to rebind, which must leave focus on the chip. Channel 0 is in neither
+      // group.
+      _nodeLabelled(tester, 'GuideProgramRow0:0').requestFocus();
+      await tester.pumpAndSettle();
+      _nodeLabelled(tester, 'GuideFilter:$favorites').requestFocus();
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideFilter:${favorites + 1}');
+
+      // LEFT goes back to Favorites, and RIGHT to the first group again.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideFilter:$favorites');
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideFilter:${favorites + 1}');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideFilter:${favorites + 1}');
+      expect(rail(tester).selectedIndex, favorites + 1);
+      expect(
+        tester
+            .widgetList<EpgChannelCell>(find.byType(EpgChannelCell))
+            .map((cell) => cell.name)
+            .toList(),
+        ['Channel 2', 'Channel 30'],
+      );
+
+      // DOWN leaves the rail for the controls row, as from any chip.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideWindowBar:0');
+    });
+
+    testWidgets('LEFT from a grouped lineup lands on the first chip', (
+      tester,
+    ) async {
+      stubGroupedLineup();
+      await pumpGuide(tester);
+      final firstGroup = GuideFilter.values.length;
+      rail(tester).onSelect(firstGroup);
+      await tester.pumpAndSettle();
+
+      _nodeLabelled(tester, 'GuideChannel:1').requestFocus();
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<EpgHeroPreview>(find.byType(EpgHeroPreview)).title,
+        'Channel 30',
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'GuideFilter:0');
+      expect(rail(tester).selectedIndex, firstGroup);
+    });
+  });
 }

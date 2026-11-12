@@ -12,6 +12,7 @@ import '../repositories/item_mutation_repository.dart';
 import '../services/user_data_sync.dart';
 import '../models/live_tv_recording_state.dart';
 import '../models/series_recording_episodes.dart';
+import '../utils/channel_groups.dart';
 
 class GuideChannel {
   final String id;
@@ -426,6 +427,22 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   GuideFilter _filter = GuideFilter.all;
   GuideFilter get filter => _filter;
 
+  // Channel groups by name, each with the ids of its channels, read from the
+  // channels' tags whenever the lineup is fetched. The rail sees only the
+  // names and filteredChannels only the ids, so another source of groups can
+  // fill this map without the chips changing.
+  Map<String, Set<String>> _channelGroupIds = const {};
+  List<String> _channelGroups = const [];
+  String? _channelGroup;
+
+  /// The channel groups the guide offers after [filters], sorted by name.
+  /// Empty when no channel is in a group.
+  List<String> get channelGroups => _channelGroups;
+
+  /// The selected channel group. While one is selected, [filter] is
+  /// [GuideFilter.all], since the rail selects one chip at a time.
+  String? get channelGroup => _channelGroup;
+
   /// The filters the guide offers
   /// ([FeatureDetector.supportsGuideCategoryFilters]).
   List<GuideFilter> get filters =>
@@ -451,6 +468,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   DateTime get windowEnd => _windowEnd;
 
   List<GuideChannel> get filteredChannels {
+    if (_channelGroup case final group?) {
+      final ids = _channelGroupIds[group] ?? const <String>{};
+      return _channels.where((ch) => ids.contains(ch.id)).toList();
+    }
     if (_filter == GuideFilter.all) return _channels;
     if (_filter == GuideFilter.favorites) {
       return _channels.where((ch) => ch.isFavorite).toList();
@@ -734,6 +755,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         await ensureProgramsForChannels(initialChannelIds);
       }
       if (_isCategory(_filter)) await _walkCategory();
+      await _ensureChannelGroupPrograms();
       if (_disposed || loadGeneration != _loadGeneration) return;
       _state = GuideState.ready;
       _reloadOnEntry = false;
@@ -747,13 +769,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   }
 
   void setFilter(GuideFilter value) {
-    if (_filter == value) return;
+    if (_filter == value && _channelGroup == null) return;
+    _channelGroup = null;
     _filter = value;
-    _categoryRequest++;
-    if (_categoryFetchInFlight) {
-      _categoryFetchInFlight = false;
-      _state = GuideState.ready;
-    }
+    _cancelCategoryFetch();
     if (_isCategory(value) && _categoryLoadedFor != value) {
       unawaited(_loadCategoryPrograms());
       return;
@@ -767,6 +786,55 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           .map((c) => c.id)
           .toList();
       unawaited(ensureProgramsForChannels(favIds));
+    }
+  }
+
+  /// Shows only the channels in [group], with all their programs, as the
+  /// favorites filter does. [filter] goes back to [GuideFilter.all], since the
+  /// rail selects one chip at a time.
+  void setChannelGroup(String group) {
+    if (_channelGroup == group) return;
+    _channelGroup = group;
+    _filter = GuideFilter.all;
+    _cancelCategoryFetch();
+    _notifyListeners();
+    unawaited(
+      _ensureChannelGroupPrograms().catchError((Object _) {
+        // A failed request leaves the rows unloaded. A reload, setWindow,
+        // setDate or shiftWindow asks for them again, and so does picking
+        // another chip and then this group.
+      }),
+    );
+  }
+
+  /// A category walk still out belongs to the chip being left, so its reply
+  /// is dropped and the guide stops waiting on it.
+  void _cancelCategoryFetch() {
+    _categoryRequest++;
+    if (_categoryFetchInFlight) {
+      _categoryFetchInFlight = false;
+      _state = GuideState.ready;
+    }
+  }
+
+  /// A group can sit anywhere in the lineup, past the lazily-loaded prefix,
+  /// so its channels' programs are fetched on their own. A window move, a
+  /// refresh or a re-sort drops a request still out and nothing else asks for
+  /// these rows again, so they are asked for again until a pass finishes
+  /// within one program generation. Rows already loaded are skipped.
+  Future<void> _ensureChannelGroupPrograms() async {
+    final group = _channelGroup;
+    if (group == null) return;
+    while (true) {
+      final generation = _programGeneration;
+      await ensureProgramsForChannels([
+        for (final channel in filteredChannels) channel.id,
+      ]);
+      if (_disposed ||
+          generation == _programGeneration ||
+          _channelGroup != group) {
+        return;
+      }
     }
   }
 
@@ -907,6 +975,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           await _loadNextBatch();
           if (_disposed || loadGeneration != _loadGeneration) return;
         }
+        await _ensureChannelGroupPrograms();
       }
       if (_disposed || loadGeneration != _loadGeneration) return;
       _state = GuideState.ready;
@@ -959,7 +1028,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     final response = await _client.liveTvApi.getChannels(
       sortBy: 'SortName',
       sortOrder: 'Ascending',
-      fields: 'ImageTags,UserData',
+      fields: 'ImageTags,UserData,Tags',
       enableTotalRecordCount: false,
       userId: _client.userId,
     );
@@ -996,7 +1065,26 @@ class LiveTvGuideViewModel extends ChangeNotifier {
             .map((channel) => channel.withSyncedUserData())
             .toList()
           ..sort(comparatorFor(_sortBy));
+    _readChannelGroups();
     return true;
+  }
+
+  /// Rebuilds the channel groups from the lineup's tags. A selected group
+  /// that no channel is in any more falls back to All.
+  void _readChannelGroups() {
+    final ids = <String, Set<String>>{};
+    for (final channel in _channels) {
+      for (final group in channelGroupsFromTags(channel.rawData)) {
+        (ids[group] ??= <String>{}).add(channel.id);
+      }
+    }
+    _channelGroupIds = ids;
+    _channelGroups = ids.keys.toList()
+      ..sort((a, b) {
+        final byName = a.toLowerCase().compareTo(b.toLowerCase());
+        return byName != 0 ? byName : a.compareTo(b);
+      });
+    if (!ids.containsKey(_channelGroup)) _channelGroup = null;
   }
 
   void _resetPrograms() {
