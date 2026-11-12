@@ -28,7 +28,7 @@ Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers, built with 
 | Linux               | [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux\&logoColor=fff)](https://aur.archlinux.org/packages/moonfin-bin)<br>[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux\&logoColor=black)](https://github.com/Moonfin-Client/Moonfin-Core/releases) |
 | macOS               | [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store\&logoColor=white)](https://apps.apple.com/app/moonfin/id6761283970)<br>[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?logo=homebrew\&logoColor=fff)](https://formulae.brew.sh/cask/moonfin)              |
 | tvOS                | [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store\&logoColor=white)](https://apps.apple.com/app/moonfin/id6761283970)                                                                                                                                                 |
-| Windows | [![Release](https://img.shields.io/github/v/release/Moonfin-Client/Moonfin-Core?label=Release&logo=github&logoColor=white)](https://github.com/Moonfin-Client/Moonfin-Core/releases)<br>[![WinGet](https://img.shields.io/winget/v/Moonfin.Moonfin?label=WinGet&logo=windows&logoColor=white)](https://winstall.app/apps/Moonfin.Moonfin)<br>or `winget install Moonfin.Moonfin` |                                                                                                     |
+| Windows | [![Microsoft Store](https://img.shields.io/badge/-grey?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMyAyMyI%2BPHBhdGggZmlsbD0iI2YyNTAyMiIgZD0iTTEgMWgxMHYxMEgxeiIvPjxwYXRoIGZpbGw9IiM3ZmJhMDAiIGQ9Ik0xMiAxaDEwdjEwSDEyeiIvPjxwYXRoIGZpbGw9IiMwMGE0ZWYiIGQ9Ik0xIDEyaDEwdjEwSDF6Ii8%2BPHBhdGggZmlsbD0iI2ZmYjkwMCIgZD0iTTEyIDEyaDEwdjEwSDEyeiIvPjwvc3ZnPg%3D%3D&label=Microsoft+Store)](https://apps.microsoft.com/detail/9plb327dd51d)<br>[![Release](https://img.shields.io/github/v/release/Moonfin-Client/Moonfin-Core?label=Release&logo=github&logoColor=white)](https://github.com/Moonfin-Client/Moonfin-Core/releases)<br>[![WinGet](https://img.shields.io/winget/v/Moonfin.Moonfin?label=WinGet&logo=windows&logoColor=white)](https://winstall.app/apps/Moonfin.Moonfin)<br>or `winget install Moonfin.Moonfin` |                                                                                                     |
 
 ## Supported Servers
 
@@ -36,7 +36,7 @@ Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers, built with 
 |--------|------------------|--------|
 | Jellyfin | 10.8.0+ | Full support |
 | Emby | 4.8.0.0+ | Full support (the admin panel needs 4.9+) |
-| Plex | Plex Media Server 1.43+ | Supported, without the features that need the Moonbase plugin |
+| Plex | Plex Media Server 1.43+ | Supported. Moonbase features need the [Moonbase for Plex](https://github.com/Moonfin-Client/Plugin/blob/master/Go/README.md) companion |
 | [Silo](https://github.com/Silo-Server/silo-server) | API v2 (`api_major` 2) | Supported through Silo's native API, see below |
 
 ### Silo
@@ -45,7 +45,7 @@ Moonfin talks to Silo through its native API (`/api/v2`), not its Jellyfin-compa
 
 Sign-in with a password or a code, Home, libraries, search, favorites, watched state, ratings, collections, playback, skip intro and credits, trickplay, household profiles with their PINs, and downloads with offline progress sync all work.
 
-Requests use Silo's own requests feature in place of Seerr, and Watch Together uses Silo's Watch Party in place of SyncPlay. Settings sync, admin defaults, server messages, custom themes and MDBList and TMDB ratings need the [Moonbase plugin](https://github.com/Moonfin-Client/Plugin) installed in Silo.
+Requests use Silo's own requests feature in place of Seerr, and Watch Parties use Silo's own watch party rooms. Settings sync, admin defaults, server messages, custom themes and MDBList and TMDB ratings need the [Moonbase plugin](https://github.com/Moonfin-Client/Plugin) installed in Silo.
 
 Live TV and DVR, music, playlists, remote control of other devices, the server admin panel (Silo's is in its web app) and retro games aren't available on Silo, so Moonfin hides them while a Silo server is active. Books, audiobooks, 4K requests and Silo's server-side download subscriptions aren't supported yet.
 
@@ -77,18 +77,19 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Retro games** browsed and played in-app from a server game library, with gamepad support, save states and battery saves that sync between devices, hardware rendering on Android, and RomM-backed libraries you browse with your own RomM account. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
 - **Multi-server unified library** that merges several Jellyfin and Emby servers into one browsable, searchable UI.
 - **Library styles** for video, music, and book libraries, from the classic grid to a docked side panel, an immersive music hero, or a bookstore shelf.
-- **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork.
-- **Five detail screen styles** to pick from: Classic, Modern, Spotlight, Nouveau, and Minimalist.
+- **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork, and a Settings screen that previews each change live.
+- **Nine detail screen styles** to pick from: Classic, Modern, Spotlight, Nouveau, Minimalist, Stage, Premiere, Quick Look, and Frost.
 - **Featured media bar** with six layouts, plus optional in-bar trailer previews.
 - **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks, plus custom loading animations and a screensaver on TV.
 - **An integrated admin panel** for Jellyfin and Emby, covering settings, users, libraries, Live TV, logs, devices, and analytics, plus a messages window for notes from your server admin.
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
+- **Smart Search** that finds titles from a plain sentence, and a **Calendar** of what's coming up in Sonarr and Radarr with reminders on phones, both served by the Moonbase plugin.
 - **Live TV and DVR** with a program guide, rewind on channels that keep a rewind window, a quick channel changer on TV, automatic recovery when a channel stalls, and recording management.
 - **Client certificates (mTLS)** for servers that require one, with a page you open on your phone to send the certificate to a TV.
 - **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.
 - **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network with a D-pad and search typed from your phone. Other Jellyfin apps can steer Moonfin too.
-- **SyncPlay** for synchronized group watching.
+- **Watch Parties** with chat, reactions, invite links, and voting on what to watch. Moonbase hosts them on Jellyfin, Emby, and Plex, Silo hosts its own, and SyncPlay is still there on Jellyfin.
 - **Personal ratings** as a like, five stars, or a score out of ten, usable to sort or filter a library.
 - **Kids Mode** that strips the app back to what a child needs and locks the way out with a PIN, plus blocked ratings that apply everywhere in the app.
 - **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin, including its friends list and chat.
