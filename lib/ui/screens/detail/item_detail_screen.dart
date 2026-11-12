@@ -2638,7 +2638,7 @@ class _DetailContentState extends State<_DetailContent> {
       if (pieces.similar)
         row(
           l10n.similar,
-          state.similar,
+          pieces.similarItems,
           _sectionFocusNode('detailSeerrSimilar'),
         ),
       if (pieces.collection)

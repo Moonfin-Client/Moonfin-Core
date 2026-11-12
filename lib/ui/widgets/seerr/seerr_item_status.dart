@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -49,6 +50,7 @@ class SeerrDetailPieces {
     required this.recommendations,
     required this.similar,
     required this.collection,
+    this.similarItems = const [],
   });
 
   static const none = SeerrDetailPieces._(
@@ -67,6 +69,22 @@ class SeerrDetailPieces {
     AppLocalizations l10n,
   ) {
     if (state == null) return none;
+    final recommendations =
+        visibility.shows(DetailSection.seerrRecommendations) &&
+        state.recommendations.isNotEmpty;
+    // Seerr's similar titles often repeat its recommendations, and Silo has
+    // only the one list for both, so Similar keeps what a shown
+    // Recommendations row doesn't.
+    final shown = {
+      if (recommendations)
+        for (final item in state.recommendations) _titleKey(item),
+    };
+    final similarItems = visibility.shows(DetailSection.seerrSimilar)
+        ? [
+            for (final item in state.similar)
+              if (!shown.contains(_titleKey(item))) item,
+          ]
+        : const <SeerrDiscoverItem>[];
     return SeerrDetailPieces._(
       chips:
           visibility.shows(DetailSection.seerrGenresTags) &&
@@ -77,12 +95,9 @@ class SeerrDetailPieces {
       streaming:
           visibility.shows(DetailSection.seerrStreaming) &&
           state.streamingProviders.isNotEmpty,
-      recommendations:
-          visibility.shows(DetailSection.seerrRecommendations) &&
-          state.recommendations.isNotEmpty,
-      similar:
-          visibility.shows(DetailSection.seerrSimilar) &&
-          state.similar.isNotEmpty,
+      recommendations: recommendations,
+      similar: similarItems.isNotEmpty,
+      similarItems: similarItems,
       collection:
           visibility.shows(DetailSection.seerrCollection) &&
           state.movie?.collection != null,
@@ -95,6 +110,13 @@ class SeerrDetailPieces {
   final bool recommendations;
   final bool similar;
   final bool collection;
+
+  /// The Seerr similar titles to draw: those a shown Recommendations row
+  /// doesn't already have.
+  final List<SeerrDiscoverItem> similarItems;
+
+  static String _titleKey(SeerrDiscoverItem item) =>
+      '${item.mediaType}:${item.id}';
 
   bool get hasAny =>
       chips || stats || streaming || recommendations || similar || collection;

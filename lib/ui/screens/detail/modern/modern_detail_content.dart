@@ -2588,7 +2588,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (pieces.similar)
         _seerrTabRow(
           l10n.similar,
-          state.similar,
+          pieces.similarItems,
           firstFocusNode: _seerrSimilarFocusNode,
           onNavigateUp: above(_seerrSimilarFocusNode),
           onNavigateDown: below(_seerrSimilarFocusNode),
