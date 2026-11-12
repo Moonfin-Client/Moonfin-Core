@@ -174,6 +174,21 @@ class MoonbaseGamesApi implements GamesApi {
   }
 
   @override
+  Future<List<RecentGame>> getRecentGames(
+    String libraryId, {
+    bool released = false,
+    int limit = 16,
+  }) async {
+    final response = await _dio.get(
+      '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Recent',
+      queryParameters: {'sort': released ? 'released' : 'added', 'limit': limit},
+    );
+    return _asList(
+      response.data,
+    ).map((m) => RecentGame.fromJson(m)).toList(growable: false);
+  }
+
+  @override
   Future<GameDetail?> getGame(String libraryId, String gameId) async {
     final response = await _dio.get(
       '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Games/${Uri.encodeComponent(gameId)}',

@@ -1875,6 +1875,9 @@ class HomeViewModel extends ChangeNotifier {
 
     final views = await viewsFuture;
     final Set<String> latestExcludes = await configFuture;
+    if (GetIt.instance.isRegistered<GameLibraryRegistry>()) {
+      await GetIt.instance<GameLibraryRegistry>().refresh();
+    }
 
     final filteredViews = views.where((lib) {
       final collectionType = lib.collectionType.toLowerCase();
@@ -1886,8 +1889,19 @@ class HomeViewModel extends ChangeNotifier {
       return !latestExcludes.contains(lib.id);
     }).toList();
 
+    bool isGames(AggregatedLibrary lib) =>
+        isGameLibrary(lib.id, lib.collectionType, lib.name);
+
     Future<HomeRow?> rowFor(AggregatedLibrary lib) async {
       try {
+        if (isGames(lib)) {
+          return await _loadGameRow(
+            lib,
+            id: '${idPrefix}_${lib.id}',
+            title: mergedTitle(currentAppLocalizations(), lib.name),
+            rowType: rowType,
+          );
+        }
         return await load(lib, lib.collectionType.toLowerCase());
       } catch (_) {
         return null;
@@ -1902,8 +1916,10 @@ class HomeViewModel extends ChangeNotifier {
           .toList();
     }
 
+    // Game rows hold games, not media, so they never merge with a library's.
+    final gameRows = Future.wait(filteredViews.where(isGames).map(rowFor));
     final grouped = <String, List<AggregatedLibrary>>{};
-    for (final lib in filteredViews) {
+    for (final lib in filteredViews.where((lib) => !isGames(lib))) {
       grouped.putIfAbsent(lib.collectionType.toLowerCase(), () => []).add(lib);
     }
 
@@ -1958,7 +1974,34 @@ class HomeViewModel extends ChangeNotifier {
       );
     }
 
-    return mergedRows;
+    return [
+      ...mergedRows,
+      ...(await gameRows).whereType<HomeRow>().where((row) => row.items.isNotEmpty),
+    ];
+  }
+
+  /// A game library's recent row comes from Moonbase, since the server
+  /// itself can't see the games. A server without the route leaves it out.
+  Future<HomeRow?> _loadGameRow(
+    AggregatedLibrary lib, {
+    required String id,
+    required String title,
+    required HomeRowType rowType,
+  }) async {
+    final gamesApi = _client.gamesApi;
+    if (gamesApi == null) return null;
+    final games = await gamesApi.getRecentGames(
+      lib.id,
+      released: rowType == HomeRowType.recentlyReleased,
+    );
+    final items = [for (final game in games) gameHomeItem(game, lib.id, _serverId)];
+    return HomeRow(
+      id: id,
+      title: title,
+      items: items,
+      rowType: rowType,
+      totalCount: items.length,
+    );
   }
 
   static DateTime? _parseDate(dynamic value) => parseServerDate(value);

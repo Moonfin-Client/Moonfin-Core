@@ -6,6 +6,7 @@ import '../../../data/repositories/tmdb_repository.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/artwork_request_size.dart';
+import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/tmdb_thumb.dart';
 import '../../navigation/destinations.dart';
@@ -50,7 +51,8 @@ bool _isWideArtworkRow(HomeRow row) =>
     (row.rowType == HomeRowType.studios && row.id == 'studios');
 
 /// Whether [row] draws in the Modern style. Rows with wide logo artwork stay
-/// Classic whichever style is picked.
+/// Classic whichever style is picked, and so do game rows, which draw the
+/// game screens' cards.
 bool isHomeRowModern(HomeRow row, UserPreferences prefs) {
   if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
     return false;
@@ -58,7 +60,7 @@ bool isHomeRowModern(HomeRow row, UserPreferences prefs) {
   if (_isWideArtworkRow(row)) {
     return false;
   }
-  return true;
+  return !isGameHomeRow(row);
 }
 
 /// A My Media row in the Modern style whose cards stay static because Modern

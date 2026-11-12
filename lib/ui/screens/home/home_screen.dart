@@ -55,6 +55,8 @@ import '../../../util/app_exit.dart';
 import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
+import '../../widgets/game/game_poster_card.dart';
+import '../../widgets/game/retro_artwork_shape.dart';
 import '../../widgets/focus/row_glide.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/input_mode_tracker.dart';
@@ -88,6 +90,7 @@ import '../../navigation/route_lifecycle_observer.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../../util/game_library.dart';
+import '../../../util/overview_text.dart';
 import 'home_backdrop.dart';
 import 'home_row_card_image.dart';
 import 'home_row_prefetch.dart';
@@ -950,6 +953,9 @@ class _ContentRowsState extends State<_ContentRows>
   late bool _lastMedia3PreviewPreference;
   List<double> _rowTopOffsets = [];
   List<double> _rowExtents = [];
+  // The game focused in a game row, by row id, for the Modern style's
+  // description under the row.
+  final _focusedGame = ValueNotifier<(String, AggregatedItem)?>(null);
   // How far the first row reaches up over the media bar, from the top of its
   // slot to the middle of its artwork, and the part of that its title and
   // cards cover. Both are 0 when the row doesn't peek.
@@ -1413,6 +1419,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   @override
   void dispose() {
+    _focusedGame.dispose();
     _screensaver.setHomePreviewActive(false);
     HardwareKeyboard.instance.removeHandler(_handleGlobalHardwareKey);
     _rowPrefetchDebounce?.cancel();
@@ -3159,6 +3166,8 @@ class _ContentRowsState extends State<_ContentRows>
             (10 * metadataScale) +
             headroom;
       }
+    } else if (isGameHomeRow(row)) {
+      childHeight = _gameRowHeight(posterSize, prefs);
     } else if (row.rowType == HomeRowType.liveTv ||
         row.rowType == HomeRowType.watchParties ||
         row.rowType == HomeRowType.libraryTilesSmall) {
@@ -3210,7 +3219,8 @@ class _ContentRowsState extends State<_ContentRows>
     final hasSubtitle = subtitle != null &&
         (row.rowType != HomeRowType.liveTv &&
             row.rowType != HomeRowType.watchParties &&
-            row.rowType != HomeRowType.libraryTilesSmall);
+            row.rowType != HomeRowType.libraryTilesSmall &&
+            !isGameHomeRow(row));
     final headerPaddingTop = _rowHeaderPaddingTop(isRowsV2);
     final headerPaddingBottom = (row.id == 'mdblist_watching_now') ? 12.0 : (isRowsV2 ? 1.0 : 8.0);
     final titleHeight = 20.0 * metadataScale;
@@ -4152,6 +4162,11 @@ class _ContentRowsState extends State<_ContentRows>
         220 * metadataScale,
         metadataScale: metadataScale,
       );
+    } else if (isGameHomeRow(row)) {
+      return _libraryRowExtent(
+        _gameRowHeight(posterSize, prefs),
+        metadataScale: metadataScale,
+      );
     } else if (row.rowType == HomeRowType.liveTv ||
         row.rowType == HomeRowType.watchParties ||
         row.rowType == HomeRowType.libraryTilesSmall) {
@@ -4854,6 +4869,15 @@ class _ContentRowsState extends State<_ContentRows>
                         rowIndex: rowIndex,
                         rows: rows,
                       );
+                    } else if (isGameHomeRow(row)) {
+                      rowChild = _buildGamesRow(
+                        row,
+                        focusColor,
+                        cardExpansion,
+                        posterSize: posterSize,
+                        rowIndex: rowIndex,
+                        rows: rows,
+                      );
                     } else if (row.rowType == HomeRowType.liveTv) {
                       rowChild = _buildLiveTvRow(
                         row,
@@ -5102,6 +5126,162 @@ class _ContentRowsState extends State<_ContentRows>
             );
           },
         ),
+    );
+  }
+
+  /// The Modern style has no info overlay, so a game row keeps room under its
+  /// cards for the focused game's description. Touch never focuses a card.
+  bool _showsGameDescription() =>
+      _isHomeRowsStyleV2() && !PlatformDetection.useMobileUi;
+
+  static const double _kGameDescriptionLineHeight = 1.4;
+
+  TextStyle _gameDescriptionStyle() =>
+      (Theme.of(context).textTheme.bodyMedium ?? const TextStyle(fontSize: 14))
+          .copyWith(
+            color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+            height: _kGameDescriptionLineHeight,
+          );
+
+  /// Three lines of the description, then a gap before the next row.
+  double _gameDescriptionHeight() {
+    final fontSize = _gameDescriptionStyle().fontSize ?? 14;
+    final line =
+        MediaQuery.textScalerOf(context).scale(fontSize) *
+        _kGameDescriptionLineHeight;
+    return 4 + line * 3 + 24 * _desktopUiScaleFactor();
+  }
+
+  /// The cards with their titles, plus room above for a focused card to grow.
+  double _gameCardsHeight(PosterSize posterSize, bool cardExpansion) {
+    final artHeight = _squarePosterSide(posterSize);
+    return artHeight +
+        (56 * _desktopUiScaleFactor()) +
+        _focusHeadroom(artHeight, cardExpansion);
+  }
+
+  double _gameRowHeight(PosterSize posterSize, UserPreferences prefs) =>
+      _gameCardsHeight(
+        posterSize,
+        prefs.get(UserPreferences.cardFocusExpansion),
+      ) +
+      (_showsGameDescription() ? _gameDescriptionHeight() : 0);
+
+  /// A game library's recent games, each card shaped like its box art the way
+  /// the game screens draw it.
+  Widget _buildGamesRow(
+    HomeRow row,
+    Color focusColor,
+    bool cardExpansion, {
+    required PosterSize posterSize,
+    required int rowIndex,
+    required List<HomeRow> rows,
+  }) {
+    final metadataScale = _desktopUiScaleFactor();
+    final artHeight = _squarePosterSide(posterSize);
+    final headroom = _focusHeadroom(artHeight, cardExpansion);
+    final cardWidth = artHeight / RetroArtworkShape.portraitHeightRatio;
+    final cells = [
+      for (final item in row.items)
+        RetroArtworkShape.cellFor(gameItemBoxartAspect(item)),
+    ];
+    final gamesApi = GetIt.instance<MediaServerClient>().gamesApi;
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final showDescription = _showsGameDescription();
+
+    void open(AggregatedItem item) => context.push(
+      Destinations.gameDetailOf(gameItemLibraryId(item), item.id),
+    );
+
+    final cards = LockedFocusRow<AggregatedItem>(
+      key: _rowKey(rowIndex),
+      items: row.items,
+      hubKey: _hubKeyForRow(row),
+      controller: _rowHorizontalController(rowIndex),
+      height: _gameCardsHeight(posterSize, cardExpansion),
+      itemExtent: cardWidth,
+      itemExtentOf: (index) => cardWidth * cells[index].width,
+      itemSpacing: _rowItemSpacing(cardWidth, cardExpansion),
+      clipBehavior: cardExpansion ? Clip.none : Clip.hardEdge,
+      padding: EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5 + headroom, 20, 5),
+      onIndexChanged: (_, item) {
+        _focusedGame.value = (row.id, item);
+        _onHomeRowTileFocused(item);
+      },
+      onFocusChange: (has) {
+        if (!has && _focusedGame.value?.$1 == row.id) _focusedGame.value = null;
+        _onRowFocusTracked(rowIndex, has);
+      },
+      onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+        rowIndex: rowIndex,
+        rows: rows,
+        isUp: isUp,
+      ),
+      onLeftEdge: _onRowLeftEdge,
+      onTap: (_, item) => open(item),
+      itemBuilder: (ctx, item, index, isFocused) => GamePosterCard(
+        imageUrl: gamesApi?.thumbUrl(
+          libraryId: gameItemLibraryId(item),
+          gameId: item.id,
+        ),
+        title: item.name,
+        fileName: gameItemFileName(item),
+        seed: item.id,
+        width: cardWidth * cells[index].width,
+        imageHeight: cardWidth * cells[index].height,
+        artworkSlotHeight: artHeight,
+        externalIsFocused: isFocused,
+        focusColor: focusColor,
+        cardFocusExpansion: cardExpansion,
+        suppressFocusGlow: isNeon,
+        onTap: () => open(item),
+      ),
+    );
+
+    return _buildTitledRow(
+      key: _rowContainerKey(rowIndex),
+      title: _localizedRowTitle(row, AppLocalizations.of(context)),
+      rowIndex: rowIndex,
+      hasItems: true,
+      height: _gameRowHeight(posterSize, widget.prefs),
+      child: !showDescription
+          ? cards
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                cards,
+                SizedBox(
+                  height: _gameDescriptionHeight(),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      _kHomeRowLabelInset,
+                      4,
+                      _kHomeRowTrailingInset,
+                      0,
+                    ),
+                    child: ValueListenableBuilder<(String, AggregatedItem)?>(
+                      valueListenable: _focusedGame,
+                      builder: (context, focused, _) => Container(
+                        alignment: Alignment.topLeft,
+                        constraints: BoxConstraints(
+                          maxWidth: 1200 * metadataScale,
+                        ),
+                        child: Text(
+                          focused?.$1 == row.id
+                              ? cleanOverview(
+                                  focused!.$2.overview,
+                                ).replaceAll(RegExp(r'\s+'), ' ')
+                              : '',
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: _gameDescriptionStyle(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -6774,7 +6954,8 @@ class _ContentRowsState extends State<_ContentRows>
         row.items.isNotEmpty &&
         row.rowType != HomeRowType.liveTv &&
         row.rowType != HomeRowType.watchParties &&
-        row.rowType != HomeRowType.libraryTilesSmall;
+        row.rowType != HomeRowType.libraryTilesSmall &&
+        !isGameHomeRow(row);
 
     ({String? url, double width, double aspectRatio}) imageOf(
       HomeRow row,

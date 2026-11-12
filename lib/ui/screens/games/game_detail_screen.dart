@@ -1261,7 +1261,7 @@ class _HeroTitle extends StatelessWidget {
         ),
         SizedBox(height: large ? 8 : 4),
         Text(
-          _headlineTitle(game),
+          gameHeadlineTitle(game.title, game.fileName),
           style: TextStyle(
             color: Colors.white,
             fontSize: large ? 40 : 26,
@@ -1282,16 +1282,6 @@ class _HeroTitle extends StatelessWidget {
       ],
     );
   }
-}
-
-/// The title without trailing No-Intro tags such as "(USA)" or "(Rev 1)". The region
-/// still shows in the facts below.
-String _headlineTitle(GameDetail game) {
-  final title = gameDisplayTitle(game.title, game.fileName);
-  final stripped = title
-      .replaceFirst(RegExp(r'(\s*[(\[][^()\[\]]*[)\]])+$'), '')
-      .trim();
-  return stripped.isEmpty ? title : stripped;
 }
 
 /// A one-line "year · genre · players" summary from whatever metadata is present, or null
