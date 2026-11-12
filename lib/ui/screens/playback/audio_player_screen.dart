@@ -137,7 +137,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       }),
     ]);
     unawaited(_activeMedia3Backend?.setVolume(100.0));
-    if (PlatformDetection.isDesktop) {
+    if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
       _playerVolume = _prefs
           .get(UserPreferences.playerVolume)
           .clamp(0.0, 100.0)
@@ -1692,7 +1692,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   void _applyPlayerVolume() {
-    if (!PlatformDetection.isDesktop) return;
+    if (!PlatformDetection.isDesktop && !PlatformDetection.isWeb) return;
     unawaited(_manager.backend?.setVolume(_playerVolume));
   }
 
