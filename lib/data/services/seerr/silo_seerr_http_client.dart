@@ -663,7 +663,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'cast': [
         for (final c in cast.whereType<Map>())
           {
-            'id': _nameId('${c['name']}'),
+            'id': _personId('${c['name'] ?? ''}', c['profile_path']),
             'name': '${c['name'] ?? ''}',
             'character': c['character'],
             'profilePath': c['profile_path'],
@@ -673,19 +673,132 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'crew': [
         if (director is String && director.isNotEmpty)
           {
-            'id': _nameId(director),
+            'id': _personId(director),
             'name': director,
             'job': 'Director',
             'department': 'Directing',
           },
         for (final name in creators.whereType<String>())
           {
-            'id': _nameId(name),
+            'id': _personId(name),
             'name': name,
             'job': 'Creator',
             'department': 'Writing',
           },
       ],
+    };
+  }
+
+  // People. Silo's request cast has no person ids, so a cast member is known
+  // by name. The person Silo's library has by that exact name gives the
+  // biography and the titles; anyone else shows with their name and photo.
+
+  final Map<int, ({String name, String? profilePath})> _people = {};
+  final Map<String, Future<String?>> _libraryPeople = {};
+
+  int _personId(String name, [Object? profilePath]) {
+    final id = _nameId(name);
+    _people[id] = (
+      name: name,
+      profilePath: profilePath is String
+          ? profilePath
+          : _people[id]?.profilePath,
+    );
+    return id;
+  }
+
+  Future<String?> _libraryPersonId(String name) {
+    final key = name.toLowerCase();
+    return _libraryPeople[key] ??= () async {
+      try {
+        final found = await _silo.itemsApi.getPersons(
+          searchTerm: name,
+          limit: 10,
+        );
+        final items = found['Items'] is List ? found['Items'] as List : [];
+        for (final person in items.whereType<Map>()) {
+          if ('${person['Name'] ?? ''}'.toLowerCase() == key) {
+            return person['Id'] as String?;
+          }
+        }
+        return null;
+      } catch (_) {
+        // Asked again next time rather than remembered as no one.
+        _libraryPeople.remove(key);
+        return null;
+      }
+    }();
+  }
+
+  static String? _dateOnly(Object? date) =>
+      date is String && date.length >= 10 ? date.substring(0, 10) : null;
+
+  @override
+  Future<Map<String, dynamic>> getPersonDetails(int personId) async {
+    final known = _people[personId];
+    final details = <String, dynamic>{
+      'id': personId,
+      'name': known?.name ?? '',
+      'profilePath': known?.profilePath,
+    };
+    final libraryId = known == null
+        ? null
+        : await _libraryPersonId(known.name);
+    if (libraryId == null) return details;
+    final person = await _silo.itemsApi.getItem(libraryId);
+    final places = person['ProductionLocations'];
+    return {
+      ...details,
+      'biography': person['Overview'],
+      'birthday': _dateOnly(person['PremiereDate']),
+      'deathday': _dateOnly(person['EndDate']),
+      'placeOfBirth': places is List && places.isNotEmpty ? places.first : null,
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> getPersonCombinedCredits(int personId) async {
+    final known = _people[personId];
+    final libraryId = known == null
+        ? null
+        : await _libraryPersonId(known.name);
+    if (libraryId == null) {
+      return const {'cast': <Object>[], 'crew': <Object>[]};
+    }
+    final page = await _silo.itemsApi.getItems(
+      personIds: [libraryId],
+      includeItemTypes: const ['Movie', 'Series'],
+      recursive: true,
+      limit: 100,
+    );
+    final items = page['Items'] is List ? page['Items'] as List : [];
+    return {
+      'cast': [
+        for (final item in items.whereType<Map>()) ?_libraryCredit(item),
+      ],
+      'crew': <Object>[],
+    };
+  }
+
+  /// A library title as a Seerr credit, keyed by its TMDB id so it opens the
+  /// same request page. Its poster is the library's own.
+  Map<String, dynamic>? _libraryCredit(Map item) {
+    final providers = item['ProviderIds'];
+    final tmdb = int.tryParse(
+      providers is Map ? '${providers['Tmdb'] ?? ''}' : '',
+    );
+    final id = item['Id'];
+    if (tmdb == null || id is! String) return null;
+    final series = item['Type'] == 'Series';
+    final day = _dateOnly(item['PremiereDate']);
+    final poster = _silo.imageApi.getPrimaryImageUrl(id, maxWidth: 300);
+    return {
+      'id': tmdb,
+      'mediaType': series ? 'tv' : 'movie',
+      if (series) 'name': item['Name'] else 'title': item['Name'],
+      if (series) 'firstAirDate': day else 'releaseDate': day,
+      'overview': item['Overview'],
+      if (poster.isNotEmpty) 'posterPath': poster,
     };
   }
 

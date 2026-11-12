@@ -95,7 +95,7 @@ String? spotlightLandscapeImageUrl(
 String? spotlightSeerrPosterUrl(String? posterPath) =>
     posterPath == null || posterPath.isEmpty
     ? null
-    : '$seerrPosterBase$posterPath';
+    : seerrImageUrl(seerrPosterBase, posterPath);
 
 /// A Seerr backdrop path as a TMDB URL, or null when Seerr sent none.
 String? spotlightSeerrBackdropUrl(String? backdropPath) =>

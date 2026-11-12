@@ -17327,7 +17327,7 @@ class SeerrAppearancesRow extends StatelessWidget {
             title: item.displayTitle,
             subtitle: item.character,
             imageUrl: item.posterPath != null
-                ? 'https://image.tmdb.org/t/p/w342${item.posterPath}'
+                ? seerrImageUrl(seerrPosterBase, item.posterPath!)
                 : null,
             width: cardWidth,
             aspectRatio: 2 / 3,

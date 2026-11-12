@@ -23,6 +23,7 @@ import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/offline_aware_image.dart';
+import '../../widgets/seerr/seerr_image_urls.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbProfileLarge = 'https://image.tmdb.org/t/p/w500';
@@ -455,7 +456,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
               title: item.displayTitle,
               subtitle: isCast ? item.character : item.job ?? item.department,
               imageUrl: item.posterPath != null
-                  ? '$_tmdbPosterBase${item.posterPath}'
+                  ? seerrImageUrl(_tmdbPosterBase, item.posterPath!)
                   : null,
               width: 130,
               aspectRatio: 2 / 3,

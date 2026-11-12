@@ -581,4 +581,134 @@ void main() {
       '2027-01-02..2027-01-29',
     ], reason: 'Silo answers at most 31 days at a time');
   });
+
+  group('a request title\'s cast', () {
+    Map<String, (int, Object?)> routes({List<Object> people = const []}) => {
+      ..._base(),
+      'GET /api/v2/requests/detail/series/95396': (
+        200,
+        {
+          ..._severance,
+          'cast': [
+            {'name': 'Adam Scott', 'character': 'Mark', 'profile_path': '/adam.jpg'},
+            {'name': 'Britt Lower', 'character': 'Helly', 'profile_path': '/britt.jpg'},
+          ],
+          'recommendations': [],
+        },
+      ),
+      'GET /api/v2/catalog/search/capabilities': (
+        200,
+        {'state': 'available', 'allowed': true, 'people_media_scope': false},
+      ),
+      'GET /api/v2/catalog/people': (200, {'items': people}),
+      'GET /api/v2/catalog/people/42': (
+        200,
+        {
+          'id': '42',
+          'name': 'Adam Scott',
+          'bio': 'An American actor.',
+          'birth_date': '1973-04-03',
+          'birthplace': 'Santa Cruz, California, USA',
+          'tmdb_id': '55536',
+        },
+      ),
+      'GET /api/v2/user/libraries': (
+        200,
+        {
+          'items': [
+            {'id': '1', 'name': 'Movies', 'type': 'movies', 'sort_order': 1},
+          ],
+        },
+      ),
+      'GET /api/v2/settings/values/effective': (
+        200,
+        {'revision': 1, 'items': []},
+      ),
+      'GET /api/v2/catalog': (
+        200,
+        {
+          'items': [
+            {
+              'content_id': 'series-tvdb-371980',
+              'type': 'series',
+              'title': 'Severance',
+              'tmdb_id': '95396',
+              'poster_url': '/api/v2/artwork/posters/severance.jpg',
+            },
+            {
+              'content_id': 'movie-heat',
+              'type': 'movie',
+              'title': 'Heat',
+              'tmdb_id': '949',
+            },
+            {'content_id': 'movie-x', 'type': 'movie', 'title': 'No Tmdb Id'},
+          ],
+          'page': {'has_more': false},
+        },
+      ),
+    };
+
+    Future<int> castId(SiloSeerrHttpClient client, String name) async {
+      final tv = SeerrTvDetails.fromJson(await client.getTvDetails(95396));
+      return tv.credits!.cast.singleWhere((c) => c.name == name).id;
+    }
+
+    test('someone in the library brings their biography and titles', () async {
+      final silo = _Silo(
+        routes(
+          people: [
+            {'id': '43', 'name': 'Adam Scottish'},
+            {'id': '42', 'name': 'Adam Scott'},
+          ],
+        ),
+      );
+      final client = _client(silo);
+      final id = await castId(client, 'Adam Scott');
+
+      final person = SeerrPersonDetails.fromJson(
+        await client.getPersonDetails(id),
+      );
+      expect(person.name, 'Adam Scott');
+      expect(person.profilePath, '/adam.jpg');
+      expect(person.biography, 'An American actor.');
+      expect(person.birthday, '1973-04-03');
+      expect(person.placeOfBirth, 'Santa Cruz, California, USA');
+
+      final credits = SeerrPersonCombinedCredits.fromJson(
+        await client.getPersonCombinedCredits(id),
+      );
+      // A title without a TMDB id can't open a request page, so it's left out.
+      expect(credits.cast.map((c) => (c.id, c.mediaType, c.displayTitle)), [
+        (95396, 'tv', 'Severance'),
+        (949, 'movie', 'Heat'),
+      ]);
+      // The library's own poster, and none for a title without one.
+      expect(credits.cast.first.posterPath, startsWith('https://silo.example'));
+      expect(credits.cast.last.posterPath, isNull);
+    });
+
+    test('someone the library doesn\'t have shows with name and photo', () async {
+      final client = _client(
+        _Silo(
+          routes(
+            people: [
+              {'id': '43', 'name': 'Adam Scottish'},
+            ],
+          ),
+        ),
+      );
+      final id = await castId(client, 'Britt Lower');
+
+      final person = SeerrPersonDetails.fromJson(
+        await client.getPersonDetails(id),
+      );
+      expect(person.name, 'Britt Lower');
+      expect(person.profilePath, '/britt.jpg');
+      expect(person.biography, isNull);
+      final credits = SeerrPersonCombinedCredits.fromJson(
+        await client.getPersonCombinedCredits(id),
+      );
+      expect(credits.cast, isEmpty);
+    });
+  });
 }
