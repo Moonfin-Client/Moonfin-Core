@@ -211,4 +211,38 @@ void main() {
       expect(episode.isPlayed, isTrue, reason: episode.id);
     }
   });
+
+  test('every caller waiting on a pass also waits for the one that follows '
+      'it', () async {
+    final vm = seasonPage();
+    await vm.load();
+    await pumpEventQueue();
+    userDataSync.publish('ep-3', {'IsFavorite': true});
+    final gate = itemsApi.nextReadGate = Completer<void>();
+    final earlierPass = vm.syncUserDataIfStale();
+    expect(itemsApi.nextReadGate, isNull, reason: 'the read is out');
+
+    // Two callers queue up behind the pass, after the page was invalidated.
+    var toggleDone = false;
+    var syncDone = false;
+    final toggle = vm.togglePlayed().whenComplete(() => toggleDone = true);
+    await pumpEventQueue();
+    final sync = vm.syncUserDataIfStale().whenComplete(() => syncDone = true);
+
+    final followUpGate = itemsApi.nextReadGate = Completer<void>();
+    gate.complete();
+    await earlierPass;
+    await pumpEventQueue();
+    expect(itemsApi.nextReadGate, isNull, reason: 'the follow-up read is out');
+    expect(toggleDone, isFalse);
+    expect(syncDone, isFalse);
+
+    followUpGate.complete();
+    await Future.wait([toggle, sync]);
+
+    expect(vm.item?.isPlayed, isTrue);
+    for (final episode in vm.episodes) {
+      expect(episode.isPlayed, isTrue, reason: episode.id);
+    }
+  });
 }

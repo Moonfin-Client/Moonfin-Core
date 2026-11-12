@@ -810,9 +810,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   ///
   /// A change recorded while a pass is out may postdate what that pass read,
   /// so it gets a pass of its own once the current one ends, and the returned
-  /// future waits for that one.
+  /// future waits for that one. A pass already out is waited for even when
+  /// nothing is stale, since another caller may have just started it.
   Future<void> syncUserDataIfStale() {
-    if (_isDisposed || !_userDataStale) return Future.value();
+    if (_isDisposed) return Future.value();
     final active = _userDataPass;
     if (active != null) {
       return active.then(
@@ -820,6 +821,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         onError: (Object _) => syncUserDataIfStale(),
       );
     }
+    if (!_userDataStale) return Future.value();
     return _userDataPass = _syncUserData().whenComplete(
       () => _userDataPass = null,
     );
