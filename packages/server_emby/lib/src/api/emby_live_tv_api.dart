@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
-class EmbyLiveTvApi implements LiveTvApi {
+class EmbyLiveTvApi implements LiveTvApi, ChannelGroupApi {
   final Dio _dio;
   static const _postChannelIdsThreshold = 1800;
 
   EmbyLiveTvApi(this._dio);
+
+  @override
+  Future<ChannelGroupLineup> getChannelGroups() =>
+      ChannelGroupLineup.fetch(_dio);
 
   @override
   Future<Map<String, dynamic>> getChannels({

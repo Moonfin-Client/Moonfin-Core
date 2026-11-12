@@ -97,6 +97,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   /// Holds the lineup's schedule for the header and the channel list, and
   /// refreshes it on a program boundary and once an hour.
   ChannelCarouselPrewarm? _carouselPrewarm;
+  Timer? _carouselBrowseDebounce;
   AppThemeController? _themeController;
   ScreensaverController? _screensaverController;
 
@@ -235,6 +236,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _liveRecoverySub?.cancel();
     _schedulePushDebounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    _carouselBrowseDebounce?.cancel();
     _carouselPrewarm?.dispose();
     _screensaverController?.setNativePlayerPresented(false);
     _themeController?.removeListener(_onThemeChanged);
@@ -371,13 +373,29 @@ class _AppleTvLiveTvPlayerHostScreenState
     }
   }
 
-  Future<void> _switchChannel(String channelId) async {
+  Future<void> _switchChannel(
+    String channelId, {
+    List<GuideChannel>? lineup,
+  }) async {
     if (_switching) return;
-    final index = _syncedChannels.indexWhere((c) => c.id == channelId);
-    if (index < 0 || index == _currentIndex) return;
+    final channels = lineup ?? _syncedChannels;
+    final index = channels.indexWhere((c) => c.id == channelId);
+    if (index < 0) return;
+    final alreadyPlaying = _currentChannel.id == channelId;
+    _syncedChannels = channels;
+    _currentIndex = index;
+    if (lineup != null) {
+      _logoUrlCache.clear();
+      _nowPlayingByChannel.clear();
+      _warmSchedule();
+    }
+    if (alreadyPlaying) {
+      _readSchedule();
+      _pushMetadata();
+      return;
+    }
     _switching = true;
     try {
-      _currentIndex = index;
       _readSchedule();
       _pushMetadata();
       await _playCurrentChannel();
@@ -401,6 +419,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     }
 
     String? selectedId;
+    List<GuideChannel>? lineup;
     try {
       selectedId = await Navigator.of(context).push<String>(
         MaterialPageRoute(
@@ -408,6 +427,7 @@ class _AppleTvLiveTvPlayerHostScreenState
             miniPlayerMode: true,
             currentChannel: _currentChannel,
             appleTvTextureId: _guideTexture,
+            onChannelSelected: (_, channels) => lineup = channels,
           ),
         ),
       );
@@ -418,7 +438,7 @@ class _AppleTvLiveTvPlayerHostScreenState
 
     if (!mounted || _exiting) return;
     await backend.resumePlayer();
-    if (selectedId != null) await _switchChannel(selectedId);
+    if (selectedId != null) await _switchChannel(selectedId, lineup: lineup);
   }
 
   /// The recording dialogs are the Flutter player's own, so the native player
@@ -522,7 +542,12 @@ class _AppleTvLiveTvPlayerHostScreenState
     final currentId = _currentChannel.id;
     for (final channel in _syncedChannels) {
       final program = viewModel.nowNextForChannel(channel.id).now;
-      if (program != null) _nowPlayingByChannel[channel.id] = program;
+      if (program != null) {
+        _nowPlayingByChannel[channel.id] = program;
+      } else if (viewModel.loadStateFor(channel.id) !=
+          GuideChannelLoadState.loading) {
+        _nowPlayingByChannel.remove(channel.id);
+      }
       if (channel.id == currentId) _currentProgram = program;
     }
   }
@@ -566,7 +591,8 @@ class _AppleTvLiveTvPlayerHostScreenState
           'selected': channel.id == currentId,
           ..._programPayload(
             _nowPlayingByChannel[channel.id],
-            viewModel?.loadStateFor(channel.id) == GuideChannelLoadState.loaded,
+            viewModel?.loadStateFor(channel.id) ??
+                GuideChannelLoadState.loading,
             l10n,
             now,
           ),
@@ -576,7 +602,7 @@ class _AppleTvLiveTvPlayerHostScreenState
 
   Map<String, dynamic> _programPayload(
     GuideProgram? program,
-    bool scheduleLoaded,
+    GuideChannelLoadState state,
     AppLocalizations l10n,
     DateTime now,
   ) {
@@ -593,7 +619,7 @@ class _AppleTvLiveTvPlayerHostScreenState
         'isLive': false,
         'progress': 0.0,
         'hasTimer': false,
-        'programLoading': !scheduleLoaded,
+        'programLoading': state == GuideChannelLoadState.loading,
       };
     }
     final seasonEpisode = program.seasonEpisodeLabel;
@@ -919,6 +945,22 @@ class _AppleTvLiveTvPlayerHostScreenState
         unawaited(
           _manager.changeBitrate(mbps == null || mbps < 0 ? null : mbps),
         );
+      case 'visibleChannelsChanged':
+        final ids = (action['channelIds'] as List?)
+            ?.whereType<String>()
+            .toList();
+        _carouselBrowseDebounce?.cancel();
+        if (ids != null && ids.isNotEmpty) {
+          _carouselBrowseDebounce = Timer(const Duration(milliseconds: 150), () async {
+            try {
+              await _carouselPrewarm?.ensureVisibleChannels(ids);
+            } catch (error) {
+              debugPrint(
+                'Live TV carousel listings unavailable (${error.runtimeType})',
+              );
+            }
+          });
+        }
       case 'selectChannel':
         final id = action['channelId']?.toString();
         if (id != null && id.isNotEmpty) {

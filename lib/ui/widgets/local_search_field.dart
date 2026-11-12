@@ -38,11 +38,12 @@ class LocalSearchField extends StatefulWidget {
 class _LocalSearchFieldState extends State<LocalSearchField> {
   final GlobalKey<CustomTVTextFieldState> _fallbackTvFieldKey = GlobalKey();
   late final UserPreferences _prefs = GetIt.instance<UserPreferences>();
-  late String _lastReportedText = widget.controller.text;
+  late String _lastReportedText;
 
   @override
   void initState() {
     super.initState();
+    _lastReportedText = widget.controller.text;
     widget.controller.addListener(_handleControllerChanged);
     if (PlatformDetection.isTV) {
       widget.focusNode.addListener(_handleFocusChanged);
@@ -54,6 +55,7 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_handleControllerChanged);
+      _lastReportedText = widget.controller.text;
       widget.controller.addListener(_handleControllerChanged);
     }
     if (oldWidget.focusNode != widget.focusNode && PlatformDetection.isTV) {

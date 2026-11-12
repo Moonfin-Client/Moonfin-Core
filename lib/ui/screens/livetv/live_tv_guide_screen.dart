@@ -26,6 +26,7 @@ import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/local_search_field.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
@@ -40,6 +41,7 @@ import 'epg/widgets/epg_hero_preview.dart';
 import 'epg/widgets/epg_now_next_card.dart';
 import 'epg/widgets/epg_program_cell.dart';
 import 'guide/guide_cell.dart';
+import 'guide/guide_filter_picker.dart';
 import 'guide/guide_layout_profile.dart';
 import 'guide/guide_selection.dart';
 import 'guide/guide_window.dart';
@@ -97,10 +99,9 @@ class LiveTvGuideScreen extends StatefulWidget {
   /// of [Navigator] pops.
   final bool embedded;
 
-  /// Called with the selected channel id instead of `Navigator.pop(channelId)`
-  /// when [embedded]. Required for the in-player overlay; null on the standalone
-  /// route (where the pop result is used).
-  final ValueChanged<String>? onChannelSelected;
+  /// Pass the player the channels the viewer can see, including any changes
+  /// since playback started.
+  final void Function(String, List<GuideChannel>)? onChannelSelected;
 
   /// Called when the user dismisses the embedded guide (activates the
   /// mini-player frame) instead of `Navigator.pop()`.
@@ -164,7 +165,24 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   final _guideHorizontalScrollController = ScrollController();
   final _miniPlayerFocusNode = FocusNode(debugLabel: 'GuideMiniPlayer');
   final Map<int, FocusNode> _channelFocusNodes = {};
-  final Map<int, FocusNode> _filterFocusNodes = {};
+  final Map<GuideFilter, FocusNode> _filterFocusNodes = {};
+  late LiveTvCategoryDisplay _categoryDisplay;
+  final _browseFocus = FocusNode(debugLabel: 'GuideBrowse');
+  final _channelSearchFocus = FocusNode(debugLabel: 'GuideSearch');
+  final _channelSearch = TextEditingController();
+  Timer? _channelSearchDebounce;
+  bool _pickerOpen = false;
+  GuideFilter? _pendingPickerFocus;
+  bool get _usesPicker =>
+      !widget.miniPlayerMode &&
+      _vm.supportsGroupPicker &&
+      _categoryDisplay != LiveTvCategoryDisplay.programmes;
+  bool get _sidePanel =>
+      PlatformDetection.isTV || PlatformDetection.useDesktopUi;
+  double get _panelWidth => (MediaQuery.sizeOf(context).width * 0.34)
+      .clamp(300.0, 480.0)
+      .clamp(0.0, MediaQuery.sizeOf(context).width);
+
   final Map<int, FocusNode> _windowBarFocusNodes = {};
 
   /// Where the controls row was left, so returning to it from either
@@ -238,10 +256,12 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   @override
   void initState() {
     super.initState();
+    _categoryDisplay = _prefs.get(UserPreferences.liveTvCategoryDisplay);
     _vm = LiveTvGuideViewModel(
       GetIt.instance<MediaServerClient>(),
       initialSortBy: _prefs.get(UserPreferences.liveTvChannelSortBy),
     );
+    _prefs.addListener(_onCategoryDisplayChanged);
     _vm.addListener(_onChanged);
     userDataSync.addListener(_vm.syncChannelUserData);
     widget.backController?._onBackPressed = _consumeBackIfExploring;
@@ -259,9 +279,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _guideHorizontalScrollController.addListener(_syncHorizontalFromGuide);
     _scheduleReanchor();
     _displayClockTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      if (mounted) setState(() {});
+      if (!mounted) return;
+      setState(() {});
     });
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final mediaQuery = MediaQuery.of(context);
@@ -362,6 +382,14 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   void _onChanged() {
     if (!mounted) return;
+    if (_vm.filter != GuideFilter.all &&
+        _vm.filter != GuideFilter.favorites &&
+        (!_vm.availableProgrammeCategories.contains(_vm.filter) ||
+            (_usesPicker &&
+                _categoryDisplay == LiveTvCategoryDisplay.groups))) {
+      _vm.setFilter(GuideFilter.all);
+      return;
+    }
     if (_vm.state == GuideState.ready) _vm.scheduleBoundaryRefresh();
     final channelIds = _vm.filteredChannels
         .map((channel) => channel.id)
@@ -380,6 +408,19 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       });
     }
     _scheduleInitialChannelFocus();
+    final pending = _pendingPickerFocus;
+    if (pending != null && _vm.state != GuideState.loading) {
+      _pendingPickerFocus = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_mayTakeFocus &&
+            !_pickerOpen &&
+            _browseFocus.hasFocus &&
+            _vm.filter == pending &&
+            _vm.filteredChannels.isNotEmpty) {
+          _focusChannelRow(0, animate: false);
+        }
+      });
+    }
     if (_pendingVerticalMove == null) return;
     // The target row can only be focused once the notification's rebuild has
     // mounted it, so resolve the intent after this frame.
@@ -485,7 +526,12 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// window bar.
   bool get _gridHasFocus {
     final focus = FocusManager.instance.primaryFocus;
-    if (focus == null) return false;
+    if (focus == null ||
+        !_mayTakeFocus ||
+        _browseFocus.hasFocus ||
+        _channelSearchFocus.hasFocus) {
+      return false;
+    }
     return !_filterFocusNodes.containsValue(focus) &&
         !_windowBarFocusNodes.containsValue(focus) &&
         focus != _miniPlayerFocusNode;
@@ -576,6 +622,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _scheduleInitialChannelFocus() {
     if (widget.miniPlayerMode ||
         _didRestoreInitialChannelFocus ||
+        _channelSearchFocus.hasFocus ||
         _vm.state != GuideState.ready ||
         _vm.filteredChannels.isEmpty) {
       return;
@@ -593,7 +640,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _focusChannelRow(index, animate: false);
+        if (mounted && !_channelSearchFocus.hasFocus) {
+          _focusChannelRow(index, animate: false);
+        }
       });
     });
   }
@@ -692,7 +741,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _focusFilterRail() {
     if (!_mayTakeFocus) return;
     _cancelPendingVerticalMove();
-    _filterFocusNodeFor(0).requestFocus();
+    if (_usesPicker) {
+      _browseFocus.requestFocus();
+    } else {
+      _filterFocusNodeFor(_vm.filter).requestFocus();
+    }
   }
 
   /// Moves within the controls row, refusing a move off either end.
@@ -831,6 +884,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   @override
   void dispose() {
     userDataSync.removeListener(_vm.syncChannelUserData);
+    _prefs.removeListener(_onCategoryDisplayChanged);
     widget.backController?._onBackPressed = null;
     _reanchorTimer?.cancel();
     _displayClockTimer?.cancel();
@@ -848,6 +902,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _timeHeaderHorizontalScrollController.dispose();
     _guideHorizontalScrollController.dispose();
     _miniPlayerFocusNode.dispose();
+    _browseFocus.dispose();
+    _channelSearchFocus.dispose();
+    _channelSearchDebounce?.cancel();
+    _channelSearch.dispose();
     for (final node in _channelFocusNodes.values) {
       node.dispose();
     }
@@ -949,9 +1007,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   }
 
   Widget _buildContent(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     final body = LayoutBuilder(
       builder: (context, constraints) {
-        final landscape = _isLandscapeConstraints(constraints);
+        final landscape = _isLandscapeSize(MediaQuery.sizeOf(context));
         final topInset = _contentTopInset(landscape: landscape);
         final area = guideAvailableArea(
           maxWidth: constraints.maxWidth,
@@ -965,7 +1024,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           textScaleFactor: MediaQuery.textScalerOf(context).scale(1),
         );
         _layoutProfile = profile;
-        final heroVisible = landscape && !widget.miniPlayerMode;
+        final compactSearch =
+            landscape && !_sidePanel && !widget.miniPlayerMode && keyboardOpen;
+        final heroVisible =
+            landscape && !widget.miniPlayerMode && !compactSearch;
         if (heroVisible != _heroVisible) {
           _heroVisible = heroVisible;
           // Deferred because this runs during build: gaining the hero has
@@ -992,13 +1054,25 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             right: landscape ? 24 : 8,
             bottom: 16,
           ),
-          child: landscape ? _buildLandscape() : _buildMobile(),
+          child: landscape
+              ? _buildLandscape(compactSearch: compactSearch)
+              : _buildMobile(),
         );
       },
     );
 
+    final offset = _pickerOpen && _sidePanel ? _panelWidth : 0.0;
+    final visibleGuide = ClipRect(
+      child: Transform.translate(
+        offset: Offset(
+          Directionality.of(context) == TextDirection.ltr ? offset : -offset,
+          0,
+        ),
+        child: body,
+      ),
+    );
     if (widget.embedded) {
-      return body;
+      return visibleGuide;
     }
 
     return Scaffold(
@@ -1008,7 +1082,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         top: !PlatformDetection.isAppleTV,
         right: !PlatformDetection.isAppleTV,
         bottom: !PlatformDetection.isAppleTV,
-        child: body,
+        child: visibleGuide,
       ),
     );
   }
@@ -1018,12 +1092,6 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       PlatformDetection.isTV ||
       PlatformDetection.useDesktopUi ||
       size.width >= size.height;
-
-  bool _isLandscapeConstraints(BoxConstraints constraints) =>
-      widget.miniPlayerMode ||
-      PlatformDetection.isTV ||
-      PlatformDetection.useDesktopUi ||
-      constraints.maxWidth >= constraints.maxHeight;
 
   void _scheduleGuideWindowUpdate(Duration window) {
     if (_vm.state != GuideState.ready ||
@@ -1044,15 +1112,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     });
   }
 
-  Widget _buildLandscape() {
+  Widget _buildLandscape({required bool compactSearch}) {
     return Column(
       children: [
-        _buildTopSection(),
+        _buildTopSection(showHero: !compactSearch),
         SizedBox(height: widget.miniPlayerMode ? 8 : 2),
         // The window control sits directly above the grid. The tick strip's
         // left region is only channel-column wide and 22-24 px tall, so it
         // can't hold the chevrons and the range text at the narrowest size.
-        if (!widget.miniPlayerMode) _buildGuideWindowBar(),
+        if (!widget.miniPlayerMode && !compactSearch) _buildGuideWindowBar(),
         Expanded(child: _buildBody()),
       ],
     );
@@ -1062,14 +1130,20 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     return Column(
       children: [
         _buildMobileHeader(),
-        _buildFilterRail(),
+        if (_usesPicker)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+            child: _buildBrowseControls(),
+          )
+        else
+          _buildFilterRail(),
         const SizedBox(height: 8),
         Expanded(child: _buildMobileBody()),
       ],
     );
   }
 
-  Widget _buildTopSection() {
+  Widget _buildTopSection({required bool showHero}) {
     if (widget.miniPlayerMode) {
       return ListenableBuilder(
         listenable: Listenable.merge([
@@ -1078,41 +1152,45 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           _channelRailFocused,
         ]),
         builder: (context, _) {
-          final focusedProgram = _focusedProgram.value;
-          final focusedChannel =
-              !_channelRailFocused.value && focusedProgram != null
-              ? _vm.channelForId(focusedProgram.channelId)
-              : (_focusedChannel.value ?? widget.currentChannel);
-          // On the channel column, what that channel is airing, as the full
-          // guide's hero shows.
-          return _buildProgramInfoHeader(
-            program:
-                focusedProgram ??
-                (focusedChannel == null
-                    ? null
-                    : _vm.nowNextForChannel(focusedChannel.id).now),
-            channel: focusedChannel,
-          );
+          final (:channel, :program) = _currentPreview();
+          return _buildProgramInfoHeader(program: program, channel: channel);
         },
       );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [_buildToolbar(), const SizedBox(height: 2), _buildHero()],
+      children: [
+        _buildToolbar(),
+        if (showHero) ...[const SizedBox(height: 2), _buildHero()],
+      ],
     );
   }
 
-  /// The program the hero (and its artwork lookup) is currently previewing:
-  /// the focused program cell, or — when focus is on the channel column
-  /// instead — whatever that channel is airing now.
-  GuideProgram? _currentPreviewProgram() {
-    final program = _focusedProgram.value;
-    final channel = !_channelRailFocused.value && program != null
-        ? _vm.channelForId(program.channelId)
-        : _focusedChannel.value;
-    return program ??
-        (channel == null ? null : _vm.nowNextForChannel(channel.id).now);
+  /// Look up the focused channel and program again, since the guide may
+  /// have changed without moving focus.
+  ({GuideChannel? channel, GuideProgram? program}) _currentPreview() {
+    final focused = _channelRailFocused.value ? null : _focusedProgram.value;
+    final id =
+        focused?.channelId ??
+        _focusedChannel.value?.id ??
+        (widget.miniPlayerMode ? widget.currentChannel?.id : null);
+    final channel = id == null ? null : _vm.channelForId(id);
+    if (channel == null) return (channel: null, program: null);
+
+    if (focused != null) {
+      final programs = _vm.programsForChannel(channel.id);
+      final match = programs.where((p) => p.id == focused.id).firstOrNull;
+      if (match != null) return (channel: channel, program: match);
+      final anchor = _selection?.anchorTime ?? focused.startDate;
+      final replacement = programs
+          .where(
+            (p) => !anchor.isBefore(p.startDate) && anchor.isBefore(p.endDate),
+          )
+          .firstOrNull;
+      return (channel: channel, program: replacement);
+    }
+    return (channel: channel, program: _vm.nowNextForChannel(channel.id).now);
   }
 
   /// The bulk guide fetch disables images to keep its payload small (issue
@@ -1125,7 +1203,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _scheduleArtworkLookup() {
     _artworkLookupDebounce?.cancel();
     if (!_heroVisible) return;
-    final preview = _currentPreviewProgram();
+    final preview = _currentPreview().program;
     if (preview == null ||
         preview.artworkSource != null ||
         _vm.hasArtworkResult(preview.id)) {
@@ -1137,7 +1215,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       // the whole guide anyway would cost a frame per focus move on any
       // server whose programs carry no artwork.
       if (await _vm.artworkSourceFor(preview) == null) return;
-      if (mounted && _currentPreviewProgram()?.id == programId) {
+      if (mounted && _currentPreview().program?.id == programId) {
         setState(() {});
       }
     });
@@ -1151,11 +1229,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         _channelRailFocused,
       ]),
       builder: (context, _) {
-        final program = _focusedProgram.value;
-        final channel = !_channelRailFocused.value && program != null
-            ? _vm.channelForId(program.channelId)
-            : _focusedChannel.value;
-        final preview = _currentPreviewProgram();
+        final (:channel, program: preview) = _currentPreview();
         final now = DateTime.now();
         final isLive =
             preview != null &&
@@ -1205,7 +1279,6 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ? ' (${preview!.seasonEpisodeLabel})'
             : '';
         final l10n = AppLocalizations.of(context);
-        final recordingState = _latestProgram(preview);
         final badgeLabel = preview == null
             ? null
             : preview.isPremiere
@@ -1228,8 +1301,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           badgeLabel: badgeLabel,
           synopsis: preview?.overview,
           isLive: isLive,
-          hasTimer: recordingState?.hasTimer ?? false,
-          hasSeriesTimer: recordingState?.hasSeriesTimer ?? false,
+          hasTimer: preview?.hasTimer ?? false,
+          hasSeriesTimer: preview?.hasSeriesTimer ?? false,
           apple: _apple,
           compact: true,
         );
@@ -1251,15 +1324,189 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
   }
 
+  void _onCategoryDisplayChanged() {
+    final mode = _prefs.get(UserPreferences.liveTvCategoryDisplay);
+    if (mode == _categoryDisplay) return;
+    setState(() => _categoryDisplay = mode);
+    if (!_usesPicker) _channelSearch.clear();
+    if ((_vm.selectedGroup != null && !_usesPicker) ||
+        (_usesPicker &&
+            mode == LiveTvCategoryDisplay.groups &&
+            _vm.filter != GuideFilter.all &&
+            _vm.filter != GuideFilter.favorites)) {
+      _vm.setFilter(GuideFilter.all);
+    }
+  }
+
+  Future<void> _openFilterPicker() async {
+    if (_pickerOpen || !_mayTakeFocus) return;
+    _cancelPendingVerticalMove();
+    _pendingPickerFocus = null;
+    final panel = _sidePanel;
+    final width = _panelWidth;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _pickerOpen = true);
+    final choice = await showGeneralDialog<GuideFilterChoice>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black26,
+      pageBuilder: (context, _, _) {
+        final picker = GuideFilterPicker(
+          vm: _vm,
+          includeCategories: _categoryDisplay == LiveTvCategoryDisplay.both,
+          filterLabel: (filter) => _filterLabel(filter, l10n),
+          sidePanel: panel,
+        );
+        return panel
+            ? Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: SizedBox(
+                  width: width,
+                  height: double.infinity,
+                  child: picker,
+                ),
+              )
+            : picker;
+      },
+    );
+    if (!mounted) return;
+    setState(() => _pickerOpen = false);
+    if (choice == null || !_usesPicker) return;
+    final previous = (_vm.filter, _vm.selectedGroup);
+    final (filter, group) = choice;
+    if (group != null) {
+      _vm.setGroup(group);
+    } else if (filter == GuideFilter.all ||
+        filter == GuideFilter.favorites ||
+        _vm.availableProgrammeCategories.contains(filter)) {
+      _vm.setFilter(filter);
+    }
+    if (!panel && previous != (_vm.filter, _vm.selectedGroup)) {
+      _selection = null;
+      _lastFocusedRowIndex = null;
+      _scrollToRow(0, animate: false);
+    }
+    if (panel) {
+      _selection = null;
+      _lastFocusedRowIndex = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_mayTakeFocus ||
+            _vm.filter != filter ||
+            _vm.selectedGroup != group) {
+          return;
+        }
+        if (_vm.filteredChannels.isEmpty) {
+          if (_vm.state == GuideState.loading) _pendingPickerFocus = filter;
+          _browseFocus.requestFocus();
+        } else {
+          _focusChannelRow(0, animate: false);
+        }
+      });
+    }
+  }
+
+  void _searchChannels(String value) {
+    _channelSearchDebounce?.cancel();
+    if (value.trim().isEmpty) {
+      _vm.setChannelQuery('');
+    } else {
+      _channelSearchDebounce = Timer(
+        const Duration(milliseconds: 180),
+        () => _vm.setChannelQuery(value),
+      );
+    }
+  }
+
+  Widget _buildBrowseControls() {
+    final l10n = AppLocalizations.of(context);
+    final title =
+        _vm.selectedGroup ??
+        (_vm.filter == GuideFilter.all
+            ? l10n.guideAllChannels
+            : _filterLabel(_vm.filter));
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.48),
+            child: Focus(
+              canRequestFocus: false,
+              onKeyEvent: (_, event) {
+                if (!event.isActionable) return KeyEventResult.ignored;
+                if (event.logicalKey.isRightKey) {
+                  _channelSearchFocus.requestFocus();
+                  return KeyEventResult.handled;
+                }
+                if (event.logicalKey.isDownKey && _sidePanel) {
+                  _focusWindowBarFromGenres();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: FilledButton.icon(
+                focusNode: _browseFocus,
+                onPressed: _openFilterPicker,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColorScheme.accent,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                iconAlignment: IconAlignment.end,
+                icon: const Icon(Icons.arrow_drop_down),
+                label: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: LocalSearchField(
+                  controller: _channelSearch,
+                  focusNode: _channelSearchFocus,
+                  hint: l10n.guideSearchChannels,
+                  onChanged: _searchChannels,
+                  onTvKeyEvent: (_, event) {
+                    if (!event.isActionable) return KeyEventResult.ignored;
+                    if (event.logicalKey.isLeftKey) {
+                      _browseFocus.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                    if (event.logicalKey.isDownKey) {
+                      _focusWindowBarFromGenres();
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFilterRail({
     EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(16, 6, 16, 6),
     VoidCallback? onNavigateDown,
   }) {
-    final filters = _vm.filters;
+    final filters = [
+      GuideFilter.all,
+      ..._vm.availableProgrammeCategories,
+      GuideFilter.favorites,
+    ];
     return Padding(
       padding: padding,
       child: EpgFilterRail(
-        labels: [for (final f in filters) _filterLabel(f)],
+        labels: [for (final filter in filters) _filterLabel(filter)],
         selectedIndex: filters.indexOf(_vm.filter),
         onSelect: (i) {
           _cancelPendingVerticalMove();
@@ -1270,18 +1517,17 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           _vm.setFilter(filters[i]);
         },
         apple: _apple,
-        focusNodeFor: _filterFocusNodeFor,
+        focusNodeFor: (i) => _filterFocusNodeFor(filters[i]),
         onNavigateDown: onNavigateDown ?? _focusLastChannelRow,
       ),
     );
   }
 
-  FocusNode _filterFocusNodeFor(int index) {
-    return _filterFocusNodes.putIfAbsent(
-      index,
-      () => FocusNode(debugLabel: 'GuideFilter:$index'),
-    );
-  }
+  FocusNode _filterFocusNodeFor(GuideFilter filter) =>
+      _filterFocusNodes.putIfAbsent(
+        filter,
+        () => FocusNode(debugLabel: 'GuideFilter:${filter.index}'),
+      );
 
   FocusNode _windowBarFocusNodeFor(int index) {
     return _windowBarFocusNodes.putIfAbsent(
@@ -1343,7 +1589,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     switch (_vm.state) {
       case GuideState.loading:
         return const Center(child: CircularProgressIndicator());
-      case GuideState.error:
+      case GuideState.error
+          when !_vm.listingsAccessDenied || _vm.filteredChannels.isEmpty:
         final l10n = AppLocalizations.of(context);
         return Center(
           child: Text(
@@ -1351,7 +1598,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             style: TextStyle(color: Colors.white.withAlpha(179)),
           ),
         );
-      case GuideState.ready:
+      case GuideState.ready || GuideState.error:
         final channels = _vm.filteredChannels;
         if (channels.isEmpty) {
           return Center(
@@ -1369,6 +1616,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Widget _buildNowNextList(List<GuideChannel> channels) {
     return ListView.builder(
+      key: ValueKey((_vm.filter, _vm.selectedGroup)),
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
       itemCount: channels.length,
       itemBuilder: (context, index) {
@@ -1423,25 +1671,13 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     return m == 0 ? l10n.guideHoursLeft(h) : l10n.guideHoursMinutesLeft(h, m);
   }
 
-  /// The focused program is the object focus last handed over, so a reload
-  /// after a recording change leaves its timer state stale until focus moves.
-  GuideProgram? _latestProgram(GuideProgram? program) {
-    if (program == null) return null;
-    return _vm
-            .programsForChannel(program.channelId)
-            .where((p) => p.id == program.id)
-            .firstOrNull ??
-        program;
-  }
-
   Widget _buildProgramInfoHeader({
     required GuideProgram? program,
     required GuideChannel? channel,
   }) {
     final l10n = AppLocalizations.of(context);
-    final recordingState = _latestProgram(program);
-    final hasTimer = recordingState?.hasTimer ?? false;
-    final hasSeriesTimer = recordingState?.hasSeriesTimer ?? false;
+    final hasTimer = program?.hasTimer ?? false;
+    final hasSeriesTimer = program?.hasSeriesTimer ?? false;
     final title = program?.name ?? channel?.name ?? l10n.guideTimeline;
     final episodeLine = program?.episodeLine ?? '';
     final timeRange = program == null
@@ -1617,10 +1853,12 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             const SizedBox(width: 8),
           ],
           Expanded(
-            child: _buildFilterRail(
-              padding: EdgeInsets.zero,
-              onNavigateDown: _focusWindowBarFromGenres,
-            ),
+            child: _usesPicker
+                ? _buildBrowseControls()
+                : _buildFilterRail(
+                    padding: EdgeInsets.zero,
+                    onNavigateDown: _focusWindowBarFromGenres,
+                  ),
           ),
         ],
       ),
@@ -1730,8 +1968,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
   }
 
-  String _filterLabel(GuideFilter filter) {
-    final l10n = AppLocalizations.of(context);
+  String _filterLabel(GuideFilter filter, [AppLocalizations? labels]) {
+    final l10n = labels ?? AppLocalizations.of(context);
     return switch (filter) {
       GuideFilter.all => l10n.all,
       GuideFilter.movies => l10n.movies,
@@ -1748,7 +1986,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     switch (_vm.state) {
       case GuideState.loading:
         return const Center(child: CircularProgressIndicator());
-      case GuideState.error:
+      case GuideState.error
+          when !_vm.listingsAccessDenied || _vm.filteredChannels.isEmpty:
         final l10n = AppLocalizations.of(context);
         return Center(
           child: Text(
@@ -1756,7 +1995,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             style: TextStyle(color: Colors.white.withAlpha(179)),
           ),
         );
-      case GuideState.ready:
+      case GuideState.ready || GuideState.error:
         final channels = _vm.filteredChannels;
         if (channels.isEmpty) {
           return Center(
@@ -1923,7 +2162,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         }
         if (key.isLeftKey) {
           _onNavigationKey();
-          _focusFilterRail();
+          if (_usesPicker) {
+            unawaited(_openFilterPicker());
+          } else {
+            _focusFilterRail();
+          }
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -2501,16 +2744,14 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Future<void> _watchChannel(String channelId) async {
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channelId));
-    if (widget.embedded && widget.onChannelSelected != null) {
-      widget.onChannelSelected!(channelId);
-      return;
-    }
-    if (widget.miniPlayerMode) {
+    if (widget.embedded || widget.miniPlayerMode) {
+      widget.onChannelSelected?.call(channelId, _vm.playbackChannels);
+      if (widget.embedded) return;
       Navigator.of(context).pop(channelId);
       return;
     }
 
-    final channels = _vm.filteredChannels;
+    final channels = _vm.playbackChannels;
     final index = channels.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
     _vm.resetWindowOnExit(windowStart: guideLeftEdge(DateTime.now()));

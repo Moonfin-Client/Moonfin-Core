@@ -1,3 +1,89 @@
+import 'package:dio/dio.dart';
+
+/// Read channel groups from Moonbase when available; other servers use the regular guide.
+abstract interface class ChannelGroupApi {
+  Future<ChannelGroupLineup> getChannelGroups();
+}
+
+class ChannelGroupLineup {
+  final Map<String, Set<String>> groupsByChannelId;
+
+  /// Channels this viewer can access, or null if Moonbase doesn't provide them.
+  final List<Map<String, dynamic>>? channels;
+  final bool partial;
+
+  /// False if the server doesn't support the channel-group endpoint.
+  final bool endpointAvailable;
+
+  /// Channel IDs the tuner couldn't match in a partial response.
+  final Set<String>? unresolvedChannelIds;
+
+  /// Null means the plugin couldn't check. An empty set means it found no categories.
+  final Set<String>? programmeCategories;
+
+  const ChannelGroupLineup(
+    this.groupsByChannelId, {
+    this.channels,
+    this.partial = false,
+    this.endpointAvailable = true,
+    this.unresolvedChannelIds,
+    this.programmeCategories,
+  });
+
+  static Future<ChannelGroupLineup> fetch(Dio dio) async {
+    try {
+      final response = await dio.get(
+        '/Moonfin/LiveTv/ChannelGroups',
+        options: Options(receiveTimeout: const Duration(seconds: 6)),
+      );
+      final data = response.data;
+      if (data is! Map ||
+          data['supported'] is! bool ||
+          data['channels'] is! List) {
+        throw const FormatException('Invalid channel group response');
+      }
+      final channels = <Map<String, dynamic>>[];
+      final memberships = <String, Set<String>>{};
+      Set<String> labels(List values) => {
+        for (final value in values)
+          if (value is String && value.trim().isNotEmpty) value.trim(),
+      };
+      for (final row in data['channels'] as List) {
+        if (row is! Map<String, dynamic> ||
+            row['Id'] is! String ||
+            (row['Id'] as String).isEmpty ||
+            row['Name'] is! String ||
+            row['groups'] is! List) {
+          throw const FormatException('Invalid guide channel');
+        }
+        channels.add(row);
+        final groups = labels(row['groups'] as List);
+        if (groups.isNotEmpty) memberships[row['Id'] as String] = groups;
+      }
+      final unresolved = data['unresolvedChannelIds'];
+      final categories = data['programmeCategories'];
+      return ChannelGroupLineup(
+        memberships,
+        channels: channels,
+        partial: data['partial'] == true,
+        programmeCategories:
+            categories is List && categories.every((c) => c is String)
+            ? categories.cast<String>().toSet()
+            : null,
+        unresolvedChannelIds:
+            unresolved is List && unresolved.every((id) => id is String)
+            ? unresolved.cast<String>().toSet()
+            : null,
+      );
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        return const ChannelGroupLineup({}, endpointAvailable: false);
+      }
+      rethrow;
+    }
+  }
+}
+
 abstract class LiveTvApi {
   Future<Map<String, dynamic>> getChannels({
     int? startIndex,

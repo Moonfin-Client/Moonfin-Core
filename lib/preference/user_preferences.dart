@@ -4125,6 +4125,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_always_authenticate',
     defaultValue: false,
   );
+  static final liveTvCategoryDisplay = EnumPreference(
+    key: 'live_tv_category_display',
+    defaultValue: LiveTvCategoryDisplay.both,
+    values: LiveTvCategoryDisplay.values,
+  );
   static final liveTvChannelSortBy = EnumPreference(
     key: 'live_tv_channel_sort_by',
     defaultValue: ChannelSortBy.number,

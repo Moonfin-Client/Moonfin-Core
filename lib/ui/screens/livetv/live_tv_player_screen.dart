@@ -838,7 +838,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _onChannelUserDataChanged() {
     if (!mounted) return;
     final updated = GuideChannel.withSyncedUserDataAll(_syncedChannels);
-    if (updated != null) setState(() => _syncedChannels = updated);
+    if (updated == null) return;
+    final currentId = _currentChannel.id;
+    if (_prefs.get(UserPreferences.liveTvChannelSortBy) ==
+        ChannelSortBy.favoritesFirst) {
+      updated.sort(
+        LiveTvGuideViewModel.comparatorFor(ChannelSortBy.favoritesFirst),
+      );
+    }
+    setState(() {
+      _syncedChannels = updated;
+      _currentIndex = updated.indexWhere((channel) => channel.id == currentId);
+    });
   }
 
   Future<void> _toggleChannelFavorite() async {
@@ -1346,7 +1357,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   void _warmChannelCarousel() {
-    if (!PlatformDetection.isTV || widget.channels.length < 2) return;
+    if (!PlatformDetection.isTV ||
+        (_syncedChannels.length < 2 && _carouselPrewarm == null)) {
+      return;
+    }
     final prewarm = _carouselPrewarm ??= ChannelCarouselPrewarm(_client);
     prewarm.tuned(_syncedChannels, _currentChannel.id);
   }
@@ -1406,7 +1420,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   Future<void> _onCarouselChannelSelected(String channelId) async {
-    final selectedIndex = widget.channels.indexWhere(
+    final selectedIndex = _syncedChannels.indexWhere(
       (channel) => channel.id == channelId,
     );
     if (selectedIndex < 0 || !_isCarouselOpen) return;
@@ -1416,7 +1430,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       return;
     }
 
-    final previousIndex = _currentIndex;
+    final previousId = _currentChannel.id;
     final previousProgram = _currentProgram;
     _isSwitching = true;
     try {
@@ -1434,8 +1448,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
       // Keep the carousel open while restoring the previously working stream
       // and its metadata. The overlay owns the visible centered selection.
+      final restoreIndex = _syncedChannels.indexWhere(
+        (channel) => channel.id == previousId,
+      );
+      if (restoreIndex < 0) return;
       setState(() {
-        _currentIndex = previousIndex;
+        _currentIndex = restoreIndex;
         _currentProgram = previousProgram;
         _infoVisible = false;
         _carouselSelectionRevision++;
@@ -1826,15 +1844,21 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
   }
 
-  Future<void> _onGuideChannelSelected(String channelId) async {
+  Future<void> _onGuideChannelSelected(
+    String channelId,
+    List<GuideChannel> lineup,
+  ) async {
     _closeGuideOverlay();
-    if (channelId == _currentChannel.id) return;
-    final selectedIndex = widget.channels.indexWhere(
-      (channel) => channel.id == channelId,
-    );
-    if (selectedIndex >= 0) {
-      await _switchChannel(selectedIndex);
-    }
+    if (_isSwitching) return;
+    final index = lineup.indexWhere((channel) => channel.id == channelId);
+    if (index < 0) return;
+    final alreadyPlaying = _currentChannel.id == channelId;
+    setState(() {
+      _syncedChannels = lineup;
+      _currentIndex = index;
+    });
+    _warmChannelCarousel();
+    if (!alreadyPlaying) await _switchChannel(index);
   }
 
   Future<void> _exitPlayback() async {
@@ -1973,7 +1997,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               ? 1
               : -1;
           // Follows the guide's order, like the carousel, and wraps around.
-          final next = (_currentIndex + delta) % widget.channels.length;
+          final next = (_currentIndex + delta) % _syncedChannels.length;
           if (next != _currentIndex) unawaited(_switchChannel(next));
         }
         return KeyEventResult.handled;

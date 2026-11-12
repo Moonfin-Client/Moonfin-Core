@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -34,7 +35,7 @@ class EpgFilterRail extends StatefulWidget {
 
 class _EpgFilterRailState extends State<EpgFilterRail> {
   final ScrollController _scrollController = ScrollController();
-  final Map<int, GlobalKey> _chipKeys = {};
+  final Map<FocusNode, GlobalKey> _chipKeys = {};
   final Map<FocusNode, VoidCallback> _focusListeners = {};
   bool _clippedStart = false;
   bool _clippedEnd = false;
@@ -50,10 +51,23 @@ class _EpgFilterRailState extends State<EpgFilterRail> {
   @override
   void didUpdateWidget(EpgFilterRail oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.labels.length != widget.labels.length ||
-        oldWidget.focusNodeFor != widget.focusNodeFor) {
+    if (!listEquals(oldWidget.labels, widget.labels)) {
+      final focused = FocusManager.instance.primaryFocus;
+      final hadFocus = _focusListeners.containsKey(focused);
       _detachFocusListeners();
       _attachFocusListeners();
+      _chipKeys.removeWhere((node, _) => !_focusListeners.containsKey(node));
+      if (hadFocus && !_focusListeners.containsKey(focused)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && widget.selectedIndex >= 0) {
+            widget.focusNodeFor(widget.selectedIndex).requestFocus();
+          }
+        });
+      }
+    }
+    if (widget.selectedIndex >= 0 &&
+        oldWidget.selectedIndex != widget.selectedIndex) {
+      _revealChip(widget.selectedIndex);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateClippedEdges());
   }
@@ -86,14 +100,15 @@ class _EpgFilterRailState extends State<EpgFilterRail> {
   }
 
   GlobalKey _chipKey(int index) =>
-      _chipKeys.putIfAbsent(index, () => GlobalKey());
+      _chipKeys.putIfAbsent(widget.focusNodeFor(index), () => GlobalKey());
 
   // Scroll after the frame: focus can change mid-build, and scrolling then
   // would fire during layout.
   void _revealChip(int index) {
+    final node = widget.focusNodeFor(index);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final chipContext = _chipKeys[index]?.currentContext;
+      final chipContext = _chipKeys[node]?.currentContext;
       if (chipContext == null) return;
       Scrollable.ensureVisible(
         chipContext,
