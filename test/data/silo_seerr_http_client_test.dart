@@ -689,6 +689,27 @@ void main() {
       expect(credits.cast.map((c) => c.mediaInfo?.status), [5, 5]);
     });
 
+    test('a person whose id is also a library\'s brings the person', () async {
+      final silo = _Silo({
+        ...routes(
+          people: [
+            {'id': '1', 'name': 'Adam Scott'},
+          ],
+        ),
+        'GET /api/v2/catalog/people/1': (
+          200,
+          {'id': '1', 'name': 'Adam Scott', 'bio': 'An American actor.'},
+        ),
+      });
+      final client = _client(silo);
+      final id = await castId(client, 'Adam Scott');
+
+      final person = SeerrPersonDetails.fromJson(
+        await client.getPersonDetails(id),
+      );
+      expect(person.biography, 'An American actor.');
+    });
+
     test('someone the library doesn\'t have shows with name and photo', () async {
       final client = _client(
         _Silo(

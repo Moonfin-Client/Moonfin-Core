@@ -749,7 +749,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     if (libraryId == null) return details;
     final Map<String, dynamic> person;
     try {
-      person = await _silo.itemsApi.getItem(libraryId);
+      person = await _silo.itemsApi.getPerson(libraryId);
     } catch (_) {
       return details;
     }
