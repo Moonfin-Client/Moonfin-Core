@@ -2447,15 +2447,17 @@ class HomeViewModel extends ChangeNotifier {
     }();
   }
 
+  static String _lastPlayedOf(AggregatedItem item) =>
+      item.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
+
   /// Newest first by when the user last played the item.
-  static int _byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
-    final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-    final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-    return bDate.compareTo(aDate);
-  }
+  static int _byLastPlayedDate(AggregatedItem a, AggregatedItem b) =>
+      _lastPlayedOf(b).compareTo(_lastPlayedOf(a));
 
   /// [existing] with the unseen items of [incoming] appended. The first id
-  /// wins, so Continue Watching keeps an episode Next Up also offers.
+  /// wins, so Continue Watching keeps an episode Next Up also offers, unless
+  /// that copy has no last played date and a later one does. Emby's Resume
+  /// repeats Next Up episodes without one.
   ///
   /// The row is never sorted as a whole. A Next Up episode carries the last
   /// played date of its series, so it would sort in among items the viewer
@@ -2466,12 +2468,17 @@ class HomeViewModel extends ChangeNotifier {
     List<AggregatedItem> incoming,
   ) {
     final seen = {for (final item in existing) item.id};
-    final added = <AggregatedItem>[];
+    final added = <String, AggregatedItem>{};
     for (final item in incoming) {
-      if (seen.add(item.id)) added.add(item);
+      if (seen.contains(item.id)) continue;
+      final kept = added[item.id];
+      if (kept == null ||
+          (_lastPlayedOf(kept).isEmpty && _lastPlayedOf(item).isNotEmpty)) {
+        added[item.id] = item;
+      }
     }
-    added.sort(_byLastPlayedDate);
-    return [...existing, ...added];
+    final arrivals = added.values.toList()..sort(_byLastPlayedDate);
+    return [...existing, ...arrivals];
   }
 
   /// Returns null rather than throwing, so a caller merging several sources
@@ -2491,19 +2498,13 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// Merges a fresh first page of Continue Watching and Next Up into the
-  /// resume row. Resume items win the dedupe.
+  /// resume row, deduped the way [appendNewArrivals] does it.
   void _applyMergedResumeRows(HomeRow? resumeRow, HomeRow? nextUpRow) {
     if (resumeRow == null && nextUpRow == null) return;
-    final merged = <String, AggregatedItem>{};
-    for (final item in _prefs.filterContinueWatching(
-      resumeRow?.items ?? const [],
-    )) {
-      merged[item.id] = item;
-    }
-    for (final item in _prefs.filterNextUp(nextUpRow?.items ?? const [])) {
-      merged.putIfAbsent(item.id, () => item);
-    }
-    final sorted = merged.values.toList()..sort(_byLastPlayedDate);
+    final sorted = appendNewArrivals(const [], [
+      ..._prefs.filterContinueWatching(resumeRow?.items ?? const []),
+      ..._prefs.filterNextUp(nextUpRow?.items ?? const []),
+    ]);
     final existing = _rows.firstWhereOrNull((r) => r.id == 'resume');
     if (existing != null &&
         keepsPagedRow(

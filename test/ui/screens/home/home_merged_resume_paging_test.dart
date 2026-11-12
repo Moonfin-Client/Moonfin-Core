@@ -69,6 +69,20 @@ void main() {
       expect(identical(merged.single, resume), isTrue);
     });
 
+    test('an undated first copy gives way to a dated one', () {
+      final resume = item('next');
+      final nextUp = item('next', lastPlayed: '2026-09-01T00:00:00Z');
+
+      final merged = HomeViewModel.appendNewArrivals(const [], [
+        resume,
+        item('movie', lastPlayed: '2026-01-01T00:00:00Z'),
+        nextUp,
+      ]);
+
+      expect(idsOf(merged), ['next', 'movie']);
+      expect(identical(merged.first, nextUp), isTrue);
+    });
+
     test('an item the user never played goes last', () {
       final incoming = [
         item('undated'),
