@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -31,6 +33,9 @@ class _ItemsApi extends Fake implements ItemsApi {
     },
     'ep-3': {'Played': false},
   };
+
+  /// Holds back the answer to the next user data read until completed.
+  Completer<void>? nextReadGate;
 
   void markSeasonPlayed() {
     for (final id in userData.keys) {
@@ -81,11 +86,17 @@ class _ItemsApi extends Fake implements ItemsApi {
     }
     if (invocation.memberName == #getItems && named[#fields] == 'UserData') {
       final ids = named[#ids] as List<String>? ?? const [];
+      // Read when asked, answered when the gate opens.
       final items = [
         for (final id in ids)
           if (userData.containsKey(id)) {'Id': id, 'UserData': userData[id]},
       ];
-      return Future.value({'Items': items, 'TotalRecordCount': items.length});
+      final answer = {'Items': items, 'TotalRecordCount': items.length};
+      final gate = nextReadGate;
+      nextReadGate = null;
+      return gate == null
+          ? Future.value(answer)
+          : gate.future.then((_) => answer);
     }
     if (invocation.memberName == #getItems) {
       return Future.value({'Items': const [], 'TotalRecordCount': 0});
@@ -173,6 +184,31 @@ void main() {
       expect(episode.isPlayed, isFalse, reason: episode.id);
       expect(episode.playedPercentage, isNull, reason: episode.id);
       expect(episode.playbackPositionTicks, 0, reason: episode.id);
+    }
+  });
+
+  test('a read already out when the season is marked played is followed by '
+      'another', () async {
+    final vm = seasonPage();
+    await vm.load();
+    await pumpEventQueue();
+    // Something on the page changed, so a pass reads the episodes back, and
+    // its answer is slow to arrive.
+    userDataSync.publish('ep-3', {'IsFavorite': true});
+    final gate = itemsApi.nextReadGate = Completer<void>();
+    final earlierPass = vm.syncUserDataIfStale();
+    expect(itemsApi.nextReadGate, isNull, reason: 'the read is out');
+
+    final toggle = vm.togglePlayed();
+    await pumpEventQueue();
+    // The answer read before the toggle lands after it.
+    gate.complete();
+    await Future.wait([earlierPass, toggle]);
+    await pumpEventQueue();
+
+    expect(vm.item?.isPlayed, isTrue);
+    for (final episode in vm.episodes) {
+      expect(episode.isPlayed, isTrue, reason: episode.id);
     }
   });
 }
