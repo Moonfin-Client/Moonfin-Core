@@ -38,6 +38,7 @@ import '../../../util/focus/row_focus_coordinator.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/library_row.dart';
+import '../../widgets/live_tv/channel_number_chip.dart';
 import '../../widgets/media_badge.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
@@ -877,6 +878,17 @@ class _SearchScreenState extends State<SearchScreen>
     return item.subtitle;
   }
 
+  // A channel's number in the guide's own chip, under its name where a movie
+  // shows its year, so a channel found by its number shows why it is there.
+  // MediaCard draws it in place of the subtitle text, which a channel from
+  // the lineup doesn't have.
+  Widget? _channelNumberChip(AggregatedItem item) {
+    final number = Destinations.isLiveTvChannelType(item.type)
+        ? item.channelNumber
+        : null;
+    return number == null ? null : ChannelNumberChip(number);
+  }
+
   Widget _buildVoiceActivation(Color idleColor) {
     final hasFocus = _voiceFocus.hasFocus;
     final isListening = _voiceController.isListening;
@@ -1594,6 +1606,7 @@ class _SearchScreenState extends State<SearchScreen>
       posterBadgeItemId: item.type == 'Person' ? null : item.id,
       title: item.name,
       subtitle: serverOnSubtitle ? serverName : _subtitle(item),
+      subtitleWidget: _channelNumberChip(item),
       imageUrl: _imageUrl(item, maxWidth: requestWidth),
       imageOverlays: [
         if (serverName != null && !serverOnSubtitle)

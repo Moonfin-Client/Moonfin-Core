@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/live_tv/channel_number_chip.dart';
 import '../../../../widgets/offline_aware_image.dart';
 
 /// Premium mobile guide card: channel logo + number chip + name on the left,
@@ -65,7 +66,7 @@ class EpgNowNextCard extends StatelessWidget {
                   ),
                   if (channelNumber != null) ...[
                     const SizedBox(width: 8),
-                    _numberChip(channelNumber!),
+                    ChannelNumberChip(channelNumber!),
                   ],
                 ],
               ),
@@ -185,22 +186,6 @@ class EpgNowNextCard extends StatelessWidget {
   Widget _logoFallback() => ColoredBox(
         color: AppColorScheme.surface.withValues(alpha: 0.6),
         child: Icon(Icons.tv, color: AppColorScheme.onSurface.withValues(alpha: 0.4)),
-      );
-
-  Widget _numberChip(String number) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: AppColorScheme.accent,
-          borderRadius: AppRadius.circular(8),
-        ),
-        child: Text(
-          number,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF062430),
-          ),
-        ),
       );
 
   Widget _liveBadge() => Container(

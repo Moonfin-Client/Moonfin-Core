@@ -441,10 +441,7 @@ class SearchViewModel extends ChangeNotifier {
     ).then((perServer) => perServer.expand((channels) => channels).toList());
     try {
       final all = await _channelsFuture!;
-      return all
-          .where((c) => foldForSearch(c.name).contains(q))
-          .take(_resultLimit)
-          .toList();
+      return matchChannels(all, query, limit: _resultLimit);
     } catch (_) {
       // A server without Live TV shouldn't break search. Retry next query in
       // case the failure was transient.
@@ -538,4 +535,108 @@ class SearchViewModel extends ChangeNotifier {
     _searchRun++;
     super.dispose();
   }
+}
+
+/// The channels in [lineup] that [query] finds, at most [limit] of them.
+///
+/// A query that is not a channel number matches names only, in lineup order.
+/// One that is (`6`, `105`, `2.1`, `2-1`) also looks at numbers, and the
+/// channels come in this order, each listed once at its first match: the
+/// number is the query (`7` finds 7 and 007), the name contains it (in lineup
+/// order), the number starts with it (`2` finds 2.1 and 20), the number
+/// contains it (`2` finds 12). Numbers sort by the whole numbers between the
+/// dots, so 2.2 comes before 2.10, and channels on the same number keep their
+/// lineup order.
+@visibleForTesting
+List<AggregatedItem> matchChannels(
+  List<AggregatedItem> lineup,
+  String query, {
+  required int limit,
+}) {
+  final q = foldForSearch(query.trim());
+  if (q.isEmpty) return const [];
+  final wanted = _queriedChannelNumber(q);
+  if (wanted == null) {
+    return lineup
+        .where((c) => foldForSearch(c.name).contains(q))
+        .take(limit)
+        .toList();
+  }
+  final found =
+      <({_ChannelMatch match, List<int>? number, AggregatedItem channel})>[];
+  for (final channel in lineup) {
+    final number = _channelNumberSegments(channel.channelNumber);
+    final digits = number?.join('.');
+    final _ChannelMatch match;
+    if (number != null &&
+        _compareChannelNumbers(number, wanted.segments) == 0) {
+      match = _ChannelMatch.number;
+    } else if (foldForSearch(channel.name).contains(q)) {
+      match = _ChannelMatch.name;
+    } else if (digits != null && digits.startsWith(wanted.text)) {
+      match = _ChannelMatch.numberStart;
+    } else if (digits != null && digits.contains(wanted.text)) {
+      match = _ChannelMatch.numberPart;
+    } else {
+      continue;
+    }
+    found.add((match: match, number: number, channel: channel));
+  }
+  // Stable, so names keep the lineup order, and so do channels on the same
+  // number, which is server by server when several are searched.
+  mergeSort(
+    found,
+    compare: (a, b) {
+      if (a.match != b.match) return a.match.index.compareTo(b.match.index);
+      if (a.match == _ChannelMatch.name) return 0;
+      return _compareChannelNumbers(a.number!, b.number!);
+    },
+  );
+  return [for (final f in found.take(limit)) f.channel];
+}
+
+/// How a channel matched a channel-number search, best first.
+enum _ChannelMatch { number, name, numberStart, numberPart }
+
+// Digits with `.` or `-` between subchannel parts, and one trailing separator
+// allowed so `2.` still searches while `2.1` is being typed.
+final _channelNumberQuery = RegExp(r'^\d+(?:[.-]\d+)*[.-]?$');
+final _digitsOnly = RegExp(r'^\d+$');
+
+/// [query] read as a channel number: its whole numbers, and the text the
+/// lineup's numbers are searched for, as typed but with `-` taken as `.`.
+/// Null when it is not one, or when a part is too long for an int.
+({List<int> segments, String text})? _queriedChannelNumber(String query) {
+  if (!_channelNumberQuery.hasMatch(query)) return null;
+  final text = query.replaceAll('-', '.');
+  final segments = _channelNumberSegments(
+    text.endsWith('.') ? text.substring(0, text.length - 1) : text,
+  );
+  return segments == null ? null : (segments: segments, text: text);
+}
+
+// The whole numbers between the dots, the way the guide reads a channel
+// number (LiveTvGuideViewModel._numberSegments), except that `-` counts as
+// `.` and only plain digits are taken. Null for any other shape.
+List<int>? _channelNumberSegments(String? number) {
+  if (number == null) return null;
+  final segments = <int>[];
+  for (final part in number.replaceAll('-', '.').split('.')) {
+    final value = _digitsOnly.hasMatch(part) ? int.tryParse(part) : null;
+    if (value == null) return null;
+    segments.add(value);
+  }
+  return segments;
+}
+
+// Segment by segment, a missing one counting as 0, like the guide's channel
+// order: 2 < 2.1 < 2.2 < 2.10 < 20.
+int _compareChannelNumbers(List<int> a, List<int> b) {
+  final len = max(a.length, b.length);
+  for (var i = 0; i < len; i++) {
+    final va = i < a.length ? a[i] : 0;
+    final vb = i < b.length ? b[i] : 0;
+    if (va != vb) return va.compareTo(vb);
+  }
+  return 0;
 }

@@ -32,6 +32,14 @@ class AggregatedItem {
   /// Emby returns numeric ids.
   String? get channelId => rawData['ChannelId']?.toString();
 
+  /// A Live TV channel's number as the server sends it, like `105`, `2.1` or
+  /// `007`, or null when it sends none. Read through toString like
+  /// [channelId], in case a server sends it as a JSON number.
+  String? get channelNumber {
+    final number = rawData['ChannelNumber']?.toString().trim();
+    return number == null || number.isEmpty ? null : number;
+  }
+
   /// Whether this item is music/audio content (track, audiobook, or any item
   /// whose server MediaType is Audio). Used to decide when to show the music
   /// mini-player and when to keep the audio media session alive.

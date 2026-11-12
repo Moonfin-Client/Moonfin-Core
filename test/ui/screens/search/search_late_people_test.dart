@@ -22,6 +22,8 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/search/search_screen.dart';
+import 'package:moonfin/ui/widgets/live_tv/channel_number_chip.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/util/game_library.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -118,6 +120,8 @@ class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockImageApi extends Mock implements ImageApi {}
 
+class _MockLiveTvApi extends Mock implements LiveTvApi {}
+
 /// Finds a movie and a folder straight away and holds the people search until
 /// the test lets it answer.
 class _FakeItemsApi extends Fake implements ItemsApi {
@@ -135,7 +139,12 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   @override
   dynamic noSuchMethod(Invocation invocation) => Future.value(const {
     'Items': [
-      {'Id': 'm1', 'Name': 'Movie One', 'Type': 'Movie'},
+      {
+        'Id': 'm1',
+        'Name': 'Movie One',
+        'Type': 'Movie',
+        'ProductionYear': 2024,
+      },
       {'Id': 'f1', 'Name': 'Folder One', 'Type': 'Folder'},
     ],
   });
@@ -144,6 +153,7 @@ class _FakeItemsApi extends Fake implements ItemsApi {
 void main() {
   late _FakeItemsApi itemsApi;
   late _FakePluginSyncService pluginSync;
+  late _MockClient client;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
@@ -152,7 +162,7 @@ void main() {
     itemsApi = _FakeItemsApi();
     pluginSync = _FakePluginSyncService();
 
-    final client = _MockClient();
+    client = _MockClient();
     when(() => client.itemsApi).thenReturn(itemsApi);
     when(() => client.imageApi).thenReturn(_MockImageApi());
     when(() => client.gamesApi).thenReturn(null);
@@ -217,6 +227,101 @@ void main() {
     await peopleAnswer(tester);
 
     expect(find.text('Person One'), findsOneWidget);
+  });
+
+  testWidgets('a channel shows its number in the guide chip under its name', (
+    tester,
+  ) async {
+    final liveTv = _MockLiveTvApi();
+    when(
+      () => liveTv.getChannels(
+        fields: any(named: 'fields'),
+        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        userId: any(named: 'userId'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'c1', 'Name': 'Channel One', 'ChannelNumber': '1007'},
+          {'Id': 'c2', 'Name': 'One Sport'},
+        ],
+      },
+    );
+    when(() => client.liveTvApi).thenReturn(liveTv);
+
+    await searchWithPeoplePending(tester);
+
+    Finder card(String name) =>
+        find.ancestor(of: find.text(name), matching: find.byType(MediaCard));
+    final chip = find.byType(ChannelNumberChip);
+
+    // The number sits under the channel's name, at its left edge, and the
+    // name keeps the whole line. The channel without a number next to it
+    // takes the same card, its name on the same line, and no chip. Returns
+    // the channel's card and how far below its top the name starts.
+    (Rect, double) expectChannels(String what) {
+      final channel = tester.getRect(card('Channel One'));
+      final title = tester.getRect(find.text('Channel One'));
+      expect(chip, findsOneWidget, reason: what);
+      expect(tester.widget<ChannelNumberChip>(chip).number, '1007');
+      expect(find.text('1007'), findsOneWidget, reason: what);
+      final chipRect = tester.getRect(chip);
+      expect(title.left, closeTo(channel.left, 0.01), reason: what);
+      expect(title.width, closeTo(channel.width, 0.01), reason: what);
+      expect(chipRect.left, closeTo(channel.left, 0.01), reason: what);
+      expect(chipRect.top, closeTo(title.bottom + 2, 0.01), reason: what);
+      expect(chipRect.bottom, lessThanOrEqualTo(channel.bottom), reason: what);
+      final sport = tester.getRect(card('One Sport'));
+      expect(sport.width, closeTo(channel.width, 0.01), reason: what);
+      expect(sport.height, closeTo(channel.height, 0.01), reason: what);
+      expect(
+        tester.getRect(find.text('One Sport')).top,
+        closeTo(title.top, 0.01),
+        reason: what,
+      );
+      expect(
+        find.descendant(of: card('One Sport'), matching: chip),
+        findsNothing,
+        reason: what,
+      );
+      expect(tester.takeException(), isNull, reason: what);
+      return (channel, title.top - channel.top);
+    }
+
+    // A movie takes a card of the same size, its name as far down it, and
+    // its year right under the name, as on main, with no chip.
+    void expectMovie((Rect, double) channel, String what) {
+      final movie = tester.getRect(card('Movie One'));
+      final title = tester.getRect(find.text('Movie One'));
+      expect(movie.width, closeTo(channel.$1.width, 0.01), reason: what);
+      expect(movie.height, closeTo(channel.$1.height, 0.01), reason: what);
+      expect(title.top - movie.top, closeTo(channel.$2, 0.01), reason: what);
+      expect(
+        tester.getRect(find.text('2024')).top,
+        closeTo(title.bottom, 0.01),
+        reason: what,
+      );
+      expect(
+        find.descendant(of: card('Movie One'), matching: chip),
+        findsNothing,
+        reason: what,
+      );
+      expect(tester.takeException(), isNull, reason: what);
+    }
+
+    // The All tab: each in its row.
+    expectMovie(expectChannels('All tab'), 'All tab');
+
+    // The Channels and Movies tabs: the same cards in grid cells.
+    await tester.tap(find.text('Channels: 2'));
+    await tester.pumpAndSettle();
+    final inGrid = expectChannels('Channels tab');
+    await tester.tap(find.text('Movies: 1'));
+    await tester.pumpAndSettle();
+    expectMovie(inGrid, 'Movies tab');
+
+    // Lets the people search answer, so its timeout isn't left pending.
+    await peopleAnswer(tester);
   });
 
   testWidgets('people arriving late keep the picked tab selected', (
