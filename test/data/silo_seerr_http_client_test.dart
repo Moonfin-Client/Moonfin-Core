@@ -685,6 +685,8 @@ void main() {
       // The library's own poster, and none for a title without one.
       expect(credits.cast.first.posterPath, startsWith('https://silo.example'));
       expect(credits.cast.last.posterPath, isNull);
+      // They're in the library, so their cards show as available.
+      expect(credits.cast.map((c) => c.mediaInfo?.status), [5, 5]);
     });
 
     test('someone the library doesn\'t have shows with name and photo', () async {

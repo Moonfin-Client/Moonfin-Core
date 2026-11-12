@@ -707,26 +707,30 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     return id;
   }
 
-  Future<String?> _libraryPersonId(String name) {
+  /// The library person for a cast member's [personId], or null. Only a find
+  /// is remembered, so a search that was down or a person added since is
+  /// asked about again.
+  Future<String?> _libraryIdFor(int personId) {
+    final name = _people[personId]?.name ?? '';
+    if (name.isEmpty) return Future.value();
     final key = name.toLowerCase();
     return _libraryPeople[key] ??= () async {
+      String? found;
       try {
-        final found = await _silo.itemsApi.getPersons(
+        final page = await _silo.itemsApi.getPersons(
           searchTerm: name,
           limit: 10,
         );
-        final items = found['Items'] is List ? found['Items'] as List : [];
+        final items = page['Items'] is List ? page['Items'] as List : [];
         for (final person in items.whereType<Map>()) {
           if ('${person['Name'] ?? ''}'.toLowerCase() == key) {
-            return person['Id'] as String?;
+            found = person['Id'] as String?;
+            break;
           }
         }
-        return null;
-      } catch (_) {
-        // Asked again next time rather than remembered as no one.
-        _libraryPeople.remove(key);
-        return null;
-      }
+      } catch (_) {}
+      if (found == null) _libraryPeople.remove(key);
+      return found;
     }();
   }
 
@@ -741,11 +745,14 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'name': known?.name ?? '',
       'profilePath': known?.profilePath,
     };
-    final libraryId = known == null
-        ? null
-        : await _libraryPersonId(known.name);
+    final libraryId = await _libraryIdFor(personId);
     if (libraryId == null) return details;
-    final person = await _silo.itemsApi.getItem(libraryId);
+    final Map<String, dynamic> person;
+    try {
+      person = await _silo.itemsApi.getItem(libraryId);
+    } catch (_) {
+      return details;
+    }
     final places = person['ProductionLocations'];
     return {
       ...details,
@@ -758,19 +765,20 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   @override
   Future<Map<String, dynamic>> getPersonCombinedCredits(int personId) async {
-    final known = _people[personId];
-    final libraryId = known == null
-        ? null
-        : await _libraryPersonId(known.name);
-    if (libraryId == null) {
-      return const {'cast': <Object>[], 'crew': <Object>[]};
+    const none = {'cast': <Object>[], 'crew': <Object>[]};
+    final libraryId = await _libraryIdFor(personId);
+    if (libraryId == null) return none;
+    final Map<String, dynamic> page;
+    try {
+      page = await _silo.itemsApi.getItems(
+        personIds: [libraryId],
+        includeItemTypes: const ['Movie', 'Series'],
+        recursive: true,
+        limit: 100,
+      );
+    } catch (_) {
+      return none;
     }
-    final page = await _silo.itemsApi.getItems(
-      personIds: [libraryId],
-      includeItemTypes: const ['Movie', 'Series'],
-      recursive: true,
-      limit: 100,
-    );
     final items = page['Items'] is List ? page['Items'] as List : [];
     return {
       'cast': [
@@ -799,6 +807,13 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       if (series) 'firstAirDate': day else 'releaseDate': day,
       'overview': item['Overview'],
       if (poster.isNotEmpty) 'posterPath': poster,
+      'mediaInfo': {
+        'id': tmdb,
+        'tmdbId': tmdb,
+        'status': _mediaStatusOf('available', null),
+        'jellyfinMediaId': id,
+        'requests': <Object>[],
+      },
     };
   }
 
