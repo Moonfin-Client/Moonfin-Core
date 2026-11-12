@@ -48,9 +48,8 @@ class SeerrDetailPieces {
     required this.stats,
     required this.streaming,
     required this.recommendations,
-    required this.similar,
+    required this.similarItems,
     required this.collection,
-    this.similarItems = const [],
   });
 
   static const none = SeerrDetailPieces._(
@@ -58,7 +57,7 @@ class SeerrDetailPieces {
     stats: false,
     streaming: false,
     recommendations: false,
-    similar: false,
+    similarItems: [],
     collection: false,
   );
 
@@ -96,7 +95,6 @@ class SeerrDetailPieces {
           visibility.shows(DetailSection.seerrStreaming) &&
           state.streamingProviders.isNotEmpty,
       recommendations: recommendations,
-      similar: similarItems.isNotEmpty,
       similarItems: similarItems,
       collection:
           visibility.shows(DetailSection.seerrCollection) &&
@@ -108,12 +106,13 @@ class SeerrDetailPieces {
   final bool stats;
   final bool streaming;
   final bool recommendations;
-  final bool similar;
   final bool collection;
 
   /// The Seerr similar titles to draw: those a shown Recommendations row
   /// doesn't already have.
   final List<SeerrDiscoverItem> similarItems;
+
+  bool get similar => similarItems.isNotEmpty;
 
   static String _titleKey(SeerrDiscoverItem item) =>
       '${item.mediaType}:${item.id}';
