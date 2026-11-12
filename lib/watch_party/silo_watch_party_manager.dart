@@ -652,10 +652,34 @@ class SiloWatchPartyManager extends ChangeNotifier {
     if (room == null || backend == null) return;
     try {
       await backend.close(room.roomId, token ?? '');
+      _dropStoredRoom();
     } catch (e) {
       _logger.w('Watch Party: closing the room failed', error: e);
     }
     _leaveRoom(null);
+  }
+
+  /// Silo: drops what Moonbase keeps for the room (subtitles, avatars) once
+  /// it ends, so it stops counting toward the account's rooms for the day.
+  /// Moonbase lets only the host, or the account that stored it when nobody
+  /// set subtitles, do that; anyone else is refused, which is fine.
+  void _dropStoredRoom() {
+    final room = _room;
+    final client = _client;
+    if (room == null || client == null || isMoonbase) return;
+    unawaited(() async {
+      try {
+        final ep = await moonbaseEndpoint(client, _dio);
+        if (ep == null) return;
+        await _dio.delete<dynamic>(
+          '${ep.base}/Moonfin/WatchParty/${room.roomId}',
+          options: Options(headers: ep.headers),
+        );
+      } catch (e) {
+        // Not ours to end, or an older Moonbase: it expires in a day.
+        _logger.d('Watch Party: ending the stored room failed', error: e);
+      }
+    }());
   }
 
   /// Leaves without ending the room. On Silo a host's room closes on its
@@ -808,7 +832,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
       final link = mine?.json['avatar_url'];
       if (link is! String || link.isEmpty) return;
       final ep = await moonbaseEndpoint(client, _dio);
-      if (ep == null) return;
+      // A room that ended meanwhile would be stored again.
+      if (ep == null || _room?.roomId != room.roomId) return;
       await _dio.put<dynamic>(
         '${ep.base}/Moonfin/WatchParty/${room.roomId}/Avatar',
         data: {'url': link},
@@ -1503,6 +1528,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
 
   void _leaveRoom(String? reason) {
     if (_room == null && _channel == null) return;
+    if (reason == 'closed') _dropStoredRoom();
     _socketGeneration++;
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
