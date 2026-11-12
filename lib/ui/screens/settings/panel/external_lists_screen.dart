@@ -979,7 +979,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
           final user = params['username'] as String? ?? '';
           final list = params['listname'] as String? ?? '';
           if (user.isNotEmpty && list.isNotEmpty) {
-            _mdblistListNameController.text = 'https://mdblist.com/lists/$user/$list';
+            _mdblistListNameController.text = mdblistListUrl(params);
           } else {
             _mdblistListNameController.text = '';
           }
@@ -1135,31 +1135,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       params['id'] = rawId;
     } else if (_source == 'mdblist') {
       if (_type == 'list_url') {
-        // Accept https://mdblist.com/lists/{username}/{listname} with an
-        // optional trailing slash, query string, or fragment. Anchoring on the
-        // /lists/ segment keeps extra path segments from producing the wrong
-        // username and listname pair.
-        var rawUrl = _mdblistListNameController.text.trim();
-        final queryStart = rawUrl.indexOf(RegExp(r'[?#]'));
-        if (queryStart >= 0) {
-          rawUrl = rawUrl.substring(0, queryStart);
-        }
-        while (rawUrl.endsWith('/')) {
-          rawUrl = rawUrl.substring(0, rawUrl.length - 1);
-        }
-        final parts = rawUrl.split('/').where((s) => s.isNotEmpty).toList();
-        String parsedUser = '';
-        String parsedList = '';
-        final listsIndex = parts.lastIndexOf('lists');
-        if (listsIndex >= 0 && parts.length >= listsIndex + 3) {
-          parsedUser = parts[listsIndex + 1];
-          parsedList = parts[listsIndex + 2];
-        } else if (parts.length >= 2) {
-          parsedList = parts.last;
-          parsedUser = parts[parts.length - 2];
-        }
-        params['username'] = parsedUser;
-        params['listname'] = parsedList;
+        params.addAll(parseMdblistListUrl(_mdblistListNameController.text));
       } else {
         params['username'] = _mdblistUsernameController.text.trim();
         params['listname'] = _mdblistListNameController.text.trim();

@@ -552,6 +552,33 @@ void main() {
     });
   });
 
+  group('MDBList list URLs', () {
+    test('an official list opened as movies or shows keeps just that type', () {
+      expect(parseMdblistListUrl('https://mdblist.com/lists/official/movies/most-watched-week'),
+          {'username': 'official', 'listname': 'most-watched-week', 'mediatype': 'movie'});
+      expect(parseMdblistListUrl('https://mdblist.com/lists/official/shows/most-watched-week/?sort=rank#top'),
+          {'username': 'official', 'listname': 'most-watched-week', 'mediatype': 'show'});
+    });
+
+    test('other lists read the two segments after /lists/', () {
+      expect(parseMdblistListUrl('https://mdblist.com/lists/official/most-watched-week'),
+          {'username': 'official', 'listname': 'most-watched-week'});
+      expect(parseMdblistListUrl('https://mdblist.com/lists/someone/movies/'),
+          {'username': 'someone', 'listname': 'movies'});
+      expect(parseMdblistListUrl('someone/best'), {'username': 'someone', 'listname': 'best'});
+    });
+
+    test('the page URL reads back to the same row', () {
+      for (final url in [
+        'https://mdblist.com/lists/official/movies/most-watched-week',
+        'https://mdblist.com/lists/official/shows/most-watched-week',
+        'https://mdblist.com/lists/someone/best',
+      ]) {
+        expect(mdblistListUrl(parseMdblistListUrl(url)), url);
+      }
+    });
+  });
+
   group('currentAppLocale resolution', () {
     test('resolves supported locales', () {
       expect(currentAppLocale(const Locale('fr')).languageCode, 'fr');
