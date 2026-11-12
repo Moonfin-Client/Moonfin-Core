@@ -161,7 +161,9 @@ void main() {
     final guide = LiveTvGuideScreen(
       miniPlayerMode: miniPlayerMode,
       embedded: miniPlayerMode,
-      onChannelSelected: miniPlayerMode ? (onChannelSelected ?? (_) {}) : null,
+      onChannelSelected: miniPlayerMode
+          ? (id, _) => onChannelSelected?.call(id)
+          : null,
       onClose: miniPlayerMode ? () {} : null,
     );
 

@@ -194,7 +194,7 @@ void main() {
           child: LiveTvGuideScreen(
             miniPlayerMode: true,
             embedded: true,
-            onChannelSelected: onChannelSelected,
+            onChannelSelected: (id, _) => onChannelSelected(id),
             onClose: () {},
           ),
         ),

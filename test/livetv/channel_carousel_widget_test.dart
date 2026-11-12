@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_card.dart';
@@ -16,7 +17,6 @@ import 'package:server_core/server_core.dart';
 class _CarouselClient extends Mock implements MediaServerClient {}
 
 class _CarouselGuide extends LiveTvGuideViewModel {
-  final List<GuideChannel> lineup;
   final List<List<String>> requests = [];
   bool disposed = false;
   int schedules = 0;
@@ -26,22 +26,18 @@ class _CarouselGuide extends LiveTvGuideViewModel {
   bool get listening => hasListeners;
   String titleSuffix = '';
 
+
   void changeProgram() {
     titleSuffix = ' updated';
     notifyListeners();
   }
 
-  _CarouselGuide(super.client, this.lineup);
-
-  @override
-  List<GuideChannel> get filteredChannels => lineup;
+  _CarouselGuide(super.client, List<GuideChannel> lineup) {
+    usePlaybackLineup(lineup);
+  }
 
   @override
   GuideState get state => ready ? GuideState.ready : GuideState.loading;
-
-  @override
-  GuideChannel? channelForId(String channelId) =>
-      lineup.where((channel) => channel.id == channelId).firstOrNull;
 
   @override
   List<GuideProgram> unfilteredProgramsForChannel(String channelId) {
@@ -222,6 +218,7 @@ void main() {
     final vm = _CarouselGuide(client, channels);
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.buildTheme(ThemeRegistry.active),
         home: Scaffold(
           body: ChannelCarouselOverlay(
@@ -369,7 +366,7 @@ void main() {
     expect(vm.listening, isFalse);
   });
 
-  testWidgets('prewarm loads every carousel channel and arms its boundary', (
+  testWidgets('prewarm loads listings near the tuned channel', (
     tester,
   ) async {
     final client = _CarouselClient();
@@ -395,7 +392,12 @@ void main() {
     await tester.pump();
 
     expect(vm.requests, hasLength(1));
-    expect(vm.requests.single, channels.map((channel) => channel.id));
+    expect(vm.requests.single, [for (var i = 2; i <= 10; i++) 'ch$i']);
+    expect(vm.playbackChannels, channels);
+    await prewarm.ensureVisibleChannels(
+      carouselNeighborhood(channels, 'ch0', 5),
+    );
+    expect(vm.requests.last, containsAll(['ch0', 'ch11']));
     expect(vm.schedules, greaterThanOrEqualTo(1));
     expect(prewarm.hourlyDueAt, now.add(const Duration(seconds: 2)));
     prewarm.dispose();
@@ -492,7 +494,10 @@ void main() {
       await tester.pump();
 
       expect(vm.requests, hasLength(2));
-      expect(vm.requests.last, channels.map((channel) => channel.id));
+      expect(
+        vm.requests.last,
+        unorderedEquals(channels.map((channel) => channel.id)),
+      );
       expect(vm.refreshCalls, 0);
       prewarm.dispose();
     },

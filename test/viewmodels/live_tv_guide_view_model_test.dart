@@ -1,16 +1,20 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+
 import 'package:server_core/server_core.dart';
 
 class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockLiveTvApi extends Mock implements LiveTvApi {}
+
+class _GroupedLiveTvApi extends _MockLiveTvApi implements ChannelGroupApi {}
 
 class _MockUserLibraryApi extends Mock implements UserLibraryApi {}
 
@@ -93,16 +97,17 @@ Future<Map<String, dynamic>> _guide(
   );
 }
 
-void _stubChannels(LiveTvApi liveTv, List<Map<String, dynamic>> channels) {
-  when(
-    () => liveTv.getChannels(
-      sortBy: any(named: 'sortBy'),
-      sortOrder: any(named: 'sortOrder'),
-      fields: any(named: 'fields'),
-      enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-      userId: any(named: 'userId'),
-    ),
-  ).thenAnswer((_) async => {'Items': channels});
+Future<Map<String, dynamic>> _channelsRequest(LiveTvApi api) => api.getChannels(
+  sortBy: any(named: 'sortBy'),
+  sortOrder: any(named: 'sortOrder'),
+  fields: any(named: 'fields'),
+  enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+  userId: any(named: 'userId'),
+);
+
+void _stubChannels(LiveTvApi api, List<Map<String, dynamic>> channels) {
+  when(() => _channelsRequest(api))
+      .thenAnswer((_) async => {'Items': channels});
 }
 
 void main() {
@@ -114,6 +119,7 @@ void main() {
     client = _MockClient();
     liveTv = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTv);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userId).thenReturn('user');
     when(() => _guide(liveTv)).thenAnswer((_) async => {'Items': <dynamic>[]});
   });
@@ -137,6 +143,153 @@ void main() {
     }
   });
 
+  group('group membership on guide reload', () {
+    late _GroupedLiveTvApi api;
+    late LiveTvGuideViewModel vm;
+    setUp(() {
+      api = _GroupedLiveTvApi();
+      when(() => client.liveTvApi).thenReturn(api);
+      when(() => client.baseUrl).thenReturn('fixture');
+      when(() => _guide(api)).thenAnswer((_) async => {'Items': []});
+      vm = LiveTvGuideViewModel(client);
+      addTearDown(vm.dispose);
+    });
+    testWidgets('edits appear on the next reload and browsing does not poll', (
+      tester,
+    ) async {
+      _stubChannels(api, [_channel('one')]);
+      var name = 'Sports';
+      when(api.getChannelGroups).thenAnswer(
+        (_) async => ChannelGroupLineup({
+          'one': {name},
+        }, partial: name == 'Sports'),
+      );
+      await vm.load();
+      vm.setGroup('Sports');
+      name = 'Local sports';
+      await vm.shiftWindow(const Duration(hours: 1));
+      await tester.pump(const Duration(minutes: 10));
+      expect(vm.availableGroups, ['Sports']);
+      verify(api.getChannelGroups).called(1);
+
+      await vm.goToNow();
+      expect(vm.availableGroups, ['Local sports']);
+      expect(vm.selectedGroup, isNull);
+      verify(api.getChannelGroups).called(1);
+    });
+    test(
+      'removing the plugin restores the default categories on reload',
+      () async {
+        _stubChannels(api, [_channel('one')]);
+        when(api.getChannelGroups).thenAnswer(
+          (_) async => const ChannelGroupLineup(
+            {
+              'one': {'Local'},
+            },
+            programmeCategories: {'movies'},
+          ),
+        );
+        await vm.load();
+        vm.setGroup('Local');
+        expect(vm.availableProgrammeCategories, [GuideFilter.movies]);
+
+        when(api.getChannelGroups).thenAnswer(
+          (_) async => const ChannelGroupLineup({}, endpointAvailable: false),
+        );
+        await vm.load();
+        expect(vm.availableGroups, isEmpty);
+        expect(vm.selectedGroup, isNull);
+        expect(vm.availableProgrammeCategories, contains(GuideFilter.sports));
+        expect(vm.playbackChannels.single.id, 'one');
+      },
+    );
+    for (final removeChannel in [false, true]) {
+      test(
+        'clears the selected group when its last channel is ${removeChannel ? 'deleted' : 'ungrouped'} and another tuner is offline',
+        () async {
+          _stubChannels(api, [_channel('healthy'), _channel('offline')]);
+          when(api.getChannelGroups).thenAnswer(
+            (_) async => const ChannelGroupLineup({
+              'healthy': {'Sports'},
+              'offline': {'UK'},
+            }),
+          );
+          await vm.load();
+          vm.setGroup('Sports');
+          if (removeChannel) _stubChannels(api, [_channel('offline')]);
+          when(api.getChannelGroups).thenAnswer(
+            (_) async => const ChannelGroupLineup(
+              {},
+              partial: true,
+              unresolvedChannelIds: {'offline'},
+            ),
+          );
+          await vm.load();
+          expect(vm.availableGroups, ['UK']);
+          expect(vm.selectedGroup, isNull);
+          expect(vm.filteredChannels, isNotEmpty);
+          vm.setGroup('UK');
+          expect(vm.filteredChannels.single.id, 'offline');
+        },
+      );
+    }
+  });
+  test('channel groups page by channel and keep every programme', () async {
+    final grouped = _GroupedLiveTvApi();
+    when(() => client.liveTvApi).thenReturn(grouped);
+    when(() => client.baseUrl).thenReturn('fixture');
+    final channels = [
+      for (var i = 0; i < 200; i++) _channel('c$i', number: '$i'),
+    ];
+    _stubChannels(grouped, channels);
+    when(grouped.getChannelGroups).thenAnswer(
+      (_) async => ChannelGroupLineup({
+        for (var i = 100; i < 162; i++) 'c$i': {'US| SPORTS', 'Kids'},
+        'invisible': {'private group'},
+      }),
+    );
+    final pages = <List<String>>[];
+    when(() => _guide(grouped)).thenAnswer((inv) async {
+      final ids = _requestedIds(inv);
+      pages.add(ids);
+      return {
+        'Items': [
+          for (final id in ids) ...[
+            _program('news-$id', id),
+            _program('sport-$id', id, isSports: true),
+          ],
+        ],
+      };
+    });
+    final vm = LiveTvGuideViewModel(client);
+    addTearDown(vm.dispose);
+    await vm.load();
+    expect(vm.availableGroups, ['Kids', 'US| SPORTS']);
+    vm.setGroup('US| SPORTS');
+    await Future<void>.delayed(Duration.zero);
+    expect(
+      vm.filteredChannels.map((c) => c.id),
+      channels.skip(100).take(62).map((c) => c['Id']),
+    );
+    expect(vm.programsForChannel('c100').map((p) => p.name), [
+      'news-c100',
+      'sport-c100',
+    ]);
+    expect(vm.programsHighWater, 50);
+    await vm.loadMorePrograms();
+    expect(vm.hasMorePrograms, false);
+    expect(pages.map((p) => p.length), [50, 50, 12]);
+    expect(pages.last.first, 'c150');
+    vm.setGroup('Kids');
+    await Future<void>.delayed(Duration.zero);
+    expect(pages.length, 3);
+    verify(grouped.getChannelGroups).called(1);
+    when(grouped.getChannelGroups)
+        .thenAnswer((_) async => const ChannelGroupLineup({}));
+    await vm.load();
+    expect(vm.selectedGroup, isNull);
+    expect(vm.filteredChannels.length, 200);
+  });
   test('load() fetches only the first batch; loadMorePrograms() paginates the rest', () async {
     // 120 channels → batches of 50 (never one giant all-channels request).
     final channels = List.generate(120, (i) => _channel('c$i'));
