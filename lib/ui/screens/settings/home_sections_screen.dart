@@ -815,8 +815,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       _persistSections(pushSync: false);
     }
     _refreshPluginSections();
-    // Empty-state check is driven entirely by _refreshPluginSections;
-    // no separate call here avoids a double-spinner flash on open.
   }
 
   bool _ensureBuiltinSectionsPresent() {
@@ -905,7 +903,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       if (changed) {
         _persistSections(pushSync: false);
       }
-      await _checkEmptyStates();
+      // The empty checks send a request per row, so the rows open without
+      // waiting and the empty ones gray out as the answers come back.
+      unawaited(_checkEmptyStates());
     } finally {
       if (mounted) {
         setState(() {

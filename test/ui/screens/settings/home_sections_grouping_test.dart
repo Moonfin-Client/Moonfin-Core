@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -267,6 +269,25 @@ void main() {
     expect(enabledInPrefs('Pixar'), isFalse);
     expect(top(tester, 'Pixar'), greaterThan(top(tester, 'Disabled')));
     expect(find.byIcon(Icons.drag_handle), findsNWidgets(handles));
+  });
+
+  testWidgets('the rows open before the empty checks answer', (tester) async {
+    final items = GetIt.instance<MediaServerClient>().itemsApi;
+    when(
+      () => items.getItems(
+        parentId: any(named: 'parentId'),
+        limit: 1,
+        recursive: true,
+      ),
+    ).thenAnswer((_) => Completer<Map<String, dynamic>>().future);
+
+    await pump(tester, InterfaceLayout.phone);
+    await tester.tap(find.text('Collections').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pixar'));
+    await tester.pumpAndSettle();
+
+    expect(enabledInPrefs('Pixar'), isTrue);
   });
 
   testWidgets('on a phone a long press drags an enabled row to a new place', (
