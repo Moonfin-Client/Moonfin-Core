@@ -130,23 +130,23 @@ void main() {
     ]);
   });
 
-  test('a Plex server merges with the others', () async {
+  test('Plex and Silo servers merge with the others', () async {
     final libraries = await repository({
       'a': (ServerType.jellyfin, ['movies']),
       'p': (ServerType.plex, ['movies', 'music']),
+      's': (ServerType.silo, ['movies', 'tvshows']),
     }).getAggregatedLibraries();
 
-    expect(tiles(libraries), ['Movies [movies]', 'music (Server p)']);
-  });
-
-  test('a server whose type does not merge keeps its tiles', () async {
-    final libraries = await repository({
-      'a': (ServerType.jellyfin, ['movies']),
-      'b': (ServerType.emby, ['movies']),
-      's': (ServerType.silo, ['movies']),
-    }).getAggregatedLibraries();
-
-    expect(tiles(libraries), ['Movies [movies]', 'movies (Server s)']);
+    expect(tiles(libraries), [
+      'Movies [movies]',
+      'music (Server p)',
+      'tvshows (Server s)',
+    ]);
+    expect(libraries.first.mergedFrom.map((library) => library.serverId), [
+      'a',
+      'p',
+      's',
+    ]);
   });
 
   test('merging libraries is off by default', () {
@@ -338,26 +338,6 @@ void main() {
       ).getAggregatedLibraries();
 
       expect(tiles(libraries), ['movies (Server a)']);
-    });
-
-    test('a server whose type does not merge, when it is down, merges '
-        'nothing', () async {
-      final catalog = _FakeCatalog({
-        'a': {UnifiedLibraryKind.movies},
-      });
-      GetIt.instance.registerSingleton<UnifiedCatalogService>(catalog);
-
-      final libraries = await repository(
-        {
-          'a': (ServerType.jellyfin, ['movies']),
-          'b': (ServerType.emby, ['music']),
-          's': (ServerType.silo, ['movies']),
-        },
-        down: {'s'},
-      ).getAggregatedLibraries();
-
-      expect(tiles(libraries), ['movies (Server a)', 'music (Server b)']);
-      expect(catalog.serversQueried, isEmpty);
     });
   });
 

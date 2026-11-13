@@ -174,38 +174,10 @@ void main() {
     expect(apis['b']!.fields.single, contains('ProviderIds'));
   });
 
-  test('a Silo server\'s results stay its own', () async {
-    final sessions = [
-      ...twoServers(),
-      server('s', [
-        catalogMovie('s1', 'Altovar', tmdb: '1001'),
-      ], type: ServerType.silo),
-    ];
-
-    final results = await search(sessions, merge: true);
-
-    expect(results['Movie'], ['a:a1', 's:s1', 'a:a4', 'b:b4']);
-    expect(apis['s']!.fields.single, isNot(contains('ProviderIds')));
-  });
-
-  test('one server that merges beside a Silo one folds nothing', () async {
+  test('servers of every type fold together', () async {
     final sessions = [
       server('a', [catalogMovie('a1', 'Altovar', tmdb: '1001')]),
-      server('s', [
-        catalogMovie('s1', 'Altovar', tmdb: '1001'),
-      ], type: ServerType.silo),
-    ];
-
-    final results = await search(sessions, merge: true);
-
-    expect(results['Movie'], ['a:a1', 's:s1']);
-    expect(apis['a']!.fields.single, isNot(contains('ProviderIds')));
-  });
-
-  test('Jellyfin, Emby and Plex servers fold together', () async {
-    final sessions = [
-      server('a', [catalogMovie('a1', 'Altovar', tmdb: '1001')]),
-      for (final type in [ServerType.emby, ServerType.plex])
+      for (final type in [ServerType.emby, ServerType.plex, ServerType.silo])
         server(
           type.name,
           [catalogMovie('${type.name}1', 'Altovar', tmdb: '1001')],
@@ -554,14 +526,10 @@ void main() {
         expect(service.rowsDecoded, 4);
       });
 
-      test('but not with one beside a Silo server, where nothing can fold',
-          () async {
+      test('but not with a single server, where nothing can fold', () async {
         await seedBoth();
         sessions = [
           server('a', [catalogMovie('a2', 'Hodrimel', tmdb: '1002')]),
-          server('s', [
-            catalogMovie('s1', 'Hodrimel', tmdb: '1002'),
-          ], type: ServerType.silo),
         ];
         final service = catalog();
         final vm = viewModel(service);
@@ -570,7 +538,7 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 50));
         final found = await moviesFound(vm, 'hodrimel');
 
-        expect([for (final item in found) item.serverId], ['a', 's']);
+        expect([for (final item in found) item.serverId], ['a']);
         expect(service.rowsDecoded, 0);
       });
     });

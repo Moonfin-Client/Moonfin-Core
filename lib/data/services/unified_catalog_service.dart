@@ -591,7 +591,7 @@ class UnifiedCatalogService extends ChangeNotifier {
     super.dispose();
   }
 
-  /// The supported accounts, each on its [onlineClientOf] client. While
+  /// The signed-in accounts, each on its [onlineClientOf] client. While
   /// offline the app's own clients respond with the downloaded items only,
   /// and storing that response would delete most of the stored catalog.
   Future<List<ServerUserSession>> _resolveSessions() async => [

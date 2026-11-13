@@ -1,7 +1,6 @@
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
-import '../services/unified_catalog_query.dart';
 import '../utils/blocked_ratings.dart';
 
 class SearchRepository {
@@ -199,9 +198,7 @@ class SearchRepository {
       excludeItemTypes: excludeItemTypes,
       limit: limit ?? 24,
       recursive: true,
-      fields: withProviderIds && supportsUnifiedLibraries(_client.serverType)
-          ? _searchFieldsWithProviderIds
-          : _searchFields,
+      fields: withProviderIds ? _searchFieldsWithProviderIds : _searchFields,
       studios: studios,
     );
 

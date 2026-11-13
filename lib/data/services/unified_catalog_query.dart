@@ -39,11 +39,6 @@ enum UnifiedLibraryKind {
   }
 }
 
-bool supportsUnifiedLibraries(ServerType type) =>
-    type == ServerType.jellyfin ||
-    type == ServerType.emby ||
-    type == ServerType.plex;
-
 const unifiedServerIdKey = 'UnifiedServerId';
 
 const unifiedKindKey = 'UnifiedKind';

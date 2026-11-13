@@ -125,11 +125,11 @@ void main() {
   late List<Map<String, dynamic>> live;
   late _Catalog catalog;
 
-  ServerUserSession server(String id, {ServerType type = ServerType.jellyfin}) {
+  ServerUserSession server(String id) {
     final client = _Client();
     when(() => client.baseUrl).thenReturn('http://$id.test');
-    when(() => client.serverType).thenReturn(type);
-    return fakeSession(id, client: client, type: type);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
+    return fakeSession(id, client: client);
   }
 
   /// Adds [items] to the stored catalog without recording a full read, so a
@@ -250,10 +250,10 @@ void main() {
 
   late _Client homeClient;
 
-  HomeViewModel model({String active = 'a', bool disposes = true}) {
+  HomeViewModel model({bool disposes = true}) {
     final client = homeClient = _Client();
     when(() => client.userId).thenReturn('user');
-    when(() => client.baseUrl).thenReturn('http://$active.test');
+    when(() => client.baseUrl).thenReturn('http://a.test');
     final mediaBar = _MediaBar();
     when(() => mediaBar.load(force: any(named: 'force')))
         .thenAnswer((_) async {});
@@ -629,37 +629,6 @@ void main() {
           offset: any(named: 'offset'),
         ),
       ).called(1);
-    });
-
-    // Which servers merge is the repository's rule as well, but leaving
-    // alone the row of a server outside them is Home's.
-    test('on a Silo server beside two that merge, the row is the Silo '
-        'server\'s own', () async {
-      sessions = [
-        server('s', type: ServerType.silo),
-        server('a'),
-        server('b'),
-      ];
-      await prefs.setHomeSectionsConfig([
-        for (final cfg in HomeSectionConfig.defaults())
-          cfg.copyWith(enabled: false),
-        HomeSectionConfig.pluginDynamic(
-          serverId: 'http://s.test',
-          pluginSection: 'genre',
-          pluginAdditionalData: _genreId,
-          pluginDisplayText: 'Animation',
-          pluginSource: HomeSectionPluginSource.genres,
-        ),
-      ]);
-      final vm = model(active: 's');
-      await vm.load();
-
-      final row = vm.rows.single;
-      expect(row.items.map((item) => '${item.serverId}:${item.id}'), [
-        for (final item in live) 'http://s.test:${item['Id']}',
-      ]);
-      expect(row.items.map((item) => item.rawData), live);
-      expect(catalog.loads, 0);
     });
 
     test('offline, Home shows no row and does not load the stored catalog',

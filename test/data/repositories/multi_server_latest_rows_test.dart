@@ -274,34 +274,6 @@ void main() {
     expect(movies.items.map((item) => item.serverId), ['a']);
   });
 
-  test('a server whose type takes no part in merged libraries is left out '
-      'of the folding', () async {
-    await mergeRows(libraries: true);
-    serverTypes = {'s': ServerType.silo};
-    movieProviderIds = {
-      'a': {'Tmdb': '1003'},
-      'b': {'Tmdb': '1003'},
-      's': {'Tmdb': '1003'},
-    };
-
-    final rows = await repository(['a', 'b', 's'])
-        .getAggregatedLatestMediaRows();
-
-    final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
-    expect(movies.items.map((item) => item.id), [
-      'a-movies-new',
-      's-movies-new',
-    ]);
-    // Only the servers that fold are asked for the ids they fold on.
-    for (final (index, parentId) in requestedParentIds.indexed) {
-      expect(
-        requestedFields[index]!.contains('ProviderIds'),
-        !parentId.startsWith('s-'),
-        reason: parentId,
-      );
-    }
-  });
-
   test('two titles without provider ids that share an item id on two '
       'servers are both shown', () async {
     await mergeRows(libraries: true);

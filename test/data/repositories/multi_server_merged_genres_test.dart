@@ -125,25 +125,6 @@ void main() {
     expect(row.items.first.id, 'a-Action');
   });
 
-  test('a server whose type does not merge keeps its own genres', () async {
-    await turnOnMergedLibraries(prefs);
-
-    final row = await repository({
-      ...twoServers,
-      's': (ServerType.silo, ['Drama', 'Noir']),
-    }).getAggregatedGenres();
-
-    expect(tiles(row), [
-      'Action@a*',
-      'Comedy@a*',
-      'Comédie@b*',
-      'Drama@a*',
-      'Drama@s',
-      'Noir@s',
-      'Western@b*',
-    ]);
-  });
-
   test('pages of the row fold into the tiles already shown', () async {
     await turnOnMergedLibraries(prefs);
     final multiServer = repository(twoServers);
@@ -252,15 +233,15 @@ void main() {
       );
     });
 
-    test('with a single server whose type merges', () async {
+    test('with a single server', () async {
       await turnOnMergedLibraries(prefs);
 
-      final row = await repository({
+      final multiServer = repository({
         'a': (ServerType.jellyfin, ['Drama']),
-        's': (ServerType.silo, ['Drama']),
-      }).getAggregatedGenres();
+      });
 
-      expect(tiles(row), ['Drama@a', 'Drama@s']);
+      expect(await multiServer.mergedGenreServerIds(), isEmpty);
+      expect(tiles(await multiServer.getAggregatedGenres()), ['Drama@a']);
     });
 
     test('while browsing the downloads offline', () async {

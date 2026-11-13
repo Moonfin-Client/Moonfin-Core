@@ -653,16 +653,13 @@ class MultiServerRepository {
       GetIt.instance.isRegistered<UserPreferences>() &&
       GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
 
-  /// Returns the [sessions] whose server type takes part in merged libraries
-  /// when there are at least [minServers] of them, otherwise an empty list.
+  /// Returns [sessions] when there are at least [minServers] of them,
+  /// otherwise an empty list; every server type takes part.
   static List<ServerUserSession> sessionsIfMergeable(
     Iterable<ServerUserSession> sessions, {
     int minServers = 2,
   }) {
-    final mergeableSessions = [
-      for (final session in sessions)
-        if (supportsUnifiedLibraries(session.server.serverType)) session,
-    ];
+    final mergeableSessions = sessions.toList();
     return mergeableSessions.length < minServers
         ? const []
         : mergeableSessions;
@@ -673,7 +670,7 @@ class MultiServerRepository {
   };
 
   /// The servers whose libraries, and so genres, are merged right now; empty
-  /// with the setting off, offline, or fewer than two such servers.
+  /// with the setting off, offline, or fewer than two servers.
   Future<Set<String>> mergedGenreServerIds() async {
     if (!_effectiveMergeLibrariesByType || shouldUseOfflineCatalog()) {
       return const {};
