@@ -13887,5 +13887,44 @@
     "seerrDownloadFailed": "Falha na transferência",
     "@seerrDownloadFailed": {
         "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "adminExternalIdTypeBook": "Livro",
+    "adminImageTypeMenu": "Menu",
+    "adminGroupOverview": "Sinopse",
+    "seriesRecordingAllEpisodes": "Todos os episódios",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "homeScreenBackdropFullScreen": "Ecrã inteiro",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Ecrã inteiro",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "settingsPreviewSaved": "Guardado",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "calendarReleaseDigital": "Digital",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarSettingsView": "Visualizar",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsActions": "Ações",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Início",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }
