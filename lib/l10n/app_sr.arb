@@ -13698,5 +13698,100 @@
     "settingsAudioOutputSection": "Аудио излаз",
     "@settingsAudioOutputSection": {
         "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "playlistSortRandom": "Насумично",
+    "@playlistSortRandom": {
+        "description": "Label for sorting playlist items randomly"
+    },
+    "libraryStyleDocked": "Усидрена",
+    "@libraryStyleDocked": {
+        "description": "Library style option: a side panel on TV and desktop, a bottom bar on phones"
+    },
+    "libraryShowLabel": "Прикажи",
+    "@libraryShowLabel": {
+        "description": "Library button that opens the played status filter, followed by its current value such as All or Unwatched"
+    },
+    "adminExternalIdTypeBook": "Књига",
+    "adminImageTypeMenu": "Мени",
+    "adminGroupOverview": "Преглед",
+    "librarySortPlaylistOrder": "Редослед на листи за репродукцију",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "librarySortParentalRating": "Родитељска оцена",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortMyRating": "Моја оцена",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "seriesRecordingAllEpisodes": "Све епизоде",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "playerTransportDocked": "Усидрена",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "recordPromptTomorrow": "Сутра",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "homeScreenBackdropFullScreen": "Цео екран",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Цео екран",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "musicSortYear": "Година",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "siloTooManyAttemptsWait": "Превише покушаја. Покушајте поново за {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseDigital": "Дигитални",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "sinceYouWatchedSourceLocal": "Мунфинове препоруке",
+    "sinceYouWatchedSourceServer": "Препоруке Џелифина (Jellyfin)",
+    "sinceYouWatchedSourceOnline": "Сличност према ТМДБ-у (TMDb)",
+    "calendarSettingsView": "Погледај",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Прикажи",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsSpecials": "Специјалне епизоде",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Радње",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "syncPlayParticipantYou": "Ви",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "afterHoursStart": "Почетак",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "seerrDownloadFailed": "Преузимање није успело",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }
