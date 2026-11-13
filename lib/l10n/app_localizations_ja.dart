@@ -43,7 +43,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => '保留中';
 
   @override
   String get animeMarkerRecap => 'Recap';
@@ -166,7 +166,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'アクティブ';
 
   @override
   String get addUser => 'ユーザーの追加';
@@ -277,7 +277,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'コレクション';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -466,7 +466,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'プレミア公開';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -544,13 +544,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => '自動';
 
   @override
-  String get interfaceLayoutTv => 'TV';
+  String get interfaceLayoutTv => 'テレビ';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'デスクトップ';
 
   @override
   String get interfaceLayoutPhone => 'Phone';
@@ -585,14 +585,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get glassQualityReduced => '軽量';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'パフォーマンス';
 
   @override
   String get performanceModeSubtitle =>
       'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => '自動';
 
   @override
   String get performanceModeStandard => 'Standard';
@@ -608,7 +608,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Auto uses Impeller on boxes whose graphics run it smoothly and Skia everywhere else. Pick Skia if animations or video look wrong. Takes effect on the next launch.';
 
   @override
-  String get rendererModeAuto => 'Auto';
+  String get rendererModeAuto => '自動';
 
   @override
   String get rendererModeSkia => 'Skia';
@@ -639,7 +639,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get keyboardStyleNative => 'Native';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'クラシック';
 
   @override
   String get keyboardStyleGlass => 'Glass';
@@ -1540,7 +1540,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cast => 'キャスト';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'キャスト';
 
   @override
   String get trailer => '予告編';
@@ -2168,7 +2168,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => '削除';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2177,7 +2177,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get keyNamePageDown => 'Page Down';
 
   @override
-  String get keyNameHome => 'Home';
+  String get keyNameHome => 'ホーム';
 
   @override
   String get keyNameEnd => 'End';
@@ -2545,7 +2545,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get premiere => 'プレミア公開';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => '繰り返す';
 
   @override
   String get guideTimeline => 'ガイドのタイムライン';
@@ -2626,7 +2626,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => '全エピソード';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3005,7 +3005,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get savedMediaPlayNextUnwatched => 'Play next unwatched';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => '読む';
 
   @override
   String get savedMediaCancelDownload => 'Cancel download';
@@ -3014,7 +3014,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sortBySize => 'Size';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => '名前';
 
   @override
   String get sortByDateAdded => 'Date added';
@@ -3238,16 +3238,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loadingAnimationSize => 'Animation Size';
 
   @override
-  String get loadingAnimationSizeThumbnail => 'Thumbnail';
+  String get loadingAnimationSizeThumbnail => 'サムネイル';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => '小さい';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => '中くらい';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => '大きい';
 
   @override
   String get loadingAnimationPosition => 'Animation Position';
@@ -3280,7 +3280,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loadingAnimationPositionBottomRight => 'Bottom-Right';
 
   @override
-  String get loadingAnimationPositionBouncing => 'Bouncing';
+  String get loadingAnimationPositionBouncing => 'バウンド';
 
   @override
   String get loadingAnimationSpeed => 'Animation Speed';
@@ -3334,7 +3334,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seasonalDensityLight => 'Light';
 
   @override
-  String get seasonalDensityNormal => 'Normal';
+  String get seasonalDensityNormal => '普通';
 
   @override
   String get seasonalDensityHeavy => 'Heavy';
@@ -3361,10 +3361,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seasonalRowSubtitle => 'Seasonal';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => '国';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => '自動';
 
   @override
   String get countryUnitedStates => 'United States';
@@ -3373,7 +3373,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get countryCanada => 'Canada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => '他の';
 
   @override
   String get seasonalRowHolidays => 'Holidays';
@@ -3669,14 +3669,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
 
   @override
-  String get detailMetadataStatus => 'Series Status';
+  String get detailMetadataStatus => 'シリーズステータス';
 
   @override
   String get detailMetadataStatusSubtitle =>
       'Shows whether the series is continuing, ended, or returning';
 
   @override
-  String get detailMetadataGenres => 'Genres';
+  String get detailMetadataGenres => 'ジャンル';
 
   @override
   String get detailMetadataSeerrAvailability => 'Seerr Availability';
@@ -3716,31 +3716,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailSectionGroupCollection => 'Collection pages';
 
   @override
-  String get detailSectionGroupOther => 'Other';
+  String get detailSectionGroupOther => '他の';
 
   @override
-  String get detailSectionLogo => 'Logo';
+  String get detailSectionLogo => 'ロゴ';
 
   @override
   String get detailSectionLogoSubtitle => 'Shows the title as text when off';
 
   @override
-  String get detailSectionTagline => 'Tagline';
+  String get detailSectionTagline => 'キャッチフレーズ';
 
   @override
-  String get detailSectionPoster => 'Poster';
+  String get detailSectionPoster => 'ポスター';
 
   @override
   String get detailSectionVersionBadge => 'Version badge';
 
   @override
-  String get detailSectionUpNext => 'Next Up';
+  String get detailSectionUpNext => '次は次へ';
 
   @override
-  String get detailSectionLyrics => 'Lyrics';
+  String get detailSectionLyrics => '歌詞';
 
   @override
-  String get detailSectionCast => 'Cast';
+  String get detailSectionCast => 'キャスト';
 
   @override
   String get detailSectionCastSubtitle => 'Also on collection pages';
@@ -3749,19 +3749,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailSectionCrew => 'Directors & writers';
 
   @override
-  String get detailSectionStudios => 'Studios';
+  String get detailSectionStudios => 'スタジオ';
 
   @override
-  String get detailSectionChapters => 'Chapters';
+  String get detailSectionChapters => '章';
 
   @override
-  String get detailSectionExtras => 'Extras';
+  String get detailSectionExtras => '特典';
 
   @override
-  String get detailSectionCollections => 'Collections';
+  String get detailSectionCollections => 'コレクション';
 
   @override
-  String get detailSectionMoreLikeThis => 'More Like This';
+  String get detailSectionMoreLikeThis => 'もっと似たもの';
 
   @override
   String get detailSectionMoreLikeThisSubtitle =>
@@ -3793,7 +3793,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seerrStreamingOn => 'Streaming on';
 
   @override
-  String get detailSectionSeerrRecommendations => 'Recommendations';
+  String get detailSectionSeerrRecommendations => '推奨事項';
 
   @override
   String get detailSectionSeerrSimilar => 'Similar titles';
@@ -3802,7 +3802,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailSectionSeerrCollection => 'Collection banner';
 
   @override
-  String get detailSectionSeerrPersonAppearances => 'Appearances';
+  String get detailSectionSeerrPersonAppearances => '出演作品';
 
   @override
   String get detailSectionSeerrPersonCrew => 'Crew credits';
@@ -3811,7 +3811,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailSectionPersonPagesSubtitle => 'On person pages';
 
   @override
-  String get detailSectionBiography => 'Biography';
+  String get detailSectionBiography => 'バイオグラフィー';
 
   @override
   String get detailSectionBirthplace => 'Birthplace';
@@ -3843,7 +3843,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get upcomingEpisodeToday => 'Today';
+  String get upcomingEpisodeToday => '今日';
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
@@ -3921,10 +3921,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => '上に移動';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => '下に移動';
 
   @override
   String get buttonOrderHint =>
@@ -4124,7 +4124,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA パススルー';
 
   @override
-  String get settingsAudioPassthroughMode => 'Passthrough';
+  String get settingsAudioPassthroughMode => 'パススルー';
 
   @override
   String get settingsAudioPassthroughModeDescription =>
@@ -4796,10 +4796,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'Classic is the original header with icon buttons. Modern adds labeled sort, group and filter chips under the search. Docked keeps the controls in a bar at the bottom of the screen.';
 
   @override
-  String get libraryStyleClassic => 'Classic';
+  String get libraryStyleClassic => 'クラシック';
 
   @override
-  String get libraryStyleModern => 'Modern';
+  String get libraryStyleModern => 'モダン';
 
   @override
   String get libraryStyleDocked => 'Docked';
@@ -4812,7 +4812,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Classic is the original shelves under a featured title. Reading Room leads with what you\'re reading on large cards. Bookstore browses the whole library in a grid.';
 
   @override
-  String get bookLibraryStyleClassic => 'Classic';
+  String get bookLibraryStyleClassic => 'クラシック';
 
   @override
   String get bookLibraryStyleReadingRoom => 'Reading Room';
@@ -4828,7 +4828,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
 
   @override
-  String get musicLibraryStyleClassic => 'Classic';
+  String get musicLibraryStyleClassic => 'クラシック';
 
   @override
   String get musicLibraryStyleQuickAccess => 'Quick Access';
@@ -4990,7 +4990,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mediaBarModeGallery => 'Gallery';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'バナー';
 
   @override
   String get mediaBarModeAya => 'Aya';
@@ -5211,7 +5211,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => '外部リスト';
 
   @override
   String get homeRowsStreamingServices => 'Streaming Services';
@@ -5354,7 +5354,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clockModeBouncing => 'バウンド';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => '一般設定';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5363,10 +5363,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get screensaverLibraryContent => 'Library Content';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => '背景';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => '黒';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5577,7 +5577,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get networks => 'ネットワーク';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'タグ';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5808,7 +5808,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seerrRequestedStatus => 'リクエスト済み';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'ダウンロード中';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -6592,7 +6592,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminTagMode => 'Tag mode';
 
   @override
-  String get adminEmbyConnect => 'Emby Connect';
+  String get adminEmbyConnect => 'Emby 接続';
 
   @override
   String get adminEmbyConnectUser => 'Emby Connect username or email';
@@ -6681,7 +6681,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'No channels yet. They show up here once a tuner is set up and the server has imported its channels.';
 
   @override
-  String get adminTranscodingHwaAdvanced => 'Advanced';
+  String get adminTranscodingHwaAdvanced => '詳細設定';
 
   @override
   String get adminTranscodingHwaHelp =>
@@ -7077,7 +7077,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => '書籍';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7117,7 +7117,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminImageTypeDisc => 'Disc';
 
   @override
-  String get adminImageTypeMenu => 'Menu';
+  String get adminImageTypeMenu => 'メニュー';
 
   @override
   String get adminActivityMediaDetails => 'Media details';
@@ -7133,13 +7133,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'アーティスト';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
 
   @override
-  String get adminMetadataFieldAlbum => 'Album';
+  String get adminMetadataFieldAlbum => 'アルバム';
 
   @override
   String get adminMetadataFieldSeriesName => 'Series name';
@@ -7191,7 +7191,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => '評価';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7283,7 +7283,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => '録画';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7451,7 +7451,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'なし';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7462,7 +7462,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => '失敗';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7720,7 +7720,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => '視聴';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7733,16 +7733,16 @@ class AppLocalizationsJa extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => '概要';
 
   @override
-  String get adminGroupLibrary => 'Library';
+  String get adminGroupLibrary => 'ライブラリ';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => '再生';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => '人々';
 
   @override
   String get adminGroupSystem => 'System';
@@ -9772,7 +9772,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataDisplayOrderProduction => 'Production';
 
   @override
-  String get adminMetadataDisplayOrderTv => 'TV';
+  String get adminMetadataDisplayOrderTv => 'テレビ';
 
   @override
   String get adminMetadataDisplayOrderAlternate => 'Alternate';
@@ -9854,7 +9854,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => '著者';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -9898,19 +9898,19 @@ class AppLocalizationsJa extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => '名前';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => '概要';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'ジャンル';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => '人々';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -9920,13 +9920,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataLockFieldBirthLocation => 'Birth location';
 
   @override
-  String get adminMetadataLockFieldRuntime => 'Runtime';
+  String get adminMetadataLockFieldRuntime => 'ランタイム';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'スタジオ';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'タグ';
 
   @override
   String get adminMetadataGenres => 'ジャンル';
@@ -11221,7 +11221,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trackActionPlayNext => '次にプレイ';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => '詳細を見る';
 
   @override
   String get trackActionAddToQueue => 'キューに追加';
@@ -11661,7 +11661,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'ダウンロード中';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -11901,13 +11901,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Dolby Vision プロファイル 7 拡張層ストリームを直接再生するかどうかを制御します。';
 
   @override
-  String get settingsAutoAftkrtEnabled => '自動 (AFTKRT 有効)';
+  String get settingsAutoAftkrtEnabled => '自動';
 
   @override
-  String get settingsEnabledOnThisDevice => 'このデバイスで有効になっています';
+  String get settingsEnabledOnThisDevice => '有効';
 
   @override
-  String get settingsDisabledPreferTranscode => '無効 (トランスコードを優先)';
+  String get settingsDisabledPreferTranscode => 'オフ';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12380,7 +12380,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb 類似度';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -12432,7 +12432,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'すべて選択';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12450,7 +12450,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'フィルター';
 
   @override
   String get showHeader => 'Show';
@@ -12534,10 +12534,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => '名前';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => '発売日';
 
   @override
   String get externalRowSortRating => 'Rating';
@@ -12546,7 +12546,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'シャッフル';
 
   @override
   String get audioPlaylists => 'オーディオのプレイリスト';
@@ -13271,7 +13271,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'タイプ';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13401,7 +13401,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return '他 $count 件';
   }
 
   @override
@@ -13485,10 +13485,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => '毎日';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => '毎週';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13539,7 +13539,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => '外観';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13549,7 +13549,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'タイトル';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13581,7 +13581,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => '視聴済み';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -13662,7 +13662,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'ユーザー';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -13674,7 +13674,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => '活動';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -13893,7 +13893,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => '衰退';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14073,7 +14073,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'グループ名';
 
   @override
   String chatMemberCount(int count) {
@@ -14090,7 +14090,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatOwner => 'Owner';
 
   @override
-  String get chatAdmin => 'Admin';
+  String get chatAdmin => '管理者';
 
   @override
   String get chatMakeAdmin => 'Make admin';
@@ -14108,14 +14108,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'グループを離れる';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'グループの作成';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15018,7 +15018,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playlistTypes => 'Playlist Types';
 
   @override
-  String get playlistTypeVideo => 'Video';
+  String get playlistTypeVideo => 'ビデオ';
 
   @override
   String get playlistTypeMusicVideo => 'Music Video';
@@ -15027,10 +15027,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'オーディオブック';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => '書籍';
 
   @override
   String get playlistTypePhoto => 'Photo';
@@ -15045,7 +15045,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'オーディオのプレイリスト';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15187,10 +15187,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => '予告編';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => '特典';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15226,10 +15226,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => '元の言語';
 
   @override
-  String get seerrRuntime => 'Runtime';
+  String get seerrRuntime => 'ランタイム';
 
   @override
   String get subtitleHdrSeparate => 'Separate HDR Style';
@@ -15350,10 +15350,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get setupOptional => 'Optional';
 
   @override
-  String get setupStyleClassic => 'Classic';
+  String get setupStyleClassic => 'クラシック';
 
   @override
-  String get setupStyleModern => 'Modern';
+  String get setupStyleModern => 'モダン';
 
   @override
   String get setupRowsClassicHint => 'Compact. More rows on screen at once.';
@@ -15401,7 +15401,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => 'プレミア公開';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15685,7 +15685,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => '全て';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -15723,7 +15723,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => '一度もない';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -15792,7 +15792,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'ダウンロード中';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -15930,13 +15930,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get animationSpeedSlow => 'Slow';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => '中くらい';
 
   @override
   String get animationSpeedFast => 'Fast';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'オフ';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16001,13 +16001,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
-  String get bottomNavbarTabsAutomatic => 'Automatic';
+  String get bottomNavbarTabsAutomatic => '自動';
 
   @override
   String get bottomNavbarTabsPinned => 'Pinned';
 
   @override
-  String get bottomNavbarTabsAvailable => 'Available';
+  String get bottomNavbarTabsAvailable => '利用可能';
 
   @override
   String get bottomNavbarTabsReset => 'Reset to Automatic';
@@ -16160,7 +16160,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => '詳細設定';
 
   @override
   String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
@@ -16243,16 +16243,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => '発売日';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
 
   @override
-  String get playlistSortRuntime => 'Runtime';
+  String get playlistSortRuntime => 'ランタイム';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => '最後にプレイした時間';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
@@ -16293,7 +16293,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get librarySortAlbumArtist => 'Album Artist';
 
   @override
-  String get librarySortAlbum => 'Album';
+  String get librarySortAlbum => 'アルバム';
 
   @override
   String get librarySortArtist => 'Artist';
@@ -16302,7 +16302,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get librarySortTrackNumber => 'Track Number';
 
   @override
-  String get librarySortGenre => 'Genre';
+  String get librarySortGenre => 'ジャンル';
 
   @override
   String get librarySortFoldersFirst => 'Folders First';
@@ -16332,7 +16332,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailsBackdropFullScreen => 'Full Screen';
 
   @override
-  String get detailsBackdropFit => 'Fit';
+  String get detailsBackdropFit => 'フィット';
 
   @override
   String get libraryBackdrops => 'Library Backdrops';
@@ -16703,7 +16703,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => '今';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -16810,7 +16810,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => '承認する';
 
   @override
   String get siloApproveSignInDone =>
@@ -17403,7 +17403,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'ビュー';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17445,7 +17445,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'スペシャル';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17466,7 +17466,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'タイプ';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17483,7 +17483,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'アクション';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17555,7 +17555,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => '再生';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17696,7 +17696,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => '開始';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -17806,7 +17806,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => '固定';
 
   @override
   String get afterHoursCastStaticLine =>

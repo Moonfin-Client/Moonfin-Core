@@ -6001,7 +6001,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Échec du téléchargement';
 
   @override
   String get seerrImportBlocked => 'Import blocked';

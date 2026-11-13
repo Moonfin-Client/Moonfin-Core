@@ -43,7 +43,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => 'Nakabinbin';
 
   @override
   String get animeMarkerRecap => 'Recap';
@@ -167,7 +167,7 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Aktibo';
 
   @override
   String get addUser => 'Magdagdag ng User';
@@ -279,7 +279,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'Mga koleksyon';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -1569,7 +1569,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get cast => 'I-cast';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'I-cast';
 
   @override
   String get trailer => 'Trailer';
@@ -2209,7 +2209,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => 'I-delete';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2590,7 +2590,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get premiere => 'Premiere';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Ulitin';
 
   @override
   String get guideTimeline => 'Gabay sa Timeline';
@@ -2672,7 +2672,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => 'Lahat ng Episode';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3054,7 +3054,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get savedMediaPlayNextUnwatched => 'Play next unwatched';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'Basahin';
 
   @override
   String get savedMediaCancelDownload => 'Cancel download';
@@ -3063,7 +3063,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get sortBySize => 'Size';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'Pangalan';
 
   @override
   String get sortByDateAdded => 'Date added';
@@ -3295,13 +3295,13 @@ class AppLocalizationsTl extends AppLocalizations {
   String get loadingAnimationSizeThumbnail => 'Thumbnail';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => 'Maliit';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => 'Katamtaman';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => 'Malaki';
 
   @override
   String get loadingAnimationPosition => 'Animation Position';
@@ -3415,7 +3415,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get seasonalRowSubtitle => 'Seasonal';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'Bansa';
 
   @override
   String get seasonalRowCountryAuto => 'Automatic';
@@ -3427,7 +3427,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get countryCanada => 'Canada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'Iba pa';
 
   @override
   String get seasonalRowHolidays => 'Holidays';
@@ -3729,14 +3729,14 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
 
   @override
-  String get detailMetadataStatus => 'Series Status';
+  String get detailMetadataStatus => 'Katayuan ng Serye';
 
   @override
   String get detailMetadataStatusSubtitle =>
       'Shows whether the series is continuing, ended, or returning';
 
   @override
-  String get detailMetadataGenres => 'Genres';
+  String get detailMetadataGenres => 'Mga genre';
 
   @override
   String get detailMetadataSeerrAvailability => 'Seerr Availability';
@@ -3776,7 +3776,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailSectionGroupCollection => 'Collection pages';
 
   @override
-  String get detailSectionGroupOther => 'Other';
+  String get detailSectionGroupOther => 'Iba pa';
 
   @override
   String get detailSectionLogo => 'Logo';
@@ -3800,7 +3800,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailSectionLyrics => 'Lyrics';
 
   @override
-  String get detailSectionCast => 'Cast';
+  String get detailSectionCast => 'I-cast';
 
   @override
   String get detailSectionCastSubtitle => 'Also on collection pages';
@@ -3809,19 +3809,19 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailSectionCrew => 'Directors & writers';
 
   @override
-  String get detailSectionStudios => 'Studios';
+  String get detailSectionStudios => 'Mga studio';
 
   @override
-  String get detailSectionChapters => 'Chapters';
+  String get detailSectionChapters => 'Mga kabanata';
 
   @override
-  String get detailSectionExtras => 'Extras';
+  String get detailSectionExtras => 'Mga Extra';
 
   @override
-  String get detailSectionCollections => 'Collections';
+  String get detailSectionCollections => 'Mga koleksyon';
 
   @override
-  String get detailSectionMoreLikeThis => 'More Like This';
+  String get detailSectionMoreLikeThis => 'Higit pang Tulad nito';
 
   @override
   String get detailSectionMoreLikeThisSubtitle =>
@@ -3853,7 +3853,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get seerrStreamingOn => 'Streaming on';
 
   @override
-  String get detailSectionSeerrRecommendations => 'Recommendations';
+  String get detailSectionSeerrRecommendations => 'Mga rekomendasyon';
 
   @override
   String get detailSectionSeerrSimilar => 'Similar titles';
@@ -3862,7 +3862,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailSectionSeerrCollection => 'Collection banner';
 
   @override
-  String get detailSectionSeerrPersonAppearances => 'Appearances';
+  String get detailSectionSeerrPersonAppearances => 'Mga appearance';
 
   @override
   String get detailSectionSeerrPersonCrew => 'Crew credits';
@@ -3871,7 +3871,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailSectionPersonPagesSubtitle => 'On person pages';
 
   @override
-  String get detailSectionBiography => 'Biography';
+  String get detailSectionBiography => 'Talambuhay';
 
   @override
   String get detailSectionBirthplace => 'Birthplace';
@@ -3903,7 +3903,7 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get upcomingEpisodeToday => 'Today';
+  String get upcomingEpisodeToday => 'Ngayong araw';
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
@@ -3981,10 +3981,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => 'Ilipat Pataas';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => 'Ilipat Pababa';
 
   @override
   String get buttonOrderHint =>
@@ -5300,7 +5300,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => 'Mga External na Listahan';
 
   @override
   String get homeRowsStreamingServices => 'Streaming Services';
@@ -5452,7 +5452,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get clockModeBouncing => 'Bouncing';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'Mga Pangkalahatang Setting';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5464,7 +5464,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get screensaverBackdrop => 'Backdrop';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'Itim';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5680,7 +5680,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get networks => 'Mga network';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Mga tag';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5930,7 +5930,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get seerrRequestedStatus => 'Hiniling';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Nagda-download';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -6719,7 +6719,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminTagMode => 'Tag mode';
 
   @override
-  String get adminEmbyConnect => 'Emby Connect';
+  String get adminEmbyConnect => 'Emby Kumonekta';
 
   @override
   String get adminEmbyConnectUser => 'Emby Connect username or email';
@@ -7204,7 +7204,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => 'Aklat';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7260,7 +7260,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'Mga artist';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
@@ -7318,7 +7318,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => 'Mga rating';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7410,7 +7410,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => 'Mga recording';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7578,7 +7578,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'Wala';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7589,7 +7589,7 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => 'Nabigo';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7847,7 +7847,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => 'Panoorin';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7860,16 +7860,16 @@ class AppLocalizationsTl extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => 'Pangkalahatang-ideya';
 
   @override
   String get adminGroupLibrary => 'Library';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => 'Pag-playback';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => 'Mga tao';
 
   @override
   String get adminGroupSystem => 'System';
@@ -10078,7 +10078,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'May-akda';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -10122,19 +10122,19 @@ class AppLocalizationsTl extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => 'Pangalan';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => 'Pangkalahatang-ideya';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'Mga genre';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'Mga tao';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -10147,10 +10147,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminMetadataLockFieldRuntime => 'Runtime';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'Mga studio';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'Mga tag';
 
   @override
   String get adminMetadataGenres => 'Mga genre';
@@ -11502,7 +11502,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get trackActionPlayNext => 'I-play Susunod';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => 'Tingnan ang mga Detalye';
 
   @override
   String get trackActionAddToQueue => 'Idagdag sa Queue';
@@ -11954,7 +11954,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Nagda-download';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -12208,14 +12208,13 @@ class AppLocalizationsTl extends AppLocalizations {
       'Kinokontrol kung ang Dolby Vision profile 7 na mga stream ng enhancement-layer ay dapat magdirekta ng pag-play.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'Auto (naka-enable ang AFTKRT)';
+  String get settingsAutoAftkrtEnabled => 'Auto';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Naka-enable sa device na ito';
+  String get settingsEnabledOnThisDevice => 'Naka-enable';
 
   @override
-  String get settingsDisabledPreferTranscode =>
-      'Naka-disable (mas gusto ang transcode)';
+  String get settingsDisabledPreferTranscode => 'Naka-off';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12776,7 +12775,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'Piliin ang Lahat';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12794,7 +12793,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'Mga filter';
 
   @override
   String get showHeader => 'Show';
@@ -12882,10 +12881,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => 'Pangalan';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => 'Petsa ng Paglabas';
 
   @override
   String get externalRowSortRating => 'Rating';
@@ -12894,7 +12893,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'I-shuffle';
 
   @override
   String get audioPlaylists => 'Mga Audio Playlist';
@@ -13631,7 +13630,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Uri';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13761,7 +13760,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return '+$count higit pa';
   }
 
   @override
@@ -13845,10 +13844,10 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'Araw-araw';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'Linggu-linggo';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13899,7 +13898,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'Hitsura';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13909,7 +13908,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'Mga title';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13941,7 +13940,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'Napanood na';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -14022,7 +14021,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'Mga gumagamit';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -14034,7 +14033,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'Aktibidad';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -14253,7 +14252,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => 'Tanggihan';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14433,7 +14432,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'Pangalan ng grupo';
 
   @override
   String chatMemberCount(int count) {
@@ -14468,14 +14467,14 @@ class AppLocalizationsTl extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'Umalis sa grupo';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'Lumikha ng pangkat';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15416,7 +15415,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get playlistTypeAudiobook => 'Audiobook';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Aklat';
 
   @override
   String get playlistTypePhoto => 'Photo';
@@ -15431,7 +15430,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'Mga Audio Playlist';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15573,10 +15572,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => 'Mga trailer';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => 'Mga Extra';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15612,7 +15611,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => 'Orihinal na Wika';
 
   @override
   String get seerrRuntime => 'Runtime';
@@ -16071,7 +16070,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'Lahat';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -16109,7 +16108,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'Hindi kailanman';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -16178,7 +16177,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'Nagda-download';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -16316,13 +16315,13 @@ class AppLocalizationsTl extends AppLocalizations {
   String get animationSpeedSlow => 'Slow';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => 'Katamtaman';
 
   @override
   String get animationSpeedFast => 'Fast';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'Naka-off';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16629,7 +16628,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => 'Petsa ng Paglabas';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
@@ -16638,7 +16637,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get playlistSortRuntime => 'Runtime';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => 'Huling Naglaro';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
@@ -16718,7 +16717,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailsBackdropFullScreen => 'Full Screen';
 
   @override
-  String get detailsBackdropFit => 'Fit';
+  String get detailsBackdropFit => 'Angkop';
 
   @override
   String get libraryBackdrops => 'Library Backdrops';
@@ -17089,7 +17088,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'Ngayon';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -17196,7 +17195,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => 'Aprubahan';
 
   @override
   String get siloApproveSignInDone =>
@@ -17789,7 +17788,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'Tingnan';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17831,7 +17830,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'Mga espesyal';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17852,7 +17851,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'Uri';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17869,7 +17868,7 @@ class AppLocalizationsTl extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'Mga aksyon';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17941,7 +17940,7 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'I-play';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -18082,7 +18081,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'Simula';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';

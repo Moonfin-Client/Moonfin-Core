@@ -43,7 +43,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => 'Pritraktata';
 
   @override
   String get animeMarkerRecap => 'Recap';
@@ -167,7 +167,7 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Aktiva';
 
   @override
   String get addUser => 'Aldoni Uzanton';
@@ -278,7 +278,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'Kolektoj';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -467,7 +467,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'Premiero';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -548,13 +548,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => 'Aŭtomata';
 
   @override
-  String get interfaceLayoutTv => 'TV';
+  String get interfaceLayoutTv => 'televido';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'Labortablo';
 
   @override
   String get interfaceLayoutPhone => 'Phone';
@@ -589,14 +589,14 @@ class AppLocalizationsEo extends AppLocalizations {
   String get glassQualityReduced => 'Reduktita';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'Rendimento';
 
   @override
   String get performanceModeSubtitle =>
       'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => 'Aŭtomata';
 
   @override
   String get performanceModeStandard => 'Standard';
@@ -612,7 +612,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Auto uses Impeller on boxes whose graphics run it smoothly and Skia everywhere else. Pick Skia if animations or video look wrong. Takes effect on the next launch.';
 
   @override
-  String get rendererModeAuto => 'Auto';
+  String get rendererModeAuto => 'Aŭtomata';
 
   @override
   String get rendererModeSkia => 'Skia';
@@ -643,10 +643,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get keyboardStyleNative => 'Native';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'Klasika';
 
   @override
-  String get keyboardStyleGlass => 'Glass';
+  String get keyboardStyleGlass => 'Vitro';
 
   @override
   String get keyboardStyleDocked => 'Docked';
@@ -1565,7 +1565,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get cast => 'Elsendi';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'Elsendi';
 
   @override
   String get trailer => 'Antaŭfilmo';
@@ -2198,7 +2198,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => 'Forigi';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2207,7 +2207,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get keyNamePageDown => 'Page Down';
 
   @override
-  String get keyNameHome => 'Home';
+  String get keyNameHome => 'Hejmo';
 
   @override
   String get keyNameEnd => 'End';
@@ -2576,7 +2576,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get premiere => 'Premiero';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Ripeti';
 
   @override
   String get guideTimeline => 'Gvida Kronologio';
@@ -2658,7 +2658,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => 'Ĉiuj epizodoj';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3039,7 +3039,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get savedMediaPlayNextUnwatched => 'Play next unwatched';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'Legu';
 
   @override
   String get savedMediaCancelDownload => 'Cancel download';
@@ -3048,7 +3048,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get sortBySize => 'Size';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'Nomo';
 
   @override
   String get sortByDateAdded => 'Date added';
@@ -3277,16 +3277,16 @@ class AppLocalizationsEo extends AppLocalizations {
   String get loadingAnimationSize => 'Animation Size';
 
   @override
-  String get loadingAnimationSizeThumbnail => 'Thumbnail';
+  String get loadingAnimationSizeThumbnail => 'Bildeto';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => 'Malgranda';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => 'Meza';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => 'Granda';
 
   @override
   String get loadingAnimationPosition => 'Animation Position';
@@ -3319,7 +3319,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get loadingAnimationPositionBottomRight => 'Bottom-Right';
 
   @override
-  String get loadingAnimationPositionBouncing => 'Bouncing';
+  String get loadingAnimationPositionBouncing => 'Resaltanta';
 
   @override
   String get loadingAnimationSpeed => 'Animation Speed';
@@ -3373,7 +3373,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seasonalDensityLight => 'Light';
 
   @override
-  String get seasonalDensityNormal => 'Normal';
+  String get seasonalDensityNormal => 'Normala';
 
   @override
   String get seasonalDensityHeavy => 'Heavy';
@@ -3400,10 +3400,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seasonalRowSubtitle => 'Seasonal';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'Lando';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => 'Aŭtomata';
 
   @override
   String get countryUnitedStates => 'United States';
@@ -3412,7 +3412,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get countryCanada => 'Canada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'Aliaj';
 
   @override
   String get seasonalRowHolidays => 'Holidays';
@@ -3712,14 +3712,14 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
 
   @override
-  String get detailMetadataStatus => 'Series Status';
+  String get detailMetadataStatus => 'Serio Statuso';
 
   @override
   String get detailMetadataStatusSubtitle =>
       'Shows whether the series is continuing, ended, or returning';
 
   @override
-  String get detailMetadataGenres => 'Genres';
+  String get detailMetadataGenres => 'Ĝenroj';
 
   @override
   String get detailMetadataSeerrAvailability => 'Seerr Availability';
@@ -3759,31 +3759,31 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailSectionGroupCollection => 'Collection pages';
 
   @override
-  String get detailSectionGroupOther => 'Other';
+  String get detailSectionGroupOther => 'Aliaj';
 
   @override
-  String get detailSectionLogo => 'Logo';
+  String get detailSectionLogo => 'Emblemo';
 
   @override
   String get detailSectionLogoSubtitle => 'Shows the title as text when off';
 
   @override
-  String get detailSectionTagline => 'Tagline';
+  String get detailSectionTagline => 'Slogano';
 
   @override
-  String get detailSectionPoster => 'Poster';
+  String get detailSectionPoster => 'Afiŝo';
 
   @override
   String get detailSectionVersionBadge => 'Version badge';
 
   @override
-  String get detailSectionUpNext => 'Next Up';
+  String get detailSectionUpNext => 'Sekva Supre';
 
   @override
-  String get detailSectionLyrics => 'Lyrics';
+  String get detailSectionLyrics => 'Kantoteksto';
 
   @override
-  String get detailSectionCast => 'Cast';
+  String get detailSectionCast => 'Elsendi';
 
   @override
   String get detailSectionCastSubtitle => 'Also on collection pages';
@@ -3792,19 +3792,19 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailSectionCrew => 'Directors & writers';
 
   @override
-  String get detailSectionStudios => 'Studios';
+  String get detailSectionStudios => 'Studioj';
 
   @override
-  String get detailSectionChapters => 'Chapters';
+  String get detailSectionChapters => 'Ĉapitroj';
 
   @override
-  String get detailSectionExtras => 'Extras';
+  String get detailSectionExtras => 'Ekstraĵoj';
 
   @override
-  String get detailSectionCollections => 'Collections';
+  String get detailSectionCollections => 'Kolektoj';
 
   @override
-  String get detailSectionMoreLikeThis => 'More Like This';
+  String get detailSectionMoreLikeThis => 'Pli Kiel Ĉi tio';
 
   @override
   String get detailSectionMoreLikeThisSubtitle =>
@@ -3836,7 +3836,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seerrStreamingOn => 'Streaming on';
 
   @override
-  String get detailSectionSeerrRecommendations => 'Recommendations';
+  String get detailSectionSeerrRecommendations => 'Rekomendoj';
 
   @override
   String get detailSectionSeerrSimilar => 'Similar titles';
@@ -3845,7 +3845,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailSectionSeerrCollection => 'Collection banner';
 
   @override
-  String get detailSectionSeerrPersonAppearances => 'Appearances';
+  String get detailSectionSeerrPersonAppearances => 'Aperoj';
 
   @override
   String get detailSectionSeerrPersonCrew => 'Crew credits';
@@ -3854,7 +3854,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailSectionPersonPagesSubtitle => 'On person pages';
 
   @override
-  String get detailSectionBiography => 'Biography';
+  String get detailSectionBiography => 'Biografio';
 
   @override
   String get detailSectionBirthplace => 'Birthplace';
@@ -3886,7 +3886,7 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
-  String get upcomingEpisodeToday => 'Today';
+  String get upcomingEpisodeToday => 'Hodiaŭ';
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
@@ -3964,10 +3964,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => 'Movu Supren';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => 'Movu Malsupren';
 
   @override
   String get buttonOrderHint =>
@@ -4170,7 +4170,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA trapaso';
 
   @override
-  String get settingsAudioPassthroughMode => 'Passthrough';
+  String get settingsAudioPassthroughMode => 'Trapaso';
 
   @override
   String get settingsAudioPassthroughModeDescription =>
@@ -4852,10 +4852,10 @@ class AppLocalizationsEo extends AppLocalizations {
       'Classic is the original header with icon buttons. Modern adds labeled sort, group and filter chips under the search. Docked keeps the controls in a bar at the bottom of the screen.';
 
   @override
-  String get libraryStyleClassic => 'Classic';
+  String get libraryStyleClassic => 'Klasika';
 
   @override
-  String get libraryStyleModern => 'Modern';
+  String get libraryStyleModern => 'Moderna';
 
   @override
   String get libraryStyleDocked => 'Docked';
@@ -4868,7 +4868,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Classic is the original shelves under a featured title. Reading Room leads with what you\'re reading on large cards. Bookstore browses the whole library in a grid.';
 
   @override
-  String get bookLibraryStyleClassic => 'Classic';
+  String get bookLibraryStyleClassic => 'Klasika';
 
   @override
   String get bookLibraryStyleReadingRoom => 'Reading Room';
@@ -4884,7 +4884,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
 
   @override
-  String get musicLibraryStyleClassic => 'Classic';
+  String get musicLibraryStyleClassic => 'Klasika';
 
   @override
   String get musicLibraryStyleQuickAccess => 'Quick Access';
@@ -5047,7 +5047,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get mediaBarModeGallery => 'Gallery';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'Standardo';
 
   @override
   String get mediaBarModeAya => 'Aya';
@@ -5276,7 +5276,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => 'Eksteraj listoj';
 
   @override
   String get homeRowsStreamingServices => 'Streaming Services';
@@ -5424,7 +5424,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get clockModeBouncing => 'Resaltanta';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'Ĝeneralaj Agordoj';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5433,10 +5433,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get screensaverLibraryContent => 'Library Content';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => 'Fono';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'Nigra';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5445,7 +5445,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get screensaverBackdropCalm => 'Calm';
 
   @override
-  String get screensaverBackdropNeonPulse => 'Neon Pulse';
+  String get screensaverBackdropNeonPulse => 'Neona Pulso';
 
   @override
   String get screensaverBackdropAurora => 'Aurora';
@@ -5649,7 +5649,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get networks => 'Retoj';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Etikedoj';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5894,7 +5894,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seerrRequestedStatus => 'Petita';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Elŝutante';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -6681,7 +6681,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminTagMode => 'Tag mode';
 
   @override
-  String get adminEmbyConnect => 'Emby Connect';
+  String get adminEmbyConnect => 'Emby Konekti';
 
   @override
   String get adminEmbyConnectUser => 'Emby Connect username or email';
@@ -6770,7 +6770,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'No channels yet. They show up here once a tuner is set up and the server has imported its channels.';
 
   @override
-  String get adminTranscodingHwaAdvanced => 'Advanced';
+  String get adminTranscodingHwaAdvanced => 'Altnivela';
 
   @override
   String get adminTranscodingHwaHelp =>
@@ -7166,7 +7166,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => 'Libro';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7206,7 +7206,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminImageTypeDisc => 'Disc';
 
   @override
-  String get adminImageTypeMenu => 'Menu';
+  String get adminImageTypeMenu => 'Menuo';
 
   @override
   String get adminActivityMediaDetails => 'Media details';
@@ -7222,13 +7222,13 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'Artistoj';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
 
   @override
-  String get adminMetadataFieldAlbum => 'Album';
+  String get adminMetadataFieldAlbum => 'Albumo';
 
   @override
   String get adminMetadataFieldSeriesName => 'Series name';
@@ -7280,7 +7280,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => 'Taksoj';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7372,7 +7372,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => 'Registraĵoj';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7540,7 +7540,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'Neniu';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7551,7 +7551,7 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => 'Malsukcesis';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7809,7 +7809,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => 'Spekti';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7822,16 +7822,16 @@ class AppLocalizationsEo extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => 'Superrigardo';
 
   @override
-  String get adminGroupLibrary => 'Library';
+  String get adminGroupLibrary => 'Biblioteko';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => 'Reproduktado';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => 'Homoj';
 
   @override
   String get adminGroupSystem => 'System';
@@ -9919,7 +9919,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminMetadataDisplayOrderProduction => 'Production';
 
   @override
-  String get adminMetadataDisplayOrderTv => 'TV';
+  String get adminMetadataDisplayOrderTv => 'televido';
 
   @override
   String get adminMetadataDisplayOrderAlternate => 'Alternate';
@@ -10001,7 +10001,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'Aŭtoro';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -10045,19 +10045,19 @@ class AppLocalizationsEo extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => 'Nomo';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => 'Superrigardo';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'Ĝenroj';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'Homoj';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -10067,13 +10067,13 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminMetadataLockFieldBirthLocation => 'Birth location';
 
   @override
-  String get adminMetadataLockFieldRuntime => 'Runtime';
+  String get adminMetadataLockFieldRuntime => 'Daŭro';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'Studioj';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'Etikedoj';
 
   @override
   String get adminMetadataGenres => 'Ĝenroj';
@@ -11411,7 +11411,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get trackActionPlayNext => 'Ludu Poste';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => 'Rigardu Detalojn';
 
   @override
   String get trackActionAddToQueue => 'Aldoni al Vico';
@@ -11861,7 +11861,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Elŝutante';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -12114,14 +12114,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Kontrolas ĉu Dolby Vision-profilo 7 plibonig-tavolaj fluoj devus direkti ludadon.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'Aŭtomata (AFTKRT ebligita)';
+  String get settingsAutoAftkrtEnabled => 'Aŭtomata';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Ebligita sur ĉi tiu aparato';
+  String get settingsEnabledOnThisDevice => 'Ebligita';
 
   @override
-  String get settingsDisabledPreferTranscode =>
-      'Malŝaltita (preferas transkodon)';
+  String get settingsDisabledPreferTranscode => 'Malŝaltita';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12619,7 +12618,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb-simileco';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -12671,7 +12670,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'Elektu Ĉiujn';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12689,7 +12688,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'Filtriloj';
 
   @override
   String get showHeader => 'Show';
@@ -12777,10 +12776,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => 'Nomo';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => 'Eldondato';
 
   @override
   String get externalRowSortRating => 'Rating';
@@ -12789,7 +12788,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'Miksi';
 
   @override
   String get audioPlaylists => 'Aŭdiaj ludlistoj';
@@ -13524,7 +13523,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Tajpu';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13654,7 +13653,7 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return '+$count pli';
   }
 
   @override
@@ -13738,10 +13737,10 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'Ĉiutage';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'Ĉiusemajne';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13792,7 +13791,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'Aspekto';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13802,7 +13801,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'Titoloj';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13834,7 +13833,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'Spektitaj';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -13915,7 +13914,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'Uzantoj';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -13927,7 +13926,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'Aktiveco';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -14146,7 +14145,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => 'Malkresko';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14326,7 +14325,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'Grupnomo';
 
   @override
   String chatMemberCount(int count) {
@@ -14343,7 +14342,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get chatOwner => 'Owner';
 
   @override
-  String get chatAdmin => 'Admin';
+  String get chatAdmin => 'Administranto';
 
   @override
   String get chatMakeAdmin => 'Make admin';
@@ -14361,14 +14360,14 @@ class AppLocalizationsEo extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'Forlasu grupon';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'Krei grupon';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15304,10 +15303,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'Aŭdlibro';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Libro';
 
   @override
   String get playlistTypePhoto => 'Photo';
@@ -15322,7 +15321,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'Aŭdiaj ludlistoj';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15464,10 +15463,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => 'Antaŭfilmoj';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => 'Ekstraĵoj';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15503,10 +15502,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => 'Originala Lingvo';
 
   @override
-  String get seerrRuntime => 'Runtime';
+  String get seerrRuntime => 'Daŭro';
 
   @override
   String get subtitleHdrSeparate => 'Separate HDR Style';
@@ -15627,10 +15626,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get setupOptional => 'Optional';
 
   @override
-  String get setupStyleClassic => 'Classic';
+  String get setupStyleClassic => 'Klasika';
 
   @override
-  String get setupStyleModern => 'Modern';
+  String get setupStyleModern => 'Moderna';
 
   @override
   String get setupRowsClassicHint => 'Compact. More rows on screen at once.';
@@ -15678,7 +15677,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => 'Premiero';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15962,7 +15961,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'Ĉiuj';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -16000,7 +15999,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'Neniam';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -16069,7 +16068,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'Elŝutante';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -16207,13 +16206,13 @@ class AppLocalizationsEo extends AppLocalizations {
   String get animationSpeedSlow => 'Slow';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => 'Meza';
 
   @override
   String get animationSpeedFast => 'Fast';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'Malŝaltita';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16278,13 +16277,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
-  String get bottomNavbarTabsAutomatic => 'Automatic';
+  String get bottomNavbarTabsAutomatic => 'Aŭtomata';
 
   @override
   String get bottomNavbarTabsPinned => 'Pinned';
 
   @override
-  String get bottomNavbarTabsAvailable => 'Available';
+  String get bottomNavbarTabsAvailable => 'Disponebla';
 
   @override
   String get bottomNavbarTabsReset => 'Reset to Automatic';
@@ -16437,7 +16436,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => 'Altnivela';
 
   @override
   String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
@@ -16520,16 +16519,16 @@ class AppLocalizationsEo extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => 'Eldondato';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
 
   @override
-  String get playlistSortRuntime => 'Runtime';
+  String get playlistSortRuntime => 'Daŭro';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => 'Laste Ludita';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
@@ -16570,7 +16569,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get librarySortAlbumArtist => 'Album Artist';
 
   @override
-  String get librarySortAlbum => 'Album';
+  String get librarySortAlbum => 'Albumo';
 
   @override
   String get librarySortArtist => 'Artist';
@@ -16579,7 +16578,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get librarySortTrackNumber => 'Track Number';
 
   @override
-  String get librarySortGenre => 'Genre';
+  String get librarySortGenre => 'Ĝenro';
 
   @override
   String get librarySortFoldersFirst => 'Folders First';
@@ -16980,7 +16979,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'Nun';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -17087,7 +17086,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => 'Aprobi';
 
   @override
   String get siloApproveSignInDone =>
@@ -17680,7 +17679,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'Vido';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17722,7 +17721,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'Specialaĵoj';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17743,7 +17742,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'Tajpu';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17760,7 +17759,7 @@ class AppLocalizationsEo extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'Agoj';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17832,7 +17831,7 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'Ludi';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17973,7 +17972,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'Komenco';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -18083,7 +18082,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => 'Statika';
 
   @override
   String get afterHoursCastStaticLine =>

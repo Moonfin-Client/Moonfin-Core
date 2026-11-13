@@ -5958,13 +5958,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get seerrImportingStatus => 'Importazione';
 
   @override
-  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+  String get seerrWaitingForImport => 'Scaricato, in attesa di importazione';
 
   @override
-  String get seerrDownloadStalled => 'Stalled';
+  String get seerrDownloadStalled => 'Bloccato';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Download non riuscito';
 
   @override
   String get seerrImportBlocked => 'Import blocked';

@@ -6001,7 +6001,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Ha fallat la baixada';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
@@ -16726,16 +16726,18 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsAdvancedSection => 'Avançat';
 
   @override
-  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+  String get settingsDecodingAndRenderingSection =>
+      'Descodificació i renderització';
 
   @override
-  String get settingsAudioStreamSection => 'Audio Stream';
+  String get settingsAudioStreamSection => 'Flux d\'àudio';
 
   @override
-  String get settingsAudioOutputSection => 'Audio Output';
+  String get settingsAudioOutputSection => 'Sortida d\'àudio';
 
   @override
-  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+  String get settingsPassthroughSettingsSection =>
+      'Configuració del passthrough';
 
   @override
   String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
@@ -16744,7 +16746,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
 
   @override
-  String get settingsRewatchSection => 'Rewatch';
+  String get settingsRewatchSection => 'Torna a veure';
 
   @override
   String get favoritesSwitchViewSection => 'Switch View';
