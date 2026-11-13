@@ -183,6 +183,7 @@ class _TestService extends Fake implements PlayerService {
 class _FakeSyncPlayApi extends Fake implements SyncPlayApi {
   final List<String> nextItemCalls = [];
   Object? nextError;
+  Future<void> Function(String playlistItemId)? onNextItem;
 
   @override
   Future<UtcTimeResponse> getUtcTime() async =>
@@ -194,6 +195,11 @@ class _FakeSyncPlayApi extends Fake implements SyncPlayApi {
   @override
   Future<void> nextItem(String playlistItemId) async {
     nextItemCalls.add(playlistItemId);
+    final handler = onNextItem;
+    if (handler != null) {
+      await handler(playlistItemId);
+      return;
+    }
     final error = nextError;
     if (error != null) throw error;
   }
@@ -220,6 +226,7 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     'ep3': {'Id': 'ep3', 'Type': 'Episode', 'Name': 'Episode 3'},
   };
   Completer<void>? getItemGate;
+  Future<void> Function(String itemId)? onGetItem;
 
   @override
   Future<Map<String, dynamic>> getItem(
@@ -227,6 +234,7 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     String? mediaSourceId,
     String? fields,
   }) async {
+    await onGetItem?.call(itemId);
     await getItemGate?.future;
     return items[itemId] ?? {'Id': itemId, 'Type': 'Episode'};
   }
@@ -430,6 +438,124 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(service.stops, [credits]);
+    },
+  );
+
+  test(
+    'superseded nextItem load (A -> B -> C) preserves finished stop for outgoing item A',
+    () async {
+      final bGate = Completer<void>();
+      itemsApi.onGetItem = (itemId) async {
+        if (itemId == 'ep2') await bGate.future;
+      };
+
+      await playbackManager.nextInQueueAsFinished();
+
+      // Update B arrives while B's item fetch stays in flight; local item is still ep1.
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:01.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep2', playlistItemId: 'pl2'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      // Update C arrives before B finishes fetching, replacing target to ep3.
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:02.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep3', playlistItemId: 'pl3'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      // C loads first and closes A as finished; completing stale B does nothing.
+      expect(service.stops, [end]);
+      bGate.complete();
+      await Future<void>.delayed(Duration.zero);
+      expect(service.stops, [end]);
+    },
+  );
+
+  test(
+    'failed earlier nextAsFinished request does not clear a newer pending advance',
+    () async {
+      final firstRequestGate = Completer<void>();
+      var callCount = 0;
+      syncPlayApi.onNextItem = (_) async {
+        callCount++;
+        if (callCount == 1) {
+          await firstRequestGate.future;
+          throw StateError('first timed out');
+        }
+      };
+
+      final firstAdvance = playbackManager.nextInQueueAsFinished();
+      await Future<void>.delayed(Duration.zero);
+
+      // Second request starts and succeeds while first is still in flight.
+      await playbackManager.nextInQueueAsFinished();
+
+      // Now the first request fails after the second record took ownership.
+      firstRequestGate.complete();
+      await firstAdvance;
+
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:03.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep2', playlistItemId: 'pl2'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(service.stops, [end]);
     },
   );
 }
