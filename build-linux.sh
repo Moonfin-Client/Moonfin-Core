@@ -302,7 +302,7 @@ ensure_mpv_compat_symlinks() {
   # which under set -e kills the build with no error message.
   for alt in libmpv.so.1 libmpv.so.2 libmpv.so; do
     if [ ! -e "$dest_lib/$alt" ]; then
-      ln -sf "$base" "$dest_lib/$alt"
+      ln -sf "$base" "$dest_lib/$alt" || return 1
     fi
   done
   return 0
@@ -1075,13 +1075,15 @@ build_rpm() {
   # them to the rest of the system, and from asking the system for them.
   # Each bundled file becomes a pattern on its base name, so
   # libavcodec.so.60.31.102 turns into libavcodec[.]so.
+  # libjvm is excluded too: libdartjni links it but is never loaded on Linux
+  # (see verify_host_dependencies), and a Requires on it would block install.
   local bundled_sonames
   bundled_sonames="$(find "$stage_dir/lib" -maxdepth 1 -name '*.so*' -printf '%f\n' 2>/dev/null \
     | sed 's/[.]so.*$/.so/' | sort -u | sed 's/[.]/[.]/g; s/[+]/[+]/g' | paste -sd'|' -)"
 
   if ! cat > "$spec_file" << EOF
 %global __provides_exclude_from ^/usr/lib/moonfin/.*\$
-%global __requires_exclude ^(${bundled_sonames:-moonfin-none})
+%global __requires_exclude ^(libjvm[.]so|${bundled_sonames:-moonfin-none})
 # Flutter's plugin libraries carry the build tree's ephemeral folder as a
 # runpath. Fedora's rpmbuild rejects that; the launcher's LD_LIBRARY_PATH is
 # what actually finds the libraries, so the check adds nothing here.
