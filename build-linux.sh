@@ -424,19 +424,21 @@ copy_runtime_libs() {
     local real_name
     real_name="$(basename "$real_path")"
 
+    # Callers can run this with set -e off (build_rpm || true, if !), so a
+    # failed copy or link has to be returned, not left for errexit.
     if [ ! -f "$dest_lib/$real_name" ]; then
-      cp -L "$real_path" "$dest_lib/$real_name"
+      cp -L "$real_path" "$dest_lib/$real_name" || return 1
       count=$((count + 1))
     fi
 
     if [ "$real_name" != "$lib_name" ] && [ ! -e "$dest_lib/$lib_name" ]; then
-      ln -sf "$real_name" "$dest_lib/$lib_name"
+      ln -sf "$real_name" "$dest_lib/$lib_name" || return 1
     fi
 
     local soname
     soname="$(readelf -d "$real_path" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\].*/\1/p' | head -n1)"
     if [ -n "$soname" ] && [ "$soname" != "$real_name" ] && [ ! -e "$dest_lib/$soname" ]; then
-      ln -sf "$real_name" "$dest_lib/$soname"
+      ln -sf "$real_name" "$dest_lib/$soname" || return 1
     fi
   done <<< "$lib_paths"
 
@@ -460,10 +462,13 @@ inject_linux_runtime_libs() {
   skip="$(runtime_skip_pattern)"
 
   local bundled_count
-  bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"
-  fix_absolute_needed "$bundle_dir/lib"
-  ensure_sqlite_unversioned_link "$bundle_dir/lib"
-  ensure_mpv_compat_symlinks "$bundle_dir/lib"
+  if ! bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"; then
+    echo "Error: could not copy runtime libraries into $bundle_dir/lib." >&2
+    return 1
+  fi
+  fix_absolute_needed "$bundle_dir/lib" || return 1
+  ensure_sqlite_unversioned_link "$bundle_dir/lib" || return 1
+  ensure_mpv_compat_symlinks "$bundle_dir/lib" || return 1
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 
   verify_host_dependencies "$bundle_dir"
