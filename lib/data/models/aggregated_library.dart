@@ -49,13 +49,21 @@ class AggregatedLibrary {
 
   /// This tile without the libraries in [hiddenIds], or null when none is left.
   /// A merged tile then draws its artwork from the first one remaining.
-  AggregatedLibrary? withoutHidden(Set<String> hiddenIds) {
+  ///
+  /// [serverId] is the server the ids were hidden on. Only its libraries are
+  /// dropped, because two servers can hand out the same library id. Without
+  /// it, an id is hidden on every server.
+  AggregatedLibrary? withoutHidden(Set<String> hiddenIds, {String? serverId}) {
+    bool isHidden(AggregatedLibrary library) =>
+        hiddenIds.contains(library.id) &&
+        (serverId == null || library.serverId == serverId);
+
     final kindName = unifiedKindName;
-    if (kindName == null) return hiddenIds.contains(id) ? null : this;
+    if (kindName == null) return isHidden(this) ? null : this;
     if (mergedFrom.isEmpty) return this;
     final shown = [
       for (final library in mergedFrom)
-        if (!hiddenIds.contains(library.id)) library,
+        if (!isHidden(library)) library,
     ];
     if (shown.isEmpty) return null;
     if (shown.length == mergedFrom.length) return this;

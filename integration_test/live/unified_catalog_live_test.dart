@@ -106,14 +106,36 @@ void main() {
           db.catalogEntries,
         )..where((t) => t.kind.equals(kind.itemType))).get();
         final perServer = rows.length ~/ copies;
-        final firstKeys = [
+        final keysByRow = [
           for (final row in rows)
             catalogMatchKeys(
               kind.itemType,
               jsonDecode(row.metadataJson) as Map<String, dynamic>,
-            ).firstOrNull,
+            ),
         ];
-        final withoutId = firstKeys.where((key) => key == null).length;
+        // Rows sharing any external id are one title, and so are rows linked
+        // through a third. Counted here on its own, to check the app's
+        // grouping rather than repeat it.
+        final parent = List<int>.generate(rows.length, (i) => i);
+        int root(int i) {
+          while (parent[i] != i) {
+            i = parent[i] = parent[parent[i]];
+          }
+          return i;
+        }
+
+        final firstRowWithKey = <String, int>{};
+        for (var i = 0; i < rows.length; i++) {
+          for (final key in keysByRow[i]) {
+            final other = firstRowWithKey.putIfAbsent(key, () => i);
+            parent[root(i)] = root(other);
+          }
+        }
+        final withoutId = keysByRow.where((keys) => keys.isEmpty).length;
+        final matchedTitles = {
+          for (var i = 0; i < rows.length; i++)
+            if (keysByRow[i].isNotEmpty) root(i),
+        }.length;
         final folded = items
             .where((item) => unifiedCopiesOf(item).length == copies)
             .length;
@@ -121,13 +143,13 @@ void main() {
         print(
           '${kind.name}: $perServer per server, ${rows.length} rows, '
           '${items.length} cards ($folded held by every server, '
+          '$matchedTitles matched by external id, '
           '${withoutId ~/ copies} with no external id), '
           'first query ${query.elapsedMilliseconds} ms',
         );
 
         // Without an external id a title stays a card per server.
-        final distinctKeys = firstKeys.whereType<String>().toSet().length;
-        expect(items.length, distinctKeys + withoutId);
+        expect(items.length, matchedTitles + withoutId);
         expect(folded, greaterThan(0));
 
         for (final sortBy in const [

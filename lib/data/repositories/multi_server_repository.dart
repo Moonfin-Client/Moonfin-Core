@@ -20,6 +20,7 @@ import '../offline/connectivity_aware_media_server_client.dart';
 import '../services/media_server_client_factory.dart';
 import '../services/unified_catalog_query.dart';
 import '../services/unified_catalog_service.dart';
+import '../services/unified_search_fold.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
@@ -1464,12 +1465,16 @@ class MultiServerRepository {
     for (final entry in groupedItems.entries) {
       final collectionType = entry.key;
 
-      // A title in two libraries is kept once, from the server listed first.
+      // An item listed twice is kept once, from the server listed first.
       final seen = <String>{};
-      final allItems = [
+      final listed = [
         for (final item in entry.value)
-          if (_isFirstCopy(item, seen, foldedServerIds: foldedServerIds)) item,
+          if (_isFirstListing(item, seen, foldedServerIds: foldedServerIds))
+            item,
       ];
+      final allItems = foldedServerIds.isEmpty
+          ? listed
+          : _foldLatestCopies(listed, sessions, foldedServerIds);
       if (allItems.isEmpty) continue;
 
       allItems.sort((a, b) {
@@ -1509,27 +1514,43 @@ class MultiServerRepository {
     return rows;
   }
 
-  /// Whether [item] is the first copy of its title, adding its keys to [seen].
-  /// A movie or series from [foldedServerIds] goes by its provider ids, any one
-  /// of which makes two items the same title; anything else by its own id.
-  static bool _isFirstCopy(
+  /// Whether [item] has not been listed yet, adding its key to [seen].
+  /// A movie or series from [foldedServerIds] goes by its server and id, as two
+  /// servers can hand out one id; anything else by its id alone.
+  static bool _isFirstListing(
     AggregatedItem item,
     Set<String> seen, {
     required Set<String> foldedServerIds,
   }) {
     final type = item.type;
-    if ((type != 'Movie' && type != 'Series') ||
-        !foldedServerIds.contains(item.serverId)) {
-      return seen.add(item.id);
-    }
-    final shared = catalogMatchKeys(type!, item.rawData);
-    final keys = shared.isEmpty
-        ? [unifiedCopyKey(item.serverId, item.id)]
-        : shared;
-    final isFirst = !keys.any(seen.contains);
-    // A later copy sharing only one id with this copy must still match.
-    seen.addAll(keys);
-    return isFirst;
+    final folds =
+        (type == 'Movie' || type == 'Series') &&
+        foldedServerIds.contains(item.serverId);
+    return seen.add(folds ? unifiedCopyKey(item.serverId, item.id) : item.id);
+  }
+
+  /// Folds the copies of one title in [items] into one card that carries them
+  /// all, as a merged library does, so the card gets its badge and server
+  /// picker. A title with a blocked copy is left out, as in a merged library.
+  List<AggregatedItem> _foldLatestCopies(
+    List<AggregatedItem> items,
+    List<ServerUserSession> sessions,
+    Set<String> foldedServerIds,
+  ) {
+    // The active server's copy is the one shown, as in search and the grid.
+    final activeServerId = _sessionRepo.activeServerId;
+    final servers = [
+      for (final session in [
+        ...sessions.where((s) => s.server.id == activeServerId),
+        ...sessions.where((s) => s.server.id != activeServerId),
+      ])
+        if (foldedServerIds.contains(session.server.id))
+          UnifiedServerInfo(id: session.server.id, name: session.server.name),
+    ];
+    return [
+      for (final item in foldSharedTitles(items, servers))
+        if (!isAnyCopyBlocked(item.rawData)) item,
+    ];
   }
 
   Future<List<_LatestForView>> _latestForSession(
@@ -1616,8 +1637,15 @@ class MultiServerRepository {
         label: 'latest $name from ${session.server.name}',
       );
 
-      var parsed = _parseItems(latestResponse, session.server.id);
-      if (parsed.isEmpty) return null;
+      // A folded server keeps its blocked copies for now. The fold has to see
+      // them, because one blocked copy hides the title on every server.
+      var listed = _parseItems(
+        latestResponse,
+        session.server.id,
+        keepBlocked: withProviderIds,
+      );
+      var parsed = withoutBlockedItems(listed);
+      if ((withProviderIds ? listed : parsed).isEmpty) return null;
 
       if (hideWatched && parsed.length >= fetchLimit && fetchLimit < _maxItems) {
         final unwatchedItems = normalizeLatestMediaItems(
@@ -1638,13 +1666,18 @@ class MultiServerRepository {
             ),
             label: 'latest $name from ${session.server.name}',
           );
-          parsed = _parseItems(latestResponse, session.server.id);
-          if (parsed.isEmpty) return null;
+          listed = _parseItems(
+            latestResponse,
+            session.server.id,
+            keepBlocked: withProviderIds,
+          );
+          parsed = withoutBlockedItems(listed);
+          if ((withProviderIds ? listed : parsed).isEmpty) return null;
         }
       }
 
       if (mergeByType) {
-        return (collectionType: collectionType, items: parsed, row: null);
+        return (collectionType: collectionType, items: listed, row: null);
       }
 
       final items = normalizeLatestMediaItems(
@@ -1843,8 +1876,9 @@ class MultiServerRepository {
 
   List<AggregatedItem> _parseItems(
     Map<String, dynamic> response,
-    String serverId,
-  ) {
+    String serverId, {
+    bool keepBlocked = false,
+  }) {
     final rawItems = response['Items'] as List? ?? [];
     final items = rawItems.map((item) {
       final data = item as Map<String, dynamic>;
@@ -1854,7 +1888,7 @@ class MultiServerRepository {
         rawData: data,
       );
     }).toList();
-    return withoutBlockedItems(items);
+    return keepBlocked ? items : withoutBlockedItems(items);
   }
 
   List<AggregatedItem> _sortAggregatedItems(

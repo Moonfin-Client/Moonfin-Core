@@ -528,7 +528,10 @@ class PlexItemsApi implements ItemsApi {
     final container = await plexContainer(
       _dio,
       '/library/sections/$sectionKey/recentlyAdded',
-      _paging(0, limit ?? 20),
+      {
+        ..._paging(0, limit ?? 20),
+        if (_wantsGuids(fields)) 'includeGuids': 1,
+      },
     );
     return {'Items': _items(container['Metadata'])};
   }

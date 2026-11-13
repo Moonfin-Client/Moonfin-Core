@@ -509,7 +509,7 @@ void main() {
         'Rusquin',
       ]);
       final holder = FocusManager.instance.primaryFocus;
-      expect(holder?.context, isNotNull);
+      expect(holder?.context?.mounted, isTrue);
       expect(
         focused() == 'library_catalog_refresh' || focusedCard(tester) != null,
         isTrue,
@@ -522,6 +522,46 @@ void main() {
       expect(focusedCard(tester), isNotNull);
       await press(tester, LogicalKeyboardKey.arrowUp);
       expect(focused(), 'library_home_button');
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Down from the update button goes to the first card when the '
+        'card focused last has scrolled away', (tester) async {
+      a.movies = [
+        for (var i = 0; i < 70; i++)
+          catalogMovie('a$i', 'Movie ${'$i'.padLeft(3, '0')}'),
+      ];
+      b.movies = [];
+      await tester.runAsync(catalog.forceFullRead);
+      await harness.pumpLibrary(tester);
+
+      for (var i = 0; i < 8; i++) {
+        await press(tester, LogicalKeyboardKey.arrowDown);
+      }
+      final deepCard = focusedCard(tester);
+      expect(deepCard, isNotNull);
+      expect(deepCard, isNot('Movie 000'));
+
+      a.movies = [...a.movies, catalogMovie('new', 'Movie 999')];
+      await tester.runAsync(catalog.forceFullRead);
+      await pumpUntil(tester, () => shows(find.text(_changed)));
+
+      // The focus leaves the grid first, so the card focused last stays the
+      // remembered one once the grid is back at the top and it is not built.
+      FocusManager.instance.rootScope.descendants
+          .firstWhere((node) => node.debugLabel == 'library_catalog_update')
+          .requestFocus();
+      await tester.pump(const Duration(milliseconds: 200));
+      Scrollable.of(
+        tester.element(find.byType(MediaCard).first),
+      ).position.jumpTo(0);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(cardTitles(tester), isNot(contains(deepCard)));
+      expect(focused(), 'library_catalog_update');
+
+      await press(tester, LogicalKeyboardKey.arrowDown);
+
+      expect(focusedCard(tester), 'Movie 000');
       expect(tester.takeException(), isNull);
     });
   });

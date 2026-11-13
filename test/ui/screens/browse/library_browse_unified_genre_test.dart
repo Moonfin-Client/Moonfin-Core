@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -494,6 +496,41 @@ void main() {
 
         expect(find.byType(GenreGridCard), findsNothing);
       });
+    });
+
+    testWidgets('left before its genres have loaded, it asks the server for '
+        'nothing', (tester) async {
+      // Holds the screen's load at its first step until the screen is gone.
+      final merged = Completer<Set<String>>();
+      when(
+        () => GetIt.instance<MultiServerRepository>().mergedGenreServerIds(),
+      ).thenAnswer((_) => merged.future);
+      stubOwnGenres();
+      await seedBoth(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AllGenresScreen(),
+        ),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      merged.complete({'a', 'b'});
+      await pumpTurns(tester);
+
+      verifyNever(
+        () => itemsApis['a']!.getGenres(
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          recursive: any(named: 'recursive'),
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+        ),
+      );
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('lists the server\'s own genres when nothing merges', (

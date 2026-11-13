@@ -60,7 +60,8 @@ void main() {
   late FakeCatalogServer a;
   late FakeCatalogServer b;
 
-  /// Completes when the test presses Done, with what was typed.
+  /// Completes when the test presses Done, with what was typed. Created when
+  /// the keyboard is shown, so it belongs to the test that opened it.
   late Completer<String?> keyboard;
   late List<String> keyboardCalls;
 
@@ -95,12 +96,13 @@ void main() {
       KeyboardStyle.native,
     );
 
-    keyboard = Completer<String?>();
     keyboardCalls = [];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_appleTvSystemChannel, (call) async {
           keyboardCalls.add(call.method);
-          return call.method == 'showTextInput' ? keyboard.future : null;
+          if (call.method != 'showTextInput') return null;
+          keyboard = Completer<String?>();
+          return keyboard.future;
         });
   });
 

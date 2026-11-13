@@ -254,4 +254,80 @@ void main() {
       expect(find.textContaining('opened /item/a2'), findsOneWidget);
     });
   });
+
+  testWidgets('a card removed while the server picker is open hands focus '
+      'on when the picker is dismissed', (tester) async {
+    // The row reloaded under the picker and no longer holds the card.
+    final showCard = ValueNotifier(true);
+    addTearDown(showCard.dispose);
+    late BuildContext host;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              host = context;
+              return ValueListenableBuilder<bool>(
+                valueListenable: showCard,
+                builder: (_, shown, _) => shown
+                    ? const Focus(autofocus: true, child: Text('Akundel'))
+                    : const SizedBox.shrink(),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final card = Focus.of(tester.element(find.text('Akundel')));
+    expect(card.hasPrimaryFocus, isTrue);
+
+    var focusLost = 0;
+    HomeScreen.openItem(host, shared, onFocusLost: () => focusLost++);
+    await tester.pumpAndSettle();
+    expect(find.text('Select Server'), findsOneWidget);
+
+    showCard.value = false;
+    await tester.pumpAndSettle();
+    // The node outlives its card and keeps the context it had.
+    expect(card.context, isNotNull);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Select Server'), findsNothing);
+    expect(focusLost, 1);
+  });
+
+  testWidgets('a card still there when the server picker is dismissed gets '
+      'focus back', (tester) async {
+    late BuildContext host;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              host = context;
+              return const Focus(autofocus: true, child: Text('Akundel'));
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final card = Focus.of(tester.element(find.text('Akundel')));
+
+    var focusLost = 0;
+    HomeScreen.openItem(host, shared, onFocusLost: () => focusLost++);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(card.hasPrimaryFocus, isTrue);
+    expect(focusLost, 0);
+  });
 }

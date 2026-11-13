@@ -1442,12 +1442,25 @@ class HomeViewModel extends ChangeNotifier {
     if (!_isLoading) _saveRowCache();
   }
 
-  static bool _sameCards(HomeRow a, HomeRow b) =>
-      a.totalCount == b.totalCount &&
-      listEquals(
-        a.items.map(unifiedCardKey).toList(),
-        b.items.map(unifiedCardKey).toList(),
-      );
+  /// Whether [a] and [b] show the same cards with the same details. The ids
+  /// alone miss a title renamed, watched, or with a copy gone unreachable
+  /// since the row was cached.
+  static bool _sameCards(HomeRow a, HomeRow b) {
+    if (a.totalCount != b.totalCount || a.items.length != b.items.length) {
+      return false;
+    }
+    const sameData = DeepCollectionEquality();
+    for (var i = 0; i < a.items.length; i++) {
+      final ours = a.items[i];
+      final theirs = b.items[i];
+      if (ours.serverId != theirs.serverId ||
+          ours.id != theirs.id ||
+          !sameData.equals(ours.rawData, theirs.rawData)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   Future<void> _loadMoreMergedGenre(HomeRow row) async {
     final genre = _mergedGenreRows[row.id];

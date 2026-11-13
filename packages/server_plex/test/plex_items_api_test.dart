@@ -147,6 +147,39 @@ void main() {
     expect(item['OriginalTitle'], 'The Ledger of the Tides');
   });
 
+  test("a library's latest items get provider ids only when asked", () async {
+    final (dio, requests) = _recordingDio({
+      'Metadata': [
+        {
+          'ratingKey': '7',
+          'type': 'movie',
+          'title': 'The Ledger of the Tides',
+          'Guid': [
+            {'id': 'tmdb://1005'},
+          ],
+        },
+      ],
+    });
+    final api = PlexItemsApi(dio);
+
+    final latest = await api.getLatestItems(
+      parentId: 'section-1',
+      limit: 5,
+      fields: 'DateCreated,ProviderIds',
+    );
+    await api.getLatestItems(parentId: 'section-1', fields: 'DateCreated');
+    await api.getLatestItems(parentId: 'section-1');
+
+    expect(requests[0].path, '/library/sections/1/recentlyAdded');
+    expect(requests[0].queryParameters['includeGuids'], 1);
+    // The paging is still sent alongside.
+    expect(requests[0].queryParameters['X-Plex-Container-Size'], 5);
+    expect(requests[1].queryParameters.containsKey('includeGuids'), isFalse);
+    expect(requests[2].queryParameters.containsKey('includeGuids'), isFalse);
+    final item = (latest['Items'] as List).single as Map;
+    expect(item['ProviderIds'], {'Tmdb': '1005'});
+  });
+
   test('a search across libraries keeps only titles that match', () async {
     final (dio, requests) = _recordingDio({
       'Hub': [

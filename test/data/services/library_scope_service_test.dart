@@ -241,6 +241,57 @@ void main() {
       expect(kept.map((l) => l.id), ['shown']);
     });
 
+    group('with a library id two servers share', () {
+      AggregatedLibrary on(String serverId, String id) => AggregatedLibrary(
+        id: id,
+        name: '$id on $serverId',
+        collectionType: 'movies',
+        serverId: serverId,
+      );
+
+      setUp(() {
+        scope = LibraryScopeService(_MockClient(), views, () => 'srv1');
+        when(() => views.getMyMediaExcludes()).thenAnswer((_) async => {'1'});
+      });
+
+      test('only the active server loses the library it hid', () async {
+        final kept = await scope.withoutHiddenLibraries([
+          on('srv1', '1'),
+          on('srv1', '2'),
+          on('srv2', '1'),
+        ]);
+        expect(kept.map((l) => (l.serverId, l.id)), [
+          ('srv1', '2'),
+          ('srv2', '1'),
+        ]);
+      });
+
+      test("a merged tile keeps the other server's library", () async {
+        final kept = await scope.withoutHiddenLibraries([
+          AggregatedLibrary.merged(
+            name: 'Movies',
+            unifiedKindName: 'movies',
+            libraries: [on('srv1', '1'), on('srv2', '1'), on('srv2', '3')],
+          ),
+        ]);
+        expect(kept.single.mergedFrom.map((l) => (l.serverId, l.id)), [
+          ('srv2', '1'),
+          ('srv2', '3'),
+        ]);
+        // The artwork comes from the first library still shown.
+        expect((kept.single.serverId, kept.single.id), ('srv2', '1'));
+      });
+
+      test('a merged tile of other servers only is left as it is', () async {
+        final tile = AggregatedLibrary.merged(
+          name: 'Movies',
+          unifiedKindName: 'movies',
+          libraries: [on('srv2', '1'), on('srv3', '1')],
+        );
+        expect(await scope.withoutHiddenLibraries([tile]), [tile]);
+      });
+    });
+
     test('keeps everything when the excludes cant be read', () async {
       when(() => views.getMyMediaExcludes()).thenThrow(Exception('offline'));
       final libraries = [_library('a', 'movies')];

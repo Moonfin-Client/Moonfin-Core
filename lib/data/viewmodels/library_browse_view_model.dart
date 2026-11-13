@@ -511,7 +511,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   LibraryBrowseViewModel({
     required this.libraryId,
-    required MediaServerClient client,
+    required this._client,
     required UserPreferences prefs,
     required MdbListRepository mdbListRepository,
     this.genreId,
@@ -527,7 +527,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }) : _unifiedKinds = unifiedGenre != null
            ? unifiedGenreKinds ?? UnifiedLibraryKind.values
            : [?unifiedKind],
-       _client = client,
        _prefs = prefs,
        _mdbListRepository = mdbListRepository {
     _sortBy = _prefs.get(UserPreferences.librarySortBy(_prefKey));
@@ -604,8 +603,20 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _catalogCheckGeneration++;
       _openingCheckRunning = false;
       _rebuildOnCatalogChange = false;
-      unawaited(_load(keepShown: true));
-      notifyListeners();
+      // The cards on screen belong to the accounts that just left, and the
+      // new ones may not be allowed to see them: nothing of them stays while
+      // the new catalog loads.
+      _focusedItem = null;
+      _focusedRatings = const {};
+      _searchResults = null;
+      _searchResultsSource = null;
+      _searchNamesSource = null;
+      _searchNames = const [];
+      _groupedCategoriesCache = null;
+      _groupedCategoriesSource = null;
+      _facetValues = QueryFilterValues.empty;
+      _facetsTitlesRevision = -1;
+      unawaited(_load());
       return;
     }
     // Without a snapshot no page has been read yet, so the first page read
@@ -631,6 +642,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   /// Patches in place; an item the catalog dropped stays until the next load.
+  /// A card whose new data is blocked is taken out instead.
   void _patchFromCatalog({int? since}) {
     final catalog = _unifiedCatalog!;
     final fromRevision = since ?? _catalogPatchedRevision;
@@ -657,12 +669,18 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     final renderedKeys = <String>{};
     var changed = false;
+    var blocked = 0;
     final patched = <AggregatedItem>[];
     for (final item in _items) {
       final current =
           staleCopyKeys == null || staleCopyKeys.contains(_renderedKey(item))
           ? _currentCard(item)
           : item;
+      if (_blockedNow(item, current)) {
+        blocked++;
+        _unfocusCard(item);
+        continue;
+      }
       // Two cards whose titles were since folded into one both resolve to
       // it, and the second keeps what it showed until the list is rebuilt.
       if (!renderedKeys.add(_renderedKey(current))) {
@@ -673,11 +691,34 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       changed = changed || !identical(current, item);
       patched.add(current);
     }
-    if (!changed) return;
+    if (!changed && blocked == 0) return;
     _items = patched;
     _renderedItemIds
       ..clear()
       ..addAll(renderedKeys);
+    _countBlockedCards(blocked);
+  }
+
+  /// The page a card came from was filtered when it was read. A rating or a
+  /// copy that arrived since can block it, so changed cards are checked again.
+  bool _blockedNow(AggregatedItem item, AggregatedItem current) =>
+      !identical(current, item) && isAnyCopyBlocked(current.rawData);
+
+  /// Counted like a card filtered out of its page, so the total and the pages
+  /// still to come stay in step with the list.
+  void _countBlockedCards(int count) {
+    if (count == 0) return;
+    _filteredOutCount += count;
+    _totalCount = max(0, _totalCount - count);
+  }
+
+  /// The focused card feeds the header, which must not keep showing a title
+  /// that has just been taken out.
+  void _unfocusCard(AggregatedItem item) {
+    final focused = _focusedItem;
+    if (focused == null || _renderedKey(focused) != _renderedKey(item)) return;
+    _focusedItem = null;
+    _focusedRatings = const {};
   }
 
   /// [item] as the catalog holds it now, or [item] itself when nothing differs.
@@ -715,11 +756,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     return _renderedIndexByKey;
   }
 
-  /// Patches only the cards behind [staleCopyKeys]. False, with nothing
-  /// changed, when a card now resolves to another copy: that can collide with
-  /// a card already shown, so it is left to the walk over every card.
+  /// Patches only the cards behind [staleCopyKeys], taking out the ones that
+  /// are now blocked. False, with nothing changed, when a card now resolves to
+  /// another copy: that can collide with a card already shown, so it is left
+  /// to the walk over every card.
   bool _patchCards(Set<String> staleCopyKeys, Map<String, int> index) {
     Map<int, AggregatedItem>? replacements;
+    Set<int>? blocked;
     for (final key in staleCopyKeys) {
       final position = index[key];
       if (position == null) continue;
@@ -727,7 +770,26 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       final current = _currentCard(item);
       if (identical(current, item)) continue;
       if (_renderedKey(current) != key) return false;
+      if (isAnyCopyBlocked(current.rawData)) {
+        (blocked ??= {}).add(position);
+        continue;
+      }
       (replacements ??= {})[position] = current;
+    }
+    if (blocked != null) {
+      // Positions move, so the index is left to be built again from the list.
+      final kept = <AggregatedItem>[];
+      for (var i = 0; i < _items.length; i++) {
+        if (blocked.contains(i)) {
+          _renderedItemIds.remove(_renderedKey(_items[i]));
+          _unfocusCard(_items[i]);
+        } else {
+          kept.add(replacements?[i] ?? _items[i]);
+        }
+      }
+      _items = kept;
+      _countBlockedCards(blocked.length);
+      return true;
     }
     if (replacements == null) return true;
     final patched = List.of(_items);

@@ -400,7 +400,11 @@ void _registerUserScopedSingletons() {
     dispose: (repository) => repository.dispose(),
   );
   _getIt.registerLazySingleton(
-    () => LibraryScopeService(_getIt(), _getIt<UserViewsRepository>()),
+    () => LibraryScopeService(
+      _getIt(),
+      _getIt<UserViewsRepository>(),
+      () => _getIt<SessionRepository>().activeServerId,
+    ),
   );
   _getIt.registerLazySingleton(
     () => BlockedContentGate(_getIt(), _getIt<UserPreferences>()),

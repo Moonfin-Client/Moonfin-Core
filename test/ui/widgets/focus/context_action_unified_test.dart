@@ -6,8 +6,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/offline/connectivity_aware_media_server_client.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
@@ -467,6 +469,151 @@ void main() {
 
     verify(() => libraries['b']!.markPlayed('h1')).called(1);
     verifyNever(() => libraries['a']!.markPlayed(any()));
+  });
+
+  group('a title whose server has no client', () {
+    // Sent to the active server instead, its id could name another title
+    // there.
+    setUp(() {
+      when(() => factory.getClientIfExists('b')).thenReturn(null);
+    });
+
+    /// A movie from a merged library that only server b holds.
+    AggregatedItem onlyOnB({int positionTicks = 0}) => AggregatedItem(
+      id: 'b1',
+      serverId: 'b',
+      rawData: {
+        'Id': 'b1',
+        'Type': 'Movie',
+        'Name': 'Altovar',
+        'UserData': {
+          'Played': false,
+          'IsFavorite': false,
+          'PlaybackPositionTicks': positionTicks,
+        },
+        unifiedServerIdKey: 'b',
+        unifiedCopiesKey: [
+          UnifiedCopy(
+            serverId: 'b',
+            itemId: 'b1',
+            serverName: 'Server b',
+            played: false,
+            positionTicks: positionTicks,
+            playedPercentage: null,
+            reachable: true,
+          ).toJson(),
+        ],
+      },
+    );
+
+    Future<bool> selectAndReport(
+      WidgetTester tester,
+      AggregatedItem item,
+      String label,
+    ) async {
+      var changed = false;
+      final actions = await actionsFor(
+        tester,
+        item,
+        onChanged: () => changed = true,
+      );
+      await tester.runAsync(
+        () => actions.firstWhere((action) => action.label == label).onSelect(),
+      );
+      await tester.pump();
+      return changed;
+    }
+
+    void expectNothingSent() {
+      for (final library in libraries.values) {
+        verifyNever(() => library.markPlayed(any()));
+        verifyNever(() => library.unmarkPlayed(any()));
+        verifyNever(() => library.markFavorite(any()));
+      }
+    }
+
+    testWidgets('is not marked watched on the active server', (tester) async {
+      final changed = await selectAndReport(
+        tester,
+        onlyOnB(),
+        'Mark as Watched',
+      );
+
+      expectNothingSent();
+      expect(changed, isFalse);
+      expect(find.text('Not changed on Server b'), findsOneWidget);
+    });
+
+    testWidgets('is not made a favorite on the active server', (tester) async {
+      await selectAndReport(tester, onlyOnB(), 'Add to Favorites');
+
+      expectNothingSent();
+      expect(find.text('Not changed on Server b'), findsOneWidget);
+    });
+
+    testWidgets('shown from that server still changes the other copy', (
+      tester,
+    ) async {
+      final changed = await selectAndReport(
+        tester,
+        _sharedMovie(shownOn: 'b'),
+        'Mark as Watched',
+      );
+
+      verify(() => libraries['a']!.markPlayed('a1')).called(1);
+      verifyNever(() => libraries['a']!.markPlayed('b1'));
+      expect(changed, isTrue);
+      expect(find.text('Not changed on Server b'), findsOneWidget);
+    });
+
+    testWidgets('keeps its progress on the active server when hidden from '
+        'Continue Watching', (tester) async {
+      await selectAndReport(
+        tester,
+        onlyOnB(positionTicks: 600),
+        'Hide from Continue Watching',
+      );
+
+      expectNothingSent();
+    });
+
+    testWidgets('is left alone when only the stored servers name it', (
+      tester,
+    ) async {
+      // A card outside a merged library carries no copies to name its server.
+      final store = AuthenticationStore();
+      await store.putServer(
+        Server(
+          id: 'b',
+          name: 'Brindlemoor',
+          address: 'http://b.example',
+          version: '1',
+          serverType: ServerType.jellyfin,
+          dateAdded: DateTime(2026),
+        ),
+      );
+      GetIt.instance.registerSingleton<AuthenticationStore>(store);
+
+      await selectAndReport(tester, _singleServerMovie('b'), 'Mark as Watched');
+
+      expectNothingSent();
+      expect(find.text('Not changed on Brindlemoor'), findsOneWidget);
+    });
+
+    testWidgets('still goes to the active server when nothing says it is '
+        'another server\'s', (tester) async {
+      // Search results carry the id the server gives itself, which no client
+      // and no stored server goes by. They are the active server's.
+      final changed = await selectAndReport(
+        tester,
+        _singleServerMovie('id-the-server-gives-itself'),
+        'Mark as Watched',
+      );
+
+      verify(() => libraries['a']!.markPlayed('h1')).called(1);
+      expect(changed, isTrue);
+      expect(find.textContaining('Not changed'), findsNothing);
+    });
   });
 
   testWidgets('Play on a title on one server plays it straight away', (

@@ -589,6 +589,49 @@ void main() {
           expect(cardKeys(vm), merged);
         });
       });
+
+      test('a merged row restored from the cache takes the stored catalog\'s '
+          'details when only they differ', () async {
+        final first = model();
+        await first.load();
+        // The cache was written before Bantrel was renamed and watched: the
+        // same cards and copies, with older details.
+        cache.cachedRows = [
+          for (final row in first.rows)
+            row.copyWith(
+              items: [
+                for (final item in row.items)
+                  item.name != 'Bantrel'
+                      ? item
+                      : AggregatedItem(
+                          id: item.id,
+                          serverId: item.serverId,
+                          rawData: {
+                            ...item.rawData,
+                            'Name': 'Bantrel Before',
+                            'UserData': {'Played': false},
+                          },
+                        ),
+              ],
+            ),
+        ];
+        final merged = cardKeys(first);
+        final titles = rowTitles(first);
+
+        fakeAsync((async) {
+          loadLate(async);
+          expect(rowTitles(vm), contains('Bantrel Before'));
+          final writes = cache.writes;
+
+          catalog.gate!.complete();
+          async.flushMicrotasks();
+
+          expect(changes, 1);
+          expect(cardKeys(vm), merged);
+          expect(rowTitles(vm), titles);
+          expect(cache.writes, writes + 1);
+        });
+      });
     });
   });
 

@@ -1162,12 +1162,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   void _focusDockedGrid() {
     final last = lastFocusedGridIndex;
     final remembered = last == null ? null : gridItemFocusNodes[last];
-    final target = remembered?.context != null
+    // A node keeps its context after its card scrolls out of the built range,
+    // so only a mounted one is a card that can take the focus.
+    final target = remembered?.context?.mounted == true
         ? remembered!
         : _vm.items.isNotEmpty
         ? getGridItemFocusNode(0)
         : null;
-    if (target?.context != null) target!.requestFocus();
+    if (target?.context?.mounted == true) target!.requestFocus();
   }
 
   Widget _buildGridArea(BuildContext context) {

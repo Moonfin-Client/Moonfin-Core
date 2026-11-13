@@ -22,7 +22,11 @@ class LibraryScopeService {
   final MediaServerClient _client;
   final UserViewsRepository _views;
 
-  LibraryScopeService(this._client, this._views);
+  /// The id of the server [_views] reads, which is the one the hidden library
+  /// ids belong to.
+  final String? Function()? _activeServerId;
+
+  LibraryScopeService(this._client, this._views, [this._activeServerId]);
 
   /// Collection types that can hold each item type, so a search only visits
   /// the libraries worth visiting. A library that declares no type holds
@@ -98,14 +102,20 @@ class LibraryScopeService {
   /// For the multi server library list, which is assembled per server and so
   /// never passed through the filtering a single server's /UserViews does. A
   /// tile that stands for several libraries stays while any of them is shown.
+  ///
+  /// The hidden ids are the active server's, so only its libraries are
+  /// dropped. Another server can hand out the same library id, and it applies
+  /// its own hidden list when its libraries are read.
   Future<List<AggregatedLibrary>> withoutHiddenLibraries(
     List<AggregatedLibrary> libraries,
   ) async {
     try {
       final hidden = await _views.getMyMediaExcludes();
       if (hidden.isEmpty) return libraries;
+      final serverId = _activeServerId?.call();
       return [
-        for (final library in libraries) ?library.withoutHidden(hidden),
+        for (final library in libraries)
+          ?library.withoutHidden(hidden, serverId: serverId),
       ];
     } catch (_) {
       return libraries;

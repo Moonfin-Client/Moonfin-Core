@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
+import 'package:moonfin/data/services/unified_catalog_query.dart';
+import 'package:moonfin/data/utils/blocked_ratings.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,6 +37,12 @@ void main() {
   late Map<String, ServerType> serverTypes;
 
   late Map<String, String> movieIds;
+
+  /// Fields added to a server's new movie, per server id.
+  late Map<String, Map<String, dynamic>> movieExtras;
+
+  /// More movies a server lists after its new one, per server id.
+  late Map<String, List<Map<String, dynamic>>> moreMovies;
 
   /// Every server has a movie, a show and a collection library, and answers
   /// with one new title per library.
@@ -97,7 +105,9 @@ void main() {
                   'DateCreated': '2026-01-01T00:00:00.0000000Z',
                   if (isMovie && movieProviderIds[id] != null)
                     'ProviderIds': movieProviderIds[id],
+                  if (isMovie) ...?movieExtras[id],
                 },
+                if (isMovie) ...?moreMovies[id],
               ],
             };
           });
@@ -116,6 +126,9 @@ void main() {
     movieProviderIds = {};
     serverTypes = {};
     movieIds = {};
+    movieExtras = {};
+    moreMovies = {};
+    resetParentalFilterCache();
   });
 
   Future<void> mergeRows({required bool libraries}) async {
@@ -297,5 +310,140 @@ void main() {
 
     final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
     expect(movies.items, hasLength(2));
+  });
+
+  test('a title two servers hold carries both copies on its card', () async {
+    await mergeRows(libraries: true);
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Tmdb': '1003'},
+    };
+
+    final rows = await repository(['a', 'b']).getAggregatedLatestMediaRows();
+
+    final movie = rows.firstWhere((row) => row.id.endsWith('movies')).items
+        .single;
+    expect(movie.serverId, 'a');
+    final copies = unifiedCopiesOf(movie.rawData);
+    expect(copies.map((copy) => copy.key), [
+      'a|a-movies-new',
+      'b|b-movies-new',
+    ]);
+    expect(copies.map((copy) => copy.serverName), ['Server a', 'Server b']);
+  });
+
+  test('copies joined only through a later copy still make one card', () async {
+    await mergeRows(libraries: true);
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Imdb': 'tt9000001'},
+      'c': {'Tmdb': '1003', 'Imdb': 'tt9000001'},
+    };
+
+    final rows = await repository(['a', 'b', 'c'])
+        .getAggregatedLatestMediaRows();
+
+    final movie = rows.firstWhere((row) => row.id.endsWith('movies')).items
+        .single;
+    expect(unifiedCopiesOf(movie.rawData).map((copy) => copy.serverId), [
+      'a',
+      'b',
+      'c',
+    ]);
+  });
+
+  test('the copy in progress is the one a folded card shows', () async {
+    await mergeRows(libraries: true);
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Tmdb': '1003'},
+    };
+    movieExtras = {
+      'b': {
+        'UserData': {'PlaybackPositionTicks': 600000000},
+      },
+    };
+
+    final rows = await repository(['a', 'b']).getAggregatedLatestMediaRows();
+
+    final movie = rows.firstWhere((row) => row.id.endsWith('movies')).items
+        .single;
+    expect((movie.serverId, movie.id), ('b', 'b-movies-new'));
+    expect(unifiedCopiesOf(movie.rawData), hasLength(2));
+  });
+
+  test('a folded title keeps its place, and the row its limit', () async {
+    await mergeRows(libraries: true);
+    Map<String, dynamic> movie(int number, {required int day}) => {
+      'Id': 'movie-$number',
+      'Name': 'Movie $number',
+      'Type': 'Movie',
+      'DateCreated': '2025-12-${day.toString().padLeft(2, '0')}T00:00:00Z',
+      'ProviderIds': {'Tmdb': '${2000 + number}'},
+    };
+    moreMovies = {
+      // Newest first, each a day older than the one before.
+      'a': [for (var n = 1; n <= 20; n++) movie(n, day: 30 - n)],
+      // An older copy of the third of them.
+      'b': [movie(3, day: 1)],
+    };
+
+    final rows = await repository(['a', 'b']).getAggregatedLatestMediaRows();
+
+    final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
+    expect(movies.items, hasLength(15));
+    expect(movies.totalCount, 15);
+    expect(movies.items.skip(2).map((item) => item.id), [
+      for (var n = 1; n <= 13; n++) 'movie-$n',
+    ]);
+    final folded = movies.items[4];
+    expect(
+      unifiedCopiesOf(folded.rawData).map((copy) => copy.key),
+      ['a|movie-3', 'b|movie-3'],
+    );
+    expect(
+      movies.items.where((item) => unifiedCopiesOf(item.rawData).isNotEmpty),
+      [folded],
+    );
+  });
+
+  test('a title with a blocked copy on any server is left out', () async {
+    await mergeRows(libraries: true);
+    await prefs.set(UserPreferences.blockedParentalRatings, 'ZZ-18');
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Tmdb': '1003'},
+      'c': {'Tmdb': '1004'},
+    };
+    // Only the second server rates the shared title as blocked.
+    movieExtras = {
+      'a': {'OfficialRating': 'ZZ-7'},
+      'b': {'OfficialRating': 'ZZ-18'},
+    };
+
+    final rows = await repository(['a', 'b', 'c'])
+        .getAggregatedLatestMediaRows();
+
+    final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
+    expect(movies.items.map((item) => item.id), ['c-movies-new']);
+  });
+
+  test('without the libraries merged by type, a card carries no copies and '
+      'each server drops its own blocked titles', () async {
+    await mergeRows(libraries: false);
+    await prefs.set(UserPreferences.blockedParentalRatings, 'ZZ-18');
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Tmdb': '1003'},
+    };
+    movieExtras = {
+      'b': {'OfficialRating': 'ZZ-18'},
+    };
+
+    final rows = await repository(['a', 'b']).getAggregatedLatestMediaRows();
+
+    final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
+    expect(movies.items.map((item) => item.id), ['a-movies-new']);
+    expect(movies.items.single.rawData.containsKey(unifiedCopiesKey), isFalse);
   });
 }

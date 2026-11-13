@@ -106,6 +106,9 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   Future<List<GenreCardData>?> _loadCatalogGenreCards() async {
     final catalog = GetIt.instance<UnifiedCatalogService>();
     await catalog.ensureLoaded();
+    // The screen can be left while the catalog loads, and the card width
+    // below is read from its context.
+    if (!mounted) return null;
     final genres = catalog.genres(UnifiedLibraryKind.values);
     if (genres.isEmpty) return null;
     final maxWidth = _genreCardRequestMaxWidth();
@@ -211,7 +214,8 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
           // still open the unified genre pages.
         }
       }
-      if (token != _loadToken) return;
+      // A screen left meanwhile must not start asking the server for genres.
+      if (!mounted || token != _loadToken) return;
       _opensUnifiedGenres = isMerged;
       _fromCatalog = fromCatalog != null;
 

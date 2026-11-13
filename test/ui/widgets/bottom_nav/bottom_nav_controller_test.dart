@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -80,6 +82,28 @@ void main() {
     answer = [merged];
     await prefs.set(UserPreferences.mergeLibrariesByType, true);
     await tester.pump(_pastReloadDebounce);
+    await tester.pump();
+
+    expect(controller.navLibraries.single.unifiedKindName, 'movies');
+  });
+
+  testWidgets('a load that finishes after a newer one does not put its '
+      'libraries back', (tester) async {
+    // The first load is still out when the preference changes.
+    final slow = Completer<List<AggregatedLibrary>>();
+    when(servers.getAggregatedLibraries).thenAnswer((_) => slow.future);
+    final controller = BottomNavController();
+    addTearDown(controller.dispose);
+    await tester.pump();
+
+    when(servers.getAggregatedLibraries).thenAnswer((_) async => [merged]);
+    await prefs.set(UserPreferences.mergeLibrariesByType, true);
+    await tester.pump(_pastReloadDebounce);
+    await tester.pump();
+    expect(controller.navLibraries.single.unifiedKindName, 'movies');
+
+    slow.complete([perServer]);
+    await tester.pump();
     await tester.pump();
 
     expect(controller.navLibraries.single.unifiedKindName, 'movies');

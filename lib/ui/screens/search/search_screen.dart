@@ -1691,10 +1691,12 @@ class _SearchScreenState extends State<SearchScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       restoreGridFocusIfNeeded();
-      if (opener?.context != null) return;
+      // A node keeps its context after its card is removed, so only a
+      // mounted one says the card is still there.
+      if (opener?.context?.mounted == true) return;
       final focus = FocusManager.instance.primaryFocus;
       if ((focus == null || focus is FocusScopeNode) &&
-          _tabsFocusNode.context != null) {
+          _tabsFocusNode.context?.mounted == true) {
         _tabsFocusNode.requestFocus();
       }
     });

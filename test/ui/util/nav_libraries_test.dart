@@ -27,6 +27,33 @@ void main() {
     expect(sameNavLibraries([movies, shows], [shows, movies]), isFalse);
   });
 
+  test('a library renamed, retyped or on another server under the same id '
+      'makes a different list', () {
+    AggregatedLibrary like(
+      AggregatedLibrary library, {
+      String? name,
+      String? collectionType,
+      String? serverId,
+    }) => AggregatedLibrary(
+      id: library.id,
+      name: name ?? library.name,
+      collectionType: collectionType ?? library.collectionType,
+      serverId: serverId ?? library.serverId,
+    );
+
+    expect(sameNavLibraries([movies], [like(movies)]), isTrue);
+    expect(
+      sameNavLibraries([movies], [like(movies, name: 'Films (Server a)')]),
+      isFalse,
+    );
+    expect(
+      sameNavLibraries([movies], [like(movies, collectionType: 'homevideos')]),
+      isFalse,
+    );
+    // Two servers can hand out the same library id.
+    expect(sameNavLibraries([movies], [like(movies, serverId: 'b')]), isFalse);
+  });
+
   test('a merged library differs from the library whose id it keeps', () {
     final merged = AggregatedLibrary.merged(
       name: 'Movies',

@@ -56,6 +56,9 @@ void main() {
   late UserPreferences prefs;
   late DateTime now;
 
+  /// While set, the catalog waits on it before learning who is signed in.
+  Completer<void>? sessionsGate;
+
   Future<LibraryBrowseViewModel> viewModel({
     UnifiedLibraryKind kind = UnifiedLibraryKind.movies,
   }) async {
@@ -83,6 +86,7 @@ void main() {
   setUp(() {
     db = OfflineDatabase(DatabaseConnection(NativeDatabase.memory()));
     now = unifiedTestNow;
+    sessionsGate = null;
     // Tests that read servers call signInToFakeServers() to swap these for
     // the two fakes.
     sessions = [
@@ -92,7 +96,10 @@ void main() {
     b = FakeCatalogServer('b')..stubApis();
     catalog = _CountingCatalog(
       database: db,
-      loadSessions: () async => sessions,
+      loadSessions: () async {
+        await sessionsGate?.future;
+        return sessions;
+      },
       activeServerId: () => 'a',
       now: () => now,
       retryDelay: Duration.zero,
@@ -627,6 +634,146 @@ void main() {
     });
   });
 
+  group('a title that becomes blocked while the grid is open', () {
+    // Set after the first load, the way the tests above leave the grid open.
+    Future<void> blockRating(String rating) async {
+      await prefs.set(UserPreferences.blockedParentalRatings, rating);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      resetParentalFilterCache();
+    }
+
+    setUp(signInToFakeServers);
+
+    test('leaves at once when its rating changes, and stays out of the '
+        'count and the search', () async {
+      a.movies = [
+        catalogMovie('a1', 'Altovar', rating: 'PG'),
+        catalogMovie('a2', 'Hodrimel', rating: 'PG'),
+      ];
+      b.movies = [catalogMovie('b1', 'Rusquin')];
+      await catalog.forceFullRead();
+      final vm = await viewModel();
+      await blockRating('R');
+      await vm.load();
+      expect(names(vm), ['Altovar', 'Hodrimel', 'Rusquin']);
+      vm.setFocusedItem(vm.items.first);
+
+      a.movies = [
+        catalogMovie('a1', 'Altovar', rating: 'R'),
+        a.movies.last,
+      ];
+      await catalog.forceFullRead();
+      await pumpEventQueue();
+
+      expect(names(vm), ['Hodrimel', 'Rusquin']);
+      expect(vm.totalCount, 2);
+      expect(vm.hasMore, isFalse);
+      expect(vm.focusedItem, isNull);
+      vm.setSearchQuery('alto');
+      expect(vm.items, isEmpty);
+      vm.setSearchQuery('');
+
+      await vm.applyCatalogUpdate();
+      expect(names(vm), ['Hodrimel', 'Rusquin']);
+      expect(vm.totalCount, 2);
+    });
+
+    test('leaves when another server adds a copy with a blocked rating',
+        () async {
+      a.movies = [
+        catalogMovie('a1', 'Altovar', tmdb: '1001', rating: 'PG'),
+        catalogMovie('a2', 'Hodrimel'),
+      ];
+      b.movies = [catalogMovie('b1', 'Rusquin')];
+      await catalog.forceFullRead();
+      final vm = await viewModel();
+      await blockRating('R');
+      await vm.load();
+      expect(names(vm), ['Altovar', 'Hodrimel', 'Rusquin']);
+
+      b.movies = [
+        ...b.movies,
+        catalogMovie('b2', 'Altovar', tmdb: '1001', rating: 'R'),
+      ];
+      await catalog.forceFullRead();
+      await pumpEventQueue();
+
+      // The card is still a's copy, whose own rating is allowed.
+      expect(names(vm), ['Hodrimel', 'Rusquin']);
+      expect(vm.totalCount, 2);
+    });
+
+    test('keeps the count right for the pages still to come', () async {
+      List<Map<String, dynamic>> movies({Set<int> restricted = const {}}) => [
+        for (var i = 0; i < 150; i++)
+          catalogMovie(
+            'a$i',
+            'Movie ${'$i'.padLeft(3, '0')}',
+            rating: restricted.contains(i) ? 'R' : 'PG',
+          ),
+      ];
+      a.movies = movies();
+      b.movies = [];
+      await catalog.forceFullRead();
+      final vm = await viewModel();
+      await blockRating('R');
+      await vm.load();
+      final firstPage = vm.items.length;
+      expect(firstPage, inInclusiveRange(4, 139));
+      expect(vm.totalCount, 150);
+
+      // One is on screen, the other on a page not read yet.
+      a.movies = movies(restricted: {3, 140});
+      await catalog.forceFullRead();
+      await pumpEventQueue();
+
+      expect(vm.items, hasLength(firstPage - 1));
+      expect(names(vm), isNot(contains('Movie 003')));
+      expect(vm.totalCount, 149);
+      expect(vm.hasMore, isTrue);
+
+      await vm.ensureAllItemsLoaded();
+
+      expect(vm.items, hasLength(148));
+      expect(names(vm), isNot(contains('Movie 003')));
+      expect(names(vm), isNot(contains('Movie 140')));
+      expect(vm.totalCount, 148);
+      expect(vm.hasMore, isFalse);
+    });
+
+    test('leaves when only its watched state is brought up to date, and '
+        'the cards after it are still found', () async {
+      a.movies = [
+        catalogMovie('a1', 'Altovar', rating: 'PG'),
+        catalogMovie('a2', 'Hodrimel'),
+      ];
+      b.movies = [catalogMovie('b1', 'Rusquin')];
+      await catalog.forceFullRead();
+      final vm = await viewModel();
+      await vm.load();
+      expect(names(vm), ['Altovar', 'Hodrimel', 'Rusquin']);
+      // Nothing reloads the grid for this, so the card is still on screen.
+      await blockRating('PG');
+      catalog.lookups = 0;
+
+      a.setUserData('a1', {'Played': true});
+      userDataSync.publish('a1', {'Played': true});
+      await pumpEventQueue();
+
+      expect(names(vm), ['Hodrimel', 'Rusquin']);
+      expect(vm.totalCount, 2);
+      // Only the changed card was looked at.
+      expect(catalog.lookups, 2);
+
+      b.setUserData('b1', {'Played': true});
+      userDataSync.publish('b1', {'Played': true});
+      await pumpEventQueue();
+
+      expect(played(vm, 'Rusquin'), isTrue);
+      expect(played(vm, 'Hodrimel'), isFalse);
+    });
+  });
+
   group('paging', () {
     setUp(() async {
       await seedCatalog(db, 'a', [
@@ -965,6 +1112,66 @@ void main() {
 
     expect(names(vm), ['Altovar', 'Hodrimel']);
     expect(vm.hasPendingCatalogUpdate, isFalse);
+  });
+
+  test('shows nothing of the accounts that left while the new accounts\' '
+      'catalog loads', () async {
+    a.movies = [
+      catalogMovie('a1', 'Altovar', genres: ['Crime']),
+      catalogMovie('a2', 'Hodrimel', genres: ['Crime']),
+    ];
+    b.movies = [
+      catalogMovie('b1', 'Rusquin', genres: ['Family']),
+      catalogMovie('b2', 'Zintrymel', genres: ['Family']),
+    ];
+    sessions = [a.session];
+    await catalog.forceFullRead();
+    final vm = await viewModel();
+    await vm.load();
+    await pumpEventQueue();
+    await vm.ensureFacetValuesLoaded();
+    expect(names(vm), ['Altovar', 'Hodrimel']);
+    expect(vm.facetValues.genres, ['Crime']);
+    vm.setFocusedItem(vm.items.first);
+    vm.setSearchQuery('altovar');
+    expect(names(vm), ['Altovar']);
+
+    // Everything the screen is told to draw from here on.
+    final shown = <String>{};
+    void record() => shown.addAll([
+      ...names(vm),
+      ?vm.focusedItem?.name,
+      for (final group in vm.groupedCategories.values)
+        for (final item in group) item.name,
+    ]);
+    vm.addListener(record);
+
+    // A restricted profile takes over, and its catalog is slow to load.
+    sessionsGate = Completer<void>();
+    sessions = [b.session];
+    catalog.reset();
+    await pumpEventQueue();
+
+    expect(vm.state, LibraryBrowseState.loading);
+    expect(vm.items, isEmpty);
+    expect(vm.totalCount, 0);
+    expect(vm.focusedItem, isNull);
+    expect(vm.focusedRatings, isEmpty);
+    expect(vm.facetValues.genres, isEmpty);
+    expect(vm.hasPendingCatalogUpdate, isFalse);
+    vm.setSearchQuery('');
+    expect(vm.items, isEmpty);
+    expect(shown, isEmpty);
+
+    sessionsGate!.complete();
+    await pumpEventQueue();
+    vm.removeListener(record);
+
+    expect(vm.state, LibraryBrowseState.ready);
+    expect(names(vm), ['Rusquin', 'Zintrymel']);
+    expect(vm.facetValues.genres, ['Family']);
+    expect(vm.focusedItem, isNull);
+    expect(shown, {'Rusquin', 'Zintrymel'});
   });
 
   test('a check asked for before the accounts were switched, finishing '

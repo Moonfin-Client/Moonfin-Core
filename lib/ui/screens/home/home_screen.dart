@@ -194,7 +194,9 @@ class HomeScreen extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final focus = FocusManager.instance.primaryFocus;
             if (focus != null && focus is! FocusScopeNode) return;
-            if (opener.context != null) {
+            // A node keeps its context after its card is removed, so only
+            // a mounted one says the card is still there.
+            if (opener.context?.mounted == true) {
               opener.requestFocus();
             } else {
               onFocusLost?.call();

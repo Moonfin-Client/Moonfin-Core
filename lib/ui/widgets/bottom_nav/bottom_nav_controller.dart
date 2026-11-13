@@ -76,6 +76,7 @@ class BottomNavController extends ChangeNotifier {
   String _signature = '';
   late String _librariesSource;
   bool _disposed = false;
+  int _librariesGeneration = 0;
 
   List<AggregatedLibrary> _libraries = const [];
   String? _userImageUrl;
@@ -249,6 +250,9 @@ class BottomNavController extends ChangeNotifier {
   }
 
   Future<void> _loadLibraries() async {
+    // Only the latest load publishes. An older one can finish later, and
+    // would put back the libraries of the preferences it started under.
+    final generation = ++_librariesGeneration;
     try {
       final useMultiServer = _prefs.get(
         UserPreferences.enableMultiServerLibraries,
@@ -267,7 +271,8 @@ class BottomNavController extends ChangeNotifier {
               .withoutHiddenLibraries(libs)
           : libs;
 
-      if (_disposed || sameNavLibraries(_libraries, filtered)) return;
+      if (_disposed || generation != _librariesGeneration) return;
+      if (sameNavLibraries(_libraries, filtered)) return;
       _libraries = filtered;
       notifyListeners();
     } catch (_) {}
