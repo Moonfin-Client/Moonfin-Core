@@ -581,11 +581,12 @@ class _HomeShellState extends State<_HomeShell>
       _themeMusicService.fadeOutAndStop();
       return;
     }
-    // Only the resume / next-up rows can change from viewing an item, so a
-    // lightweight in-place refresh keeps every other row (its paginated items,
-    // scroll offset, and focus) intact. A full refresh still runs on the Home
-    // button and pull-to-refresh. The refresh can remove a row that refetched
-    // empty, so once it lands, re-assert focus in case it held the focused row.
+    // Only the resume / next-up rows can change from viewing an item, and On
+    // Now from the time spent away, so a lightweight in-place refresh keeps
+    // every other row (its paginated items, scroll offset, and focus) intact.
+    // A full refresh still runs on the Home button and pull-to-refresh. The
+    // refresh can remove a row that refetched empty, so once it lands,
+    // re-assert focus in case it held the focused row.
     Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
       await _viewModel.refreshResumeAndNextUp();

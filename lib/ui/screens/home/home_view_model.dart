@@ -1043,17 +1043,66 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// Lightweight refresh for returning to home from a pushed route. Viewing or
-  /// playing an item only changes the resume and next-up rows, so this refetches
-  /// just those and updates them in place, leaving every other row (and its
-  /// pagination, scroll, and focus state) untouched. A full [refresh] still runs
-  /// on the Home button, pull-to-refresh, cold start, and periodic refresh.
+  /// playing an item changes the resume and next-up rows, and time spent away
+  /// moves On Now along, so this refetches just those and updates them in
+  /// place, leaving every other row (and its pagination, scroll, and focus
+  /// state) untouched. A full [refresh] still runs on the Home button,
+  /// pull-to-refresh, cold start, and periodic refresh.
   Future<void> refreshResumeAndNextUp() async {
     // A full load can start before the server has the playback stop and fetch
     // the old rows, so wait for it to finish and fetch again.
     while (_isLoading) {
       await _loadDone;
     }
+    await Future.wait([_refreshResumeRows(), _refreshOnNowRows()]);
+  }
 
+  /// Refetches the programs airing now for the On Now rows: the standalone
+  /// section and the row inside the Live TV section, which share one fetch.
+  Future<void> _refreshOnNowRows() async {
+    final ids = [
+      for (final row in _rows)
+        if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
+          row.id,
+    ];
+    if (ids.isEmpty) {
+      await _restoreMissingOnNow();
+      return;
+    }
+    final fresh = _dataSource.loadOnNow(_serverId);
+    // Each row's refresh handles a failure; this keeps one that no row ends
+    // up awaiting from surfacing as uncaught.
+    fresh.ignore();
+    await Future.wait([
+      for (final id in ids)
+        _refreshRowInPlace(id, () => fresh, (items) => items),
+    ]);
+  }
+
+  /// Brings On Now back when its section is on but the row was left out for
+  /// having nothing airing, e.g. the guide was filled in while the user was
+  /// away. Checks for programs first, so a section that stays empty costs one
+  /// small request per return; once there are some, Home refreshes as the
+  /// Home button does, which lays every section out in the user's order.
+  Future<void> _restoreMissingOnNow() async {
+    final configs = _prefs.activeHomeSectionConfigs;
+    if (!configs.any(
+      (c) =>
+          c.type == HomeSectionType.onNow || c.type == HomeSectionType.liveTv,
+    )) {
+      return;
+    }
+    final HomeRow fresh;
+    try {
+      fresh = await _dataSource.loadOnNow(_serverId);
+    } catch (_) {
+      return;
+    }
+    if (filterEmptyElements(fresh.items).isEmpty) return;
+    await load(preserveExisting: true);
+  }
+
+  Future<void> _refreshResumeRows() async {
     // A row that came back empty was dropped, so there's no row to refresh in
     // place. Loading it as a new section brings it back once it has items.
     if (const ['resume', 'nextUp', 'resumeAudio'].any(
