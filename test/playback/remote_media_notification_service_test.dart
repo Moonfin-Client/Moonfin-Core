@@ -533,6 +533,19 @@ void main() {
     );
     await Future<void>.delayed(Duration.zero);
     expect(service.activeSession?.itemId, 'ep-2');
+
+    // Disabling setting after dismissing clears dismissed state and drops keepsSocketAlive.
+    service.dismissCurrent();
+    expect(service.keepsSocketAlive, isTrue);
+    await prefs.set(UserPreferences.remoteMediaNotification, false);
+    await Future<void>.delayed(Duration.zero);
+    expect(service.keepsSocketAlive, isFalse);
+
+    // Re-enabling shows the active session cleanly instead of staying suppressed.
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-2');
+    expect(service.keepsSocketAlive, isTrue);
   });
 
   test('completed stop/pause does not modify a replacement session', () async {

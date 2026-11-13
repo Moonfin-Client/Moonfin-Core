@@ -134,11 +134,19 @@ class RemoteMediaNotificationService {
   /// one was locally dismissed while still playing) so the WebSocket stays
   /// connected across brief screen-off / background periods.
   bool get keepsSocketAlive {
+    if (!_isFeatureEnabled) return false;
     final session = activeSessionNotifier.value;
     if (session != null) return session.isPlaying;
     return _dismissedIdentityKey != null &&
         !_dismissedIsCastBacked &&
         _dismissedCandidatePlaying;
+  }
+
+  void _clearDismissedState() {
+    _dismissedIdentityKey = null;
+    _dismissedWhilePaused = false;
+    _dismissedIsCastBacked = false;
+    _dismissedCandidatePlaying = false;
   }
 
   void start() {
@@ -168,10 +176,7 @@ class RemoteMediaNotificationService {
     _sessionGeneration++;
     _sessionsById.clear();
     _preferredSessionId = null;
-    _dismissedIdentityKey = null;
-    _dismissedWhilePaused = false;
-    _dismissedIsCastBacked = false;
-    _dismissedCandidatePlaying = false;
+    _clearDismissedState();
     _lastSessionsPushAt = null;
     _syncSubscription();
     _recompute();
@@ -293,6 +298,7 @@ class RemoteMediaNotificationService {
   void _recompute() {
     if (!_isFeatureEnabled) {
       _preferredSessionId = null;
+      _clearDismissedState();
       _setSession(null);
       _syncFallbackPoll();
       return;
@@ -301,10 +307,7 @@ class RemoteMediaNotificationService {
     final candidate = _buildCastCandidate() ?? _buildRemoteSessionCandidate();
     if (candidate == null) {
       _preferredSessionId = null;
-      _dismissedIdentityKey = null;
-      _dismissedWhilePaused = false;
-      _dismissedIsCastBacked = false;
-      _dismissedCandidatePlaying = false;
+      _clearDismissedState();
       _setSession(null);
       _syncFallbackPoll();
       return;
@@ -322,10 +325,7 @@ class RemoteMediaNotificationService {
         _syncFallbackPoll();
         return;
       }
-      _dismissedIdentityKey = null;
-      _dismissedWhilePaused = false;
-      _dismissedIsCastBacked = false;
-      _dismissedCandidatePlaying = false;
+      _clearDismissedState();
     }
 
     _setSession(candidate);
