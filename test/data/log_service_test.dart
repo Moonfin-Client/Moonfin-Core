@@ -166,6 +166,14 @@ void main() {
         r'open C:\Users\jane\Videos\x.mkv failed',
         r'\Users\[REDACTED]\Videos',
       );
+      assertRedacted(
+        'GET /Users/0123456789abcdef0123456789abcdef/Items',
+        '/Users/0123456789abcdef0123456789abcdef/Items',
+      );
+      assertRedacted(
+        'GET /Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+        '/Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+      );
     });
 
     test('redacts a credential sent as a header', () {
