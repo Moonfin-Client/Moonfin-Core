@@ -48,6 +48,7 @@ import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/socket_handler.dart';
+import '../../playback/remote_media_notification_service.dart';
 import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
@@ -607,14 +608,18 @@ class SessionRepository {
       // A socket that dropped while the app sat idle is waiting out its
       // backoff, and the user is here now, so do not make them wait for it.
       _socketHandler.retryNow();
-      return;
+    } else {
+      _socketSuspended = false;
+      final serverId = _activeServerId;
+      if (serverId != null) {
+        final client = _clientFactory.getClientIfExists(serverId);
+        if (client != null) {
+          _socketHandler.connectTo(client);
+        }
+      }
     }
-    _socketSuspended = false;
-    final serverId = _activeServerId;
-    if (serverId == null) return;
-    final client = _clientFactory.getClientIfExists(serverId);
-    if (client != null) {
-      _socketHandler.connectTo(client);
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      unawaited(GetIt.instance<RemoteMediaNotificationService>().refresh());
     }
   }
 
@@ -667,6 +672,10 @@ class SessionRepository {
     }
     if (getIt.isRegistered<CastService>() &&
         getIt<CastService>().activeKindNotifier.value != null) {
+      return true;
+    }
+    if (getIt.isRegistered<RemoteMediaNotificationService>() &&
+        getIt<RemoteMediaNotificationService>().keepsSocketAlive) {
       return true;
     }
     return false;
@@ -841,6 +850,9 @@ class SessionRepository {
     _socketConnectionSubscription?.cancel();
     _socketConnectionSubscription = null;
     userDataSync.reset();
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      GetIt.instance<RemoteMediaNotificationService>().clearSessions();
+    }
     _socketHandler.disconnect();
 
     if (serverId != null) {
@@ -920,6 +932,9 @@ class SessionRepository {
     _socketConnectionSubscription = _socketHandler.connections.listen(
       (_) => unawaited(_reportRemoteCapabilities(client)),
     );
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      unawaited(GetIt.instance<RemoteMediaNotificationService>().refresh());
+    }
   }
 
   // Plugin events pushed over the session websocket (Emby transport) get

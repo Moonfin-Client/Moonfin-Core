@@ -15,17 +15,35 @@ import 'overlay_sheet.dart';
 import 'remote_search_sheet.dart';
 import 'remote_navigation_pad.dart';
 
-void showRemoteControlDialog(BuildContext context) {
+BuildContext? _activeRemoteControlContext;
+State? _activeRemoteControlSheet;
+Object? _activeRemoteControlToken;
+
+void showRemoteControlDialog(
+  BuildContext context, {
+  String? initialSessionId,
+}) {
+  if (_activeRemoteControlContext?.mounted ?? false) return;
+  final token = Object();
+  _activeRemoteControlToken = token;
+  _activeRemoteControlContext = context;
   showFocusRestoringModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => const _RemoteControlSheet(),
-  );
+    builder: (_) => _RemoteControlSheet(initialSessionId: initialSessionId),
+  ).whenComplete(() {
+    if (identical(_activeRemoteControlToken, token)) {
+      _activeRemoteControlToken = null;
+      _activeRemoteControlContext = null;
+    }
+  });
 }
 
 class _RemoteControlSheet extends StatefulWidget {
-  const _RemoteControlSheet();
+  const _RemoteControlSheet({this.initialSessionId});
+
+  final String? initialSessionId;
 
   @override
   State<_RemoteControlSheet> createState() => _RemoteControlSheetState();
@@ -57,10 +75,12 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   String? _searchSessionId;
   String? _searchDeviceId;
   bool _openingSearch = false;
+  bool _appliedInitialSelection = false;
 
   @override
   void initState() {
     super.initState();
+    _activeRemoteControlSheet = this;
     _sessionApi = GetIt.instance<MediaServerClient>().sessionApi;
     _userId = GetIt.instance<MediaServerClient>().userId;
     WidgetsBinding.instance.addObserver(this);
@@ -91,6 +111,11 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
 
   @override
   void dispose() {
+    if (identical(_activeRemoteControlSheet, this)) {
+      _activeRemoteControlSheet = null;
+      _activeRemoteControlToken = null;
+      _activeRemoteControlContext = null;
+    }
     WidgetsBinding.instance.removeObserver(this);
     _cancelNavigation();
     _cancelVolume();
@@ -352,6 +377,15 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
             _cancelNavigation();
             _cancelVolume();
           }
+        }
+        if (!_appliedInitialSelection && widget.initialSessionId != null) {
+          _appliedInitialSelection = true;
+          _selectedSession ??= controllable
+              .cast<Map<String, dynamic>?>()
+              .firstWhere(
+                (s) => s?['Id']?.toString() == widget.initialSessionId,
+                orElse: () => null,
+              );
         }
         _reconcileVolume(volumeRequest);
       });
