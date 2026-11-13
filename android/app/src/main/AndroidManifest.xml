@@ -88,13 +88,13 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="seerr_notifications" />
 
-        <!-- Impeller renderer, set per flavor in build.gradle.kts. Off by
-             default on TV boxes, whose GPUs (often PowerVR) stutter on the
-             Impeller GLES fallback. MoonfinApplication turns it on at runtime
-             for boxes where it runs on Vulkan. -->
+        <!-- Impeller is off here because TV boxes, often PowerVR, stutter on
+             the Impeller GLES fallback. MoonfinApplication turns it on at
+             runtime for phones and tablets, and for boxes where it runs on
+             Vulkan. -->
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="${enableImpeller}" />
+            android:value="false" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.moonfin.androidtv.MoonfinCastOptionsProvider" />

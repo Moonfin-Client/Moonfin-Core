@@ -142,21 +142,11 @@ jobs:
           print(out)
           EOF
 
-  # Android APK + AAB, with mobile and TV on their own runners
+  # Android APK + AAB, one package for phones, tablets and TVs
   android:
     needs: plan
     if: needs.plan.outputs.android == 'true'
-    name: android (${{ matrix.target }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: mobile
-            artifact: android
-            files: Moonfin_Android_v*.*
-          - target: tv
-            artifact: android-tv
-            files: Moonfin_AndroidTV_v*.*
+    name: android
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
@@ -236,12 +226,12 @@ jobs:
       - name: Build
         run: |
           chmod +x build-android.sh
-          ./build-android.sh ${{ matrix.target }}
+          ./build-android.sh
 
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.artifact }}
-          path: ${{ matrix.files }}
+          name: android
+          path: Moonfin_Android_v*.*
 
   # iOS: an unsigned IPA for releases, or a TestFlight upload. It builds with
   # the iOS 27 SDK so the app fills an iPhone Duo's screen and gets its hinge.

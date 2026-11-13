@@ -326,6 +326,13 @@ Future<void> _detectAndSetTvMode() async {
       final isTV = await channel.invokeMethod<bool>('isTvDevice');
       if (isTV != null) {
         PlatformDetection.setTvMode(isTV);
+        if (isTV) {
+          try {
+            final touch =
+                await channel.invokeMethod<bool>('supportsTouchLayout');
+            if (touch != null) PlatformDetection.setSupportsTouchLayout(touch);
+          } catch (_) {}
+        }
         return;
       }
     } catch (_) {}

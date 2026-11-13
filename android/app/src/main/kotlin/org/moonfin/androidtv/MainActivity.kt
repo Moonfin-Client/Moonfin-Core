@@ -96,6 +96,8 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     private var displayCapsSink: EventChannel.EventSink? = null
     private var displayListener: DisplayManager.DisplayListener? = null
     private var castStatusListener: SessionManagerListener<CastSession>? = null
+    // The TV UI has no cast buttons, so a TV never starts the Cast SDK.
+    private val castSdkEnabled by lazy { !isTelevision(this) }
     private var castDiscoveryCallback: MediaRouter.Callback? = null
 
     // A receiver is published by both the MediaRouter and the MediaRouter2
@@ -300,6 +302,8 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Before super.onCreate, which starts the engine and picks its renderer.
+        rememberLeanbackLaunch(this, intent)
         discardHeadlessEngine()
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -412,6 +416,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
                 "isTvDevice" -> {
                     result.success(isTvDevice())
                 }
+                "supportsTouchLayout" -> result.success(supportsTouchLayoutOrNull(this))
                 "displayHdrTypes" -> result.success(getDisplayHdrTypes())
                 "displayCapabilities" -> {
                     // The caller stamps why it asked, so the probe log can tell
@@ -633,7 +638,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
                 "stopGoogleCastSession" -> {
                     // Stopping only the media leaves the session up, and with it the
                     // receiver, the cast icon and the notification.
-                    runCatching { CastContext.getSharedInstance(this).sessionManager.endCurrentSession(true) }
+                    runCatching { castContext()?.sessionManager?.endCurrentSession(true) }
                     result.success(null)
                 }
                 "getGoogleCastVolume" -> {
@@ -1153,8 +1158,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         nativePad = null
         dismissRunnable?.let { handler.removeCallbacks(it) }
         pendingCastTimeout?.let { handler.removeCallbacks(it) }
-        val castContext = runCatching { CastContext.getSharedInstance(this) }.getOrNull()
-        val sessionManager = castContext?.sessionManager
+        val sessionManager = runCatching { castContext()?.sessionManager }.getOrNull()
         pendingCastListener?.let { listener ->
             sessionManager?.removeSessionManagerListener(listener, CastSession::class.java)
         }
@@ -1578,7 +1582,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     private fun registerCastStatusListener() {
-        val sessionManager = runCatching { CastContext.getSharedInstance(this).sessionManager }.getOrNull()
+        val sessionManager = runCatching { castContext()?.sessionManager }.getOrNull()
             ?: return
 
         castStatusListener?.let { listener ->
@@ -2123,8 +2127,11 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     private fun getCurrentCastSession(): CastSession? {
-        return runCatching { CastContext.getSharedInstance(this).sessionManager.currentCastSession }
+        return runCatching { castContext()?.sessionManager?.currentCastSession }
             .getOrNull()
     }
+
+    private fun castContext(): CastContext? =
+        if (castSdkEnabled) CastContext.getSharedInstance(this) else null
 
 }
