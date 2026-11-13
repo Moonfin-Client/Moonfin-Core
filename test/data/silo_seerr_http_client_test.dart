@@ -130,28 +130,24 @@ Map<String, (int, Object?)> _base({bool admin = false}) => {
 };
 
 void main() {
-  test(
-    'status and user come from Silo, with request permissions only',
-    () async {
-      final silo = _Silo(_base());
-      final status = await _client(silo).getMoonfinStatus();
+  test('status and user come from Silo, with request permissions only',
+      () async {
+    final silo = _Silo(_base());
+    final status = await _client(silo).getMoonfinStatus();
 
-      expect(status.enabled, isTrue);
-      expect(status.authenticated, isTrue);
-      expect(status.seerrUserId, 7);
-      final user = SeerrUser(id: 7, permissions: status.permissions);
-      expect(user.hasPermission(SeerrPermission.request), isTrue);
-      expect(user.hasPermission(SeerrPermission.manageRequests), isFalse);
-    },
-  );
+    expect(status.enabled, isTrue);
+    expect(status.authenticated, isTrue);
+    expect(status.seerrUserId, 7);
+    final user = SeerrUser(id: 7, permissions: status.permissions);
+    expect(user.hasPermission(SeerrPermission.request), isTrue);
+    expect(user.hasPermission(SeerrPermission.manageRequests), isFalse);
+  });
 
   test('an acting admin may manage requests', () async {
     final status = await _client(_Silo(_base(admin: true))).getMoonfinStatus();
     expect(
-      SeerrUser(
-        id: 7,
-        permissions: status.permissions,
-      ).hasPermission(SeerrPermission.manageRequests),
+      SeerrUser(id: 7, permissions: status.permissions)
+          .hasPermission(SeerrPermission.manageRequests),
       isTrue,
     );
   });
@@ -176,9 +172,11 @@ void main() {
     );
 
     expect(silo.calls.last, contains('media_type=series'));
-    expect(page.results.map((r) => r.id), [
-      95396,
-    ], reason: 'a title already in the library shows only with the library');
+    expect(
+      page.results.map((r) => r.id),
+      [95396],
+      reason: 'a title already in the library shows only with the library',
+    );
     final severance = page.results.single;
     expect(severance.mediaType, 'tv');
     expect(severance.name, 'Severance');
@@ -194,11 +192,7 @@ void main() {
         {
           'items': [],
           'row_order': [
-            {
-              'key': 'trending_movies',
-              'type': 'tmdb_chart',
-              'title': 'Trending Movies',
-            },
+            {'key': 'trending_movies', 'type': 'tmdb_chart', 'title': 'Trending Movies'},
             {'key': 'r_cozy', 'type': 'mdblist', 'title': 'Cozy Picks'},
             {'key': 'studios', 'type': 'studios', 'title': 'Studios'},
           ],
@@ -206,12 +200,7 @@ void main() {
       ),
       'GET /api/v2/requests/discover/rows/r_cozy': (
         200,
-        {
-          'key': 'r_cozy',
-          'page': 1,
-          'total_pages': 1,
-          'results': [_heat, _severance],
-        },
+        {'key': 'r_cozy', 'page': 1, 'total_pages': 1, 'results': [_heat, _severance]},
       ),
     });
     final client = _client(silo);
@@ -221,9 +210,7 @@ void main() {
     expect(slider.title, 'Cozy Picks');
     expect(slider.isSupported, isTrue);
     expect(
-      SeerrDiscoverSlider.tryFromJson(
-        (await client.getDiscoverSliders()).single,
-      )!.id,
+      SeerrDiscoverSlider.tryFromJson((await client.getDiscoverSliders()).single)!.id,
       slider.id,
       reason: 'a home row made from it finds it again',
     );
@@ -241,28 +228,15 @@ void main() {
       ..._base(),
       'GET /api/v2/requests/discover/trending_movies': (
         200,
-        {
-          'page': 1,
-          'total_pages': 1,
-          'results': [_heat],
-        },
+        {'page': 1, 'total_pages': 1, 'results': [_heat]},
       ),
       'GET /api/v2/requests/discover/trending_series': (
         200,
-        {
-          'page': 1,
-          'total_pages': 1,
-          'results': [_severance],
-        },
+        {'page': 1, 'total_pages': 1, 'results': [_severance]},
       ),
       'GET /api/v2/requests/discover/popular_movies': (
         200,
-        {
-          'page': 1,
-          'total_pages': 9,
-          'next_page': 3,
-          'results': [_heat],
-        },
+        {'page': 1, 'total_pages': 9, 'next_page': 3, 'results': [_heat]},
       ),
     });
     final client = _client(silo);
@@ -271,19 +245,11 @@ void main() {
 
     silo.routes['GET /api/v2/requests/discover/popular_movies'] = (
       200,
-      {
-        'page': 1,
-        'total_pages': 9,
-        'next_page': 3,
-        'results': [_heat],
-      },
+      {'page': 1, 'total_pages': 9, 'next_page': 3, 'results': [_heat]},
     );
     final popular = await client.getTrendingMovies();
     expect(silo.calls.last, contains('/popular_movies'));
-    final asked = int.parse(
-      Uri.parse('x:${silo.calls.last.split(' ').last}')
-          .queryParameters['page']!,
-    );
+    final asked = int.parse(Uri.parse('x:${silo.calls.last.split(' ').last}').queryParameters['page']!);
     expect(
       popular['page'],
       2 - (asked - 1),
@@ -308,18 +274,8 @@ void main() {
           'recommendations': [_heat],
           'production_companies': [],
           'seasons': [
-            {
-              'season_number': 1,
-              'episode_count': 9,
-              'availability': 'available',
-              'requested': false,
-            },
-            {
-              'season_number': 2,
-              'episode_count': 10,
-              'availability': 'missing',
-              'requested': true,
-            },
+            {'season_number': 1, 'episode_count': 9, 'availability': 'available', 'requested': false},
+            {'season_number': 2, 'episode_count': 10, 'availability': 'missing', 'requested': true},
           ],
         },
       ),
@@ -333,9 +289,7 @@ void main() {
     expect(tv.genres.single.name, 'Drama');
     expect(tv.contentRating, 'TV-MA');
     expect(tv.credits!.cast.single.name, 'Adam Scott');
-    final similar = SeerrDiscoverPage.fromJson(
-      await client.getSimilarTv(95396),
-    );
+    final similar = SeerrDiscoverPage.fromJson(await client.getSimilarTv(95396));
     expect(similar.results.single.id, 949);
   });
 
@@ -355,66 +309,66 @@ void main() {
         },
       ),
     });
-    final page = SeerrDiscoverPage.fromJson(await _client(silo).getWatchlist());
+    final page = SeerrDiscoverPage.fromJson(
+      await _client(silo).getWatchlist(),
+    );
 
     final item = page.results.single;
     expect(item.contentRating, 'TV-MA');
     expect(item.firstAirDate, '2022-02-18');
   });
 
-  test(
-    'a request carries the title Silo needs, and keeps Silo ids exact',
-    () async {
-      final created = {
-        'id': '7390012345678901234',
-        'media_type': 'series',
-        'tmdb_id': 95396,
-        'title': 'Severance',
-        'status': 'pending',
-        'outcome': 'active',
-        'state': 'pending',
-        'seasons': [2],
-        'requested_by_user_id': '7',
-        'targets': [],
-        'created_at': '2026-01-02T03:04:05.000Z',
-        'updated_at': '2026-01-02T03:04:05.000Z',
-      };
-      final silo = _Silo({
-        ..._base(),
-        'GET /api/v2/requests/detail/series/95396': (
-          200,
-          {..._severance, 'tvdb_id': 371980, 'year': 2022},
-        ),
-        'POST /api/v2/requests': (201, created),
-        'POST /api/v2/requests/7390012345678901234/cancel': (200, created),
-      });
-      final client = _client(silo);
+  test('a request carries the title Silo needs, and keeps Silo ids exact',
+      () async {
+    final created = {
+      'id': '7390012345678901234',
+      'media_type': 'series',
+      'tmdb_id': 95396,
+      'title': 'Severance',
+      'status': 'pending',
+      'outcome': 'active',
+      'state': 'pending',
+      'seasons': [2],
+      'requested_by_user_id': '7',
+      'targets': [],
+      'created_at': '2026-01-02T03:04:05.000Z',
+      'updated_at': '2026-01-02T03:04:05.000Z',
+    };
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/detail/series/95396': (
+        200,
+        {..._severance, 'tvdb_id': 371980, 'year': 2022},
+      ),
+      'POST /api/v2/requests': (201, created),
+      'POST /api/v2/requests/7390012345678901234/cancel': (200, created),
+    });
+    final client = _client(silo);
 
-      final request = SeerrRequest.fromJson(
-        await client.createRequest(
-          mediaId: 95396,
-          mediaType: 'tv',
-          seasons: [2],
-        ),
-      );
-      expect(silo.bodies['POST /api/v2/requests'], {
-        'media_type': 'series',
-        'tmdb_id': 95396,
-        'tvdb_id': 371980,
-        'title': 'Severance',
-        'year': 2022,
-        'seasons': [2],
-      });
-      expect(request.status, 1);
-      expect(request.seasons!.single.seasonNumber, 2);
+    final request = SeerrRequest.fromJson(
+      await client.createRequest(
+        mediaId: 95396,
+        mediaType: 'tv',
+        seasons: [2],
+      ),
+    );
+    expect(silo.bodies['POST /api/v2/requests'], {
+      'media_type': 'series',
+      'tmdb_id': 95396,
+      'tvdb_id': 371980,
+      'title': 'Severance',
+      'year': 2022,
+      'seasons': [2],
+    });
+    expect(request.status, 1);
+    expect(request.seasons!.single.seasonNumber, 2);
 
-      await client.deleteRequest(request.id);
-      expect(
-        silo.calls.last,
-        'POST /api/v2/requests/7390012345678901234/cancel',
-      );
-    },
-  );
+    await client.deleteRequest(request.id);
+    expect(
+      silo.calls.last,
+      'POST /api/v2/requests/7390012345678901234/cancel',
+    );
+  });
 
   test('a refused request reads as the error the screens word', () async {
     final silo = _Silo({
@@ -512,32 +466,24 @@ void main() {
     expect(list.results.map((r) => r.requestedBy?.bestName), ['sam', 'pat']);
     // The names are read once, not on every page.
     await client.getRequests(requestedBy: 9);
-    expect(
-      silo.calls.where((c) => c.startsWith('GET /api/v2/admin/users')).length,
-      1,
-    );
+    expect(silo.calls.where((c) => c.startsWith('GET /api/v2/admin/users')).length, 1);
   });
 
-  test(
-    'the badge counts what waits for approval without reading the queue',
-    () async {
-      final silo = _Silo({
-        ..._base(admin: true),
-        'GET /api/v2/admin/requests/counts': (
-          200,
-          {'needs_approval': 120, 'in_progress': 3, 'failed': 0, 'done': 9},
-        ),
-      });
-      final counts = SeerrRequestCounts.fromJson(
-        await _client(silo).getRequestCount(),
-      );
-      expect(counts.pending, 120);
-      expect(
-        silo.calls.where((c) => c.startsWith('GET /api/v2/admin/requests?')),
-        isEmpty,
-      );
-    },
-  );
+  test('the badge counts what waits for approval without reading the queue',
+      () async {
+    final silo = _Silo({
+      ..._base(admin: true),
+      'GET /api/v2/admin/requests/counts': (
+        200,
+        {'needs_approval': 120, 'in_progress': 3, 'failed': 0, 'done': 9},
+      ),
+    });
+    final counts = SeerrRequestCounts.fromJson(
+      await _client(silo).getRequestCount(),
+    );
+    expect(counts.pending, 120);
+    expect(silo.calls.where((c) => c.startsWith('GET /api/v2/admin/requests?')), isEmpty);
+  });
 
   test('the arr calendars read Silo\'s calendar, with TMDB and TVDB ids '
       'from the catalog', () async {
@@ -644,16 +590,8 @@ void main() {
         {
           ..._severance,
           'cast': [
-            {
-              'name': 'Adam Scott',
-              'character': 'Mark',
-              'profile_path': '/adam.jpg',
-            },
-            {
-              'name': 'Britt Lower',
-              'character': 'Helly',
-              'profile_path': '/britt.jpg',
-            },
+            {'name': 'Adam Scott', 'character': 'Mark', 'profile_path': '/adam.jpg'},
+            {'name': 'Britt Lower', 'character': 'Helly', 'profile_path': '/britt.jpg'},
           ],
           'recommendations': [],
         },
@@ -797,31 +735,28 @@ void main() {
       expect(credits.cast, isEmpty);
     });
 
-    test(
-      'someone the library doesn\'t have shows with name and photo',
-      () async {
-        final client = _client(
-          _Silo(
-            routes(
-              people: [
-                {'id': '43', 'name': 'Adam Scottish'},
-              ],
-            ),
+    test('someone the library doesn\'t have shows with name and photo', () async {
+      final client = _client(
+        _Silo(
+          routes(
+            people: [
+              {'id': '43', 'name': 'Adam Scottish'},
+            ],
           ),
-        );
-        final id = await castId(client, 'Britt Lower');
+        ),
+      );
+      final id = await castId(client, 'Britt Lower');
 
-        final person = SeerrPersonDetails.fromJson(
-          await client.getPersonDetails(id),
-        );
-        expect(person.name, 'Britt Lower');
-        expect(person.profilePath, '/britt.jpg');
-        expect(person.biography, isNull);
-        final credits = SeerrPersonCombinedCredits.fromJson(
-          await client.getPersonCombinedCredits(id),
-        );
-        expect(credits.cast, isEmpty);
-      },
-    );
+      final person = SeerrPersonDetails.fromJson(
+        await client.getPersonDetails(id),
+      );
+      expect(person.name, 'Britt Lower');
+      expect(person.profilePath, '/britt.jpg');
+      expect(person.biography, isNull);
+      final credits = SeerrPersonCombinedCredits.fromJson(
+        await client.getPersonCombinedCredits(id),
+      );
+      expect(credits.cast, isEmpty);
+    });
   });
 }
