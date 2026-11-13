@@ -514,6 +514,9 @@ verify_host_dependencies() {
   while IFS= read -r name; do
     [ -n "$name" ] || continue
     [[ "$name" =~ $skip ]] && continue
+    # libdartjni.so (package:jni, pulled in by path_provider_android) links
+    # libjvm. Flutter ships it on Linux, but nothing loads it there.
+    [ "$name" = libjvm.so ] && continue
     unexpected="${unexpected}  ${name}"$'\n'
   done <<< "$deps"
 
