@@ -111,6 +111,7 @@ class AppleTvPlaybackPromptController {
 
   bool _showNextUp = false;
   bool _nextUpDismissed = false;
+  bool _markedPlayed = false;
   bool _isNextUpAdvancing = false;
   int consecutiveEpisodes = 0;
   DateTime? _suppressSeekPromptsUntil;
@@ -247,6 +248,7 @@ class AppleTvPlaybackPromptController {
     try {
       final proceed = await _checkStillWatching();
       if (!proceed || _disposed) return;
+      _markCurrentPlayed();
       await _commands.advanceNext();
     } finally {
       _isNextUpAdvancing = false;
@@ -268,7 +270,8 @@ class AppleTvPlaybackPromptController {
     _showNextUp = false;
     _nextUpDismissed = true;
     unawaited(_commands.hideNextUp());
-    unawaited(_commands.exitPlayback());
+    _markCurrentPlayed();
+    unawaited(_commands.exitPlayback(finished: true));
   }
 
   /// A viewer reaching for the remote has answered the prompt's question.
@@ -304,7 +307,8 @@ class AppleTvPlaybackPromptController {
       _commands.resume();
       return true;
     }
-    unawaited(_commands.exitPlayback());
+    _markCurrentPlayed();
+    unawaited(_commands.exitPlayback(finished: true));
     return false;
   }
 
@@ -321,6 +325,7 @@ class AppleTvPlaybackPromptController {
     _commands.setSuppressAutoNext(false);
     consecutiveEpisodes++;
     _nextUpDismissed = false;
+    _markedPlayed = false;
     _nextUpTimer?.cancel();
     _showNextUp = false;
     unawaited(_commands.hideNextUp());
@@ -405,6 +410,8 @@ class AppleTvPlaybackPromptController {
   // Skipping the credits counts as finishing, even when they start before the
   // server's own played threshold.
   void _markCurrentPlayed() {
+    if (_markedPlayed) return;
+    _markedPlayed = true;
     final currentId = _queueSnapshot().currentId;
     if (currentId != null && currentId.isNotEmpty) {
       _commands.markPlayed(currentId);

@@ -403,6 +403,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   CalendarEntry? _nextAirDateReminder;
   int _nextAirDateLookup = 0;
   bool _nextUpDismissed = false;
+  bool _outroMarkedPlayed = false;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
   StreamSubscription? _positionSub;
@@ -984,6 +985,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
+        _outroMarkedPlayed = false;
         _showNextUp = false;
         _skipSegment = null;
         // Stream indexes belong to the file they came from, so the next item
@@ -2691,9 +2693,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     setState(() => _showNextUp = false);
     try {
       if (!await _checkStillWatching()) return;
+      _markCurrentItemPlayedForOutroSkip();
       // The next item, not the next chapter, even when the card came up
       // during one.
-      await _manager.nextInQueue();
+      await _manager.nextInQueueAsFinished();
     } finally {
       _isNextUpAdvancing = false;
     }
@@ -2710,11 +2713,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _handleNextUpCancel() {
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _markCurrentItemPlayedForOutroSkip();
     setState(() {
       _showNextUp = false;
       _nextUpDismissed = true;
     });
-    unawaited(_exitPlayback());
+    unawaited(_exitPlayback(finished: true));
   }
 
   void _focusNextUpPlay({int attempt = 0}) {
@@ -2748,7 +2752,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _manager.pause();
     final shouldContinue = await StillWatchingDialog.show(context);
     if (shouldContinue != true) {
-      unawaited(_exitPlayback());
+      _markCurrentItemPlayedForOutroSkip();
+      unawaited(_exitPlayback(finished: true));
       return false;
     }
 
@@ -2764,6 +2769,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // Skipping the credits counts as finishing, even when they start before the
   // server's own played threshold.
   void _markCurrentItemPlayedForOutroSkip() {
+    if (_outroMarkedPlayed) return;
+    _outroMarkedPlayed = true;
     final item = _queue.currentItem;
     final itemId = _itemIdForQueueItem(item);
     if (itemId != null && itemId.isNotEmpty) {
@@ -2781,6 +2788,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     ? existingUserData.cast<String, dynamic>()
                     : <String, dynamic>{});
           userData['Played'] = true;
+          userData['PlaybackPositionTicks'] = 0;
+          userData['PlayedPercentage'] = null;
           raw['UserData'] = userData;
         }
       } catch (_) {}

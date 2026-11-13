@@ -281,4 +281,19 @@ void main() {
     // again, and it too says the item was played to the end.
     expect(service.stops, [end, end]);
   });
+
+  test('nextInQueueAsFinished reports the end of the current item', () async {
+    manager = managerWith();
+    await manager.playItems(<dynamic>[
+      <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+      <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+    ]);
+    backend.currentDuration = end;
+    backend.emitPosition(credits);
+
+    await manager.nextInQueueAsFinished();
+
+    expect(service.stops, [end]);
+    expect(manager.queueService.currentIndex, 1);
+  });
 }

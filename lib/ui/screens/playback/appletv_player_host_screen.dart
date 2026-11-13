@@ -2118,7 +2118,7 @@ class _HostPromptCommands implements AppleTvPromptCommands {
   // The next item, not the next chapter, even when the card came up during
   // one.
   Future<void> advanceNext() =>
-      _host._manager?.nextInQueue() ?? Future<void>.value();
+      _host._manager?.nextInQueueAsFinished() ?? Future<void>.value();
 
   @override
   Future<void> exitPlayback({bool finished = false}) async =>

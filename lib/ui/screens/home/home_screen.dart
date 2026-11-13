@@ -586,6 +586,15 @@ class _HomeShellState extends State<_HomeShell>
     // empty, so once it lands, re-assert focus in case it held the focused row.
     Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
+      if (GetIt.instance.isRegistered<PlaybackManager>()) {
+        try {
+          await GetIt.instance<PlaybackManager>().lastStopReport.timeout(
+            const Duration(seconds: 2),
+            onTimeout: () {},
+          );
+        } catch (_) {}
+      }
+      if (!mounted) return;
       await _viewModel.refreshResumeAndNextUp();
       if (!mounted) return;
       _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh();

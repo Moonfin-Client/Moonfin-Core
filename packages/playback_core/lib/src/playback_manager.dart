@@ -4423,7 +4423,15 @@ class PlaybackManager implements AudioOwnable {
     await _advanceQueue();
   }
 
-  Future<void> _advanceQueue() async {
+  /// Advances like [nextInQueue], reporting the current item stopped at its
+  /// end so leaving its credits marks it watched instead of keeping a resume
+  /// point.
+  Future<void> nextInQueueAsFinished() async {
+    if (await _maybeIntercept(TransportAction.next)) return;
+    await _advanceQueue(finished: true);
+  }
+
+  Future<void> _advanceQueue({bool finished = false}) async {
     // Nothing queued after this, so run it to the end and let the ordinary
     // finish handle watched state and whatever follows, rather than stopping
     // on a dead player.
@@ -4436,7 +4444,7 @@ class PlaybackManager implements AudioOwnable {
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
-      await _stopAndReportCurrent(skipQueueChange: true);
+      await _stopAndReportCurrent(skipQueueChange: true, finished: finished);
       _resetBackendSelectionLock();
       final hadNext = queueService.next();
       if (hadNext) {
