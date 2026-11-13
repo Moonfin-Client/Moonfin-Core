@@ -159,6 +159,10 @@ void main() {
     test('redacts emails and home folder names', () {
       assertRedacted('signed in as jane.doe@example.com', 'as [REDACTED]');
       assertRedacted(
+        'switch to 1920x1080@23.976 for 23.976fps content',
+        'switch to 1920x1080@23.976 for',
+      );
+      assertRedacted(
         'open /home/jane/Videos/x.mkv failed',
         '/home/[REDACTED]/Videos/x.mkv',
       );
