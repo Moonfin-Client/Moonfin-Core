@@ -16560,28 +16560,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsAdvancedSection => 'Edistynyt';
 
   @override
-  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+  String get settingsDecodingAndRenderingSection => 'Dekoodaus & Renderointi';
 
   @override
-  String get settingsAudioStreamSection => 'Audio Stream';
+  String get settingsAudioStreamSection => 'Audio Striimi';
 
   @override
-  String get settingsAudioOutputSection => 'Audio Output';
+  String get settingsAudioOutputSection => 'Audio Uloslähtö';
 
   @override
-  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+  String get settingsPassthroughSettingsSection => 'Passthrough asetukset';
 
   @override
-  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+  String get settingsSeerrHomePageRowsSection => 'Seerr Rivi Kotisivulla';
 
   @override
-  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+  String get settingsSavedCustomHomeRowsSection =>
+      'Tallennetut mukautetut kotirivit';
 
   @override
-  String get settingsRewatchSection => 'Rewatch';
+  String get settingsRewatchSection => 'Katso uudelleen';
 
   @override
-  String get favoritesSwitchViewSection => 'Switch View';
+  String get favoritesSwitchViewSection => 'Vaihda näkymää';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17618,7 +17619,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
-    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+    return 'Albumit, artistit ja soittolistat on kaikki poistettu käytöstä. Jos haluat näyttää jonkin näistä, siirry kohtaan Rivit, avaa $group kohdasta$disabled ,ja ota se käyttöön.';
   }
 
   @override
@@ -17627,7 +17628,7 @@ class AppLocalizationsFi extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+    return 'Jos haluat nähdä albumit, artistit tai äänisoittolistat Etusivulla, ota ensin käyttöön $setting Siirry sitten kohtaan Rivit, avaa $group kohdassa $disabled ja ota yksi niistä käyttöön.';
   }
 
   @override
@@ -17635,7 +17636,7 @@ class AppLocalizationsFi extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+    return 'Kokoelmat rivi on poistettu käytöstä. Jos haluat tuoda sen näkyviin, siirry kohtaan Rivit, avaa $group kohdassa $disabled ja ota se käyttöön.';
   }
 
   @override
@@ -17644,42 +17645,42 @@ class AppLocalizationsFi extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+    return 'Jos haluat nähdä Kokoelmat-rivin Etusivulla, ota ensin käyttöön $setting. Siirry sitten kohtaan Rivit, avaa $group kohdassa $disabled ja ota se käyttöön.';
   }
 
   @override
   String get settingsPreviewRowsOffInKidsMode =>
-      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+      'Kids Mode nämä rivit eivät näy aloitussivulla, joten nämä asetukset eivät vaikuta siihen.';
 
   @override
   String settingsPreviewNeedsRowInRows(String disabled) {
-    return 'Turn on a row in Rows, under $disabled';
+    return 'Valitse rivi kohdassa Rivit, osiossa $disabled';
   }
 
   @override
   String settingsPreviewNeedsSwitchAndRow(String setting) {
-    return 'Turn on $setting, then turn on a row in Rows';
+    return 'Ota $setting käyttöön ja valitse sitten rivi kohdasta Rows';
   }
 
   @override
   String get settingsPreviewKeptOffByKidsMode =>
-      'Kids Mode keeps this off Home';
+      'Kids Mode pitää tämän pois päältä Etusivu';
 
   @override
   String get settingsPreviewAudioRowsEmpty =>
-      'There\'s no music to show, so Home leaves these rows out.';
+      'Musiikkia ei ole näytettävissä, joten Home jättää nämä rivit pois.';
 
   @override
   String get settingsPreviewRowsEmpty =>
-      'There\'s nothing to show in these rows, so Home leaves them out.';
+      'Näissä riveissä ei ole mitään näytettävää, joten Home jättää ne pois.';
 
   @override
   String get settingsPreviewCollectionsEmpty =>
-      'There are no collections to show, so Home leaves this row out.';
+      'Näytettäviä kokoelmia ei ole, joten Home jättää tämän rivin pois.';
 
   @override
   String get settingsPreviewShowEpisodesNote =>
-      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
+      'Tämä muuttaa vain niiden kokoelmien rivejä, jotka on lisätty Rows-kohtaan. Kokoelma rivi näyttää samalta.';
 
   @override
   String get settingsPreviewSaved => 'Tallennettu';

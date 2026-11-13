@@ -19,10 +19,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get animeMarkerMixed => 'Gemischte Folge';
 
   @override
-  String get animeMarkerAnimeCanon => 'Anime Canon';
+  String get animeMarkerAnimeCanon => 'Anime-Kanon';
 
   @override
-  String get animeMarkerMangaCanon => 'Manga Canon';
+  String get animeMarkerMangaCanon => 'Manga-Kanon';
 
   @override
   String get animeMarkerSubbed => 'Untertitelt';
@@ -34,13 +34,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get animeMarkerSubbedAndDubbed => 'Untertitelt/Synchronisiert';
 
   @override
-  String get animeMarkerSubbedShort => 'Sub';
+  String get animeMarkerSubbedShort => 'OmU';
 
   @override
-  String get animeMarkerDubbedShort => 'Dub';
+  String get animeMarkerDubbedShort => 'Synch.';
 
   @override
-  String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
+  String get animeMarkerSubbedAndDubbedShort => 'OmU/Synch.';
 
   @override
   String get animeMarkerPending => 'Ausstehend';
@@ -58,7 +58,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signIn => 'Anmelden';
 
   @override
-  String get signingIn => 'Signing in...';
+  String get signingIn => 'Anmeldung läuft …';
 
   @override
   String get empty => 'Leer';
@@ -242,7 +242,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      '„Klassisch“ ist das ursprüngliche zentrierte Moonfin-Layout.\n„Modern“ ist ein responsives, filmisches Layout.';
+      'Wie Filme und Serien beim Öffnen angezeigt werden.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassisch';
@@ -297,8 +297,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count people',
-      one: '1 person',
+      other: '$count Personen',
+      one: '1 Person',
     );
     return '$_temp0';
   }
@@ -308,8 +308,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count facts',
-      one: '1 fact',
+      other: '$count Fakten',
+      one: '1 Fakt',
     );
     return '$_temp0';
   }
@@ -319,8 +319,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tags',
-      one: '1 tag',
+      other: '$count Schlagwörter',
+      one: '1 Schlagwort',
     );
     return '$_temp0';
   }
@@ -330,8 +330,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count studios',
-      one: '1 studio',
+      other: '$count Studios',
+      one: '1 Studio',
     );
     return '$_temp0';
   }
@@ -341,8 +341,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count Kapitel',
+      one: '1 Kapitel',
     );
     return '$_temp0';
   }
@@ -363,8 +363,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count seasons',
-      one: '1 season',
+      other: '$count Staffeln',
+      one: '1 Staffel',
     );
     return '$_temp0';
   }
@@ -374,8 +374,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count Episoden',
+      one: '1 Episode',
     );
     return '$_temp0';
   }
@@ -385,8 +385,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count movies',
-      one: '1 movie',
+      other: '$count Filme',
+      one: '1 Film',
     );
     return '$_temp0';
   }
@@ -396,8 +396,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count shows',
-      one: '1 show',
+      other: '$count Serien',
+      one: '1 Serie',
     );
     return '$_temp0';
   }
@@ -407,8 +407,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count Titel',
+      one: '1 Titel',
     );
     return '$_temp0';
   }
@@ -418,8 +418,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items',
-      one: '1 item',
+      other: '$count Elemente',
+      one: '1 Element',
     );
     return '$_temp0';
   }
@@ -429,8 +429,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count albums',
-      one: '1 album',
+      other: '$count Alben',
+      one: '1 Album',
     );
     return '$_temp0';
   }
@@ -440,8 +440,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count collections',
-      one: '1 collection',
+      other: '$count Sammlungen',
+      one: '1 Sammlung',
     );
     return '$_temp0';
   }
@@ -451,8 +451,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count titles',
-      one: '1 title',
+      other: '$count Titel',
+      one: '1 Titel',
     );
     return '$_temp0';
   }
@@ -461,29 +461,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailScreenStyleNouveau => 'Nouveau';
 
   @override
-  String get detailScreenStyleMinimalist => 'minimal';
+  String get detailScreenStyleMinimalist => 'Minimalistisch';
 
   @override
-  String get detailScreenStyleStage => 'Stage';
+  String get detailScreenStyleStage => 'Bühne';
 
   @override
   String get detailScreenStylePremiere => 'Premiere';
 
   @override
-  String get detailScreenStyleQuickLook => 'Quick Look';
+  String get detailScreenStyleQuickLook => 'Schnellansicht';
 
   @override
   String get detailScreenStyleFrost => 'Frost';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Detailseite öffnen';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Mit Zurück schließen';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
-    return '$played of $total';
+    return '$played von $total gesehen';
   }
 
   @override
@@ -494,7 +494,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Tab-Inhalte beim Wechseln zwischen den Tabs automatisch anzeigen. Deaktivieren, um jeden Tab manuell zu öffnen und zu schließen.';
 
   @override
-  String get showTechnicalDetails => 'Technische Details anzeigen?';
+  String get showTechnicalDetails => 'Technische Details anzeigen';
 
   @override
   String get showTechnicalDetailsSubtitle =>
@@ -505,20 +505,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Verwenden Sie den lokalen Algorithmus „Moonfin Empfehlungen“ für Ihre Bibliothek oder die Online-Ähnlichkeitswerte von TMDb. Hinweis: Für Online-Empfehlungen ist eine Seerr-Integration erforderlich.';
+      'Wähle zwischen dem lokalen Empfehlungsalgorithmus von Moonfin, dem serverseitigen Empfehlungssystem von Jellyfin und den Online-Ähnlichkeitsbewertungen von TMDb. Hinweis: Online-Empfehlungen erfordern eine Seerr-Integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Empfehlungen';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin schlägt vor';
+  String get recommendationSystemJellyfin => 'Jellyfin Empfehlungen';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Ähnlichkeit';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Altersfreigabe für Empfehlungen begrenzen?';
+      'Altersfreigabe für Empfehlungen begrenzen';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -776,7 +776,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get exitApp => 'Moonfin beenden?';
 
   @override
-  String get exitAppConfirmation => 'Möchtest du die App beenden?';
+  String get exitAppConfirmation => 'Bist du sicher?';
 
   @override
   String get exit => 'Beenden';
@@ -1644,10 +1644,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finished => 'Durchgelesen';
 
   @override
-  String get favorited => 'Favorisiert';
+  String get favorited => 'Favorit';
 
   @override
-  String get favorite => 'Favorisieren';
+  String get favorite => 'Als Favorit markieren';
 
   @override
   String get playlist => 'Wiedergabeliste';
@@ -3915,7 +3915,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailSectionSeerrStreaming => 'Streaming services';
 
   @override
-  String get seerrStreamingOn => 'Streaming on';
+  String get seerrStreamingOn => 'Zu sehen bei';
 
   @override
   String get detailSectionSeerrRecommendations => 'Recommendations';
@@ -5174,13 +5174,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'How long after an episode airs it still counts as new.';
 
   @override
-  String get mediaBarNewSeries => 'New Series';
+  String get mediaBarNewSeries => 'Neue Serie';
 
   @override
-  String get mediaBarNewSeason => 'New Season';
+  String get mediaBarNewSeason => 'Neue Staffel';
 
   @override
-  String get mediaBarNewEpisodes => 'New Episodes';
+  String get mediaBarNewEpisodes => 'Neue Episoden';
 
   @override
   String get moviesAndTvShows => 'Filme & TV-Sendungen';
@@ -12089,51 +12089,49 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsAppInfo => 'APP-INFO';
 
   @override
-  String get settingsReportAnIssue => 'Melden Sie ein Problem';
+  String get settingsReportAnIssue => 'Ein Problem melden';
 
   @override
-  String get settingsReportAnIssueSubtitle =>
-      'Öffnen Sie den Issue-Tracker auf GitHub';
+  String get settingsReportAnIssueSubtitle => 'Issue-Tracker auf GitHub öffnen';
 
   @override
-  String get settingsJoinDiscord => 'Treten Sie Discord bei';
+  String get settingsJoinDiscord => 'Discord beitreten';
 
   @override
-  String get settingsJoinDiscordSubtitle => 'Chatten Sie mit der Community';
+  String get settingsJoinDiscordSubtitle => 'Mit der Community chatten';
 
   @override
-  String get settingsJoinTheDiscord => 'Treten Sie dem Discord bei';
+  String get settingsJoinTheDiscord => 'Discord beitreten';
 
   @override
-  String get settingsSupportMoonfin => 'Unterstützen Sie Moonfin';
+  String get settingsSupportMoonfin => 'Moonfin unterstützen';
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Spenden Sie dem Entwickler einen Kaffee';
+      'Spendiere dem Entwickler einen Kaffee';
 
   @override
-  String get settingsLegal => 'RECHTLICH';
+  String get settingsLegal => 'RECHTLICHES';
 
   @override
   String get settingsLicenses => 'Lizenzen';
 
   @override
   String get settingsOpenSourceLicenseNotices =>
-      'Hinweise zur Open-Source-Lizenz';
+      'Hinweise zur Open-Source-Lizenzen';
 
   @override
   String get settingsPrivacyPolicy => 'Datenschutzrichtlinie';
 
   @override
-  String get settingsPrivacyPolicySubtitle =>
-      'Wie Moonfin mit Ihren Daten umgeht';
+  String get settingsPrivacyPolicySubtitle => 'Wie Moonfin mit Daten umgeht';
 
   @override
-  String get settingsCheckForUpdates => 'Suchen Sie nach Updates';
+  String get settingsCheckForUpdates => 'Nach Updates suchen';
 
   @override
   String get settingsCheckForUpdatesSubtitle =>
-      'Suchen Sie nach der neuesten Moonfin-Version';
+      'Nach der neuesten Moonfin-Version suchen';
 
   @override
   String get settingsBoth => 'Beide';
@@ -12742,74 +12740,75 @@ class AppLocalizationsDe extends AppLocalizations {
       'Studiozeile auf der Startseite anzeigen.';
 
   @override
-  String get sinceYouWatched => 'Since You Watched';
+  String get sinceYouWatched => 'Basierend auf deinen angesehenen Titeln';
 
   @override
-  String get sinceYouWatchedRowTitle => 'Since you watched';
+  String get sinceYouWatchedRowTitle => 'Weil du … gesehen hast';
 
   @override
   String sinceYouWatchedItemRowTitle(String title) {
-    return 'Since you watched \"$title\"';
+    return 'Weil du „$title“ gesehen hast';
   }
 
   @override
   String sinceYouWatchedRowNumber(int number) {
-    return 'Since You Watched Row $number';
+    return 'Empfehlungen $number';
   }
 
   @override
-  String get displaySinceYouWatchedRows => 'Display Since You Watched Rows';
+  String get displaySinceYouWatchedRows => 'Empfehlungen nach Verlauf';
 
   @override
   String get displaySinceYouWatchedRowsSubtitle =>
-      'Show and customize Since You Watched rows in Home Sections.';
+      'Empfehlungen anhand gesehener Titel auf der Startseite anzeigen und anpassen';
 
   @override
-  String get sinceYouWatchedSource => 'Recommendation Source';
+  String get sinceYouWatchedSource => 'Empfehlungsquelle';
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Wähle zwischen dem lokalen Empfehlungsalgorithmus von Moonfin, dem serverseitigen Empfehlungssystem von Jellyfin und den Ähnlichkeitsbewertungen von TMDb. Hinweis: Online-Empfehlungen erfordern eine Seerr-Integration.';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin-Empfehlungen';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Jellyfin-Empfehlungen';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb-Ähnlichkeit';
 
   @override
-  String get sinceYouWatchedSourceType => 'Source Type';
+  String get sinceYouWatchedSourceType => 'Inhaltstyp';
 
   @override
   String get sinceYouWatchedSourceTypeDescription =>
-      'Choose type of items to recommend';
+      'Wähle aus, welche Arten von Inhalten empfohlen werden sollen';
 
   @override
-  String get sinceYouWatchedSourceItem => 'Source Item';
+  String get sinceYouWatchedSourceItem => 'Titelauswahl';
 
   @override
   String get sinceYouWatchedSourceItemDescription =>
-      'Choose which source item to base recommendations on';
+      'Bestimme die Grundlage für deine Empfehlungen';
 
   @override
-  String get sinceYouWatchedRecentlyWatched => 'Recently Watched';
+  String get sinceYouWatchedRecentlyWatched => 'Zuletzt angesehen';
 
   @override
-  String get sinceYouWatchedNumRows => 'Number of Rows to Add';
+  String get sinceYouWatchedNumRows => 'Anzahl der Empfehlungszeilen';
 
   @override
   String get sinceYouWatchedNumRowsDescription =>
-      'Choose how many Since You Watched rows to display (1-5)';
+      'Wähle aus, wie viele Empfehlungszeilen angezeigt werden sollen';
 
   @override
-  String get sinceYouWatchedIncludeWatched => 'Include Previously Watched';
+  String get sinceYouWatchedIncludeWatched =>
+      'Bereits angesehene Titel empfehlen';
 
   @override
   String get sinceYouWatchedIncludeWatchedSubtitle =>
-      'Include watched items in recommendations';
+      'Zeigt auch Filme und Serien in den Empfehlungen an, die du bereits gesehen hast';
 
   @override
   String get studiosRowSorting => 'Studiosortierung';
@@ -17473,21 +17472,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addServerButtonSubtitle =>
-      'By address, or with a Plex or Emby Connect account';
+      'Über eine Adresse oder ein Plex- bzw. Emby-Connect-Konto';
 
   @override
-  String get addServerChooseHow => 'Choose how you\'d like to connect.';
+  String get addServerChooseHow => 'Wähle aus, wie du dich verbinden möchtest';
 
   @override
   String get addServerAddressChoice =>
-      'Jellyfin, Emby or Silo on your network or online';
+      'Jellyfin, Emby oder Silo im lokalen Netzwerk oder über das Internet';
 
   @override
-  String get addServerPlexChoice => 'Use your Plex account to find its servers';
+  String get addServerPlexChoice => 'Mit deinem Plex-Konto nach Servern suchen';
 
   @override
   String get addServerAddressHelp =>
-      'The same address you\'d open in a browser, including the port.';
+      'Dieselbe Adresse wie im Browser, inklusive Port';
 
   @override
   String get addServerDetectNote =>

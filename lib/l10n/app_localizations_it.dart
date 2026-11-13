@@ -16602,28 +16602,29 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsAdvancedSection => 'Avanzate';
 
   @override
-  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+  String get settingsDecodingAndRenderingSection => 'Decodifica e Rendering';
 
   @override
-  String get settingsAudioStreamSection => 'Audio Stream';
+  String get settingsAudioStreamSection => 'Traccia Audio';
 
   @override
-  String get settingsAudioOutputSection => 'Audio Output';
+  String get settingsAudioOutputSection => 'Uscita Audio';
 
   @override
-  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+  String get settingsPassthroughSettingsSection => 'Impostazioni Passthrough';
 
   @override
-  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+  String get settingsSeerrHomePageRowsSection => 'Righe Seerr nella Home';
 
   @override
-  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+  String get settingsSavedCustomHomeRowsSection =>
+      'Righe Personalizzate Salvate';
 
   @override
-  String get settingsRewatchSection => 'Rewatch';
+  String get settingsRewatchSection => 'Da Rivedere';
 
   @override
-  String get favoritesSwitchViewSection => 'Switch View';
+  String get favoritesSwitchViewSection => 'Cambia Vista';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17666,7 +17667,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
-    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+    return 'Album, Artisti e Playlist Audio sono tutti disattivati. Per mostrarne uno, vai in Righe, apri $group sotto $disabled e attivalo.';
   }
 
   @override
@@ -17675,7 +17676,7 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+    return 'Per vedere Album, Artisti o Playlist Audio nella Home, attiva prima $setting. Poi vai in Righe, apri $group sotto $disabled e attivane uno.';
   }
 
   @override
@@ -17683,7 +17684,7 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+    return 'La riga Collezioni è disattivata. Per mostrarla, vai in Righe, apri $group sotto $disabled e attivala.';
   }
 
   @override
@@ -17692,42 +17693,42 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+    return 'Per vedere la riga Collezioni nella Home, attiva prima $setting. Poi vai in Righe, apri $group sotto $disabled e attivala.';
   }
 
   @override
   String get settingsPreviewRowsOffInKidsMode =>
-      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+      'La Modalità Bambini tiene queste righe fuori dalla Home, quindi queste impostazioni non la cambiano.';
 
   @override
   String settingsPreviewNeedsRowInRows(String disabled) {
-    return 'Turn on a row in Rows, under $disabled';
+    return 'Attiva una riga in Righe, sotto $disabled';
   }
 
   @override
   String settingsPreviewNeedsSwitchAndRow(String setting) {
-    return 'Turn on $setting, then turn on a row in Rows';
+    return 'Attiva $setting, poi attiva una riga in Righe';
   }
 
   @override
   String get settingsPreviewKeptOffByKidsMode =>
-      'Kids Mode keeps this off Home';
+      'La Modalità Bambini la tiene fuori dalla Home';
 
   @override
   String get settingsPreviewAudioRowsEmpty =>
-      'There\'s no music to show, so Home leaves these rows out.';
+      'Non c\'è musica da mostrare, quindi la Home non mostra queste righe.';
 
   @override
   String get settingsPreviewRowsEmpty =>
-      'There\'s nothing to show in these rows, so Home leaves them out.';
+      'Non c\'è niente da mostrare in queste righe, quindi la Home non le mostra.';
 
   @override
   String get settingsPreviewCollectionsEmpty =>
-      'There are no collections to show, so Home leaves this row out.';
+      'Non ci sono collezioni da mostrare, quindi la Home non mostra questa riga.';
 
   @override
   String get settingsPreviewShowEpisodesNote =>
-      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
+      'Cambia solo le righe di una singola collezione aggiunta in Righe. La riga Collezioni resta uguale.';
 
   @override
   String get settingsPreviewSaved => 'Salvato';
