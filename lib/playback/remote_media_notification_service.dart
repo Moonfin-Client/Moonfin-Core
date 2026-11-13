@@ -290,7 +290,7 @@ class RemoteMediaNotificationService {
     switch (event) {
       case SessionsMessage(:final sessions):
         _lastSessionsPushAt = DateTime.now();
-        _applySessionsSnapshot(sessions);
+        _applySessionsSnapshot(sessions, replaceAll: true);
       case SessionEndedMessage(:final sessionId):
         if (_sessionsById.remove(sessionId) != null) {
           if (_preferredSessionId == sessionId) {
@@ -812,6 +812,10 @@ class RemoteMediaNotificationService {
     final clamped = percent.clamp(0, 100);
     if (session.isCastBacked) {
       await _castService.setVolume(session.castKind!, volume: clamped / 100.0);
+      if (_castService.activeKindNotifier.value == session.castKind &&
+          _isSameSession(session)) {
+        _castService.remoteVolumeNotifier.value = clamped / 100.0;
+      }
       return;
     }
     final client = _activeClient();

@@ -42,7 +42,8 @@ Future<void> _runCastAction(
   try {
     await action();
   } catch (e) {
-    messenger?.showSnackBar(
+    if (messenger == null || !messenger.mounted) return;
+    messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.castControlFailed(describeError(e, l10n))),
       ),

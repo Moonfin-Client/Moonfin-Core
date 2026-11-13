@@ -141,6 +141,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
           return;
         }
         if (_shouldMirrorRemote) {
+          unawaited(_deactivateSession());
           _onRemoteSessionChanged();
           return;
         }
@@ -507,7 +508,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
       _scheduleRemotePausedIdleTimer(session.identityKey);
     }
     final mediaChanged =
-        !_remoteMode || _lastRemoteMediaKey != session.identityKey;
+        !_remoteMode ||
+        _lastRemoteMediaKey != session.identityKey ||
+        mediaItem.value?.duration != session.duration ||
+        mediaItem.value?.title != session.title ||
+        mediaItem.value?.artist != session.subtitle;
     _remoteMode = true;
     if (mediaChanged) {
       unawaited(_pushRemoteMediaItemAndState(session));
@@ -1049,6 +1054,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
       // request throws, the notification must still release on schedule.
       await _remoteService!.stop();
       if (_hasLocalItem) return;
+      final replacement = _remoteService.activeSession;
+      if (replacement != null && !PlatformDetection.isTV) {
+        _onRemoteSessionChanged();
+        return;
+      }
       _timedOutRemoteMediaKey = null;
       _exitRemoteMode(emitIdle: true);
       await super.stop();

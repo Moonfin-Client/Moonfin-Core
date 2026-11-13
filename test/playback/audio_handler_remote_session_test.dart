@@ -120,10 +120,13 @@ class _RecordingRemoteService extends RemoteMediaNotificationService {
   @override
   Future<void> stop() async {
     calls.add('remote:stop');
+    final current = activeSessionNotifier.value;
     if (onStop != null) {
       await onStop!();
     }
-    activeSessionNotifier.value = null;
+    if (identical(activeSessionNotifier.value, current)) {
+      activeSessionNotifier.value = null;
+    }
   }
 
   @override
@@ -418,6 +421,70 @@ void main() {
     await stopFuture;
     expect(handler.isRemoteMode, isFalse);
     expect(handler.mediaItem.value?.id, 'song-1');
+  });
+
+  test('preserves replacement remote session when stop completes', () async {
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      sessionId: 'sess-a',
+      itemId: 'ep-a',
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+    expect(handler.mediaItem.value?.id, 'remote:sess-a:ep-a');
+
+    final stopCompleter = Completer<void>();
+    remoteService.onStop = () => stopCompleter.future;
+
+    final stopFuture = handler.stop();
+
+    // Replacement arrives while stop is in flight
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      sessionId: 'sess-b',
+      itemId: 'ep-b',
+      isPlaying: false,
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    stopCompleter.complete();
+    await stopFuture;
+
+    expect(handler.isRemoteMode, isTrue);
+    expect(handler.mediaItem.value?.id, 'remote:sess-b:ep-b');
+    expect(
+      handler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+  });
+
+  test('republishes media item when duration or metadata resolves on same item', () async {
+    remoteService.activeSessionNotifier.value = RemoteMediaSession(
+      sessionId: 'sess-tv',
+      deviceName: 'SHIELD',
+      itemId: 'ep-1',
+      title: 'The Beast in the Jungle',
+      subtitle: 'The Haunting of Bly Manor • S1E9',
+      position: Duration.zero,
+      duration: null,
+      isPlaying: true,
+      canSeek: false,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.mediaItem.value?.duration, isNull);
+
+    // Duration resolves on same identityKey
+    remoteService.activeSessionNotifier.value = RemoteMediaSession(
+      sessionId: 'sess-tv',
+      deviceName: 'SHIELD',
+      itemId: 'ep-1',
+      title: 'The Beast in the Jungle',
+      subtitle: 'The Haunting of Bly Manor • S1E9',
+      position: const Duration(seconds: 5),
+      duration: const Duration(minutes: 50),
+      isPlaying: true,
+      canSeek: true,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.mediaItem.value?.duration, const Duration(minutes: 50));
   });
 
   test('keeps remote session ready across pause and resume', () async {

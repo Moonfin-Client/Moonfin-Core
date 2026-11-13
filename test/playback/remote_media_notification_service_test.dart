@@ -420,6 +420,7 @@ void main() {
     await service.pause();
     await service.seek(const Duration(seconds: 90));
     await service.setVolume(75);
+    expect(castService.remoteVolumeNotifier.value, 0.75);
     await service.stop();
 
     expect(castService.calls, [
