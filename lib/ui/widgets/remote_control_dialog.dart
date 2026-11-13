@@ -379,13 +379,16 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           }
         }
         if (!_appliedInitialSelection && widget.initialSessionId != null) {
-          _appliedInitialSelection = true;
-          _selectedSession ??= controllable
+          final initialSession = controllable
               .cast<Map<String, dynamic>?>()
               .firstWhere(
                 (s) => s?['Id']?.toString() == widget.initialSessionId,
                 orElse: () => null,
               );
+          if (initialSession != null) {
+            _appliedInitialSelection = true;
+            _selectedSession ??= initialSession;
+          }
         }
         _reconcileVolume(volumeRequest);
       });
@@ -685,6 +688,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           onTap: () => setState(() {
             _cancelNavigation();
             _cancelVolume();
+            _appliedInitialSelection = true;
             _selectedSession = isSelected ? null : session;
             // Another device has its own volume and position, so what was held
             // for the last one doesn't carry over.

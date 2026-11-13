@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/cast/cast_service.dart';
+import 'package:moonfin/data/services/cast/cast_target.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/socket_handler.dart';
 import 'package:moonfin/playback/audio_handler.dart';
@@ -154,15 +155,20 @@ class _RecordingRemoteService extends RemoteMediaNotificationService {
 }
 
 RemoteMediaSession _remoteSession({
+  String sessionId = 'sess-tv',
+  String? jellyfinSessionId = 'sess-tv',
+  CastTargetKind? castKind,
   String itemId = 'ep-1',
   bool isPlaying = true,
   Duration position = const Duration(seconds: 60),
+  bool canSeek = true,
   bool supportsSetVolume = true,
   int? volumePercent = 45,
 }) {
   return RemoteMediaSession(
-    sessionId: 'sess-tv',
-    jellyfinSessionId: 'sess-tv',
+    sessionId: sessionId,
+    jellyfinSessionId: jellyfinSessionId,
+    castKind: castKind,
     deviceName: 'SHIELD',
     itemId: itemId,
     title: 'The Beast in the Jungle',
@@ -173,7 +179,7 @@ RemoteMediaSession _remoteSession({
     duration: const Duration(minutes: 48),
     position: position,
     isPlaying: isPlaying,
-    canSeek: true,
+    canSeek: canSeek,
     supportsSetVolume: supportsSetVolume,
     volumePercent: volumePercent,
   );
@@ -347,5 +353,27 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(handler.isRemoteMode, isTrue);
     expect(handler.mediaItem.value?.id, 'remote:sess-tv:ep-3');
+  });
+
+  test('omits seek controls and exposes active cast kind when non-seekable Cast session is active', () async {
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      sessionId: 'cast:googleCast:living-room',
+      jellyfinSessionId: null,
+      castKind: CastTargetKind.googleCast,
+      canSeek: false,
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(handler.activeRemoteJellyfinSessionId, isNull);
+    expect(handler.activeRemoteCastKind, CastTargetKind.googleCast);
+    expect(handler.playbackState.value.controls, [
+      MediaControl.pause,
+      MediaControl.stop,
+    ]);
+    expect(handler.playbackState.value.androidCompactActionIndices, [0, 1]);
+    expect(
+      handler.playbackState.value.systemActions,
+      isNot(containsAll([MediaAction.seek, MediaAction.fastForward, MediaAction.rewind])),
+    );
   });
 }

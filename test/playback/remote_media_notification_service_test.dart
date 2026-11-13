@@ -78,6 +78,8 @@ class _FakeCastService extends Fake implements CastService {
 
 class _FakeSessionApi extends Fake implements SessionApi {
   List<Map<String, dynamic>> sessionsResponse = [];
+  Future<List<Map<String, dynamic>>> Function()? onGetSessions;
+  Future<void> Function()? onSendPlayStateCommand;
   final commands = <String>[];
 
   @override
@@ -85,7 +87,7 @@ class _FakeSessionApi extends Fake implements SessionApi {
     String? controllableByUserId,
     String? deviceId,
     int? activeWithinSeconds,
-  }) async => sessionsResponse;
+  }) async => onGetSessions != null ? onGetSessions!() : sessionsResponse;
 
   @override
   Future<void> sendPlayStateCommand(
@@ -99,6 +101,9 @@ class _FakeSessionApi extends Fake implements SessionApi {
           ? 'playstate:$sessionId:$command:$seekPositionTicks'
           : 'playstate:$sessionId:$command',
     );
+    if (onSendPlayStateCommand != null) {
+      await onSendPlayStateCommand!();
+    }
   }
 
   @override
@@ -121,7 +126,6 @@ class _FakeImageApi extends Fake implements ImageApi {
     String itemId, {
     int? maxWidth,
     int? maxHeight,
-    int? quality,
     String? tag,
   }) => 'https://server.test/Items/$itemId/Images/Primary?maxHeight=${maxHeight ?? 0}';
 }
@@ -459,6 +463,122 @@ void main() {
     expect(active!.title, 'Midnight City');
     expect(active.subtitle, "M83 • Hurry Up, We're Dreaming");
     expect(active.activityLabel, 'Listening on Moonfin');
+  });
+
+  test('ignores late getSessions results after clearSessions or client switch', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    final oldCompleter = Completer<List<Map<String, dynamic>>>();
+    final newApi = _FakeSessionApi()
+      ..sessionsResponse = [_tvSession(id: 'sess-new', itemId: 'ep-new')];
+    final newClient = _FakeClient(newApi);
+    var activeClient = client;
+
+    final switchable = RemoteMediaNotificationService(
+      socketHandler: socket,
+      castService: castService,
+      prefs: prefs,
+      activeClient: () => activeClient,
+      enabledOnPlatform: true,
+    );
+    addTearDown(switchable.dispose);
+
+    sessionApi.onGetSessions = () => oldCompleter.future;
+    final oldRefresh = switchable.refreshSessions();
+
+    // Switch client while old getSessions is still in flight; new client must not be blocked.
+    activeClient = newClient;
+    switchable.clearSessions();
+    await switchable.refreshSessions();
+    expect(switchable.activeSession?.sessionId, 'sess-new');
+
+    // Old request finishes late: must not overwrite new account's session.
+    oldCompleter.complete([_tvSession(id: 'sess-old', itemId: 'ep-old')]);
+    await oldRefresh;
+    expect(switchable.activeSession?.sessionId, 'sess-new');
+  });
+
+  test('keepsSocketAlive stays true while a playing session is dismissed until it pauses or stops', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    service.start();
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: false)]));
+    await Future<void>.delayed(Duration.zero);
+    expect(service.keepsSocketAlive, isTrue);
+
+    service.dismissCurrent();
+    expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isTrue);
+
+    // Same item pauses while dismissed -> keepsSocketAlive drops to false.
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isFalse);
+
+    // Next item appears -> notification returns and keepsSocketAlive is true again.
+    socket.eventsController.add(
+      SessionsMessage([_tvSession(itemId: 'ep-2', isPaused: false)]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-2');
+    expect(service.keepsSocketAlive, isTrue);
+
+    // Dismiss again, then session stops -> dismissed key resets so restarting ep-2 later shows it.
+    service.dismissCurrent();
+    socket.eventsController.add(const SessionEndedMessage(sessionId: 'sess-tv'));
+    await Future<void>.delayed(Duration.zero);
+    expect(service.keepsSocketAlive, isFalse);
+
+    socket.eventsController.add(
+      SessionsMessage([_tvSession(itemId: 'ep-2', isPaused: false)]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-2');
+  });
+
+  test('completed stop/pause does not modify a replacement session', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    service.start();
+    socket.eventsController.add(
+      SessionsMessage([_tvSession(id: 'sess-a', itemId: 'ep-a')]),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    final commandCompleter = Completer<void>();
+    sessionApi.onSendPlayStateCommand = () => commandCompleter.future;
+
+    final stopFuture = service.stop();
+    socket.eventsController.add(const SessionEndedMessage(sessionId: 'sess-a'));
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-b', deviceId: 'tv-b', itemId: 'ep-b', isPaused: false),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.sessionId, 'sess-b');
+
+    commandCompleter.complete();
+    await stopFuture;
+    expect(service.activeSession?.sessionId, 'sess-b');
+    expect(service.activeSession?.isPlaying, isTrue);
+  });
+
+  test('adjustVolume falls back to SetVolume without step commands and ignores non-seekable seek', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    service.start();
+    final session = _tvSession(
+      supportedCommands: const ['SetVolume'],
+      volumeLevel: 40,
+    );
+    (session['PlayState'] as Map<String, dynamic>)['CanSeek'] = false;
+    socket.eventsController.add(SessionsMessage([session]));
+    await Future<void>.delayed(Duration.zero);
+
+    await service.seek(const Duration(seconds: 60));
+    await service.fastForward(const Duration(seconds: 10));
+    await service.rewind(const Duration(seconds: 10));
+    await service.adjustVolume(1);
+
+    expect(sessionApi.commands, ['general:sess-tv:SetVolume:{Volume: 45}']);
   });
 }
 

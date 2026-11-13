@@ -11,12 +11,14 @@ import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/audiobook_resume_service.dart';
+import '../data/services/cast/cast_target.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../util/audio_artwork_url.dart';
 import '../platform/pip_service.dart';
 import '../util/platform_detection.dart';
 import '../preference/user_preferences.dart';
 import '../ui/navigation/app_router.dart';
+import '../ui/widgets/cast_mini_player.dart';
 import '../ui/widgets/remote_control_dialog.dart';
 import 'aether_backend.dart';
 import 'car_artwork.dart';
@@ -87,6 +89,8 @@ class MoonfinAudioHandler extends BaseAudioHandler
   bool get isRemoteMode => _remoteMode && !_hasLocalItem;
   String? get activeRemoteJellyfinSessionId =>
       isRemoteMode ? _remoteService?.activeSession?.jellyfinSessionId : null;
+  CastTargetKind? get activeRemoteCastKind =>
+      isRemoteMode ? _remoteService?.activeSession?.castKind : null;
 
   // stop() cancels _subs; car/lock-screen commands can arrive afterwards, so
   // re-bind before acting on them.
@@ -588,9 +592,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
     playbackState.add(PlaybackState(
       controls: [
-        MediaControl.rewind,
+        if (session.canSeek) MediaControl.rewind,
         session.isPlaying ? MediaControl.pause : MediaControl.play,
-        MediaControl.fastForward,
+        if (session.canSeek) MediaControl.fastForward,
         MediaControl.stop,
       ],
       systemActions: {
@@ -598,11 +602,12 @@ class MoonfinAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.playPause,
         MediaAction.stop,
-        MediaAction.fastForward,
-        MediaAction.rewind,
         if (session.canSeek) MediaAction.seek,
+        if (session.canSeek) MediaAction.fastForward,
+        if (session.canSeek) MediaAction.rewind,
       },
-      androidCompactActionIndices: const [0, 1, 2],
+      androidCompactActionIndices:
+          session.canSeek ? const [0, 1, 2] : const [0, 1],
       processingState: session.isBuffering
           ? AudioProcessingState.buffering
           : AudioProcessingState.ready,
@@ -1096,9 +1101,15 @@ Future<void> initAudioService({
           final navContext =
               appRouter.routerDelegate.navigatorKey.currentContext;
           if (navContext == null || !navContext.mounted) return;
+          final castKind = handler.activeRemoteCastKind;
+          final jellyfinSessionId = handler.activeRemoteJellyfinSessionId;
+          if (castKind != null && jellyfinSessionId == null) {
+            showCastControlsSheet(navContext);
+            return;
+          }
           showRemoteControlDialog(
             navContext,
-            initialSessionId: handler.activeRemoteJellyfinSessionId,
+            initialSessionId: jellyfinSessionId,
           );
         });
   }

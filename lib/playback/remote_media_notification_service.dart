@@ -120,18 +120,25 @@ class RemoteMediaNotificationService {
   DateTime? _lastSessionsPushAt;
   bool _started = false;
   bool _subscribedToSessions = false;
-  bool _fetching = false;
+  MediaServerClient? _fetchingClient;
+  int _sessionGeneration = 0;
   String? _dismissedIdentityKey;
   bool _dismissedWhilePaused = false;
+  bool _dismissedIsCastBacked = false;
+  bool _dismissedCandidatePlaying = false;
   String? _preferredSessionId;
 
   RemoteMediaSession? get activeSession => activeSessionNotifier.value;
 
-  /// True while mirroring an actively playing remote session so the WebSocket
-  /// stays connected across brief screen-off / background periods.
+  /// True while mirroring an actively playing Jellyfin remote session (or when
+  /// one was locally dismissed while still playing) so the WebSocket stays
+  /// connected across brief screen-off / background periods.
   bool get keepsSocketAlive {
     final session = activeSessionNotifier.value;
-    return session != null && session.isPlaying;
+    if (session != null) return session.isPlaying;
+    return _dismissedIdentityKey != null &&
+        !_dismissedIsCastBacked &&
+        _dismissedCandidatePlaying;
   }
 
   void start() {
@@ -158,13 +165,17 @@ class RemoteMediaNotificationService {
 
   /// Clears cached remote sessions (e.g. on sign-out or account switch).
   void clearSessions() {
+    _sessionGeneration++;
     _sessionsById.clear();
     _preferredSessionId = null;
     _dismissedIdentityKey = null;
     _dismissedWhilePaused = false;
+    _dismissedIsCastBacked = false;
+    _dismissedCandidatePlaying = false;
     _lastSessionsPushAt = null;
     _syncSubscription();
     _recompute();
+    _syncFallbackPoll();
   }
 
   /// Re-evaluates subscription and fetches sessions (e.g. on sign-in or resume).
@@ -182,6 +193,8 @@ class RemoteMediaNotificationService {
     if (current == null) return;
     _dismissedIdentityKey = current.identityKey;
     _dismissedWhilePaused = !current.isPlaying;
+    _dismissedIsCastBacked = current.isCastBacked;
+    _dismissedCandidatePlaying = current.isPlaying;
     activeSessionNotifier.value = null;
     _syncFallbackPoll();
   }
@@ -236,23 +249,29 @@ class RemoteMediaNotificationService {
   }
 
   Future<void> refreshSessions() async {
-    if (!_isFeatureEnabled || _fetching) return;
+    if (!_isFeatureEnabled) return;
     final client = _activeClient();
     if (client == null ||
         client.accessToken == null ||
         client.accessToken!.isEmpty) {
       return;
     }
-    _fetching = true;
+    if (identical(_fetchingClient, client)) return;
+    final generation = _sessionGeneration;
+    _fetchingClient = client;
     try {
       final sessions = await client.sessionApi.getSessions(
         controllableByUserId: client.userId,
       );
+      if (generation != _sessionGeneration ||
+          !identical(client, _activeClient())) {
+        return;
+      }
       _applySessionsSnapshot(sessions, replaceAll: true);
     } catch (_) {
       // Non-Jellyfin/Emby servers or transient network errors are ignored.
     } finally {
-      _fetching = false;
+      if (identical(_fetchingClient, client)) _fetchingClient = null;
     }
   }
 
@@ -275,13 +294,19 @@ class RemoteMediaNotificationService {
     if (!_isFeatureEnabled) {
       _preferredSessionId = null;
       _setSession(null);
+      _syncFallbackPoll();
       return;
     }
 
     final candidate = _buildCastCandidate() ?? _buildRemoteSessionCandidate();
     if (candidate == null) {
       _preferredSessionId = null;
+      _dismissedIdentityKey = null;
+      _dismissedWhilePaused = false;
+      _dismissedIsCastBacked = false;
+      _dismissedCandidatePlaying = false;
       _setSession(null);
+      _syncFallbackPoll();
       return;
     }
 
@@ -291,14 +316,20 @@ class RemoteMediaNotificationService {
       final sameItem = _dismissedIdentityKey == candidate.identityKey;
       final resumedFromPause = _dismissedWhilePaused && candidate.isPlaying;
       if (sameItem && !resumedFromPause) {
+        _dismissedIsCastBacked = candidate.isCastBacked;
+        _dismissedCandidatePlaying = candidate.isPlaying;
         _setSession(null);
+        _syncFallbackPoll();
         return;
       }
       _dismissedIdentityKey = null;
       _dismissedWhilePaused = false;
+      _dismissedIsCastBacked = false;
+      _dismissedCandidatePlaying = false;
     }
 
     _setSession(candidate);
+    _syncFallbackPoll();
   }
 
   void _setSession(RemoteMediaSession? next) {
@@ -310,8 +341,11 @@ class RemoteMediaNotificationService {
 
   void _syncFallbackPoll() {
     final session = activeSessionNotifier.value;
+    final hasActiveJellyfin = session != null && !session.isCastBacked;
+    final hasDismissedJellyfin =
+        _dismissedIdentityKey != null && !_dismissedIsCastBacked;
     final needPoll =
-        session != null && !session.isCastBacked && _isFeatureEnabled;
+        _isFeatureEnabled && (hasActiveJellyfin || hasDismissedJellyfin);
     if (!needPoll) {
       _fallbackPollTimer?.cancel();
       _fallbackPollTimer = null;
@@ -597,7 +631,7 @@ class RemoteMediaNotificationService {
     final client = _activeClient();
     if (client == null) return;
     await client.sessionApi.sendPlayStateCommand(session.sessionId, 'Unpause');
-    _applyOptimistic(isPlaying: true);
+    _applyOptimistic(session, isPlaying: true);
     _scheduleRefresh();
   }
 
@@ -611,7 +645,7 @@ class RemoteMediaNotificationService {
     final client = _activeClient();
     if (client == null) return;
     await client.sessionApi.sendPlayStateCommand(session.sessionId, 'Pause');
-    _applyOptimistic(isPlaying: false);
+    _applyOptimistic(session, isPlaying: false);
     _scheduleRefresh();
   }
 
@@ -620,7 +654,9 @@ class RemoteMediaNotificationService {
     if (session == null) return;
     if (session.isCastBacked) {
       await _castService.stop(session.castKind!);
-      _setSession(null);
+      if (_isSameSession(session)) {
+        _setSession(null);
+      }
       return;
     }
     final client = _activeClient();
@@ -630,13 +666,15 @@ class RemoteMediaNotificationService {
     if (_preferredSessionId == session.sessionId) {
       _preferredSessionId = null;
     }
-    _setSession(null);
+    if (_isSameSession(session)) {
+      _setSession(null);
+    }
     _scheduleRefresh();
   }
 
   Future<void> seek(Duration position) async {
     final session = activeSessionNotifier.value;
-    if (session == null) return;
+    if (session == null || !session.canSeek) return;
     final clamped = position < Duration.zero
         ? Duration.zero
         : (session.duration != null && position > session.duration!)
@@ -654,19 +692,19 @@ class RemoteMediaNotificationService {
       'Seek',
       seekPositionTicks: ticks,
     );
-    _applyOptimistic(position: clamped);
+    _applyOptimistic(session, position: clamped);
     _scheduleRefresh();
   }
 
   Future<void> fastForward(Duration offset) async {
     final session = activeSessionNotifier.value;
-    if (session == null) return;
+    if (session == null || !session.canSeek) return;
     await seek(session.position + offset);
   }
 
   Future<void> rewind(Duration offset) async {
     final session = activeSessionNotifier.value;
-    if (session == null) return;
+    if (session == null || !session.canSeek) return;
     await seek(session.position - offset);
   }
 
@@ -709,18 +747,20 @@ class RemoteMediaNotificationService {
       'SetVolume',
       arguments: {'Volume': '$clamped'},
     );
-    _applyOptimistic(volumePercent: clamped);
+    _applyOptimistic(session, volumePercent: clamped);
     _scheduleRefresh();
   }
 
   Future<void> adjustVolume(int direction) async {
     final session = activeSessionNotifier.value;
     if (session == null || direction == 0) return;
-    if (session.isCastBacked) {
+    if (session.isCastBacked ||
+        (!session.supportsVolumeStep && session.supportsSetVolume)) {
       final current = session.volumePercent ?? 50;
       await setVolume(current + (direction > 0 ? 5 : -5));
       return;
     }
+    if (!session.supportsVolumeStep) return;
     final client = _activeClient();
     if (client == null) return;
     await client.sessionApi.sendGeneralCommand(
@@ -730,13 +770,21 @@ class RemoteMediaNotificationService {
     _scheduleRefresh();
   }
 
-  void _applyOptimistic({
+  bool _isSameSession(RemoteMediaSession expected) {
+    final current = activeSessionNotifier.value;
+    return current != null &&
+        current.sessionId == expected.sessionId &&
+        current.identityKey == expected.identityKey;
+  }
+
+  void _applyOptimistic(
+    RemoteMediaSession expected, {
     bool? isPlaying,
     Duration? position,
     int? volumePercent,
   }) {
-    final current = activeSessionNotifier.value;
-    if (current == null) return;
+    if (!_isSameSession(expected)) return;
+    final current = activeSessionNotifier.value!;
     _setSession(
       current.copyWith(
         isPlaying: isPlaying,

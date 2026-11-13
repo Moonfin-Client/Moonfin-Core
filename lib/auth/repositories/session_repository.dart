@@ -352,6 +352,9 @@ class SessionRepository {
     }
 
     setActiveServerClient(client);
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      GetIt.instance<RemoteMediaNotificationService>().clearSessions();
+    }
     resetUserScopedSingletons();
     setActiveStreamResolver(client);
     _cancelSocketIdleTimer();
