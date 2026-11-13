@@ -9934,7 +9934,7 @@
     "@detailUseSeriesThumbnailsSubtitle": {
         "description": "Description for setting to use series thumbnails on Classic details page"
     },
-    "hideHomeMediaDescription": "Hide Media Description on Home Screen",
+    "hideHomeMediaDescription": "Hide Media Description on Details Page",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -12416,5 +12416,258 @@
     "keepVideoClearOfDynamicIslandDescription": "In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.",
     "@keepVideoClearOfDynamicIslandDescription": {
         "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "playlistSortReleaseDate": "Release Date",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "detailScreenStylePremiere": "Premiere",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "keyNameDelete": "Delete",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "adminPlayMethodDirectPlay": "Direct playing",
+    "seasonalRowCountryOther": "Other",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionCollections": "Collections",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionSeerrRecommendations": "Recommendations",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Appearances",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionGroupOther": "Other",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionBiography": "Biography",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionPoster": "Poster",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionMoreLikeThis": "More Like This",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "bookLibraryStyleClassic": "Classic",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "musicLibraryStyleClassic": "Classic",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "libraryShowLabel": "Show",
+    "@libraryShowLabel": {
+        "description": "Library button that opens the played status filter, followed by its current value such as All or Unwatched"
+    },
+    "homeRowsExternalLists": "External Lists",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminExternalIdTypeAlbumArtist": "Album Artist",
+    "adminMetadataFieldArtists": "Artists",
+    "adminMetadataFieldAlbum": "Album",
+    "adminLiveTvTabRecordings": "Recordings",
+    "adminLogLevelNone": "None",
+    "adminLogWatch": "Watch",
+    "adminGroupLibrary": "Library",
+    "adminGroupPlayback": "Playback",
+    "adminGroupPeople": "People",
+    "externalRowSortName": "Name",
+    "watchPartyType": "Type",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "friendsDecline": "Decline",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "Group name",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "Leave group",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "setupStylePremiere": "Premiere",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "advancedPlayback": "Advanced Playback",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "playlistSortRuntime": "Runtime",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Last Played",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortDateAdded": "Date Added",
+    "@librarySortDateAdded": {
+        "description": "Sort option: when an item was added to the server library"
+    },
+    "librarySortDateEpisodeAdded": "Date Episode Added",
+    "@librarySortDateEpisodeAdded": {
+        "description": "Sort option for series: when the newest episode was added"
+    },
+    "librarySortParentalRating": "Parental Rating",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortGenre": "Genre",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "detailsBackdropFit": "Fit",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "recordPromptNow": "Now",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "siloApproveSignInApprove": "Approve",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "musicFilter": "Filter",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "calendarSettingsView": "View",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Show",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "afterHoursPlay": "Play",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "rendererModeAuto": "Auto",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "adminExternalIdTypeArtist": "Artist",
+    "adminTaskResultFailed": "Failed",
+    "musicSortYear": "Year",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortArtist": "Artist",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "accountActive": "Active",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyboardStyleClassic": "Classic",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "librarySortMyRating": "My Rating",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "librarySortAlbumArtist": "Album Artist",
+    "@librarySortAlbumArtist": {
+        "description": "Sort option for music: by album artist"
+    },
+    "playlistSortPlayCount": "Play Count",
+    "@playlistSortPlayCount": {
+        "description": "Label for sorting playlist items by play count"
+    },
+    "detailSectionUpNext": "Next Up",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Lyrics",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "additionalParts": "Additional Parts",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "afterHoursCastSkipIntro": "Skip Intro",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStatic": "Static",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "detailSectionCast": "Cast",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "Studios",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Chapters",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Extras",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "libraryStyleClassic": "Classic",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Modern",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataSectionRatings": "Ratings",
+    "externalRowSortReleaseDate": "Release Date",
+    "externalRowSortShuffle": "Shuffle",
+    "bottomNavbarTabsAvailable": "Available",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "detailsPage": "Details Page",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "calendarSettingsColorByType": "Type",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "adminEmbyConnect": "Emby Connect",
+    "playlistSortRandom": "Random",
+    "@playlistSortRandom": {
+        "description": "Label for sorting playlist items randomly"
     }
 }
