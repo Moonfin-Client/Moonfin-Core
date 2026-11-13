@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "Foretrækker servertranskodning",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Profile 7 Direkte afspilning",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Styrer, om Dolby Vision-profil 7-streams med forbedringslag skal dirigere afspilning.",
-    "settingsAutoAftkrtEnabled": "Auto (AFKTKRT aktiveret)",
-    "settingsEnabledOnThisDevice": "Aktiveret på denne enhed",
-    "settingsDisabledPreferTranscode": "Deaktiveret (foretrækker omkodning)",
+    "settingsAutoAftkrtEnabled": "Automatisk",
+    "settingsEnabledOnThisDevice": "Aktiveret",
+    "settingsDisabledPreferTranscode": "Fra",
     "settingsResumeRewindDescription": "Når du genoptager afspilningen (fra Fortsæt med at se eller en side med medieelementer), hvor mange sekunder skal der spoles tilbage?",
     "settingsUnpauseRewindDescription": "Når du genoptager afspilningen efter at have trykket på pauseknappen, hvor mange sekunder skal der så spoles tilbage?",
     "settingsSkipBackLengthDescription": "Hvor mange sekunder der skal springes tilbage efter at have trykket på tilbagespolingsknappen.",
@@ -8974,5 +8974,423 @@
     "oledModeVivid": "Levende",
     "@oledModeVivid": {
         "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
-    }
+    },
+    "detailScreenStylePremiere": "Premiere",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "savedMediaRead": "Læse",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "loadingAnimationSizeThumbnail": "Miniaturebillede",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeMedium": "Mellem",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "seasonalDensityHeavy": "Tung",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "seasonalRowCountryOther": "Andre",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "detailSectionPoster": "Plakat",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "upcomingEpisodeToday": "I dag",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "rendererModeAuto": "Automatisk",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "loadingAnimationPositionMiddle": "Mellem",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionBouncing": "Hoppende",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "detailSectionSeerrRecommendations": "Anbefalinger",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionStudios": "Studier",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionBiography": "Biografi",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionMoreLikeThis": "Mere som dette",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "keyNameDelete": "Slet",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "musicLibraryStyleClassic": "Klassisk",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "screensaverBackdropBlack": "Sort",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "adminExternalIdTypePerson": "Person",
+    "adminMetadataSectionRatings": "Bedømmelser",
+    "settingsAudioPassthroughMode": "Gennemløb",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "libraryStyleClassic": "Klassisk",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Moderne",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "bookLibraryStyleClassic": "Klassisk",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "mediaBarModeBanner": "Banner",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "adminTranscodingHwaAdvanced": "Fremskreden",
+    "adminExternalIdTypeArtist": "Kunstner",
+    "adminLogLevelNone": "Ingen",
+    "adminGroupLibrary": "Bibliotek",
+    "adminGroupPlayback": "Afspilning",
+    "adminGroupPeople": "Personer",
+    "adminMetadataLockFieldGenres": "Genrer",
+    "adminMetadataLockFieldTags": "Tags",
+    "selectAllStudios": "Vælg alle",
+    "externalRowSortName": "Navn",
+    "externalRowSortReleaseDate": "Udgivelsesdato",
+    "externalRowSortShuffle": "Bland",
+    "watchPartyType": "Type",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "chatGroupName": "Gruppenavn",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "Forlad gruppen",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "filterTrailers": "Trailere",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "seerrRuntime": "Spilletid",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "hideHomeUnwatchedCount": "Skjul antal af usete elementer",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "setupStyleClassic": "Klassisk",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStylePremiere": "Premiere",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "animationSpeedMedium": "Mellem",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "Fra",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "playlistSortRuntime": "Spilletid",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Sidst spillet",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortArtist": "Kunstner",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "librarySortGenre": "Genre",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "detailsBackdropFit": "Passe",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "playbackInfoDevice": "Enhed",
+    "@playbackInfoDevice": {
+        "description": "Playback information row label: this device's model and operating system"
+    },
+    "recordPromptNow": "Nu",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "siloApproveSignInApprove": "Godkende",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "musicFilter": "Filter",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "calendarSettingsColorByType": "Type",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursCastStatic": "Fast",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "detailMetadataStatus": "Seriestatus",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "adminMetadataLockFieldStudios": "Studier",
+    "animeMarkerPending": "Afventer",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "interfaceLayoutDesktop": "Computer",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "guideRepeatBadge": "Gentage",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "performanceMode": "Ydeevne",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "bookFormatComic": "Tegneserie",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "castMembers": "Medvirkende",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "emulatorCoreDownloading": "Henter",
+    "setupStyleModern": "Moderne",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "accountActive": "Aktiv",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyboardStyleClassic": "Klassisk",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "spotlightCollectionsCard": "Kollektioner",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "performanceModeAuto": "Automatisk",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeLarge": "Stor",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationSizeSmall": "Lille",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "detailSectionCast": "Medvirkende",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "seerrDownloading": "Henter",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "adminMetadataFieldArtists": "Kunstnere",
+    "adminMetadataFieldAlbum": "Album",
+    "adminEmbyConnect": "Emby Connect",
+    "adminLiveTvTabRecordings": "Optagelser",
+    "adminTaskResultFailed": "Mislykkedes",
+    "adminMetadataDisplayOrderAbsolute": "Absolut",
+    "adminMetadataLockFieldName": "Navn",
+    "adminMetadataDisplayOrderTv": "TV",
+    "audioPlaylistsSection": "Lydafspilningslister",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "spotlightFilmography": "Filmografi",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "seasonalDensityLight": "Lys",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "detailSectionSeerrPersonAppearances": "Udseender",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "achievementsAppearance": "Udseende",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "adminMetadataPersonKindDirector": "Instruktør",
+    "autoDownloadKeepAll": "Alle",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "keyNameHome": "Hjem",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "afterHoursPlay": "Afspil",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "detailMetadataGenres": "Genrer",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailSectionGroupOther": "Andre",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLyrics": "Sangtekster",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionChapters": "Kapitler",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "blue": "Blå",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "screensaverBackdrop": "Baggrund",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "adminLogWatch": "Se",
+    "adminMetadataPersonKindArtist": "Kunstner",
+    "adminMetadataLockFieldRuntime": "Spilletid",
+    "achievementsStatsWatched": "Set",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "friendsDecline": "Nedgang",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "playlistTypeVideo": "Video",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "setupCurrent": "Nuværende",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "interfaceLayoutTv": "TV",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "autoDownloadDeleteNever": "Aldrig",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "sortByName": "Navn",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "bottomNavbarTabsAvailable": "Tilgængelig",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortReleaseDate": "Udgivelsesdato",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "detailSectionUpNext": "Næste",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionExtras": "Ekstramateriale",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Kollektioner",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "adminMetadataLockFieldCast": "Personer",
+    "downloadNotificationRunning": "Henter",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "settingsAdvancedSection": "Fremskreden",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "seerrOriginalLanguage": "Originalsprog",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "filterExtras": "Ekstramateriale",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "detailsBackgroundOpacity": "Baggrunds-gennemsigtighed",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "tags": "Tags",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "homeRowsExternalLists": "Eksterne lister",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "filtersHeader": "Filtre"
 }
