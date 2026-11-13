@@ -227,7 +227,24 @@ void main() {
     await socket.close();
   });
 
+  test('is off by default until user opts in', () async {
+    expect(prefs.get(UserPreferences.remoteMediaNotification), isFalse);
+
+    service.start();
+    expect(socket.subscriptions, isEmpty);
+
+    socket.eventsController.add(SessionsMessage([_tvSession()]));
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isFalse);
+
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    await Future<void>.delayed(Duration.zero);
+    expect(socket.subscriptions, contains('Sessions'));
+  });
+
   test('subscribes to Sessions and mirrors playing TV session', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     expect(socket.subscriptions, contains('Sessions'));
 
@@ -270,6 +287,7 @@ void main() {
   });
 
   test('toggling preference off clears active session and unsubscribes', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     socket.eventsController.add(SessionsMessage([_tvSession()]));
     await Future<void>.delayed(Duration.zero);
@@ -284,6 +302,7 @@ void main() {
   });
 
   test('dismissCurrent stays dismissed until item changes or paused session resumes', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
     await Future<void>.delayed(Duration.zero);
@@ -323,6 +342,7 @@ void main() {
   });
 
   test('transport and volume commands delegate to Jellyfin SessionApi', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     socket.eventsController.add(
       SessionsMessage([_tvSession(positionSeconds: 100, durationSeconds: 500)]),
@@ -358,6 +378,7 @@ void main() {
   });
 
   test('CastService target takes precedence and handles transport actions', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     castService.activeKindNotifier.value = CastTargetKind.googleCast;
     castService.activeTargetNotifier.value = const CastTarget(
@@ -405,6 +426,7 @@ void main() {
   });
 
   test('audio remote sessions use Listening on Moonfin without device name', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     socket.eventsController.add(
       SessionsMessage([
