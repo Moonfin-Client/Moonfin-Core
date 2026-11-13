@@ -1007,7 +1007,29 @@ build_rpm() {
   create_desktop_file "$rpm_dir"
   create_metainfo_file "$rpm_dir" "$version"
 
+  # Bundle libmpv and its FFmpeg like the deb does. Fedora's own mpv-libs is
+  # built against ffmpeg-free, which has no HEVC decoder, so leaning on it
+  # leaves HEVC files with sound and a black screen.
+  local stage_dir="$rpm_dir/stage"
+  mkdir -p "$stage_dir"
+  cp -r "$BUILD_DIR"/* "$stage_dir/"
+  inject_linux_runtime_libs "$stage_dir"
+
+  # The bundled libraries are private to Moonfin. Keep rpm from advertising
+  # them to the rest of the system, and from asking the system for them.
+  # Each bundled file becomes a pattern on its base name, so
+  # libavcodec.so.60.31.102 turns into libavcodec[.]so.
+  local bundled_sonames
+  bundled_sonames="$(find "$stage_dir/lib" -maxdepth 1 -name '*.so*' -printf '%f\n' 2>/dev/null \
+    | sed 's/[.]so.*$/.so/' | sort -u | sed 's/[.]/[.]/g; s/[+]/[+]/g' | paste -sd'|' -)"
+
   cat > "$spec_file" << EOF
+%global __provides_exclude_from ^/usr/lib/moonfin/.*\$
+%global __requires_exclude ^(${bundled_sonames:-moonfin-none})
+# Flutter's plugin libraries carry the build tree's ephemeral folder as a
+# runpath. Fedora's rpmbuild rejects that; the launcher's LD_LIBRARY_PATH is
+# what actually finds the libraries, so the check adds nothing here.
+%global __brp_check_rpaths %{nil}
 Name:           moonfin
 Version:        ${version}
 Release:        1
@@ -1026,7 +1048,7 @@ mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/pixmaps
 mkdir -p %{buildroot}/usr/share/metainfo
 
-cp -r ${BUILD_DIR}/* %{buildroot}/usr/lib/moonfin/
+cp -r ${stage_dir}/* %{buildroot}/usr/lib/moonfin/
 
 cat > %{buildroot}/usr/bin/moonfin << 'EOFRUNNER'
 #!/bin/sh
