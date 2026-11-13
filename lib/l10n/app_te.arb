@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "సర్వర్ ట్రాన్స్‌కోడ్‌కు ప్రాధాన్యత ఇవ్వండి",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision ప్రొఫైల్ 7 డైరెక్ట్ ప్లే",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision ప్రొఫైల్ 7 మెరుగుదల-లేయర్ స్ట్రీమ్‌లు డైరెక్ట్ ప్లే చేయాలా వద్దా అనేది నియంత్రిస్తుంది.",
-    "settingsAutoAftkrtEnabled": "ఆటో (AFTKRT ప్రారంభించబడింది)",
-    "settingsEnabledOnThisDevice": "ఈ పరికరంలో ప్రారంభించబడింది",
-    "settingsDisabledPreferTranscode": "డిసేబుల్ చేయబడింది (ట్రాన్స్‌కోడ్‌కు ప్రాధాన్యత ఇవ్వండి)",
+    "settingsAutoAftkrtEnabled": "ఆటో",
+    "settingsEnabledOnThisDevice": "ప్రారంభించబడింది",
+    "settingsDisabledPreferTranscode": "ఆఫ్",
     "settingsResumeRewindDescription": "ప్లేబ్యాక్‌ని పునఃప్రారంభిస్తున్నప్పుడు (చూడడం కొనసాగించు లేదా మీడియా ఐటెమ్ పేజీ నుండి), ఎన్ని సెకన్లు రీవైండ్ చేయాలి?",
     "settingsUnpauseRewindDescription": "పాజ్ బటన్‌ను నొక్కిన తర్వాత ప్లేబ్యాక్‌ని పునఃప్రారంభిస్తున్నప్పుడు, ఎన్ని సెకన్లు రీవైండ్ చేయాలి?",
     "settingsSkipBackLengthDescription": "రివైండ్ బటన్‌ను నొక్కిన తర్వాత ఎన్ని సెకన్లు వెనక్కి దూకాలి.",
@@ -8958,5 +8958,390 @@
     "imdbMostPopularMovies": "IMDb అత్యంత జనాదరణ పొందిన సినిమాలు",
     "imdbMostPopularTvShows": "IMDb అత్యంత జనాదరణ పొందిన TV షోలు",
     "imdbLowestRatedMovies": "IMDb అత్యల్ప రేటింగ్ సినిమాలు",
-    "imdbTopEnglishMovies": "IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు"
+    "imdbTopEnglishMovies": "IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు",
+    "emulatorCoreDownloading": "డౌన్‌లోడ్ చేస్తోంది",
+    "castMembers": "కాస్ట్ చేయండి",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "వీడియో",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "audioPlaylistsSection": "ఆడియో ప్లేజాబితాలు",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "settingsAudioPassthroughMode": "పాస్‌త్రూ",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "tags": "ట్యాగ్‌లు",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "personalRatingStars": "5 నక్షత్రాలు",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "selectAllStudios": "అన్నీ ఎంచుకోండి",
+    "filtersHeader": "ఫిల్టర్లు",
+    "interfaceLayoutTv": "టీవీ",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "డెస్క్‌టాప్",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "బ్యానర్",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "ట్రైలర్‌లు",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "అదనపు అంశాలు",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "అసలు భాష",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "రన్‌టైమ్",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "క్లాసిక్",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "మోడర్న్",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "టీవీ",
+    "adminMetadataLockFieldName": "పేరు",
+    "adminMetadataLockFieldGenres": "శైలులు",
+    "adminMetadataLockFieldCast": "ప్రజలు",
+    "adminMetadataLockFieldRuntime": "రన్‌టైమ్",
+    "adminMetadataLockFieldStudios": "స్టూడియోలు",
+    "adminMetadataLockFieldTags": "ట్యాగ్‌లు",
+    "aiTranslated": "ఎఐ అనువదించబడింది",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "seerrDownloading": "డౌన్‌లోడ్ చేస్తోంది",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "పనితీరు",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "ఆటో",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "సూక్ష్మచిత్రం",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "చిన్నది",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "మధ్యస్థం",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "పెద్దది",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "బౌన్సింగ్",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "బ్యాక్‌డ్రాప్",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "నలుపు",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "అన్నీ",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "ఎప్పుడూ",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "డౌన్‌లోడ్ చేస్తోంది",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "సేకరణలు",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "హోమ్",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "మధ్యస్థం",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "ఆఫ్",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "సిరీస్ స్థితి",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "శైలులు",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "ఈరోజు",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "పెండింగ్‌లో ఉంది",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "చదవండి",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "పేరు",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "స్వరూపం",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "వీక్షించినవి",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "పునరావృతం చేయండి",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "అందుబాటులో ఉంది",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsAdd": "స్నేహితులను జోడించండి",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAccept": "అంగీకరించండి",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsDecline": "తిరస్కరించు",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "friendsSendRequest": "స్నేహితుడిగా జోడించండి",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "chatGroupName": "సమూహం పేరు",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "సమూహం నుండి నిష్క్రమించండి",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "achievementsUnlockedNotification": "లక్ష్యాన్ని చేరుకున్నారు",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "detailSectionGroupOther": "ఇతర",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "లోగో",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "పోస్టర్",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "తదుపరి",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "సాహిత్యం",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "కాస్ట్ చేయండి",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "స్టూడియోలు",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "అధ్యాయాలు",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "అదనపు అంశాలు",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "సేకరణలు",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "ఇలాంటివి మరిన్ని",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "సిఫార్సులు",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "నటించినవి",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "జీవిత చరిత్ర",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "ఇతర",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "అధునాతనమైనది",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "విడుదల తేదీ",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "రన్‌టైమ్",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "చివరిగా ఆడింది",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "ఆటో",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "క్లాసిక్",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "మోడర్న్",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "కళాకారులు",
+    "adminMetadataFieldAlbum": "ఆల్బమ్",
+    "adminMetadataSectionRatings": "రేటింగ్‌లు",
+    "adminLiveTvTabRecordings": "రికార్డింగ్‌లు",
+    "adminLogLevelNone": "ఏదీ లేదు",
+    "adminTaskResultFailed": "విఫలమైంది",
+    "adminLogWatch": "చూడండి",
+    "adminGroupLibrary": "లైబ్రరీ",
+    "adminGroupPlayback": "ప్లేబ్యాక్",
+    "adminGroupPeople": "ప్రజలు",
+    "librarySortAlbum": "ఆల్బమ్",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "శైలి",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "క్లాసిక్",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "బాహ్య జాబితాలు",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby కనెక్ట్ చేయండి",
+    "adminTranscodingHwaAdvanced": "అధునాతనమైనది",
+    "musicLibraryStyleClassic": "క్లాసిక్",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "తొలగించండి",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "క్లాసిక్",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "ఇప్పుడు",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "ఫిట్",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "పేరు",
+    "externalRowSortReleaseDate": "విడుదల తేదీ",
+    "externalRowSortShuffle": "షఫుల్ చేయండి",
+    "siloApproveSignInApprove": "ఆమోదించండి",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "చురుకుగా",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "ప్రీమియర్",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "ప్రీమియర్",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "టైప్ చేయండి",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "ప్లే చేయండి",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "స్థిరం",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "టైప్ చేయండి",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    }
 }
