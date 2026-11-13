@@ -339,7 +339,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final navbarIsLeft = navbarPosition == NavbarPosition.left;
     final tvTopNavbarInset =
         navbarPosition == NavbarPosition.top && PlatformDetection.isTV && !PlatformDetection.useMobileUi
-        ? 48.0
+        ? tvTopNavbarRowInset
         : 0.0;
     final rowLeftInset =
         ((navbarIsLeft && !PlatformDetection.useMobileUi)

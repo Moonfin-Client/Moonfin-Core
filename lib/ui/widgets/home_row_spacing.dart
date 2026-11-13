@@ -4,6 +4,10 @@ import '../../util/platform_detection.dart';
 /// Room under a Classic card for its title and year.
 const double classicCardCaptionHeight = 50.0;
 
+/// Room left of the rows on a TV with the navbar along the top. Apple TV
+/// starts them closer so they line up with the toolbar's avatar.
+double get tvTopNavbarRowInset => PlatformDetection.isAppleTV ? 16.0 : 48.0;
+
 /// Room above a row's title. Classic rows on mobile keep a wider gap.
 double homeRowHeaderTop(bool modern) =>
     modern || !PlatformDetection.useMobileUi ? 6.0 : 16.0;

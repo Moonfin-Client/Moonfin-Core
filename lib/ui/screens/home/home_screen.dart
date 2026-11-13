@@ -4473,7 +4473,7 @@ class _ContentRowsState extends State<_ContentRows>
         prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final tvTopNavbarInset =
         navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
-            ? 48.0
+            ? tvTopNavbarRowInset
             : 0.0;
     final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
     final platformScale = PlatformDetection.isTV
@@ -4602,7 +4602,7 @@ class _ContentRowsState extends State<_ContentRows>
         : safeTop + 56;
     final tvTopNavbarInset =
         navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
-        ? 48.0
+        ? tvTopNavbarRowInset
         : 0.0;
     final rowLeftInset =
         (navbarIsLeft && !PlatformDetection.useMobileUi
@@ -5519,7 +5519,7 @@ class _ContentRowsState extends State<_ContentRows>
     final rowLeftInsetV2 =
         (navbarIsTopV2
             ? (PlatformDetection.isTV && !PlatformDetection.useMobileUi
-                  ? 48.0
+                  ? tvTopNavbarRowInset
                   : 0.0)
             : (!PlatformDetection.useMobileUi ? 56.0 : 0.0)) +
         (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
