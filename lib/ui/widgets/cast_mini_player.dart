@@ -14,7 +14,6 @@ import '../util/error_message.dart';
 import '../../util/audio_labels.dart';
 import 'overlay_sheet.dart';
 
-BuildContext? _activeCastControlsContext;
 Object? _activeCastControlsToken;
 
 String _formatCastDuration(Duration d) {
@@ -57,7 +56,7 @@ void showCastControlsSheet(
   BuildContext context, {
   CastService? castService,
 }) {
-  if (_activeCastControlsContext?.mounted ?? false) return;
+  if (_activeCastControlsToken != null) return;
   final service = castService ?? GetIt.instance<CastService>();
   final kind = service.activeKindNotifier.value;
   if (kind == null) return;
@@ -68,7 +67,6 @@ void showCastControlsSheet(
   final positionTicks = service.remotePositionNotifier.value;
   final token = Object();
   _activeCastControlsToken = token;
-  _activeCastControlsContext = context;
 
   showFocusRestoringModalBottomSheet<void>(
     context: context,
@@ -202,7 +200,6 @@ void showCastControlsSheet(
   ).whenComplete(() {
     if (identical(_activeCastControlsToken, token)) {
       _activeCastControlsToken = null;
-      _activeCastControlsContext = null;
     }
   });
 }

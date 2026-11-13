@@ -58,6 +58,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
   DateTime? _lastRemotePushedAt;
   bool? _lastRemotePlaying;
   bool? _lastRemoteBuffering;
+  bool? _lastRemoteCanSeek;
   int _remotePushGeneration = 0;
 
   AetherBackend? _engineNowPlaying;
@@ -475,6 +476,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     _lastRemotePushedAt = null;
     _lastRemotePlaying = null;
     _lastRemoteBuffering = null;
+    _lastRemoteCanSeek = null;
     if (_remotePlaybackInfoActive) {
       _remotePlaybackInfoActive = false;
       try {
@@ -581,12 +583,14 @@ class MoonfinAudioHandler extends BaseAudioHandler
     final stateChanged =
         force ||
         _lastRemotePlaying != session.isPlaying ||
-        _lastRemoteBuffering != session.isBuffering;
+        _lastRemoteBuffering != session.isBuffering ||
+        _lastRemoteCanSeek != session.canSeek;
     if (!stateChanged && !_remotePositionJumped(session)) {
       return;
     }
     _lastRemotePlaying = session.isPlaying;
     _lastRemoteBuffering = session.isBuffering;
+    _lastRemoteCanSeek = session.canSeek;
     _lastRemotePushedPosition = session.position;
     _lastRemotePushedAt = DateTime.now();
 
@@ -913,6 +917,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
   Future<void> stop() async {
     if (isRemoteMode) {
       await _remoteService!.stop();
+      if (_hasLocalItem) return;
       _exitRemoteMode(emitIdle: true);
       await super.stop();
       return;

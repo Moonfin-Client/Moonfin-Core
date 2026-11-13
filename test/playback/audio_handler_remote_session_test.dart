@@ -115,9 +115,14 @@ class _RecordingRemoteService extends RemoteMediaNotificationService {
   @override
   Future<void> pause() async => calls.add('remote:pause');
 
+  Future<void> Function()? onStop;
+
   @override
   Future<void> stop() async {
     calls.add('remote:stop');
+    if (onStop != null) {
+      await onStop!();
+    }
     activeSessionNotifier.value = null;
   }
 
@@ -375,5 +380,42 @@ void main() {
       handler.playbackState.value.systemActions,
       isNot(containsAll([MediaAction.seek, MediaAction.fastForward, MediaAction.rewind])),
     );
+
+    // Turning canSeek on without changing position/playing still republishes controls.
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      sessionId: 'cast:googleCast:living-room',
+      jellyfinSessionId: null,
+      castKind: CastTargetKind.googleCast,
+      canSeek: true,
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(handler.playbackState.value.controls, [
+      MediaControl.rewind,
+      MediaControl.pause,
+      MediaControl.fastForward,
+      MediaControl.stop,
+    ]);
+    expect(handler.playbackState.value.androidCompactActionIndices, [0, 1, 2]);
+  });
+
+  test('preserves local playback that starts while remote stop is in flight', () async {
+    remoteService.activeSessionNotifier.value = _remoteSession();
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+
+    final stopCompleter = Completer<void>();
+    remoteService.onStop = () => stopCompleter.future;
+
+    final stopFuture = handler.stop();
+    manager.queueService.setQueue([_localSong]);
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isFalse);
+    expect(handler.mediaItem.value?.id, 'song-1');
+
+    stopCompleter.complete();
+    await stopFuture;
+    expect(handler.isRemoteMode, isFalse);
+    expect(handler.mediaItem.value?.id, 'song-1');
   });
 }
