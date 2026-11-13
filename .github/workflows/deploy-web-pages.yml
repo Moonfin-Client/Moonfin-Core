@@ -35,6 +35,7 @@ jobs:
         run: |
           flutter pub get
           flutter build web --wasm --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
+          bash scripts/fetch-web-fonts.sh build/web
 
       - name: Write Pages runtime config
         run: |
