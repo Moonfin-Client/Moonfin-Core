@@ -178,15 +178,15 @@ void main() {
 
   test('results of a server missing from the server list are left '
       'unfolded', () {
-    final plex = _item('plex', 'p1', 'Altovar', ids: {'Tmdb': '1001'});
+    final silo = _item('silo', 's1', 'Altovar', ids: {'Tmdb': '1001'});
     final folded = foldSharedTitles([
       _item('a', 'a1', 'Altovar', ids: {'Tmdb': '1001'}),
-      plex,
+      silo,
       _item('b', 'b1', 'Altovar', ids: {'Tmdb': '1001'}),
     ], _servers);
 
-    expect(_keys(folded), ['a:a1', 'plex:p1']);
-    expect(folded[1], same(plex));
+    expect(_keys(folded), ['a:a1', 'silo:s1']);
+    expect(folded[1], same(silo));
     expect(unifiedCopiesOf(folded[0].rawData).map((copy) => copy.serverId), [
       'a',
       'b',

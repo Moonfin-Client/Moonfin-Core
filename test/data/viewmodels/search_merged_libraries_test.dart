@@ -174,46 +174,51 @@ void main() {
     expect(apis['b']!.fields.single, contains('ProviderIds'));
   });
 
-  test('a Plex server\'s results stay its own', () async {
+  test('a Silo server\'s results stay its own', () async {
     final sessions = [
       ...twoServers(),
-      server('p', [
-        catalogMovie('p1', 'Altovar', tmdb: '1001'),
-      ], type: ServerType.plex),
+      server('s', [
+        catalogMovie('s1', 'Altovar', tmdb: '1001'),
+      ], type: ServerType.silo),
     ];
 
     final results = await search(sessions, merge: true);
 
-    expect(results['Movie'], ['a:a1', 'p:p1', 'a:a4', 'b:b4']);
-    expect(apis['p']!.fields.single, isNot(contains('ProviderIds')));
+    expect(results['Movie'], ['a:a1', 's:s1', 'a:a4', 'b:b4']);
+    expect(apis['s']!.fields.single, isNot(contains('ProviderIds')));
   });
 
-  test('one server that merges beside a Plex one folds nothing', () async {
+  test('one server that merges beside a Silo one folds nothing', () async {
     final sessions = [
       server('a', [catalogMovie('a1', 'Altovar', tmdb: '1001')]),
-      server('p', [
-        catalogMovie('p1', 'Altovar', tmdb: '1001'),
-      ], type: ServerType.plex),
+      server('s', [
+        catalogMovie('s1', 'Altovar', tmdb: '1001'),
+      ], type: ServerType.silo),
     ];
 
     final results = await search(sessions, merge: true);
 
-    expect(results['Movie'], ['a:a1', 'p:p1']);
+    expect(results['Movie'], ['a:a1', 's:s1']);
     expect(apis['a']!.fields.single, isNot(contains('ProviderIds')));
   });
 
-  test('a Jellyfin and an Emby server fold together', () async {
+  test('Jellyfin, Emby and Plex servers fold together', () async {
     final sessions = [
       server('a', [catalogMovie('a1', 'Altovar', tmdb: '1001')]),
-      server('e', [
-        catalogMovie('e1', 'Altovar', tmdb: '1001'),
-      ], type: ServerType.emby),
+      for (final type in [ServerType.emby, ServerType.plex])
+        server(
+          type.name,
+          [catalogMovie('${type.name}1', 'Altovar', tmdb: '1001')],
+          type: type,
+        ),
     ];
 
     final results = await search(sessions, merge: true);
 
     expect(results['Movie'], ['a:a1']);
-    expect(apis['e']!.fields.single, contains('ProviderIds'));
+    for (final api in apis.values) {
+      expect(api.fields.single, contains('ProviderIds'));
+    }
   });
 
   test('a shared title takes one place in a full group, not two', () async {
@@ -549,14 +554,14 @@ void main() {
         expect(service.rowsDecoded, 4);
       });
 
-      test('but not with one beside a Plex server, where nothing can fold',
+      test('but not with one beside a Silo server, where nothing can fold',
           () async {
         await seedBoth();
         sessions = [
           server('a', [catalogMovie('a2', 'Hodrimel', tmdb: '1002')]),
-          server('p', [
-            catalogMovie('p1', 'Hodrimel', tmdb: '1002'),
-          ], type: ServerType.plex),
+          server('s', [
+            catalogMovie('s1', 'Hodrimel', tmdb: '1002'),
+          ], type: ServerType.silo),
         ];
         final service = catalog();
         final vm = viewModel(service);
@@ -565,7 +570,7 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 50));
         final found = await moviesFound(vm, 'hodrimel');
 
-        expect([for (final item in found) item.serverId], ['a', 'p']);
+        expect([for (final item in found) item.serverId], ['a', 's']);
         expect(service.rowsDecoded, 0);
       });
     });

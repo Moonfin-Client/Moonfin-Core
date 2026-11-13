@@ -1128,16 +1128,16 @@ void main() {
 
   test('a server whose type takes no part in merged libraries is not '
       'read', () async {
-    final plex = FakeCatalogServer('p', type: ServerType.plex)..stubApis();
-    plex.movies = [catalogMovie('p1', 'Rusquin')];
+    final silo = FakeCatalogServer('s', type: ServerType.silo)..stubApis();
+    silo.movies = [catalogMovie('s1', 'Rusquin')];
     a.movies = [catalogMovie('a1', 'Altovar')];
-    signedIn = [a, plex];
+    signedIn = [a, silo];
     final service = build();
 
     await service.forceFullRead();
 
     expect(movieNames(service), ['Altovar']);
-    expect(plex.fullPageStartIndexes, isEmpty);
+    expect(silo.fullPageStartIndexes, isEmpty);
   });
 
   test('with no sign-in store given, an account that signed out is pruned '

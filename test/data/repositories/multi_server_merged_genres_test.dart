@@ -130,7 +130,7 @@ void main() {
 
     final row = await repository({
       ...twoServers,
-      'p': (ServerType.plex, ['Drama', 'Noir']),
+      's': (ServerType.silo, ['Drama', 'Noir']),
     }).getAggregatedGenres();
 
     expect(tiles(row), [
@@ -138,8 +138,8 @@ void main() {
       'Comedy@a*',
       'Comédie@b*',
       'Drama@a*',
-      'Drama@p',
-      'Noir@p',
+      'Drama@s',
+      'Noir@s',
       'Western@b*',
     ]);
   });
@@ -257,10 +257,10 @@ void main() {
 
       final row = await repository({
         'a': (ServerType.jellyfin, ['Drama']),
-        'p': (ServerType.plex, ['Drama']),
+        's': (ServerType.silo, ['Drama']),
       }).getAggregatedGenres();
 
-      expect(tiles(row), ['Drama@a', 'Drama@p']);
+      expect(tiles(row), ['Drama@a', 'Drama@s']);
     });
 
     test('while browsing the downloads offline', () async {

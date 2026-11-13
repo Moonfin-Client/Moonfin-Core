@@ -111,6 +111,42 @@ void main() {
     },
   );
 
+  test('a list asked for provider ids gets them, and its original title', () async {
+    final (dio, requests) = _recordingDio({
+      'Metadata': [
+        {
+          'ratingKey': '7',
+          'type': 'movie',
+          'title': 'Le Sablier des marées',
+          'originalTitle': 'The Ledger of the Tides',
+          'Guid': [
+            {'id': 'tmdb://1005'},
+            {'id': 'imdb://tt9000002'},
+          ],
+        },
+      ],
+    });
+    final api = PlexItemsApi(dio);
+
+    final listed = await api.getItems(
+      parentId: 'section-1',
+      includeItemTypes: ['Movie'],
+      fields: 'SortName,ProviderIds',
+    );
+    await api.getItems(ids: ['7', '8'], fields: 'ProviderIds');
+    await api.getItems(parentId: 'section-1', includeItemTypes: ['Movie']);
+    await api.getItems(ids: ['7'], fields: 'UserData');
+
+    expect(requests[0].queryParameters['includeGuids'], 1);
+    expect(requests[1].path, '/library/metadata/7,8');
+    expect(requests[1].queryParameters['includeGuids'], 1);
+    expect(requests[2].queryParameters.containsKey('includeGuids'), isFalse);
+    expect(requests[3].queryParameters.containsKey('includeGuids'), isFalse);
+    final item = (listed['Items'] as List).single as Map;
+    expect(item['ProviderIds'], {'Tmdb': '1005', 'Imdb': 'tt9000002'});
+    expect(item['OriginalTitle'], 'The Ledger of the Tides');
+  });
+
   test('a search across libraries keeps only titles that match', () async {
     final (dio, requests) = _recordingDio({
       'Hub': [

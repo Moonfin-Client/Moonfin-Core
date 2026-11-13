@@ -633,10 +633,10 @@ void main() {
 
     // Which servers merge is the repository's rule as well, but leaving
     // alone the row of a server outside them is Home's.
-    test('on a Plex server beside two that merge, the row is the Plex '
+    test('on a Silo server beside two that merge, the row is the Silo '
         'server\'s own', () async {
       sessions = [
-        server('p', type: ServerType.plex),
+        server('s', type: ServerType.silo),
         server('a'),
         server('b'),
       ];
@@ -644,19 +644,19 @@ void main() {
         for (final cfg in HomeSectionConfig.defaults())
           cfg.copyWith(enabled: false),
         HomeSectionConfig.pluginDynamic(
-          serverId: 'http://p.test',
+          serverId: 'http://s.test',
           pluginSection: 'genre',
           pluginAdditionalData: _genreId,
           pluginDisplayText: 'Animation',
           pluginSource: HomeSectionPluginSource.genres,
         ),
       ]);
-      final vm = model(active: 'p');
+      final vm = model(active: 's');
       await vm.load();
 
       final row = vm.rows.single;
       expect(row.items.map((item) => '${item.serverId}:${item.id}'), [
-        for (final item in live) 'http://p.test:${item['Id']}',
+        for (final item in live) 'http://s.test:${item['Id']}',
       ]);
       expect(row.items.map((item) => item.rawData), live);
       expect(catalog.loads, 0);

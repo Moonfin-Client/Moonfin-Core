@@ -130,14 +130,23 @@ void main() {
     ]);
   });
 
+  test('a Plex server merges with the others', () async {
+    final libraries = await repository({
+      'a': (ServerType.jellyfin, ['movies']),
+      'p': (ServerType.plex, ['movies', 'music']),
+    }).getAggregatedLibraries();
+
+    expect(tiles(libraries), ['Movies [movies]', 'music (Server p)']);
+  });
+
   test('a server whose type does not merge keeps its tiles', () async {
     final libraries = await repository({
       'a': (ServerType.jellyfin, ['movies']),
       'b': (ServerType.emby, ['movies']),
-      'p': (ServerType.plex, ['movies']),
+      's': (ServerType.silo, ['movies']),
     }).getAggregatedLibraries();
 
-    expect(tiles(libraries), ['Movies [movies]', 'movies (Server p)']);
+    expect(tiles(libraries), ['Movies [movies]', 'movies (Server s)']);
   });
 
   test('merging libraries is off by default', () {
@@ -342,9 +351,9 @@ void main() {
         {
           'a': (ServerType.jellyfin, ['movies']),
           'b': (ServerType.emby, ['music']),
-          'p': (ServerType.plex, ['movies']),
+          's': (ServerType.silo, ['movies']),
         },
-        down: {'p'},
+        down: {'s'},
       ).getAggregatedLibraries();
 
       expect(tiles(libraries), ['movies (Server a)', 'music (Server b)']);

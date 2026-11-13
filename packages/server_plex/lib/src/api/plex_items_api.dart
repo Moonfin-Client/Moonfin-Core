@@ -60,6 +60,10 @@ class PlexItemsApi implements ItemsApi {
     },
   };
 
+  // Plex leaves the TMDB, IMDb and TVDB ids out of a list unless asked.
+  static bool _wantsGuids(String? fields) =>
+      fields != null && fields.split(',').contains('ProviderIds');
+
   static String? _keyOf(String? id, String prefix) =>
       id != null && id.startsWith(prefix) ? id.substring(prefix.length) : null;
 
@@ -149,6 +153,7 @@ class PlexItemsApi implements ItemsApi {
       final container = await plexContainer(
         _dio,
         '/library/metadata/${ids.join(',')}',
+        {if (_wantsGuids(fields)) 'includeGuids': 1},
       );
       return plexItemsResult(_items(container['Metadata']));
     }
@@ -182,6 +187,7 @@ class PlexItemsApi implements ItemsApi {
       final container = await plexContainer(_dio, '/hubs/search', {
         'query': searchTerm,
         'includeCollections': 1,
+        if (_wantsGuids(fields)) 'includeGuids': 1,
         'limit': ?limit,
       });
       final matches = _items([
@@ -253,6 +259,7 @@ class PlexItemsApi implements ItemsApi {
       else if (isHd != null)
         'resolution': isHd ? '720,1080,4k' : 'sd,480,576',
       if (isFavorite == true) 'userRating': '$plexFavoriteRating',
+      if (_wantsGuids(fields)) 'includeGuids': 1,
       if (pagedByPlex) ..._paging(startIndex, limit),
     });
 
