@@ -558,4 +558,87 @@ void main() {
       expect(service.stops, [end]);
     },
   );
+
+  test(
+    'non-echo user seek clears pending finished advance before nextItem lands',
+    () async {
+      await playbackManager.nextInQueueAsFinished();
+      expect(syncPlayApi.nextItemCalls, ['pl1']);
+
+      await playbackManager.seekTo(const Duration(minutes: 10));
+
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:04.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep2', playlistItemId: 'pl2'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(service.stops, [credits]);
+    },
+  );
+
+  test(
+    'second nextAsFinished during in-flight B load still finishes outgoing item A when B lands first',
+    () async {
+      final bGate = Completer<void>();
+      itemsApi.onGetItem = (itemId) async {
+        if (itemId == 'ep2' && !bGate.isCompleted) {
+          await bGate.future;
+        }
+      };
+
+      await playbackManager.nextInQueueAsFinished();
+
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:05.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep2', playlistItemId: 'pl2'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      // Viewer presses Next Up again while ep1 is still current and B is loading.
+      await playbackManager.nextInQueueAsFinished();
+
+      // B finishes loading before any C update arrives; ep1 must still stop finished.
+      bGate.complete();
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(service.stops, [end]);
+    },
+  );
 }

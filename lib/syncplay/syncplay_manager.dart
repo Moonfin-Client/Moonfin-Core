@@ -828,11 +828,11 @@ class SyncPlayManager extends ChangeNotifier {
       // the group, is seeked back, plays on, and reports again, forever.
       final currentOutgoingItemId =
           _itemId(_playbackManager.queueService.currentItem);
+      final pendingNow = _pendingFinishedAdvance;
       final stopAsFinished =
-          pendingFinishedAdvance != null &&
-          identical(_pendingFinishedAdvance, pendingFinishedAdvance) &&
-          pendingFinishedAdvance.itemId != null &&
-          currentOutgoingItemId == pendingFinishedAdvance.itemId;
+          pendingNow != null &&
+          pendingNow.itemId != null &&
+          currentOutgoingItemId == pendingNow.itemId;
       if (stopAsFinished) {
         _pendingFinishedAdvance = null;
       }
@@ -1357,8 +1357,12 @@ class SyncPlayManager extends ChangeNotifier {
       case TransportAction.seek:
         final target = position ?? _playbackManager.state.position;
         // Swallowed either way: under SyncPlay the player only moves on the
-        // group's command.
-        if (!_isEchoOfGroupSeek(target)) _scheduleSeekRequest(target);
+        // group's command. Clear any pending finished advance on a real user
+        // seek so seeking back out of credits cancels the prior Next intent.
+        if (!_isEchoOfGroupSeek(target)) {
+          _pendingFinishedAdvance = null;
+          _scheduleSeekRequest(target);
+        }
         return true;
       case TransportAction.stop:
         _pendingFinishedAdvance = null;
