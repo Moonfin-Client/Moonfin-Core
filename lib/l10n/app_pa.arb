@@ -9319,5 +9319,122 @@
     "watchPartyType": "ਟਾਈਪ ਕਰੋ",
     "@watchPartyType": {
         "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "moveUp": "ਉੱਪਰ ਜਾਓ",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "ਹੇਠਾਂ ਜਾਓ",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "ਆਡੀਓਬੁੱਕ",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "ਕਿਤਾਬ",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "ਆਟੋਮੈਟਿਕ",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "ਲੇਖਕ",
+    "adminMetadataLockFieldOverview": "ਸੰਖੇਪ ਜਾਣਕਾਰੀ",
+    "screensaverGeneralSettings": "ਆਮ ਸੈਟਿੰਗਾਂ",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "ਨਿਓਨ ਪਲਸ",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "ਰੋਜ਼ਾਨਾ",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "ਹਫਤਾਵਾਰੀ",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "ਟਾਈਟਲ",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "ਉਪਭੋਗਤਾ",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "ਗਤੀਵਿਧੀ",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "ਆਟੋਮੈਟਿਕ",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "ਐਡਮਿਨ",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "ਗਰੁੱਪ ਬਣਾਓ",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "ਵੇਰਵੇ ਵੇਖੋ",
+    "achievementsUnlockedMore": "+{count} ਹੋਰ",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "ਟੈਗਲਾਈਨ",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "ਸਧਾਰਣ",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "ਦੇਸ਼",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "ਆਟੋਮੈਟਿਕ",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "ਕਿਤਾਬ",
+    "adminImageTypeMenu": "ਮੀਨੂ",
+    "adminGroupOverview": "ਸੰਖੇਪ ਜਾਣਕਾਰੀ",
+    "seriesRecordingAllEpisodes": "ਸਾਰੇ ਐਪੀਸੋਡ",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "ਗਲਾਸ",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb ਸਮਾਨਤਾ",
+    "calendarSettingsView": "ਦੇਖੋ",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "ਵਿਸ਼ੇਸ਼",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "ਕਾਰਵਾਈਆਂ",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "ਸ਼ੁਰੂ",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }
