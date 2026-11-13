@@ -413,6 +413,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
+  StreamSubscription<PlaybackNotice>? _noticeSub;
   bool _reconnecting = false;
   StreamSubscription? _pipChangedSub;
   StreamSubscription? _pipActionSub;
@@ -864,6 +865,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted) return;
       setState(() => _reconnecting = reconnecting);
     });
+    _noticeSub = _manager.noticeStream.listen((notice) {
+      if (!mounted || _isStopping) return;
+      if (notice == PlaybackNotice.storageFullServerFallback) {
+        _showThrottledPlaybackError(
+          AppLocalizations.of(context).playbackStorageFullFallback,
+        );
+      }
+    });
     _bringupState = _manager.bringupState;
     _bringupSub = _manager.bringupStateStream.listen((state) {
       if (!mounted) return;
@@ -1157,6 +1166,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _letterboxCropGeometrySub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
+    _noticeSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
     _pipActionSub?.cancel();
@@ -1325,6 +1335,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (error == unsupportedVideoError) {
       _showThrottledPlaybackError(
         AppLocalizations.of(context).playbackVideoUnsupported,
+      );
+      return;
+    }
+    if (error == storageFullError) {
+      _showThrottledPlaybackError(
+        AppLocalizations.of(context).playbackStorageFullStopped,
       );
       return;
     }
