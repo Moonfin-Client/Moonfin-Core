@@ -1,12 +1,16 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../data/services/seerr/arr_queue.dart';
 import '../../data/services/seerr/seerr_download_progress.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/date_format_util.dart';
 import '../../util/download_utils.dart';
 import '../../util/platform_detection.dart';
+import '../../util/relative_time_label.dart';
 
 /// Progress bar for an active Seerr download. Not focusable, so d-pad
 /// traversal is unaffected.
@@ -60,7 +64,7 @@ class SeerrDownloadProgressBar extends StatelessWidget {
         .scaleFactor;
   }
 
-  /// The label's look, shared with [SeerrNotFoundYetLabel] so the two read as
+  /// The label's look, shared with [SeerrArrWaitLabel] so the two read as
   /// the same line.
   static TextStyle _labelStyle(BuildContext context, double scale) {
     final role = Theme.of(context).textTheme.labelMedium ?? const TextStyle();
@@ -308,36 +312,64 @@ class SeerrDownloadProgressBar extends StatelessWidget {
       prefixLabel != null ? '$prefixLabel \u00b7 $label' : label;
 }
 
-/// Stands where the download bar would be when the arr has an approved,
-/// released movie but no download for it yet. No bar, since an empty one would
-/// read as a download stuck at 0%.
-class SeerrNotFoundYetLabel extends StatelessWidget {
+/// What the arr is waiting on, where the download bar would be: a search
+/// running now, a title it hasn't found, or one that isn't out yet. No bar,
+/// since an empty one would read as a download stuck at 0%.
+class SeerrArrWaitLabel extends StatelessWidget {
+  final ArrWait wait;
   final double? scale;
 
   /// "HD" when a 4K bar sits under it, as the bars label themselves.
   final String? prefixLabel;
 
-  const SeerrNotFoundYetLabel({super.key, this.scale, this.prefixLabel});
+  /// Whether Not found yet says when the arr last searched. A poster tile
+  /// has no room for it.
+  final bool showLastSearch;
+
+  const SeerrArrWaitLabel({
+    super.key,
+    required this.wait,
+    this.scale,
+    this.prefixLabel,
+    this.showLastSearch = true,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
     final scale = this.scale ?? SeerrDownloadProgressBar._barScale();
     final style = SeerrDownloadProgressBar._labelStyle(context, scale);
+    final (icon, text) = switch (wait) {
+      ArrSearching() => (Icons.travel_explore, l10n.seerrSearchingIndexers),
+      ArrNotFoundYet(:final lastSearch) => (
+        Icons.search_off,
+        lastSearch != null && showLastSearch
+            ? l10n.seerrNotFoundYetSearched(relativeTimeLabel(l10n, lastSearch))
+            : l10n.seerrNotFoundYet,
+      ),
+      ArrNotReleased(:final date, :final nextEpisode) => (
+        Icons.event,
+        // A date already gone would read as wrong.
+        switch (date != null && date.isAfter(clock.now()) ? date : null) {
+          null => l10n.seerrNotAvailableYet,
+          final date when nextEpisode => l10n.seerrNextEpisodeOn(
+            formatShortDate(date, locale: locale),
+          ),
+          final date => l10n.seerrAvailableOn(
+            formatShortDate(date, locale: locale),
+          ),
+        },
+      ),
+    };
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.search_off,
-          size: (style.fontSize ?? 12) * 1.3,
-          color: style.color,
-        ),
+        Icon(icon, size: (style.fontSize ?? 12) * 1.3, color: style.color),
         SizedBox(width: 6 * scale),
         Flexible(
           child: Text(
-            [
-              ?prefixLabel,
-              AppLocalizations.of(context).seerrNotFoundYet,
-            ].join(' \u00b7 '),
+            [?prefixLabel, text].join(' \u00b7 '),
             style: style,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

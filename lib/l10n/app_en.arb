@@ -7801,7 +7801,42 @@
   },
   "seerrNotFoundYet": "Not found yet",
   "@seerrNotFoundYet": {
-    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr or Sonarr has the released movie or aired episodes but has not found a release to download yet"
+  },
+  "seerrSearchingIndexers": "Searching indexers",
+  "@seerrSearchingIndexers": {
+    "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+  },
+  "seerrNotFoundYetSearched": "Not found yet · searched {when}",
+  "@seerrNotFoundYetSearched": {
+    "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrNotAvailableYet": "Not available yet",
+  "@seerrNotAvailableYet": {
+    "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+  },
+  "seerrAvailableOn": "Available {date}",
+  "@seerrAvailableOn": {
+    "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrNextEpisodeOn": "Next episode {date}",
+  "@seerrNextEpisodeOn": {
+    "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "seerrGetDifferentRelease": "Get a different release",
   "@seerrGetDifferentRelease": {

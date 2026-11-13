@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -116,12 +117,18 @@ SeerrRequest _request(
   int? tvdbId,
   List<int> seasons = const [],
   bool is4k = false,
+  int mediaStatus = 3,
 }) => SeerrRequest(
   id: id,
   status: SeerrRequest.statusApproved,
   type: type,
   is4k: is4k,
-  media: SeerrMedia(id: id, tmdbId: tmdbId, tvdbId: tvdbId, status: 3),
+  media: SeerrMedia(
+    id: id,
+    tmdbId: tmdbId,
+    tvdbId: tvdbId,
+    status: mediaStatus,
+  ),
   seasons: [
     for (final n in seasons)
       SeerrSeasonRequest(id: n, seasonNumber: n, status: 2),
@@ -273,7 +280,7 @@ void main() {
       final vm = SeerrMediaDetailViewModel(seerr, _FakePrefs());
       await vm.load('10378', 'movie');
       expect(vm.state.arrQueue, isNull);
-      expect(vm.state.hd.isNotFoundYet, isFalse);
+      expect(vm.state.hd.arrWait, isNull);
       vm.dispose();
     });
   });
@@ -360,7 +367,7 @@ void main() {
       final vm = SeerrRequestsViewModel(seerr);
       await vm.load();
       await pumpEventQueue();
-      expect(vm.state.isNotFoundYet(vm.state.requests.single), isTrue);
+      expect(vm.state.waitFor(vm.state.requests.single), isA<ArrNotFoundYet>());
       vm.dispose();
     });
 
@@ -378,7 +385,10 @@ void main() {
         final vm = SeerrRequestsViewModel(seerr);
         vm.load();
         async.flushMicrotasks();
-        expect(vm.state.isNotFoundYet(vm.state.requests.single), isTrue);
+        expect(
+          vm.state.waitFor(vm.state.requests.single),
+          isA<ArrNotFoundYet>(),
+        );
 
         seerr.queue = const ArrQueue(
           service: 'radarr',
@@ -391,6 +401,189 @@ void main() {
           vm.state.downloadFor(vm.state.requests.single)?.state,
           SeerrDownloadState.stalled,
         );
+        vm.dispose();
+      });
+    });
+
+    test('a new season of a series in the library waits on its next '
+        'airing', () async {
+      final seerr = _FakeSeerr()
+        ..queue = ArrQueue(
+          service: 'sonarr',
+          inArr: true,
+          monitored: true,
+          seasons: [
+            const ArrSeason(
+              seasonNumber: 1,
+              monitored: true,
+              episodeCount: 8,
+              episodeFileCount: 8,
+            ),
+            ArrSeason(
+              seasonNumber: 2,
+              monitored: true,
+              episodeCount: 2,
+              episodeFileCount: 2,
+              nextAiring: DateTime.now().add(const Duration(days: 3)),
+            ),
+          ],
+        )
+        ..requests = [
+          _request(
+            1,
+            type: 'tv',
+            tmdbId: 63639,
+            tvdbId: 280619,
+            seasons: [2],
+            mediaStatus: SeerrMediaStatus.partiallyAvailable,
+          ),
+        ];
+      final vm = SeerrRequestsViewModel(seerr);
+      await vm.load();
+      await pumpEventQueue();
+      final wait = vm.state.waitFor(vm.state.requests.single);
+      expect(wait, isA<ArrNotReleased>());
+      expect((wait as ArrNotReleased).nextEpisode, isTrue);
+      vm.dispose();
+    });
+
+    test('a movie that is not out yet is not polled', () {
+      fakeAsync((async) {
+        final seerr = _FakeSeerr()
+          ..queue = const ArrQueue(
+            service: 'radarr',
+            inArr: true,
+            monitored: true,
+            hasFile: false,
+            isAvailable: false,
+          )
+          ..requests = [_request(1)];
+        final vm = SeerrRequestsViewModel(seerr);
+        vm.load();
+        async.flushMicrotasks();
+        expect(
+          vm.state.waitFor(vm.state.requests.single),
+          isA<ArrNotReleased>(),
+        );
+        final reads = seerr.queueCalls.length;
+        async.elapse(const Duration(seconds: 45));
+        expect(seerr.queueCalls, hasLength(reads));
+        vm.dispose();
+      });
+    });
+
+    // fakeAsync moves package:clock too, so these see the date go by.
+    test('a movie that comes out while the screen is open is read again', () {
+      fakeAsync((async) {
+        final seerr = _FakeSeerr()
+          ..queue = ArrQueue(
+            service: 'radarr',
+            inArr: true,
+            monitored: true,
+            hasFile: false,
+            isAvailable: false,
+            releaseDate: clock.now().add(const Duration(minutes: 5)),
+          )
+          ..requests = [_request(1)];
+        final vm = SeerrRequestsViewModel(seerr);
+        vm.load();
+        async.flushMicrotasks();
+        final reads = seerr.queueCalls.length;
+        async.elapse(const Duration(minutes: 4));
+        expect(seerr.queueCalls, hasLength(reads));
+
+        seerr.queue = const ArrQueue(
+          service: 'radarr',
+          inArr: true,
+          monitored: true,
+          hasFile: false,
+          isAvailable: true,
+        );
+        async.elapse(const Duration(minutes: 1, seconds: 20));
+        expect(
+          vm.state.waitFor(vm.state.requests.single),
+          isA<ArrNotFoundYet>(),
+        );
+        vm.dispose();
+      });
+    });
+
+    test('an episode that airs while the screen is open is read again', () {
+      fakeAsync((async) {
+        ArrQueue sonarr({required int files, DateTime? next}) => ArrQueue(
+          service: 'sonarr',
+          inArr: true,
+          monitored: true,
+          seasons: [
+            ArrSeason(
+              seasonNumber: 2,
+              monitored: true,
+              episodeCount: next == null ? 3 : 2,
+              episodeFileCount: files,
+              nextAiring: next,
+            ),
+          ],
+        );
+        final seerr = _FakeSeerr()
+          ..queue = sonarr(
+            files: 2,
+            next: clock.now().add(const Duration(minutes: 5)),
+          )
+          ..requests = [
+            _request(
+              1,
+              type: 'tv',
+              tmdbId: 63639,
+              tvdbId: 280619,
+              seasons: [2],
+              mediaStatus: SeerrMediaStatus.partiallyAvailable,
+            ),
+          ];
+        final vm = SeerrRequestsViewModel(seerr);
+        vm.load();
+        async.flushMicrotasks();
+        expect(
+          vm.state.waitFor(vm.state.requests.single),
+          isA<ArrNotReleased>(),
+        );
+
+        seerr.queue = sonarr(files: 2);
+        async.elapse(const Duration(minutes: 5, seconds: 20));
+        expect(
+          vm.state.waitFor(vm.state.requests.single),
+          isA<ArrNotFoundYet>(),
+        );
+        vm.dispose();
+      });
+    });
+
+    test('a title held back past its date is watched for a day', () {
+      fakeAsync((async) {
+        final seerr = _FakeSeerr()
+          ..queue = ArrQueue(
+            service: 'radarr',
+            inArr: true,
+            monitored: true,
+            hasFile: false,
+            isAvailable: false,
+            releaseDate: clock.now().subtract(const Duration(hours: 1)),
+          )
+          ..requests = [_request(1)];
+        final vm = SeerrRequestsViewModel(seerr);
+        vm.load();
+        async.flushMicrotasks();
+        var reads = seerr.queueCalls.length;
+        async.elapse(const Duration(seconds: 16));
+        expect(seerr.queueCalls.length, greaterThan(reads));
+
+        reads = seerr.queueCalls.length;
+        async.elapse(const Duration(hours: 22));
+        expect(seerr.queueCalls.length, greaterThan(reads));
+
+        async.elapse(const Duration(hours: 2));
+        reads = seerr.queueCalls.length;
+        async.elapse(const Duration(minutes: 1));
+        expect(seerr.queueCalls, hasLength(reads));
         vm.dispose();
       });
     });

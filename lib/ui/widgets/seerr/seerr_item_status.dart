@@ -108,17 +108,18 @@ Map<int, int> seerrItemSeasonStatus(ItemDetailViewModel viewModel) {
 }
 
 /// The Seerr state of an item with something downloading, or with an approved
-/// request the arr hasn't found a release for yet, or null.
+/// request the arr is still waiting on, or null.
 SeerrMediaDetailState? seerrItemDownloads(ItemDetailViewModel viewModel) {
   final state = _resolved(viewModel);
   if (state == null) return null;
   final downloading = state.hdDownload != null || state.download4k != null;
-  return downloading || state.hd.isNotFoundYet ? state : null;
+  return downloading || state.hd.arrWait != null ? state : null;
 }
 
 /// Progress bars for whatever Radarr or Sonarr is fetching right now, one per
 /// quality track. Labelled only when both are running, so the usual single bar
-/// stays uncluttered. An HD track with nothing grabbed yet says so instead.
+/// stays uncluttered. An HD track with nothing grabbed yet says what the arr
+/// is waiting on instead.
 class SeerrItemDownloadBars extends StatelessWidget {
   final SeerrMediaDetailState state;
 
@@ -128,8 +129,8 @@ class SeerrItemDownloadBars extends StatelessWidget {
   Widget build(BuildContext context) {
     final hd = state.hdDownload;
     final uhd = state.download4k;
-    final notFoundYet = hd == null && state.hd.isNotFoundYet;
-    final both = (hd != null || notFoundYet) && uhd != null;
+    final wait = hd == null ? state.hd.arrWait : null;
+    final both = (hd != null || wait != null) && uhd != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -140,8 +141,8 @@ class SeerrItemDownloadBars extends StatelessWidget {
             prefixLabel: both ? 'HD' : null,
             reasonMaxLines: 3,
           )
-        else if (notFoundYet)
-          SeerrNotFoundYetLabel(prefixLabel: both ? 'HD' : null),
+        else if (wait != null)
+          SeerrArrWaitLabel(wait: wait, prefixLabel: both ? 'HD' : null),
         if (uhd != null)
           SeerrDownloadProgressBar(
             summary: uhd,
