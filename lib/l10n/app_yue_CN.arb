@@ -6482,9 +6482,9 @@
     "settingsPreferServerTranscode": "首选服务器转码",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision 配置文件 7 直接播放",
     "settingsDolbyVisionProfile7DirectPlayDescription": "控制 Dolby Vision 配置文件 7 增强层流是否应直接播放。",
-    "settingsAutoAftkrtEnabled": "自动（AFTKRT 已启用）",
-    "settingsEnabledOnThisDevice": "在此设备上启用",
-    "settingsDisabledPreferTranscode": "已禁用（首选转码）",
+    "settingsAutoAftkrtEnabled": "汽车",
+    "settingsEnabledOnThisDevice": "启用",
+    "settingsDisabledPreferTranscode": "离开",
     "settingsResumeRewindDescription": "恢复播放时（从“继续观看”或媒体项目页面），应倒回多少秒？",
     "settingsUnpauseRewindDescription": "按下暂停按钮后恢复播放时，应该倒回多少秒？",
     "settingsSkipBackLengthDescription": "按快退按钮后跳回多少秒。",
@@ -7181,5 +7181,401 @@
     "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
     "whenFullscreen": "When fullscreen",
     "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer",
+    "scrollWheelActionOff": "离开",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "settingsNone": "没有任何",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "themeStoreSave": "节省",
+    "posterCategory": "海报",
+    "bannerCategory": "横幅",
+    "logoCategory": "标识",
+    "thumbnailCategory": "缩略图",
+    "resolutionAll": "全部",
+    "subtitleModeAlways": "总是",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "detailScreenStyleMoonfin": "Classic",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modern",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "impellerOff": "离开",
+    "audiobookChapters": "章节",
+    "audiobookSleepOff": "离开",
+    "audiobookSave": "节省",
+    "audiobookCancel": "取消",
+    "audiobookDelete": "删除",
+    "glassQualityAuto": "汽车",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "adminDrawerDisplay": "展示",
+    "adminLibrarySectionGeneral": "一般的",
+    "adminLibrarySectionSubtitles": "字幕",
+    "adminLibrarySectionSeries": "系列",
+    "adminLibrarySectionMusic": "音乐",
+    "adminLibrarySectionMovies": "电影",
+    "adminLibRefreshNever": "绝不",
+    "adminLibDefault": "默认",
+    "adminLibDisplayTitle": "展示",
+    "adminLibChaptersSection": "章节",
+    "adminLibNone": "没有任何",
+    "adminLibEmbeddedAllowNone": "没有任何",
+    "adminParentalRatingNone": "没有任何",
+    "adminUnratedBook": "图书",
+    "adminUnratedChannelContent": "渠道",
+    "adminUnratedLiveTvChannel": "电视直播",
+    "adminUnratedMovie": "电影",
+    "adminUnratedMusic": "音乐",
+    "adminUnratedTrailer": "Trailers",
+    "adminBackupSubtitles": "字幕",
+    "adminPlaybackAudioSection": "声音的",
+    "adminPlaybackAutoOption": "汽车",
+    "adminGeneralSectionServer": "服务器",
+    "bookHeroRead": "读",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "processingStatus": "加工",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "issueTypeVideo": "视频",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "声音的",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "adminSdUsername": "用户名",
+    "adminSdPassword": "密码",
+    "emulatorCoreDownloading": "正在下载",
+    "castMembers": "投掷",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "视频",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "tags": "标签",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "selectAllStudios": "选择全部",
+    "filtersHeader": "过滤器",
+    "interfaceLayoutTv": "电视",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "桌面",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "横幅",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "Trailers",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "seerrOriginalLanguage": "原始语言",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "运行时",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "Classic",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Modern",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "电视",
+    "adminMetadataLockFieldName": "姓名",
+    "adminMetadataLockFieldGenres": "流派",
+    "adminMetadataLockFieldCast": "People",
+    "adminMetadataLockFieldRuntime": "运行时",
+    "adminMetadataLockFieldStudios": "工作室",
+    "adminMetadataLockFieldTags": "标签",
+    "seerrDownloading": "正在下载",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceModeAuto": "汽车",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "缩略图",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "小的",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "中等的",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "大的",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "screensaverBackdrop": "背景",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "黑色的",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "全部",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "绝不",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "正在下载",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "收藏",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "家",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "中等的",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "离开",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "系列状态",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "流派",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "今天",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "待办的",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "读",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "姓名",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "Appearance",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "看过",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "重复",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "可用的",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "衰退",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "团体名称",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "离开群组",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "其他",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "标识",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "海报",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "下一步",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionCast": "投掷",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "工作室",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "章节",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionCollections": "收藏",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "更多类似的",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "建议",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "出场次数",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "传",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "其他",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "playlistSortReleaseDate": "发布日期",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "运行时",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "上次玩过",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "汽车",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "Classic",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Modern",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "艺术家",
+    "adminMetadataFieldAlbum": "专辑",
+    "adminMetadataSectionRatings": "评级",
+    "adminLiveTvTabRecordings": "录音",
+    "adminLogLevelNone": "没有任何",
+    "adminLogWatch": "手表",
+    "adminGroupLibrary": "图书馆",
+    "adminGroupPlayback": "回放",
+    "adminGroupPeople": "People",
+    "librarySortAlbum": "专辑",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "类型",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "Classic",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "adminEmbyConnect": "Emby 连接",
+    "musicLibraryStyleClassic": "Classic",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "删除",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "Classic",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "现在",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "合身",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "姓名",
+    "externalRowSortReleaseDate": "发布日期",
+    "externalRowSortShuffle": "随机播放",
+    "siloApproveSignInApprove": "批准",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "积极的",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "首映",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "首映",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "类型",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "玩",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "watchPartyType": "类型",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    }
 }
