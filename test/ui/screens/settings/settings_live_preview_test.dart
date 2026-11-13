@@ -59,6 +59,7 @@ import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
 import 'package:moonfin/ui/screensaver/screensaver_gradient_backdrops.dart';
 import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
+import 'package:moonfin/ui/widgets/home_row_spacing.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
@@ -2405,8 +2406,8 @@ void main() {
     await pump();
     rowsLeft(NavbarPosition.left);
     await pump();
-    // Home's rows start 56 in beside the rail against 48 under a TV's top
-    // bar, rather than after the rail's whole width.
+    // Home's rows start 56 in beside the rail against tvTopNavbarRowInset
+    // under a TV's top bar, rather than after the rail's whole width.
     final scale =
         tester
             .getRect(
@@ -2418,7 +2419,7 @@ void main() {
         1150;
     expect(
       tester.getTopLeft(find.text(l10n.continueWatching)).dx - underTopBar,
-      closeTo(8 * scale, 0.5),
+      closeTo((56 - tvTopNavbarRowInset) * scale, 0.5),
     );
 
     // The docked keyboard opens under the field rather than in its place, and
