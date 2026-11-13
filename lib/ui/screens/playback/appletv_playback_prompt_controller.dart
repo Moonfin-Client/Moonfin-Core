@@ -248,7 +248,6 @@ class AppleTvPlaybackPromptController {
     try {
       final proceed = await _checkStillWatching();
       if (!proceed || _disposed) return;
-      _markCurrentPlayed();
       await _commands.advanceNext();
     } finally {
       _isNextUpAdvancing = false;

@@ -151,6 +151,7 @@ class _Manager extends PlaybackManager {
   int finishedStopCalls = 0;
   int nextInQueueCalls = 0;
   int finishedNextInQueueCalls = 0;
+  bool blockNextAdvance = false;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
   StreamResolutionResult? resolution;
 
@@ -198,6 +199,8 @@ class _Manager extends PlaybackManager {
   @override
   Future<void> nextInQueueAsFinished() async {
     finishedNextInQueueCalls++;
+    if (blockNextAdvance) return;
+    notifyFinishedItemStop(queueService.currentItem);
     queueService.next();
   }
 }
@@ -713,6 +716,53 @@ void main() {
         expect(manager.finishedNextInQueueCalls, 1);
         expect(client.userLibrary.markedPlayed, ['ep1']);
         expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'intercepted Next Up play during outro does not mark the episode watched until committed',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.blockNextAdvance = true;
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, isEmpty);
+        expect(ep1Raw['UserData'], isNull);
         await tester.pumpWidget(const SizedBox());
       },
       variant: TargetPlatformVariant.only(TargetPlatform.android),

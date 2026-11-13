@@ -641,4 +641,47 @@ void main() {
       expect(service.stops, [end]);
     },
   );
+
+  test(
+    'failed newer nextAsFinished request restores earlier valid pending advance',
+    () async {
+      var callCount = 0;
+      syncPlayApi.onNextItem = (_) async {
+        callCount++;
+        if (callCount == 2) {
+          throw StateError('second failed');
+        }
+      };
+
+      await playbackManager.nextInQueueAsFinished();
+      // Second press fails while first advance was already accepted.
+      await playbackManager.nextInQueueAsFinished();
+
+      syncPlayManager.handleGroupUpdate(
+        const SyncPlayGroupUpdate(
+          groupId: 'g1',
+          type: SyncPlayGroupUpdateType.playQueue,
+          payload: SyncPlayPlayQueuePayload(
+            SyncPlayPlayQueueUpdate(
+              reason: SyncPlayQueueUpdateReason.nextItem,
+              lastUpdate: '2026-01-01T00:00:06.000Z',
+              playlist: [
+                SyncPlayQueueItem(itemId: 'ep1', playlistItemId: 'pl1'),
+                SyncPlayQueueItem(itemId: 'ep2', playlistItemId: 'pl2'),
+              ],
+              playingItemIndex: 1,
+              startPositionTicks: 0,
+              isPlaying: true,
+              shuffleMode: SyncPlayShuffleMode.sorted,
+              repeatMode: SyncPlayRepeatMode.repeatNone,
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(service.stops, [end]);
+    },
+  );
 }

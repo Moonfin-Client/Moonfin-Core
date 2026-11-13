@@ -643,6 +643,9 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _finishedItemStopController = StreamController<dynamic>.broadcast(
+    sync: true,
+  );
   final _liveRecoveryStatusController =
       StreamController<LiveRecoveryStatus?>.broadcast();
   final _volumeController = StreamController<double>.broadcast();
@@ -666,6 +669,18 @@ class PlaybackManager implements AudioOwnable {
   /// Each new level, so a screen showing its own volume can follow a change
   /// made from somewhere else, such as a session remote.
   Stream<double> get volumeStream => _volumeController.stream;
+
+  /// Emits the outgoing queue item when a finished stop or finished queue
+  /// advance commits (after any transport interceptor has allowed it).
+  Stream<dynamic> get finishedItemStopStream =>
+      _finishedItemStopController.stream;
+
+  /// Allows test subclasses overriding `stopAsFinished` or
+  /// `nextInQueueAsFinished` to emit committed finished-stop events.
+  void notifyFinishedItemStop(dynamic item) {
+    if (item == null || _finishedItemStopController.isClosed) return;
+    _finishedItemStopController.add(item);
+  }
 
   void reportVolumeState({
     required double volume,
@@ -5593,6 +5608,9 @@ class PlaybackManager implements AudioOwnable {
           !identical(queueService.currentItem, expectedItem)) {
         return false;
       }
+      final finishedItem = finished
+          ? (queueService.currentItem ?? _lastPlaybackItem)
+          : null;
       // The other half of the re-resolve note: between them every app
       // initiated teardown of the player's playlist is now on the record.
       _diagnosticLogger?.call(
@@ -5609,6 +5627,7 @@ class PlaybackManager implements AudioOwnable {
       _stopProgressTimer();
       final backend = _backend;
       if (_hasNoActivePlayback(backend)) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
           _forceTranscodeForQueue = false;
           _directPlayAllowedForQueue = true;
@@ -5621,6 +5640,7 @@ class PlaybackManager implements AudioOwnable {
         return true;
       }
       if (_isOfflinePlayback) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
           await _onOfflineStop?.call();
           _onOfflineStop = null;
@@ -5696,6 +5716,7 @@ class PlaybackManager implements AudioOwnable {
       _currentResolution = null;
       _lastPlaybackItem = null;
       _lastPlaybackResolution = null;
+      if (finishedItem != null) notifyFinishedItemStop(finishedItem);
       await _backend?.stop();
       _playbackStartTime = null;
       _waitingForMedia = false;
@@ -5745,6 +5766,7 @@ class PlaybackManager implements AudioOwnable {
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _finishedItemStopController.close();
     _liveRecoveryStatusController.close();
     _reconnectRetry?.cancel();
     _reconnectProvenTimer?.cancel();

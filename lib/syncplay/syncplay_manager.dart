@@ -1376,14 +1376,22 @@ class SyncPlayManager extends ChangeNotifier {
         final playlistItemId = _currentPlaylistItemId();
         final outgoingItemId =
             _itemId(_playbackManager.queueService.currentItem);
+        final previous = _pendingFinishedAdvance;
         final pending = _PendingFinishedAdvance(
           playlistItemId: playlistItemId,
           itemId: outgoingItemId,
         );
         _pendingFinishedAdvance = pending;
         final sent = await _sendNextRequest(playlistItemId);
-        if (!sent && identical(_pendingFinishedAdvance, pending)) {
-          _pendingFinishedAdvance = null;
+        if (!sent) {
+          pending.failed = true;
+          if (identical(_pendingFinishedAdvance, pending)) {
+            _pendingFinishedAdvance = (previous != null &&
+                    !previous.failed &&
+                    previous.itemId == outgoingItemId)
+                ? previous
+                : null;
+          }
         }
         return true;
       case TransportAction.previous:
@@ -1907,4 +1915,5 @@ class _PendingFinishedAdvance {
 
   final String? playlistItemId;
   final String? itemId;
+  bool failed = false;
 }

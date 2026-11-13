@@ -403,11 +403,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   CalendarEntry? _nextAirDateReminder;
   int _nextAirDateLookup = 0;
   bool _nextUpDismissed = false;
-  bool _outroMarkedPlayed = false;
+  String? _lastOutroMarkedItemId;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
   StreamSubscription? _positionSub;
   StreamSubscription? _queueSub;
+  StreamSubscription<dynamic>? _finishedItemStopSub;
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
@@ -917,6 +918,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
     });
+    _finishedItemStopSub = _manager.finishedItemStopStream.listen(
+      _markCurrentItemPlayedForOutroSkip,
+    );
     _listenToLetterboxCropState(_activeBackend);
     _backendSub = _manager.backendChangedStream.listen((backend) {
       _listenToLetterboxCropState(backend);
@@ -985,7 +989,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
-        _outroMarkedPlayed = false;
+        _lastOutroMarkedItemId = null;
         _showNextUp = false;
         _skipSegment = null;
         // Stream indexes belong to the file they came from, so the next item
@@ -1153,6 +1157,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _positionSub?.cancel();
     _queueSub?.cancel();
+    _finishedItemStopSub?.cancel();
     _episodeBrowser?.dispose();
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
@@ -2693,7 +2698,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     setState(() => _showNextUp = false);
     try {
       if (!await _checkStillWatching()) return;
-      _markCurrentItemPlayedForOutroSkip();
       // The next item, not the next chapter, even when the card came up
       // during one.
       await _manager.nextInQueueAsFinished();
@@ -2770,32 +2774,31 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   // Skipping the credits counts as finishing, even when they start before the
   // server's own played threshold.
-  void _markCurrentItemPlayedForOutroSkip() {
-    if (_outroMarkedPlayed) return;
-    _outroMarkedPlayed = true;
-    final item = _queue.currentItem;
+  void _markCurrentItemPlayedForOutroSkip([dynamic targetItem]) {
+    final item = targetItem ?? _queue.currentItem;
     final itemId = _itemIdForQueueItem(item);
-    if (itemId != null && itemId.isNotEmpty) {
-      try {
-        final mutations = ItemMutationRepository(_clientForQueueItem(item));
-        unawaited(
-          mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
-        );
-        final raw = _rawDataForQueueItem(item);
-        if (raw != null) {
-          final existingUserData = raw['UserData'];
-          final userData = existingUserData is Map<String, dynamic>
-              ? existingUserData
-              : (existingUserData is Map
-                    ? existingUserData.cast<String, dynamic>()
-                    : <String, dynamic>{});
-          userData['Played'] = true;
-          userData['PlaybackPositionTicks'] = 0;
-          userData['PlayedPercentage'] = null;
-          raw['UserData'] = userData;
-        }
-      } catch (_) {}
-    }
+    if (itemId == null || itemId.isEmpty) return;
+    if (_lastOutroMarkedItemId == itemId) return;
+    _lastOutroMarkedItemId = itemId;
+    try {
+      final mutations = ItemMutationRepository(_clientForQueueItem(item));
+      unawaited(
+        mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
+      );
+      final raw = _rawDataForQueueItem(item);
+      if (raw != null) {
+        final existingUserData = raw['UserData'];
+        final userData = existingUserData is Map<String, dynamic>
+            ? existingUserData
+            : (existingUserData is Map
+                  ? existingUserData.cast<String, dynamic>()
+                  : <String, dynamic>{});
+        userData['Played'] = true;
+        userData['PlaybackPositionTicks'] = 0;
+        userData['PlayedPercentage'] = null;
+        raw['UserData'] = userData;
+      }
+    } catch (_) {}
   }
 
   void _skipCurrentSegment() {

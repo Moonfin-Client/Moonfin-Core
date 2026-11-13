@@ -63,6 +63,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<void>? _exitSub;
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
+  StreamSubscription<dynamic>? _finishedItemStopSub;
+  String? _lastMarkedPlayedItemId;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
@@ -195,6 +197,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _sessionEndedSub = manager.sessionEndedStream.listen(
         (_) => _handleExit(),
       );
+      _finishedItemStopSub = manager.finishedItemStopStream.listen((item) {
+        final itemId = _itemIdForQueueItem(item);
+        if (itemId != null && itemId.isNotEmpty) {
+          _markPlayed(itemId, item: item);
+        }
+      });
       _reconnectingSub = manager.reconnectingStream.listen((reconnecting) {
         if (!mounted) return;
         unawaited(
@@ -1209,14 +1217,16 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     );
   }
 
-  void _markPlayed(String itemId) {
-    final item = _manager?.queueService.currentItem;
+  void _markPlayed(String itemId, {dynamic item}) {
+    if (_lastMarkedPlayedItemId == itemId) return;
+    _lastMarkedPlayedItemId = itemId;
+    final target = item ?? _manager?.queueService.currentItem;
     try {
-      final client = _clientForQueueItem(item);
+      final client = _clientForQueueItem(target);
       if (client == null) return;
       final mutations = ItemMutationRepository(client);
       unawaited(mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}));
-      final raw = _rawDataForQueueItem(item);
+      final raw = _rawDataForQueueItem(target);
       if (raw != null) {
         final existingUserData = raw['UserData'];
         final userData = existingUserData is Map<String, dynamic>
@@ -1225,6 +1235,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
                   ? existingUserData.cast<String, dynamic>()
                   : <String, dynamic>{});
         userData['Played'] = true;
+        userData['PlaybackPositionTicks'] = 0;
+        userData['PlayedPercentage'] = null;
         raw['UserData'] = userData;
       }
     } catch (_) {}
@@ -1785,6 +1797,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   }
 
   void _onQueueChanged() {
+    _lastMarkedPlayedItemId = null;
     _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
     _syncCinemaSkip();
@@ -1980,6 +1993,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _exitSub?.cancel();
     _queueSub?.cancel();
     _sessionEndedSub?.cancel();
+    _finishedItemStopSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
     _actionSub?.cancel();
