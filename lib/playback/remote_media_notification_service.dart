@@ -117,6 +117,12 @@ class RemoteMediaNotificationService {
     null,
   );
 
+  /// Incremented every time the paused socket grace window is (re)started, so
+  /// listeners holding their own pause deadline (e.g. the notification's
+  /// foreground release timer) can renew it under exactly the same conditions.
+  /// Identical paused heartbeats do not bump it.
+  final ValueNotifier<int> pausedGraceRenewals = ValueNotifier(0);
+
   final Map<String, Map<String, dynamic>> _sessionsById = {};
   StreamSubscription<ServerWebSocketMessage>? _socketEventSub;
   StreamSubscription<void>? _socketConnSub;
@@ -187,6 +193,7 @@ class RemoteMediaNotificationService {
         _pausedGraceTimer = null;
         _syncFallbackPoll();
       });
+      pausedGraceRenewals.value++;
     }
   }
 
@@ -885,6 +892,7 @@ class RemoteMediaNotificationService {
     _castService.remotePositionNotifier.removeListener(_onPrefsOrCastChanged);
     _castService.remoteVolumeNotifier.removeListener(_onPrefsOrCastChanged);
     activeSessionNotifier.dispose();
+    pausedGraceRenewals.dispose();
   }
 }
 

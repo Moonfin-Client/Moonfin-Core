@@ -83,6 +83,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     unawaited(_attachAndroidInterruptions());
     _attachEngineNowPlaying();
     _remoteService?.activeSessionNotifier.addListener(_onRemoteSessionChanged);
+    _remoteService?.pausedGraceRenewals.addListener(_onRemotePausedGraceRenewed);
     // Resolve the artwork provider authority before the first now-playing push
     // so its artUri can be wrapped; harmless no-op off Android.
     unawaited(CarArtwork.instance.ensureReady());
@@ -520,6 +521,23 @@ class MoonfinAudioHandler extends BaseAudioHandler
     _pausedIdleTimer?.cancel();
     _pausedIdleTimer = null;
     _pausedIdleKey = null;
+  }
+
+  // The remote service restarted its paused socket grace (seek while paused,
+  // explicit refresh, ...). Renew the notification deadline under the same
+  // conditions so the two windows stay aligned; identical paused heartbeats
+  // never bump the counter, so they extend neither. Transitions to a new item
+  // or from playing to paused arrive through _onRemoteSessionChanged instead.
+  void _onRemotePausedGraceRenewed() {
+    final session = _remoteService?.activeSession;
+    if (session == null || session.isPlaying || session.isBuffering) return;
+    final key = session.identityKey;
+    final tracked =
+        _pausedIdleKey == 'remote:$key' || _timedOutRemoteMediaKey == key;
+    if (!tracked) return;
+    _timedOutRemoteMediaKey = null;
+    _cancelPausedIdleTimer();
+    _onRemoteSessionChanged();
   }
 
   void _scheduleRemotePausedIdleTimer(String identityKey) {
@@ -1026,17 +1044,20 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> stop() async {
-    _cancelPausedIdleTimer();
-    _timedOutRemoteMediaKey = null;
-    _localPauseTimedOut = false;
-    _lastLocalCurrentItem = null;
     if (isRemoteMode) {
+      // Keep the paused idle deadline armed until Stop succeeds: if the
+      // request throws, the notification must still release on schedule.
       await _remoteService!.stop();
       if (_hasLocalItem) return;
+      _timedOutRemoteMediaKey = null;
       _exitRemoteMode(emitIdle: true);
       await super.stop();
       return;
     }
+    _cancelPausedIdleTimer();
+    _timedOutRemoteMediaKey = null;
+    _localPauseTimedOut = false;
+    _lastLocalCurrentItem = null;
     for (final sub in _subs) {
       sub.cancel();
     }
@@ -1063,6 +1084,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
   void disposeForTest() {
     _cancelPausedIdleTimer();
     _remoteService?.activeSessionNotifier.removeListener(_onRemoteSessionChanged);
+    _remoteService?.pausedGraceRenewals.removeListener(
+      _onRemotePausedGraceRenewed,
+    );
     for (final sub in _subs) {
       unawaited(sub.cancel());
     }

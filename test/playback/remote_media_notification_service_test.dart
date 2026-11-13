@@ -618,12 +618,15 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(clockedService.activeSession?.isPlaying, isFalse);
     expect(clockedService.keepsSocketAlive, isTrue);
+    final renewalsAfterPause = clockedService.pausedGraceRenewals.value;
+    expect(renewalsAfterPause, greaterThan(0));
 
     // Identical paused heartbeats 20 minutes later do not extend the deadline.
     fakeNow = fakeNow.add(const Duration(minutes: 20));
     socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
     await Future<void>.delayed(Duration.zero);
     expect(clockedService.keepsSocketAlive, isTrue);
+    expect(clockedService.pausedGraceRenewals.value, renewalsAfterPause);
 
     // Seeking while paused does reset the grace window.
     fakeNow = fakeNow.add(const Duration(minutes: 5));
@@ -632,6 +635,10 @@ void main() {
     );
     await Future<void>.delayed(Duration.zero);
     expect(clockedService.keepsSocketAlive, isTrue);
+    expect(
+      clockedService.pausedGraceRenewals.value,
+      greaterThan(renewalsAfterPause),
+    );
 
     // 10 minutes after the seek (35 minutes since initial pause), still within
     // the reset 30-minute window.

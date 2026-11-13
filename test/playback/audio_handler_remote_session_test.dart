@@ -546,6 +546,85 @@ void main() {
     );
   });
 
+  test('paused grace renewals from the remote service renew the notification deadline', () async {
+    final shortGraceHandler = MoonfinAudioHandler(
+      manager,
+      _FakeClientFactory(),
+      _FakeBrowse(),
+      _FakeSessionStore(),
+      remoteService: remoteService,
+      pausedForegroundGrace: const Duration(milliseconds: 60),
+    );
+    addTearDown(shortGraceHandler.disposeForTest);
+
+    remoteService.activeSessionNotifier.value = _remoteSession(isPlaying: false);
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+
+    // A seek while paused renews the service's socket grace; the handler
+    // must restart its own deadline alongside it.
+    remoteService.pausedGraceRenewals.value++;
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      isPlaying: false,
+      position: const Duration(seconds: 90),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+    // 80ms since the first pause: past the original deadline, inside the new one.
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
+
+    // A renewal after the timeout (e.g. seeking the paused item) restores the
+    // controls instead of staying suppressed.
+    remoteService.pausedGraceRenewals.value++;
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      isPlaying: false,
+      position: const Duration(seconds: 120),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+  });
+
+  test('keeps the paused idle deadline when remote stop fails', () async {
+    final shortGraceHandler = MoonfinAudioHandler(
+      manager,
+      _FakeClientFactory(),
+      _FakeBrowse(),
+      _FakeSessionStore(),
+      remoteService: remoteService,
+      pausedForegroundGrace: const Duration(milliseconds: 40),
+    );
+    addTearDown(shortGraceHandler.disposeForTest);
+
+    remoteService.activeSessionNotifier.value = _remoteSession(isPlaying: false);
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+
+    remoteService.onStop = () async => throw StateError('network down');
+    await expectLater(shortGraceHandler.stop(), throwsStateError);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
+  });
+
   test('emits idle after pausedForegroundGrace during local paused playback', () async {
     final shortGraceHandler = MoonfinAudioHandler(
       manager,
