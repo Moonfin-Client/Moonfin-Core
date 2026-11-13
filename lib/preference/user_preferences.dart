@@ -3272,7 +3272,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final mediaBarTrailerPreview = Preference(
     key: 'mediaBarTrailerPreview',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final mediaBarTrailerAudio = Preference(

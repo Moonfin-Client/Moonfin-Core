@@ -951,7 +951,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Build web
-        run: flutter build web --wasm --release
+        run: flutter build web --wasm --release --no-web-resources-cdn
 
       - uses: actions/upload-artifact@v6
         with:

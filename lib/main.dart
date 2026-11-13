@@ -1098,12 +1098,6 @@ Future<void> _initDeferredStartupServices(UserPreferences prefs) async {
     await GetIt.instance<SeerrNotificationService>().handleColdStart();
   } catch (_) {}
 
-  if (PlatformDetection.isMobile) {
-    try {
-      await GetIt.instance<PushMessagingService>().initialize();
-    } catch (_) {}
-  }
-
   // Audio session ownership differs per platform:
   // - Android: MoonfinAudioHandler acquires audio focus per playback, and skips
   //   it when the backend manages focus itself like media3. We only configure

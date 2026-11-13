@@ -22,6 +22,7 @@
         android:label="${appName}"
         android:name=".MoonfinApplication"
         android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
         android:requestLegacyExternalStorage="true"
         android:banner="@drawable/moonfin_tv_banner"
         android:enableOnBackInvokedCallback="true"
@@ -87,6 +88,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="seerr_notifications" />
+
+        <!-- The SDK starts with the process and would fetch an FCM token on
+             its own, TV included. PushMessagingService asks for one only when
+             the server can deliver push. -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
 
         <!-- Impeller is off here because TV boxes, often PowerVR, stutter on
              the Impeller GLES fallback. MoonfinApplication turns it on at
