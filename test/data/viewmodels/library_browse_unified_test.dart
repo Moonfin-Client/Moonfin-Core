@@ -227,6 +227,84 @@ void main() {
     });
   });
 
+  group('a search stays over the whole list', () {
+    // Each match sorts after every title on the first page.
+    Future<void> settle() async {
+      for (var i = 0; i < 5; i++) {
+        await pumpEventQueue();
+      }
+    }
+
+    test('when the list is loaded with the query already typed', () async {
+      await seedCatalog(db, 'a', numbered('a', [for (var i = 0; i < 800; i++) i]));
+      await seedCatalog(db, 'b', [catalogMovie('bz', 'Zintry')]);
+      final vm = await viewModel();
+      // Nothing is loaded yet, so this starts no page walk of its own.
+      vm.setSearchQuery('zintry');
+
+      await vm.load();
+      await settle();
+
+      expect(names(vm), ['Zintry']);
+    });
+
+    test('when a catalog change rebuilds the list mid walk', () async {
+      await seedCatalog(db, 'a', numbered('a', [for (var i = 0; i < 800; i++) i]));
+      await seedCatalog(db, 'b', [catalogMovie('bz', 'Zintry')]);
+      final vm = await viewModel();
+      await vm.load();
+      // Wait past the check made on opening, which lets changes straight in.
+      await pumpEventQueue();
+      await catalog.removeCopy('a', 'a0');
+      expect(vm.hasPendingCatalogUpdate, isTrue);
+
+      vm.setSearchQuery('zintry');
+      // The walk the query starts once the typing stops, here without the
+      // wait, so the rebuild lands while it is still paging.
+      unawaited(vm.ensureAllItemsLoaded());
+      await vm.applyCatalogUpdate();
+      expect(vm.hasMore, isTrue);
+      await settle();
+
+      expect(names(vm), ['Zintry']);
+    });
+
+    test('when a refresh brings another match', () async {
+      signInToFakeServers();
+      a.movies = numbered('a', [for (var i = 0; i < 300; i++) i]);
+      b.movies = [catalogMovie('bz', 'Zintry')];
+      await catalog.forceFullRead();
+      final vm = await viewModel();
+      vm.setSearchQuery('zintry');
+      await vm.load();
+      await settle();
+
+      b.movies = [...b.movies, catalogMovie('by', 'Zintry Crossing')];
+      await vm.refreshCatalog();
+      await settle();
+
+      expect(names(vm), ['Zintry', 'Zintry Crossing']);
+    });
+
+    test('and a list already complete is not walked again', () async {
+      await seedCatalog(db, 'a', [catalogMovie('a1', 'Altovar')]);
+      await seedCatalog(db, 'b', [catalogMovie('bz', 'Zintry')]);
+      final vm = await viewModel();
+      vm.setSearchQuery('zintry');
+      await vm.load();
+      await settle();
+      var notified = 0;
+      vm.addListener(() => notified++);
+
+      await vm.load();
+      await settle();
+
+      expect(names(vm), ['Zintry']);
+      // One for the loading state and one for the list, none for a page.
+      expect(notified, 2);
+    });
+  });
+
   test('offers only the sorts and filters the stored catalog can '
       'answer', () async {
     await seedCatalog(db, 'a', [catalogMovie('a1', 'Altovar')]);
@@ -778,7 +856,7 @@ void main() {
       final vm = await viewModel();
       await vm.load();
       expect(vm.items.length, greaterThanOrEqualTo(40));
-      final untouched = vm.items.firstWhere((item) => item.id == 'a8');
+      final before = vm.items;
       catalog.lookups = 0;
 
       a.setUserData('a7', {'Played': true});
@@ -786,9 +864,62 @@ void main() {
       await pumpEventQueue();
 
       expect(played(vm, 'Movie 007'), isTrue);
-      expect(vm.items.firstWhere((item) => item.id == 'a8'), same(untouched));
-      // Only its own card is looked up, plus the lookups that find it.
-      expect(catalog.lookups, lessThan(5));
+      expect(vm.items, isNot(same(before)));
+      for (var i = 0; i < before.length; i++) {
+        if (before[i].id == 'a7') continue;
+        expect(vm.items[i], same(before[i]));
+      }
+      // One lookup to find the copies of the changed title, one for its card.
+      // No other card is looked up or compared.
+      expect(catalog.lookups, 2);
+    });
+
+    test('still reaches the right card once more pages have loaded and '
+        'cards have been patched', () async {
+      await seedCatalog(db, 'a', numbered('a', [for (var i = 0; i < 400; i++) i]));
+      final vm = await viewModel();
+      await vm.load();
+      await pumpEventQueue();
+      final firstPage = vm.items.length;
+      expect(vm.hasMore, isTrue);
+
+      catalog.applyUserData('a', {
+        'a7': {'Played': true},
+      });
+      expect(played(vm, 'Movie 007'), isTrue);
+
+      await vm.ensureAllItemsLoaded();
+      expect(vm.items, hasLength(400));
+      final before = vm.items;
+      catalog.lookups = 0;
+      catalog.applyUserData('a', {
+        'a7': {'Played': false},
+        'a399': {'Played': true},
+      });
+
+      expect(firstPage, lessThan(399));
+      expect(played(vm, 'Movie 007'), isFalse);
+      expect(played(vm, 'Movie 399'), isTrue);
+      expect(names(vm), [for (final item in before) item.name]);
+      expect(catalog.lookups, 4);
+    });
+
+    test('that changes nothing a card shows leaves the list as it was',
+        () async {
+      await seedCatalog(db, 'a', numbered('a', [for (var i = 0; i < 40; i++) i]));
+      final vm = await viewModel();
+      await vm.load();
+      await pumpEventQueue();
+      catalog.applyUserData('a', {
+        'a7': {'Played': true},
+      });
+      final before = vm.items;
+
+      catalog.applyUserData('a', {
+        'a7': {'Played': true},
+      });
+
+      expect(vm.items, same(before));
     });
 
     test('keeps each copy\'s own state for the server picker', () async {

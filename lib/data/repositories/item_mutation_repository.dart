@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import '../services/user_data_sync.dart';
 
 class ItemMutationRepository {
@@ -9,7 +10,9 @@ class ItemMutationRepository {
 
   ItemMutationRepository(this._client);
 
-  static final _favoriteSyncs = <String, Future<void>>{};
+  /// The favorite changes in progress, one per server and item. Servers can
+  /// hand out the same item id, and each still needs its own request.
+  static final _favoriteSyncs = <_FavoriteSyncKey, _FavoriteSync>{};
 
   /// Shows [isFavorite] at once, then brings the server to the newest choice
   /// one request at a time, so a quick run of toggles ends where the user
@@ -20,25 +23,45 @@ class ItemMutationRepository {
   /// lands on the server's value whichever order the callers run in.
   Future<void> setFavorite(String itemId, {required bool isFavorite}) async {
     userDataSync.requestFavorite(itemId, isFavorite);
-    final session = userDataSync.session;
-    final key = '$session:$itemId';
+    final key = (
+      session: userDataSync.session,
+      // The active client and the factory's can be two wrappers around one
+      // server's client.
+      server: onlineClientOf(_client),
+      itemId: itemId,
+    );
+    var sync = _favoriteSyncs[key];
+    if (sync == null) {
+      sync = _favoriteSyncs[key] = _FavoriteSync(
+        wanted: isFavorite,
+        held: userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
+      );
+      sync.done = _syncFavorite(key, sync);
+    } else {
+      sync.wanted = isFavorite;
+    }
     try {
-      await (_favoriteSyncs[key] ??= _syncFavorite(itemId, session, key));
+      await sync.done;
     } on _FavoriteSyncFailure catch (failure) {
       if (failure.confirmed == isFavorite) return;
       Error.throwWithStackTrace(failure.error, failure.stackTrace);
     }
   }
 
-  Future<void> _syncFavorite(String itemId, int session, String key) async {
+  /// [UserDataSync] tracks a change by item id alone, so what this server is
+  /// wanted to hold and what it does hold are kept in [sync]. Another
+  /// server's change under the same id would otherwise end this one early.
+  Future<void> _syncFavorite(_FavoriteSyncKey key, _FavoriteSync sync) async {
+    final (:session, server: _, :itemId) = key;
     try {
       // Lets setFavorite store this run before it can finish and remove it.
       await Future<void>.value();
       while (userDataSync.session == session) {
-        final wanted = userDataSync.pendingFavorite(itemId);
-        if (wanted == null) return;
-        if (wanted == userDataSync.confirmedFavorite(itemId)) {
-          userDataSync.confirmFavorite(itemId, wanted);
+        final wanted = sync.wanted;
+        if (wanted == sync.held) {
+          if (userDataSync.pendingFavorite(itemId) == wanted) {
+            userDataSync.confirmFavorite(itemId, wanted);
+          }
           return;
         }
         try {
@@ -49,12 +72,15 @@ class ItemMutationRepository {
           }
         } catch (error, stackTrace) {
           if (userDataSync.session != session) return;
-          final confirmed = userDataSync.confirmedFavorite(itemId) ?? !wanted;
           userDataSync.failFavoriteChange(itemId);
-          throw _FavoriteSyncFailure(error, stackTrace, confirmed: confirmed);
+          throw _FavoriteSyncFailure(error, stackTrace, confirmed: sync.held);
         }
         if (userDataSync.session != session) return;
-        userDataSync.confirmFavorite(itemId, wanted);
+        sync.held = wanted;
+        // Another server's run under the same id may have ended the change.
+        if (userDataSync.favoriteChangePending(itemId)) {
+          userDataSync.confirmFavorite(itemId, wanted);
+        }
       }
     } finally {
       _favoriteSyncs.remove(key);
@@ -136,6 +162,25 @@ class ItemMutationRepository {
       imageRefreshMode: imageRefreshMode,
     );
   }
+}
+
+typedef _FavoriteSyncKey = ({
+  int session,
+  MediaServerClient server,
+  String itemId,
+});
+
+/// One server's favorite change in progress.
+class _FavoriteSync {
+  _FavoriteSync({required this.wanted, required this.held});
+
+  /// The newest choice.
+  bool wanted;
+
+  /// What the server holds, as far as this client knows.
+  bool held;
+
+  late final Future<void> done;
 }
 
 /// A failed favorite request and the value the server still holds.

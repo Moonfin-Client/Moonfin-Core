@@ -506,7 +506,11 @@ class SearchViewModel extends ChangeNotifier {
       final matched = servers == null
           ? found
           : foldSharedTitles(found, servers, knownCopies: catalog?.copiesOf);
-      grouped.add(group.copyWith(items: matched.take(_resultLimit).toList()));
+      // Each server's search left out its own blocked copies, but the catalog
+      // adds copies unchecked. As in the merged library, one blocked copy
+      // hides the whole title.
+      final allowed = matched.where((item) => !isAnyCopyBlocked(item.rawData));
+      grouped.add(group.copyWith(items: allowed.take(_resultLimit).toList()));
     }
     return grouped;
   }

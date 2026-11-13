@@ -428,6 +428,7 @@ class UnifiedCatalogService extends ChangeNotifier {
   /// Bumped on any change other than to user data alone.
   int _mergeRevision = 0;
   final Map<UnifiedLibraryKind, _MergedLibrary> _mergedLibraries = {};
+  ({Map<String, String> spellings, int mergeRevision})? _genreSpellingsCache;
 
   /// Copies whose user data changed, with the [revision] of each change.
   /// Complete for changes after [_userDataChangesSinceRevision].
@@ -1983,7 +1984,13 @@ class UnifiedCatalogService extends ChangeNotifier {
   }
 
   /// Each genre as the first server holding it writes it, by [genreNameKey].
+  /// Cached like the merged lists: it reads every entry, and a change to a
+  /// genre or to the order of the servers rebuilds those too.
   Map<String, String> _genreSpellings() {
+    final cached = _genreSpellingsCache;
+    if (cached != null && cached.mergeRevision == _mergeRevision) {
+      return cached.spellings;
+    }
     final spellings = <String, String>{};
     for (final session in _activeSessions) {
       for (final entry in _entries[_accountOf(session)]?.values ??
@@ -1998,6 +2005,10 @@ class UnifiedCatalogService extends ChangeNotifier {
         }
       }
     }
+    _genreSpellingsCache = (
+      spellings: spellings,
+      mergeRevision: _mergeRevision,
+    );
     return spellings;
   }
 
@@ -2045,11 +2056,11 @@ class UnifiedCatalogService extends ChangeNotifier {
     if (_isStale(generation)) return;
 
     // A change can be published before the server has recorded it, and the
-    // server then responds with the old user data. Retry until a held entry
-    // carries the change.
+    // server then responds with the old user data. Retry each copy until
+    // its own entry carries the change.
     for (final MapEntry(key: copy, value: retries) in asked.entries) {
       if (retries >= _maxUserDataRetries ||
-          _userDataAlreadyApplied(copy.itemId)) {
+          _userDataAlreadyApplied(copy)) {
         continue;
       }
       _userDataQueue.putIfAbsent(copy, () => retries + 1);
@@ -2057,20 +2068,24 @@ class UnifiedCatalogService extends ChangeNotifier {
     _scheduleUserDataFlush(_userDataRetryDelay);
   }
 
-  /// Whether a held entry for [itemId] already carries the change that
-  /// [UserDataSync] published: applying the change to it alters nothing.
-  bool _userDataAlreadyApplied(String itemId) {
-    for (final entries in _entries.values) {
-      final entry = entries[itemId];
+  /// Whether [copy]'s held entry already carries the change that
+  /// [UserDataSync] published under its id: applying the change to it alters
+  /// nothing. Another server's entry under the same id doesn't count; it can
+  /// be up to date while this one is still waiting for its server.
+  bool _userDataAlreadyApplied(UnifiedCopyRef copy) {
+    for (final MapEntry(key: account, value: entries) in _entries.entries) {
+      if (account.serverId != copy.serverId) continue;
+      final entry = entries[copy.itemId];
       if (entry == null) continue;
       final item = AggregatedItem(
-        id: itemId,
+        id: copy.itemId,
         serverId: entry.serverId,
         rawData: entry.raw,
       );
-      if (identical(_userDataSync.apply(item), item)) return true;
+      if (!identical(_userDataSync.apply(item), item)) return false;
     }
-    return false;
+    // Also when the copy is no longer held: there is nothing left to refresh.
+    return true;
   }
 
   /// Asks each server for the user data of its own [copies] and applies it.

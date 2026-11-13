@@ -327,7 +327,7 @@ void main() {
   });
 
   group('all genres', () {
-    Future<void> pumpGenres(WidgetTester tester) async {
+    Future<void> pumpGenres(WidgetTester tester, {Finder? until}) async {
       tester.view.physicalSize = const Size(1600, 1000);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
@@ -347,7 +347,7 @@ void main() {
       );
       await pumpUntil(
         tester,
-        () => find.byType(GenreGridCard).evaluate().isNotEmpty,
+        () => (until ?? find.byType(GenreGridCard)).evaluate().isNotEmpty,
         reason: 'the genres never loaded',
       );
     }
@@ -397,6 +397,103 @@ void main() {
       await tester.tap(find.byType(GenreGridCard).at(1));
       await tester.pumpAndSettle();
       expect(find.text('opened /unified-genre/Drama'), findsOneWidget);
+    });
+
+    group('with a rating blocked', () {
+      /// Altovar is rated R on server b only, and Umbrel, the one Family
+      /// title, on its only copy.
+      Future<void> seedRated(WidgetTester tester) => tester.runAsync(() async {
+        await seedCatalog(harness.db, 'a', [
+          _dramaTitle('a1', 'Altovar', tmdb: '1001'),
+          _dramaTitle('a2', 'Hodrimel'),
+          {
+            ..._dramaTitle('a3', 'Umbrel', genres: ['Family', 'Drama']),
+            'OfficialRating': 'R',
+            'ImageTags': {'Primary': 'tag-a3'},
+          },
+        ]);
+        await seedCatalog(harness.db, 'b', [
+          {
+            ..._dramaTitle('b1', 'Altovar', tmdb: '1001', genres: ['Horror']),
+            'OfficialRating': 'R',
+          },
+        ]);
+        await harness.catalog.ensureLoaded();
+      });
+
+      setUp(() {
+        final imageApi = MockImageApi();
+        when(
+          () => imageApi.getPrimaryImageUrl(
+            any(),
+            tag: any(named: 'tag'),
+            maxWidth: any(named: 'maxWidth'),
+          ),
+        ).thenAnswer(
+          (invocation) => 'art-of-${invocation.positionalArguments.first}',
+        );
+        when(
+          () => GetIt.instance<MultiServerRepository>().getImageApiForServer(
+            any(),
+          ),
+        ).thenReturn(imageApi);
+      });
+
+      testWidgets('a title with a blocked copy is not counted, and a genre '
+          'left with no title is not shown', (tester) async {
+        mergedServers({'a', 'b'});
+        await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+        await seedRated(tester);
+
+        await pumpGenres(tester);
+
+        expect(tiles(tester), ['Drama 1']);
+      });
+
+      testWidgets('a tile takes no artwork from a blocked title', (
+        tester,
+      ) async {
+        mergedServers({'a', 'b'});
+        await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+        await seedRated(tester);
+
+        await pumpGenres(tester);
+
+        // Umbrel is the only title with artwork, and it is blocked.
+        final drama = tester
+            .widgetList<GenreGridCard>(find.byType(GenreGridCard))
+            .firstWhere((card) => card.genre.name == 'Drama');
+        expect(drama.genre.imageUrl, isNull);
+        expect(drama.genre.backdropUrl, isNull);
+      });
+
+      testWidgets('nothing is left out when the rating is not blocked', (
+        tester,
+      ) async {
+        mergedServers({'a', 'b'});
+        await seedRated(tester);
+
+        await pumpGenres(tester);
+
+        expect(tiles(tester), ['Drama 3', 'Family 1', 'Horror 1']);
+      });
+
+      testWidgets('with every title blocked there is no genre to show, not '
+          'the server\'s own list', (tester) async {
+        mergedServers({'a', 'b'});
+        stubOwnGenres();
+        await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+        await tester.runAsync(() async {
+          await seedCatalog(harness.db, 'a', [
+            {..._dramaTitle('a1', 'Altovar'), 'OfficialRating': 'R'},
+          ]);
+          await harness.catalog.ensureLoaded();
+        });
+
+        await pumpGenres(tester, until: find.text('No genres found'));
+
+        expect(find.byType(GenreGridCard), findsNothing);
+      });
     });
 
     testWidgets('lists the server\'s own genres when nothing merges', (

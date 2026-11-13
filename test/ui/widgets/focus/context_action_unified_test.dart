@@ -35,15 +35,19 @@ class _Factory extends Mock implements MediaServerClientFactory {}
 
 /// A movie shown from [shownOn], with a copy on server a and one on server
 /// b, each under that server's own id.
+///
+/// [idOn] gives a server's copy another id, as when two servers hand out the
+/// same one.
 AggregatedItem _sharedMovie({
   String shownOn = 'a',
   bool played = false,
   bool favorite = false,
+  Map<String, String> idOn = const {},
 }) => AggregatedItem(
-  id: '${shownOn}1',
+  id: idOn[shownOn] ?? '${shownOn}1',
   serverId: shownOn,
   rawData: {
-    'Id': '${shownOn}1',
+    'Id': idOn[shownOn] ?? '${shownOn}1',
     'Type': 'Movie',
     'Name': 'Altovar',
     'UserData': {'Played': played, 'IsFavorite': favorite},
@@ -52,7 +56,7 @@ AggregatedItem _sharedMovie({
       for (final id in ['a', 'b'])
         UnifiedCopy(
           serverId: id,
-          itemId: '${id}1',
+          itemId: idOn[id] ?? '${id}1',
           serverName: 'Server $id',
           played: played,
           positionTicks: 0,
@@ -246,6 +250,82 @@ void main() {
 
       verify(() => libraries['a']!.unmarkFavorite('a1')).called(1);
       verify(() => libraries['b']!.unmarkFavorite('b1')).called(1);
+    });
+
+    group('under the same id on both servers', () {
+      const sameId = {'a': 'x1', 'b': 'x1'};
+
+      testWidgets('is made a favorite on each server', (tester) async {
+        await select(tester, _sharedMovie(idOn: sameId), 'Add to Favorites');
+
+        verify(() => libraries['a']!.markFavorite('x1')).called(1);
+        verify(() => libraries['b']!.markFavorite('x1')).called(1);
+      });
+
+      testWidgets('stops being a favorite on each server', (tester) async {
+        await select(
+          tester,
+          _sharedMovie(idOn: sameId, favorite: true),
+          'Remove from Favorites',
+        );
+
+        verify(() => libraries['a']!.unmarkFavorite('x1')).called(1);
+        verify(() => libraries['b']!.unmarkFavorite('x1')).called(1);
+      });
+
+      testWidgets('is marked watched on each server', (tester) async {
+        await select(tester, _sharedMovie(idOn: sameId), 'Mark as Watched');
+
+        verify(() => libraries['a']!.markPlayed('x1')).called(1);
+        verify(() => libraries['b']!.markPlayed('x1')).called(1);
+      });
+
+      testWidgets('names the server whose copy could not be changed', (
+        tester,
+      ) async {
+        when(
+          () => libraries['b']!.markFavorite(any()),
+        ).thenThrow(Exception('offline'));
+
+        await select(tester, _sharedMovie(idOn: sameId), 'Add to Favorites');
+        await tester.pump();
+
+        verify(() => libraries['a']!.markFavorite('x1')).called(1);
+        expect(find.textContaining('Server b'), findsOneWidget);
+        expect(find.textContaining('Server a'), findsNothing);
+      });
+    });
+
+    testWidgets('is made a favorite on each server while another title '
+        'there is being changed under one of its ids', (tester) async {
+      // Server b's own title x1 is not a copy of this one.
+      final actions = await actionsFor(
+        tester,
+        _sharedMovie(idOn: {'a': 'x1', 'b': 'x2'}),
+      );
+
+      await tester.runAsync(() async {
+        // Made in here: one made under the test's fake clock never completes
+        // for code waiting in real time.
+        final unrelated = Completer<void>();
+        when(
+          () => libraries['b']!.markFavorite('x1'),
+        ).thenAnswer((_) => unrelated.future);
+        final other = ItemMutationRepository(
+          clients['b']!,
+        ).setFavorite('x1', isFavorite: true);
+        await Future<void>.delayed(Duration.zero);
+        final selected = actions
+            .firstWhere((action) => action.label == 'Add to Favorites')
+            .onSelect();
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+
+        verify(() => libraries['a']!.markFavorite('x1')).called(1);
+        verify(() => libraries['b']!.markFavorite('x2')).called(1);
+        verify(() => libraries['b']!.markFavorite('x1')).called(1);
+        unrelated.complete();
+        await Future.wait<void>([other, Future.sync(() => selected)]);
+      });
     });
 
     testWidgets('changes the servers that answer and names the one that '

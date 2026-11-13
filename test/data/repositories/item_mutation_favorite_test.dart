@@ -136,6 +136,87 @@ void main() {
     });
   });
 
+  group('two servers that hold the same id', () {
+    late _UserLibraryApi otherApi;
+    late ItemMutationRepository other;
+    late List<Completer<void>> otherRequests;
+
+    setUp(() {
+      otherApi = _UserLibraryApi();
+      otherRequests = [];
+      Future<void> held(Invocation _) {
+        final request = Completer<void>();
+        otherRequests.add(request);
+        return request.future;
+      }
+
+      when(() => otherApi.markFavorite(any())).thenAnswer(held);
+      when(() => otherApi.unmarkFavorite(any())).thenAnswer(held);
+      final client = _Client();
+      when(() => client.userLibraryApi).thenReturn(otherApi);
+      other = ItemMutationRepository(client);
+    });
+
+    Future<void> setOnBoth(bool isFavorite) => Future.wait([
+      repository.setFavorite('ch', isFavorite: isFavorite),
+      other.setFavorite('ch', isFavorite: isFavorite),
+    ]);
+
+    test('are each sent the change', () async {
+      final run = setOnBoth(true);
+      await settle();
+      requests.single.complete();
+      otherRequests.single.complete();
+      await run;
+
+      verify(() => api.markFavorite('ch')).called(1);
+      verify(() => otherApi.markFavorite('ch')).called(1);
+      expect(userDataSync.favoriteFor('ch'), isTrue);
+      expect(userDataSync.favoriteChangePending('ch'), isFalse);
+    });
+
+    test('each end on the last choice, whichever answers first', () async {
+      final runs = [setOnBoth(true)];
+      await settle();
+      runs.add(setOnBoth(false));
+      // The first server is done with both requests before the second has
+      // answered its first.
+      requests.single.complete();
+      await settle();
+      requests.last.complete();
+      await settle();
+      otherRequests.single.complete();
+      await settle();
+      expect(otherRequests, hasLength(2));
+      otherRequests.last.complete();
+      await Future.wait(runs);
+
+      verifyInOrder([
+        () => api.markFavorite('ch'),
+        () => api.unmarkFavorite('ch'),
+      ]);
+      verifyInOrder([
+        () => otherApi.markFavorite('ch'),
+        () => otherApi.unmarkFavorite('ch'),
+      ]);
+      expect(userDataSync.favoriteFor('ch'), isFalse);
+      expect(userDataSync.favoriteChangePending('ch'), isFalse);
+    });
+
+    test('a failure on one leaves the other changed', () async {
+      final first = repository.setFavorite('ch', isFavorite: true);
+      final second = other.setFavorite('ch', isFavorite: true);
+      await settle();
+      otherRequests.single.completeError(Exception('offline'));
+      await expectLater(second, throwsException);
+      requests.single.complete();
+      await first;
+
+      verify(() => api.markFavorite('ch')).called(1);
+      verifyNever(() => api.unmarkFavorite(any()));
+    });
+  });
+
   test('a failed request shows what the server last held', () async {
     final run = toggle();
     await settle();

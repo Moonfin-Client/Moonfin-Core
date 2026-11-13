@@ -195,6 +195,74 @@ void main() {
     expect(genrePageRequests, ['a@0', 'b@0', 'a@15', 'b@15', 'a@30', 'b@30']);
   });
 
+  group('paging servers that share only part of their genres', () {
+    String name(int i) => 'Genre ${'$i'.padLeft(2, '0')}';
+    List<String> names(int from, int to) => [
+      for (var i = from; i <= to; i++) name(i),
+    ];
+
+    /// Loads the row page after page, as the home screen does, and returns
+    /// the names shown at the end. The home screen ends a row whose page
+    /// brought nothing, so every page has to add a tile. The total is an
+    /// upper bound while servers are unread: it may only come down.
+    Future<List<String>> pageThrough(MultiServerRepository multiServer) async {
+      var row = await multiServer.getAggregatedGenres();
+      var pages = 0;
+      while (row.hasMore && pages < 20) {
+        pages++;
+        final (items, total) = await multiServer.loadMore(row: row);
+        expect(
+          items.length,
+          greaterThan(row.items.length),
+          reason: 'page $pages added nothing, total ${row.totalCount}',
+        );
+        expect(total, lessThanOrEqualTo(row.totalCount));
+        row = row.copyWith(items: items, totalCount: total);
+      }
+      expect(row.hasMore, isFalse);
+      expect(row.totalCount, row.items.length);
+      return [for (final item in row.items) item.name];
+    }
+
+    setUp(() async {
+      await turnOnMergedLibraries(prefs);
+      paged = true;
+    });
+
+    test('a genre read on the first page but left out of the row is shown '
+        'by a later page', () async {
+      final multiServer = repository({
+        'a': (ServerType.jellyfin, names(1, 20)),
+        'b': (ServerType.emby, names(11, 40)),
+        'c': (ServerType.jellyfin, names(21, 45)),
+      });
+
+      expect(await pageThrough(multiServer), names(1, 45));
+    });
+
+    test('servers with no genre in common show all of them', () async {
+      final multiServer = repository({
+        'a': (ServerType.jellyfin, names(1, 15)),
+        'b': (ServerType.emby, names(16, 30)),
+      });
+
+      final row = await multiServer.getAggregatedGenres();
+      expect(row.items, hasLength(15));
+      expect(row.totalCount, 30);
+      expect(await pageThrough(multiServer), names(1, 30));
+    });
+
+    test('a page holding only genres already shown leads on to the next '
+        'one', () async {
+      final multiServer = repository({
+        'a': (ServerType.jellyfin, names(1, 60)),
+        'b': (ServerType.emby, names(31, 45)),
+      });
+
+      expect(await pageThrough(multiServer), names(1, 60));
+    });
+  });
+
   test('an unmerged row keeps the total its servers gave', () async {
     await prefs.set(UserPreferences.enableMultiServerLibraries, true);
     paged = true;

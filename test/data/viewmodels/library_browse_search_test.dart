@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/viewmodels/library_browse_view_model.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -385,6 +386,37 @@ void main() {
       // A term on the request would leave the loaded items and the fetch
       // offset describing two different result sets.
       expect(api.searchTerms, everyElement(isNull));
+    });
+  });
+
+  group('a search stays over the whole list', () {
+    test('when the list is loaded again with the query still typed', () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      // Nothing is loaded yet, so this starts no page walk of its own.
+      vm.setSearchQuery('m 399');
+      await vm.load();
+      await pumpEventQueue();
+      expect(_names(vm), ['M 399']);
+
+      await vm.setSortDirection(SortDirection.descending);
+      await pumpEventQueue();
+
+      expect(_names(vm), ['M 399']);
+    });
+
+    test('and no query means no walk', () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      vm.setSearchQuery('  ');
+
+      await vm.load();
+      await pumpEventQueue();
+
+      expect(api.requests, hasLength(1));
+      expect(vm.hasMore, isTrue);
     });
   });
 

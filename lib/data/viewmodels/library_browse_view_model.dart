@@ -650,31 +650,25 @@ class LibraryBrowseViewModel extends ChangeNotifier {
             copy.key,
       };
       if (staleCopyKeys.isEmpty) return;
+      // A long grid is not walked for the one card that was watched.
+      final index = _renderedIndex;
+      if (index != null && _patchCards(staleCopyKeys, index)) return;
     }
 
     final renderedKeys = <String>{};
     var changed = false;
     final patched = <AggregatedItem>[];
     for (final item in _items) {
-      var current = item;
-      final raw =
+      final current =
           staleCopyKeys == null || staleCopyKeys.contains(_renderedKey(item))
-          ? _catalogItem(item.serverId, item.id)
-          : null;
-      if (raw != null &&
-          !identical(raw, item.rawData) &&
-          !const DeepCollectionEquality().equals(raw, item.rawData)) {
-        current = AggregatedItem(
-          id: raw['Id'].toString(),
-          serverId: raw[unifiedServerIdKey].toString(),
-          rawData: raw,
-        );
-      }
+          ? _currentCard(item)
+          : item;
       // Two cards whose titles were since folded into one both resolve to
       // it, and the second keeps what it showed until the list is rebuilt.
       if (!renderedKeys.add(_renderedKey(current))) {
-        current = item;
         renderedKeys.add(_renderedKey(item));
+        patched.add(item);
+        continue;
       }
       changed = changed || !identical(current, item);
       patched.add(current);
@@ -684,6 +678,64 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _renderedItemIds
       ..clear()
       ..addAll(renderedKeys);
+  }
+
+  /// [item] as the catalog holds it now, or [item] itself when nothing differs.
+  AggregatedItem _currentCard(AggregatedItem item) {
+    final raw = _catalogItem(item.serverId, item.id);
+    if (raw == null ||
+        identical(raw, item.rawData) ||
+        const DeepCollectionEquality().equals(raw, item.rawData)) {
+      return item;
+    }
+    return AggregatedItem(
+      id: raw['Id'].toString(),
+      serverId: raw[unifiedServerIdKey].toString(),
+      rawData: raw,
+    );
+  }
+
+  List<AggregatedItem>? _renderedIndexSource;
+  Map<String, int>? _renderedIndexByKey;
+
+  /// Where each rendered copy sits in the list, built once per list. Null when
+  /// two cards share a key, which only the walk over every card can settle.
+  Map<String, int>? get _renderedIndex {
+    if (!identical(_renderedIndexSource, _items)) {
+      _renderedIndexSource = _items;
+      final index = <String, int>{
+        for (var i = 0; i < _items.length; i++) _renderedKey(_items[i]): i,
+      };
+      _renderedIndexByKey =
+          index.length == _items.length &&
+              _renderedItemIds.length == _items.length
+          ? index
+          : null;
+    }
+    return _renderedIndexByKey;
+  }
+
+  /// Patches only the cards behind [staleCopyKeys]. False, with nothing
+  /// changed, when a card now resolves to another copy: that can collide with
+  /// a card already shown, so it is left to the walk over every card.
+  bool _patchCards(Set<String> staleCopyKeys, Map<String, int> index) {
+    Map<int, AggregatedItem>? replacements;
+    for (final key in staleCopyKeys) {
+      final position = index[key];
+      if (position == null) continue;
+      final item = _items[position];
+      final current = _currentCard(item);
+      if (identical(current, item)) continue;
+      if (_renderedKey(current) != key) return false;
+      (replacements ??= {})[position] = current;
+    }
+    if (replacements == null) return true;
+    final patched = List.of(_items);
+    replacements.forEach((position, card) => patched[position] = card);
+    _items = patched;
+    // No key moved, so the index holds for the new list too.
+    _renderedIndexSource = patched;
+    return true;
   }
 
   Map<String, dynamic>? _catalogItem(String serverId, String itemId) {
@@ -952,7 +1004,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _state = LibraryBrowseState.error;
     }
     notifyListeners();
-    if (isGrouping || _prefs.get(UserPreferences.showAlphabeticalFilters)) {
+    // A search only matches loaded items, and this load dropped the walk that
+    // was pulling in the rest for it.
+    if (isGrouping ||
+        _searchQuery.trim().isNotEmpty ||
+        _prefs.get(UserPreferences.showAlphabeticalFilters)) {
       unawaited(ensureAllItemsLoaded());
     }
   }

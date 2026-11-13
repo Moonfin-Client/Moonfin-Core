@@ -744,8 +744,18 @@ class MultiServerRepository {
               results[index].length;
         }
       }
+      // Loading more starts past the pages read here, so the tiles that did
+      // not fit the row are held back for it rather than read again.
+      for (final session in sessions) {
+        _rowHeldBack.remove('${cacheKeyPrefix}_${session.server.id}');
+      }
+      for (final item in all.skip(limit)) {
+        (_rowHeldBack['${cacheKeyPrefix}_${item.serverId}'] ??= []).add(item);
+      }
+      // An upper bound: a genre not read yet may fold into a tile, so the
+      // total comes down as pages load and is exact once every server is read.
       totalCount =
-          takenItems.length +
+          all.length +
           _unreadCountOf(sessions, cacheKeyPrefix, readCountByServer);
     }
 
@@ -1073,7 +1083,7 @@ class MultiServerRepository {
                 );
                 _rowTotals[cacheKey] =
                     response['TotalRecordCount'] as int? ?? items.length;
-                return items;
+                return [...?_rowHeldBack[cacheKey], ...items];
               } else {
                 nextOffsets[cacheKey] = startIndex + _defaultLimit;
 
@@ -1179,15 +1189,26 @@ class MultiServerRepository {
         ? await mergedGenreServerIds()
         : const <String>{};
 
+    // A page of the merged genres can hold only genres the row already
+    // shows. The caller ends a row whose page brought nothing, so read on
+    // while a server has more. Every page moves the offsets on, which ends it.
+    Future<(List<AggregatedItem>, int)> foldedPage(
+      List<AggregatedItem> tiles,
+    ) async {
+      final unread = _unreadCountOf(sessions, row.id, nextOffsets);
+      if (tiles.length <= row.items.length &&
+          unread > 0 &&
+          generation == _pagingGeneration) {
+        return loadMore(row: row);
+      }
+      return (tiles, tiles.length + unread);
+    }
+
     final newItems = results.expand((e) => e).toList();
     if (newItems.isEmpty) {
-      return (
-        row.items,
-        mergedServerIds.isEmpty
-            ? row.totalCount
-            : row.items.length +
-                  _unreadCountOf(sessions, row.id, nextOffsets),
-      );
+      return mergedServerIds.isEmpty
+          ? (row.items, row.totalCount)
+          : foldedPage(row.items);
     }
 
     // Merge and sort
@@ -1285,12 +1306,11 @@ class MultiServerRepository {
       }
     }
 
-    final totalCount = mergedServerIds.isEmpty
-        ? sessions.fold<int>(0, (sum, session) {
-            return sum + (_rowTotals['${row.id}_${session.server.id}'] ?? 0);
-          })
-        : sortedCombined.length +
-              _unreadCountOf(sessions, row.id, nextOffsets);
+    if (mergedServerIds.isNotEmpty) return foldedPage(sortedCombined);
+
+    final totalCount = sessions.fold<int>(0, (sum, session) {
+      return sum + (_rowTotals['${row.id}_${session.server.id}'] ?? 0);
+    });
 
     return (sortedCombined, totalCount);
   }

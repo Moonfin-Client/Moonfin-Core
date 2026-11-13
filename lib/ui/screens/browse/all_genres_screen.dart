@@ -14,6 +14,7 @@ import '../../../data/services/background_service.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/services/unified_catalog_query.dart';
 import '../../../data/services/unified_catalog_service.dart';
+import '../../../data/utils/blocked_ratings.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -108,13 +109,28 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     final genres = catalog.genres(UnifiedLibraryKind.values);
     if (genres.isEmpty) return null;
     final maxWidth = _genreCardRequestMaxWidth();
+    // The catalog holds every title. As in the merged library, one blocked
+    // copy hides a title, so it gives a tile neither a count nor artwork. A
+    // catalog with only blocked titles still answers, with no tiles: the
+    // server's own list would count them again.
     return [
-      for (final genre in genres) _buildCatalogGenreCard(genre, maxWidth),
+      for (final genre in genres)
+        if ([
+              for (final item in genre.items)
+                if (!isAnyCopyBlocked(item)) item,
+            ]
+            case final allowed when allowed.isNotEmpty)
+          _buildCatalogGenreCard(genre.name, allowed, maxWidth),
     ];
   }
 
-  GenreCardData _buildCatalogGenreCard(UnifiedGenre genre, int maxWidth) {
-    final shuffled = [...genre.items]..shuffle();
+  /// [items] is never empty.
+  GenreCardData _buildCatalogGenreCard(
+    String name,
+    List<Map<String, dynamic>> items,
+    int maxWidth,
+  ) {
+    final shuffled = [...items]..shuffle();
     // Both image URLs are built with one server's image API, so the tile's
     // image and backdrop must come from items on the same server.
     final serverId = shuffled.first[unifiedServerIdKey];
@@ -139,8 +155,8 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     if (usedId != null) _usedArtworkIds.add(usedId);
     return GenreCardData(
       id: '',
-      name: genre.name,
-      itemCount: genre.items.length,
+      name: name,
+      itemCount: items.length,
       imageUrl: imageUrl,
       backdropUrl: backdropUrl,
       isGenreFallback: true,

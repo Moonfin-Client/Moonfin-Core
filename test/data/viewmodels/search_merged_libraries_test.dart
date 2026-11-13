@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/database/offline_database.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -13,7 +14,9 @@ import 'package:moonfin/data/repositories/search_repository.dart';
 import 'package:moonfin/data/services/unified_catalog_query.dart';
 import 'package:moonfin/data/services/unified_catalog_service.dart';
 import 'package:moonfin/data/viewmodels/search_view_model.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/multi_server_fakes.dart';
 import '../services/unified_catalog_fakes.dart';
@@ -540,6 +543,117 @@ void main() {
 
         expect([for (final item in found) item.serverId], ['a']);
         expect(service.rowsDecoded, 0);
+      });
+    });
+
+    group('with a rating blocked', () {
+      /// Both servers hold one movie, and only [ratedOn] rates it R.
+      Future<void> seedSharedMovie({required String ratedOn}) async {
+        for (final id in ['a', 'b']) {
+          await seedCatalog(db, id, [
+            catalogMovie(
+              '${id}1',
+              'Hodrimel',
+              tmdb: '1002',
+              rating: id == ratedOn ? 'R' : null,
+            ),
+            catalogMovie('${id}2', 'Hodrimel Rusquin', tmdb: '1007'),
+          ], markFullyRead: false);
+        }
+      }
+
+      setUp(() async {
+        SharedPreferences.setMockInitialValues({});
+        final store = PreferenceStore();
+        await store.init();
+        final prefs = UserPreferences(store);
+        await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+        GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      });
+
+      List<String> shown(List<AggregatedItem> found) => [
+        for (final item in found) '${item.serverId}:${item.id}',
+      ];
+
+      test('a movie found on one server is left out when the stored catalog '
+          'holds a blocked copy of it', () async {
+        await seedSharedMovie(ratedOn: 'b');
+        // Server b's own search already left its blocked copy out.
+        sessions = [
+          server('a', [
+            catalogMovie('a1', 'Hodrimel', tmdb: '1002'),
+            catalogMovie('a2', 'Hodrimel Rusquin', tmdb: '1007'),
+          ]),
+          server('b', []),
+        ];
+
+        final found = await moviesFound(viewModel(catalog()), 'hodrimel');
+
+        expect(shown(found), ['a:a2']);
+        expect(copies(found.single), [
+          ('a', 'a2', 'Hodrimel Rusquin'),
+          ('b', 'b2', 'Hodrimel Rusquin'),
+        ]);
+      });
+
+      test('a blocked copy on the server being browsed is not the one '
+          'shown', () async {
+        await seedSharedMovie(ratedOn: 'a');
+        sessions = [
+          server('a', []),
+          server('b', [catalogMovie('b1', 'Hodrimel', tmdb: '1002')]),
+        ];
+
+        final found = await moviesFound(viewModel(catalog()), 'hodrimel');
+
+        expect(shown(found), isEmpty);
+      });
+
+      test('a stored catalog that loads late takes the movie with a blocked '
+          'copy back out', () async {
+        await seedSharedMovie(ratedOn: 'b');
+        sessions = [
+          server('a', [catalogMovie('a1', 'Hodrimel', tmdb: '1002')]),
+          server('b', []),
+        ];
+        final service = _SlowCatalog(
+          database: db,
+          loadSessions: () async => sessions,
+          activeServerId: () => 'a',
+        );
+        addTearDown(service.dispose);
+        await service.loadNow();
+        final vm = viewModel(service);
+
+        fakeAsync((async) {
+          service.gate = Completer();
+          vm.searchImmediate('hodrimel');
+          async.elapse(const Duration(seconds: 1));
+          // Without the catalog only server a's own copy is known.
+          expect(shown(vm.results.single.items), ['a:a1']);
+
+          service.gate.complete();
+          async.flushMicrotasks();
+
+          expect(vm.results, isEmpty);
+        });
+      });
+
+      test('nothing is left out when no copy carries the blocked rating',
+          () async {
+        await seedSharedMovie(ratedOn: 'none');
+        sessions = [
+          server('a', [catalogMovie('a1', 'Hodrimel', tmdb: '1002')]),
+          server('b', []),
+        ];
+
+        final found = await moviesFound(viewModel(catalog()), 'hodrimel');
+
+        expect(shown(found), ['a:a1']);
+        expect(copies(found.single), [
+          ('a', 'a1', 'Hodrimel'),
+          ('b', 'b1', 'Hodrimel'),
+        ]);
       });
     });
 

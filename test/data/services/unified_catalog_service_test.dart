@@ -1491,9 +1491,11 @@ void main() {
       userData.publish('7', {'Played': true});
       await pumpEventQueue();
 
-      expect(a.userDataRequests, [
-        ['7'],
-      ]);
+      // Server a can't be told from one that has yet to record the change,
+      // so it is asked again, a few times at most.
+      expect(a.userDataRequests, isNotEmpty);
+      expect(a.userDataRequests.length, lessThanOrEqualTo(3));
+      expect(a.userDataRequests, everyElement(['7']));
       expect(b.userDataRequests, [
         ['7'],
       ]);
@@ -1559,6 +1561,31 @@ void main() {
 
       expect(a.userDataRequests, hasLength(2));
       expect(movieNames(service, filters: ['IsPlayed']), ['Altovar']);
+    });
+
+    test('a server answering late is asked again, though another server '
+        'holds the change under the same id', () async {
+      a.movies = [catalogMovie('7', 'Altovar')];
+      b.movies = [catalogMovie('7', 'Rusquin')];
+      b.setUserData('7', {'Played': true});
+      final service = build();
+      await service.forceFullRead();
+      expect(movieNames(service, filters: ['IsPlayed']), ['Rusquin']);
+
+      // Server a's first answer still holds the old state.
+      a.afterUserDataRequest = () {
+        a.afterUserDataRequest = null;
+        a.setUserData('7', {'Played': true});
+      };
+      userData.publish('7', {'Played': true});
+      await pumpEventQueue();
+
+      expect(a.userDataRequests, hasLength(2));
+      expect(b.userDataRequests, hasLength(1));
+      expect(
+        movieNames(service, filters: ['IsPlayed']),
+        unorderedEquals(['Altovar', 'Rusquin']),
+      );
     });
 
     test('changed while the server is being read survives the read', () async {
@@ -2534,5 +2561,21 @@ void main() {
 
       expect(await storedEntries(), hasLength(anyOf(1200, 1700)));
     });
+  });
+
+  test('a genre is written as the first server writes it now, not as it did '
+      'when last asked', () async {
+    a.movies = [catalogMovie('a1', 'Altovar', genres: ['Sci-Fi'])];
+    b.movies = [catalogMovie('b1', 'Rusquin', genres: ['sci-fi'])];
+    final service = build();
+    await service.forceFullRead();
+    expect(service.genres(UnifiedLibraryKind.values).single.name, 'Sci-Fi');
+    expect(service.facets(UnifiedLibraryKind.movies).genres, ['Sci-Fi']);
+
+    a.movies = [catalogMovie('a1', 'Altovar', genres: ['SCI-FI'])];
+    await service.forceFullRead();
+
+    expect(service.genres(UnifiedLibraryKind.values).single.name, 'SCI-FI');
+    expect(service.facets(UnifiedLibraryKind.movies).genres, ['SCI-FI']);
   });
 }
