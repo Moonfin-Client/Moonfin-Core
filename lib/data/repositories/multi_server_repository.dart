@@ -16,7 +16,10 @@ import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import '../services/media_server_client_factory.dart';
+import '../services/unified_catalog_query.dart';
+import '../services/unified_catalog_service.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
@@ -28,6 +31,13 @@ import 'search_repository.dart';
 import 'user_views_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
+
+/// One library's latest items. [row] is null when rows are merged by type.
+typedef _LatestForView = ({
+  String collectionType,
+  List<AggregatedItem> items,
+  HomeRow? row,
+});
 
 class ServerUserSession {
   final Server server;
@@ -66,6 +76,12 @@ class MultiServerRepository {
   static const _defaultSortOrder = 'Ascending';
   static const _studioPageSize = 200;
   static const _genreArtworkConcurrency = 6;
+  // Three servers times three libraries: at most nine item requests at a
+  // time, a load a TV can handle.
+  static const _latestServerConcurrency = 3;
+  static const _latestLibraryConcurrency = 3;
+  // ProviderIds are what a merged Latest row folds a shared title by.
+  static const _latestFieldsWithProviderIds = '$_fields,ProviderIds';
 
   List<ServerUserSession>? _cachedSessions;
   DateTime _cacheExpiry = DateTime(0);
@@ -197,37 +213,176 @@ class MultiServerRepository {
     final sessions = await getLoggedInServers();
     final hasMultiple = sessions.length > 1;
 
-    final results = await Future.wait(
+    // One server down or slow costs its own tiles, not everyone's.
+    final answers = await Future.wait(
       sessions.map(
-        (session) => _withTimeout(() async {
-          final response = await loadVisibleUserViews(session.client);
-          final items = response['Items'] as List? ?? [];
-
-          return items.map((item) {
-            final data = item as Map<String, dynamic>;
-            final name = data['Name'] as String? ?? '';
-            return AggregatedLibrary(
-              id: data['Id']?.toString() ?? '',
-              name: hasMultiple
-                  ? _l10n.libraryNameWithServer(name, session.server.name)
-                  : name,
-              collectionType: data['CollectionType'] as String? ?? '',
-              serverId: session.server.id,
-              primaryImageAspectRatio: (data['PrimaryImageAspectRatio'] as num?)
-                  ?.toDouble(),
-              imageTags: data['ImageTags'] != null
-                  ? Map<String, dynamic>.from(data['ImageTags'] as Map)
-                  : null,
-              backdropImageTags: (data['BackdropImageTags'] as List?)
-                  ?.map((e) => e.toString())
-                  .toList(),
-            );
-          }).toList();
-        }, label: 'libraries from ${session.server.name}'),
+        (session) => _librariesOf(session, hasMultiple: hasMultiple),
       ),
     );
+    if (sessions.isNotEmpty && answers.every((answer) => answer == null)) {
+      throw StateError('MultiServer: all servers failed to load libraries');
+    }
 
-    return results.expand((e) => e).toList();
+    final libraries = [for (final answer in answers) ...?answer];
+    if (!_effectiveMergeLibrariesByType) return libraries;
+    // Offline, each tile opens its own library from the downloads catalog.
+    // A merged tile opens the merged catalog, which holds no downloads.
+    if (shouldUseOfflineCatalog()) return libraries;
+    return _mergeLibrariesByType(
+      libraries,
+      sessions,
+      unanswered: [
+        for (final (index, session) in sessions.indexed)
+          if (answers[index] == null) session,
+      ],
+    );
+  }
+
+  Future<List<AggregatedLibrary>?> _librariesOf(
+    ServerUserSession session, {
+    required bool hasMultiple,
+  }) async {
+    try {
+      final response = await _withTimeout(
+        () => loadVisibleUserViews(session.client),
+        label: 'libraries from ${session.server.name}',
+      );
+      final items = response['Items'] as List? ?? [];
+
+      return items.map((item) {
+        final data = item as Map<String, dynamic>;
+        final name = data['Name'] as String? ?? '';
+        return AggregatedLibrary(
+          id: data['Id']?.toString() ?? '',
+          name: hasMultiple
+              ? _l10n.libraryNameWithServer(name, session.server.name)
+              : name,
+          collectionType: data['CollectionType'] as String? ?? '',
+          serverId: session.server.id,
+          primaryImageAspectRatio: (data['PrimaryImageAspectRatio'] as num?)
+              ?.toDouble(),
+          imageTags: data['ImageTags'] != null
+              ? Map<String, dynamic>.from(data['ImageTags'] as Map)
+              : null,
+          backdropImageTags: (data['BackdropImageTags'] as List?)
+              ?.map((e) => e.toString())
+              .toList(),
+        );
+      }).toList();
+    } catch (e) {
+      _logger.w(
+        'MultiServer: Failed to load libraries from ${session.server.name}: $e',
+      );
+      return null;
+    }
+  }
+
+  /// Folds every server's movie libraries into one tile, and likewise series.
+  /// A server in [unanswered] still counts for the types the catalog already
+  /// holds of it, so its titles stay within reach while it is down.
+  Future<List<AggregatedLibrary>> _mergeLibrariesByType(
+    List<AggregatedLibrary> libraries,
+    List<ServerUserSession> sessions, {
+    required List<ServerUserSession> unanswered,
+  }) async {
+    final mergeableServerIds = _idsOf(sessionsIfMergeable(sessions));
+    if (mergeableServerIds.isEmpty) return libraries;
+
+    final librariesByKind = <UnifiedLibraryKind, List<AggregatedLibrary>>{
+      for (final kind in UnifiedLibraryKind.values) kind: [],
+    };
+    for (final library in libraries) {
+      if (!mergeableServerIds.contains(library.serverId)) continue;
+      final kind = UnifiedLibraryKind.fromCollectionType(
+        library.collectionType,
+      );
+      if (kind != null) librariesByKind[kind]!.add(library);
+    }
+
+    final catalog = GetIt.instance.isRegistered<UnifiedCatalogService>()
+        ? GetIt.instance<UnifiedCatalogService>()
+        : null;
+    final unansweredMergeable = [
+      for (final session in unanswered)
+        if (mergeableServerIds.contains(session.server.id)) session,
+    ];
+    final kindsInCatalog = await _kindsHeldByCatalog(
+      catalog,
+      unansweredMergeable,
+    );
+
+    final mergedKinds = <UnifiedLibraryKind>{
+      for (final kind in UnifiedLibraryKind.values)
+        if (librariesByKind[kind]!
+                    .map((library) => library.serverId)
+                    .toSet()
+                    .length >
+                1 ||
+            kindsInCatalog.contains(kind))
+          kind,
+    };
+    if (mergedKinds.isEmpty) return libraries;
+
+    // Cheap to repeat: the catalog skips servers it already brought up to date.
+    if (catalog != null) unawaited(catalog.syncOnLaunch());
+
+    String nameOf(UnifiedLibraryKind kind) =>
+        kind == UnifiedLibraryKind.movies ? _l10n.movies : _l10n.tvShows;
+
+    // The merged tile takes the place of the first library it replaces; the
+    // other libraries of that kind are dropped.
+    final placedKinds = <UnifiedLibraryKind>{};
+    final result = <AggregatedLibrary>[];
+    for (final library in libraries) {
+      final kind = UnifiedLibraryKind.fromCollectionType(
+        library.collectionType,
+      );
+      if (kind == null ||
+          !mergedKinds.contains(kind) ||
+          !mergeableServerIds.contains(library.serverId)) {
+        result.add(library);
+      } else if (placedKinds.add(kind)) {
+        result.add(
+          AggregatedLibrary.merged(
+            name: nameOf(kind),
+            unifiedKindName: kind.name,
+            libraries: librariesByKind[kind]!,
+          ),
+        );
+      }
+    }
+    // A kind only the catalog knows, because every server holding it failed
+    // to answer: there is no live library to build the tile from, so it gets
+    // a bare tile attributed to the first of those servers.
+    for (final kind in mergedKinds.difference(placedKinds)) {
+      result.add(
+        AggregatedLibrary(
+          id: 'unified_${kind.name}',
+          name: nameOf(kind),
+          collectionType: kind.collectionType,
+          serverId: unansweredMergeable.first.server.id,
+          unifiedKindName: kind.name,
+        ),
+      );
+    }
+    return result;
+  }
+
+  Future<Set<UnifiedLibraryKind>> _kindsHeldByCatalog(
+    UnifiedCatalogService? catalog,
+    List<ServerUserSession> unansweredMergeable,
+  ) async {
+    if (catalog == null || unansweredMergeable.isEmpty) return const {};
+    try {
+      final kindsPerServer = await Future.wait([
+        for (final session in unansweredMergeable)
+          catalog.kindsHeldBy(session.server.id),
+      ]).timeout(_serverTimeout);
+      return {for (final kinds in kindsPerServer) ...kinds};
+    } catch (e) {
+      _logger.w('MultiServer: Merged catalog not read: $e');
+      return const {};
+    }
   }
 
   Future<HomeRow> getAggregatedResume({int limit = _defaultLimit}) async {
@@ -263,19 +418,19 @@ class MultiServerRepository {
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
 
-    final results = await Future.wait(
-      sessions.map(
-        (session) => _withTimeout(() async {
-          final response = await session.client.itemsApi.getResumeItems(
-            mediaTypes: 'Audio',
-            limit: perServer,
-            fields: _fields,
-            enableImageTypes: _imageTypes,
-            imageTypeLimit: _imageTypeLimit,
-          );
-          return _parseItems(response, session.server.id);
-        }, label: 'resume audio from ${session.server.name}'),
-      ),
+    final results = await _gatherPerServer(
+      sessions,
+      (session) async {
+        final response = await session.client.itemsApi.getResumeItems(
+          mediaTypes: 'Audio',
+          limit: perServer,
+          fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
+        );
+        return _parseItems(response, session.server.id);
+      },
+      label: 'resume audio',
     );
 
     final all = results.expand((e) => e).toList()..sort(_compareByLastPlayed);
@@ -494,6 +649,38 @@ class MultiServerRepository {
     );
   }
 
+  static bool get _effectiveMergeLibrariesByType =>
+      GetIt.instance.isRegistered<UserPreferences>() &&
+      GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
+
+  /// Returns the [sessions] whose server type takes part in merged libraries
+  /// when there are at least [minServers] of them, otherwise an empty list.
+  static List<ServerUserSession> sessionsIfMergeable(
+    Iterable<ServerUserSession> sessions, {
+    int minServers = 2,
+  }) {
+    final mergeableSessions = [
+      for (final session in sessions)
+        if (supportsUnifiedLibraries(session.server.serverType)) session,
+    ];
+    return mergeableSessions.length < minServers
+        ? const []
+        : mergeableSessions;
+  }
+
+  static Set<String> _idsOf(Iterable<ServerUserSession> sessions) => {
+    for (final session in sessions) session.server.id,
+  };
+
+  /// The servers whose libraries, and so genres, are merged right now; empty
+  /// with the setting off, offline, or fewer than two such servers.
+  Future<Set<String>> mergedGenreServerIds() async {
+    if (!_effectiveMergeLibrariesByType || shouldUseOfflineCatalog()) {
+      return const {};
+    }
+    return _idsOf(sessionsIfMergeable(await getLoggedInServers()));
+  }
+
   Future<HomeRow> getAggregatedGenres({
     int limit = _defaultLimit,
     String sortBy = _defaultSortBy,
@@ -506,6 +693,7 @@ class MultiServerRepository {
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
+    final readCountByServer = <String, int>{};
 
     final results = await _gatherPerServer(sessions, (session) async {
       final response = await session.client.itemsApi.getGenres(
@@ -527,19 +715,42 @@ class MultiServerRepository {
       );
       _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
           response['TotalRecordCount'] as int? ?? items.length;
+      readCountByServer['${cacheKeyPrefix}_${session.server.id}'] =
+          items.length < limit
+          ? (response['Items'] as List? ?? const []).length
+          : items.length;
       return items;
     }, label: cacheKeyPrefix);
 
+    final mergedServerIds = await mergedGenreServerIds();
     final all = _sortAggregatedItems(
-      results.expand((e) => e).toList(growable: false),
+      foldGenresByName(
+        results.expand((e) => e).toList(growable: false),
+        mergedServerIds,
+      ),
       sortBy: sortBy,
       sortOrder: sortOrder,
     );
 
     final takenItems = all.take(limit).toList();
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
-    });
+    final int totalCount;
+    if (mergedServerIds.isEmpty) {
+      totalCount = sessions.fold<int>(0, (sum, session) {
+        return sum +
+            (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
+      });
+    } else {
+      // A folded-away tile no longer says how far its server was read.
+      for (final (index, session) in sessions.indexed) {
+        if (mergedServerIds.contains(session.server.id)) {
+          _rowOffsets['${cacheKeyPrefix}_${session.server.id}'] =
+              results[index].length;
+        }
+      }
+      totalCount =
+          takenItems.length +
+          _unreadCountOf(sessions, cacheKeyPrefix, readCountByServer);
+    }
 
     return HomeRow(
       id: cacheKeyPrefix,
@@ -569,28 +780,24 @@ class MultiServerRepository {
         .where((s) => s.isNotEmpty)
         .toSet();
 
-    final results = await Future.wait(
-      sessions.map(
-        (session) => _withTimeout(() async {
-          Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) =>
-              session.client.itemsApi.getStudios(
-                userId: session.client.userId,
-                sortBy: sortBy,
-                sortOrder: sortOrder,
-                recursive: true,
-                startIndex: startIndex,
-                limit: limit,
-                fields: 'ItemCounts,PrimaryImageAspectRatio',
-              );
+    final results = await _gatherPerServer(sessions, (session) async {
+      Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) =>
+          session.client.itemsApi.getStudios(
+            userId: session.client.userId,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            recursive: true,
+            startIndex: startIndex,
+            limit: limit,
+            fields: 'ItemCounts,PrimaryImageAspectRatio',
+          );
 
-          if (selectedSet.isEmpty) {
-            final response = await fetchPage(0, perServer);
-            return _parseItems(response, session.server.id);
-          }
-          return _collectStudios(selectedSet, session.server.id, fetchPage);
-        }, label: '$cacheKeyPrefix from ${session.server.name}'),
-      ),
-    );
+      if (selectedSet.isEmpty) {
+        final response = await fetchPage(0, perServer);
+        return _parseItems(response, session.server.id);
+      }
+      return _collectStudios(selectedSet, session.server.id, fetchPage);
+    }, label: cacheKeyPrefix);
 
     final all = _sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
@@ -969,8 +1176,22 @@ class MultiServerRepository {
       }
     }
 
+    // Folded tiles are counted once, so the servers' totals overstate the row.
+    final mergedServerIds =
+        row.rowType == HomeRowType.genres && row.id == 'genres'
+        ? await mergedGenreServerIds()
+        : const <String>{};
+
     final newItems = results.expand((e) => e).toList();
-    if (newItems.isEmpty) return (row.items, row.totalCount);
+    if (newItems.isEmpty) {
+      return (
+        row.items,
+        mergedServerIds.isEmpty
+            ? row.totalCount
+            : row.items.length +
+                  _unreadCountOf(sessions, row.id, nextOffsets),
+      );
+    }
 
     // Merge and sort
     final combined = [...row.items, ...newItems];
@@ -980,6 +1201,9 @@ class MultiServerRepository {
     var uniqueCombined = combined
         .where((item) => seen.add('${item.serverId}_${item.id}'))
         .toList();
+    if (mergedServerIds.isNotEmpty) {
+      uniqueCombined = foldGenresByName(uniqueCombined, mergedServerIds);
+    }
 
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists ||
@@ -1064,12 +1288,26 @@ class MultiServerRepository {
       }
     }
 
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${row.id}_${session.server.id}'] ?? 0);
-    });
+    final totalCount = mergedServerIds.isEmpty
+        ? sessions.fold<int>(0, (sum, session) {
+            return sum + (_rowTotals['${row.id}_${session.server.id}'] ?? 0);
+          })
+        : sortedCombined.length +
+              _unreadCountOf(sessions, row.id, nextOffsets);
 
     return (sortedCombined, totalCount);
   }
+
+  /// What the servers of row [rowId] still hold past where each was read to.
+  int _unreadCountOf(
+    List<ServerUserSession> sessions,
+    String rowId,
+    Map<String, int> readCountByServer,
+  ) => sessions.fold(0, (sum, session) {
+    final key = '${rowId}_${session.server.id}';
+    final unread = (_rowTotals[key] ?? 0) - (readCountByServer[key] ?? 0);
+    return unread > 0 ? sum + unread : sum;
+  });
 
   Future<HomeRow> _getAggregatedSortedItemsRow({
     required String id,
@@ -1085,27 +1323,23 @@ class MultiServerRepository {
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
 
-    final results = await Future.wait(
-      sessions.map(
-        (session) => _withTimeout(() async {
-          final response = await session.client.itemsApi.getItems(
-            includeItemTypes: includeItemTypes,
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            recursive: true,
-            limit: perServer,
-            isFavorite: isFavorite,
-            fields: _fields,
-            enableImageTypes: _imageTypes,
-            imageTypeLimit: _imageTypeLimit,
-          );
-          final items = _parseItems(response, session.server.id);
-          _rowTotals['${id}_${session.server.id}'] =
-              response['TotalRecordCount'] as int? ?? items.length;
-          return items;
-        }, label: '$logPrefix from ${session.server.name}'),
-      ),
-    );
+    final results = await _gatherPerServer(sessions, (session) async {
+      final response = await session.client.itemsApi.getItems(
+        includeItemTypes: includeItemTypes,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: perServer,
+        isFavorite: isFavorite,
+        fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
+      );
+      final items = _parseItems(response, session.server.id);
+      _rowTotals['${id}_${session.server.id}'] =
+          response['TotalRecordCount'] as int? ?? items.length;
+      return items;
+    }, label: logPrefix);
 
     final all = _sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
@@ -1146,6 +1380,8 @@ class MultiServerRepository {
               if (lib.imageTags != null) 'ImageTags': lib.imageTags,
               if (lib.backdropImageTags != null)
                 'BackdropImageTags': lib.backdropImageTags,
+              if (lib.unifiedKindName != null)
+                unifiedKindKey: lib.unifiedKindName,
             },
           ),
         )
@@ -1173,121 +1409,36 @@ class MultiServerRepository {
         prefs?.get(UserPreferences.mergeRecentRowsByType) ?? false;
     final hideWatched =
         prefs?.get(UserPreferences.hideWatchedInRecentRows) ?? false;
+    // Only servers the merged libraries read fold their shared titles.
+    final foldedServerIds = mergeByType && _effectiveMergeLibrariesByType
+        ? _idsOf(sessionsIfMergeable(sessions, minServers: 1))
+        : const <String>{};
     final groupedItems = <String, List<AggregatedItem>>{};
 
-    for (final session in sessions) {
-      try {
-        final views = await _withTimeout(
-          () => loadUserViews(session.client, includeHidden: true),
-          label: 'views from ${session.server.name}',
-        );
-
-        Set<String> latestExcludes = const {};
-        try {
-          final config = await session.client.usersApi.getUserConfiguration();
-          latestExcludes = config.latestItemsExcludes.toSet();
-        } catch (_) {}
-
-        for (final view in views) {
-          final id = view.id;
-          final collectionType = view.collectionType.toLowerCase();
-          if (collectionType == 'playlists' ||
-              collectionType == 'boxsets' ||
-              collectionType == 'livetv') {
-            continue;
-          }
-          if (latestExcludes.contains(id)) continue;
-
-          final name = view.name;
-          var fetchLimit = latestMediaFetchLimitForCollection(
-            collectionType,
-            defaultLimit: _defaultLimit,
-            maxLimit: _maxItems,
-            hideWatched: hideWatched,
-          );
-
-          try {
-            var latestResponse = await _withTimeout(
-              () => session.client.itemsApi.getLatestItems(
-                parentId: id,
-                limit: fetchLimit,
-                fields: _fields,
-                enableImageTypes: _imageTypes,
-                imageTypeLimit: _imageTypeLimit,
-              ),
-              label: 'latest $name from ${session.server.name}',
-            );
-
-            var parsed = _parseItems(latestResponse, session.server.id);
-            if (parsed.isEmpty) continue;
-
-            if (hideWatched &&
-                parsed.length >= fetchLimit &&
-                fetchLimit < _maxItems) {
-              final unwatchedItems = normalizeLatestMediaItems(
-                parsed,
-                collectionType: collectionType,
-                limit: _defaultLimit,
-                hideWatched: true,
-              );
-              if (unwatchedItems.length < _defaultLimit) {
-                fetchLimit = _maxItems;
-                latestResponse = await _withTimeout(
-                  () => session.client.itemsApi.getLatestItems(
-                    parentId: id,
-                    limit: fetchLimit,
-                    fields: _fields,
-                    enableImageTypes: _imageTypes,
-                    imageTypeLimit: _imageTypeLimit,
-                  ),
-                  label: 'latest $name from ${session.server.name}',
-                );
-                parsed = _parseItems(latestResponse, session.server.id);
-                if (parsed.isEmpty) continue;
-              }
-            }
-
-            // Merged rows are built once every server has answered, so the
-            // items are only collected here.
-            if (mergeByType) {
-              groupedItems.putIfAbsent(collectionType, () => []).addAll(parsed);
-              continue;
-            }
-
-            var items = normalizeLatestMediaItems(
-              parsed,
-              collectionType: collectionType,
-              limit: _defaultLimit,
-              hideWatched: hideWatched,
-            );
-            if (items.isEmpty) continue;
-
-            final displayName = hasMultiple
-                ? '$name (${session.server.name})'
-                : name;
-            final totalCount = items.length < _defaultLimit
-                ? items.length
-                : _maxItems;
-            _rowTotals['latest_${session.server.id}_${id}_${session.server.id}'] =
-                totalCount;
-            rows.add(
-              HomeRow(
-                id: 'latest_${session.server.id}_$id',
-                title: _l10n.latestLibraryName(displayName),
-                items: items,
-                rowType: HomeRowType.latestMedia,
-                totalCount: totalCount,
-                isAudio: collectionType == 'music',
-              ),
-            );
-          } catch (e) {
-            _logger.w('MultiServer: Failed to load latest for $name: $e');
-          }
-        }
-      } catch (e) {
-        _logger.w(
-          'MultiServer: Failed to load views from ${session.server.name}: $e',
-        );
+    // Read in turn, each slow or down server would hold up the home screen. The
+    // answers come back in server and library order whatever the timing.
+    final perSession = await mapBounded<
+      ServerUserSession,
+      List<_LatestForView>
+    >(
+      sessions,
+      _latestServerConcurrency,
+      (session) => _latestForSession(
+        session,
+        hasMultiple: hasMultiple,
+        mergeByType: mergeByType,
+        withProviderIds: foldedServerIds.contains(session.server.id),
+        hideWatched: hideWatched,
+      ),
+    );
+    for (final latest in perSession.expand((views) => views ?? const [])) {
+      // Merged rows are built once every server has answered.
+      if (mergeByType) {
+        groupedItems
+            .putIfAbsent(latest.collectionType, () => [])
+            .addAll(latest.items);
+      } else if (latest.row case final row?) {
+        rows.add(row);
       }
     }
 
@@ -1296,11 +1447,11 @@ class MultiServerRepository {
     for (final entry in groupedItems.entries) {
       final collectionType = entry.key;
 
-      // A title in two libraries, or on two servers, is kept once.
-      final seenIds = <String>{};
+      // A title in two libraries is kept once, from the server listed first.
+      final seen = <String>{};
       final allItems = [
         for (final item in entry.value)
-          if (seenIds.add(item.id)) item,
+          if (_isFirstCopy(item, seen, foldedServerIds: foldedServerIds)) item,
       ];
       if (allItems.isEmpty) continue;
 
@@ -1339,6 +1490,178 @@ class MultiServerRepository {
     }
 
     return rows;
+  }
+
+  /// Whether [item] is the first copy of its title, adding its keys to [seen].
+  /// A movie or series from [foldedServerIds] goes by its provider ids, any one
+  /// of which makes two items the same title; anything else by its own id.
+  static bool _isFirstCopy(
+    AggregatedItem item,
+    Set<String> seen, {
+    required Set<String> foldedServerIds,
+  }) {
+    final type = item.type;
+    if ((type != 'Movie' && type != 'Series') ||
+        !foldedServerIds.contains(item.serverId)) {
+      return seen.add(item.id);
+    }
+    final shared = catalogMatchKeys(type!, item.rawData);
+    final keys = shared.isEmpty
+        ? [unifiedCopyKey(item.serverId, item.id)]
+        : shared;
+    final isFirst = !keys.any(seen.contains);
+    // A later copy sharing only one id with this copy must still match.
+    seen.addAll(keys);
+    return isFirst;
+  }
+
+  Future<List<_LatestForView>> _latestForSession(
+    ServerUserSession session, {
+    required bool hasMultiple,
+    required bool mergeByType,
+    required bool withProviderIds,
+    required bool hideWatched,
+  }) async {
+    try {
+      final viewsFuture = _withTimeout(
+        () => loadUserViews(session.client, includeHidden: true),
+        label: 'views from ${session.server.name}',
+      );
+      // Awaited below, after the excludes that are read alongside it.
+      viewsFuture.ignore();
+
+      Set<String> latestExcludes = const {};
+      try {
+        final config = await session.client.usersApi
+            .getUserConfiguration()
+            .timeout(_serverTimeout);
+        latestExcludes = config.latestItemsExcludes.toSet();
+      } catch (_) {}
+
+      final views = [
+        for (final view in await viewsFuture)
+          if (!const {
+                'playlists',
+                'boxsets',
+                'livetv',
+              }.contains(view.collectionType.toLowerCase()) &&
+              !latestExcludes.contains(view.id))
+            view,
+      ];
+      final results = await mapBounded<AggregatedLibrary, _LatestForView>(
+        views,
+        _latestLibraryConcurrency,
+        (view) => _latestForView(
+          session,
+          view,
+          hasMultiple: hasMultiple,
+          mergeByType: mergeByType,
+          withProviderIds: withProviderIds,
+          hideWatched: hideWatched,
+        ),
+      );
+      return results.whereType<_LatestForView>().toList();
+    } catch (e) {
+      _logger.w(
+        'MultiServer: Failed to load views from ${session.server.name}: $e',
+      );
+      return const [];
+    }
+  }
+
+  Future<_LatestForView?> _latestForView(
+    ServerUserSession session,
+    AggregatedLibrary view, {
+    required bool hasMultiple,
+    required bool mergeByType,
+    required bool withProviderIds,
+    required bool hideWatched,
+  }) async {
+    final id = view.id;
+    final name = view.name;
+    final collectionType = view.collectionType.toLowerCase();
+    var fetchLimit = latestMediaFetchLimitForCollection(
+      collectionType,
+      defaultLimit: _defaultLimit,
+      maxLimit: _maxItems,
+      hideWatched: hideWatched,
+    );
+
+    try {
+      var latestResponse = await _withTimeout(
+        () => session.client.itemsApi.getLatestItems(
+          parentId: id,
+          limit: fetchLimit,
+          fields: withProviderIds ? _latestFieldsWithProviderIds : _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
+        ),
+        label: 'latest $name from ${session.server.name}',
+      );
+
+      var parsed = _parseItems(latestResponse, session.server.id);
+      if (parsed.isEmpty) return null;
+
+      if (hideWatched && parsed.length >= fetchLimit && fetchLimit < _maxItems) {
+        final unwatchedItems = normalizeLatestMediaItems(
+          parsed,
+          collectionType: collectionType,
+          limit: _defaultLimit,
+          hideWatched: true,
+        );
+        if (unwatchedItems.length < _defaultLimit) {
+          fetchLimit = _maxItems;
+          latestResponse = await _withTimeout(
+            () => session.client.itemsApi.getLatestItems(
+              parentId: id,
+              limit: fetchLimit,
+              fields: withProviderIds ? _latestFieldsWithProviderIds : _fields,
+              enableImageTypes: _imageTypes,
+              imageTypeLimit: _imageTypeLimit,
+            ),
+            label: 'latest $name from ${session.server.name}',
+          );
+          parsed = _parseItems(latestResponse, session.server.id);
+          if (parsed.isEmpty) return null;
+        }
+      }
+
+      if (mergeByType) {
+        return (collectionType: collectionType, items: parsed, row: null);
+      }
+
+      final items = normalizeLatestMediaItems(
+        parsed,
+        collectionType: collectionType,
+        limit: _defaultLimit,
+        hideWatched: hideWatched,
+      );
+      if (items.isEmpty) return null;
+
+      final displayName = hasMultiple
+          ? '$name (${session.server.name})'
+          : name;
+      final totalCount = items.length < _defaultLimit
+          ? items.length
+          : _maxItems;
+      _rowTotals['latest_${session.server.id}_${id}_${session.server.id}'] =
+          totalCount;
+      return (
+        collectionType: collectionType,
+        items: parsed,
+        row: HomeRow(
+          id: 'latest_${session.server.id}_$id',
+          title: _l10n.latestLibraryName(displayName),
+          items: items,
+          rowType: HomeRowType.latestMedia,
+          totalCount: totalCount,
+          isAudio: collectionType == 'music',
+        ),
+      );
+    } catch (e) {
+      _logger.w('MultiServer: Failed to load latest for $name: $e');
+      return null;
+    }
   }
 
   Future<T> _withTimeout<T>(

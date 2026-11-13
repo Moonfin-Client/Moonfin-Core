@@ -185,6 +185,8 @@ class SiloItemsApi
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     if (ids != null) {
       return _byIds(

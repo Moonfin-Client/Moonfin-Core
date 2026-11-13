@@ -91,6 +91,26 @@ void main() {
     expect(requests.single.queryParameters.containsKey('sort'), isFalse);
   });
 
+  test(
+    'the user data and image switches change nothing Plex is asked',
+    () async {
+      final (dio, requests) = _recordingDio(const {'Metadata': []});
+      final api = PlexItemsApi(dio);
+
+      await api.getItems(parentId: 'section-1', includeItemTypes: ['Movie']);
+      await api.getItems(
+        parentId: 'section-1',
+        includeItemTypes: ['Movie'],
+        enableUserData: false,
+        enableImages: false,
+      );
+
+      expect(requests, hasLength(2));
+      expect(requests.last.path, requests.first.path);
+      expect(requests.last.queryParameters, requests.first.queryParameters);
+    },
+  );
+
   test('a search across libraries keeps only titles that match', () async {
     final (dio, requests) = _recordingDio({
       'Hub': [

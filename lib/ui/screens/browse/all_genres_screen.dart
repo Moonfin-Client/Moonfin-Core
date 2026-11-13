@@ -7,9 +7,13 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../auth/repositories/session_repository.dart';
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/log_service.dart';
+import '../../../data/services/unified_catalog_query.dart';
+import '../../../data/services/unified_catalog_service.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -71,6 +75,78 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   /// A grouping toggle starts a second load, so the first stops writing.
   int _loadToken = 0;
 
+  /// True when the active server's genres are merged with other servers';
+  /// tiles then open the unified genre page.
+  bool _opensUnifiedGenres = false;
+
+  /// Tiles were built from the unified catalog (count and artwork included),
+  /// not from the active server's genre list.
+  bool _fromCatalog = false;
+
+  Future<bool> _activeServerMergesGenres() async {
+    final getIt = GetIt.instance;
+    if (!getIt.isRegistered<UnifiedCatalogService>() ||
+        !getIt.isRegistered<MultiServerRepository>() ||
+        !getIt.isRegistered<SessionRepository>()) {
+      return false;
+    }
+    try {
+      final mergedServerIds = await getIt<MultiServerRepository>()
+          .mergedGenreServerIds();
+      return mergedServerIds.contains(
+        getIt<SessionRepository>().activeServerId,
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Null when the unified catalog has no genres yet.
+  Future<List<GenreCardData>?> _loadCatalogGenreCards() async {
+    final catalog = GetIt.instance<UnifiedCatalogService>();
+    await catalog.ensureLoaded();
+    final genres = catalog.genres(UnifiedLibraryKind.values);
+    if (genres.isEmpty) return null;
+    final maxWidth = _genreCardRequestMaxWidth();
+    return [
+      for (final genre in genres) _buildCatalogGenreCard(genre, maxWidth),
+    ];
+  }
+
+  GenreCardData _buildCatalogGenreCard(UnifiedGenre genre, int maxWidth) {
+    final shuffled = [...genre.items]..shuffle();
+    // Both image URLs are built with one server's image API, so the tile's
+    // image and backdrop must come from items on the same server.
+    final serverId = shuffled.first[unifiedServerIdKey];
+    final (imageUrl, backdropUrl, usedId) = resolveGenreFallbackArtwork(
+      items: [
+        for (final item
+            in shuffled
+                .where((item) => item[unifiedServerIdKey] == serverId)
+                .take(4))
+          {
+            ...item,
+            if (item['ImageTags'] case {'Primary': final String tag})
+              'PrimaryImageTag': tag,
+          },
+      ],
+      imageApi: GetIt.instance<MultiServerRepository>().getImageApiForServer(
+        serverId.toString(),
+      ),
+      maxWidth: maxWidth,
+      avoidIds: _usedArtworkIds,
+    );
+    if (usedId != null) _usedArtworkIds.add(usedId);
+    return GenreCardData(
+      id: '',
+      name: genre.name,
+      itemCount: genre.items.length,
+      imageUrl: imageUrl,
+      backdropUrl: backdropUrl,
+      isGenreFallback: true,
+    );
+  }
+
   void _onChanged() {
     if (!mounted) return;
     final currentGroup =
@@ -109,11 +185,25 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     final token = ++_loadToken;
     try {
       _usedArtworkIds.clear();
+      final isMerged = await _activeServerMergesGenres();
+      List<GenreCardData>? fromCatalog;
+      if (isMerged) {
+        try {
+          fromCatalog = await _loadCatalogGenreCards();
+        } catch (_) {
+          // Fall back to the active server's genre list below; its tiles
+          // still open the unified genre pages.
+        }
+      }
+      if (token != _loadToken) return;
+      _opensUnifiedGenres = isMerged;
+      _fromCatalog = fromCatalog != null;
+
       final items = <dynamic>[];
       var startIndex = 0;
       int? total;
 
-      while (true) {
+      while (fromCatalog == null) {
         final response = await _client.itemsApi.getGenres(
           sortBy: 'SortName',
           sortOrder: 'Ascending',
@@ -149,7 +239,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
           .where((x) => x.itemCount > 0 || !genreReportsCounts(x.data))
           .toList();
 
-      _genres = temp.map((x) {
+      _genres = fromCatalog ?? temp.map((x) {
         final data = x.data;
         final (imageUrl, backdropUrl, hasOwnArtwork) = resolveGenreOwnArtwork(
           genreData: data,
@@ -187,6 +277,9 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   Future<void> _loadGenreArtwork(int token) async {
+    // Catalog tiles already have their count and artwork, and have no
+    // server genre id to query with.
+    if (_fromCatalog) return;
     final groupCollections = _lastGroupCollections;
 
     // A genre with its own artwork only needs a query when grouping changes
@@ -360,7 +453,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
       return;
     }
 
-    if (previousImageType != _imageType) {
+    if (previousImageType != _imageType && !_fromCatalog) {
       for (final genre in _genres) {
         genre.imageUrl = null;
       }
@@ -499,9 +592,11 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                 UserPreferences.cardFocusExpansion,
               ),
               onTap: () => context.push(
-                Destinations.genre(genre.name, genreId: genre.id),
+                _opensUnifiedGenres
+                    ? Destinations.unifiedGenre(genre.name)
+                    : Destinations.genre(genre.name, genreId: genre.id),
               ),
-              onLongPress: () {
+              onLongPress: _fromCatalog ? null : () {
                 final serverId = GetIt.instance<UserRepository>().currentUser?.serverId ?? '';
                 final aggregatedItem = AggregatedItem(
                   id: genre.id,

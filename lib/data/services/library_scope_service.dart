@@ -96,14 +96,17 @@ class LibraryScopeService {
   /// Drops the libraries the user hid from My Media.
   ///
   /// For the multi server library list, which is assembled per server and so
-  /// never passed through the filtering a single server's /UserViews does.
+  /// never passed through the filtering a single server's /UserViews does. A
+  /// tile that stands for several libraries stays while any of them is shown.
   Future<List<AggregatedLibrary>> withoutHiddenLibraries(
     List<AggregatedLibrary> libraries,
   ) async {
     try {
       final hidden = await _views.getMyMediaExcludes();
       if (hidden.isEmpty) return libraries;
-      return libraries.where((lib) => !hidden.contains(lib.id)).toList();
+      return [
+        for (final library in libraries) ?library.withoutHidden(hidden),
+      ];
     } catch (_) {
       return libraries;
     }

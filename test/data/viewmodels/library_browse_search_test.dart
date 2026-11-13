@@ -68,6 +68,8 @@ class _FakeItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     pageRequests++;
     searchTerms.add(searchTerm);
@@ -155,6 +157,8 @@ class _IndexedItemsApi extends _FakeItemsApi implements LetterPositionApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     final start = startIndex ?? 0;
     requests.add((start: start, limit: limit));
@@ -256,6 +260,31 @@ void main() {
       vm.setSearchQuery('matrix, the');
 
       expect(_names(vm), <String>['The Matrix']);
+    });
+
+    test('outside a merged library, only the name a title is listed under '
+        'is matched', () async {
+      final api = _FakeItemsApi([
+        [
+          {
+            ..._movie('Selwick Fold', sortName: 'Selwick Fold'),
+            'OriginalTitle': 'Hoshi to Tolvane',
+            'UnifiedVersions': [
+              {'ServerId': 'b', 'ItemId': 'b1', 'Name': 'Le Verger de Tolvane'},
+            ],
+          },
+          _movie('The Morvent', sortName: 'Morvent, The'),
+        ],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      vm.setSearchQuery('tolvane');
+      expect(_names(vm), isEmpty);
+
+      vm.setSearchQuery('the morvent');
+      expect(_names(vm), isEmpty);
     });
 
     test('finds an accented name typed without its accents', () async {

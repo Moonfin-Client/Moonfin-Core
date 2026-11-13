@@ -34,6 +34,7 @@ import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/row_data_source.dart';
+import '../../../data/services/unified_catalog_query.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../data/services/connectivity_service.dart';
@@ -78,6 +79,7 @@ import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/unified_server_picker.dart';
 import '../../widgets/carousel_panel.dart';
 import '../detail/item_detail_screen.dart' show technicalDetailsFor;
 import '../../widgets/selector_builder.dart';
@@ -162,6 +164,47 @@ class HomeScreen extends StatelessWidget {
   static Future<String?> seeAllRoute(HomeRow row) =>
       _ContentRowsState._seeAllRoute(row);
 
+  /// [onFocusLost] runs when the server picker is dismissed and the card
+  /// that opened it no longer exists.
+  @visibleForTesting
+  static void openItem(
+    BuildContext context,
+    AggregatedItem item, {
+    bool autoPlay = false,
+    VoidCallback? onFocusLost,
+  }) {
+    final opener = FocusManager.instance.primaryFocus;
+    unawaited(
+      openOnPickedServer(
+        context,
+        item,
+        open: (itemId, serverId) => context.push(
+          autoPlay
+              ? Destinations.item(itemId, serverId: serverId, autoPlay: true)
+              : Destinations.itemOrPhoto(
+                  itemId,
+                  serverId: serverId,
+                  type: item.type,
+                  channelId: item.channelId,
+                ),
+        ),
+        onDismissed: () {
+          // Opened by touch with no card focused: there is no focus to restore.
+          if (opener == null || opener is FocusScopeNode) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final focus = FocusManager.instance.primaryFocus;
+            if (focus != null && focus is! FocusScopeNode) return;
+            if (opener.context != null) {
+              opener.requestFocus();
+            } else {
+              onFocusLost?.call();
+            }
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return const ResponsiveLayout(
@@ -202,6 +245,7 @@ class _HomeShellState extends State<_HomeShell>
   final ValueNotifier<bool> _isScrolledToTopNotifier = ValueNotifier(true);
   String _lastSectionsJson = '';
   bool _lastMultiServer = false;
+  bool _lastMergeLibraries = false;
   bool _lastMergeContinueWatchingNextUp = false;
   String _lastHiddenCW = '{}';
   String _lastHiddenNU = '{}';
@@ -246,6 +290,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    _lastMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     _lastMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -414,6 +459,7 @@ class _HomeShellState extends State<_HomeShell>
     final currentMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    final currentMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     final currentMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -435,6 +481,7 @@ class _HomeShellState extends State<_HomeShell>
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
+        currentMergeLibraries != _lastMergeLibraries ||
         currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
         currentBlocked != _lastBlockedParentalRatings ||
         currentHiddenCW != _lastHiddenCW ||
@@ -451,6 +498,7 @@ class _HomeShellState extends State<_HomeShell>
         currentDateFormat != _lastDateFormat) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
+      _lastMergeLibraries = currentMergeLibraries;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
       _lastHiddenCW = currentHiddenCW;
@@ -5893,25 +5941,20 @@ class _ContentRowsState extends State<_ContentRows>
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(
-              Destinations.genre(
-                item.name,
-                genreId: item.id,
-                serverId: item.serverId,
-              ),
+              item.rawData[unifiedGenreTileKey] == true
+                  ? Destinations.unifiedGenre(item.name)
+                  : Destinations.genre(
+                      item.name,
+                      genreId: item.id,
+                      serverId: item.serverId,
+                    ),
             );
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
             context.push(Destinations.studio(item.name, serverId: item.serverId));
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
-            context.push(
-              Destinations.itemOrPhoto(
-                item.id,
-                serverId: item.serverId,
-                type: item.type,
-                channelId: item.channelId,
-              ),
-            );
+            _openItem(item);
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
@@ -6025,25 +6068,20 @@ class _ContentRowsState extends State<_ContentRows>
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(
-                        Destinations.genre(
-                          item.name,
-                          genreId: item.id,
-                          serverId: item.serverId,
-                        ),
+                        item.rawData[unifiedGenreTileKey] == true
+                            ? Destinations.unifiedGenre(item.name)
+                            : Destinations.genre(
+                                item.name,
+                                genreId: item.id,
+                                serverId: item.serverId,
+                              ),
                       );
                     } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
                       context.push(Destinations.studio(item.name, serverId: item.serverId));
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
-                      context.push(
-                        Destinations.itemOrPhoto(
-                          item.id,
-                          serverId: item.serverId,
-                          type: item.type,
-                          channelId: item.channelId,
-                        ),
-                      );
+                      _openItem(item);
                     }
                   }
 
@@ -6187,6 +6225,7 @@ class _ContentRowsState extends State<_ContentRows>
                     imageSourceAspectRatio: glide != null && canUseExpandedV2Card
                         ? v2FocusedAspect
                         : null,
+                    bottomLeftBadge: unifiedServerCountBadgeFor(item),
                     subtitle: cardSubtitle,
                     subtitleWidget: cardSubtitleWidget,
                     imageUrl: imageUrl,
@@ -6862,11 +6901,19 @@ class _ContentRowsState extends State<_ContentRows>
             ContinueWatchingDefaultAction.play) {
       return false;
     }
-    context.push(
-      Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
-    );
+    _openItem(item, autoPlay: true);
     return true;
   }
+
+  void _openItem(AggregatedItem item, {bool autoPlay = false}) =>
+      HomeScreen.openItem(
+        context,
+        item,
+        autoPlay: autoPlay,
+        onFocusLost: () {
+          if (mounted) _focusFirstAvailableHomeTarget();
+        },
+      );
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {
     // Game libraries route to the EmulatorJS browser, everything else by its
@@ -6876,6 +6923,7 @@ class _ContentRowsState extends State<_ContentRows>
       item.rawData['CollectionType'] as String?,
       item.name,
       serverId: item.serverId,
+      unifiedKindName: item.rawData[unifiedKindKey] as String?,
     ));
   }
 

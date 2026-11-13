@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/parental_filter.dart';
 import '../models/aggregated_item.dart';
+import '../services/unified_catalog_query.dart';
 
 String? _cachedCsv;
 ParentalFilter _cachedFilter = ParentalFilter.none;
@@ -75,4 +76,16 @@ List<AggregatedItem> withoutUnratedOrBlockedItems(List<AggregatedItem> items) {
         rating.isNotEmpty &&
         !filter.isBlockedRating(rating);
   }).toList();
+}
+
+/// Servers can rate a title differently; a merged one is blocked when any
+/// copy is.
+bool isAnyCopyBlocked(Map<String, dynamic> raw) {
+  if (!activeParentalFilter.isActive) return false;
+  final own = raw['OfficialRating']?.toString().trim();
+  if (isRatingBlocked(own == null || own.isEmpty ? null : own)) return true;
+  return unifiedCopiesOf(raw).any((copy) {
+    final rating = copy.officialRating?.trim();
+    return rating != null && rating.isNotEmpty && isRatingBlocked(rating);
+  });
 }

@@ -106,6 +106,28 @@ void main() {
     );
   });
 
+  test('a light items request turns user data and images off', () async {
+    final (dio, request) = _recordingDio();
+    final api = EmbyItemsApi(dio, () => 'user-1');
+
+    await api.getItems(enableUserData: false, enableImages: false);
+    expect(request()?.queryParameters['EnableUserData'], isFalse);
+    expect(request()?.queryParameters['EnableImages'], isFalse);
+
+    await api.getItems(enableUserData: true, enableImages: true);
+    expect(request()?.queryParameters['EnableUserData'], isTrue);
+    expect(request()?.queryParameters['EnableImages'], isTrue);
+  });
+
+  test('an items request leaves user data and images to the server', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(dio, () => 'user-1').getItems(parentId: 'lib-1');
+
+    expect(request()?.queryParameters.containsKey('EnableUserData'), isFalse);
+    expect(request()?.queryParameters.containsKey('EnableImages'), isFalse);
+  });
+
   test('grouping into collections uses the name Emby reads', () async {
     final (dio, request) = _recordingDio();
 

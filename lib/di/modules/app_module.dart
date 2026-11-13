@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
@@ -53,6 +54,8 @@ import '../../data/services/custom_external_lists_service.dart';
 import '../../data/services/download_service.dart';
 import '../../data/services/item_membership_service.dart';
 import '../../data/services/remove_watched_service.dart';
+import '../../data/services/unified_catalog_service.dart';
+import '../../data/database/offline_database.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/pending_rating_store.dart';
@@ -116,6 +119,13 @@ void resetUserScopedSingletons() {
   }
 
   _registerUserScopedSingletons();
+
+  // Reset only now: a merged library on screen reloads at once, and before
+  // the repository naming the accounts is registered it would see nobody
+  // signed in.
+  if (_getIt.isRegistered<UnifiedCatalogService>()) {
+    _getIt<UnifiedCatalogService>().reset();
+  }
 }
 
 StreamSubscription<User?>? _accessScheduleUserSubscription;
@@ -292,8 +302,79 @@ void registerAppModule() {
     dispose: (service) => service.dispose(),
   );
   _getIt.registerLazySingleton(() => const ExternalPlayerService());
+  if (_getIt.isRegistered<OfflineDatabase>()) {
+    _getIt.registerLazySingleton(
+      () => buildUnifiedCatalogService(_getIt<OfflineDatabase>()),
+      dispose: (service) => service.dispose(),
+    );
+    watchMergedLibrariesSetting();
+  }
 
   _registerUserScopedSingletons();
+}
+
+@visibleForTesting
+UnifiedCatalogService buildUnifiedCatalogService(OfflineDatabase database) =>
+    UnifiedCatalogService(
+      database: database,
+      // Resolved per read: a server or account switch replaces the repository.
+      loadSessions: () async => _getIt.isRegistered<MultiServerRepository>()
+          ? _getIt<MultiServerRepository>().getLoggedInServers()
+          : const <ServerUserSession>[],
+      activeServerId: () => _getIt<SessionRepository>().activeServerId,
+      // An account's catalog rows are deleted only once the account is gone
+      // from here, not when its token couldn't be read for one sync.
+      knownAccounts: _storedAccounts,
+      // The device having no network, and nothing less: with only the active
+      // server out of reach the others are still read.
+      isOffline: () =>
+          _getIt.isRegistered<ConnectivityService>() &&
+          !_getIt<ConnectivityService>().isOnline,
+      isMetered: () =>
+          _getIt.isRegistered<ConnectivityService>() &&
+          _getIt<ConnectivityService>().isCellularOnly,
+      isEnabled: _effectiveMergeLibrariesByType,
+    );
+
+bool _effectiveMergeLibrariesByType() =>
+    _getIt.isRegistered<UserPreferences>() &&
+    _getIt<UserPreferences>().effectiveMergeLibrariesByType;
+
+void Function()? _stopWatchingMergedLibraries;
+
+/// Deletes the merged libraries' catalog rows when the setting is turned off,
+/// as nothing would refresh or delete them afterwards. Switching to a profile
+/// that has it off doesn't count: the catalog rows belong to the accounts.
+@visibleForTesting
+void watchMergedLibrariesSetting() {
+  _stopWatchingMergedLibraries?.call();
+  _stopWatchingMergedLibraries = null;
+  if (!_getIt.isRegistered<UserPreferences>()) return;
+  final prefs = _getIt<UserPreferences>();
+  var profile = prefs.activeProfileScopeSuffix();
+  var wasOn = _effectiveMergeLibrariesByType();
+  void onChanged() {
+    final currentProfile = prefs.activeProfileScopeSuffix();
+    final isOn = _effectiveMergeLibrariesByType();
+    final turnedOff = wasOn && !isOn && currentProfile == profile;
+    profile = currentProfile;
+    wasOn = isOn;
+    if (turnedOff && _getIt.isRegistered<UnifiedCatalogService>()) {
+      unawaited(_getIt<UnifiedCatalogService>().clear());
+    }
+  }
+
+  prefs.addListener(onChanged);
+  _stopWatchingMergedLibraries = () => prefs.removeListener(onChanged);
+}
+
+List<({String serverId, String userId})> _storedAccounts() {
+  final store = _getIt<AuthenticationStore>();
+  return [
+    for (final server in store.getServers())
+      for (final user in store.getUsers(server.id))
+        (serverId: server.id, userId: user.id),
+  ];
 }
 
 SignedInServer? _activeServer() {

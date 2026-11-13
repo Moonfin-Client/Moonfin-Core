@@ -115,6 +115,8 @@ class PlexItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     // A filter Plex can't apply answers with nothing, since ignoring it
     // would show items the filter was meant to leave out.

@@ -31,6 +31,10 @@ class FocusableToolbarButton extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onUpKey;
 
+  /// When false the button dims and ignores presses but still takes focus, so
+  /// D-pad focus isn't lost when the button disables itself on press.
+  final bool enabled;
+
   const FocusableToolbarButton({
     super.key,
     required this.icon,
@@ -44,6 +48,7 @@ class FocusableToolbarButton extends StatefulWidget {
     this.scaleOnFocus = 1.0,
     this.focusNode,
     this.onUpKey,
+    this.enabled = true,
   });
 
   @override
@@ -83,7 +88,9 @@ class _FocusableToolbarButtonState extends State<FocusableToolbarButton>
     }
 
     Widget core = MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor: widget.enabled
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
@@ -95,19 +102,29 @@ class _FocusableToolbarButtonState extends State<FocusableToolbarButton>
             return KeyEventResult.handled;
           }
           if (isActivateKey(event)) {
-            widget.onTap();
+            if (widget.enabled) widget.onTap();
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
         },
-        child: GestureDetector(onTap: widget.onTap, child: content),
+        child: GestureDetector(
+          onTap: widget.enabled ? widget.onTap : null,
+          child: content,
+        ),
       ),
     );
 
     if (widget.tooltip != null) {
       core = Tooltip(message: widget.tooltip!, child: core);
     }
-    return core;
+    // The Semantics node is always in the tree (adding nothing while enabled)
+    // so toggling [enabled] doesn't change the tree shape and drop the
+    // button's focus.
+    return Semantics(
+      button: widget.enabled ? null : true,
+      enabled: widget.enabled ? null : false,
+      child: core,
+    );
   }
 
   Color _backgroundColor() {
@@ -123,8 +140,12 @@ class _FocusableToolbarButtonState extends State<FocusableToolbarButton>
     switch (widget.variant) {
       case ToolbarButtonVariant.invert:
         return focused
-            ? AppColors.black
-            : AppColorScheme.onSurface.withAlpha(widget.unfocusedIconAlpha);
+            ? (widget.enabled ? AppColors.black : AppColors.black.withAlpha(97))
+            : AppColorScheme.onSurface.withAlpha(
+                widget.enabled
+                    ? widget.unfocusedIconAlpha
+                    : widget.unfocusedIconAlpha ~/ 2,
+              );
       case ToolbarButtonVariant.translucent:
         return AppColorScheme.onSurface;
     }

@@ -11,11 +11,15 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 
+import '../../../auth/repositories/session_repository.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/alphabet_bucket.dart';
 import '../../../data/repositories/mdblist_repository.dart';
+import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/unified_catalog_query.dart';
+import '../../../data/services/unified_catalog_service.dart';
 import '../../../data/viewmodels/library_browse_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -44,6 +48,8 @@ import '../detail/playlist_sort_filter_bar.dart';
 import 'library_header_styles.dart';
 import '../../widgets/local_search_field.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
+import '../../widgets/choice_dialog_shell.dart';
+import '../../widgets/unified_server_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 
@@ -149,6 +155,15 @@ class LibraryBrowseScreen extends StatefulWidget {
   final List<String>? includeItemTypes;
   final bool favoritesOnly;
 
+  /// Set when browsing a merged library. [unifiedTitle] supplies its name,
+  /// since no single server has a library to take the name from.
+  final UnifiedLibraryKind? unifiedKind;
+  final String? unifiedTitle;
+
+  /// Set when [genreName] is browsed merged across servers: the library kinds
+  /// the page lists.
+  final List<UnifiedLibraryKind>? unifiedGenreKinds;
+
   /// Set by the settings live preview, which draws the library in this style
   /// with its first card held in focus and leaves the app's backdrop alone.
   final LibraryStyle? previewStyle;
@@ -162,6 +177,9 @@ class LibraryBrowseScreen extends StatefulWidget {
     this.studioName,
     this.includeItemTypes,
     this.favoritesOnly = false,
+    this.unifiedKind,
+    this.unifiedTitle,
+    this.unifiedGenreKinds,
     this.previewStyle,
   });
 
@@ -178,6 +196,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   final _homeButtonFocusNode = FocusNode(debugLabel: 'library_home_button');
   final _sortFocusNode = FocusNode(debugLabel: 'library_sort_button');
   final _dockedPanelScope = FocusScopeNode(debugLabel: 'library_docked_panel');
+  final _catalogRefreshFocusNode = FocusNode(
+    debugLabel: 'library_catalog_refresh',
+  );
+  final _catalogUpdateFocusNode = FocusNode(
+    debugLabel: 'library_catalog_update',
+  );
   Timer? _backdropDebounce;
   bool? _hasSubtitlesCache;
   final _prefs = GetIt.instance<UserPreferences>();
@@ -191,6 +215,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     super.initState();
     final client = GetIt.instance<MediaServerClientFactory>()
         .clientForServerOrActive(widget.serverId);
+    final getIt = GetIt.instance;
+    final isUnified =
+        (widget.unifiedKind != null || widget.unifiedGenreKinds != null) &&
+        getIt.isRegistered<UnifiedCatalogService>();
     _vm = LibraryBrowseViewModel(
       libraryId: widget.libraryId,
       client: client,
@@ -198,9 +226,19 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       genreId: widget.genreId,
       studioName: widget.studioName,
-      overrideName: widget.genreName ?? widget.studioName,
+      overrideName:
+          widget.genreName ?? widget.studioName ?? widget.unifiedTitle,
       includeItemTypes: widget.includeItemTypes,
       favoritesOnly: widget.favoritesOnly,
+      unifiedKind: isUnified ? widget.unifiedKind : null,
+      unifiedGenre: isUnified && widget.unifiedGenreKinds != null
+          ? widget.genreName
+          : null,
+      unifiedGenreKinds: widget.unifiedGenreKinds,
+      unifiedCatalog: isUnified ? getIt<UnifiedCatalogService>() : null,
+      imageApiForServer: isUnified
+          ? getIt<MultiServerRepository>().getImageApiForServer
+          : null,
     );
     _vm.addListener(_onChanged);
     _vm.load();
@@ -259,6 +297,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     _homeButtonFocusNode.dispose();
     _sortFocusNode.dispose();
     _dockedPanelScope.dispose();
+    _catalogRefreshFocusNode.dispose();
+    _catalogUpdateFocusNode.dispose();
     InlineBackInterceptor.remove(_backToAlphabet);
     _allLetterFocusNode.dispose();
     _gridAreaFocusNode.dispose();
@@ -300,6 +340,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       final first = _vm.currentCategoryItems.first;
       _backdropUrl = _backgroundService.backdropUrlsFor(first).firstOrNull;
       _vm.setFocusedItem(first);
+    }
+    // The update button disappears once the update is applied; move focus to
+    // the refresh button so it isn't lost.
+    if (_catalogUpdateFocusNode.hasFocus && !_vm.hasPendingCatalogUpdate) {
+      _catalogRefreshFocusNode.requestFocus();
     }
     if (mounted) setState(() {});
     _maybeBumpGridVersion();
@@ -540,11 +585,26 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       return;
     }
 
+    unawaited(
+      openOnPickedServer(
+        context,
+        item,
+        open: (id, serverId) => _openItem(item, id: id, serverId: serverId),
+        onDismissed: _restoreGridFocusAfterDialog,
+      ),
+    );
+  }
+
+  void _openItem(
+    AggregatedItem item, {
+    required String id,
+    required String serverId,
+  }) {
     context
         .push(
           Destinations.itemOrPhoto(
-            item.id,
-            serverId: item.serverId,
+            id,
+            serverId: serverId,
             type: item.type,
             channelId: item.channelId,
           ),
@@ -555,6 +615,32 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           }
         });
   }
+
+  /// The item id to look up poster badges with. Badges are fetched from the
+  /// active server, so in a merged library only that server's items get them;
+  /// null for items on other servers.
+  String? _posterBadgeItemId(AggregatedItem item) {
+    if (!_vm.isUnifiedBrowse) return item.id;
+    final activeServerId = _activeServerId;
+    return activeServerId != null && item.serverId == activeServerId
+        ? item.id
+        : null;
+  }
+
+  /// Cached once per build for [_posterBadgeItemId], instead of being read
+  /// for every card.
+  String? _activeServerId;
+
+  String? _readActiveServerId() {
+    if (!_vm.isUnifiedBrowse) return null;
+    final getIt = GetIt.instance;
+    return getIt.isRegistered<SessionRepository>()
+        ? getIt<SessionRepository>().activeServerId
+        : null;
+  }
+
+  Widget? _serverCountBadge(AggregatedItem item) =>
+      _vm.isUnifiedBrowse ? unifiedServerCountBadgeFor(item) : null;
 
   double? _displayPlayedPercentage(AggregatedItem item) {
     final server = item.playedPercentage;
@@ -661,7 +747,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
 
   String? _imageUrl(AggregatedItem item, {double? cellWidth}) {
-    final api = _vm.imageApi;
+    final api = _vm.imageApiFor(item);
     final width = cellWidth ?? _cardWidth();
     final posterMaxW = _requestWidthFor(width, ArtworkShape.poster);
     final landscapeMaxW = _requestWidthFor(width, ArtworkShape.landscape);
@@ -918,6 +1004,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   @override
   Widget build(BuildContext context) {
+    _activeServerId = _readActiveServerId();
     Widget screen = QuickReturnWrapper(
       scrollController: _scrollController,
       scrollDirection:
@@ -1038,6 +1125,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             },
       onDisplay: _vm.isMusicBrowse ? null : () => _showSettingsDialog(context),
       onShuffle: _isSongsBrowse ? _shuffleSongsLibrary : null,
+      refresh: _headerRefresh(l10n),
       alphabetApplies: _alphabetApplies,
       alphabetOn: _prefs.get(UserPreferences.showAlphabeticalFilters),
       onToggleAlphabet: () => _prefs.set(
@@ -1167,6 +1255,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             canGroup: _vm.canGroup,
             onSettings: () => _showSettingsDialog(context),
             onShuffle: _isSongsBrowse ? () => _shuffleSongsLibrary() : null,
+            refresh: _headerRefresh(AppLocalizations.of(context)),
             onLetterChanged: (l) => _jumpToLetter(l),
           ),
           Expanded(child: _buildGridArea(context)),
@@ -1392,8 +1481,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         _vm.state == LibraryBrowseState.ready &&
         PlatformDetection.useDesktopUi &&
         !PlatformDetection.isTV;
+    final catalogStrip = _vm.isUnifiedBrowse
+        ? _catalogStrip(AppLocalizations.of(context))
+        : null;
     return Column(
       children: [
+        if (catalogStrip != null && !catalogStrip.isEmpty) catalogStrip,
         if (showHorizChevrons)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
@@ -1425,12 +1518,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           ),
         Expanded(
           child: switch (_vm.state) {
-            LibraryBrowseState.loading => SkeletonLibraryGrid(
-                cardWidth: _cardWidth(),
-                aspectRatio: _gridBaseAspectRatio(),
-                isSongs: _isSongsBrowse,
-                isHorizontal: _vm.scrollDirection == LibraryScrollDirection.horizontal,
-              ),
+            LibraryBrowseState.loading => _buildLoadingSkeleton(),
             LibraryBrowseState.error => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1500,20 +1588,120 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  Widget _buildLoadingSkeleton() => SkeletonLibraryGrid(
+    cardWidth: _cardWidth(),
+    aspectRatio: _gridBaseAspectRatio(),
+    isSongs: _isSongsBrowse,
+    isHorizontal: _vm.scrollDirection == LibraryScrollDirection.horizontal,
+  );
+
   Widget _buildGrid() {
     if (_vm.items.isEmpty) {
-      return Center(
+      // The catalog is still syncing and has no titles yet: show the skeleton,
+      // not the empty state. A filter that matches nothing falls through.
+      if (!_vm.catalogHasTitles && _vm.isCatalogSyncing) {
+        return _buildLoadingSkeleton();
+      }
+      final empty = Center(
         child: Text(
           AppLocalizations.of(context).noItemsFound,
           style: const TextStyle(color: Colors.white70),
         ),
       );
+      if (!_pullToRefreshEnabled) return empty;
+      // RefreshIndicator only works around a scrollable.
+      return RefreshIndicator(
+        onRefresh: _vm.refreshCatalog,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(height: constraints.maxHeight, child: empty),
+          ),
+        ),
+      );
     }
 
-    if (_vm.scrollDirection == LibraryScrollDirection.horizontal) {
-      return _buildHorizontalGrid();
+    final grid = _vm.scrollDirection == LibraryScrollDirection.horizontal
+        ? _buildHorizontalGrid()
+        : _buildVerticalGrid();
+    // Wrapping a horizontal grid is harmless: RefreshIndicator ignores
+    // sideways scrolling.
+    if (!_pullToRefreshEnabled) return grid;
+    return RefreshIndicator(onRefresh: _vm.refreshCatalog, child: grid);
+  }
+
+  /// Pull-to-refresh is offered only for a merged library on the mobile UI.
+  bool get _pullToRefreshEnabled =>
+      _vm.isUnifiedBrowse && PlatformDetection.useMobileUi;
+
+  /// Keeps a merged library's grid scrollable on mobile even when its cards
+  /// don't fill the page, so pull-to-refresh still works.
+  ScrollPhysics? get _gridScrollPhysics =>
+      _pullToRefreshEnabled ? const AlwaysScrollableScrollPhysics() : null;
+
+  LibraryHeaderRefresh? _headerRefresh(AppLocalizations l10n) {
+    if (!_vm.isUnifiedBrowse) return null;
+    final syncing = _vm.isCatalogSyncing;
+    final total = _vm.catalogServersTotal;
+    final done = _vm.catalogServersUpToDate;
+    return LibraryHeaderRefresh(
+      focusNode: _catalogRefreshFocusNode,
+      onRefresh: () => unawaited(_vm.refreshCatalog()),
+      busy: syncing,
+      // Hidden until the first titles arrive; the strip under the header
+      // shows the full sync line instead.
+      showProgress: syncing && _vm.catalogHasTitles,
+      progressText: total == 0
+          ? null
+          : l10n.unifiedCatalogSyncProgress(done, total),
+      progressSemanticsLabel: total == 0
+          ? l10n.syncing
+          : l10n.unifiedCatalogServersUpToDate(done, total),
+    );
+  }
+
+  LibraryCatalogStrip _catalogStrip(AppLocalizations l10n) {
+    final refresh = _headerRefresh(l10n)!;
+    final total = _vm.catalogServersTotal;
+    // Until the first titles arrive the strip shows the full sync line. The
+    // docked panel has no room for the progress numbers, so the strip shows
+    // them for it as well.
+    final awaitingFirstTitles = refresh.busy && !_vm.catalogHasTitles;
+    final showProgressInStrip =
+        awaitingFirstTitles || (refresh.busy && _usesDockedPanel);
+    return LibraryCatalogStrip(
+      updateFocusNode: _catalogUpdateFocusNode,
+      onKeyEvent: _onCatalogStripKey,
+      horizontalPadding: _isCompact(context) ? 16.0 : _horizontalPadding,
+      progressSemanticsLabel: showProgressInStrip
+          ? refresh.progressSemanticsLabel
+          : null,
+      progressText: awaitingFirstTitles && total > 0
+          ? l10n.unifiedCatalogSyncingServers(
+              _vm.catalogServersUpToDate,
+              total,
+            )
+          : refresh.progressText,
+      unreachableServerCount: _vm.catalogUnreachableServerCount,
+      onUpdate: _vm.hasPendingCatalogUpdate
+          ? () => unawaited(_vm.applyCatalogUpdate())
+          : null,
+    );
+  }
+
+  /// The header and grid hand focus to each other by explicit FocusNode, so
+  /// the strip must do the same.
+  KeyEventResult _onCatalogStripKey(FocusNode node, KeyEvent event) {
+    if (!event.isActionable) return KeyEventResult.ignored;
+    if (event.logicalKey.isUpKey) {
+      _focusHeaderFromBelow();
+      return KeyEventResult.handled;
     }
-    return _buildVerticalGrid();
+    if (event.logicalKey.isDownKey) {
+      _focusDockedGrid();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   Widget _buildVerticalGrid() {
@@ -1700,6 +1888,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
           return CustomScrollView(
             controller: _scrollController,
+            physics: _gridScrollPhysics,
             scrollCacheExtent: _gridScrollCacheExtent(
               cellExtent: cellHeight,
               spacing: rowSpacing,
@@ -1713,6 +1902,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
         final verticalScrollView = CustomScrollView(
           controller: _scrollController,
+          physics: _gridScrollPhysics,
           scrollCacheExtent: _gridScrollCacheExtent(
             cellExtent: cellHeight,
             spacing: rowSpacing,
@@ -1784,7 +1974,18 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   /// The alphabet bar sits directly above the grid, so it takes focus from the
   /// top row, and the header button covers a page that shows no bar. Nothing
   /// sits above the grid in Docked, so the panel takes it there.
+  ///
+  /// In a merged library the update button takes focus first while it is
+  /// shown.
   void _focusAboveGrid() {
+    if (_catalogUpdateFocusNode.context?.mounted ?? false) {
+      _catalogUpdateFocusNode.requestFocus();
+    } else {
+      _focusHeaderFromBelow();
+    }
+  }
+
+  void _focusHeaderFromBelow() {
     if (_usesDockedPanel) {
       _focusDockedPanel();
     } else if (_alphabetBarShown) {
@@ -1825,11 +2026,15 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final isGrouped =
         (_vm.isPlaylistBrowse && _vm.groupByType) || _vm.isGrouping;
 
+    final badgeItemId = _posterBadgeItemId(item);
+    final serverCountBadge = _serverCountBadge(item);
+
     Widget card(BuildContext? revealContext) {
       return MediaCard(
-        animeMarkerItemId: item.id,
-        posterBadgeItemId: item.id,
-        recordingItemId: item.id,
+        animeMarkerItemId: badgeItemId,
+        posterBadgeItemId: badgeItemId,
+        recordingItemId: badgeItemId,
+        bottomLeftBadge: serverCountBadge,
         title: item.name,
         subtitle: _cardSubtitle(item),
         showLabel: _showCardTitles,
@@ -2103,9 +2308,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                       // what tells the sliver where the list ends.
                       if (index >= items.length) return null;
                       final item = items[index];
+                      final badgeItemId = _posterBadgeItemId(item);
                       return MediaCard(
-                        posterBadgeItemId: item.id,
-                        recordingItemId: item.id,
+                        posterBadgeItemId: badgeItemId,
+                        recordingItemId: badgeItemId,
+                        bottomLeftBadge: _serverCountBadge(item),
                         title: item.name,
                         subtitle: _cardSubtitle(item),
                         showLabel: _showCardTitles,
@@ -2292,6 +2499,7 @@ class _LibraryHeader extends StatelessWidget {
   final VoidCallback onSort;
   final VoidCallback onSettings;
   final VoidCallback? onShuffle;
+  final LibraryHeaderRefresh? refresh;
   final ValueChanged<String> onLetterChanged;
   final FocusNode? homeFocusNode;
   final KeyEventResult Function(FocusNode, KeyEvent)? onTvSearchKey;
@@ -2321,6 +2529,7 @@ class _LibraryHeader extends StatelessWidget {
     required this.onSort,
     required this.onSettings,
     this.onShuffle,
+    this.refresh,
     required this.onLetterChanged,
     this.searchController,
     this.searchFocusNode,
@@ -2422,6 +2631,17 @@ class _LibraryHeader extends StatelessWidget {
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: onSettings,
+                  onUpKey: _focusSearch,
+                ),
+              ],
+              if (refresh != null) ...[
+                SizedBox(width: 2 * desktopScale),
+                LibraryRefreshAction(
+                  refresh: refresh!,
+                  size: 30 * desktopScale,
+                  iconSize: 20 * desktopScale,
+                  scale: desktopScale,
+                  unfocusedIconAlpha: 128,
                   onUpKey: _focusSearch,
                 ),
               ],
@@ -3807,13 +4027,7 @@ class _GroupByDialogState extends State<_GroupByDialog> {
   Widget build(BuildContext context) {
     final vm = widget.vm;
     final l10n = AppLocalizations.of(context);
-    final surfaceColor = AppColorScheme.surface.withValues(alpha: 0.92);
     final onSurface = AppColorScheme.onSurface;
-    final dividerColor = onSurface.withValues(alpha: 0.12);
-    final dialogWidth = (MediaQuery.sizeOf(context).width - 32).clamp(
-      280.0,
-      360.0,
-    );
 
     const options = [
       LibraryGroupBy.none,
@@ -3823,46 +4037,22 @@ class _GroupByDialogState extends State<_GroupByDialog> {
       LibraryGroupBy.studio,
     ];
 
-    return Dialog(
-      backgroundColor: surfaceColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: AppRadius.circular(20),
-        side: ThemeRegistry.active.borders.chipBorder.copyWith(
-          color: onSurface.withValues(alpha: 0.18),
-        ),
-      ),
-      child: SizedBox(
-        width: dialogWidth,
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                l10n.groupByTitle,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: onSurface,
-                ),
-              ),
-            ),
-            Divider(color: dividerColor),
-            for (final opt in options)
-              _DialogRadioTile(
-                label: _groupByLabel(opt, l10n),
-                selected: vm.groupBy == opt,
-                onTap: () {
-                  vm.setGroupBy(opt);
-                  Navigator.of(context).pop();
-                },
-                accent: _jellyfinBlue,
-                onSurface: onSurface,
-              ),
-          ],
-        ),
-      ),
+    return ChoiceDialogShell(
+      title: l10n.groupByTitle,
+      maxWidth: 360,
+      children: [
+        for (final opt in options)
+          _DialogRadioTile(
+            label: _groupByLabel(opt, l10n),
+            selected: vm.groupBy == opt,
+            onTap: () {
+              vm.setGroupBy(opt);
+              Navigator.of(context).pop();
+            },
+            accent: _jellyfinBlue,
+            onSurface: onSurface,
+          ),
+      ],
     );
   }
 }

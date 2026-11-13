@@ -10,6 +10,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../auth/repositories/session_repository.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../../data/repositories/multi_server_repository.dart';
@@ -19,6 +20,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/recent_searches_store.dart';
 import '../../../data/services/remote_search_session.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../data/services/unified_catalog_service.dart';
 import '../../../data/services/voice_search_controller.dart';
 import '../../../data/viewmodels/search_view_model.dart';
 import '../../../preference/preference_constants.dart';
@@ -35,7 +37,6 @@ import '../../util/error_message.dart';
 import '../../util/search_group_title_localizer.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
 import '../../../util/focus/row_focus_coordinator.dart';
-import '../../theme/app_theme_controller.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_badge.dart';
@@ -45,6 +46,7 @@ import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/sliding_pill_tabs.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
+import '../../widgets/unified_server_picker.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
@@ -134,6 +136,13 @@ class _SearchScreenState extends State<SearchScreen>
           : null,
       pluginSync: getIt.isRegistered<PluginSyncService>()
           ? getIt<PluginSyncService>()
+          : null,
+      mergeSharedTitles: _userPreferences.effectiveMergeLibrariesByType,
+      unifiedCatalog: getIt.isRegistered<UnifiedCatalogService>()
+          ? getIt<UnifiedCatalogService>()
+          : null,
+      activeServerId: () => getIt.isRegistered<SessionRepository>()
+          ? getIt<SessionRepository>().activeServerId
           : null,
     );
     _vm.addListener(_onViewModelChanged);
@@ -1585,7 +1594,12 @@ class _SearchScreenState extends State<SearchScreen>
       MediaQuery.devicePixelRatioOf(context),
       ArtworkShape.forAspectRatio(ar),
     );
-    final serverName = _vm.serverNameFor(item);
+    // A title on several servers gets the server-count badge instead of a
+    // single server's name.
+    final serverCountBadge = unifiedServerCountBadgeFor(item);
+    final serverName = serverCountBadge != null
+        ? null
+        : _vm.serverNameFor(item);
     // A person's round portrait would clip the badge, so their server goes on
     // the line under the name instead.
     final serverOnSubtitle = serverName != null && item.type == 'Person';
@@ -1595,6 +1609,7 @@ class _SearchScreenState extends State<SearchScreen>
       title: item.name,
       subtitle: serverOnSubtitle ? serverName : _subtitle(item),
       imageUrl: _imageUrl(item, maxWidth: requestWidth),
+      bottomLeftBadge: serverCountBadge,
       imageOverlays: [
         if (serverName != null && !serverOnSubtitle)
           Positioned(
@@ -1622,11 +1637,10 @@ class _SearchScreenState extends State<SearchScreen>
           : (node, event) {
               if (event.isActionable && _isPlayKey(event.logicalKey)) {
                 if (event is KeyDownEvent) {
-                  context.push(
-                    Destinations.item(
-                      item.id,
-                      serverId: item.serverId,
-                      autoPlay: true,
+                  _openOnPickedServer(
+                    item,
+                    (id, serverId) => context.push(
+                      Destinations.item(id, serverId: serverId, autoPlay: true),
                     ),
                   );
                 }
@@ -1634,12 +1648,15 @@ class _SearchScreenState extends State<SearchScreen>
               }
               return onNavKey(node, event);
             },
-      onTap: () => context.push(
-        Destinations.itemOrPhoto(
-          item.id,
-          serverId: item.serverId,
-          type: item.type,
-          channelId: item.channelId,
+      onTap: () => _openOnPickedServer(
+        item,
+        (id, serverId) => context.push(
+          Destinations.itemOrPhoto(
+            id,
+            serverId: serverId,
+            type: item.type,
+            channelId: item.channelId,
+          ),
         ),
       ),
       onLongPress: () => showContextMenu(
@@ -1650,6 +1667,37 @@ class _SearchScreenState extends State<SearchScreen>
         },
       ),
     );
+  }
+
+  void _openOnPickedServer(
+    AggregatedItem item,
+    void Function(String id, String serverId) open,
+  ) {
+    final opener = FocusManager.instance.primaryFocus;
+    unawaited(
+      openOnPickedServer(
+        context,
+        item,
+        open: open,
+        onDismissed: () => _restoreFocusAfterServerPicker(opener),
+      ),
+    );
+  }
+
+  /// Returns focus to the card that opened the server picker. If the results
+  /// changed and that card is gone, focus goes to the last focused card, or
+  /// failing that to the tabs.
+  void _restoreFocusAfterServerPicker(FocusNode? opener) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      restoreGridFocusIfNeeded();
+      if (opener?.context != null) return;
+      final focus = FocusManager.instance.primaryFocus;
+      if ((focus == null || focus is FocusScopeNode) &&
+          _tabsFocusNode.context != null) {
+        _tabsFocusNode.requestFocus();
+      }
+    });
   }
 
   // Shared Seerr card body, used by both the grid and the All-tab rows.
@@ -1873,26 +1921,8 @@ class _ServerBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColorScheme.scrim.withValues(alpha: 0.75),
-        borderRadius: AppRadius.circular(4),
-        boxShadow: kMediaBadgeShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Text(
-          name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: AppColorScheme.onBadge,
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+    return MediaLabelBadge(
+      child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
     );
   }
 }

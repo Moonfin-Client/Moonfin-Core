@@ -13,9 +13,12 @@ import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/lyrics.dart';
 import '../models/tmdb_item_ref.dart';
+import '../offline/offline_errors.dart';
 import '../services/blocked_content_gate.dart';
+import '../services/media_server_client_factory.dart';
 import '../services/row_data_source.dart';
 import '../services/series_track_sync.dart';
+import '../services/unified_catalog_service.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
@@ -1053,7 +1056,20 @@ class ItemDetailViewModel extends ChangeNotifier {
         _seriesBooks = series.books;
         _item = series.series;
       } else {
-        final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
+        final Map<String, dynamic> data;
+        try {
+          data = await _client.itemsApi.getItem(
+            itemId,
+            mediaSourceId: mediaSourceId,
+          );
+        } on DioException catch (e) {
+          // Offline, the 404 is the downloads catalog saying the title isn't
+          // downloaded, not its server saying it is gone.
+          if (e.response?.statusCode == 404 && !isFabricatedOfflineError(e)) {
+            _removeDeletedItemFromCatalog();
+          }
+          rethrow;
+        }
         final candidate = AggregatedItem(
           id: itemId,
           serverId: _serverId ?? _client.baseUrl,
@@ -1091,6 +1107,24 @@ class ItemDetailViewModel extends ChangeNotifier {
       _state = ItemDetailState.error;
       notifyListeners();
     }
+  }
+
+  /// The item was deleted since the merged catalog last read its server, so
+  /// its row is removed now. Only when `_client` is the item's own server
+  /// client; the fallback active client returns 404 for any foreign id.
+  void _removeDeletedItemFromCatalog() {
+    final serverId = _serverId;
+    final getIt = GetIt.instance;
+    if (serverId == null ||
+        !getIt.isRegistered<UnifiedCatalogService>() ||
+        !getIt.isRegistered<MediaServerClientFactory>() ||
+        !identical(
+          getIt<MediaServerClientFactory>().getClientIfExists(serverId),
+          _client,
+        )) {
+      return;
+    }
+    unawaited(getIt<UnifiedCatalogService>().removeCopy(serverId, itemId));
   }
 
   static const _probedSourceTypes = {

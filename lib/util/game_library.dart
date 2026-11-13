@@ -96,7 +96,12 @@ String libraryRoute(
   String? collectionType,
   String name, {
   String? serverId,
+  String? unifiedKindName,
 }) {
+  // A merged tile has no library of its own to open.
+  if (unifiedKindName != null) {
+    return Destinations.unifiedLibrary(unifiedKindName);
+  }
   if (isGameLibrary(id, collectionType, name)) {
     return '${Destinations.gamesLibrary(id)}?title=${Uri.encodeQueryComponent(name)}';
   }

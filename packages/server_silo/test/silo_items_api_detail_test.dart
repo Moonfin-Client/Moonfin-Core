@@ -136,6 +136,29 @@ void main() {
         _xxx,
       ]);
     });
+
+    test('the user data and image switches change nothing asked', () async {
+      FixtureServer movie() => FixtureServer({
+        '/api/v2/catalog/items/$_xxx': FixtureServer.file(
+          'silo/catalog_item_movie.json',
+        ),
+      });
+      final plain = movie();
+      final light = movie();
+
+      final a = await siloTestClient(plain).itemsApi.getItems(ids: [_xxx]);
+      final b = await siloTestClient(light).itemsApi.getItems(
+        ids: [_xxx],
+        enableUserData: false,
+        enableImages: false,
+      );
+
+      expect(
+        light.requests.map((r) => r.uri),
+        plain.requests.map((r) => r.uri),
+      );
+      expect(b, a);
+    });
   });
 
   group('one page, one read (perf)', () {

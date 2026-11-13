@@ -54,6 +54,9 @@ Future<Map<String, dynamic>> loadVisibleUserViews(
   MediaServerClient client,
 ) async {
   final viewsFuture = client.userViewsApi.getUserViews(includeHidden: true);
+  // It is awaited below. A server that is down fails this before then, with
+  // nobody listening yet, and that would be reported as an unhandled error.
+  viewsFuture.ignore();
   final excludes = await _excludesFrom(client.usersApi.getUserConfiguration());
   final response = await viewsFuture;
 

@@ -35,6 +35,13 @@ class UserDataSync extends ChangeNotifier {
   int get revision => _revision;
   int revisionFor(String itemId) => _itemRevisions[itemId] ?? 0;
 
+  /// The ids of the items that changed after [revision].
+  List<String> changedSince(int revision) => [
+    for (final MapEntry(key: itemId, value: changedAt)
+        in _itemRevisions.entries)
+      if (changedAt > revision) itemId,
+  ];
+
   /// Bumped by [reset], so work queued for one user can tell it is stale.
   int get session => _session;
   int _session = 0;

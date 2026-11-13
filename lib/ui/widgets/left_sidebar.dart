@@ -31,6 +31,7 @@ import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
 import '../navigation/route_lifecycle_observer.dart';
+import '../util/nav_libraries.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
 import '../screens/downloads/downloads_panel.dart';
@@ -342,18 +343,10 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
             )
           : libs;
 
-      if (mounted && !_librariesEqual(_libraries, filtered)) {
+      if (mounted && !sameNavLibraries(_libraries, filtered)) {
         setState(() => _libraries = filtered);
       }
     } catch (_) {}
-  }
-
-  bool _librariesEqual(List<AggregatedLibrary> a, List<AggregatedLibrary> b) {
-    if (a.length != b.length) return false;
-    for (int i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id) return false;
-    }
-    return true;
   }
 
   // Kids Mode sends /live-tv back to home, so the guide button would only be a
@@ -451,6 +444,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
         lib.collectionType,
         lib.name,
         serverId: lib.serverId,
+        unifiedKindName: lib.unifiedKindName,
       ),
     );
   }

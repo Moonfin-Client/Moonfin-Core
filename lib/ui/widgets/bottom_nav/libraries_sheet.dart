@@ -37,6 +37,7 @@ Future<void> showBottomNavLibrariesSheet({
             lib.collectionType,
             lib.name,
             serverId: lib.serverId,
+            unifiedKindName: lib.unifiedKindName,
           ),
         );
       },

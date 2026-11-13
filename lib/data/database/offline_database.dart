@@ -67,12 +67,58 @@ class AutoDownloadSubscriptions extends Table {
   Set<Column> get primaryKey => {seriesId, serverId, userId};
 }
 
-@DriftDatabase(tables: [DownloadedItems, AutoDownloadSubscriptions])
+/// One movie or series as one server account lists it: a cache the merged
+/// libraries sort, filter and page from without asking every server.
+class CatalogEntries extends Table {
+  TextColumn get serverId => text()();
+  TextColumn get userId => text()();
+  TextColumn get itemId => text()();
+
+  /// `Movie` or `Series`.
+  TextColumn get kind => text()();
+
+  /// The item as the server sent it, with the fields the grid shows.
+  TextColumn get metadataJson => text()();
+
+  @override
+  Set<Column> get primaryKey => {serverId, userId, itemId};
+}
+
+/// What the last sync recorded about one server account's movies or series.
+class CatalogSyncStates extends Table {
+  TextColumn get serverId => text()();
+  TextColumn get userId => text()();
+  TextColumn get kind => text()();
+
+  /// When the server last confirmed the rows, by a count check or a full read.
+  DateTimeColumn get lastSyncedAt => dateTime()();
+
+  IntColumn get itemCount => integer().withDefault(const Constant(0))();
+
+  /// The server's total when the rows last matched it. Null has the next check
+  /// list the server's ids instead of comparing counts.
+  IntColumn get serverTotal => integer().nullable()();
+
+  /// When every row was last read again in full. Null until one has been.
+  DateTimeColumn get lastFullSyncAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {serverId, userId, kind};
+}
+
+@DriftDatabase(
+  tables: [
+    DownloadedItems,
+    AutoDownloadSubscriptions,
+    CatalogEntries,
+    CatalogSyncStates,
+  ],
+)
 class OfflineDatabase extends _$OfflineDatabase {
   OfflineDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -83,6 +129,10 @@ class OfflineDatabase extends _$OfflineDatabase {
           () => m.addColumn(downloadedItems, downloadedItems.downloadSource),
         );
         await _tolerateExisting(() => m.createTable(autoDownloadSubscriptions));
+      }
+      if (from < 3) {
+        await _tolerateExisting(() => m.createTable(catalogEntries));
+        await _tolerateExisting(() => m.createTable(catalogSyncStates));
       }
     },
   );

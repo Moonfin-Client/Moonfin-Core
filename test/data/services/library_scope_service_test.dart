@@ -196,6 +196,51 @@ void main() {
       expect(kept.map((l) => l.id), ['shown']);
     });
 
+    AggregatedLibrary merged(List<String> ids) => AggregatedLibrary.merged(
+      name: 'Movies',
+      unifiedKindName: 'movies',
+      libraries: [for (final id in ids) _library(id, 'movies')],
+    );
+
+    test('a merged tile stays when the library it drew its artwork from is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'first'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second', 'third']),
+      ]);
+
+      expect(kept.single.unifiedKindName, 'movies');
+      expect(kept.single.name, 'Movies');
+      // The artwork comes from the first library still shown.
+      expect(kept.single.id, 'second');
+      expect(kept.single.mergedFrom.map((l) => l.id), ['second', 'third']);
+    });
+
+    test('a merged tile keeps its artwork when a later library is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'second'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second']),
+      ]);
+      expect(kept.single.id, 'first');
+    });
+
+    test('a merged tile is removed once every library it stands for is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'first', 'second'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second']),
+        _library('shown', 'music'),
+      ]);
+      expect(kept.map((l) => l.id), ['shown']);
+    });
+
     test('keeps everything when the excludes cant be read', () async {
       when(() => views.getMyMediaExcludes()).thenThrow(Exception('offline'));
       final libraries = [_library('a', 'movies')];

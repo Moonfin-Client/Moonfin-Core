@@ -6,6 +6,7 @@ class _LibrariesCategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.libraries)),
       body: ListView(
@@ -33,6 +34,21 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 subtitle: l10n.showLibrariesFromAllServers,
                 icon: Icons.dns,
                 onChanged: _pushPersonalizationSync,
+              ),
+              // Rebuild on preference changes so this tile's enabled state
+              // follows the switch above, which writes through its own
+              // binding.
+              ListenableBuilder(
+                listenable: prefs,
+                builder: (context, _) => SwitchPreferenceTile(
+                  preference: UserPreferences.mergeLibrariesByType,
+                  title: l10n.mergeLibrariesByType,
+                  subtitle: l10n.mergeLibrariesByTypeDescription,
+                  icon: Icons.merge_type,
+                  enabled: prefs.get(
+                    UserPreferences.enableMultiServerLibraries,
+                  ),
+                ),
               ),
               SwitchPreferenceTile(
                 preference: UserPreferences.showBookDiscoverTab,
@@ -176,3 +192,7 @@ class _LibrariesCategoryScreen extends StatelessWidget {
     );
   }
 }
+
+/// The page is otherwise only reachable inside the panel's private navigator.
+@visibleForTesting
+Widget librariesSettingsScreenForTesting() => const _LibrariesCategoryScreen();

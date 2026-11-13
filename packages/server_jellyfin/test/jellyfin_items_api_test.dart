@@ -217,6 +217,46 @@ void main() {
     expect(request?.path, '/Items/Latest');
   });
 
+  test('a light items request turns user data and images off', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+    final api = JellyfinItemsApi(dio, () => 'user-1');
+
+    await api.getItems(enableUserData: false, enableImages: false);
+    expect(request?.queryParameters['EnableUserData'], isFalse);
+    expect(request?.queryParameters['EnableImages'], isFalse);
+
+    await api.getItems(enableUserData: true, enableImages: true);
+    expect(request?.queryParameters['EnableUserData'], isTrue);
+    expect(request?.queryParameters['EnableImages'], isTrue);
+  });
+
+  test('an items request leaves user data and images to the server', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(dio, () => 'user-1').getItems(parentId: 'lib-1');
+
+    expect(request?.queryParameters.containsKey('EnableUserData'), isFalse);
+    expect(request?.queryParameters.containsKey('EnableImages'), isFalse);
+  });
+
   test('a new playlist is made private', () async {
     RequestOptions? request;
     final dio = Dio()

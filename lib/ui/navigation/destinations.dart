@@ -77,6 +77,8 @@ class Destinations {
 
   // Browsing
   static const libraryBrowse = '/library/:libraryId';
+  static const unifiedLibraryBrowse = '/unified/:kind';
+  static const unifiedGenreBrowse = '/unified-genre/:genreName';
   static const allGenres = '/genres';
   static const allFavorites = '/favorites';
 
@@ -174,6 +176,9 @@ class Destinations {
   static const seerrMediaDetail = '/seerr/media/:itemId';
   static const seerrPersonDetail = '/seerr/person/:personId';
   static const seerrCollectionDetail = '/seerr/collection/:collectionId';
+
+  /// [kindName] is a `UnifiedLibraryKind` name.
+  static String unifiedLibrary(String kindName) => '/unified/$kindName';
 
   static String library(
     String libraryId, {
@@ -277,6 +282,13 @@ class Destinations {
       if (!hardwareRenderingEnabled) 'hw=0',
     ];
     return '$base?${params.join('&')}';
+  }
+
+  /// A genre merged across servers. [kindName] is a `UnifiedLibraryKind`
+  /// name; without one the page lists movies and series together.
+  static String unifiedGenre(String genreName, {String? kindName}) {
+    final base = '/unified-genre/${Uri.encodeComponent(genreName)}';
+    return kindName == null ? base : '$base?kind=$kindName';
   }
 
   static String genre(

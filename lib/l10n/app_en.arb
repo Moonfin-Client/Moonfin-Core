@@ -6378,6 +6378,98 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "mergeLibrariesByType": "Merge Movie and TV Show Libraries",
+  "@mergeLibrariesByType": {
+    "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+  },
+  "mergeLibrariesByTypeDescription": "With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.",
+  "@mergeLibrariesByTypeDescription": {
+    "description": "Description for the setting that merges movie and series libraries across servers"
+  },
+  "unifiedServerCountLabel": "{count, plural, other{On {count} servers}}",
+  "@unifiedServerCountLabel": {
+    "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many different servers hold it and is always 2 or more",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unifiedCopyLoadingDetails": "Loading details...",
+  "@unifiedCopyLoadingDetails": {
+    "description": "Shown under a server's name, when choosing which server to open a title from, while that server's copy (resolution, audio, size) is being read"
+  },
+  "unifiedCopyDetailsUnavailable": "Details unavailable",
+  "@unifiedCopyDetailsUnavailable": {
+    "description": "Shown under a server's name, when choosing which server to open a title from, when the server didn't answer with what its copy is. Keep it short, it shows as one small line"
+  },
+  "unifiedCopySubtitles": "Subtitles: {languages}",
+  "@unifiedCopySubtitles": {
+    "description": "The subtitle languages of one server's copy of a title, in a one line summary of that copy. languages is a comma separated list of language names",
+    "placeholders": {
+      "languages": {
+        "type": "String"
+      }
+    }
+  },
+  "unifiedCopiesNotChanged": "Not changed on {servers}",
+  "@unifiedCopiesNotChanged": {
+    "description": "Message shown after marking a title watched, unwatched or favorite in a library merged across servers, when the change could not be made on some of the servers that hold the title. servers is a comma separated list of server names",
+    "placeholders": {
+      "servers": {
+        "type": "String"
+      }
+    }
+  },
+  "unifiedCatalogSyncingServers": "Syncing servers... {done}/{total}",
+  "@unifiedCatalogSyncingServers": {
+    "description": "Shown above the placeholder cards of a library merged across servers while it has nothing to show yet because the servers are still being read. done is how many servers have been read, total how many there are",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "unifiedCatalogSyncProgress": "{done}/{total}",
+  "@unifiedCatalogSyncProgress": {
+    "description": "Shown beside a small spinner next to the Refresh button of a library merged across servers while its servers are read in the background: how many are up to date out of how many there are. It has no words and exists so a language can order or separate the two numbers its own way. Keep it as short as the two numbers",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "unifiedCatalogServersUpToDate": "{done} of {total} servers up to date",
+  "@unifiedCatalogServersUpToDate": {
+    "description": "Accessibility label of the background read progress of a library merged across servers",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "unifiedCatalogServersUnreachable": "{count, plural, =1{1 server unreachable} other{{count} servers unreachable}}",
+  "@unifiedCatalogServersUnreachable": {
+    "description": "Small warning above a library merged across servers when some servers could not be read, so their titles may be missing or out of date. Keep it short, it shows as one small line",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unifiedCatalogChanged": "Library changed",
+  "@unifiedCatalogChanged": {
+    "description": "Status text of a small button above a library merged across servers, shown when titles were added or removed on a server since the list on screen was built. The button's action word, Update, follows it, and pressing it rebuilds the list in place. Keep it short"
+  },
   "recentlyAddedAndReleased": "Recently Added and Released",
   "@recentlyAddedAndReleased": {
     "description": "Section title for Recently Added and Recently Released home row settings"
