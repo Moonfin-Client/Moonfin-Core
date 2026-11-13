@@ -1009,8 +1009,8 @@ verify_bundled_video_decoders() {
     return 1
   fi
   if ! command -v python3 >/dev/null 2>&1; then
-    echo "Warning: python3 not found; could not check $(basename "$avcodec") for HEVC and H.264 decoders." >&2
-    return 0
+    echo "Error: python3 is required to check $(basename "$avcodec") for HEVC and H.264 decoders." >&2
+    return 1
   fi
 
   local status=0
@@ -1044,19 +1044,24 @@ build_rpm() {
   local rpm_dir="$TEMP_DIR/rpm"
   local spec_file="$rpm_dir/moonfin.spec"
 
-  rm -rf "$rpm_dir"
-  mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
-  create_desktop_file "$rpm_dir"
-  create_metainfo_file "$rpm_dir" "$version"
+  # "all" runs this as build_rpm || true, which turns set -e off in here, so
+  # every step below stops explicitly rather than package an incomplete RPM.
+  if ! rm -rf "$rpm_dir" \
+    || ! mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS} \
+    || ! create_desktop_file "$rpm_dir" \
+    || ! create_metainfo_file "$rpm_dir" "$version"; then
+    echo "Error: could not prepare the RPM build tree in $rpm_dir." >&2
+    return 1
+  fi
 
   # Bundle libmpv and its FFmpeg like the deb does. Fedora's own mpv-libs is
   # built against ffmpeg-free, which has no HEVC decoder, so leaning on it
   # leaves HEVC files with sound and a black screen.
   local stage_dir="$rpm_dir/stage"
-  mkdir -p "$stage_dir"
-  cp -r "$BUILD_DIR"/* "$stage_dir/"
-  # "all" runs this as build_rpm || true, which turns set -e off in here, so
-  # stop explicitly rather than package an RPM without its libraries.
+  if ! mkdir -p "$stage_dir" || ! cp -r "$BUILD_DIR"/* "$stage_dir/"; then
+    echo "Error: could not stage the Flutter bundle for the RPM." >&2
+    return 1
+  fi
   if ! inject_linux_runtime_libs "$stage_dir"; then
     echo "Error: could not bundle runtime libraries for the RPM." >&2
     return 1
@@ -1071,7 +1076,7 @@ build_rpm() {
   bundled_sonames="$(find "$stage_dir/lib" -maxdepth 1 -name '*.so*' -printf '%f\n' 2>/dev/null \
     | sed 's/[.]so.*$/.so/' | sort -u | sed 's/[.]/[.]/g; s/[+]/[+]/g' | paste -sd'|' -)"
 
-  cat > "$spec_file" << EOF
+  if ! cat > "$spec_file" << EOF
 %global __provides_exclude_from ^/usr/lib/moonfin/.*\$
 %global __requires_exclude ^(${bundled_sonames:-moonfin-none})
 # Flutter's plugin libraries carry the build tree's ephemeral folder as a
@@ -1128,8 +1133,12 @@ fi
 * $(date '+%a %b %d %Y') Moonfin Team <support@moonfin.dev>
 - Release ${version}
 EOF
+  then
+    echo "Error: could not write $spec_file." >&2
+    return 1
+  fi
 
-  cd "$rpm_dir"
+  cd "$rpm_dir" || return 1
   rpmbuild --define "_topdir $rpm_dir" -bb "$spec_file" || true
   local rpm_file=$(find "$rpm_dir/RPMS" -name "*.rpm" 2>/dev/null | head -1)
   if [ -n "$rpm_file" ]; then
@@ -1144,8 +1153,14 @@ EOF
       printf '%s\n' "$leaked" | sed 's/^/  /' >&2
       return 1
     fi
-    cp "$rpm_file" "$REPO_ROOT/$rpm_name"
+    if ! cp "$rpm_file" "$REPO_ROOT/$rpm_name"; then
+      echo "Error: could not copy the RPM to $REPO_ROOT/$rpm_name." >&2
+      return 1
+    fi
     echo "✓ Created: $REPO_ROOT/$rpm_name"
+  else
+    echo "Error: rpmbuild produced no package in $rpm_dir/RPMS." >&2
+    return 1
   fi
 }
 
