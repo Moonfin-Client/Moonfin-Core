@@ -8126,7 +8126,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
         );
       // The local queue would start the next item on this device.
-      case TransportAction.next || TransportAction.previous:
+      case TransportAction.next ||
+          TransportAction.nextAsFinished ||
+          TransportAction.previous:
         break;
       case TransportAction.stop:
         return false;

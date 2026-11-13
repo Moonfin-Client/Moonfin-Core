@@ -298,7 +298,7 @@ void main() {
   });
 
   test(
-    'intercepted nextInQueueAsFinished closes outgoing item as finished when coordinator switches via playItems',
+    'nextInQueueAsFinished dispatches TransportAction.nextAsFinished and leaves unrelated playItems unfinished',
     () async {
       manager = managerWith();
       await manager.playItems(<dynamic>[
@@ -308,44 +308,40 @@ void main() {
       backend.currentDuration = end;
       backend.emitPosition(credits);
 
-      var intercepted = false;
+      final seenActions = <TransportAction>[];
       manager.setTransportInterceptor((action, {position}) async {
-        if (action == TransportAction.next) {
-          intercepted = true;
-          return true;
-        }
-        return false;
+        seenActions.add(action);
+        // Simulate a coordinator (Watch Party / Cast) that swallows next.
+        return action == TransportAction.nextAsFinished;
       });
 
       await manager.nextInQueueAsFinished();
-      expect(intercepted, isTrue);
+      expect(seenActions, [TransportAction.nextAsFinished]);
       expect(service.stops, isEmpty);
 
+      // An unrelated item switch afterwards must still report the outgoing
+      // position rather than consuming a stale finished flag.
       await manager.playItems(<dynamic>[
-        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+        <String, dynamic>{'Id': 'episode3', 'Type': 'Episode'},
       ]);
-      expect(service.stops, [end]);
+      expect(service.stops, [credits]);
     },
   );
 
   test(
-    'intercepted nextInQueueAsFinished does not mark later manual stop as finished',
+    'playItems with stopCurrentAsFinished reports the end of the outgoing item',
     () async {
       manager = managerWith();
       await manager.playItems(<dynamic>[
         <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
-        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
       ]);
       backend.currentDuration = end;
       backend.emitPosition(credits);
 
-      manager.setTransportInterceptor((action, {position}) async {
-        return action == TransportAction.next;
-      });
-
-      await manager.nextInQueueAsFinished();
-      await manager.stop();
-      expect(service.stops, [credits]);
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ], stopCurrentAsFinished: true);
+      expect(service.stops, [end]);
     },
   );
 }

@@ -82,6 +82,7 @@ class SyncPlayManager extends ChangeNotifier {
   StreamSubscription<Duration>? _positionSub;
   StreamSubscription<void>? _queueChangedSub;
   bool _applyingRemoteCommand = false;
+  ({String? playlistItemId, String? itemId})? _pendingFinishedAdvance;
   final Map<String, String> _itemTitleCache = {};
   final Set<String> _pendingTitleLookups = {};
   /// Server users keyed by lower-cased name, for participant avatars. The
@@ -679,7 +680,9 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   void _applyQueueUpdate(SyncPlayPlayQueueUpdate update) {
+    final pendingFinished = _pendingFinishedAdvance;
     final previousPlaylistItemId = _state.currentPlaylistItemId;
+    final outgoingPlaylistItemId = _currentPlaylistItemId();
     _state.queue = update.playlist;
     _state.currentItemIndex = update.playingItemIndex;
     final idx = update.playingItemIndex;
@@ -698,6 +701,10 @@ class SyncPlayManager extends ChangeNotifier {
         reason == SyncPlayQueueUpdateReason.previousItem ||
         previousPlaylistItemId != _state.currentPlaylistItemId;
     if (!isItemSwitch) return;
+
+    // Consume any pending finished-advance on the first queue switch so a
+    // different remote change cannot inherit it later.
+    _pendingFinishedAdvance = null;
 
     // Seek latency and convergence are per-stream, and a give-up must not
     // outlive the item that caused it.
@@ -719,6 +726,16 @@ class SyncPlayManager extends ChangeNotifier {
 
     final localCurrentItemId =
         _itemId(_playbackManager.queueService.currentItem);
+    final stopFinishedItemId =
+        pendingFinished != null &&
+        reason == SyncPlayQueueUpdateReason.nextItem &&
+        outgoingPlaylistItemId != null &&
+        pendingFinished.playlistItemId == outgoingPlaylistItemId &&
+        targetPlaylistItemId != outgoingPlaylistItemId &&
+        pendingFinished.itemId != null &&
+        pendingFinished.itemId == localCurrentItemId
+        ? pendingFinished.itemId
+        : null;
     final hasActivePlayer = _playbackManager.currentResolution != null;
     final needsRemoteLoad = targetItemId != null &&
         (targetItemId != localCurrentItemId || !hasActivePlayer);
@@ -733,6 +750,7 @@ class SyncPlayManager extends ChangeNotifier {
         startMs: startMs,
         shouldAutoPlay: shouldAutoPlay,
         targetPlaylistItemId: targetPlaylistItemId,
+        stopFinishedItemId: stopFinishedItemId,
       ));
       return;
     }
@@ -763,6 +781,7 @@ class SyncPlayManager extends ChangeNotifier {
     required int startMs,
     required bool shouldAutoPlay,
     required String? targetPlaylistItemId,
+    String? stopFinishedItemId,
   }) async {
     final client = _currentClient;
     if (client == null) return;
@@ -799,11 +818,16 @@ class SyncPlayManager extends ChangeNotifier {
       // resume after its start seek would otherwise undo the pause below,
       // and a joiner playing through the handshake reports Ready from past
       // the group, is seeked back, plays on, and reports again, forever.
+      final currentOutgoingItemId =
+          _itemId(_playbackManager.queueService.currentItem);
       await _playbackManager.playItems(
         items,
         startIndex: startIndex,
         startPosition: Duration(milliseconds: startMs),
         autoPlay: shouldAutoPlay,
+        stopCurrentAsFinished:
+            stopFinishedItemId != null &&
+            currentOutgoingItemId == stopFinishedItemId,
       );
       if (!shouldAutoPlay && _playbackManager.state.isPlaying) {
         await _playbackManager.pause();
@@ -1291,6 +1315,7 @@ class SyncPlayManager extends ChangeNotifier {
     _isBuffering = false;
     _bufferingReported = false;
     _startedPausedForHandshake = false;
+    _pendingFinishedAdvance = null;
     _playbackManager.setTransportInterceptor(null);
   }
 
@@ -1322,12 +1347,26 @@ class SyncPlayManager extends ChangeNotifier {
         if (!_isEchoOfGroupSeek(target)) _scheduleSeekRequest(target);
         return true;
       case TransportAction.stop:
+        _pendingFinishedAdvance = null;
         await requestStop();
         return true;
       case TransportAction.next:
+        _pendingFinishedAdvance = null;
         await requestNext();
         return true;
+      case TransportAction.nextAsFinished:
+        final playlistItemId = _currentPlaylistItemId();
+        final outgoingItemId =
+            _itemId(_playbackManager.queueService.currentItem);
+        _pendingFinishedAdvance = (
+          playlistItemId: playlistItemId,
+          itemId: outgoingItemId,
+        );
+        final sent = await _sendNextRequest(playlistItemId);
+        if (!sent) _pendingFinishedAdvance = null;
+        return true;
       case TransportAction.previous:
+        _pendingFinishedAdvance = null;
         await requestPrevious();
         return true;
     }
@@ -1640,11 +1679,20 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   Future<void> requestNext() async {
-    final id = _currentPlaylistItemId();
-    if (!_state.enabled || !syncPlayEnabled || id == null) return;
+    await _sendNextRequest(_currentPlaylistItemId());
+  }
+
+  Future<bool> _sendNextRequest(String? id) async {
+    final api = _api;
+    if (!_state.enabled || !syncPlayEnabled || api == null || id == null) {
+      return false;
+    }
     try {
-      await _api?.nextItem(id);
-    } catch (_) {}
+      await api.nextItem(id);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> requestPrevious() async {
@@ -1656,6 +1704,7 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   Future<void> requestSetCurrentItem(String playlistItemId) async {
+    _pendingFinishedAdvance = null;
     if (!_state.enabled || !syncPlayEnabled) return;
     try {
       await _api?.setPlaylistItem(playlistItemId);
