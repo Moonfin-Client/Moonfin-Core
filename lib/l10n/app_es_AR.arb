@@ -7667,5 +7667,121 @@
     "settingsNone": "Ninguno",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "themeMoonfin": "Moonfin",
+    "@themeMoonfin": {
+        "description": "Display name for the Moonfin theme"
+    },
+    "mediaBarModeMoonfin": "Moonfin",
+    "@mediaBarModeMoonfin": {
+        "description": "Media bar style option: Moonfin"
+    },
+    "sortAlphabetical": "Alfabético",
+    "gamePaused": "En pausa",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "audiobookBookmarks": "Marcadores",
+    "bookPercentRead": "{percent}% leído",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookHeroListen": "Escuchar",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "moveUp": "Subir",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Mover hacia abajo",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeMixed": "Mixto",
+    "@playlistTypeMixed": {
+        "description": "Filter checkbox label for mixed media playlists"
+    },
+    "adminMetadataPersonKindAuthor": "Autor",
+    "adminMetadataLockFieldOverview": "Descripción general",
+    "screensaverGeneralSettings": "Configuraciones generales",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "screensaverBackdropNeonPulse": "Pulso de neón",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsRecap": "Resumen",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "achievementsDailyQuests": "A diario",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Semanalmente",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Títulos",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Usuarios",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Actividad",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "chatAdmin": "Administración",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Crear grupo",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Ver detalles",
+    "achievementsUnlockedMore": "+{count} más",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Lema",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "adminGroupOverview": "Descripción general",
+    "calendarSettingsView": "Vista",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Especiales",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Comportamiento",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
     }
 }
