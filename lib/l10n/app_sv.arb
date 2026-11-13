@@ -6577,9 +6577,9 @@
     "settingsPreferServerTranscode": "Föredrar serveromkodning",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Profil 7 Direktspel",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Styr om Dolby Vision profil 7 förbättringslager strömmar ska styra uppspelning.",
-    "settingsAutoAftkrtEnabled": "Auto (AFKTKRT aktiverat)",
-    "settingsEnabledOnThisDevice": "Aktiverad på den här enheten",
-    "settingsDisabledPreferTranscode": "Inaktiverad (föredrar omkodning)",
+    "settingsAutoAftkrtEnabled": "Auto",
+    "settingsEnabledOnThisDevice": "Aktiverad",
+    "settingsDisabledPreferTranscode": "Av",
     "settingsResumeRewindDescription": "När du återupptar uppspelningen (från Fortsätt titta eller en sida med medieobjekt), hur många sekunder ska du spola tillbaka?",
     "settingsUnpauseRewindDescription": "När du återupptar uppspelningen efter att du tryckt på pausknappen, hur många sekunder ska du spola tillbaka?",
     "settingsSkipBackLengthDescription": "Hur många sekunder att hoppa tillbaka efter att ha tryckt på tillbakaspolningsknappen.",
@@ -9038,5 +9038,374 @@
     "increase": "Öka",
     "@increase": {
         "description": "Action that increases a numeric personal rating."
+    },
+    "emulatorCoreDownloading": "Laddar ner",
+    "castMembers": "Casta",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "tags": "Taggar",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "groupByParentalRating": "Åldersgräns",
+    "@groupByParentalRating": {
+        "description": "Option to group library items by parental rating"
+    },
+    "sortOrder": "Sorteringsordning",
+    "ascending": "Stigande",
+    "descending": "Fallande",
+    "selectAllStudios": "Välj Alla",
+    "filtersHeader": "Filter",
+    "interfaceLayoutTv": "TV",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "Skrivbord",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "Baner",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "Trailers",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "Extramaterial",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "Originalspråk",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "Speltid",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "Klassisk",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Modern",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "TV",
+    "adminMetadataPersonKindDirector": "Regissör",
+    "adminMetadataLockFieldName": "Namn",
+    "adminMetadataLockFieldGenres": "Genrer",
+    "adminMetadataLockFieldCast": "Personer",
+    "adminMetadataLockFieldRuntime": "Speltid",
+    "adminMetadataLockFieldStudios": "Studior",
+    "adminMetadataLockFieldTags": "Taggar",
+    "seerrDownloading": "Laddar ner",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "Prestanda",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "Miniatyrbild",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Små",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Mellan",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "Stor",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "Studsande",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "Bakgrund",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "Svart",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "Alla",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "Aldrig",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "Laddar ner",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "Samlingar",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "Hem",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "Mellan",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "Av",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataParentalRating": "Åldersgräns",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataStatus": "Seriestatus",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Genrer",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "I dag",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "I avvaktan på",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "Läsa",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "Namn",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "Utseende",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "Visad",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "Upprepa",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "Tillgänglig",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "Nedgång",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "Gruppnamn",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "Lämna gruppen",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "Andra",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logotyp",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "Affisch",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "Nästa avsnitt",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Låttexter",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Casta",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "Studior",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Kapitel",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Extramaterial",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Samlingar",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Mer sånt här",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "Rekommendationer",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Medverkan",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "Biografi",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "Andra",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "Avancerat",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "Utgivningsdatum",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "Speltid",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Senast spelade",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "Auto",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "Klassisk",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Modern",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "Artister",
+    "adminMetadataFieldAlbum": "Album",
+    "adminMetadataSectionRatings": "Betyg",
+    "adminLiveTvTabRecordings": "Inspelningar",
+    "adminLogLevelNone": "Ingen",
+    "adminTaskResultFailed": "Misslyckades",
+    "adminLogWatch": "Titta",
+    "adminGroupLibrary": "Bibliotek",
+    "adminGroupPlayback": "Uppspelning",
+    "adminGroupPeople": "Personer",
+    "librarySortDateAdded": "Datum Tillagt",
+    "@librarySortDateAdded": {
+        "description": "Sort option: when an item was added to the server library"
+    },
+    "librarySortParentalRating": "Åldersgräns",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "Genre",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "Klassisk",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "Externa listor",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby Anslut",
+    "adminTranscodingHwaAdvanced": "Avancerat",
+    "musicLibraryStyleClassic": "Klassisk",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "Radera",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "Klassisk",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "Nu",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "Färdig",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "Namn",
+    "externalRowSortReleaseDate": "Utgivningsdatum",
+    "externalRowSortShuffle": "Blanda",
+    "siloApproveSignInApprove": "Godkänna",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "Aktiv",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "Premiär",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "Premiär",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "Typ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Spela upp",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "Statisk",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "Typ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
     }
 }
