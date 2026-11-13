@@ -9319,5 +9319,122 @@
     "settingsAdvancedSection": "Gevorderd",
     "@settingsAdvancedSection": {
         "description": "Section header on the Playback settings screen"
+    },
+    "moveUp": "Beweeg op",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Beweeg af",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "Oudioboek",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Boek",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "Outomaties",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "Skrywer",
+    "adminMetadataLockFieldOverview": "Oorsig",
+    "screensaverGeneralSettings": "Algemene instellings",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neon polsslag",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "Daagliks",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Weekliks",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Titels",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Gebruikers",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Aktiwiteit",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Outomaties",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "Admin",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Skep groep",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Bekyk besonderhede",
+    "achievementsUnlockedMore": "+{count} meer",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Byskrif",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normaal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Land",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Outomaties",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Boek",
+    "adminImageTypeMenu": "Kieslys",
+    "adminGroupOverview": "Oorsig",
+    "seriesRecordingAllEpisodes": "Alle episodes",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glas",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb-ooreenkoms",
+    "calendarSettingsView": "Uitsig",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Spesiale aanbiedinge",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Aksies",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Begin",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }
