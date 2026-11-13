@@ -12549,6 +12549,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get homeRowsStyleModern => 'ಮಾಡರ್ನ್';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'ಹೋಮ್ ಸಾಲುಗಳು';
 
   @override
@@ -15704,6 +15707,10 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

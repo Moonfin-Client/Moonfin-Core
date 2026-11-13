@@ -12585,6 +12585,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Mga Home Row';
 
   @override
@@ -15743,6 +15746,10 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

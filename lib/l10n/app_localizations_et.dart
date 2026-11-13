@@ -12497,6 +12497,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get homeRowsStyleModern => 'Kaasaegne';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Kodu read';
 
   @override
@@ -15646,6 +15649,10 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

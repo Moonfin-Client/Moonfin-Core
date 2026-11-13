@@ -12143,6 +12143,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeRowsStyleModern => '现代';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => '首页行';
 
   @override
@@ -15215,6 +15218,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => '更大的卡片，标题在下方。';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => '所有内容居中堆叠。';

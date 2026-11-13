@@ -12612,6 +12612,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderno';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Righe Home';
 
   @override
@@ -15789,6 +15792,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Schede più grandi con i titoli sotto.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Tutto centrato in un unico blocco.';

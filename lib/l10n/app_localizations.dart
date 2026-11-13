@@ -21964,6 +21964,12 @@ abstract class AppLocalizations {
   /// **'Modern'**
   String get homeRowsStyleModern;
 
+  /// Name of the home row style that shows a large details panel under each row's posters
+  ///
+  /// In en, this message translates to:
+  /// **'Carousel'**
+  String get homeRowsStyleCarousel;
+
   /// No description provided for @homeRowsSection.
   ///
   /// In en, this message translates to:
@@ -21979,7 +21985,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowsTypeDescription.
   ///
   /// In en, this message translates to:
-  /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.'**
+  /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.'**
   String get rowsTypeDescription;
 
   /// No description provided for @modernCardsOnMyMediaRow.
@@ -27324,6 +27330,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Larger cards with titles underneath.'**
   String get setupRowsModernHint;
+
+  /// What the carousel home row style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Posters with a large details panel underneath.'**
+  String get setupRowsCarouselHint;
 
   /// What the classic detail screen style gives you
   ///

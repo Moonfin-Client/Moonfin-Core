@@ -12117,6 +12117,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeRowsStyleModern => '모던';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => '홈 행';
 
   @override
@@ -15176,6 +15179,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => '제목이 아래에 표시되는 더 큰 카드 레이아웃.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => '모든 정보가 중앙에 한 번에 정렬된 레이아웃.';

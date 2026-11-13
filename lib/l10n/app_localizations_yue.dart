@@ -12183,6 +12183,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get homeRowsStyleModern => '現代';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => '主畫面列表';
 
   @override
@@ -15277,6 +15280,10 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

@@ -12580,6 +12580,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderni';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Kotirivit';
 
   @override
@@ -15751,6 +15754,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Suuremmat kortit, joiden alla on otsikot.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Kaikki on koottu yhteen pinoon.';

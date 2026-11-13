@@ -12521,6 +12521,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Ana Sayfa Satırları';
 
   @override
@@ -15680,6 +15683,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get setupRowsModernHint =>
       'Başlıkları altında olan daha büyük kartlar.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint =>
