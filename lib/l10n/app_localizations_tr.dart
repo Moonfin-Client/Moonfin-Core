@@ -5288,6 +5288,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsExternalLists => 'Harici Listeler';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Satır Başına Ayarlar';
 
   @override

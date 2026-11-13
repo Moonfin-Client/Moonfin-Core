@@ -5394,6 +5394,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Postavke po retku';
 
   @override

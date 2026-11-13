@@ -9322,11 +9322,17 @@ abstract class AppLocalizations {
   /// **'Genres and Studios'**
   String get homeRowsGenresAndStudios;
 
-  /// Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists
+  /// Home Rows editor: heading of the group of disabled rows from custom lists a user set up, such as their own MDBList, TMDB or Letterboxd lists
   ///
   /// In en, this message translates to:
   /// **'External Lists'**
   String get homeRowsExternalLists;
+
+  /// Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services
+  ///
+  /// In en, this message translates to:
+  /// **'Streaming Services'**
+  String get homeRowsStreamingServices;
 
   /// Section title for per-row settings
   ///

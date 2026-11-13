@@ -4423,6 +4423,8 @@ class _ContentRowsState extends State<_ContentRows>
     if (row.id == 'radarr_calendar') return l10n.radarrCalendarRowSubtitle;
     if (row.id == 'sonarr_calendar') return l10n.sonarrCalendarRowSubtitle;
     if (row.id.startsWith('seerr_')) return seerrBrand(l10n.seerrDiscoveryRows);
+    final chart = externalCharts[HomeSectionType.fromSerialized(row.id)];
+    if (chart != null) return chart.label;
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
     if (row.id.startsWith('imdb_')) return 'IMDb List';
     if (row.id == 'seasonal') return l10n.seasonalRowSubtitle;

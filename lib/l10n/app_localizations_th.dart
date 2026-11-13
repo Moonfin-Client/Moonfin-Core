@@ -5257,6 +5257,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'การตั้งค่าต่อแถว';
 
   @override

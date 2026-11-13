@@ -527,7 +527,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       if (section.pluginSource == HomeSectionPluginSource.playlists) {
         return 5;
       }
-      return 7;
+      return 12;
     }
     // is builtin
     if (section.type == HomeSectionType.collections) {
@@ -550,11 +550,16 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         section.type == HomeSectionType.sonarrCalendar) {
       return 6;
     }
-    if (section.type == HomeSectionType.mdblistWatchingNow ||
-        _isImdbSectionType(section.type) ||
-        _isTmdbSectionType(section.type)) {
-      return 7;
+    // The outside lists are grouped by where they come from, with the
+    // streaming service charts on their own.
+    if (_isImdbSectionType(section.type)) return 7;
+    if (externalCharts[section.type] case final chart?) {
+      if (chart.type.startsWith('provider_')) return 9;
+      if (chart.source == 'justwatch') return 11;
+      return chart.usesMdblist ? 10 : 8;
     }
+    if (_isTmdbSectionType(section.type)) return 8;
+    if (section.type == HomeSectionType.mdblistWatchingNow) return 10;
     // general builtins (resume, nextUp, etc.)
     return 1;
   }
@@ -735,7 +740,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     4 => l10n.homeRowsGenresAndStudios,
     5 => l10n.playlists,
     6 => seerrBrand(l10n.seerr),
-    7 => l10n.homeRowsExternalLists,
+    7 => 'IMDb',
+    8 => 'TMDB',
+    9 => l10n.homeRowsStreamingServices,
+    10 => 'MDBList',
+    11 => 'JustWatch',
+    12 => l10n.homeRowsExternalLists,
     _ => l10n.general,
   };
 
@@ -1802,7 +1812,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           ? cfg.pluginDisplayText!
           : (cfg.pluginSection ?? l10n.none);
     }
-    return homeSectionTypeLabel(cfg.type, l10n);
+    final label = homeSectionTypeLabel(cfg.type, l10n);
+    // The IMDb group's header names the source, so its rows drop a leading
+    // "IMDb ". A translation that puts the name elsewhere keeps it.
+    return _isImdbSectionType(cfg.type) && label.startsWith('IMDb ')
+        ? label.substring(5)
+        : label;
   }
 
   Widget _buildLoadingOverlay(BuildContext context) {
@@ -2430,9 +2445,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                               .withValues(alpha: 0.7),
                                         ),
                                       )
-                                    : (_isTmdbSectionType(section.type)
+                                    : ((_isTmdbSectionType(section.type) ||
+                                              externalCharts.containsKey(section.type))
                                           ? Text(
-                                              'TMDB Lists',
+                                              externalCharts[section.type]?.label ?? 'TMDB Lists',
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontFamily:
@@ -2556,8 +2572,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                         ? 'Seerr Discovery Rows'
                         : (_isImdbSectionType(section.type)
                               ? 'IMDb List'
-                              : (_isTmdbSectionType(section.type)
-                                    ? 'TMDB Lists'
+                              : (_isTmdbSectionType(section.type) ||
+                                        externalCharts.containsKey(section.type)
+                                    ? externalCharts[section.type]?.label ?? 'TMDB Lists'
                                     : (section.type == HomeSectionType.mdblistWatchingNow
                                           ? 'MDBList'
                                           : null))))),
@@ -2874,8 +2891,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                             ? const Text('Seerr Discovery Rows')
                             : (_isImdbSectionType(section.type)
                                   ? const Text('IMDb List')
-                                  : (_isTmdbSectionType(section.type)
-                                        ? const Text('TMDB Lists')
+                                  : (_isTmdbSectionType(section.type) ||
+                                            externalCharts.containsKey(section.type)
+                                        ? Text(externalCharts[section.type]?.label ?? 'TMDB Lists')
                                         : (section.type == HomeSectionType.mdblistWatchingNow
                                               ? const Text('MDBList')
                                               : null))))),
@@ -3382,6 +3400,28 @@ String homeSectionTypeLabel(HomeSectionType type, AppLocalizations l10n) =>
       HomeSectionType.tmdbTrendingTvWeekly => 'Trending TV (Weekly)',
       HomeSectionType.tmdbTrendingAllWeekly => 'Trending All (Weekly)',
       HomeSectionType.mdblistWatchingNow => l10n.mdblistWatchingNow,
+      HomeSectionType.mdblistMostWatchedWeekMovies ||
+      HomeSectionType.mdblistMostWatchedWeekShows ||
+      HomeSectionType.mdblistMostWatchedYearMovies ||
+      HomeSectionType.mdblistMostWatchedYearShows ||
+      HomeSectionType.mdblistAnticipatedMovies ||
+      HomeSectionType.mdblistAnticipatedShows ||
+      HomeSectionType.mdblistStreamingChartsMovies ||
+      HomeSectionType.mdblistStreamingChartsShows ||
+      HomeSectionType.justwatchTopMovies ||
+      HomeSectionType.justwatchTopShows ||
+      HomeSectionType.tmdbTrendingAllDaily ||
+      HomeSectionType.tmdbKoreanDramas ||
+      HomeSectionType.tmdbAnime ||
+      HomeSectionType.tmdbNewDigitalMovies ||
+      HomeSectionType.tmdbHiddenGems ||
+      HomeSectionType.tmdbNetflix ||
+      HomeSectionType.tmdbPrimeVideo ||
+      HomeSectionType.tmdbDisneyPlus ||
+      HomeSectionType.tmdbHboMax ||
+      HomeSectionType.tmdbAppleTv ||
+      HomeSectionType.tmdbParamountPlus =>
+        externalCharts[type]!.title,
       HomeSectionType.sinceYouWatched1 => l10n.sinceYouWatchedRowNumber(1),
       HomeSectionType.sinceYouWatched2 => l10n.sinceYouWatchedRowNumber(2),
       HomeSectionType.sinceYouWatched3 => l10n.sinceYouWatchedRowNumber(3),

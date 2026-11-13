@@ -39,6 +39,8 @@ void main() {
   // Whether the plugin can fill the calendar rows. The other external rows
   // stay unavailable, the way they are with no plugin.
   var calendarsAvailable = false;
+  // Whether the plugin can fill the outside chart rows.
+  var chartsAvailable = false;
 
   setUpAll(() => registerFallbackValue(HomeSectionType.none));
 
@@ -78,6 +80,7 @@ void main() {
     when(() => sync.pluginAvailable).thenReturn(false);
     when(() => sync.seerrAvailable).thenReturn(false);
     calendarsAvailable = false;
+    chartsAvailable = false;
     when(
       () => sync.externalRowAvailable(
         any(),
@@ -89,11 +92,12 @@ void main() {
           type == HomeSectionType.sonarrCalendar) {
         return calendarsAvailable;
       }
-      final external = imdbChartSections.contains(type) ||
+      final chart = imdbChartSections.contains(type) ||
           UserPreferences.isTmdbSectionType(type) ||
-          type == HomeSectionType.mdblistWatchingNow ||
-          type == HomeSectionType.seasonal;
-      return external ? false : null;
+          externalCharts.containsKey(type) ||
+          type == HomeSectionType.mdblistWatchingNow;
+      if (chart) return chartsAvailable;
+      return type == HomeSectionType.seasonal ? false : null;
     });
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
   });
@@ -207,6 +211,28 @@ void main() {
       }
     });
   }
+
+  testWidgets('outside lists are grouped by where they come from', (
+    tester,
+  ) async {
+    chartsAvailable = true;
+    await pump(tester, InterfaceLayout.phone);
+
+    final headers = ['IMDb', 'TMDB', 'Streaming Services', 'MDBList', 'JustWatch'];
+    for (final header in headers) {
+      expect(find.text(header), findsOneWidget, reason: header);
+    }
+    final tops = [for (final header in headers) top(tester, header)];
+    expect(tops, orderedEquals([...tops]..sort()));
+
+    await tester.tap(find.text('IMDb'));
+    await tester.tap(find.text('Streaming Services'));
+    await tester.pumpAndSettle();
+    // Under its source's header a row drops the prefix.
+    expect(find.text('Top 250 Movies'), findsOneWidget);
+    expect(find.text('IMDb Top 250 Movies'), findsNothing);
+    expect(find.text('Popular on Netflix'), findsOneWidget);
+  });
 
   testWidgets('rows switched off where they live stay out of the editor', (
     tester,

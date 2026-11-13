@@ -5303,6 +5303,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Mga Setting ng Bawat Hanay';
 
   @override

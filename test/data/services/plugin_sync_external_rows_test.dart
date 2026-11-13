@@ -86,6 +86,24 @@ void main() {
     expect(service.externalRowAvailable(HomeSectionType.mdblistWatchingNow), isTrue);
   });
 
+  test('the JustWatch and discover rows also need a plugin that serves them', () async {
+    final keys = {...plugin, 'tmdbAvailable': true, 'mdblistAvailable': true};
+    var service = await pinged(keys);
+    expect(service.externalRowAvailable(HomeSectionType.mdblistMostWatchedWeekMovies), isTrue);
+    expect(service.externalRowAvailable(HomeSectionType.tmdbTrendingAllDaily), isTrue);
+    expect(service.externalRowAvailable(HomeSectionType.justwatchTopMovies), isFalse);
+    expect(service.externalRowAvailable(HomeSectionType.tmdbNetflix), isFalse);
+
+    service = await pinged({...keys, 'discoverChartsSupported': true});
+    expect(service.externalRowAvailable(HomeSectionType.justwatchTopMovies), isTrue);
+    expect(service.externalRowAvailable(HomeSectionType.tmdbNetflix), isTrue);
+
+    service = await pinged({...plugin, 'discoverChartsSupported': true, 'tmdbAvailable': true});
+    expect(service.externalRowAvailable(HomeSectionType.justwatchTopShows), isFalse);
+    expect(service.externalRowAvailable(HomeSectionType.mdblistAnticipatedShows), isFalse);
+    expect(service.externalRowAvailable(HomeSectionType.tmdbHiddenGems), isTrue);
+  });
+
   test('the calendars follow the plugin calendar flag', () async {
     final service = await pinged({...plugin, 'calendarAvailable': true});
     expect(service.externalRowAvailable(HomeSectionType.radarrCalendar), isTrue);

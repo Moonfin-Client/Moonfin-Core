@@ -6927,7 +6927,11 @@
   },
   "homeRowsExternalLists": "External Lists",
   "@homeRowsExternalLists": {
-    "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    "description": "Home Rows editor: heading of the group of disabled rows from custom lists a user set up, such as their own MDBList, TMDB or Letterboxd lists"
+  },
+  "homeRowsStreamingServices": "Streaming Services",
+  "@homeRowsStreamingServices": {
+    "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
   },
   "perRowSettings": "Per-Row Settings",
   "@perRowSettings": {
