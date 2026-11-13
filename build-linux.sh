@@ -1013,7 +1013,12 @@ build_rpm() {
   local stage_dir="$rpm_dir/stage"
   mkdir -p "$stage_dir"
   cp -r "$BUILD_DIR"/* "$stage_dir/"
-  inject_linux_runtime_libs "$stage_dir"
+  # "all" runs this as build_rpm || true, which turns set -e off in here, so
+  # stop explicitly rather than package an RPM without its libraries.
+  if ! inject_linux_runtime_libs "$stage_dir"; then
+    echo "Error: could not bundle runtime libraries for the RPM." >&2
+    return 1
+  fi
 
   # The bundled libraries are private to Moonfin. Keep rpm from advertising
   # them to the rest of the system, and from asking the system for them.
