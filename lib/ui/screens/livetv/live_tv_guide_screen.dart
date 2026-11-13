@@ -161,6 +161,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   final _prefs = GetIt.instance<UserPreferences>();
   final _channelScrollController = ScrollController();
   final _programScrollController = ScrollController();
+  final _nowNextScrollController = ScrollController();
   final _timeHeaderHorizontalScrollController = ScrollController();
   final _guideHorizontalScrollController = ScrollController();
   final _miniPlayerFocusNode = FocusNode(debugLabel: 'GuideMiniPlayer');
@@ -176,6 +177,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   bool get _usesPicker =>
       !widget.miniPlayerMode &&
       _vm.supportsGroupPicker &&
+      _vm.availableGroups.isNotEmpty &&
       _categoryDisplay != LiveTvCategoryDisplay.programmes;
   bool get _sidePanel =>
       PlatformDetection.isTV || PlatformDetection.useDesktopUi;
@@ -899,6 +901,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _channelRailFocused.removeListener(_scheduleArtworkLookup);
     _channelScrollController.dispose();
     _programScrollController.dispose();
+    _nowNextScrollController.dispose();
     _timeHeaderHorizontalScrollController.dispose();
     _guideHorizontalScrollController.dispose();
     _miniPlayerFocusNode.dispose();
@@ -1409,12 +1412,21 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _searchChannels(String value) {
     _channelSearchDebounce?.cancel();
     if (value.trim().isEmpty) {
-      _vm.setChannelQuery('');
+      _applyChannelQuery('');
     } else {
       _channelSearchDebounce = Timer(
         const Duration(milliseconds: 180),
-        () => _vm.setChannelQuery(value),
+        () => _applyChannelQuery(value),
       );
+    }
+  }
+
+  void _applyChannelQuery(String query) {
+    _vm.setChannelQuery(query);
+    _lastFocusedRowIndex = null;
+    _scrollToRow(0, animate: false);
+    if (_nowNextScrollController.hasClients) {
+      _nowNextScrollController.jumpTo(0);
     }
   }
 
@@ -1616,6 +1628,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Widget _buildNowNextList(List<GuideChannel> channels) {
     return ListView.builder(
+      controller: _nowNextScrollController,
       key: ValueKey((_vm.filter, _vm.selectedGroup)),
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
       itemCount: channels.length,
