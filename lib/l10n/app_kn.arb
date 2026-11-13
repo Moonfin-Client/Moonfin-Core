@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "ಸರ್ವರ್ ಟ್ರಾನ್ಸ್‌ಕೋಡ್‌ಗೆ ಆದ್ಯತೆ ನೀಡಿ",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision ಪ್ರೊಫೈಲ್ 7 ಡೈರೆಕ್ಟ್ ಪ್ಲೇ",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision ಪ್ರೊಫೈಲ್ 7 ವರ್ಧನೆ-ಪದರದ ಸ್ಟ್ರೀಮ್‌ಗಳು ನೇರವಾಗಿ ಪ್ಲೇ ಮಾಡಬೇಕೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸುತ್ತದೆ.",
-    "settingsAutoAftkrtEnabled": "ಸ್ವಯಂ (AFTKRT ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ)",
-    "settingsEnabledOnThisDevice": "ಈ ಸಾಧನದಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ",
-    "settingsDisabledPreferTranscode": "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ (ಟ್ರಾನ್ಸ್‌ಕೋಡ್‌ಗೆ ಆದ್ಯತೆ)",
+    "settingsAutoAftkrtEnabled": "ಆಟೋ",
+    "settingsEnabledOnThisDevice": "ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ",
+    "settingsDisabledPreferTranscode": "ಆಫ್",
     "settingsResumeRewindDescription": "ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ಪುನರಾರಂಭಿಸುವಾಗ (ವೀಕ್ಷಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ ಅಥವಾ ಮಾಧ್ಯಮ ಐಟಂ ಪುಟದಿಂದ), ಎಷ್ಟು ಸೆಕೆಂಡುಗಳು ರಿವೈಂಡ್ ಮಾಡಬೇಕು?",
     "settingsUnpauseRewindDescription": "ವಿರಾಮ ಬಟನ್ ಒತ್ತಿದ ನಂತರ ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ಪುನರಾರಂಭಿಸುವಾಗ, ಎಷ್ಟು ಸೆಕೆಂಡುಗಳು ರಿವೈಂಡ್ ಮಾಡಬೇಕು?",
     "settingsSkipBackLengthDescription": "ರಿವೈಂಡ್ ಬಟನ್ ಒತ್ತಿದ ನಂತರ ಎಷ್ಟು ಸೆಕೆಂಡುಗಳು ಹಿಂದಕ್ಕೆ ಹೋಗಬೇಕು.",
@@ -8958,5 +8958,366 @@
     "imdbMostPopularMovies": "IMDb ಅತ್ಯಂತ ಜನಪ್ರಿಯ ಚಲನಚಿತ್ರಗಳು",
     "imdbMostPopularTvShows": "IMDb ಅತ್ಯಂತ ಜನಪ್ರಿಯ ಟಿವಿ ಶೋಗಳು",
     "imdbLowestRatedMovies": "IMDb ಅತ್ಯಂತ ಕಡಿಮೆ ರೇಟ್ ಮಾಡಿದ ಚಲನಚಿತ್ರಗಳು",
-    "imdbTopEnglishMovies": "IMDb ಅತ್ಯುತ್ತಮ ರೇಟ್ ಮಾಡಿದ ಇಂಗ್ಲಿಷ್ ಚಲನಚಿತ್ರಗಳು"
+    "imdbTopEnglishMovies": "IMDb ಅತ್ಯುತ್ತಮ ರೇಟ್ ಮಾಡಿದ ಇಂಗ್ಲಿಷ್ ಚಲನಚಿತ್ರಗಳು",
+    "emulatorCoreDownloading": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ",
+    "castMembers": "ಬಿತ್ತರಿಸಿ",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "ವೀಡಿಯೊ",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "audioPlaylistsSection": "ಆಡಿಯೋ ಪ್ಲೇಪಟ್ಟಿಗಳು",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "settingsAudioPassthroughMode": "ಪಾಸ್‌ಥ್ರೂ",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "tags": "ಟ್ಯಾಗ್‌ಗಳು",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "selectAllStudios": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
+    "filtersHeader": "ಶೋಧಕಗಳು",
+    "interfaceLayoutTv": "ಟಿ.ವಿ",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "ಡೆಸ್ಕ್ಟಾಪ್",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "ಬ್ಯಾನರ್",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "ಟ್ರೇಲರ್‌ಗಳು",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "ಹೆಚ್ಚುವರಿಗಳು",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "ಮೂಲ ಭಾಷೆ",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "ಚಾಲನಾಸಮಯ",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "ಕ್ಲಾಸಿಕ್",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "ಮಾಡರ್ನ್",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "ಟಿ.ವಿ",
+    "adminMetadataLockFieldName": "ಹೆಸರು",
+    "adminMetadataLockFieldGenres": "ಪ್ರಕಾರಗಳು",
+    "adminMetadataLockFieldCast": "ಜನರು",
+    "adminMetadataLockFieldRuntime": "ಚಾಲನಾಸಮಯ",
+    "adminMetadataLockFieldStudios": "ಸ್ಟುಡಿಯೋಗಳು",
+    "adminMetadataLockFieldTags": "ಟ್ಯಾಗ್‌ಗಳು",
+    "seerrDownloading": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "ಕಾರ್ಯಕ್ಷಮತೆ",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "ಆಟೋ",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "ಥಂಬ್‌ನೇಲ್",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "ಚಿಕ್ಕದು",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "ಮಧ್ಯಮ",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "ದೊಡ್ಡದು",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "ಪುಟಿಯುವ",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "ಹಿನ್ನೆಲೆ",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "ಕಪ್ಪು",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "ಎಲ್ಲಾ",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "ಎಂದಿಗೂ ಇಲ್ಲ",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "ಸಂಗ್ರಹಣೆಗಳು",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "ಮುಖಪುಟ",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "ಮಧ್ಯಮ",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "ಆಫ್",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "ಸರಣಿ ಸ್ಥಿತಿ",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "ಪ್ರಕಾರಗಳು",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "ಇಂದು",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "ಬಾಕಿಯಿದೆ",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "ಓದು",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "ಹೆಸರು",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "ಗೋಚರತೆ",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "ವೀಕ್ಷಿಸಲಾಗಿದೆ",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "ಪುನರಾವರ್ತಿಸಿ",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "ಲಭ್ಯವಿದೆ",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "ನಿರಾಕರಿಸು",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "ಗುಂಪಿನ ಹೆಸರು",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "ಗುಂಪನ್ನು ತೊರೆಯಿರಿ",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "ಇತರೆ",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "ಲೋಗೋ",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "ಪೋಸ್ಟರ್",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "ಮುಂದೆ",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "ಸಾಹಿತ್ಯ",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "ಬಿತ್ತರಿಸಿ",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "ಸ್ಟುಡಿಯೋಗಳು",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "ಅಧ್ಯಾಯಗಳು",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "ಹೆಚ್ಚುವರಿಗಳು",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "ಸಂಗ್ರಹಣೆಗಳು",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "ಈ ರೀತಿ ಇನ್ನಷ್ಟು",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "ಶಿಫಾರಸುಗಳು",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "ಕಾಣಿಸಿಕೊಂಡ ಕೃತಿಗಳು",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "ಜೀವನಚರಿತ್ರೆ",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "ಇತರೆ",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "ಸುಧಾರಿತ",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "ಬಿಡುಗಡೆ ದಿನಾಂಕ",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "ಚಾಲನಾಸಮಯ",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "ಕೊನೆಯದಾಗಿ ಆಡಿದ್ದು",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "ಆಟೋ",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "ಕ್ಲಾಸಿಕ್",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "ಮಾಡರ್ನ್",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "ಕಲಾವಿದರು",
+    "adminMetadataFieldAlbum": "ಆಲ್ಬಮ್",
+    "adminMetadataSectionRatings": "ರೇಟಿಂಗ್‌ಗಳು",
+    "adminLiveTvTabRecordings": "ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು",
+    "adminLogLevelNone": "ಯಾವುದೂ ಇಲ್ಲ",
+    "adminTaskResultFailed": "ವಿಫಲವಾಗಿದೆ",
+    "adminLogWatch": "ವೀಕ್ಷಿಸಿ",
+    "adminGroupLibrary": "ಲೈಬ್ರರಿ",
+    "adminGroupPlayback": "ಪ್ಲೇಬ್ಯಾಕ್",
+    "adminGroupPeople": "ಜನರು",
+    "librarySortAlbum": "ಆಲ್ಬಮ್",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "ಪ್ರಕಾರ",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "ಕ್ಲಾಸಿಕ್",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "ಬಾಹ್ಯ ಪಟ್ಟಿಗಳು",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby ಸಂಪರ್ಕಿಸಿ",
+    "adminTranscodingHwaAdvanced": "ಸುಧಾರಿತ",
+    "musicLibraryStyleClassic": "ಕ್ಲಾಸಿಕ್",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "ಅಳಿಸಿ",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "ಕ್ಲಾಸಿಕ್",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "ಈಗ",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "ಫಿಟ್",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "ಹೆಸರು",
+    "externalRowSortReleaseDate": "ಬಿಡುಗಡೆ ದಿನಾಂಕ",
+    "externalRowSortShuffle": "ಷಫಲ್",
+    "siloApproveSignInApprove": "ಅನುಮೋದಿಸಿ",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "ಸಕ್ರಿಯ",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "ಪ್ರಥಮ ಪ್ರದರ್ಶನ",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "ಪ್ರಥಮ ಪ್ರದರ್ಶನ",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "ಟೈಪ್ ಮಾಡಿ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "ಪ್ಲೇ ಮಾಡಿ",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "ಸ್ಥಿರ",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "ಟೈಪ್ ಮಾಡಿ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    }
 }
