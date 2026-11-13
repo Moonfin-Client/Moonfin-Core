@@ -12435,6 +12435,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get homeRowsStyleModern => 'مدرن';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'ردیف های صفحه اصلی';
 
   @override
@@ -15582,6 +15585,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

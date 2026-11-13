@@ -12540,6 +12540,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderný';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Domovské riadky';
 
   @override
@@ -15701,6 +15704,10 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

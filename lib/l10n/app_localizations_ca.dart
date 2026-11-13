@@ -12709,6 +12709,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Files d\'inici';
 
   @override
@@ -15902,6 +15905,10 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Targetes més grans amb títols a sota.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Tot està centrat en una sola columna.';

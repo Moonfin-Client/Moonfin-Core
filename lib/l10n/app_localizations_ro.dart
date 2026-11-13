@@ -12607,6 +12607,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Rânduri pe ecranul principal';
 
   @override
@@ -15783,6 +15786,10 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Carduri mai mari cu titlurile dedesubt.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Totul centrat într-o singură coloană.';

@@ -12793,6 +12793,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get homeRowsStyleModern => 'Nowoczesny';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Sekcje ekranu głównego';
 
   @override
@@ -15992,6 +15995,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Większe karty z tytułami pod spodem.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint =>

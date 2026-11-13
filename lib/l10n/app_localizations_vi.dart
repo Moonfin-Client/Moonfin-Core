@@ -12488,6 +12488,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeRowsStyleModern => 'Hiện đại';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Hàng nhà';
 
   @override
@@ -15645,6 +15648,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

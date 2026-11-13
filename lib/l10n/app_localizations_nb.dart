@@ -12486,6 +12486,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderne';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Hjem-rader';
 
   @override
@@ -15632,6 +15635,10 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

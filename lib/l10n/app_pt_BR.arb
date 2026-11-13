@@ -10936,7 +10936,7 @@
     "@achievementsBadges": {
         "description": "Badges section title"
     },
-    "achievementsBadgeCount": "Quantidade de insígnias",
+    "achievementsBadgeCount": "{unlocked} de {total} emblemas",
     "@achievementsBadgeCount": {
         "description": "How many badges are unlocked out of the total",
         "placeholders": {
@@ -10969,7 +10969,7 @@
             }
         }
     },
-    "achievementsUnlockedMore": "Mais conquistas desbloqueadas",
+    "achievementsUnlockedMore": "+{count} a mais",
     "@achievementsUnlockedMore": {
         "description": "Follows the first few badge names when more were unlocked at once",
         "placeholders": {
@@ -10982,7 +10982,7 @@
     "@achievementsQuests": {
         "description": "Quests section title"
     },
-    "achievementsQuestCount": "Quantidade de missões",
+    "achievementsQuestCount": "{count} concluídos",
     "@achievementsQuestCount": {
         "description": "How many quests are completed",
         "placeholders": {
@@ -11011,7 +11011,7 @@
     "@achievementsLibraryCompletion": {
         "description": "Library completion section title"
     },
-    "achievementsLibraryCount": "Itens da biblioteca",
+    "achievementsLibraryCount": "{count} bibliotecas",
     "@achievementsLibraryCount": {
         "description": "How many libraries have a completion percentage",
         "placeholders": {
@@ -11020,7 +11020,7 @@
             }
         }
     },
-    "achievementsScore": "Pontuação",
+    "achievementsScore": "{score} pontos",
     "@achievementsScore": {
         "description": "The score a user has earned",
         "placeholders": {
@@ -11037,7 +11037,7 @@
     "@achievementsTopRank": {
         "description": "Shown instead of progress when the user is at the highest rank"
     },
-    "achievementsPointsToNextRank": "Pontos para a próxima posição",
+    "achievementsPointsToNextRank": "{points} pontos para {tier}",
     "@achievementsPointsToNextRank": {
         "description": "Points needed to reach the next rank tier",
         "placeholders": {
@@ -11049,7 +11049,7 @@
             }
         }
     },
-    "achievementsCurrentStreak": "Sequência atual",
+    "achievementsCurrentStreak": "{days} dias consecutivos",
     "@achievementsCurrentStreak": {
         "description": "The current watch streak",
         "placeholders": {
@@ -11058,7 +11058,7 @@
             }
         }
     },
-    "achievementsBestStreak": "Melhor sequência",
+    "achievementsBestStreak": "Melhor: {days} dias",
     "@achievementsBestStreak": {
         "description": "The best watch streak",
         "placeholders": {
@@ -11087,7 +11087,7 @@
     "@achievementsHiddenBadge": {
         "description": "Placeholder name for a secret badge that is still locked"
     },
-    "achievementsUnlockedOn": "Desbloqueada em",
+    "achievementsUnlockedOn": "Desbloqueado {date}",
     "@achievementsUnlockedOn": {
         "description": "When a badge was unlocked",
         "placeholders": {
@@ -11096,7 +11096,7 @@
             }
         }
     },
-    "achievementsPoints": "Pontos",
+    "achievementsPoints": "{points} pts",
     "@achievementsPoints": {
         "description": "Points a badge is worth",
         "placeholders": {
@@ -11113,7 +11113,7 @@
     "@achievementsWeeklyQuests": {
         "description": "Weekly quests section"
     },
-    "achievementsQuestReward": "Recompensa da missão",
+    "achievementsQuestReward": "+{points}",
     "@achievementsQuestReward": {
         "description": "Points a quest pays out",
         "placeholders": {
@@ -11198,7 +11198,7 @@
     "@achievementsOwned": {
         "description": "State of an avatar or title that is held but not worn"
     },
-    "achievementsEarnedAt": "Obtido em",
+    "achievementsEarnedAt": "Conquistado com {score} pontos totais",
     "@achievementsEarnedAt": {
         "description": "What a user has to reach to unlock a cosmetic without paying",
         "placeholders": {
@@ -11359,7 +11359,7 @@
     "@achievementsActivitySubtitle": {
         "description": "Subtitle on the row that opens the activity feed"
     },
-    "achievementsActivityUnlocked": "Desbloqueou",
+    "achievementsActivityUnlocked": "{user} desbloqueou {badge}",
     "@achievementsActivityUnlocked": {
         "description": "One line of the activity feed",
         "placeholders": {
@@ -11379,7 +11379,7 @@
     "@achievementsShopSubtitle": {
         "description": "Subtitle on the row that opens the shop"
     },
-    "achievementsShopPack": "Pacote",
+    "achievementsShopPack": "{name} ×{count}",
     "@achievementsShopPack": {
         "description": "A shop item that grants more than one of a power-up",
         "placeholders": {
@@ -11480,7 +11480,7 @@
     "@achievementsPeriodYear": {
         "description": "Recap period: the last year"
     },
-    "achievementsDaysWatched": "Dias assistidos",
+    "achievementsDaysWatched": "{count} dias assistidos",
     "@achievementsDaysWatched": {
         "description": "How many days the user watched something",
         "placeholders": {
@@ -11489,7 +11489,7 @@
             }
         }
     },
-    "achievementsBadgesEarned": "Insígnias conquistadas",
+    "achievementsBadgesEarned": "{count} emblemas conquistados",
     "@achievementsBadgesEarned": {
         "description": "How many badges were earned in the recap period",
         "placeholders": {
@@ -11580,7 +11580,7 @@
     "@friendsNone": {
         "description": "Shown when the friends list is empty"
     },
-    "friendsWatching": "Assistindo",
+    "friendsWatching": "Assistindo {title}",
     "@friendsWatching": {
         "description": "Status line of a friend who is playing something",
         "placeholders": {
@@ -11589,7 +11589,7 @@
             }
         }
     },
-    "friendsLastWatched": "Assistiu por último",
+    "friendsLastWatched": "Assistiu por último: {title}",
     "@friendsLastWatched": {
         "description": "Status line of an offline friend with the last thing they played",
         "placeholders": {
@@ -11598,7 +11598,7 @@
             }
         }
     },
-    "friendsLastSeen": "Visto por último",
+    "friendsLastSeen": "Visto por último {time}",
     "@friendsLastSeen": {
         "description": "Status line of an offline friend, with a relative time such as 5m ago",
         "placeholders": {
@@ -11639,7 +11639,7 @@
     "@friendsCancelRequest": {
         "description": "Take back a friend request the user sent"
     },
-    "friendsRequestFrom": "Solicitação de",
+    "friendsRequestFrom": "{name} quer adicionar você como amigo",
     "@friendsRequestFrom": {
         "description": "Title of the dialog answering a friend request",
         "placeholders": {
@@ -11648,7 +11648,7 @@
             }
         }
     },
-    "friendsCancelRequestBody": "Deseja cancelar esta solicitação de amizade?",
+    "friendsCancelRequestBody": "Cancelar a solicitação enviada para {name}?",
     "@friendsCancelRequestBody": {
         "description": "Body of the dialog cancelling a sent friend request",
         "placeholders": {
@@ -11665,7 +11665,7 @@
     "@friendsNoMatches": {
         "description": "Shown when the people search finds nobody"
     },
-    "friendsRequestSent": "Solicitação de amizade enviada",
+    "friendsRequestSent": "Solicitação enviada para {name}",
     "@friendsRequestSent": {
         "description": "Shown after sending a friend request",
         "placeholders": {
@@ -11682,7 +11682,7 @@
     "@friendsSendMessage": {
         "description": "Action that opens a chat with a friend"
     },
-    "friendsOpenItem": "Abrir item",
+    "friendsOpenItem": "Abrir {title}",
     "@friendsOpenItem": {
         "description": "Action that opens what a friend is watching",
         "placeholders": {
@@ -11695,7 +11695,7 @@
     "@friendsRemove": {
         "description": "Action that removes a friend"
     },
-    "friendsRemoveBody": "Deseja remover este usuário da sua lista de amigos?",
+    "friendsRemoveBody": "Remover {name} dos seus amigos? Você poderá adicioná-lo novamente depois.",
     "@friendsRemoveBody": {
         "description": "Body of the dialog removing a friend",
         "placeholders": {
@@ -11712,7 +11712,7 @@
     "@friendsUnblock": {
         "description": "Action that unblocks a user"
     },
-    "friendsBlockBody": "Deseja bloquear este usuário?",
+    "friendsBlockBody": "Bloquear {name}? Vocês não poderão trocar mensagens diretamente. Os grupos em comum continuarão disponíveis.",
     "@friendsBlockBody": {
         "description": "Body of the dialog blocking a user",
         "placeholders": {
@@ -11721,7 +11721,7 @@
             }
         }
     },
-    "friendsUnblockBody": "Deseja desbloquear este usuário?",
+    "friendsUnblockBody": "Desbloquear {name}?",
     "@friendsUnblockBody": {
         "description": "Body of the dialog unblocking a user",
         "placeholders": {
@@ -11734,7 +11734,7 @@
     "@friendsBlocked": {
         "description": "Section header listing blocked users"
     },
-    "friendsProfileHidden": "Perfil oculto",
+    "friendsProfileHidden": "{name} mantém o perfil privado.",
     "@friendsProfileHidden": {
         "description": "Shown when another user hides their profile",
         "placeholders": {
@@ -11811,7 +11811,7 @@
     "@chatYou": {
         "description": "Stands for the signed-in user in chats and member lists"
     },
-    "chatYouSaid": "Você disse",
+    "chatYouSaid": "Você: {text}",
     "@chatYouSaid": {
         "description": "Preview of the last chat message when the user sent it",
         "placeholders": {
@@ -11941,7 +11941,7 @@
     "@chatPickMembers": {
         "description": "Hint on the new group screen"
     },
-    "chatNewMessageFrom": "Nova mensagem de",
+    "chatNewMessageFrom": "Nova mensagem de {name}",
     "@chatNewMessageFrom": {
         "description": "Title of the banner for a new chat message",
         "placeholders": {
@@ -11959,7 +11959,7 @@
         "description": "Shown when a picked chat image has an unsupported type"
     },
     "audiobookFullTimeline": "Linha do tempo completa do audiolivro",
-    "dateCreatedFormat": "Data de criação",
+    "dateCreatedFormat": "Adicionado em: {date}",
     "@dateCreatedFormat": {
         "placeholders": {
             "date": {}
@@ -11981,7 +11981,7 @@
             }
         }
     },
-    "transcodeAudioChannelsExceeded": "Quantidade de canais de áudio excedida",
+    "transcodeAudioChannelsExceeded": "A quantidade de canais de áudio ({channels}ch) excede o limite do reprodutor.",
     "@transcodeAudioChannelsExceeded": {
         "placeholders": {
             "channels": {
@@ -12002,7 +12002,7 @@
             }
         }
     },
-    "transcodeBitrateExceededWithValues": "A taxa de bits excede o limite suportado",
+    "transcodeBitrateExceededWithValues": "A taxa de bits do arquivo ({fileBitrate}) excede o limite de transmissão configurado ({maxBitrate}).",
     "@transcodeBitrateExceededWithValues": {
         "placeholders": {
             "fileBitrate": {
@@ -12293,7 +12293,7 @@
     "@decrease": {
         "description": "Action that decreases a numeric personal rating."
     },
-    "personalRatingOutOfTen": "de 10",
+    "personalRatingOutOfTen": "{rating} / 10",
     "@personalRatingOutOfTen": {
         "description": "Numeric personal rating displayed on a scale out of ten.",
         "placeholders": {
@@ -12302,7 +12302,7 @@
             }
         }
     },
-    "personalRatingOutOfFive": "de 5",
+    "personalRatingOutOfFive": "{rating} / 5",
     "@personalRatingOutOfFive": {
         "description": "Personal rating displayed on a five-star scale.",
         "placeholders": {
@@ -13644,7 +13644,7 @@
     "@pluginConnected": {
         "description": "Status line on the Settings Sync screen when the server plugin answers"
     },
-    "pluginConnectedVersion": "Versão do plugin conectado",
+    "pluginConnectedVersion": "Conectado, versão {version}",
     "@pluginConnectedVersion": {
         "description": "Status line on the Settings Sync screen with the server plugin's version",
         "placeholders": {
@@ -13689,7 +13689,7 @@
     "@profileSaveSubtitle": {
         "description": "Line under the Save button saying which way the settings go"
     },
-    "resetNamedProfile": "Redefinir perfil selecionado",
+    "resetNamedProfile": "Redefinir perfil {profile}",
     "@resetNamedProfile": {
         "description": "Button that resets the chosen settings profile, for example Reset TV Profile",
         "placeholders": {
@@ -14696,5 +14696,198 @@
     "librarySortLength": "Duração",
     "@librarySortLength": {
         "description": "Sort option for music: by track or album length"
+    },
+    "keyNameDelete": "Excluir",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "playbackInfoChannel": "Canal",
+    "@playbackInfoChannel": {
+        "description": "Playback information row label: the Live TV channel being watched"
+    },
+    "playbackInfoDevice": "Dispositivo",
+    "@playbackInfoDevice": {
+        "description": "Playback information row label: this device's model and operating system"
+    },
+    "playerTransportDocked": "Acoplado",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "keyboardStyleClassic": "Clássico",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "keyboardStyleDocked": "Acoplado",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "recordPromptNow": "Agora",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "recordPromptTomorrow": "Amanhã",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "detailsBackdropFit": "Ajustar",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "Nome",
+    "externalRowSortReleaseDate": "Data de lançamento",
+    "externalRowSortRating": "Avaliação",
+    "externalRowSortPopularity": "Popularidade",
+    "externalRowSortShuffle": "Embaralhar",
+    "musicSortYear": "Ano",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "musicFilter": "Filtro",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "setupCurrent": "Atual",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "signingIn": "Entrando...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "hideHomeUnwatchedCount": "Ocultar contagem de não assistidos",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "siloApproveSignInApprove": "Aprovar",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "siloTooManyAttemptsWait": "Muitas tentativas. Tente novamente em {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinHint": "PIN",
+    "@siloPinHint": {
+        "description": "Field label in the Silo profile PIN dialog"
+    },
+    "siloPinUnlock": "Desbloquear",
+    "@siloPinUnlock": {
+        "description": "Button in the Silo profile PIN dialog that checks the PIN"
+    },
+    "accountActive": "Ativo",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "Estreia",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "Estreia",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "mergedCalendarRow": "Próximos lançamentos",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Calendários do Radarr e Sonarr",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "upcomingCalendars": "Próximos calendários",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Escolher o que as linhas do Radarr e do Sonarr mostram.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "sinceYouWatchedRowTitle": "Desde que você assistiu",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedSource": "Fonte de recomendações",
+    "sinceYouWatchedSourceLocal": "Recomendações do Moonfin",
+    "sinceYouWatchedSourceServer": "Recomendações do Jellyfin",
+    "sinceYouWatchedSourceOnline": "Similaridade TMDb",
+    "sinceYouWatchedSourceType": "Tipo de fonte",
+    "sinceYouWatchedSourceTypeDescription": "Escolha o tipo de conteúdo para recomendar",
+    "sinceYouWatchedSourceItem": "Item de origem",
+    "sinceYouWatchedSourceItemDescription": "Escolha o conteúdo que servirá de base para as recomendações",
+    "sinceYouWatchedRecentlyWatched": "Assistidos recentemente",
+    "sinceYouWatchedIncludeWatched": "Incluir já assistidos",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Incluir itens assistidos nas recomendações",
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarSettingsView": "Visualização",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Mostrar",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsSpecials": "Especiais",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsColorByType": "Tipo",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "syncPlayParticipantYou": "Você",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "subtitleBold": "Texto em negrito",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "afterHoursPlay": "Reproduzir",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastSkipIntro": "Pular introdução",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStatic": "Estático",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "Tipo",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "settingsDecodingAndRenderingSection": "Decodificação e renderização",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Fluxo de áudio",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Saída de áudio",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Configurações de passagem direta",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsRewatchSection": "Reassistir",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "seerrDownloadFailed": "Falha no download",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

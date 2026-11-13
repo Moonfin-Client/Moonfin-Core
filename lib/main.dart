@@ -326,6 +326,13 @@ Future<void> _detectAndSetTvMode() async {
       final isTV = await channel.invokeMethod<bool>('isTvDevice');
       if (isTV != null) {
         PlatformDetection.setTvMode(isTV);
+        if (isTV) {
+          try {
+            final touch =
+                await channel.invokeMethod<bool>('supportsTouchLayout');
+            if (touch != null) PlatformDetection.setSupportsTouchLayout(touch);
+          } catch (_) {}
+        }
         return;
       }
     } catch (_) {}
@@ -1090,12 +1097,6 @@ Future<void> _initDeferredStartupServices(UserPreferences prefs) async {
     await GetIt.instance<SeerrNotificationService>().initialize();
     await GetIt.instance<SeerrNotificationService>().handleColdStart();
   } catch (_) {}
-
-  if (PlatformDetection.isMobile) {
-    try {
-      await GetIt.instance<PushMessagingService>().initialize();
-    } catch (_) {}
-  }
 
   // Audio session ownership differs per platform:
   // - Android: MoonfinAudioHandler acquires audio focus per playback, and skips

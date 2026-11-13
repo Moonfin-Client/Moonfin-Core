@@ -976,6 +976,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     home.leaf('pref_home_rows_style', l10n.rowsType, keywords: [
       'classic',
       'modern rows',
+      'carousel',
     ]),
     if (!PlatformDetection.useMobileUi) ...[
       home.leaf(

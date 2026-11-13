@@ -6499,9 +6499,9 @@
     "settingsPreferServerTranscode": "Prefiere la transcodificación del servidor",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Perfil 7 Reproducción directa",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Controla si las transmisiones de capa de mejora del perfil 7 de Dolby Vision deben dirigir la reproducción.",
-    "settingsAutoAftkrtEnabled": "Automático (AFTKRT habilitado)",
-    "settingsEnabledOnThisDevice": "Habilitado en este dispositivo",
-    "settingsDisabledPreferTranscode": "Deshabilitado (prefiero transcodificar)",
+    "settingsAutoAftkrtEnabled": "Auto",
+    "settingsEnabledOnThisDevice": "Activado",
+    "settingsDisabledPreferTranscode": "Apagado",
     "settingsResumeRewindDescription": "Al reanudar la reproducción (desde Continuar viendo o desde una página de elementos multimedia), ¿cuántos segundos se deben rebobinar?",
     "settingsUnpauseRewindDescription": "Al reanudar la reproducción después de presionar el botón de pausa, ¿cuántos segundos se deben rebobinar?",
     "settingsSkipBackLengthDescription": "Cuántos segundos retroceder después de presionar el botón de rebobinado.",
@@ -7270,5 +7270,402 @@
                 "type": "String"
             }
         }
+    },
+    "adminLogWatch": "Mirar",
+    "detailScreenStylePremiere": "Estreno",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "keyNameDelete": "Borrar",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "guideRepeatBadge": "Repetir",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "savedMediaRead": "Leer",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "Nombre",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "loadingAnimationSizeSmall": "Pequeño",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Medio",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "seasonalRowCountryOther": "Otro",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "tags": "Etiquetas",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "seerrDownloading": "Descargando",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "adminGeneralSectionServer": "Servidor",
+    "autoDownloadKeepAll": "Todo",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "Nunca",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "animationSpeedOff": "Apagado",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "settingsAdvancedSection": "Avanzado",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "loadingAnimationSizeThumbnail": "Uña del pulgar",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeLarge": "Grande",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "adminParentalRatingNone": "Ninguno",
+    "musicLibraryStyleClassic": "Clásico",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "screensaverBackdrop": "Fondo",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "processingStatus": "Tratamiento",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "issueTypeAudio": "Audio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "adminDrawerDisplay": "Mostrar",
+    "adminTranscodingHwaAdvanced": "Avanzado",
+    "interfaceLayoutTv": "TELEVISOR",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "adminLiveTvTabRecordings": "Grabaciones",
+    "adminLogLevelNone": "Ninguno",
+    "adminGroupLibrary": "Biblioteca",
+    "adminLibrarySectionGeneral": "General",
+    "adminLibRefreshNever": "Nunca",
+    "adminLibDefault": "Por defecto",
+    "adminLibDisplayTitle": "Mostrar",
+    "adminLibChaptersSection": "Capítulos",
+    "adminLibEmbeddedAllowNone": "Ninguno",
+    "adminUnratedBook": "Libros",
+    "adminUnratedLiveTvChannel": "Televisión en vivo",
+    "adminUnratedMusic": "Música",
+    "adminBackupSubtitles": "Subtítulos",
+    "adminSdPassword": "Contraseña",
+    "adminMetadataDisplayOrderTv": "TELEVISOR",
+    "adminMetadataLockFieldName": "Nombre",
+    "adminMetadataLockFieldGenres": "Géneros",
+    "adminMetadataLockFieldCast": "Gente",
+    "adminMetadataLockFieldRuntime": "Tiempo de ejecución",
+    "adminMetadataLockFieldStudios": "Estudios",
+    "adminMetadataLockFieldTags": "Etiquetas",
+    "adminPlaybackAudioSection": "Audio",
+    "adminPlaybackAutoOption": "Auto",
+    "emulatorCoreDownloading": "Descargando",
+    "themeStoreSave": "Ahorrar",
+    "filtersHeader": "Filtros",
+    "accountActive": "Activo",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "externalRowSortName": "Nombre",
+    "externalRowSortReleaseDate": "Fecha de lanzamiento",
+    "externalRowSortShuffle": "Barajar",
+    "keyboardStyleClassic": "Clásico",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "watchPartyType": "Tipo",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "achievementsStatsWatched": "Observó",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "spotlightCollectionsCard": "Colecciones",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "detailScreenStyleMoonfin": "Clásico",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "bookHeroRead": "Leer",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "castMembers": "Elenco",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "posterCategory": "Póster",
+    "bannerCategory": "Bandera",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Uña del pulgar",
+    "audiobookSave": "Ahorrar",
+    "audiobookCancel": "Cancelar",
+    "audiobookDelete": "Borrar",
+    "impellerOff": "Apagado",
+    "playlistTypeVideo": "Video",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "filterTrailers": "Remolques",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "seerrOriginalLanguage": "Idioma original",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "Tiempo de ejecución",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "Clásico",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Moderno",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "downloadNotificationRunning": "Descargando",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "animationSpeedMedium": "Medio",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "bottomNavbarTabsAvailable": "Disponible",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "interfaceLayoutDesktop": "De oficina",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "detailScreenStyleModern": "Moderno",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "playlistSortReleaseDate": "Fecha de lanzamiento",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "Tiempo de ejecución",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Jugado por última vez",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortAlbum": "Álbum",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "Género",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "detailsBackdropFit": "Adaptar",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "recordPromptNow": "Ahora",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "siloApproveSignInApprove": "Aprobar",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "detailSectionCollections": "Colecciones",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "calendarSettingsColorByType": "Tipo",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Jugar",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "adminGroupPlayback": "Reproducción",
+    "rendererModeAuto": "Auto",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "keyNameHome": "Hogar",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "glassQualityAuto": "Auto",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "scrollWheelActionOff": "Apagado",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "detailMetadataStatus": "Estado de la serie",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Géneros",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailSectionGroupOther": "Otro",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "Póster",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "Siguiente",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionCast": "Elenco",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "Estudios",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Capítulos",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionMoreLikeThis": "Más como esto",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "Recomendaciones",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Apariciones",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "Biografía",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "upcomingEpisodeToday": "Hoy",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "settingsAudioPassthroughMode": "Paso a través",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "subtitleModeAlways": "Siempre",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "libraryStyleClassic": "Clásico",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Moderno",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "bookLibraryStyleClassic": "Clásico",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "adminEmbyConnect": "Emby Conectar",
+    "adminMetadataFieldArtists": "Artistas",
+    "adminMetadataFieldAlbum": "Álbum",
+    "adminMetadataSectionRatings": "Calificaciones",
+    "adminGroupPeople": "Gente",
+    "adminLibrarySectionSubtitles": "Subtítulos",
+    "adminLibrarySectionSeries": "Serie",
+    "adminLibrarySectionMovies": "Cine",
+    "adminLibNone": "Ninguno",
+    "adminUnratedChannelContent": "Canales",
+    "adminUnratedMovie": "Cine",
+    "adminUnratedTrailer": "Remolques",
+    "achievementsAppearance": "Apariencia",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "friendsDecline": "Rechazar",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "Nombre del grupo",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "Dejar grupo",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "resolutionAll": "Todo",
+    "audiobookChapters": "Capítulos",
+    "audiobookSleepOff": "Apagado",
+    "setupStylePremiere": "Estreno",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "screensaverBackdropBlack": "Negro",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "mediaBarModeBanner": "Bandera",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "adminLibrarySectionMusic": "Música",
+    "adminSdUsername": "Nombre de usuario",
+    "selectAllStudios": "Seleccionar todo",
+    "settingsNone": "Ninguno",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
     }
 }

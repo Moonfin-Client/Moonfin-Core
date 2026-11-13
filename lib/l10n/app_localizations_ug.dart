@@ -12516,6 +12516,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get homeRowsStyleModern => 'زامانىۋى';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'باش بەت قۇرلىرى';
 
   @override
@@ -15668,6 +15671,10 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

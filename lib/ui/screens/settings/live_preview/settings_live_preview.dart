@@ -362,9 +362,10 @@ class _SettingsLivePreviewState extends State<SettingsLivePreview> {
         'homeRowsShowRatingLabels' ||
         'homeRowsShowRatingBadges' => Builder(
           builder: (context) => homeRowsPreview(
-            modern:
-                previewValue(context, UserPreferences.homeRowsStyle) ==
-                HomeRowsStyle.v2,
+            modern: previewValue(
+              context,
+              UserPreferences.homeRowsStyle,
+            ).usesModernCards,
           ),
         ),
         'pref_bottom_navbar_style' => Builder(

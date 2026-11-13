@@ -1,5 +1,6 @@
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
+import 'carousel_panel.dart';
 
 /// Room under a Classic card for its title and year.
 const double classicCardCaptionHeight = 50.0;
@@ -33,3 +34,12 @@ double modernRowPadding(UserPreferences prefs) {
       .clamp(-40.0, 200.0);
   return PlatformDetection.useMobileUi ? 20 + offset / 2 : offset;
 }
+
+/// What the Row Padding setting adds under a Carousel row. Its panel fills
+/// all the room under the cards, so this counts from the slider's lowest step
+/// instead of overlapping the panel, plus room so the next row's title
+/// doesn't crowd it.
+double carouselRowPadding(UserPreferences prefs, double desktopScale) =>
+    modernRowPadding(prefs) +
+    (PlatformDetection.useMobileUi ? 0.0 : 40.0) +
+    3 * carouselPanelGap(desktopScale);

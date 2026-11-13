@@ -173,14 +173,10 @@ class AppUpdateService {
     );
   }
 
-  /// Whether a store installed this copy. Only the Android APK channels can end
+  /// Whether a store installed this copy. Only the Android APK channel can end
   /// up store-installed while still carrying the in-app updater.
   Future<bool> _isStoreInstalled() async {
-    final channel = AppDistribution.channel;
-    if (channel != DistributionChannel.apk &&
-        channel != DistributionChannel.androidTvApk) {
-      return false;
-    }
+    if (AppDistribution.channel != DistributionChannel.apk) return false;
 
     try {
       final packageInfo = await PackageInfo.fromPlatform();
@@ -261,11 +257,7 @@ class AppUpdateService {
 
     switch (AppDistribution.channel) {
       case DistributionChannel.apk:
-        return _firstWhere(assets, '.apk', excludeSubstring: 'tv') ??
-            _firstByExtension(assets, const ['.apk']);
-      case DistributionChannel.androidTvApk:
-        return _firstWhere(assets, '.apk', requireSubstring: 'tv') ??
-            _firstByExtension(assets, const ['.apk']);
+        return _firstByExtension(assets, const ['.apk']);
       case DistributionChannel.macosDmg:
         return _firstByExtension(assets, const ['.dmg']);
       case DistributionChannel.windows:

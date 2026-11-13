@@ -6565,8 +6565,8 @@
     "settingsDolbyVisionProfile7DirectPlay": "Proffil Dolby Vision 7 Chwarae Uniongyrchol",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Yn rheoli a ddylai ffrydiau haen gwella proffil Dolby Vision 7 gyfeirio chwarae.",
     "settingsAutoAftkrtEnabled": "Auto",
-    "settingsEnabledOnThisDevice": "Wedi'i alluogi ar y ddyfais hon",
-    "settingsDisabledPreferTranscode": "Anabl (mae'n well gennym drawsgod)",
+    "settingsEnabledOnThisDevice": "Wedi'i alluogi",
+    "settingsDisabledPreferTranscode": "I ffwrdd",
     "settingsResumeRewindDescription": "Wrth ailddechrau chwarae (o Parhau i Gwylio neu dudalen eitem cyfryngau), sawl eiliad y dylid ei hailddirwyn?",
     "settingsUnpauseRewindDescription": "Wrth ailddechrau chwarae ar ôl pwyso'r botwm saib, sawl eiliad y dylid ei ail-ddirwyn?",
     "settingsSkipBackLengthDescription": "Sawl eiliad i neidio yn ôl ar ôl pwyso'r botwm ailddirwyn.",
@@ -8958,5 +8958,366 @@
     "imdbMostPopularMovies": "Ffilmiau Mwyaf Poblogaidd IMDb",
     "imdbMostPopularTvShows": "Cyfresi Teledu Mwyaf Poblogaidd IMDb",
     "imdbLowestRatedMovies": "Ffilmiau â'r Sgôr Isaf ar IMDb",
-    "imdbTopEnglishMovies": "Ffilmiau Saesneg â'r Sgôr Uchaf ar IMDb"
+    "imdbTopEnglishMovies": "Ffilmiau Saesneg â'r Sgôr Uchaf ar IMDb",
+    "detailScreenStylePremiere": "Première",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "keyNameHome": "Hafan",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "musicLibraryStyleClassic": "Clasurol",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "detailSectionBiography": "Bywgraffiad Biography I thank Mr",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionUpNext": "Nesaf Up",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionMoreLikeThis": "Mwy Fel Hyn",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionPoster": "Poster",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "settingsAudioPassthroughMode": "Trosglwyddo",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "libraryStyleModern": "Modern",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "mediaBarModeBanner": "Baner",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "adminMetadataFieldArtists": "Artistiaid",
+    "adminLiveTvTabRecordings": "Recordiadau",
+    "adminMetadataLockFieldName": "Enw",
+    "adminMetadataLockFieldGenres": "Genres",
+    "adminMetadataLockFieldCast": "Pobl",
+    "adminMetadataLockFieldRuntime": "Amser rhedeg",
+    "watchPartyType": "Math",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "achievementsStatsWatched": "Gwyliwyd",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "seerrOriginalLanguage": "Iaith Wreiddiol",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "animationSpeedOff": "I ffwrdd",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "bottomNavbarTabsAvailable": "Ar gael",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortLastPlayed": "Chwaraewyd ddiwethaf",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortGenre": "Genre",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "detailsBackdropFit": "Ffit",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "calendarSettingsColorByType": "Math",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Chwarae",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "loadingAnimationSizeMedium": "Canolig",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "animationSpeedMedium": "Canolig",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animeMarkerPending": "Arfaeth",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "castMembers": "Castio",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "performanceMode": "Perfformiad",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "keyNameDelete": "Dileu",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "detailMetadataStatus": "Statws y Gyfres",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Genres",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "seasonalRowCountryOther": "Arall",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "loadingAnimationSizeSmall": "Bach",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "savedMediaRead": "Darllen",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "detailSectionSeerrPersonAppearances": "Ymddangosiadau",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "seerrDownloading": "Wrthi'n llwytho i lawr",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "adminGroupLibrary": "Llyfrgell",
+    "adminMetadataLockFieldStudios": "Stiwdios",
+    "adminMetadataLockFieldTags": "Tagiau",
+    "adminMetadataDisplayOrderTv": "teledu",
+    "chatGroupName": "Enw grŵp",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "filterTrailers": "Rhaghysbysebion",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "librarySortAlbum": "Albwm",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "adminLogWatch": "Gwylio",
+    "accountActive": "Actif",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyboardStyleClassic": "Clasurol",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "spotlightCollectionsCard": "Casgliadau",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "loadingAnimationSizeThumbnail": "Mân-lun",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "sortByName": "Enw",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "guideRepeatBadge": "Ailadrodd",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "loadingAnimationSizeLarge": "Mawr",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "detailSectionGroupOther": "Arall",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionChapters": "Penodau",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "homeRowsExternalLists": "Rhestrau Allanol",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "libraryStyleClassic": "Clasurol",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "adminMetadataFieldAlbum": "Albwm",
+    "chatLeave": "Gadael y grŵp",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "seerrRuntime": "Amser rhedeg",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "detailSectionLyrics": "Geiriau",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Castio",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionExtras": "Ychwanegion",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Casgliadau",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionSeerrRecommendations": "Argymhellion",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "performanceModeAuto": "Awto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "rendererModeAuto": "Awto",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "filtersHeader": "Hidlau",
+    "achievementsAppearance": "Gwedd",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "adminLogLevelNone": "Dim",
+    "afterHoursCastStatic": "Statig",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "upcomingEpisodeToday": "Heddiw",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "screensaverBackdropBlack": "Du",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "tags": "Tagiau",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "adminEmbyConnect": "Cyswllt Emby",
+    "adminTranscodingHwaAdvanced": "Uwch",
+    "adminTaskResultFailed": "Wedi methu",
+    "adminGroupPlayback": "Chwarae yn ôl",
+    "adminGroupPeople": "Pobl",
+    "emulatorCoreDownloading": "Wrthi'n llwytho i lawr",
+    "selectAllStudios": "Dewiswch Pawb",
+    "externalRowSortName": "Enw",
+    "externalRowSortReleaseDate": "Dyddiad Rhyddhau",
+    "externalRowSortShuffle": "Cymysgu",
+    "friendsDecline": "Dirywiad",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "setupStyleClassic": "Clasurol",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Modern",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "setupStylePremiere": "Première",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "autoDownloadKeepAll": "Pawb",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "Byth",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "Wrthi'n llwytho i lawr",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "playlistSortRuntime": "Amser rhedeg",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "recordPromptNow": "Yn awr",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "siloApproveSignInApprove": "Cymeradwyo",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "filterExtras": "Ychwanegion",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "loadingAnimationPositionBouncing": "Yn bownsio",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "detailSectionStudios": "Stiwdios",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "bookLibraryStyleClassic": "Clasurol",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "audioPlaylistsSection": "Rhestrau Chwarae Sain",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "playlistSortReleaseDate": "Dyddiad Rhyddhau",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistTypeVideo": "Fideo",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "adminMetadataSectionRatings": "Graddfeydd",
+    "screensaverBackdrop": "Cefndir",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "interfaceLayoutTv": "teledu",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "Penbwrdd",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "settingsAdvancedSection": "Uwch",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    }
 }

@@ -143,8 +143,7 @@ The store links above are the easy route. To install a file yourself, download i
 
 | Platform | File |
 |---|---|
-| Android (phones and tablets) | `Moonfin_Android_v<version>.apk` |
-| Android TV / Google TV / Fire TV | `Moonfin_AndroidTV_v<version>.apk` |
+| Android phones, tablets, Android TV, Google TV and Fire TV | `Moonfin_Android_v<version>.apk` |
 | iOS | `Moonfin_iOS_v<version>_unsigned.ipa` (for self-signing) |
 | Apple TV | `Moonfin_tvOS_v<version>_unsigned.ipa` (for self-signing) |
 | Windows x64 | `Moonfin_Windows_v<version>.exe` |

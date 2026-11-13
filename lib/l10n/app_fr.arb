@@ -18651,5 +18651,9 @@
     "afterHoursPixelPurgeCardRemote": "Gauche et Droite déplacent le curseur.",
     "@afterHoursPixelPurgeCardRemote": {
         "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "seerrDownloadFailed": "Échec du téléchargement",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

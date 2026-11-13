@@ -18574,5 +18574,17 @@
     "settingsPreviewShowEpisodesNote": "Cambia solo le righe di una singola collezione aggiunta in Righe. La riga Collezioni resta uguale.",
     "@settingsPreviewShowEpisodesNote": {
         "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+    },
+    "seerrWaitingForImport": "Scaricato, in attesa di importazione",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Bloccato",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrDownloadFailed": "Download non riuscito",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

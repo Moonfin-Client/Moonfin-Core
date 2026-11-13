@@ -54,7 +54,7 @@ jobs:
       - name: Build web bundle
         run: |
           flutter pub get
-          flutter build web --wasm --release --base-href "/Moonfin/Web/"
+          flutter build web --wasm --release --no-web-resources-cdn --base-href "/Moonfin/Web/"
 
       - name: Ensure jq is available
         run: |

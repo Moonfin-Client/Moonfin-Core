@@ -1372,7 +1372,7 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_home_rows_style',
     defaultValue: PlatformDetection.useMobileUi
         ? HomeRowsStyle.v1
-        : HomeRowsStyle.v2,
+        : (PlatformDetection.isTV ? HomeRowsStyle.carousel : HomeRowsStyle.v2),
     values: HomeRowsStyle.values,
   );
 
@@ -3272,7 +3272,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final mediaBarTrailerPreview = Preference(
     key: 'mediaBarTrailerPreview',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final mediaBarTrailerAudio = Preference(

@@ -157,6 +157,10 @@ enum FavoritesViewStyle {
 enum HomeRowsStyle {
   v1,
   v2,
+  carousel;
+
+  /// Carousel rows are Modern rows with a details panel under the cards.
+  bool get usesModernCards => this != v1;
 }
 
 enum DesktopUiScale {

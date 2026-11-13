@@ -12540,6 +12540,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get homeRowsStyleModern => 'Modernus';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Pradžios eilutės';
 
   @override
@@ -15695,6 +15698,10 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

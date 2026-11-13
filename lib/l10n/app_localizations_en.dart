@@ -12415,6 +12415,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Home Rows';
 
   @override
@@ -12422,7 +12425,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.';
 
   @override
   String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
@@ -15559,6 +15562,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';

@@ -12607,6 +12607,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get homeRowsStyleModern => 'Модерни';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Редови почетне странице';
 
   @override
@@ -15773,6 +15776,10 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get setupRowsModernHint => 'Веће картице са насловима испод.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Сав садржај поређан у једном низу.';

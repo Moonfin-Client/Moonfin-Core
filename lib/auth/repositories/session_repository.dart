@@ -467,8 +467,8 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
-    // Register the FCM token now that a session exists. Startup registration
-    // bails before login, so this is where closed-app push actually enrolls.
+    // Register the FCM token now that a session exists. This is where Firebase
+    // first starts, and only when the plugin can deliver push.
     if (PlatformDetection.isMobile) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {

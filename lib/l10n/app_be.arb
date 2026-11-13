@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "Аддаць перавагу перакадаванню сервера",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Профіль 7 Прамая гульня",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Кантралюе, ці павінны патокі ўзроўню паляпшэння профілю 7 Dolby Vision накіроўваць прайграванне.",
-    "settingsAutoAftkrtEnabled": "Аўта (AFTKRT уключаны)",
-    "settingsEnabledOnThisDevice": "Уключана на гэтай прыладзе",
-    "settingsDisabledPreferTranscode": "Адключана (пераважна перакадаваць)",
+    "settingsAutoAftkrtEnabled": "Аўта",
+    "settingsEnabledOnThisDevice": "Уключана",
+    "settingsDisabledPreferTranscode": "Выкл.",
     "settingsResumeRewindDescription": "Пры аднаўленні прайгравання (са старонкі \"Працягнуць прагляд\" ці старонкі мультымедыя), на колькі секунд трэба пераматаць назад?",
     "settingsUnpauseRewindDescription": "На колькі секунд трэба пераматаць назад пры аднаўленні прайгравання пасля націску кнопкі паўзы?",
     "settingsSkipBackLengthDescription": "Колькі секунд трэба перайсці назад пасля націску кнопкі перамоткі.",
@@ -8958,5 +8958,366 @@
     "imdbMostPopularMovies": "Самыя папулярныя фільмы IMDb",
     "imdbMostPopularTvShows": "Самыя папулярныя серыялы IMDb",
     "imdbLowestRatedMovies": "Фільмы з найніжэйшым рэйтынгам IMDb",
-    "imdbTopEnglishMovies": "Найлепшыя англамоўныя фільмы IMDb"
+    "imdbTopEnglishMovies": "Найлепшыя англамоўныя фільмы IMDb",
+    "detailScreenStylePremiere": "Прэм'ера",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "loadingAnimationSizeLarge": "Вялікі",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "animeMarkerPending": "У чаканні",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "detailSectionPoster": "Плакат",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionSeerrRecommendations": "Рэкамендацыі",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "loadingAnimationSizeThumbnail": "Мініяцюра",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Маленькі",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Сярэдні",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "detailSectionChapters": "раздзелы",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "seasonalRowCountryOther": "Іншае",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "adminMetadataFieldArtists": "Выканаўцы",
+    "adminMetadataLockFieldCast": "Людзі",
+    "bookLibraryStyleClassic": "Класічны",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "musicLibraryStyleClassic": "Класічны",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "adminEmbyConnect": "Emby Падключыцца",
+    "adminTranscodingHwaAdvanced": "Пашыраны",
+    "adminMetadataDisplayOrderTv": "тэлевізар",
+    "adminMetadataLockFieldTags": "Тэгі",
+    "watchPartyType": "Тып",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "seerrOriginalLanguage": "Мова арыгінала",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "playlistSortLastPlayed": "Апошняя гульня",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortGenre": "Жанр",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "calendarSettingsColorByType": "Тып",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Прайграць",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "keyNameHome": "Галоўная",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "keyboardStyleClassic": "Класічны",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "rendererModeAuto": "Аўта",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "performanceModeAuto": "Аўта",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "interfaceLayoutDesktop": "Працоўны стол",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "detailSectionLogo": "Лагатып",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "savedMediaRead": "Прачытайце",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "Імя",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "detailSectionBiography": "Біяграфія",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "libraryStyleClassic": "Класічны",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "adminMetadataLockFieldGenres": "Жанры",
+    "setupStylePremiere": "Прэм'ера",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "playlistTypeVideo": "Відэа",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "setupStyleModern": "Сучасны",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "detailsBackdropFit": "Прыстасаваны",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "seerrRuntime": "Час выканання",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "detailMetadataGenres": "Жанры",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "settingsAudioPassthroughMode": "Прахадны",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "homeRowsExternalLists": "Знешнія спісы",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "castMembers": "Трансляваць",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "animationSpeedOff": "Выкл.",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "animationSpeedMedium": "Сярэдні",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "filterTrailers": "Трэйлеры",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "setupStyleClassic": "Класічны",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "autoDownloadKeepAll": "Усе",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "audioPlaylistsSection": "Аўдыяплэйлісты",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "libraryStyleModern": "Сучасны",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataSectionRatings": "Ацэнкі",
+    "adminLogWatch": "Глядзець",
+    "librarySortAlbum": "Альбом",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "accountActive": "Актыўны",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "guideRepeatBadge": "Паўтарыць",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "keyNameDelete": "Выдаліць",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "detailSectionSeerrPersonAppearances": "Ролі",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "seerrDownloading": "Ідзе загрузка",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "tags": "Тэгі",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "adminMetadataFieldAlbum": "Альбом",
+    "adminMetadataLockFieldRuntime": "Час выканання",
+    "externalRowSortName": "Імя",
+    "externalRowSortReleaseDate": "Дата выпуску",
+    "externalRowSortShuffle": "Перамяшаць",
+    "siloApproveSignInApprove": "Ухваліць",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "spotlightCollectionsCard": "Зборнікі",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "detailSectionStudios": "Студыі",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionExtras": "Дадаткі",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Зборнікі",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Яшчэ падобнае",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "performanceMode": "Прадукцыйнасць",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "loadingAnimationPositionBouncing": "Скачучы",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdropBlack": "Чорны",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "detailSectionLyrics": "Тэкст",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "adminMetadataLockFieldStudios": "Студыі",
+    "afterHoursCastStatic": "Нерухомы",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "adminLogLevelNone": "Няма",
+    "adminTaskResultFailed": "Не ўдалося",
+    "adminGroupLibrary": "Бібліятэка",
+    "adminGroupPlayback": "Прайграванне",
+    "adminGroupPeople": "Людзі",
+    "friendsDecline": "адмовіцца",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatLeave": "Пакінуць групу",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "filterExtras": "Дадаткі",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "playlistSortReleaseDate": "Дата выпуску",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "recordPromptNow": "зараз",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "upcomingEpisodeToday": "сёння",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "mediaBarModeBanner": "Расцяжка",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "emulatorCoreDownloading": "Ідзе загрузка",
+    "selectAllStudios": "Выбраць усе",
+    "achievementsAppearance": "Знешні выгляд",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "autoDownloadDeleteNever": "ніколі",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "Ідзе загрузка",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "bottomNavbarTabsAvailable": "Даступны",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortRuntime": "Час выканання",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "achievementsStatsWatched": "Прагледжана",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "detailSectionGroupOther": "Іншае",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "chatGroupName": "Назва групы",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "interfaceLayoutTv": "тэлевізар",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "detailMetadataStatus": "Статус серыі",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "filtersHeader": "Фільтры",
+    "detailSectionUpNext": "Далей",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "adminMetadataLockFieldName": "Імя",
+    "detailSectionCast": "Трансляваць",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "adminLiveTvTabRecordings": "Запісы",
+    "screensaverBackdrop": "Фон",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "settingsAdvancedSection": "Пашыраны",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    }
 }

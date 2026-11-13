@@ -104,11 +104,18 @@ class LogService extends ChangeNotifier {
   // kept and only the value goes, since knowing auth was present still reads.
   // A hyphenated name like X-Emby-Token is covered by the bare token branch.
   static final _credentialRegex = RegExp(
-    r"""\b(api[_-]?key|access[_-]?token|auth[_-]?token|authorization|token)"""
+    r"""\b(api[_-]?key|access[_-]?token|auth[_-]?token|refresh[_-]?token|"""
+    r"""authorization|token|password|passwd|pass|pwd|client[_-]?secret|"""
+    r"""secret|signature|sig)"""
     r"""(\s*[:=]\s*"?)"""
     r"""((?:(?:Bearer|Basic|MediaBrowser)\s+)?[^\s&"',;<>{}\[\]]+)""",
     caseSensitive: false,
   );
+
+  static final _emailRegex = RegExp(r'[\w.+-]+@[\w-]+(?:\.[\w-]+)+');
+
+  // The folder after home is the account name, often the person's own.
+  static final _homeDirRegex = RegExp(r'(/home/|/Users/|\\Users\\)[^/\\\s]+');
 
   static final _ipv4Regex = RegExp(
     r'\b(?:\d{1,3}\.){3}\d{1,3}\b',
@@ -416,12 +423,26 @@ class LogService extends ChangeNotifier {
 
     if (lower.contains('key') ||
         lower.contains('token') ||
-        lower.contains('auth')) {
+        lower.contains('auth') ||
+        lower.contains('pass') ||
+        lower.contains('pwd') ||
+        lower.contains('secret') ||
+        lower.contains('sig')) {
       result = result.replaceAllMapped(_credentialRegex, (match) {
         return '${match.group(1)}${match.group(2)}[REDACTED]';
       });
     }
-    
+
+    if (result.contains('@')) {
+      result = result.replaceAll(_emailRegex, '[REDACTED]');
+    }
+
+    if (lower.contains('home/') || lower.contains('users')) {
+      result = result.replaceAllMapped(_homeDirRegex, (match) {
+        return '${match.group(1)}[REDACTED]';
+      });
+    }
+
     // catch any ipv4's
     if (result.contains('.')) {
       result = result.replaceAll(_ipv4Regex, '[REDACTED]');

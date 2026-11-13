@@ -77,7 +77,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   final Set<String> _modernRatingsRequested = {};
 
   bool get _isModern =>
-      _prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+      _prefs.get(UserPreferences.homeRowsStyle).usesModernCards;
 
   GlobalKey<LockedFocusRowState> _getRowKey(int index) {
     return _rowKeys.putIfAbsent(index, () => GlobalKey<LockedFocusRowState>());
