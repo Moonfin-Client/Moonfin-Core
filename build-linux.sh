@@ -990,6 +990,43 @@ EOF
   fi
 }
 
+# Fails when the bundled FFmpeg can't decode HEVC or H.264. libavcodec comes
+# from whatever FFmpeg the build host's libmpv links, and a codec-limited one,
+# like Fedora's ffmpeg-free, would ship the black-screen bug the bundle exists
+# to fix. Asks libavcodec itself, since its strings can't tell an enabled
+# decoder from a codec it only describes.
+verify_bundled_video_decoders() {
+  local lib_dir="$1"
+  local avcodec
+  avcodec="$(find "$lib_dir" -maxdepth 1 -name 'libavcodec.so.*' ! -type l 2>/dev/null | sort -V | tail -n1)"
+  if [ -z "$avcodec" ]; then
+    echo "Error: no libavcodec in $lib_dir, so libmpv would fall back to the system FFmpeg." >&2
+    return 1
+  fi
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "Warning: python3 not found; could not check $(basename "$avcodec") for HEVC and H.264 decoders." >&2
+    return 0
+  fi
+
+  local status=0
+  LD_LIBRARY_PATH="$lib_dir" python3 -I - "$avcodec" << 'EOF' || status=$?
+import ctypes, sys
+avcodec = ctypes.CDLL(sys.argv[1])
+avcodec.avcodec_find_decoder_by_name.restype = ctypes.c_void_p
+missing = [n for n in ("hevc", "h264") if not avcodec.avcodec_find_decoder_by_name(n.encode())]
+if missing:
+    print("Error: the bundled " + sys.argv[1].rsplit("/", 1)[-1] + " has no decoder for: "
+          + ", ".join(missing) + ". Build on a host whose libmpv uses a full FFmpeg.",
+          file=sys.stderr)
+    sys.exit(1)
+EOF
+  if [ "$status" -ne 0 ]; then
+    echo "Error: the bundled FFmpeg failed the HEVC and H.264 decoder check." >&2
+    return 1
+  fi
+  echo "Bundled $(basename "$avcodec") decodes HEVC and H.264"
+}
+
 build_rpm() {
   echo "=== Building RPM Package (.rpm) ==="
   if ! command -v rpmbuild >/dev/null 2>&1; then
@@ -1019,6 +1056,7 @@ build_rpm() {
     echo "Error: could not bundle runtime libraries for the RPM." >&2
     return 1
   fi
+  verify_bundled_video_decoders "$stage_dir/lib" || return 1
 
   # The bundled libraries are private to Moonfin. Keep rpm from advertising
   # them to the rest of the system, and from asking the system for them.
@@ -1090,6 +1128,17 @@ EOF
   rpmbuild --define "_topdir $rpm_dir" -bb "$spec_file" || true
   local rpm_file=$(find "$rpm_dir/RPMS" -name "*.rpm" 2>/dev/null | head -1)
   if [ -n "$rpm_file" ]; then
+    # If the exclude filters were ignored, the package would ask the system
+    # for libmpv and FFmpeg again, or offer its private copies to other
+    # packages. Refuse to ship it either way.
+    local leaked
+    leaked="$( { rpm -qpR "$rpm_file"; rpm -qp --provides "$rpm_file"; } 2>/dev/null \
+      | grep -E '^(libmpv|libav[a-z]*|libsw[a-z]*|libpostproc)[.]so' || true)"
+    if [ -n "$leaked" ]; then
+      echo "Error: the RPM still requires or provides bundled libraries:" >&2
+      printf '%s\n' "$leaked" | sed 's/^/  /' >&2
+      return 1
+    fi
     cp "$rpm_file" "$REPO_ROOT/$rpm_name"
     echo "✓ Created: $REPO_ROOT/$rpm_name"
   fi
