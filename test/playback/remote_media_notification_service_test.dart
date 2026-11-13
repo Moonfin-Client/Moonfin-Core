@@ -311,10 +311,11 @@ void main() {
     socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
     await Future<void>.delayed(Duration.zero);
     expect(service.activeSession, isNotNull);
-    expect(service.keepsSocketAlive, isFalse);
+    expect(service.keepsSocketAlive, isTrue);
 
     service.dismissCurrent();
     expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isFalse);
     expect(sessionApi.commands, isEmpty);
 
     // Same paused item does not re-appear.
@@ -592,6 +593,61 @@ void main() {
     await service.adjustVolume(1);
 
     expect(sessionApi.commands, ['general:sess-tv:SetVolume:{Volume: 45}']);
+  });
+
+  test('keepsSocketAlive bridges pauses up to pausedSocketGrace without resetting on heartbeats', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    var fakeNow = DateTime(2026, 1, 1, 12, 0, 0);
+    final clockedService = RemoteMediaNotificationService(
+      socketHandler: socket,
+      castService: castService,
+      prefs: prefs,
+      activeClient: () => client,
+      enabledOnPlatform: true,
+      now: () => fakeNow,
+    );
+    addTearDown(clockedService.dispose);
+
+    clockedService.start();
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: false)]));
+    await Future<void>.delayed(Duration.zero);
+    expect(clockedService.keepsSocketAlive, isTrue);
+
+    // Pausing enters the bounded socket grace window.
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
+    await Future<void>.delayed(Duration.zero);
+    expect(clockedService.activeSession?.isPlaying, isFalse);
+    expect(clockedService.keepsSocketAlive, isTrue);
+
+    // Identical paused heartbeats 20 minutes later do not extend the deadline.
+    fakeNow = fakeNow.add(const Duration(minutes: 20));
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
+    await Future<void>.delayed(Duration.zero);
+    expect(clockedService.keepsSocketAlive, isTrue);
+
+    // Seeking while paused does reset the grace window.
+    fakeNow = fakeNow.add(const Duration(minutes: 5));
+    socket.eventsController.add(
+      SessionsMessage([_tvSession(isPaused: true, positionSeconds: 180)]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(clockedService.keepsSocketAlive, isTrue);
+
+    // 10 minutes after the seek (35 minutes since initial pause), still within
+    // the reset 30-minute window.
+    fakeNow = fakeNow.add(const Duration(minutes: 10));
+    expect(clockedService.keepsSocketAlive, isTrue);
+
+    // Past 30 minutes from the seek, keepsSocketAlive drops to false.
+    fakeNow = fakeNow.add(const Duration(minutes: 21));
+    expect(clockedService.keepsSocketAlive, isFalse);
+
+    // Resuming immediately re-arms keepsSocketAlive.
+    socket.eventsController.add(
+      SessionsMessage([_tvSession(isPaused: false, positionSeconds: 181)]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(clockedService.keepsSocketAlive, isTrue);
   });
 }
 

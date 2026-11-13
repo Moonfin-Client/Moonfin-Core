@@ -239,6 +239,7 @@ void main() {
   });
 
   tearDown(() async {
+    handler.disposeForTest();
     debugDefaultTargetPlatformOverride = null;
     remoteService.dispose();
     await socket.close();
@@ -417,5 +418,158 @@ void main() {
     await stopFuture;
     expect(handler.isRemoteMode, isFalse);
     expect(handler.mediaItem.value?.id, 'song-1');
+  });
+
+  test('keeps remote session ready across pause and resume', () async {
+    remoteService.activeSessionNotifier.value = _remoteSession(isPlaying: true);
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+    expect(handler.playbackState.value.playing, isTrue);
+    expect(
+      handler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+
+    // Pausing keeps remote mode and notification controls alive.
+    remoteService.activeSessionNotifier.value = _remoteSession(isPlaying: false);
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+    expect(handler.mediaItem.value?.id, 'remote:sess-tv:ep-1');
+    expect(handler.playbackState.value.playing, isFalse);
+    expect(
+      handler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+    expect(handler.playbackState.value.controls, [
+      MediaControl.rewind,
+      MediaControl.play,
+      MediaControl.fastForward,
+      MediaControl.stop,
+    ]);
+
+    // Resuming transitions back to playing without recreating remote mode.
+    remoteService.activeSessionNotifier.value = _remoteSession(isPlaying: true);
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+    expect(handler.playbackState.value.playing, isTrue);
+    expect(
+      handler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+    expect(handler.playbackState.value.controls, [
+      MediaControl.rewind,
+      MediaControl.pause,
+      MediaControl.fastForward,
+      MediaControl.stop,
+    ]);
+  });
+
+  test('emits idle after pausedForegroundGrace and recovers on resume or new item', () async {
+    final shortGraceHandler = MoonfinAudioHandler(
+      manager,
+      _FakeClientFactory(),
+      _FakeBrowse(),
+      _FakeSessionStore(),
+      remoteService: remoteService,
+      pausedForegroundGrace: const Duration(milliseconds: 25),
+    );
+    addTearDown(shortGraceHandler.disposeForTest);
+
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-1',
+      isPlaying: true,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-1',
+      isPlaying: false,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    expect(shortGraceHandler.mediaItem.value, isNull);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
+
+    // Repeated paused updates for the timed-out item keep it idle.
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-1',
+      isPlaying: false,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
+
+    // Resuming the same item immediately restores ready remote controls.
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-1',
+      isPlaying: true,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+    expect(shortGraceHandler.playbackState.value.playing, isTrue);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+
+    // Switching to another paused item also exits the timed-out suppression.
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-1',
+      isPlaying: false,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    remoteService.activeSessionNotifier.value = _remoteSession(
+      itemId: 'ep-2',
+      isPlaying: false,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(shortGraceHandler.isRemoteMode, isTrue);
+    expect(shortGraceHandler.mediaItem.value?.id, 'remote:sess-tv:ep-2');
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+  });
+
+  test('emits idle after pausedForegroundGrace during local paused playback', () async {
+    final shortGraceHandler = MoonfinAudioHandler(
+      manager,
+      _FakeClientFactory(),
+      _FakeBrowse(),
+      _FakeSessionStore(),
+      remoteService: remoteService,
+      pausedForegroundGrace: const Duration(milliseconds: 25),
+    );
+    addTearDown(shortGraceHandler.disposeForTest);
+
+    manager.queueService.setQueue([_localSong]);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(shortGraceHandler.isRemoteMode, isFalse);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+    expect(shortGraceHandler.playbackState.value.playing, isFalse);
+
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
   });
 }

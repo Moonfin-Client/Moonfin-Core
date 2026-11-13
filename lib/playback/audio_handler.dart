@@ -51,6 +51,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
   bool _sessionActive = false;
   bool _resumeAfterInterruption = false;
 
+  static const Duration defaultPausedForegroundGrace = Duration(minutes: 30);
+
+  final Duration pausedForegroundGrace;
   bool _remoteMode = false;
   bool _remotePlaybackInfoActive = false;
   String? _lastRemoteMediaKey;
@@ -60,6 +63,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
   bool? _lastRemoteBuffering;
   bool? _lastRemoteCanSeek;
   int _remotePushGeneration = 0;
+  Timer? _pausedIdleTimer;
+  String? _pausedIdleKey;
+  String? _timedOutRemoteMediaKey;
+  bool _localPauseTimedOut = false;
+  dynamic _lastLocalCurrentItem;
 
   AetherBackend? _engineNowPlaying;
 
@@ -69,6 +77,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     this._browse,
     this._lastSessionStore, {
     this._remoteService,
+    this.pausedForegroundGrace = defaultPausedForegroundGrace,
   }) {
     _bindStreams();
     unawaited(_attachAndroidInterruptions());
@@ -361,10 +370,34 @@ class MoonfinAudioHandler extends BaseAudioHandler
         processingState: AudioProcessingState.idle,
         playing: false,
       ));
+      _cancelPausedIdleTimer();
       return;
     }
 
     final currentItem = q.currentItem;
+    if (currentItem == null) {
+      _lastLocalCurrentItem = null;
+      _localPauseTimedOut = false;
+      if (_pausedIdleKey?.startsWith('local:') == true) {
+        _cancelPausedIdleTimer();
+      }
+    } else {
+      if (!identical(currentItem, _lastLocalCurrentItem)) {
+        _lastLocalCurrentItem = currentItem;
+        _localPauseTimedOut = false;
+      }
+      if (s.isPlaying || s.isBuffering) {
+        _localPauseTimedOut = false;
+        if (_pausedIdleKey?.startsWith('local:') == true) {
+          _cancelPausedIdleTimer();
+        }
+      } else {
+        if (_localPauseTimedOut) {
+          return;
+        }
+        _scheduleLocalPausedIdleTimer(currentItem, q.currentIndex);
+      }
+    }
     final isAudiobook = currentItem is AggregatedItem && currentItem.isAudiobook;
 
     final controls = isAudiobook
@@ -449,13 +482,28 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   void _onRemoteSessionChanged() {
     if (_hasLocalItem) {
+      _timedOutRemoteMediaKey = null;
       if (_remoteMode) _exitRemoteMode(emitIdle: false);
       return;
     }
     final session = _remoteService?.activeSession;
     if (session == null || PlatformDetection.isTV) {
+      _timedOutRemoteMediaKey = null;
       if (_remoteMode) _exitRemoteMode(emitIdle: true);
       return;
+    }
+    if (session.isPlaying || session.isBuffering) {
+      _timedOutRemoteMediaKey = null;
+      _cancelPausedIdleTimer();
+    } else {
+      if (_timedOutRemoteMediaKey != null &&
+          _timedOutRemoteMediaKey != session.identityKey) {
+        _timedOutRemoteMediaKey = null;
+      }
+      if (_timedOutRemoteMediaKey == session.identityKey) {
+        return;
+      }
+      _scheduleRemotePausedIdleTimer(session.identityKey);
     }
     final mediaChanged =
         !_remoteMode || _lastRemoteMediaKey != session.identityKey;
@@ -468,9 +516,72 @@ class MoonfinAudioHandler extends BaseAudioHandler
     }
   }
 
+  void _cancelPausedIdleTimer() {
+    _pausedIdleTimer?.cancel();
+    _pausedIdleTimer = null;
+    _pausedIdleKey = null;
+  }
+
+  void _scheduleRemotePausedIdleTimer(String identityKey) {
+    final key = 'remote:$identityKey';
+    if (_pausedIdleTimer != null && _pausedIdleKey == key) {
+      return;
+    }
+    _pausedIdleTimer?.cancel();
+    _pausedIdleKey = key;
+    _pausedIdleTimer = Timer(pausedForegroundGrace, () {
+      if (_pausedIdleKey != key) return;
+      _pausedIdleTimer = null;
+      _pausedIdleKey = null;
+      if (_hasLocalItem || PlatformDetection.isTV) return;
+      final current = _remoteService?.activeSession;
+      if (current == null ||
+          current.identityKey != identityKey ||
+          current.isPlaying ||
+          current.isBuffering) {
+        return;
+      }
+      _timedOutRemoteMediaKey = identityKey;
+      _exitRemoteMode(emitIdle: true);
+    });
+  }
+
+  void _scheduleLocalPausedIdleTimer(dynamic currentItem, int queueIndex) {
+    final key = 'local:${identityHashCode(currentItem)}:$queueIndex';
+    if (_pausedIdleTimer != null && _pausedIdleKey == key) {
+      return;
+    }
+    _pausedIdleTimer?.cancel();
+    _pausedIdleKey = key;
+    _pausedIdleTimer = Timer(pausedForegroundGrace, () {
+      if (_pausedIdleKey != key) return;
+      _pausedIdleTimer = null;
+      _pausedIdleKey = null;
+      if (_shouldMirrorRemote) return;
+      final q = _manager.queueService;
+      final s = _manager.state;
+      if (!identical(q.currentItem, currentItem) ||
+          q.currentIndex != queueIndex ||
+          s.isPlaying ||
+          s.isBuffering) {
+        return;
+      }
+      _localPauseTimedOut = true;
+      playbackState.add(PlaybackState(
+        controls: const [],
+        systemActions: const {},
+        processingState: AudioProcessingState.idle,
+        playing: false,
+      ));
+    });
+  }
+
   void _exitRemoteMode({required bool emitIdle}) {
     _remoteMode = false;
     _remotePushGeneration++;
+    if (_pausedIdleKey?.startsWith('remote:') == true) {
+      _cancelPausedIdleTimer();
+    }
     _lastRemoteMediaKey = null;
     _lastRemotePushedPosition = null;
     _lastRemotePushedAt = null;
@@ -915,6 +1026,10 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> stop() async {
+    _cancelPausedIdleTimer();
+    _timedOutRemoteMediaKey = null;
+    _localPauseTimedOut = false;
+    _lastLocalCurrentItem = null;
     if (isRemoteMode) {
       await _remoteService!.stop();
       if (_hasLocalItem) return;
@@ -934,11 +1049,24 @@ class MoonfinAudioHandler extends BaseAudioHandler
   @override
   Future<void> onNotificationDeleted() async {
     if (isRemoteMode) {
+      _timedOutRemoteMediaKey = null;
       _remoteService!.dismissCurrent();
       _exitRemoteMode(emitIdle: true);
       return;
     }
+    _cancelPausedIdleTimer();
     await super.onNotificationDeleted();
+  }
+
+  /// Releases timers, subscriptions, and listeners held by tests.
+  @visibleForTesting
+  void disposeForTest() {
+    _cancelPausedIdleTimer();
+    _remoteService?.activeSessionNotifier.removeListener(_onRemoteSessionChanged);
+    for (final sub in _subs) {
+      unawaited(sub.cancel());
+    }
+    _subs.clear();
   }
 
   @override
@@ -1076,10 +1204,13 @@ Future<void> initAudioService({
       androidNotificationChannelId: 'com.moonfin.app.audio',
       androidNotificationChannelName: 'Music Playback',
       androidNotificationOngoing: false,
-      // Must stay true. When false, audio_service holds its partial wake lock
-      // and the media playback foreground service forever after a pause, which
-      // is what makes Android warn about the app draining the battery.
-      androidStopForegroundOnPause: true,
+      // Keep the foreground notification alive across temporary pauses so
+      // lock-screen / shade controls and the remote session socket remain
+      // responsive for resuming. Unbounded battery drain is prevented by
+      // MoonfinAudioHandler.defaultPausedForegroundGrace, which emits idle
+      // after 30 minutes of continuous pause to release the wake lock and
+      // foreground service.
+      androidStopForegroundOnPause: false,
       notificationColor: const Color(0xFF1A1A2E),
       androidNotificationIcon: 'drawable/ic_notification',
       androidBrowsableRootExtras: {

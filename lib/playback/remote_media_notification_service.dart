@@ -97,9 +97,13 @@ class RemoteMediaNotificationService {
     required this._activeClient,
     this._clientFactory,
     bool? enabledOnPlatform,
+    DateTime Function()? now,
   }) : _enabledOnPlatform =
            enabledOnPlatform ??
-           (PlatformDetection.isAndroid && !PlatformDetection.isTV);
+           (PlatformDetection.isAndroid && !PlatformDetection.isTV),
+       _now = now ?? DateTime.now;
+
+  static const Duration pausedSocketGrace = Duration(minutes: 30);
 
   final SocketHandler _socketHandler;
   final CastService _castService;
@@ -107,6 +111,7 @@ class RemoteMediaNotificationService {
   final MediaServerClient? Function() _activeClient;
   final MediaServerClientFactory? _clientFactory;
   final bool _enabledOnPlatform;
+  final DateTime Function() _now;
 
   final ValueNotifier<RemoteMediaSession?> activeSessionNotifier = ValueNotifier(
     null,
@@ -117,7 +122,10 @@ class RemoteMediaNotificationService {
   StreamSubscription<void>? _socketConnSub;
   Timer? _refreshDebounce;
   Timer? _fallbackPollTimer;
+  Timer? _pausedGraceTimer;
   DateTime? _lastSessionsPushAt;
+  DateTime? _pausedSince;
+  String? _pausedIdentityKey;
   bool _started = false;
   bool _subscribedToSessions = false;
   MediaServerClient? _fetchingClient;
@@ -130,16 +138,56 @@ class RemoteMediaNotificationService {
 
   RemoteMediaSession? get activeSession => activeSessionNotifier.value;
 
-  /// True while mirroring an actively playing Jellyfin remote session (or when
-  /// one was locally dismissed while still playing) so the WebSocket stays
-  /// connected across brief screen-off / background periods.
+  bool _isWithinPausedSocketGrace() {
+    final pausedSince = _pausedSince;
+    if (pausedSince == null) return false;
+    return _now().difference(pausedSince) < pausedSocketGrace;
+  }
+
+  /// True while mirroring an actively playing or recently paused Jellyfin
+  /// remote session (or when one was locally dismissed while still playing) so
+  /// the WebSocket stays connected across screen-off / background periods.
   bool get keepsSocketAlive {
     if (!_isFeatureEnabled) return false;
     final session = activeSessionNotifier.value;
-    if (session != null) return session.isPlaying;
+    if (session != null) {
+      if (session.isCastBacked) return false;
+      return session.isPlaying || _isWithinPausedSocketGrace();
+    }
     return _dismissedIdentityKey != null &&
         !_dismissedIsCastBacked &&
         _dismissedCandidatePlaying;
+  }
+
+  void _clearPausedGrace() {
+    _pausedSince = null;
+    _pausedIdentityKey = null;
+    _pausedGraceTimer?.cancel();
+    _pausedGraceTimer = null;
+  }
+
+  void _updatePausedGraceFor(RemoteMediaSession session) {
+    if (session.isCastBacked || session.isPlaying) {
+      _clearPausedGrace();
+      return;
+    }
+    final prev = activeSessionNotifier.value;
+    final pausedNewSession =
+        _pausedSince == null || _pausedIdentityKey != session.identityKey;
+    final transitionedToPaused = prev != null && prev.isPlaying;
+    final soughtWhilePaused =
+        prev != null &&
+        prev.identityKey == session.identityKey &&
+        prev.position != session.position;
+    if (pausedNewSession || transitionedToPaused || soughtWhilePaused) {
+      _pausedSince = _now();
+      _pausedIdentityKey = session.identityKey;
+      _pausedGraceTimer?.cancel();
+      _pausedGraceTimer = Timer(pausedSocketGrace, () {
+        _pausedGraceTimer = null;
+        _syncFallbackPoll();
+      });
+    }
   }
 
   void _clearDismissedState() {
@@ -176,6 +224,7 @@ class RemoteMediaNotificationService {
     _sessionGeneration++;
     _sessionsById.clear();
     _preferredSessionId = null;
+    _clearPausedGrace();
     _clearDismissedState();
     _lastSessionsPushAt = null;
     _syncSubscription();
@@ -187,6 +236,11 @@ class RemoteMediaNotificationService {
   Future<void> refresh() async {
     if (!_started) return;
     _syncSubscription();
+    final current = activeSessionNotifier.value;
+    if (current != null && !current.isCastBacked && !current.isPlaying) {
+      _pausedSince = null;
+      _updatePausedGraceFor(current);
+    }
     await refreshSessions();
     _recompute();
   }
@@ -200,6 +254,7 @@ class RemoteMediaNotificationService {
     _dismissedWhilePaused = !current.isPlaying;
     _dismissedIsCastBacked = current.isCastBacked;
     _dismissedCandidatePlaying = current.isPlaying;
+    _clearPausedGrace();
     activeSessionNotifier.value = null;
     _syncFallbackPoll();
   }
@@ -298,6 +353,7 @@ class RemoteMediaNotificationService {
   void _recompute() {
     if (!_isFeatureEnabled) {
       _preferredSessionId = null;
+      _clearPausedGrace();
       _clearDismissedState();
       _setSession(null);
       _syncFallbackPoll();
@@ -307,6 +363,7 @@ class RemoteMediaNotificationService {
     final candidate = _buildCastCandidate() ?? _buildRemoteSessionCandidate();
     if (candidate == null) {
       _preferredSessionId = null;
+      _clearPausedGrace();
       _clearDismissedState();
       _setSession(null);
       _syncFallbackPoll();
@@ -321,6 +378,7 @@ class RemoteMediaNotificationService {
       if (sameItem && !resumedFromPause) {
         _dismissedIsCastBacked = candidate.isCastBacked;
         _dismissedCandidatePlaying = candidate.isPlaying;
+        _clearPausedGrace();
         _setSession(null);
         _syncFallbackPoll();
         return;
@@ -328,6 +386,7 @@ class RemoteMediaNotificationService {
       _clearDismissedState();
     }
 
+    _updatePausedGraceFor(candidate);
     _setSession(candidate);
     _syncFallbackPoll();
   }
@@ -335,13 +394,21 @@ class RemoteMediaNotificationService {
   void _setSession(RemoteMediaSession? next) {
     final prev = activeSessionNotifier.value;
     if (_sameSession(prev, next)) return;
+    if (next == null) {
+      _clearPausedGrace();
+    } else {
+      _updatePausedGraceFor(next);
+    }
     activeSessionNotifier.value = next;
     _syncFallbackPoll();
   }
 
   void _syncFallbackPoll() {
     final session = activeSessionNotifier.value;
-    final hasActiveJellyfin = session != null && !session.isCastBacked;
+    final hasActiveJellyfin =
+        session != null &&
+        !session.isCastBacked &&
+        (session.isPlaying || _isWithinPausedSocketGrace());
     final hasDismissedJellyfin =
         _dismissedIdentityKey != null && !_dismissedIsCastBacked;
     final needPoll =
@@ -801,6 +868,7 @@ class RemoteMediaNotificationService {
     _refreshDebounce = null;
     _fallbackPollTimer?.cancel();
     _fallbackPollTimer = null;
+    _clearPausedGrace();
     _socketEventSub?.cancel();
     _socketEventSub = null;
     _socketConnSub?.cancel();
