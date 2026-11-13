@@ -62,7 +62,7 @@ class TvUiScale extends StatelessWidget {
     final logicalSize = tvUiLogicalSize(realSize);
     // tvOS reports a safe area for TVs that overscan, but the ten foot
     // layouts keep their own overscan margins, so on Apple TV the two would
-    // stack. The top inset is never passed on.
+    // stack. A scaled TV never gets the top inset.
     EdgeInsets scaleInsets(EdgeInsets insets, {bool safeArea = false}) =>
         safeArea && PlatformDetection.isAppleTV
         ? EdgeInsets.zero

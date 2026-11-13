@@ -21,6 +21,7 @@ import '../../../../util/platform_detection.dart';
 import '../../../../util/tv_ui_scale.dart';
 import '../../../util/home_row_title_localizer.dart';
 import '../../../widgets/bounded_network_image.dart';
+import '../../../widgets/home_row_spacing.dart';
 import '../../../widgets/info_area.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/modern_row.dart';
@@ -813,7 +814,7 @@ class _HomeFrame {
         !phone && !modern && prefs.get(UserPreferences.homeRowInfoOverlay);
     // _ContentRows' rowLeftInset.
     final rowLeftInset =
-        (!navbarTop && !phone ? 56.0 : (navbarTop && tv ? 48.0 : 0.0)) +
+        (!navbarTop && !phone ? 56.0 : (navbarTop && tv ? tvTopNavbarRowInset : 0.0)) +
         (phone ? 0.0 : 16.0);
     // The band the InfoArea sits in, from _ContentRows' layout pass.
     final infoNavbar = tv ? (navbarTop ? 45.0 : 15.0) : (phone ? 60.0 : 80.0);

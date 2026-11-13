@@ -347,7 +347,11 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             : tvTopNavbarInset) +
         (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
     final infoPanelLeft =
-        ((navbarIsLeft && !PlatformDetection.useMobileUi) ? 80.0 : 48.0) +
+        ((navbarIsLeft && !PlatformDetection.useMobileUi)
+            ? 80.0
+            : tvTopNavbarInset > 0
+            ? tvTopNavbarInset
+            : 48.0) +
         (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
     final infoTopInset = topPad + (navbarHeight > 0 ? navbarHeight - 12.0 : 28.0);
     // On phones the navbar pill and row titles crowd the top edge, so the

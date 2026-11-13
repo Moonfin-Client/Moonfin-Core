@@ -42,6 +42,7 @@ import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
+import '../../widgets/home_row_spacing.dart';
 import '../../widgets/info_area.dart';
 import '../../widgets/poster_badges.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
@@ -245,7 +246,7 @@ double _desktopScale(BuildContext context) =>
 double _rowScale(BuildContext context) =>
     (_tv ? 0.8 : 1.0) * _desktopScale(context);
 
-double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
+double get _rowLeftInset => _phone ? 16 : (_tv ? tvTopNavbarRowInset + 32 : 32);
 
 /// Lays [child] out at the platform design size, then scales it into the card.
 Widget _screen(Widget child) {
@@ -2430,7 +2431,7 @@ Widget _leftNavbarPreview(
   final buttons = _navButtons(context, items);
   // Home starts its rows 56 in beside the rail where a TV's top bar takes 48,
   // and the rows' own inset is the top bar one.
-  final railInset = _phone ? 0.0 : 56.0 - (_tv ? 48.0 : 0.0);
+  final railInset = _phone ? 0.0 : 56.0 - (_tv ? tvTopNavbarRowInset : 0.0);
   // The real rail only widens while it has focus, whatever Always Expand
   // Navbar Labels says, and scrolls once its buttons outgrow the screen. It
   // floats over the screen rather than pushing it aside.
