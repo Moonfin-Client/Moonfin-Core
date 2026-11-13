@@ -188,6 +188,7 @@ dependencies:
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  firebase_app_installations: ^0.4.5
   pointer_interceptor: ^0.10.1+2
   flutter_markdown_plus: ^1.0.12
   markdown: ^7.3.1

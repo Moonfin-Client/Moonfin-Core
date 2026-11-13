@@ -42,6 +42,10 @@
 	     only reach DeepLinkService. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
+	<!-- The app asks for an FCM token itself, only when the server can push
+	     and notifications are allowed. -->
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>
