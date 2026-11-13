@@ -9319,5 +9319,122 @@
     "watchPartyType": "Tipas",
     "@watchPartyType": {
         "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "moveUp": "Judėti aukštyn",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Judėti žemyn",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "Garso knyga",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Knyga",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "Automatinis",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "Autorius",
+    "adminMetadataLockFieldOverview": "Apžvalga",
+    "screensaverGeneralSettings": "Bendrieji nustatymai",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neoninis pulsas",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "Kasdien",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Kas savaitę",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Pavadinimai",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Vartotojai",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Veikla",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Automatinis",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "Administravimas",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Sukurti grupę",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Peržiūrėti išsamią informaciją",
+    "achievementsUnlockedMore": "+{count} daugiau",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Žymės eilutė",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normalus",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Šalis",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatinis",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Knyga",
+    "adminImageTypeMenu": "Meniu",
+    "adminGroupOverview": "Apžvalga",
+    "seriesRecordingAllEpisodes": "Visos serijos",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Stiklas",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb panašumas",
+    "calendarSettingsView": "Žiūrėti",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Specialūs pasiūlymai",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Veiksmai",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Pradžia",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }
