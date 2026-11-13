@@ -5271,6 +5271,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'প্রতি-সারি সেটিংস';
 
   @override

@@ -5303,6 +5303,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Cilësimet për rresht';
 
   @override

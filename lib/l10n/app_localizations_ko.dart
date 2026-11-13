@@ -5166,6 +5166,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeRowsExternalLists => '외부 목록';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => '행별 설정';
 
   @override

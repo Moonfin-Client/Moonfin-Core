@@ -5311,6 +5311,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeRowsExternalLists => 'Liste Esterne';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Impostazioni per Riga';
 
   @override

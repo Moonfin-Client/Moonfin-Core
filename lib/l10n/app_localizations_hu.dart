@@ -5311,6 +5311,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Soronkénti beállítások';
 
   @override

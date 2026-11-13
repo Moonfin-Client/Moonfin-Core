@@ -5343,6 +5343,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeRowsExternalLists => 'Listes externes';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Paramètres par rangée';
 
   @override

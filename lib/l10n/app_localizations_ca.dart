@@ -5339,6 +5339,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsExternalLists => 'Llistes externes';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Configuració per fila';
 
   @override

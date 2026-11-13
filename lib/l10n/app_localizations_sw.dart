@@ -5300,6 +5300,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get homeRowsExternalLists => 'External Lists';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Mipangilio ya Kila Safu';
 
   @override

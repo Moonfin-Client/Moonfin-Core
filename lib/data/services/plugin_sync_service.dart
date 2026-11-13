@@ -118,6 +118,9 @@ class PluginSyncService extends ChangeNotifier {
   /// TMDB overview, score, logo and trailer.
   bool _tmdbDetailsSupported = false;
   bool get tmdbDetailsAvailable => _pluginAvailable && _tmdbDetailsSupported;
+
+  /// Whether the plugin serves the JustWatch and TMDB discover chart rows.
+  bool _discoverChartsSupported = false;
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
@@ -139,6 +142,17 @@ class PluginSyncService extends ChangeNotifier {
     bool Function()? serverBuildsSeasonal,
   }) {
     if (prefs.imdbChartSections.contains(type)) return _pluginAvailable;
+    if (prefs.externalCharts[type] case final chart?) {
+      if (!_pluginAvailable ||
+          (chart.needsDiscoverCharts && !_discoverChartsSupported)) {
+        return false;
+      }
+      return chart.usesMdblist
+          ? _mdblistAvailable ||
+                _prefs.get(UserPreferences.mdblistApiKey).trim().isNotEmpty
+          : _tmdbAvailable ||
+                _prefs.get(UserPreferences.tmdbApiKey).trim().isNotEmpty;
+    }
     if (UserPreferences.isTmdbSectionType(type)) {
       return _pluginAvailable &&
           (_tmdbAvailable ||
@@ -303,6 +317,7 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbPersonLinksSupported = false;
     _tmdbReviewsSupported = false;
     _tmdbDetailsSupported = false;
+    _discoverChartsSupported = false;
     _recommendationsSupported = false;
     _smartSearchEnabled = false;
     _calendarAvailable = false;
@@ -414,6 +429,8 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'tmdbReviewsSupported') ?? false;
       _tmdbDetailsSupported =
           _readBool(pingResult, 'tmdbDetailsSupported') ?? false;
+      _discoverChartsSupported =
+          _readBool(pingResult, 'discoverChartsSupported') ?? false;
       _recommendationsSupported =
           _readBool(pingResult, 'recommendationsSupported') ?? false;
       _smartSearchEnabled =

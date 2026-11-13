@@ -5307,6 +5307,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsExternalLists => 'Ulkoiset listat';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Rivikohtaiset asetukset';
 
   @override

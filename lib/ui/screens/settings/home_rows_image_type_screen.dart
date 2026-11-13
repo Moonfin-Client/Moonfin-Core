@@ -135,6 +135,28 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.tmdbTrendingTvDaily => 'Trending TV (Daily)',
         HomeSectionType.tmdbTrendingTvWeekly => 'Trending TV (Weekly)',
         HomeSectionType.tmdbTrendingAllWeekly => 'Trending All (Weekly)',
+        HomeSectionType.mdblistMostWatchedWeekMovies ||
+        HomeSectionType.mdblistMostWatchedWeekShows ||
+        HomeSectionType.mdblistMostWatchedYearMovies ||
+        HomeSectionType.mdblistMostWatchedYearShows ||
+        HomeSectionType.mdblistAnticipatedMovies ||
+        HomeSectionType.mdblistAnticipatedShows ||
+        HomeSectionType.mdblistStreamingChartsMovies ||
+        HomeSectionType.mdblistStreamingChartsShows ||
+        HomeSectionType.justwatchTopMovies ||
+        HomeSectionType.justwatchTopShows ||
+        HomeSectionType.tmdbTrendingAllDaily ||
+        HomeSectionType.tmdbKoreanDramas ||
+        HomeSectionType.tmdbAnime ||
+        HomeSectionType.tmdbNewDigitalMovies ||
+        HomeSectionType.tmdbHiddenGems ||
+        HomeSectionType.tmdbNetflix ||
+        HomeSectionType.tmdbPrimeVideo ||
+        HomeSectionType.tmdbDisneyPlus ||
+        HomeSectionType.tmdbHboMax ||
+        HomeSectionType.tmdbAppleTv ||
+        HomeSectionType.tmdbParamountPlus =>
+          externalCharts[type]!.title,
         HomeSectionType.sinceYouWatched1 => l10n.sinceYouWatchedRowNumber(1),
         HomeSectionType.sinceYouWatched2 => l10n.sinceYouWatchedRowNumber(2),
         HomeSectionType.sinceYouWatched3 => l10n.sinceYouWatchedRowNumber(3),
