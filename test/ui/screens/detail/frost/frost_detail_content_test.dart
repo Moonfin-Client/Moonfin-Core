@@ -388,6 +388,37 @@ void main() {
     expect(narrow.height, closeTo(768, 0.01));
   });
 
+  test('a desktop window holds the stage to the UI scale', () {
+    final fourK = frostStageSize(
+      const BoxConstraints.tightFor(width: 3840, height: 2160),
+      maxMagnification: 1,
+    );
+    expect(fourK.width, closeTo(3840, 0.01));
+    expect(fourK.height, closeTo(2160, 0.01));
+    final scaled = frostStageSize(
+      const BoxConstraints.tightFor(width: 3840, height: 2160),
+      maxMagnification: 1.6,
+    );
+    expect(scaled.width, closeTo(2400, 0.01));
+    expect(scaled.height, closeTo(1350, 0.01));
+    // Under the cap the stage still fills the room, and never drops below
+    // 1280 by 720.
+    expect(
+      frostStageSize(
+        const BoxConstraints.tightFor(width: 1920, height: 1080),
+        maxMagnification: 1.6,
+      ),
+      const Size(1280, 720),
+    );
+    expect(
+      frostStageSize(
+        const BoxConstraints.tightFor(width: 800, height: 600),
+        maxMagnification: 1,
+      ).width,
+      closeTo(1280, 0.01),
+    );
+  });
+
   testWidgets('the ratings strip shares a width or keeps each column to its '
       'text', (tester) async {
     Widget strip() => RatingsRow(

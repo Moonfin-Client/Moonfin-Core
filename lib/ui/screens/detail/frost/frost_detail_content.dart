@@ -82,13 +82,34 @@ const _duration = Duration(milliseconds: 200);
 
 /// The stage Frost's TV view is laid out on: 1280 by 720 at the least, in
 /// the room's own shape so it fills the room rather than leaving bars.
-Size frostStageSize(BoxConstraints room) {
+Size frostStageSize(BoxConstraints room, {double? maxMagnification}) {
   if (!room.hasBoundedWidth || !room.hasBoundedHeight) {
     return const Size(1280, 720);
   }
   final aspect = room.maxWidth / room.maxHeight;
   final width = math.max(1280.0, 720 * aspect);
-  return Size(width, width / aspect);
+  var size = Size(width, width / aspect);
+  // Past the cap the stage is the room at that scale, so a big window gets
+  // more room rather than a bigger picture.
+  if (maxMagnification != null &&
+      room.maxWidth / size.width > maxMagnification) {
+    size = Size(
+      room.maxWidth / maxMagnification,
+      room.maxHeight / maxMagnification,
+    );
+  }
+  return size;
+}
+
+/// How far a desktop window may magnify the stage: the UI scale, the size
+/// the rest of the app is drawn at whatever the window. A TV has no UI scale
+/// and fills its room.
+double? frostStageMaxMagnification() {
+  if (!PlatformDetection.isDesktop || PlatformDetection.isTV) return null;
+  if (!GetIt.instance.isRegistered<UserPreferences>()) return null;
+  return GetIt.instance<UserPreferences>()
+      .get(UserPreferences.desktopUiScale)
+      .scaleFactor;
 }
 
 /// Scales [child], laid out on the stage, to fill the room the app's own
@@ -110,7 +131,10 @@ class FrostStage extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) => FittedBox(
         child: SizedBox.fromSize(
-          size: frostStageSize(constraints),
+          size: frostStageSize(
+            constraints,
+            maxMagnification: frostStageMaxMagnification(),
+          ),
           child: child,
         ),
       ),
