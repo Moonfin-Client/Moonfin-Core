@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "സെർവർ ട്രാൻസ്‌കോഡ് തിരഞ്ഞെടുക്കുക",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision പ്രൊഫൈൽ 7 ഡയറക്ട് പ്ലേ",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision പ്രൊഫൈൽ 7 എൻഹാൻസ്‌മെൻ്റ്-ലെയർ സ്ട്രീമുകൾ നേരിട്ട് പ്ലേ ചെയ്യണമോ എന്നത് നിയന്ത്രിക്കുന്നു.",
-    "settingsAutoAftkrtEnabled": "സ്വയമേവ (AFTKRT പ്രവർത്തനക്ഷമമാക്കി)",
-    "settingsEnabledOnThisDevice": "ഈ ഉപകരണത്തിൽ പ്രവർത്തനക്ഷമമാക്കി",
-    "settingsDisabledPreferTranscode": "പ്രവർത്തനരഹിതമാക്കി (ട്രാൻസ്‌കോഡ് മുൻഗണന നൽകുക)",
+    "settingsAutoAftkrtEnabled": "ഓട്ടോ",
+    "settingsEnabledOnThisDevice": "പ്രവർത്തനക്ഷമം",
+    "settingsDisabledPreferTranscode": "ഓഫ്",
     "settingsResumeRewindDescription": "പ്ലേബാക്ക് പുനരാരംഭിക്കുമ്പോൾ (കാണുന്നത് തുടരുക എന്നതിൽ നിന്നോ മീഡിയ ഇനം പേജിൽ നിന്നോ), എത്ര സെക്കൻഡ് റിവൈൻഡ് ചെയ്യണം?",
     "settingsUnpauseRewindDescription": "താൽക്കാലികമായി നിർത്തുക ബട്ടൺ അമർത്തിപ്പിടിച്ച് പ്ലേബാക്ക് പുനരാരംഭിക്കുമ്പോൾ, എത്ര സെക്കൻഡ് റിവൈൻഡ് ചെയ്യണം?",
     "settingsSkipBackLengthDescription": "റിവൈൻഡ് ബട്ടൺ അമർത്തി എത്ര സെക്കൻ്റുകൾ പിന്നിലേക്ക് ചാടണം.",
@@ -8958,5 +8958,366 @@
     "imdbMostPopularMovies": "IMDb ഏറ്റവും ജനപ്രിയ സിനിമകൾ",
     "imdbMostPopularTvShows": "IMDb ഏറ്റവും ജനപ്രിയ ടിവി ഷോകൾ",
     "imdbLowestRatedMovies": "IMDb ഏറ്റവും കുറഞ്ഞ റേറ്റിംഗുള്ള സിനിമകൾ",
-    "imdbTopEnglishMovies": "IMDb ഏറ്റവും ഉയർന്ന റേറ്റിംഗുള്ള ഇംഗ്ലീഷ് സിനിമകൾ"
+    "imdbTopEnglishMovies": "IMDb ഏറ്റവും ഉയർന്ന റേറ്റിംഗുള്ള ഇംഗ്ലീഷ് സിനിമകൾ",
+    "emulatorCoreDownloading": "ഡൗൺലോഡ് ചെയ്യുന്നു",
+    "castMembers": "കാസ്റ്റ് ചെയ്യുക",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "വീഡിയോ",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "audioPlaylistsSection": "ഓഡിയോ പ്ലേലിസ്റ്റുകൾ",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "settingsAudioPassthroughMode": "പാസ്ത്രൂ",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "tags": "ടാഗുകൾ",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "selectAllStudios": "എല്ലാം തിരഞ്ഞെടുക്കുക",
+    "filtersHeader": "ഫിൽട്ടറുകൾ",
+    "interfaceLayoutTv": "ടി.വി",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "ഡെസ്ക്ടോപ്പ്",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "ബാനർ",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "ട്രെയിലറുകൾ",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "എക്സ്ട്രാകൾ",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "യഥാർത്ഥ ഭാഷ",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "പ്രവർത്തനസമയം",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "ക്ലാസിക്",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "മോഡേൺ",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "ടി.വി",
+    "adminMetadataLockFieldName": "പേര്",
+    "adminMetadataLockFieldGenres": "വിഭാഗങ്ങൾ",
+    "adminMetadataLockFieldCast": "ആളുകൾ",
+    "adminMetadataLockFieldRuntime": "പ്രവർത്തനസമയം",
+    "adminMetadataLockFieldStudios": "സ്റ്റുഡിയോകൾ",
+    "adminMetadataLockFieldTags": "ടാഗുകൾ",
+    "seerrDownloading": "ഡൗൺലോഡ് ചെയ്യുന്നു",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "പ്രകടനം",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "ഓട്ടോ",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "ലഘുചിത്രം",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "ചെറുത്",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "ഇടത്തരം",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "വലിയ",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "കുതിക്കുന്ന",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "പശ്ചാത്തലം",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "കറുപ്പ്",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "എല്ലാം",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "ഒരിക്കലും",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "ഡൗൺലോഡ് ചെയ്യുന്നു",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "ശേഖരങ്ങൾ",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "ഹോം",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "ഇടത്തരം",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "ഓഫ്",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "സീരീസ് സ്റ്റാറ്റസ്",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "വിഭാഗങ്ങൾ",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "ഇന്ന്",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "തീർപ്പാക്കാത്തത്",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "വായിക്കുക",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "പേര്",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "രൂപഭാവം",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "കണ്ടവ",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "ആവർത്തിക്കുക",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "ലഭ്യമാണ്",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "നിരസിക്കുക",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "ഗ്രൂപ്പിൻ്റെ പേര്",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "ഗ്രൂപ്പ് വിടുക",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "മറ്റുള്ളവ",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "ലോഗോ",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "പോസ്റ്റർ",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "അടുത്തത്",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "വരികൾ",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "കാസ്റ്റ് ചെയ്യുക",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "സ്റ്റുഡിയോകൾ",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "അധ്യായങ്ങൾ",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "എക്സ്ട്രാകൾ",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "ശേഖരങ്ങൾ",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "ഇത് പോലെ കൂടുതൽ",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "ശുപാർശകൾ",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "പ്രത്യക്ഷപ്പെടലുകൾ",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "ജീവചരിത്രം",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "മറ്റുള്ളവ",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "വിപുലമായ",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "റിലീസ് തീയതി",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "പ്രവർത്തനസമയം",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "അവസാനം കളിച്ചത്",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "ഓട്ടോ",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "ക്ലാസിക്",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "മോഡേൺ",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "കലാകാരന്മാർ",
+    "adminMetadataFieldAlbum": "ആൽബം",
+    "adminMetadataSectionRatings": "റേറ്റിംഗുകൾ",
+    "adminLiveTvTabRecordings": "റെക്കോർഡിംഗുകൾ",
+    "adminLogLevelNone": "ഒന്നുമില്ല",
+    "adminTaskResultFailed": "പരാജയപ്പെട്ടു",
+    "adminLogWatch": "കാണുക",
+    "adminGroupLibrary": "ലൈബ്രറി",
+    "adminGroupPlayback": "പ്ലേബാക്ക്",
+    "adminGroupPeople": "ആളുകൾ",
+    "librarySortAlbum": "ആൽബം",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "തരം",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "ക്ലാസിക്",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "ബാഹ്യ ലിസ്റ്റുകൾ",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby ബന്ധിപ്പിക്കുക",
+    "adminTranscodingHwaAdvanced": "വിപുലമായ",
+    "musicLibraryStyleClassic": "ക്ലാസിക്",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "ഇല്ലാതാക്കുക",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "ക്ലാസിക്",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "ഇപ്പോൾ",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "അനുയോജ്യം",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "പേര്",
+    "externalRowSortReleaseDate": "റിലീസ് തീയതി",
+    "externalRowSortShuffle": "ഷഫിൾ",
+    "siloApproveSignInApprove": "അംഗീകരിക്കുക",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "സജീവമാണ്",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "പ്രീമിയർ",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "പ്രീമിയർ",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "ടൈപ്പ് ചെയ്യുക",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "പ്ലേ ചെയ്യുക",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "സ്ഥിരം",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "ടൈപ്പ് ചെയ്യുക",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    }
 }
