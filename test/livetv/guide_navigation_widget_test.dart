@@ -181,7 +181,7 @@ void main() {
     when(() => client.liveTvApi).thenReturn(liveTvApi);
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.baseUrl).thenReturn('fixture');
-    when(liveTvApi.getChannelGroups)
+    when(() => liveTvApi.getChannelGroups(userId: 'user'))
         .thenAnswer((_) async => const ChannelGroupLineup({}));
     when(() => client.userId).thenReturn('user');
 
@@ -341,7 +341,8 @@ void main() {
         UserPreferences.liveTvCategoryDisplay,
         LiveTvCategoryDisplay.both,
       );
-      when(liveTvApi.getChannelGroups).thenAnswer(
+      await prefs.set(UserPreferences.epgMobileView, EpgMobileView.list);
+      when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
         (_) async => const ChannelGroupLineup(
           {
             'ch1': {'Sports'},
@@ -352,6 +353,15 @@ void main() {
         ),
       );
       await pumpGuide(tester, surface: const Size(390, 844));
+      final list = tester.widget<ListView>(find.byType(ListView).last).controller!;
+      list.jumpTo(400);
+      await tester.pump();
+      expect(list.offset, greaterThan(0));
+      await tester.enterText(find.byType(TextField), 'Channel 4');
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(list.offset, 0);
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pump(const Duration(milliseconds: 200));
       await tester.tap(find.text('All channels'));
       await _pumpFrames(tester);
       expect(tester.getSize(find.byType(GuideFilterPicker)).width, 390);
@@ -383,16 +393,26 @@ void main() {
       expect(rail.selectedIndex, 0);
     },
   );
+  testWidgets('empty group mode keeps categories', (tester) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvCategoryDisplay, LiveTvCategoryDisplay.groups,
+    );
+    await pumpGuide(tester);
+    expect(find.byType(EpgFilterRail), findsOneWidget);
+  });
+
   testWidgets('TV Left opens the picker, OK selects and Back keeps the group', (
     tester,
   ) async {
-    PlatformDetection.setTvMode(true);
-    addTearDown(() => PlatformDetection.setTvMode(false));
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
     await GetIt.instance<UserPreferences>().set(
       UserPreferences.liveTvCategoryDisplay,
       LiveTvCategoryDisplay.groups,
     );
-    when(liveTvApi.getChannelGroups).thenAnswer(
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
       (_) async => const ChannelGroupLineup({
         'ch1': {'Sports'},
       }),

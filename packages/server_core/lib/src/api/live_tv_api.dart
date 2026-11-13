@@ -1,9 +1,13 @@
 import 'package:dio/dio.dart';
 
-/// Read channel groups from Moonbase when available; other servers use the regular guide.
+/// Reads channel groups from the server's supported source.
 abstract interface class ChannelGroupApi {
-  Future<ChannelGroupLineup> getChannelGroups();
+  Future<ChannelGroupLineup> getChannelGroups({String? userId});
 }
+
+/// The grouped response is the authoritative channel list, not an optional
+/// plugin lookup. Failures must not fetch the same channels a second time.
+abstract interface class DirectChannelGroupApi implements ChannelGroupApi {}
 
 class ChannelGroupLineup {
   final Map<String, Set<String>> groupsByChannelId;

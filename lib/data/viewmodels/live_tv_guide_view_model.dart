@@ -1155,8 +1155,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     ChannelGroupLineup? lineup;
     if (api is ChannelGroupApi) {
       try {
-        lineup = await (api as ChannelGroupApi).getChannelGroups();
+        lineup = await (api as ChannelGroupApi).getChannelGroups(
+          userId: _client.userId,
+        );
       } catch (error) {
+        if (api is DirectChannelGroupApi) {
+          // Emby's group request already fetched the channel lineup.
+          // Retrying through getChannels would repeat a failed request.
+          if (error is DioException && _accessDenied(error) && current()) {
+            _discardDeniedChannelLineup(error);
+          }
+          rethrow;
+        }
         debugPrint('Live TV channel groups unavailable (${error.runtimeType})');
         if (_accessDenied(error)) {
           lineup = const ChannelGroupLineup({}, endpointAvailable: false);
@@ -1208,23 +1218,26 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           request == _lineupRequest &&
           session == userDataSync.session &&
           (account == null || account == (_client.baseUrl, _client.userId))) {
-        // If the server denies access, clear the channels and pending guide requests.
-        // Moonbase handles its own permissions.
-        _loadGeneration++;
-        cancelBoundaryRefresh();
-        _channels = const [];
-        _programmeCategories = null;
-        _channelGroups = {};
-        _filter = GuideFilter.all;
-        _rebuildGroupChoices(complete: true);
-        _resetPrograms();
-        _error = error;
-        _state = GuideState.error;
-        _reloadOnEntry = true;
-        _notifyListeners();
+        _discardDeniedChannelLineup(error);
       }
       return null;
     }
+  }
+
+  void _discardDeniedChannelLineup(DioException error) {
+    // A denied channel request must discard the previous user's lineup too.
+    _loadGeneration++;
+    cancelBoundaryRefresh();
+    _channels = const [];
+    _programmeCategories = null;
+    _channelGroups = {};
+    _filter = GuideFilter.all;
+    _rebuildGroupChoices(complete: true);
+    _resetPrograms();
+    _error = error;
+    _state = GuideState.error;
+    _reloadOnEntry = true;
+    _notifyListeners();
   }
 
   void _publishChannels(List<Map<String, dynamic>> items, int revision) {

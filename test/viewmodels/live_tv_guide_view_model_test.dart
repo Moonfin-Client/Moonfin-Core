@@ -16,6 +16,9 @@ class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 class _GroupedLiveTvApi extends _MockLiveTvApi implements ChannelGroupApi {}
 
+class _DirectGroupedLiveTvApi extends _GroupedLiveTvApi
+    implements DirectChannelGroupApi {}
+
 class _MockUserLibraryApi extends Mock implements UserLibraryApi {}
 
 Map<String, dynamic> _channel(String id, {String? number}) => {
@@ -159,7 +162,7 @@ void main() {
     ) async {
       _stubChannels(api, [_channel('one')]);
       var name = 'Sports';
-      when(api.getChannelGroups).thenAnswer(
+      when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
         (_) async => ChannelGroupLineup({
           'one': {name},
         }, partial: name == 'Sports'),
@@ -170,18 +173,18 @@ void main() {
       await vm.shiftWindow(const Duration(hours: 1));
       await tester.pump(const Duration(minutes: 10));
       expect(vm.availableGroups, ['Sports']);
-      verify(api.getChannelGroups).called(1);
+      verify(() => api.getChannelGroups(userId: 'user')).called(1);
 
       await vm.goToNow();
       expect(vm.availableGroups, ['Local sports']);
       expect(vm.selectedGroup, isNull);
-      verify(api.getChannelGroups).called(1);
+      verify(() => api.getChannelGroups(userId: 'user')).called(1);
     });
     test(
       'removing the plugin restores the default categories on reload',
       () async {
         _stubChannels(api, [_channel('one')]);
-        when(api.getChannelGroups).thenAnswer(
+        when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
           (_) async => const ChannelGroupLineup(
             {
               'one': {'Local'},
@@ -193,7 +196,7 @@ void main() {
         vm.setGroup('Local');
         expect(vm.availableProgrammeCategories, [GuideFilter.movies]);
 
-        when(api.getChannelGroups).thenAnswer(
+        when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
           (_) async => const ChannelGroupLineup({}, endpointAvailable: false),
         );
         await vm.load();
@@ -208,7 +211,7 @@ void main() {
         'clears the selected group when its last channel is ${removeChannel ? 'deleted' : 'ungrouped'} and another tuner is offline',
         () async {
           _stubChannels(api, [_channel('healthy'), _channel('offline')]);
-          when(api.getChannelGroups).thenAnswer(
+          when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
             (_) async => const ChannelGroupLineup({
               'healthy': {'Sports'},
               'offline': {'UK'},
@@ -217,7 +220,7 @@ void main() {
           await vm.load();
           vm.setGroup('Sports');
           if (removeChannel) _stubChannels(api, [_channel('offline')]);
-          when(api.getChannelGroups).thenAnswer(
+          when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
             (_) async => const ChannelGroupLineup(
               {},
               partial: true,
@@ -234,6 +237,28 @@ void main() {
       );
     }
   });
+  test('Emby 403 clears the lineup without another fetch', () async {
+    final api = _DirectGroupedLiveTvApi();
+    when(() => client.liveTvApi).thenReturn(api);
+    when(() => client.baseUrl).thenReturn('emby');
+    when(() => _guide(api)).thenAnswer((_) async => {'Items': []});
+    when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => ChannelGroupLineup({}, channels: [_channel('one')]),
+    );
+    final vm = LiveTvGuideViewModel(client);
+    addTearDown(vm.dispose);
+    await vm.load();
+    expect(vm.playbackChannels, hasLength(1));
+    final request = RequestOptions(path: '/LiveTv/Channels');
+    when(() => api.getChannelGroups(userId: 'user')).thenThrow(DioException(
+      requestOptions: request,
+      response: Response(requestOptions: request, statusCode: 403),
+    ));
+    await vm.load();
+    expect(vm.playbackChannels, isEmpty);
+    verifyNever(() => _channelsRequest(api));
+  });
+
   test('channel groups page by channel and keep every programme', () async {
     final grouped = _GroupedLiveTvApi();
     when(() => client.liveTvApi).thenReturn(grouped);
@@ -242,7 +267,7 @@ void main() {
       for (var i = 0; i < 200; i++) _channel('c$i', number: '$i'),
     ];
     _stubChannels(grouped, channels);
-    when(grouped.getChannelGroups).thenAnswer(
+    when(() => grouped.getChannelGroups(userId: 'user')).thenAnswer(
       (_) async => ChannelGroupLineup({
         for (var i = 100; i < 162; i++) 'c$i': {'US| SPORTS', 'Kids'},
         'invisible': {'private group'},
@@ -283,8 +308,8 @@ void main() {
     vm.setGroup('Kids');
     await Future<void>.delayed(Duration.zero);
     expect(pages.length, 3);
-    verify(grouped.getChannelGroups).called(1);
-    when(grouped.getChannelGroups)
+    verify(() => grouped.getChannelGroups(userId: 'user')).called(1);
+    when(() => grouped.getChannelGroups(userId: 'user'))
         .thenAnswer((_) async => const ChannelGroupLineup({}));
     await vm.load();
     expect(vm.selectedGroup, isNull);

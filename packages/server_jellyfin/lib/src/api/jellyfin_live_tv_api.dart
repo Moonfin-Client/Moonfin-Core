@@ -8,7 +8,7 @@ class JellyfinLiveTvApi implements LiveTvApi, ChannelGroupApi {
   JellyfinLiveTvApi(this._dio);
 
   @override
-  Future<ChannelGroupLineup> getChannelGroups() =>
+  Future<ChannelGroupLineup> getChannelGroups({String? userId}) =>
       ChannelGroupLineup.fetch(_dio);
 
   @override
