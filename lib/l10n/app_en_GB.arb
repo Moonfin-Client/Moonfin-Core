@@ -12669,5 +12669,118 @@
     "playlistSortRandom": "Random",
     "@playlistSortRandom": {
         "description": "Label for sorting playlist items randomly"
+    },
+    "bottomNavbarTabsAutomatic": "Automatic",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "friendsMessages": "Messages",
+    "@friendsMessages": {
+        "description": "Entry that opens the list of chats"
+    },
+    "chatPhoto": "Photo",
+    "@chatPhoto": {
+        "description": "Preview of a chat message that is an image"
+    },
+    "chatAdmin": "Admin",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Create group",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "View Details",
+    "achievementsUnlockedMore": "+{count} more",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Tagline",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "detailSectionSeerrStats": "Stats",
+    "@detailSectionSeerrStats": {
+        "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+    },
+    "seasonalDensityNormal": "Normal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Country",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatic",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Book",
+    "adminImageTypeMenu": "Menu",
+    "adminGroupOverview": "Overview",
+    "librarySortPlaylistOrder": "Playlist Order",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "seriesRecordingAllEpisodes": "All Episodes",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "recordPromptTomorrow": "Tomorrow",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "homeScreenBackdropFullScreen": "Full Screen",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Full Screen",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "siloTooManyAttemptsWait": "Too many attempts. Try again in {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsPreviewSaved": "Saved",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "calendarReleaseDigital": "Digital",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb Similarity",
+    "calendarSettingsSpecials": "Specials",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Actions",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Start",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "seerrDownloadFailed": "Download failed",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }
