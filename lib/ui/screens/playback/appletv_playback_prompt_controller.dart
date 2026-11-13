@@ -285,9 +285,10 @@ class AppleTvPlaybackPromptController {
     if (behavior == StillWatchingBehavior.disabled) return true;
     if (consecutiveEpisodes < behavior.episodes) return true;
 
+    final pendingItemId = _queueSnapshot().currentId;
     _commands.pause();
     final presented = await _commands.showStillWatching();
-    if (_disposed) return false;
+    if (_disposed || _queueSnapshot().currentId != pendingItemId) return false;
     if (!presented) {
       // The modal couldn't present (something else was on screen). Fail
       // open: keep playing and keep the counter so the prompt retries after
@@ -300,7 +301,7 @@ class AppleTvPlaybackPromptController {
     _stillWatchingCompleter = completer;
     final shouldContinue = await completer.future;
     _stillWatchingCompleter = null;
-    if (_disposed) return false;
+    if (_disposed || _queueSnapshot().currentId != pendingItemId) return false;
 
     if (shouldContinue) {
       consecutiveEpisodes = 0;

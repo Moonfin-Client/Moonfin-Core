@@ -2749,8 +2749,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (behavior == StillWatchingBehavior.disabled) return true;
     if (_consecutiveEpisodes < behavior.episodes) return true;
 
+    final pendingItem = _queue.currentItem;
     _manager.pause();
     final shouldContinue = await StillWatchingDialog.show(context);
+    if (!mounted || !identical(_queue.currentItem, pendingItem)) return false;
     if (shouldContinue != true) {
       _markCurrentItemPlayedForOutroSkip();
       unawaited(_exitPlayback(finished: true));

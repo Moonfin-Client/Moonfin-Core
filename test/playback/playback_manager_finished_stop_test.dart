@@ -296,4 +296,56 @@ void main() {
     expect(service.stops, [end]);
     expect(manager.queueService.currentIndex, 1);
   });
+
+  test(
+    'intercepted nextInQueueAsFinished closes outgoing item as finished when coordinator switches via playItems',
+    () async {
+      manager = managerWith();
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ]);
+      backend.currentDuration = end;
+      backend.emitPosition(credits);
+
+      var intercepted = false;
+      manager.setTransportInterceptor((action, {position}) async {
+        if (action == TransportAction.next) {
+          intercepted = true;
+          return true;
+        }
+        return false;
+      });
+
+      await manager.nextInQueueAsFinished();
+      expect(intercepted, isTrue);
+      expect(service.stops, isEmpty);
+
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ]);
+      expect(service.stops, [end]);
+    },
+  );
+
+  test(
+    'intercepted nextInQueueAsFinished does not mark later manual stop as finished',
+    () async {
+      manager = managerWith();
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ]);
+      backend.currentDuration = end;
+      backend.emitPosition(credits);
+
+      manager.setTransportInterceptor((action, {position}) async {
+        return action == TransportAction.next;
+      });
+
+      await manager.nextInQueueAsFinished();
+      await manager.stop();
+      expect(service.stops, [credits]);
+    },
+  );
 }

@@ -1414,6 +1414,8 @@ class PlaybackManager implements AudioOwnable {
 
   Future<bool> Function(TransportAction action, {Duration? position})?
   _transportInterceptor;
+  dynamic _pendingFinishedInterceptItem;
+  DateTime? _pendingFinishedInterceptAt;
 
   void setTransportInterceptor(
     Future<bool> Function(TransportAction action, {Duration? position})?
@@ -2992,7 +2994,9 @@ class PlaybackManager implements AudioOwnable {
         backend: _traceBackendName(_backend),
       ),
     );
-    await _stopAndReportCurrent();
+    await _stopAndReportCurrent(
+      finished: _consumePendingFinishedIntercept(),
+    );
     _secondarySubtitleStreamIndex = null;
     _secondarySubtitleDelaySeconds = 0;
     _resetBackendSelectionLock();
@@ -4292,6 +4296,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> stop({bool userInitiated = true}) async {
+    _clearPendingFinishedIntercept();
     if (userInitiated && await _maybeIntercept(TransportAction.stop)) return;
     _abandonLiveRecovery('the viewer stopped playback');
     _viewerPaused = false;
@@ -4303,6 +4308,7 @@ class PlaybackManager implements AudioOwnable {
   /// For a viewer who skipped what was left, its credits: the server then
   /// counts the item played and keeps no resume point.
   Future<void> stopAsFinished() async {
+    _clearPendingFinishedIntercept();
     _abandonLiveRecovery('the viewer stopped playback');
     _viewerPaused = false;
     await _stopAndReportCurrent(finished: true);
@@ -4328,6 +4334,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> seekTo(Duration position) async {
+    _clearPendingFinishedIntercept();
     if (await _maybeIntercept(TransportAction.seek, position: position)) return;
     _lastKnownPosition = position;
     // While one is being served the stream is being replaced, so a new seek
@@ -4419,16 +4426,38 @@ class PlaybackManager implements AudioOwnable {
   /// Next and the media session's next action want, since both mean the next
   /// item however far into this one the position is.
   Future<void> nextInQueue() async {
+    _clearPendingFinishedIntercept();
     if (await _maybeIntercept(TransportAction.next)) return;
     await _advanceQueue();
   }
 
   /// Advances like [nextInQueue], reporting the current item stopped at its
   /// end so leaving its credits marks it watched instead of keeping a resume
-  /// point.
+  /// point. When a coordinator intercepts [TransportAction.next], remember the
+  /// outgoing item so the coordinator's subsequent [playItems] switch still
+  /// closes it out as finished without altering coordinator order or breaking
+  /// coordinators that ignore the advance.
   Future<void> nextInQueueAsFinished() async {
+    final item = queueService.currentItem;
+    _pendingFinishedInterceptItem = item;
+    _pendingFinishedInterceptAt = clock();
     if (await _maybeIntercept(TransportAction.next)) return;
+    _clearPendingFinishedIntercept();
     await _advanceQueue(finished: true);
+  }
+
+  void _clearPendingFinishedIntercept() {
+    _pendingFinishedInterceptItem = null;
+    _pendingFinishedInterceptAt = null;
+  }
+
+  bool _consumePendingFinishedIntercept() {
+    final item = _pendingFinishedInterceptItem;
+    final at = _pendingFinishedInterceptAt;
+    _clearPendingFinishedIntercept();
+    if (item == null || at == null) return false;
+    if (!identical(item, queueService.currentItem)) return false;
+    return clock().difference(at) <= const Duration(seconds: 10);
   }
 
   Future<void> _advanceQueue({bool finished = false}) async {
@@ -4456,6 +4485,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> previous() async {
+    _clearPendingFinishedIntercept();
     if (await _maybeIntercept(TransportAction.previous)) return;
     final chapter =
         previousChapterStart(_currentChapterStarts, state.position);
