@@ -13992,5 +13992,57 @@
     "seerrDownloadFailed": "Pobieranie nie powiodło się",
     "@seerrDownloadFailed": {
         "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "adminExternalIdTypeBook": "Książka",
+    "adminImageTypeMenu": "Menu",
+    "adminGroupOverview": "Przegląd",
+    "seriesRecordingAllEpisodes": "Wszystkie odcinki",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Szklany",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "homeScreenBackdropFullScreen": "Pełny ekran",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Pełny ekran",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "siloTooManyAttemptsWait": "Zbyt wiele prób. Spróbuj ponownie za {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseDigital": "Cyfrowa",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarSettingsView": "Wyświetl",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Odcinki specjalne",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Działania",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "syncPlayParticipantYou": "Ty",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "afterHoursStart": "Początek",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }
