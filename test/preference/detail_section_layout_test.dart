@@ -63,9 +63,32 @@ void main() {
         .where((s) => s.isAvailableIn(DetailScreenStyle.spotlight))
         .toSet();
 
-    expect(minimalist, containsAll(spotlight));
+    expect(
+      minimalist,
+      containsAll(spotlight.difference({DetailSection.playlistOrder})),
+    );
     expect(minimalist, contains(DetailSection.logo));
     expect(minimalist, isNot(contains(DetailSection.poster)));
+  });
+
+  test('styles that draw collections without a play order list no switch '
+      'for it', () {
+    for (final style in [
+      DetailScreenStyle.minimalist,
+      DetailScreenStyle.stage,
+      DetailScreenStyle.premiere,
+      DetailScreenStyle.frost,
+    ]) {
+      expect(
+        DetailSection.playlistOrder.isAvailableIn(style),
+        isFalse,
+        reason: style.name,
+      );
+    }
+    expect(
+      DetailSection.playlistOrder.isAvailableIn(DetailScreenStyle.modern),
+      isTrue,
+    );
   });
 
   test('Seerr pieces are only offered when Seerr is', () {

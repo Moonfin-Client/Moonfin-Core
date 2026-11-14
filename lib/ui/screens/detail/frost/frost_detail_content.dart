@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -39,7 +40,17 @@ import '../detail_page.dart';
 import '../item_detail_screen.dart';
 import '../play_item_on_screen.dart';
 
-enum _Tab { overview, episodes, seasons, cast, extras, related, seerr, details }
+enum _Tab {
+  overview,
+  items,
+  episodes,
+  seasons,
+  cast,
+  extras,
+  related,
+  seerr,
+  details,
+}
 
 enum _Seg { recommended, similar, about }
 
@@ -311,8 +322,10 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     final seerrOnly = _vm.isSeerrOnly;
     final pieces = _pieces(sections);
     final seerrPosters = pieces.recommendations || pieces.similar;
+    final l10n = AppLocalizations.of(context);
     return [
       _Tab.overview,
+      if (collectionGroups(_vm, widget.prefs, l10n).isNotEmpty) _Tab.items,
       if (!seerrOnly &&
           isShow &&
           (item.type != 'Episode' ||
@@ -337,6 +350,10 @@ class _FrostDetailContentState extends State<FrostDetailContent>
   String _tabLabel(_Tab tab, AppLocalizations l10n, {bool short = false}) =>
       switch (tab) {
         _Tab.overview => l10n.overview,
+        _Tab.items => collectionLabel(
+          collectionGroups(_vm, widget.prefs, l10n),
+          l10n,
+        ),
         _Tab.episodes => l10n.episodes,
         _Tab.seasons => l10n.seasons,
         _Tab.cast => short ? l10n.cast : l10n.castAndCrew,
@@ -349,6 +366,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
   Widget _tabIcon(_Tab tab) {
     final icon = switch (tab) {
       _Tab.overview => Icons.smart_display_outlined,
+      _Tab.items => Icons.collections_bookmark_outlined,
       _Tab.episodes => Icons.format_list_bulleted,
       _Tab.seasons => Icons.layers_outlined,
       _Tab.cast => Icons.people_outline,
@@ -434,23 +452,51 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     if (_vm.isSeerrOnly || !sections.shows(DetailSection.moreLikeThis)) {
       return const [];
     }
-    return [
-      for (final item in _vm.similar)
-        (
-          title: item.name,
-          imageUrl: item.primaryImageTag == null
-              ? null
-              : _vm.imageApi.getPrimaryImageUrl(
-                  item.id,
-                  maxHeight: 360,
-                  tag: item.primaryImageTag,
-                ),
-          seerrStatus: null,
-          open: () =>
-              context.push(Destinations.item(item.id, serverId: item.serverId)),
-        ),
-    ];
+    return [for (final item in _vm.similar) _libraryPoster(item)];
   }
+
+  _Poster _libraryPoster(AggregatedItem item) => (
+    title: item.name,
+    imageUrl: item.primaryImageTag == null
+        ? null
+        : _vm.imageApi.getPrimaryImageUrl(
+            item.id,
+            maxHeight: 360,
+            tag: item.primaryImageTag,
+          ),
+    seerrStatus: null,
+    open: () =>
+        context.push(Destinations.item(item.id, serverId: item.serverId)),
+  );
+
+  /// A collection's own titles in one run, its movies first. The ones only
+  /// Seerr has carry their request status and open Seerr's page.
+  List<_Poster> _collectionPosters() => [
+    for (final (_, _, items) in collectionGroups(
+      _vm,
+      widget.prefs,
+      AppLocalizations.of(context),
+    ))
+      for (final item in items)
+        item.serverId == 'seerr'
+            ? (
+                title: item.name,
+                imageUrl: switch (item.rawData['PosterPath']) {
+                  final String path when path.isNotEmpty =>
+                    '$seerrPosterBase$path',
+                  _ => null,
+                },
+                seerrStatus: item.seerrStatus ?? SeerrMediaStatus.unknown,
+                open: () => context.push(
+                  Destinations.seerrMedia(
+                    item.id,
+                    mediaType: item.seerrMediaType,
+                    title: item.name,
+                  ),
+                ),
+              )
+            : _libraryPoster(item),
+  ];
 
   List<SeerrDiscoverItem> _seerrItems(_Seg seg, SeerrDetailPieces pieces) =>
       seg == _Seg.similar
@@ -1111,6 +1157,17 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         _scroll(_castGrid(columns: 5, phone: false)),
       ),
       _Tab.extras => area(_scroll(_extrasGrid(columns: 3, phone: false))),
+      _Tab.items => area(
+        _scroll(
+          _posterGrid(
+            _collectionPosters(),
+            columns: 7,
+            gap: 6,
+            phone: false,
+            upFromTop: upFromTop,
+          ),
+        ),
+      ),
       _Tab.seerr when seg == _Seg.about => area(
         left: 56,
         _details(_seerrInfo(pieces, l10n), phone: false, upFromTop: upFromTop),
@@ -2309,7 +2366,15 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     final status = poster.seerrStatus;
     return _FrostFocus(
       focusNode: node,
-      onFocusChange: (focused) => _remember(_tab, node, focused),
+      onFocusChange: (focused) {
+        _remember(_tab, node, focused);
+        // shortcut: only focus loads the next page, so a phone's touch grid
+        // stops at the first 50 titles. Add a scroll listener if that turns
+        // out to matter.
+        if (focused && _tab == _Tab.items && index >= count - columns * 2) {
+          unawaited(_vm.loadMoreCollectionItems());
+        }
+      },
       onSelect: poster.open,
       onLeft: keys.left,
       onRight: keys.right,
@@ -2657,6 +2722,13 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         return _castGrid(columns: 3, phone: true);
       case _Tab.extras:
         return _extrasGrid(columns: 1, phone: true);
+      case _Tab.items:
+        return _posterGrid(
+          _collectionPosters(),
+          columns: 3,
+          gap: 10,
+          phone: true,
+        );
       case _Tab.related:
       case _Tab.seerr:
         return _phoneRelated(sections, l10n);

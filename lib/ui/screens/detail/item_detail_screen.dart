@@ -2394,24 +2394,33 @@ class _DetailContentState extends State<_DetailContent> {
     TextStyle? titleStyle,
     double gap = 32,
     void Function(AggregatedItem item)? onItemLongPress,
+    VoidCallback? onNearEnd,
   }) {
     final node = _sectionFocusNode(label);
     return _SectionSpec(
       focusNode: node,
       gap: gap,
-      build: (links) => HorizontalScrollSection(
-        title: title,
-        titleStyle: titleStyle,
-        builder: (_, ctrl) => DetailSimilarRow(
-          items: items,
-          imageApi: viewModel.imageApi,
-          prefs: prefs,
-          onItemLongPress: onItemLongPress ?? _showItemContextMenu,
-          scrollController: _trackSectionScrollController(node, ctrl),
-          firstItemFocusNode: node,
-          onItemKeyEvent: _sectionRowHandler(node, links, items.length),
-        ),
-      ),
+      build: (links) {
+        final keys = _sectionRowHandler(node, links, items.length);
+        return HorizontalScrollSection(
+          title: title,
+          titleStyle: titleStyle,
+          builder: (_, ctrl) => DetailSimilarRow(
+            items: items,
+            imageApi: viewModel.imageApi,
+            prefs: prefs,
+            onItemLongPress: onItemLongPress ?? _showItemContextMenu,
+            scrollController: _trackSectionScrollController(node, ctrl),
+            firstItemFocusNode: node,
+            onItemKeyEvent: onNearEnd == null
+                ? keys
+                : (index, event) {
+                    if (index >= items.length - 8) onNearEnd();
+                    return keys?.call(index, event) ?? KeyEventResult.ignored;
+                  },
+          ),
+        );
+      },
     );
   }
 
@@ -3922,6 +3931,7 @@ class _DetailContentState extends State<_DetailContent> {
       items: items,
       gap: first ? 8 : 32,
       onItemLongPress: _showBoxSetItemContextMenu,
+      onNearEnd: () => unawaited(viewModel.loadMoreCollectionItems()),
     );
 
     final specs = <_SectionSpec>[
@@ -4912,6 +4922,9 @@ class DetailActionButtons extends StatefulWidget {
   /// Adds a Collections button to the row when set.
   final VoidCallback? onCollectionsPressed;
 
+  /// Names that button for what it opens, when that isn't Collections.
+  final String? collectionsLabel;
+
   /// Leaves the audio, subtitle and version buttons out of the row, for a
   /// style that offers them on their own through
   /// [DetailActionButtonsState.trackChoices].
@@ -4955,6 +4968,7 @@ class DetailActionButtons extends StatefulWidget {
     this.playlistTracksOverride,
     this.onExtrasPressed,
     this.onCollectionsPressed,
+    this.collectionsLabel,
     this.omitTrackButtons = false,
     this.labelsUnderCircles = false,
     this.centerRow = false,
@@ -7718,7 +7732,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         : null;
     final collectionsButton = widget.onCollectionsPressed != null
         ? _DetailActionButton(
-            label: l10n.detailSectionCollections,
+            label: widget.collectionsLabel ?? l10n.detailSectionCollections,
             icon: Icons.collections_bookmark_outlined,
             onPressed: widget.onCollectionsPressed!,
           )

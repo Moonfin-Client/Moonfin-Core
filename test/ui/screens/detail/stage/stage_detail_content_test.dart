@@ -299,5 +299,33 @@ void main() {
   test('a playlist is left to Modern', () {
     expect(detailPageDraws('Playlist'), isFalse);
     expect(detailPageDraws('Movie'), isTrue);
+    expect(detailPageDraws('BoxSet'), isTrue);
+  });
+
+  testWidgets('a collection gets a row of its movies and one of its shows', (
+    tester,
+  ) async {
+    when(
+      () => itemsApi.getItems(
+        parentId: 'item-1',
+        startIndex: any(named: 'startIndex'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'film-1', 'Type': 'Movie', 'Name': 'First film'},
+          {'Id': 'show-1', 'Type': 'Series', 'Name': 'The show'},
+        ],
+        'TotalRecordCount': 2,
+      },
+    );
+    await pumpContent(tester, viewModel('BoxSet'));
+
+    expect(find.text('Movies'), findsOneWidget);
+    expect(find.text('First film'), findsOneWidget);
+    expect(find.text('Series'), findsOneWidget);
+    expect(find.text('The show'), findsOneWidget);
   });
 }
