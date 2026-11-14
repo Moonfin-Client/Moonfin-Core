@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/access_schedule_service.dart';
@@ -28,7 +29,7 @@ class TimesUpGate extends StatelessWidget {
     super.key,
     this.service,
     this.onSwitchUser,
-    this.now = DateTime.now,
+    this.now,
     this.currentPath,
     this.routeChanges,
   });
@@ -39,8 +40,10 @@ class TimesUpGate extends StatelessWidget {
   /// What Switch User does, for a test. Defaults to opening the user picker.
   final Future<void> Function()? onSwitchUser;
 
-  /// The clock "today" and "tomorrow" are read against, for a test.
-  final DateTime Function() now;
+  /// The clock "today" and "tomorrow" are read against, for a test. Defaults
+  /// to the clock the schedule is judged by, the server's when it is known,
+  /// which is the one the next opening is on.
+  final DateTime Function()? now;
 
   /// The page the app is on and what tells this it changed, for a test.
   /// Default to the app's router.
@@ -76,7 +79,7 @@ class TimesUpGate extends StatelessWidget {
         }
         return _TimesUp(
           nextAccess: watched.status.nextAccess,
-          now: now,
+          now: now ?? () => watched.scheduleNow,
           onSwitchUser: onSwitchUser ?? _openUserPicker,
         );
       },
@@ -171,12 +174,22 @@ class _TimesUpState extends State<_TimesUp> {
   /// the screen is drawn again then. It can stay up all night.
   void _scheduleMidnight() {
     final moment = widget.now();
-    final next = DateTime(moment.year, moment.month, moment.day + 1);
+    final next = dateLike(moment, moment.year, moment.month, moment.day + 1);
     _midnight = Timer(next.difference(moment), () {
       if (!mounted) return;
       setState(() {});
       _scheduleMidnight();
     });
+  }
+
+  /// The clock [widget.now] reads can change under the screen, from this
+  /// device's to the server's once the server says what time it is, so the
+  /// next midnight is worked out again each time the screen is rebuilt.
+  @override
+  void didUpdateWidget(_TimesUp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _midnight?.cancel();
+    _scheduleMidnight();
   }
 
   @override

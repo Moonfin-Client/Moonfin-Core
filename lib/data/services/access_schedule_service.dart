@@ -33,7 +33,12 @@ class AccessScheduleStatus {
 /// start failing. Jellyfin checks the schedule against its own clock, which
 /// can be in a different time zone from this device, so for a user with a
 /// schedule the server is asked whether it's turning them away and its answer
-/// decides. The schedule times the looks and says when they can come back.
+/// decides. The schedule times the looks and says when they can come back, on
+/// the server's clock when the Moonfin plugin reports it and on this device's
+/// otherwise. The plugin answers for the clock even once the time is up, so
+/// it is read on every look and stays right across the server's daylight
+/// saving changes while the user waits. A failed read keeps the last clock,
+/// which is what an older plugin that turns the blocked user away gives.
 ///
 /// It looks again just before an opening or closing, when the app comes back
 /// to the foreground and when the server turns a request away. In between it
@@ -44,6 +49,7 @@ class AccessScheduleService extends ChangeNotifier {
     required this.loadSchedules,
     required this.onBlocked,
     this.serverRefuses,
+    this.loadServerTime,
     this.now = DateTime.now,
   });
 
@@ -75,9 +81,17 @@ class AccessScheduleService extends ChangeNotifier {
   /// schedule is checked against this device's clock alone.
   final Future<bool?> Function()? serverRefuses;
 
+  /// The server's clock and time zone, null when the server can't say, which
+  /// isn't asked again, and a failure when it couldn't be read, which keeps
+  /// the last clock. Without one the schedule is read on this device's clock.
+  final Future<ServerTime?> Function()? loadServerTime;
+
+  /// This device's clock.
   final DateTime Function() now;
 
   AccessScheduleStatus _status = const AccessScheduleStatus.allowed();
+  ServerClock? _serverClock;
+  bool _timeUnsupported = false;
   String? _userId;
   List<AccessSchedule> _schedules = const [];
   Timer? _timer;
@@ -98,6 +112,11 @@ class AccessScheduleService extends ChangeNotifier {
 
   bool get isBlocked => !_status.allowed;
 
+  /// The current time on the clock the schedule is judged by: the server's
+  /// wall clock when it is known, so it reads like [AccessScheduleStatus.nextAccess]
+  /// does, and this device's otherwise.
+  DateTime get scheduleNow => _serverClock?.wallClock(now()) ?? now();
+
   /// Starts watching [userId], or stops watching for null. Pass null for
   /// anyone who isn't subject to a schedule, such as an administrator.
   void setUser(String? userId) {
@@ -105,6 +124,8 @@ class AccessScheduleService extends ChangeNotifier {
     _generation++;
     _userId = userId;
     _schedules = const [];
+    _serverClock = null;
+    _timeUnsupported = false;
     _timer?.cancel();
     _timer = null;
     _setStatus(const AccessScheduleStatus.allowed());
@@ -158,23 +179,82 @@ class AccessScheduleService extends ChangeNotifier {
     // An answer is as good as the newest one applied, even if a later look
     // failed, but never replaces the answer of a look started after it.
     if (look < _appliedLook) return;
-    // Only a schedule can close, so only then is the server asked.
+    // Only a schedule can close, so only then is the server asked whether it
+    // turns the user away and what its clock says. The two are asked together
+    // so a slow clock can't hold up a denial the server has already given.
+    // The clock isn't asked of a server that has said it can't tell.
     bool? refused;
+    // What this look's own clock read says, used only when it answered: a
+    // read that fails leaves the stored clock as it is, which a look that
+    // overlapped this one may have brought up to date in the meantime.
+    ServerClock? clock;
+    var unsupported = false;
+    var clockAnswered = false;
     final ask = serverRefuses;
-    if (fresh.isNotEmpty && ask != null) {
-      try {
-        refused = await ask();
-      } catch (_) {}
+    final askTime = loadServerTime;
+    if (fresh.isNotEmpty) {
+      Future<void> readRefusal() async {
+        if (ask == null) return;
+        try {
+          refused = await ask();
+        } catch (_) {}
+      }
+
+      Future<void> readClock() async {
+        if (askTime == null || _timeUnsupported) return;
+        try {
+          final time = await askTime();
+          if (time == null) {
+            unsupported = true;
+          } else {
+            clock = ServerClock.from(time, now());
+          }
+          clockAnswered = true;
+        } catch (_) {
+          // Keeps the stored clock.
+        }
+      }
+
+      final clockRead = readClock();
+      await readRefusal();
+      if (generation != _generation || look < _appliedLook) return;
+      // The server's answer is applied as soon as it's known, on the last
+      // clock, so playback stops, or the user is let back in, without waiting
+      // on the clock. The clock's answer then corrects the opening named.
+      if (refused != null) {
+        _appliedLook = look;
+        _schedules = fresh;
+        _apply(failed: false, refused: refused);
+      }
+      await clockRead;
       if (generation != _generation || look < _appliedLook) return;
     }
     _appliedLook = look;
     _schedules = fresh;
+    var reframed = false;
+    if (clockAnswered) {
+      reframed = _newFrame(_serverClock, clock);
+      _serverClock = clock;
+      _timeUnsupported = unsupported;
+    }
     _apply(failed: false, refused: refused);
+    // The Time's up screen reads "today" and its midnight from [scheduleNow],
+    // which a new clock moves even when the status is the same.
+    if (reframed && isBlocked) notifyListeners();
+  }
+
+  /// Whether [after] reads a different wall clock from [before]: one appears
+  /// or goes, the offset changes, or the skew moves by more than a read's
+  /// round trip could.
+  static bool _newFrame(ServerClock? before, ServerClock? after) {
+    if (before == null || after == null) return before != after;
+    return before.offset != after.offset ||
+        (before.skew - after.skew).abs() > const Duration(minutes: 1);
   }
 
   void _apply({required bool failed, bool? refused}) {
     _timer?.cancel();
-    final moment = now();
+    final moment = scheduleNow;
     final byClock = AccessScheduleEvaluator.isAllowed(_schedules, moment);
     final allowed = refused == null ? byClock : !refused;
     // The time to come back is worked out on this device's clock, so it's only
