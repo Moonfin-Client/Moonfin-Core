@@ -815,7 +815,7 @@ class _HomeFrame {
         !phone && !modern && prefs.get(UserPreferences.homeRowInfoOverlay);
     // _ContentRows' rowLeftInset.
     final rowLeftInset =
-        (!navbarTop && !phone ? 56.0 : (navbarTop && tv ? 48.0 : 0.0)) +
+        (!navbarTop && !phone ? 56.0 : (navbarTop && tv ? tvTopNavbarRowInset : 0.0)) +
         (phone ? 0.0 : 16.0);
     // The band the InfoArea sits in, from _ContentRows' layout pass.
     final infoNavbar = tv ? (navbarTop ? 45.0 : 15.0) : (phone ? 60.0 : 80.0);

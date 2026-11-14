@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin/util/tv_ui_scale.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
 
@@ -54,6 +55,45 @@ void main() {
         tvUiLogicalSize(const Size(3840, 2160)).width,
         closeTo(tvUiLogicalSize(const Size(1920, 1080)).width, 0.01),
       );
+    });
+  });
+
+  group('the system safe area on the canvas', () {
+    testWidgets("is dropped on Apple TV, whose layouts keep their own margins", (
+      tester,
+    ) async {
+      // tvOS reports 1920x1080 points with an 80 point safe area at the sides
+      // and 60 at the top and bottom.
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      const safeArea = FakeViewPadding(left: 80, top: 60, right: 80, bottom: 60);
+      tester.view.padding = safeArea;
+      tester.view.viewPadding = safeArea;
+      addTearDown(tester.view.reset);
+
+      late EdgeInsets padding;
+      late EdgeInsets viewPadding;
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData.fromView(tester.view),
+          child: TvUiScale(
+            child: Builder(
+              builder: (context) {
+                padding = MediaQuery.paddingOf(context);
+                viewPadding = MediaQuery.viewPaddingOf(context);
+                return const SizedBox.expand();
+              },
+            ),
+          ),
+        ),
+      );
+
+      const scale = 1920 / kTvDesignWidth;
+      final expected = PlatformDetection.isAppleTV
+          ? EdgeInsets.zero
+          : const EdgeInsets.fromLTRB(80 / scale, 0, 80 / scale, 60 / scale);
+      expect(padding, expected);
+      expect(viewPadding, expected);
     });
   });
 

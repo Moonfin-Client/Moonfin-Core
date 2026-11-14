@@ -2405,7 +2405,7 @@ void main() {
     await pump();
     rowsLeft(NavbarPosition.left);
     await pump();
-    // Home's rows start 56 in beside the rail against 48 under a TV's top
+    // Home's rows start 56 in beside the rail against 16 under a TV's top
     // bar, rather than after the rail's whole width.
     final scale =
         tester
@@ -2418,7 +2418,7 @@ void main() {
         1150;
     expect(
       tester.getTopLeft(find.text(l10n.continueWatching)).dx - underTopBar,
-      closeTo(8 * scale, 0.5),
+      closeTo(40 * scale, 0.5),
     );
 
     // The docked keyboard opens under the field rather than in its place, and
