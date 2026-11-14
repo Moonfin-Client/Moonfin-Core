@@ -55,6 +55,19 @@ class HtmlVideoBackend extends PlayerBackend
         _positionSecondaryCues();
       }).toJS,
     );
+    // Also fires when the browser's own control opens or closes the window.
+    _videoElement.addEventListener(
+      'enterpictureinpicture',
+      ((web.Event _) {
+        if (!_disposed) inPictureInPicture.value = true;
+      }).toJS,
+    );
+    _videoElement.addEventListener(
+      'leavepictureinpicture',
+      ((web.Event _) {
+        if (!_disposed) inPictureInPicture.value = false;
+      }).toJS,
+    );
     _registerViewFactory();
   }
 
@@ -1713,6 +1726,34 @@ class HtmlVideoBackend extends PlayerBackend
     return HtmlElementView(viewType: _viewType);
   }
 
+  /// Whether the browser can float this video in a window of its own. Firefox
+  /// has no API for it, so the property is missing there.
+  bool get supportsPictureInPicture =>
+      web.document.has('pictureInPictureEnabled') &&
+      web.document.pictureInPictureEnabled &&
+      !_videoElement.disablePictureInPicture;
+
+  /// True while the video plays in the browser's floating window.
+  final ValueNotifier<bool> inPictureInPicture = ValueNotifier<bool>(false);
+
+  /// Needs a recent click, so call it straight from the button's handler.
+  Future<void> enterPictureInPicture() async {
+    if (_disposed || !supportsPictureInPicture) return;
+    try {
+      await _videoElement.requestPictureInPicture().toDart;
+    } catch (_) {
+      // Refused, for example before the video has any metadata. The button
+      // stays as it was, since no enter event follows.
+    }
+  }
+
+  Future<void> exitPictureInPicture() async {
+    if (_disposed || !inPictureInPicture.value) return;
+    try {
+      await web.document.exitPictureInPicture().toDart;
+    } catch (_) {}
+  }
+
   String _cssObjectFit(BoxFit fit) {
     switch (fit) {
       case BoxFit.fill:
@@ -1755,5 +1796,6 @@ class HtmlVideoBackend extends PlayerBackend
     _completedStream.close();
     _errorStream.close();
     _tracksChangedStream.close();
+    inPictureInPicture.dispose();
   }
 }

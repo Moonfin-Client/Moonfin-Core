@@ -10854,6 +10854,18 @@
   "@playerTooltipExitFloatOnTop": {
     "description": "Tooltip label for disabling always-on-top in desktop player"
   },
+  "playerTooltipPictureInPicture": "Picture-in-picture",
+  "@playerTooltipPictureInPicture": {
+    "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+  },
+  "playerTooltipExitPictureInPicture": "Exit picture-in-picture",
+  "@playerTooltipExitPictureInPicture": {
+    "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+  },
+  "playerPlayingInPictureInPicture": "Playing in picture-in-picture",
+  "@playerPlayingInPictureInPicture": {
+    "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+  },
   "playerTooltipLockLandscape": "Lock landscape",
   "@playerTooltipLockLandscape": {
     "description": "Tooltip label for locking landscape orientation in player"
