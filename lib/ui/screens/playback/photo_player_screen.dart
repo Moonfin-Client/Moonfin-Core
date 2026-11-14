@@ -32,7 +32,12 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   int _currentIndex = 0;
   bool _controlsVisible = true;
   Timer? _hideTimer;
+  int _pointerCount = 0;
+  Offset _swipeStart = Offset.zero;
+  Offset _swipeLast = Offset.zero;
+  bool _swipeIgnored = false;
 
+  static const _swipeMinDistance = 50.0;
   static const _slideshowInterval = Duration(seconds: 5);
   static const _photoTransition = Duration(milliseconds: 400);
 
@@ -112,6 +117,8 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
 
   void _goTo(int index) {
     if (index < 0 || index >= _items.length) return;
+    // A swipe still in progress belongs to the photo it started on.
+    if (_pointerCount > 0) _swipeIgnored = true;
     _transformController.value = Matrix4.identity();
     setState(() => _currentIndex = index);
     _onPhotoShown();
@@ -171,6 +178,48 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     }
   }
 
+  /// A swipe is one finger down, moved and lifted, on a photo that isn't
+  /// zoomed in. Raw pointers are tracked rather than the viewer's scale
+  /// callbacks, which only start once the finger has already moved and would
+  /// also report a trackpad scroll.
+  void _onPointerDown(PointerDownEvent e) {
+    if (_pointerCount == 0) {
+      _swipeStart = e.position;
+      _swipeLast = e.position;
+      _swipeIgnored = _transformController.value.getMaxScaleOnAxis() > 1.01;
+    }
+    _pointerCount++;
+    if (_pointerCount > 1) _swipeIgnored = true;
+  }
+
+  void _onPointerMove(PointerMoveEvent e) => _swipeLast = e.position;
+
+  void _onPointerUp(PointerUpEvent e) {
+    _swipeLast = e.position;
+    _onPointerDone(swipe: true);
+  }
+
+  void _onPointerCancel(PointerCancelEvent e) => _onPointerDone(swipe: false);
+
+  void _onPointerDone({required bool swipe}) {
+    if (_pointerCount > 0) _pointerCount--;
+    if (_pointerCount > 0) return;
+    final ignored = _swipeIgnored;
+    _swipeIgnored = false;
+    if (!swipe || ignored || _items.length < 2) return;
+    final delta = _swipeLast - _swipeStart;
+    if (delta.dx.abs() < _swipeMinDistance ||
+        delta.dx.abs() < delta.dy.abs() * 1.5) {
+      return;
+    }
+    _showControlsTemporarily();
+    if (delta.dx < 0) {
+      _next();
+    } else {
+      _previous();
+    }
+  }
+
   void _toggleSlideshow() {
     if (_slideshow.isRunning) {
       _slideshow.stop();
@@ -205,14 +254,21 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
-      body: GestureDetector(
-        onTap: _toggleControls,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildPhotoView(),
-            if (_controlsVisible) _buildOverlay(context),
-          ],
+      body: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: _onPointerDown,
+        onPointerMove: _onPointerMove,
+        onPointerUp: _onPointerUp,
+        onPointerCancel: _onPointerCancel,
+        child: GestureDetector(
+          onTap: _toggleControls,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildPhotoView(),
+              if (_controlsVisible) _buildOverlay(context),
+            ],
+          ),
         ),
       ),
     );
