@@ -1240,8 +1240,10 @@ class MediaBarRepository {
         _tmdbImage(details?['backdropPath'] as String?, 1280) ??
         _tmdbImage(item.backdropUrl, 1280);
     if (backdropUrl == null) return null;
-    // Every genre counts here, not only the three the slide shows.
-    final genres = (details?['genres'] as List?)?.cast<String>() ?? const [];
+    // Every genre counts here, not only the three the slide shows. The list's
+    // own genres stand in when TMDB has nothing.
+    final genres =
+        (details?['genres'] as List?)?.cast<String>() ?? item.genres;
     if (genres.any(excludedGenres.contains)) return null;
     final runTimeTicks = (details?['runTimeTicks'] as num?)?.toInt();
     final trailerUrl = details?['trailerUrl'] as String?;
