@@ -225,6 +225,67 @@ void main() {
 
       expect(sync.apply(_episode()).isPlayed, isFalse);
     });
+
+    AggregatedItem resumable() => AggregatedItem(
+      id: 'ep1',
+      serverId: 'srv',
+      rawData: {
+        'Id': 'ep1',
+        'Type': 'Episode',
+        'UserData': {
+          'Played': false,
+          'PlaybackPositionTicks': 400,
+          'PlayedPercentage': 40,
+        },
+      },
+    );
+
+    test('a partial entry leaves the progress it does not mention', () async {
+      final events = StreamController<ServerWebSocketMessage>();
+      addTearDown(events.close);
+      sync.bindTo(events.stream, userId: 'user-1');
+
+      // What Silo passes on for a favorite event whose read-back failed.
+      events.add(
+        const UserDataChangedMessage(
+          userId: 'user-1',
+          userDataList: [
+            {'ItemId': 'ep1', 'IsFavorite': true},
+          ],
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final patched = sync.apply(resumable());
+      expect(patched.isFavorite, isTrue);
+      expect(patched.playedPercentage, 40);
+      expect(patched.playbackPositionTicks, 400);
+    });
+
+    test('a whole record without a percentage clears the old one', () async {
+      final events = StreamController<ServerWebSocketMessage>();
+      addTearDown(events.close);
+      sync.bindTo(events.stream, userId: 'user-1');
+
+      events.add(
+        const UserDataChangedMessage(
+          userId: 'user-1',
+          userDataList: [
+            {
+              'ItemId': 'ep1',
+              'Played': false,
+              'PlaybackPositionTicks': 0,
+              'IsFavorite': false,
+            },
+          ],
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final patched = sync.apply(resumable());
+      expect(patched.playedPercentage, isNull);
+      expect(patched.playbackPositionTicks, 0);
+    });
   });
 
   group('refreshing from the server', () {

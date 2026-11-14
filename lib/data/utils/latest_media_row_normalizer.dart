@@ -207,6 +207,17 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
     imageTags.remove('Thumb');
   }
 
+  // The show's logo comes as the parent logo, so it only fits when the
+  // parent is the series.
+  final seriesLogoImageTag = item.parentLogoItemId == seriesId
+      ? item.seriesLogoImageTag
+      : null;
+  if (seriesLogoImageTag != null && seriesLogoImageTag.isNotEmpty) {
+    imageTags['Logo'] = seriesLogoImageTag;
+  } else {
+    imageTags.remove('Logo');
+  }
+
   rawData['ImageTags'] = imageTags;
 
   return AggregatedItem(

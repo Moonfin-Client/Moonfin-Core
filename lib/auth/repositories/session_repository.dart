@@ -716,6 +716,15 @@ class SessionRepository {
     }());
   }
 
+  bool _hasOtherSignedInUser(String? serverId, String? userId) =>
+      _authStore.getServers().any(
+        (server) => _authStore.getUsers(server.id).any(
+          (u) =>
+              u.accessToken.isNotEmpty &&
+              !(u.serverId == serverId && u.id == userId),
+        ),
+      );
+
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
   List<PrivateUser> _siloSiblings(String serverId, String? userId) {
@@ -800,7 +809,9 @@ class SessionRepository {
     if (PlatformDetection.isMobile && !tokenKnownInvalid) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {
-          await GetIt.instance<PushMessagingService>().unregister();
+          await GetIt.instance<PushMessagingService>().unregister(
+            deleteToken: !_hasOtherSignedInUser(serverId, userId),
+          );
         }
       } catch (_) {}
     }
