@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/services/seerr/arr_queue.dart';
 import 'package:moonfin/data/services/seerr/seerr_download_progress.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/util/date_format_util.dart';
 import 'package:moonfin/ui/widgets/seerr_download_progress_bar.dart';
 
 const _gb = 1024 * 1024 * 1024;
@@ -329,13 +331,65 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(
-          body: SizedBox(width: 120, child: SeerrNotFoundYetLabel()),
+          body: SizedBox(
+            width: 120,
+            child: SeerrArrWaitLabel(wait: ArrNotFoundYet()),
+          ),
         ),
       ),
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Not found yet'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
+
+  testWidgets('each arr wait names itself', (tester) async {
+    Future<void> show(ArrWait wait) => tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SizedBox(width: 400, child: SeerrArrWaitLabel(wait: wait)),
+        ),
+      ),
+    );
+
+    await show(const ArrSearching());
+    expect(find.text('Searching indexers'), findsOneWidget);
+
+    await show(
+      ArrNotFoundYet(
+        lastSearch: DateTime.now().subtract(const Duration(hours: 3)),
+      ),
+    );
+    expect(find.text('Not found yet \u00b7 searched 3h ago'), findsOneWidget);
+
+    await show(const ArrNotReleased(nextEpisode: false));
+    expect(find.text('Not available yet'), findsOneWidget);
+
+    await show(
+      ArrNotReleased(
+        date: DateTime.now().subtract(const Duration(days: 2)),
+        nextEpisode: false,
+      ),
+    );
+    expect(find.text('Not available yet'), findsOneWidget);
+
+    // Dates ahead of now, since the label leaves out one already gone.
+    final release = DateTime.now().add(const Duration(days: 60));
+    await show(ArrNotReleased(date: release, nextEpisode: false));
+    expect(
+      find.text('Available ${formatShortDate(release, locale: 'en_US')}'),
+      findsOneWidget,
+    );
+
+    final airing = DateTime.now().add(const Duration(days: 5));
+    await show(ArrNotReleased(date: airing, nextEpisode: true));
+    expect(
+      find.text('Next episode ${formatShortDate(airing, locale: 'en_US')}'),
+      findsOneWidget,
+    );
     expect(find.byType(LinearProgressIndicator), findsNothing);
   });
 

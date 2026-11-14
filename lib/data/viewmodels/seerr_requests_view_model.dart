@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
@@ -83,12 +84,17 @@ class SeerrRequestsState {
         arrQueue: arrQueueFor(request),
       );
 
-  /// An approved request whose released movie the arr hasn't found a release
-  /// for yet.
-  bool isNotFoundYet(SeerrRequest request) =>
-      request.status == SeerrRequest.statusApproved &&
-      request.media?.status == SeerrMediaStatus.processing &&
-      (arrQueueFor(request)?.isNotFoundYet ?? false);
+  /// What the arr is waiting on for an approved request with nothing
+  /// grabbed yet, or null. A series stays partially available while a
+  /// requested season airs, so that counts too.
+  ArrWait? waitFor(SeerrRequest request) {
+    if (request.status != SeerrRequest.statusApproved) return null;
+    final status = request.media?.status;
+    final airing =
+        request.type == 'tv' && status == SeerrMediaStatus.partiallyAvailable;
+    if (status != SeerrMediaStatus.processing && !airing) return null;
+    return arrQueueFor(request)?.wait;
+  }
 
   SeerrRequestsState copyWith({
     bool? isLoading,
@@ -133,6 +139,9 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   SeerrRequestsState get state => _state;
 
   Timer? _downloadPollTimer;
+
+  /// Reads the queues again when a title that isn't out yet comes out.
+  Timer? _releaseTimer;
   bool _isDisposed = false;
 
   /// How many queue reads each title has started, keyed like the queues.
@@ -151,13 +160,27 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   void dispose() {
     _isDisposed = true;
     _downloadPollTimer?.cancel();
+    _releaseTimer?.cancel();
     super.dispose();
   }
 
   /// A card showing a bar, or one waiting for the arr to find a release,
-  /// which the next queue read may turn into a bar.
+  /// which the next queue read may turn into a bar. A title that isn't out
+  /// yet won't change before its date, so it's only watched for a day after
+  /// it, in case the arr is slow to pick it up. An arr that holds it back
+  /// longer, such as Radarr with an availability delay, shows on refresh.
   bool _isWatched(SeerrRequest r) =>
-      _state.downloadFor(r) != null || _state.isNotFoundYet(r);
+      _state.downloadFor(r) != null ||
+      switch (_state.waitFor(r)) {
+        ArrSearching() || ArrNotFoundYet() => true,
+        ArrNotReleased(:final date?) => _isJustDue(date),
+        ArrNotReleased() || null => false,
+      };
+
+  static bool _isJustDue(DateTime date) {
+    final since = clock.now().difference(date);
+    return !since.isNegative && since < const Duration(days: 1);
+  }
 
   bool get _hasActiveDownloads => _state.requests.any(_isWatched);
 
@@ -175,6 +198,31 @@ class SeerrRequestsViewModel extends ChangeNotifier {
       _downloadPollTimer?.cancel();
       _downloadPollTimer = null;
     }
+    _syncReleaseRefresh();
+  }
+
+  /// Wakes the poll when the earliest release or airing date comes, since a
+  /// title that isn't out yet is only watched from then.
+  void _syncReleaseRefresh() {
+    _releaseTimer?.cancel();
+    _releaseTimer = null;
+    final now = clock.now();
+    DateTime? next;
+    for (final r in _state.requests) {
+      if (_state.waitFor(r) case ArrNotReleased(:final date?)
+          when date.isAfter(now) && (next == null || date.isBefore(next))) {
+        next = date;
+      }
+    }
+    if (next == null) return;
+    // A browser timer can't wait much past 24 days, so a later date is
+    // looked at again after a day.
+    final delay = next.difference(now) + const Duration(seconds: 1);
+    const longest = Duration(days: 1);
+    _releaseTimer = Timer(
+      delay < longest ? delay : longest,
+      _syncDownloadPolling,
+    );
   }
 
   /// Quiet refresh of the first page that merges results into the current
@@ -207,9 +255,9 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         _state = _state.copyWith(requests: requests);
         notifyListeners();
       }
-      // Only the cards showing a bar or Not found yet. Every other title is
-      // fetched on load and refresh, which keeps a long list from costing a
-      // plugin call per title on every tick.
+      // Only the cards showing a bar, a search or Not found yet. Every other
+      // title is fetched on load and refresh, which keeps a long list from
+      // costing a plugin call per title on every tick.
       await _loadArrQueues(_state.requests.where(_isWatched).toList());
     } catch (_) {
       // Leave the list as-is and let the next tick retry.

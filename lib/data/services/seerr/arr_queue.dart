@@ -19,6 +19,25 @@ class ArrQueue {
 
   /// Radarr only: the movie has reached its minimum availability.
   final bool? isAvailable;
+
+  /// Radarr only: the day the movie reaches its minimum availability.
+  final DateTime? releaseDate;
+
+  /// Radarr only: when Radarr last searched the indexers for the movie.
+  final DateTime? lastSearchTime;
+
+  /// Whether the arr is searching the indexers for the title right now. Null
+  /// from a Moonbase that doesn't say.
+  final bool? searching;
+
+  /// Sonarr only: each season's monitored aired and downloaded episode
+  /// counts.
+  final List<ArrSeason> seasons;
+
+  /// The seasons a request asked for, or null for the whole series, which
+  /// leaves the specials out of what it waits on.
+  final Set<int>? requestedSeasons;
+
   final List<ArrQueueItem> items;
 
   const ArrQueue({
@@ -28,6 +47,11 @@ class ArrQueue {
     this.canRemove = false,
     this.hasFile,
     this.isAvailable,
+    this.releaseDate,
+    this.lastSearchTime,
+    this.searching,
+    this.seasons = const [],
+    this.requestedSeasons,
     this.items = const [],
   });
 
@@ -38,6 +62,14 @@ class ArrQueue {
     canRemove: json['canRemove'] == true,
     hasFile: json['hasFile'] as bool?,
     isAvailable: json['isAvailable'] as bool?,
+    releaseDate: _date(json['releaseDate']),
+    lastSearchTime: _date(json['lastSearchTime']),
+    searching: json['searching'] as bool?,
+    seasons: [
+      for (final raw in json['seasons'] as List? ?? const [])
+        if (raw is Map && raw['seasonNumber'] is num)
+          ArrSeason.fromJson(raw.cast<String, dynamic>()),
+    ],
     items: [
       for (final raw in json['items'] as List? ?? const [])
         if (raw is Map) ArrQueueItem.fromJson(raw.cast<String, dynamic>()),
@@ -49,8 +81,8 @@ class ArrQueue {
   /// The arr's name as people know it, for messages.
   String get serviceName => isRadarr ? 'Radarr' : 'Sonarr';
 
-  /// Only the items for [seasons], for a request that asked for some seasons
-  /// of a series. Movies and an empty list keep everything.
+  /// Only the items and seasons for [seasons], for a request that asked for
+  /// some seasons of a series. Movies and an empty list keep everything.
   ArrQueue forSeasons(Iterable<int> seasons) {
     final wanted = seasons.toSet();
     if (wanted.isEmpty || isRadarr) return this;
@@ -61,6 +93,11 @@ class ArrQueue {
       canRemove: canRemove,
       hasFile: hasFile,
       isAvailable: isAvailable,
+      releaseDate: releaseDate,
+      lastSearchTime: lastSearchTime,
+      searching: searching,
+      seasons: this.seasons,
+      requestedSeasons: wanted,
       items: [
         for (final item in items)
           if (item.seasonNumber == null || wanted.contains(item.seasonNumber))
@@ -69,17 +106,109 @@ class ArrQueue {
     );
   }
 
-  /// Radarr has the released movie, is watching for it and hasn't got it,
-  /// yet nothing is downloading. Sonarr can't say whether a season has aired,
-  /// so it never answers yes.
-  bool get isNotFoundYet =>
-      isRadarr &&
-      inArr &&
-      monitored == true &&
-      hasFile == false &&
-      isAvailable == true &&
-      items.isEmpty;
+  /// What the arr is waiting on for a monitored title with nothing in its
+  /// queue, or null when there's nothing to say. A download in the queue has
+  /// its own bar, so it's never a wait.
+  ArrWait? get wait {
+    if (!inArr || monitored != true || items.isNotEmpty) return null;
+    if (searching == true) return const ArrSearching();
+    return isRadarr ? _movieWait : _seriesWait;
+  }
+
+  ArrWait? get _movieWait {
+    if (hasFile != false) return null;
+    return switch (isAvailable) {
+      true => ArrNotFoundYet(lastSearch: lastSearchTime),
+      false => ArrNotReleased(date: releaseDate, nextEpisode: false),
+      // Radarr couldn't say, so nothing is claimed.
+      null => null,
+    };
+  }
+
+  /// A season with aired episodes still missing is not found yet. Otherwise
+  /// a season with an episode still to air is waiting on its next airing.
+  ArrWait? get _seriesWait {
+    final wanted = requestedSeasons;
+    final watched = [
+      for (final season in seasons)
+        if (season.monitored == true &&
+            (wanted?.contains(season.seasonNumber) ?? season.seasonNumber > 0))
+          season,
+    ];
+    if (watched.any((s) => s.missingAired > 0)) return const ArrNotFoundYet();
+    final airings = [for (final season in watched) ?season.nextAiring]..sort();
+    return airings.isEmpty
+        ? null
+        : ArrNotReleased(date: airings.first, nextEpisode: true);
+  }
 }
+
+/// What the arr is waiting on for a title it watches with nothing in its
+/// queue.
+sealed class ArrWait {
+  const ArrWait();
+}
+
+/// The arr is searching the indexers for the title right now.
+final class ArrSearching extends ArrWait {
+  const ArrSearching();
+}
+
+/// The title is out and the arr watches for it, but no release was found.
+final class ArrNotFoundYet extends ArrWait {
+  /// When the arr last searched, if it said. Sonarr never does.
+  final DateTime? lastSearch;
+
+  const ArrNotFoundYet({this.lastSearch});
+}
+
+/// The title isn't out yet by the arr's reckoning, so it doesn't search.
+final class ArrNotReleased extends ArrWait {
+  /// Radarr's release date for the movie, or the next airing of a series.
+  /// It can already be gone when the arr holds a title back past it, or until
+  /// the queue is read again.
+  final DateTime? date;
+
+  /// Whether [date] is a series' next episode rather than a movie's release.
+  final bool nextEpisode;
+
+  const ArrNotReleased({this.date, required this.nextEpisode});
+}
+
+/// One Sonarr season as Moonbase reads it.
+class ArrSeason {
+  final int seasonNumber;
+  final bool? monitored;
+
+  /// Aired monitored episodes, plus any episode already downloaded.
+  final int? episodeCount;
+  final int? episodeFileCount;
+
+  /// The next monitored episode to air, if one is scheduled.
+  final DateTime? nextAiring;
+
+  const ArrSeason({
+    required this.seasonNumber,
+    this.monitored,
+    this.episodeCount,
+    this.episodeFileCount,
+    this.nextAiring,
+  });
+
+  factory ArrSeason.fromJson(Map<String, dynamic> json) => ArrSeason(
+    seasonNumber: (json['seasonNumber'] as num).toInt(),
+    monitored: json['monitored'] as bool?,
+    episodeCount: (json['episodeCount'] as num?)?.toInt(),
+    episodeFileCount: (json['episodeFileCount'] as num?)?.toInt(),
+    nextAiring: _date(json['nextAiring']),
+  );
+
+  /// Aired episodes the arr watches for and hasn't got.
+  int get missingAired => (episodeCount ?? 0) - (episodeFileCount ?? 0);
+}
+
+DateTime? _date(Object? value) =>
+    value is String ? DateTime.tryParse(value)?.toLocal() : null;
 
 /// One queue entry. Sonarr lists a season pack once per episode, every entry
 /// sharing the pack's downloadId.

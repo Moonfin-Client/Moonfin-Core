@@ -117,13 +117,24 @@ class SeerrQualityStatus {
 
   bool get hasExistingRequest => activeRequests.isNotEmpty;
 
-  /// An approved request the arr is watching for, with nothing grabbed yet.
-  /// Seerr calls that processing too, so without the arr's queue it looks
-  /// the same as a download on its way.
-  bool get isNotFoundYet =>
-      isProcessing &&
-      requests.any((r) => r.status == SeerrRequest.statusApproved) &&
-      (arrQueue?.isNotFoundYet ?? false);
+  /// What the arr is waiting on for the approved requests with nothing
+  /// grabbed yet, or null. Seerr calls all of it processing, so without the
+  /// arr's queue it looks the same as a download on its way. A series stays
+  /// partially available while a requested season airs, so that counts too.
+  ArrWait? get arrWait {
+    final queue = arrQueue;
+    if (queue == null) return null;
+    if (!isProcessing && !(isPartiallyAvailable && !queue.isRadarr)) {
+      return null;
+    }
+    final approved = requests
+        .where((r) => r.status == SeerrRequest.statusApproved)
+        .toList();
+    if (approved.isEmpty) return null;
+    return queue.forSeasons([
+      for (final r in approved) ...?r.seasons?.map((s) => s.seasonNumber),
+    ]).wait;
+  }
 
   /// The stuck download an admin may swap for another release, or null.
   SeerrDownloadSummary? get replaceableDownload {
