@@ -64,6 +64,9 @@ class AppUpdateService {
     'com.huawei.appmarket',
     'com.xiaomi.mipicks',
     'org.fdroid.fdroid',
+    'org.fdroid.basic',
+    'com.looker.droidify',
+    'com.machiav3lli.fdroid',
   };
 
   static bool isStoreInstaller(String? installer) {
