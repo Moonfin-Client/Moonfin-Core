@@ -1225,7 +1225,10 @@ class SessionRepository {
   }
 
   void _ensurePlayerRouteForItem(AggregatedItem item) {
-    final currentPath = appRouter.routerDelegate.currentConfiguration.uri.path;
+    // A pushed player leaves the configuration's uri on the page under it, so
+    // only the top route shows a player already open. Reading the uri pushed a
+    // second player, which a later Stop left behind empty.
+    final currentPath = _remoteRoutePath;
     if (currentPath == Destinations.videoPlayer ||
         currentPath == Destinations.audioPlayer) {
       return;
@@ -1238,7 +1241,7 @@ class SessionRepository {
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    appRouter.push(
+    _router.push(
       isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );
   }

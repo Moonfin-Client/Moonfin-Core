@@ -43,6 +43,27 @@ class _FakeCredentialStore extends Fake implements CredentialStore {}
 
 class _FakeClientFactory extends Fake implements MediaServerClientFactory {}
 
+/// Serves a remote PlayNow's items as plain episodes.
+class _EpisodeItemsApi extends Fake implements ItemsApi {
+  @override
+  Future<Map<String, dynamic>> getItem(
+    String itemId, {
+    String? mediaSourceId,
+    String? fields,
+  }) async => {'Id': itemId, 'Type': 'Episode', 'MediaType': 'Video'};
+}
+
+class _EpisodeClient extends Fake implements MediaServerClient {
+  @override
+  final ItemsApi itemsApi = _EpisodeItemsApi();
+}
+
+class _EpisodeClientFactory extends Fake implements MediaServerClientFactory {
+  final client = _EpisodeClient();
+  @override
+  MediaServerClient? getClientIfExists(String serverId) => client;
+}
+
 class _FakeSocketHandler extends Fake implements SocketHandler {}
 
 class _FakeServerRepository extends Fake implements ServerRepository {}
@@ -131,6 +152,26 @@ class _RecordingManager extends Fake implements PlaybackManager {
   Future<void> stop({bool userInitiated = true}) async {
     calls.add('stop');
     await stopBarrier?.future;
+  }
+
+  @override
+  Future<void> playItems(
+    List<dynamic> items, {
+    int startIndex = 0,
+    Duration startPosition = Duration.zero,
+    int? audioStreamIndex,
+    int? subtitleStreamIndex,
+    String? mediaSourceId,
+    bool audioSelectionExplicit = false,
+    bool subtitleSelectionExplicit = false,
+    bool enableDirectPlay = true,
+    bool enableDirectStream = true,
+    bool enableTranscoding = true,
+    bool autoPlay = true,
+    bool carryTrackSelections = false,
+  }) async {
+    calls.add('play');
+    seeks.add(startPosition);
   }
 
   @override
@@ -805,11 +846,14 @@ void main() {
       return router;
     }
 
-    SessionRepository receiverFor(GoRouter router) => SessionRepository(
+    SessionRepository receiverFor(
+      GoRouter router, {
+      MediaServerClientFactory? clients,
+    }) => SessionRepository(
       _FakeAuthStore(),
       _FakeAuthPrefs(),
       _FakeCredentialStore(),
-      _FakeClientFactory(),
+      clients ?? _FakeClientFactory(),
       _FakeSocketHandler(),
       _FakeServerRepository(),
       _FakeUserRepository(),
@@ -830,6 +874,39 @@ void main() {
       expect(manager.calls, ['stop']);
       expect(Destinations.isPlayerRoute(router.state.uri.path), isFalse);
       expect(router.state.uri.path, Destinations.home);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+    });
+
+    // Seen on a Fire TV: a second PlayNow while the player was open pushed
+    // another player over it, and Stop closed only the top one.
+    testWidgets('closes the player after a second PlayNow moved it', (
+      tester,
+    ) async {
+      final router = await mountRouter(tester);
+      final receiver = receiverFor(router, clients: _EpisodeClientFactory())
+        ..setActiveSessionForTest('server', 'user');
+      Future<void> playNow(int seconds) => receiver.handleRemoteCommandForTest(
+        PlayMessage(
+          itemIds: const ['episode'],
+          startPositionTicks: seconds * 10000000,
+        ),
+      );
+      await playNow(0);
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, Destinations.videoPlayer);
+      await playNow(600);
+      await tester.pumpAndSettle();
+      expect(router.routerDelegate.currentConfiguration.matches.length, 2);
+      await receiver.handleRemoteCommandForTest(
+        PlaystateMessage(command: 'Stop'),
+      );
+      await tester.pumpAndSettle();
+      expect(manager.calls, ['play', 'play', 'stop']);
+      expect(manager.seeks, [Duration.zero, const Duration(minutes: 10)]);
+      expect(router.state.uri.path, Destinations.home);
+      expect(router.routerDelegate.currentConfiguration.matches.length, 1);
       await tester.pumpWidget(const SizedBox());
       receiver.dispose();
       router.dispose();
