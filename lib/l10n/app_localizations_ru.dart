@@ -511,7 +511,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin рекомендует';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+  String get recommendationSystemJellyfin => 'Server Recommends';
 
   @override
   String get recommendationSystemTmdb => 'Схожесть TMDb';
@@ -12687,13 +12687,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin рекомендует';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Server Recommends';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Схожесть TMDb';

@@ -505,13 +505,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+  String get recommendationSystemJellyfin => 'Server Recommends';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Similarity';
@@ -12544,13 +12544,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Server Recommends';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
@@ -18536,13 +18536,13 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+  String get recommendationSystemJellyfin => 'Server Recommends';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Similarity';
@@ -28105,7 +28105,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Server Recommends';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb Similarity';

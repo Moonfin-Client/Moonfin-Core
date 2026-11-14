@@ -603,7 +603,7 @@
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"
   },
-  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
+  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
   "@recommendationSystemSubtitle": {
     "description": "Explanation under the recommendation system setting"
   },
@@ -611,9 +611,9 @@
   "@recommendationSystemMoonfin": {
     "description": "Recommendation system option: Moonfin Recommends"
   },
-  "recommendationSystemJellyfin": "Jellyfin Recommends",
+  "recommendationSystemJellyfin": "Server Recommends",
   "@recommendationSystemJellyfin": {
-    "description": "Recommendation system option: Jellyfin Recommends"
+    "description": "Recommendation system option: Server Recommends"
   },
   "recommendationSystemTmdb": "TMDb Similarity",
   "@recommendationSystemTmdb": {
@@ -11587,9 +11587,9 @@
   "displaySinceYouWatchedRows": "Display Since You Watched Rows",
   "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
   "sinceYouWatchedSource": "Recommendation Source",
-  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
   "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceServer": "Server Recommends",
   "sinceYouWatchedSourceOnline": "TMDb Similarity",
   "sinceYouWatchedSourceType": "Source Type",
   "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
