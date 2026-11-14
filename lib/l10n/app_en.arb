@@ -11525,9 +11525,13 @@
   "bottomBar": "Bottom Bar",
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
+  "homeRowsStyleCarousel": "Carousel",
+  "@homeRowsStyleCarousel": {
+    "description": "Name of the home row style that shows a large details panel under each row's posters"
+  },
   "homeRowsSection": "Home Rows",
   "rowsType": "Row Type",
-  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.",
   "modernCardsOnMyMediaRow": "Modern cards on My Media row",
   "modernCardsOnMyMediaRowDescription": "Display customizable posters that expand on focus. Disable to always show landscape thumbnail.",
   "sortOrder": "Sort Order",
@@ -14407,6 +14411,10 @@
   "setupRowsModernHint": "Larger cards with titles underneath.",
   "@setupRowsModernHint": {
     "description": "What the modern home row style gives you"
+  },
+  "setupRowsCarouselHint": "Posters with a large details panel underneath.",
+  "@setupRowsCarouselHint": {
+    "description": "What the carousel home row style gives you"
   },
   "setupDetailClassicHint": "Everything centred in one stack.",
   "@setupDetailClassicHint": {
@@ -17678,5 +17686,21 @@
   "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+  },
+  "clickpadSeeking": "Allow Clickpad Seeking",
+  "@clickpadSeeking": {
+    "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+  },
+  "clickpadSeekingDescription": "When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.",
+  "@clickpadSeekingDescription": {
+    "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+  },
+  "clickpadSeekingControlsVisible": "When controls are showing",
+  "@clickpadSeekingControlsVisible": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+  },
+  "clickpadSeekingPausedOnly": "Only while paused",
+  "@clickpadSeekingPausedOnly": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
   }
 }

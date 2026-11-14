@@ -642,9 +642,9 @@ class _StageDetailContentState extends State<StageDetailContent>
     return out;
   }
 
-  /// The full width rows under the poster: an episode's run of episodes, the
-  /// cast, extras, the collections the title belongs to, more like it and
-  /// Seerr's rows.
+  /// The full width rows under the poster: an episode's run of episodes, a
+  /// collection's own titles, the cast, extras, the collections the title
+  /// belongs to, more like it and Seerr's rows.
   List<DetailPageSection> _belowSections(
     AggregatedItem item,
     DetailSectionVisibility sections,
@@ -659,6 +659,8 @@ class _StageDetailContentState extends State<StageDetailContent>
         sections.shows(DetailSection.moreEpisodes)) {
       out.add(_episodesSection(item, besidePoster: false));
     }
+
+    out.addAll(collectionRows(l10n));
 
     final cast = castSection(item, sections, l10n);
     if (cast != null) out.add(cast);

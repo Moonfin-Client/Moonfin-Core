@@ -26,13 +26,17 @@ Future<void> _downloadIsolateMain(Map<String, Object?> args) async {
   try {
     client = HttpClient();
     // The isolate gets its own globals, so the preference has to travel with
-    // the arguments rather than being read here.
-    client.badCertificateCallback = (_, _, _) => allowSelfSigned;
+    // the arguments rather than being read here. The download URL is the
+    // server's own, so its host is the one the setting reaches.
+    final serverHost = Uri.parse(url).host;
+    client.badCertificateCallback =
+        (_, host, _) => allowSelfSigned && host == serverHost;
     client.idleTimeout = const Duration(seconds: 120);
     if (clientCertificate != null) {
-      // The connection factory reads both of these, and they start out empty
-      // in a new isolate.
+      // The connection factory reads these, and they start out empty in a new
+      // isolate.
       gAllowSelfSignedCertificates = allowSelfSigned;
+      gIsOwnServerHost = (host) => host == serverHost;
       setClientCertificates([clientCertificate]);
       applyClientCertificates(client);
     }

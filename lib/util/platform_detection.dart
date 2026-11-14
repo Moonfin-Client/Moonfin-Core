@@ -68,13 +68,22 @@ class PlatformDetection {
     }
     return switch (_interfaceLayout) {
       InterfaceLayout.tv => true,
-      InterfaceLayout.desktop || InterfaceLayout.phone => false,
+      InterfaceLayout.desktop => false,
+      // A remote can't reach the phone layout's tab bar, so a TV-only device
+      // would be stuck there with no way back to this setting.
+      InterfaceLayout.phone => _isTv && !_supportsTouchLayout,
       InterfaceLayout.automatic => _isTv,
     };
   }
 
   static bool _isTv = false;
   static void setTvMode(bool value) => _isTv = value;
+
+  static bool _supportsTouchLayout = true;
+  static void setSupportsTouchLayout(bool value) =>
+      _supportsTouchLayout = value;
+
+  static bool get canUsePhoneLayout => isAndroid && _supportsTouchLayout;
 
   /// The user's layout override. The compile time platforms above are never
   /// overridden, so this only steers the two where detection has to guess.

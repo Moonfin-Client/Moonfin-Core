@@ -233,12 +233,14 @@ enum DetailSection {
   final Set<DetailScreenStyle> styles;
 
   /// Whether picking [style] can put this section on screen. Minimalist only
-  /// draws video pages and hands every other page to Spotlight, so it also
-  /// shows whatever Spotlight does. Stage, Premiere and Frost hand people and
-  /// collections to Modern the same way, and Quick Look's full page is Modern.
+  /// draws video and collection pages and hands every other page to
+  /// Spotlight, so it also shows whatever Spotlight does on those. Stage,
+  /// Premiere and Frost hand people to Modern the same way, and Quick Look's
+  /// full page is Modern.
   bool isAvailableIn(DetailScreenStyle style) =>
       styles.contains(style) ||
       (style == DetailScreenStyle.minimalist &&
+          this != DetailSection.playlistOrder &&
           styles.contains(DetailScreenStyle.spotlight)) ||
       (style == DetailScreenStyle.quickLook &&
           styles.contains(DetailScreenStyle.modern)) ||
@@ -250,7 +252,6 @@ enum DetailSection {
 
   bool get _drawnByModern =>
       group == DetailSectionGroup.person ||
-      group == DetailSectionGroup.collection ||
       this == DetailSection.seerrPersonAppearances ||
       this == DetailSection.seerrPersonCrew;
 

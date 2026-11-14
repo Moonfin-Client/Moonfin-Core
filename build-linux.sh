@@ -302,7 +302,7 @@ ensure_mpv_compat_symlinks() {
   # which under set -e kills the build with no error message.
   for alt in libmpv.so.1 libmpv.so.2 libmpv.so; do
     if [ ! -e "$dest_lib/$alt" ]; then
-      ln -sf "$base" "$dest_lib/$alt"
+      ln -sf "$base" "$dest_lib/$alt" || return 1
     fi
   done
   return 0
@@ -424,19 +424,21 @@ copy_runtime_libs() {
     local real_name
     real_name="$(basename "$real_path")"
 
+    # Callers can run this with set -e off (build_rpm || true, if !), so a
+    # failed copy or link has to be returned, not left for errexit.
     if [ ! -f "$dest_lib/$real_name" ]; then
-      cp -L "$real_path" "$dest_lib/$real_name"
+      cp -L "$real_path" "$dest_lib/$real_name" || return 1
       count=$((count + 1))
     fi
 
     if [ "$real_name" != "$lib_name" ] && [ ! -e "$dest_lib/$lib_name" ]; then
-      ln -sf "$real_name" "$dest_lib/$lib_name"
+      ln -sf "$real_name" "$dest_lib/$lib_name" || return 1
     fi
 
     local soname
     soname="$(readelf -d "$real_path" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\].*/\1/p' | head -n1)"
     if [ -n "$soname" ] && [ "$soname" != "$real_name" ] && [ ! -e "$dest_lib/$soname" ]; then
-      ln -sf "$real_name" "$dest_lib/$soname"
+      ln -sf "$real_name" "$dest_lib/$soname" || return 1
     fi
   done <<< "$lib_paths"
 
@@ -460,10 +462,13 @@ inject_linux_runtime_libs() {
   skip="$(runtime_skip_pattern)"
 
   local bundled_count
-  bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"
-  fix_absolute_needed "$bundle_dir/lib"
-  ensure_sqlite_unversioned_link "$bundle_dir/lib"
-  ensure_mpv_compat_symlinks "$bundle_dir/lib"
+  if ! bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"; then
+    echo "Error: could not copy runtime libraries into $bundle_dir/lib." >&2
+    return 1
+  fi
+  fix_absolute_needed "$bundle_dir/lib" || return 1
+  ensure_sqlite_unversioned_link "$bundle_dir/lib" || return 1
+  ensure_mpv_compat_symlinks "$bundle_dir/lib" || return 1
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 
   verify_host_dependencies "$bundle_dir"
@@ -509,6 +514,9 @@ verify_host_dependencies() {
   while IFS= read -r name; do
     [ -n "$name" ] || continue
     [[ "$name" =~ $skip ]] && continue
+    # libdartjni.so (package:jni, pulled in by path_provider_android) links
+    # libjvm. Flutter ships it on Linux, but nothing loads it there.
+    [ "$name" = libjvm.so ] && continue
     unexpected="${unexpected}  ${name}"$'\n'
   done <<< "$deps"
 
@@ -581,7 +589,7 @@ create_metainfo_file() {
 <component type="desktop-application">
   <id>${APP_ID}</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0-only</project_license>
+  <project_license>GPL-3.0-or-later</project_license>
   <name>Moonfin</name>
   <developer_name>Moonfin Team</developer_name>
   <summary>Jellyfin &amp; Emby media client</summary>
@@ -967,7 +975,7 @@ Description: Jellyfin & Emby media client
   - Casting support
   - DLNA playback
 Homepage: https://moonfin.app/
-License: GPL-3.0-only
+License: GPL-3.0-or-later
 EOF
 
   cat > "$pkg_root/usr/share/doc/moonfin/copyright" << EOF
@@ -978,7 +986,7 @@ Source: https://github.com/jmshrv/Moonfin
 
 Files: *
 Copyright: 2024-2025 Moonfin Team
-License: GPL-3.0-only
+License: GPL-3.0-or-later
 EOF
 
   cd "$TEMP_DIR/deb"
@@ -988,6 +996,43 @@ EOF
     mv "$deb_name" "$REPO_ROOT/"
     echo "✓ Created: $REPO_ROOT/$deb_name"
   fi
+}
+
+# Fails when the bundled FFmpeg can't decode HEVC or H.264. libavcodec comes
+# from whatever FFmpeg the build host's libmpv links, and a codec-limited one,
+# like Fedora's ffmpeg-free, would ship the black-screen bug the bundle exists
+# to fix. Asks libavcodec itself, since its strings can't tell an enabled
+# decoder from a codec it only describes.
+verify_bundled_video_decoders() {
+  local lib_dir="$1"
+  local avcodec
+  avcodec="$(find "$lib_dir" -maxdepth 1 -name 'libavcodec.so.*' ! -type l 2>/dev/null | sort -V | tail -n1)"
+  if [ -z "$avcodec" ]; then
+    echo "Error: no libavcodec in $lib_dir, so libmpv would fall back to the system FFmpeg." >&2
+    return 1
+  fi
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "Error: python3 is required to check $(basename "$avcodec") for HEVC and H.264 decoders." >&2
+    return 1
+  fi
+
+  local status=0
+  LD_LIBRARY_PATH="$lib_dir" python3 -I - "$avcodec" << 'EOF' || status=$?
+import ctypes, sys
+avcodec = ctypes.CDLL(sys.argv[1])
+avcodec.avcodec_find_decoder_by_name.restype = ctypes.c_void_p
+missing = [n for n in ("hevc", "h264") if not avcodec.avcodec_find_decoder_by_name(n.encode())]
+if missing:
+    print("Error: the bundled " + sys.argv[1].rsplit("/", 1)[-1] + " has no decoder for: "
+          + ", ".join(missing) + ". Build on a host whose libmpv uses a full FFmpeg.",
+          file=sys.stderr)
+    sys.exit(1)
+EOF
+  if [ "$status" -ne 0 ]; then
+    echo "Error: the bundled FFmpeg failed the HEVC and H.264 decoder check." >&2
+    return 1
+  fi
+  echo "Bundled $(basename "$avcodec") decodes HEVC and H.264"
 }
 
 build_rpm() {
@@ -1002,17 +1047,52 @@ build_rpm() {
   local rpm_dir="$TEMP_DIR/rpm"
   local spec_file="$rpm_dir/moonfin.spec"
 
-  rm -rf "$rpm_dir"
-  mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
-  create_desktop_file "$rpm_dir"
-  create_metainfo_file "$rpm_dir" "$version"
+  # "all" runs this as build_rpm || true, which turns set -e off in here, so
+  # every step below stops explicitly rather than package an incomplete RPM.
+  if ! rm -rf "$rpm_dir" \
+    || ! mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS} \
+    || ! create_desktop_file "$rpm_dir" \
+    || ! create_metainfo_file "$rpm_dir" "$version"; then
+    echo "Error: could not prepare the RPM build tree in $rpm_dir." >&2
+    return 1
+  fi
 
-  cat > "$spec_file" << EOF
+  # Bundle libmpv and its FFmpeg like the deb does. Fedora's own mpv-libs is
+  # built against ffmpeg-free, which has no HEVC decoder, so leaning on it
+  # leaves HEVC files with sound and a black screen.
+  local stage_dir="$rpm_dir/stage"
+  if ! mkdir -p "$stage_dir" || ! cp -r "$BUILD_DIR"/* "$stage_dir/"; then
+    echo "Error: could not stage the Flutter bundle for the RPM." >&2
+    return 1
+  fi
+  if ! inject_linux_runtime_libs "$stage_dir"; then
+    echo "Error: could not bundle runtime libraries for the RPM." >&2
+    return 1
+  fi
+  verify_bundled_video_decoders "$stage_dir/lib" || return 1
+
+  # The bundled libraries are private to Moonfin. Keep rpm from advertising
+  # them to the rest of the system, and from asking the system for them.
+  # Each bundled file becomes a pattern on its base name, so
+  # libavcodec.so.60.31.102 turns into libavcodec[.]so.
+  # libjvm is excluded too: libdartjni links it but is never loaded on Linux
+  # (see verify_host_dependencies), and a Requires on it would block install.
+  local bundled_sonames
+  bundled_sonames="$(find "$stage_dir/lib" -maxdepth 1 -name '*.so*' -printf '%f\n' 2>/dev/null \
+    | sed 's/[.]so.*$/.so/' | sort -u | sed 's/[.]/[.]/g; s/[+]/[+]/g' | paste -sd'|' -)"
+
+  if ! cat > "$spec_file" << EOF
+%global __provides_exclude_from ^/usr/lib/moonfin/.*\$
+%global __requires_exclude ^(libjvm[.]so|${bundled_sonames:-moonfin-none})
+# Flutter's plugin libraries carry the build tree's ephemeral folder as a
+# runpath. Fedora's rpmbuild rejects that; the launcher's LD_LIBRARY_PATH is
+# what actually finds the libraries, so the check adds nothing here.
+%global __brp_check_rpaths %{nil}
 Name:           moonfin
 Version:        ${version}
 Release:        1
 Summary:        Jellyfin & Emby media client
-License:        GPL-3.0-only
+License:        GPL-3.0-or-later
 Requires:       xdg-user-dirs
 
 %description
@@ -1026,7 +1106,7 @@ mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/pixmaps
 mkdir -p %{buildroot}/usr/share/metainfo
 
-cp -r ${BUILD_DIR}/* %{buildroot}/usr/lib/moonfin/
+cp -r ${stage_dir}/* %{buildroot}/usr/lib/moonfin/
 
 cat > %{buildroot}/usr/bin/moonfin << 'EOFRUNNER'
 #!/bin/sh
@@ -1058,13 +1138,34 @@ fi
 * $(date '+%a %b %d %Y') Moonfin Team <support@moonfin.dev>
 - Release ${version}
 EOF
+  then
+    echo "Error: could not write $spec_file." >&2
+    return 1
+  fi
 
-  cd "$rpm_dir"
+  cd "$rpm_dir" || return 1
   rpmbuild --define "_topdir $rpm_dir" -bb "$spec_file" || true
   local rpm_file=$(find "$rpm_dir/RPMS" -name "*.rpm" 2>/dev/null | head -1)
   if [ -n "$rpm_file" ]; then
-    cp "$rpm_file" "$REPO_ROOT/$rpm_name"
+    # If the exclude filters were ignored, the package would ask the system
+    # for libmpv and FFmpeg again, or offer its private copies to other
+    # packages. Refuse to ship it either way.
+    local leaked
+    leaked="$( { rpm -qpR "$rpm_file"; rpm -qp --provides "$rpm_file"; } 2>/dev/null \
+      | grep -E '^(libmpv|libav[a-z]*|libsw[a-z]*|libpostproc)[.]so' || true)"
+    if [ -n "$leaked" ]; then
+      echo "Error: the RPM still requires or provides bundled libraries:" >&2
+      printf '%s\n' "$leaked" | sed 's/^/  /' >&2
+      return 1
+    fi
+    if ! cp "$rpm_file" "$REPO_ROOT/$rpm_name"; then
+      echo "Error: could not copy the RPM to $REPO_ROOT/$rpm_name." >&2
+      return 1
+    fi
     echo "✓ Created: $REPO_ROOT/$rpm_name"
+  else
+    echo "Error: rpmbuild produced no package in $rpm_dir/RPMS." >&2
+    return 1
   fi
 }
 

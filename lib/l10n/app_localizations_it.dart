@@ -5958,13 +5958,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get seerrImportingStatus => 'Importazione';
 
   @override
-  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+  String get seerrWaitingForImport => 'Scaricato, in attesa di importazione';
 
   @override
-  String get seerrDownloadStalled => 'Stalled';
+  String get seerrDownloadStalled => 'Bloccato';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Download non riuscito';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
@@ -12612,6 +12612,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderno';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Righe Home';
 
   @override
@@ -15791,6 +15794,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get setupRowsModernHint => 'Schede più grandi con i titoli sotto.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Tutto centrato in un unico blocco.';
 
   @override
@@ -18362,4 +18369,17 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Sinistra e Destra spostano la barra di scorrimento.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

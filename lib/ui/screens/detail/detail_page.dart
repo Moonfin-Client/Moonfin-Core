@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -12,6 +14,8 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/overview_text.dart';
 import '../../../util/playback_time_label.dart';
+import '../../widgets/focus/context_action.dart';
+import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
@@ -25,6 +29,44 @@ import 'detail_layout_metrics.dart';
 import 'item_detail_screen.dart';
 import 'minimalist/widgets/minimalist_episodes_section.dart';
 import 'stage/stage_track_chips.dart';
+
+/// A collection's own titles split into its movies, shows and the rest, with
+/// the ones the library lacks slotted in when Seerr may show them. Kids Mode
+/// keeps to the library, since Seerr's titles have had no rating check.
+/// Anything that isn't a collection has none.
+List<(String, String, List<AggregatedItem>)> collectionGroups(
+  ItemDetailViewModel vm,
+  UserPreferences prefs,
+  AppLocalizations l10n,
+) {
+  if (vm.item?.type != 'BoxSet') return const [];
+  final showMissing =
+      prefs.get(UserPreferences.seerrShowMissingCollectionItems) &&
+      !prefs.get(UserPreferences.kidsModeEnabled);
+  final items = showMissing
+      ? mergeMissingByReleaseOrder(vm.collectionItems, vm.missingCollectionItems)
+      : vm.collectionItems;
+  final movies = items.where((i) => i.type == 'Movie').toList();
+  final series = items.where((i) => i.type == 'Series').toList();
+  final other = items
+      .where((i) => i.type != 'Movie' && i.type != 'Series')
+      .toList();
+  return [
+    if (movies.isNotEmpty) ('movies', l10n.movies, movies),
+    if (series.isNotEmpty) ('series', l10n.series, series),
+    if (other.isNotEmpty) ('other', l10n.other, other),
+  ];
+}
+
+/// What a collection's titles go by: its one kind when it holds only movies
+/// or only shows, and Items otherwise.
+String collectionLabel(
+  List<(String, String, List<AggregatedItem>)> groups,
+  AppLocalizations l10n,
+) => switch (groups) {
+  [('movies' || 'series', final title, _)] => title,
+  _ => l10n.items,
+};
 
 /// One part of a detail page and the node D-pad focus enters it by, or none
 /// when nothing in it takes focus.
@@ -404,6 +446,63 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
     );
   }
 
+  /// The card menu, plus the entry that pulls a title out of this collection.
+  void _showCollectionItemMenu(AggregatedItem entry) {
+    final vm = pageViewModel;
+    unawaited(
+      showContextMenu(
+        context,
+        entry,
+        collectionRemoval: vm.canRemoveFromCollection
+            ? CollectionRemovalContext(
+                collectionName: vm.item?.name ?? '',
+                remove: vm.removeFromCollection,
+              )
+            : null,
+        onChanged: () {
+          if (mounted) setState(() {});
+        },
+      ),
+    );
+  }
+
+  List<DetailPageSection> collectionRows(AppLocalizations l10n) {
+    final vm = pageViewModel;
+    final out = <DetailPageSection>[];
+    for (final (id, title, items) in collectionGroups(vm, pagePrefs, l10n)) {
+      final node = pageNode('collection-items-$id');
+      final keys = rowKeys(node, items.length);
+      out.add(
+        DetailPageSection(
+          node: node,
+          child: HorizontalScrollSection(
+            title: sectionTitle(title),
+            titleStyle: sectionTitleStyle,
+            contentSpacing: posterRowSpacing,
+            builder: (context, controller) => DetailSimilarRow(
+              items: items,
+              imageApi: vm.imageApi,
+              prefs: pagePrefs,
+              scrollController: controller,
+              firstItemFocusNode: node,
+              onItemLongPress: _showCollectionItemMenu,
+              onItemKeyEvent: (index, event) {
+                // shortcut: only key presses load the next page, so touch
+                // scrolling stops at the first 50 titles. Add a scroll
+                // listener if that turns out to matter.
+                if (index >= items.length - 8) {
+                  unawaited(vm.loadMoreCollectionItems());
+                }
+                return keys(index, event);
+              },
+            ),
+          ),
+        ),
+      );
+    }
+    return out;
+  }
+
   /// Extras, the collections the title belongs to and more like it.
   List<DetailPageSection> libraryRows(
     DetailSectionVisibility sections,
@@ -568,7 +667,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
           l10n.recommendations,
           state.recommendations,
         ),
-      if (pieces.similar) row('seerr-similar', l10n.similar, state.similar),
+      if (pieces.similar) row('seerr-similar', l10n.similar, pieces.similarItems),
     ];
   }
 }

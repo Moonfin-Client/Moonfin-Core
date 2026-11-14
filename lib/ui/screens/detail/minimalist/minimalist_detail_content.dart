@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ import '../../../widgets/logo_view.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
 import '../detail_layout_metrics.dart';
+import '../detail_page.dart';
 import '../item_detail_screen.dart';
 import '../modern/modern_detail_content.dart';
 import '../spotlight/spotlight_detail_content.dart';
@@ -39,11 +41,12 @@ const _minimalistTypes = {
   'Episode',
   'Video',
   'MusicVideo',
+  'BoxSet',
 };
 
 /// The smallest detail screen: artwork, the title, one play button and the
 /// episodes. No cast, no chapters, no recommendations. Extras and collections
-/// each sit behind a button.
+/// each sit behind a button, and so do a collection's own titles.
 ///
 /// Kids Mode always shows this one. Outside Kids Mode it's an ordinary style,
 /// for anyone who wants the screen to get out of the way.
@@ -377,10 +380,14 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
         !kidsMode &&
         sections.shows(DetailSection.extras) &&
         _vm.features.isNotEmpty;
-    final showCollections =
-        !kidsMode &&
-        sections.shows(DetailSection.collections) &&
-        _vm.parentCollections.isNotEmpty;
+    final l10n = AppLocalizations.of(context);
+    // A collection's own titles are what it's for, so Kids Mode keeps them.
+    final ownTitles = collectionGroups(_vm, widget.prefs, l10n);
+    final showCollections = item?.type == 'BoxSet'
+        ? ownTitles.isNotEmpty
+        : !kidsMode &&
+              sections.shows(DetailSection.collections) &&
+              _vm.parentCollections.isNotEmpty;
 
     return DetailActionButtons(
       key: const ValueKey('minimalist-actions'),
@@ -399,6 +406,9 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       onActionsExpandedChanged: widget.onActionsExpandedChanged,
       onExtrasPressed: showExtras ? _openExtrasModal : null,
       onCollectionsPressed: showCollections ? _openCollectionsModal : null,
+      collectionsLabel: ownTitles.isEmpty
+          ? null
+          : collectionLabel(ownTitles, l10n),
     );
   }
 
@@ -451,6 +461,37 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
 
   Future<void> _openCollectionsModal() {
     final l10n = AppLocalizations.of(context);
+    final item = _vm.item;
+    if (item != null && item.type == 'BoxSet') {
+      return _openSectionModal(
+        () => (
+          title: item.name,
+          icon: Icons.collections_bookmark_outlined,
+          sections: [
+            for (final (id, title, items) in collectionGroups(
+              _vm,
+              widget.prefs,
+              l10n,
+            ))
+              SpotlightModalSection(
+                id: 'collection_items_$id',
+                title: title,
+                count: items.length,
+                builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+                  items: items,
+                  imageApi: _vm.imageApi,
+                  prefs: widget.prefs,
+                  firstFocusNode: firstFocusNode,
+                  onItemTap: (entry) => Navigator.of(
+                    context,
+                  ).pop(() => _openCollectionItem(entry)),
+                ),
+              ),
+          ],
+        ),
+        onNearEnd: () => unawaited(_vm.loadMoreCollectionItems()),
+      );
+    }
     final showMissing = widget.prefs.get(
       UserPreferences.seerrShowMissingCollectionItems,
     );
@@ -498,8 +539,9 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   );
 
   Future<void> _openSectionModal(
-    SpotlightModalContent Function() buildContent,
-  ) async {
+    SpotlightModalContent Function() buildContent, {
+    VoidCallback? onNearEnd,
+  }) async {
     final initialContent = buildContent();
     if (initialContent.sections.isEmpty) return;
 
@@ -512,6 +554,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       returnFocus: focusedNode,
       refreshOn: _vm,
       refresh: buildContent,
+      onNearEnd: onNearEnd,
     );
     if (mounted && action != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

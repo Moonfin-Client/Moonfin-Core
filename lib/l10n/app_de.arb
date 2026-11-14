@@ -934,7 +934,7 @@
     "@chapters": {
         "description": "Section header for chapters"
     },
-    "features": "Extras",
+    "features": "Besonderheiten",
     "@features": {
         "description": "Section header for special features"
     },
@@ -1808,7 +1808,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Spur",
+    "track": "Titel",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -9041,7 +9041,7 @@
     "@recordSeries": {
         "description": "Button label to record every showing of a live TV series"
     },
-    "detailsBackgroundOpacity": "Details-Hintergrunddeckkraft",
+    "detailsBackgroundOpacity": "Hintergrund-Deckkraft",
     "@detailsBackgroundOpacity": {
         "description": "Setting for details background opacity on modern screens"
     },
@@ -9375,7 +9375,7 @@
     "@continueWatchingAndNextUpHeader": {
         "description": "Header for settings section containing Continue Watching and Next Up options"
     },
-    "hideHomeMediaDescription": "Medienbeschreibung auf der Startseite ausblenden",
+    "hideHomeMediaDescription": "Medienbeschreibung auf der Detailseite ausblenden",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -10526,7 +10526,7 @@
     "@loadingAnimationPositionBottomRight": {
         "description": "Loading animation position: Bottom-Right"
     },
-    "loadingAnimationPositionBouncing": "Herumspringend",
+    "loadingAnimationPositionBouncing": "Springend",
     "@loadingAnimationPositionBouncing": {
         "description": "Loading animation position: Bouncing DVD screensaver style"
     },
@@ -11083,5 +11083,847 @@
     "addServerAddressHelp": "Dieselbe Adresse wie im Browser, inklusive Port",
     "@addServerAddressHelp": {
         "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "screensaverBackdrop": "Hintergrundbild",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropCalm": "Ruhig",
+    "@screensaverBackdropCalm": {
+        "description": "Screensaver backdrop: Calm"
+    },
+    "screensaverAdditionalComponent": "Zusätzliche Komponente",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "adminTranscodingHwaAdvanced": "Fortschrittlich",
+    "adminExternalIdTypePerson": "Person",
+    "adminMetadataFieldArtists": "Künstler",
+    "adminMetadataFieldAlbum": "Album",
+    "adminMetadataSectionRatings": "Bewertungen",
+    "adminLiveTvTabRecordings": "Aufnahmen",
+    "adminLogLevelNone": "Keine",
+    "adminGroupLibrary": "Bibliothek",
+    "syncPlayParticipantYou": "Du",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "watchPartyType": "Typ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "achievementBadgesSubtitle": "Abzeichen, Ränge und Quests, die du durch das Anschauen verdient hast",
+    "@achievementBadgesSubtitle": {
+        "description": "Subtitle of the Achievement Badges entry in Integrations"
+    },
+    "achievementsBadges": "Abzeichen",
+    "@achievementsBadges": {
+        "description": "Badges section title"
+    },
+    "achievementsLibraryCount": "{count} Bibliotheken",
+    "@achievementsLibraryCount": {
+        "description": "How many libraries have a completion percentage",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "keyNameDelete": "Löschen",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "seasonalRowCountryOther": "Sonstige",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (Nur abspielen)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Alle (Horizontales Scrollen)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "detailMetadataParentalRating": "Altersfreigabe",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataStatus": "Serienstatus",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Genres",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailSectionGroupOther": "Sonstige",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "Poster",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "Als Nächstes",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionStudios": "Studios",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "showSeerrAvailabilityBadges": "Seerr-Verfügbarkeitsabzeichen anzeigen",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on posters across the app"
+    },
+    "achievementsStatBestLoginStreak": "Bester Login-Streak",
+    "@achievementsStatBestLoginStreak": {
+        "description": "Counter label"
+    },
+    "achievementsEarnedAt": "Erzielt bei einem Gesamtpunktstand von {score}",
+    "@achievementsEarnedAt": {
+        "description": "What a user has to reach to unlock a cosmetic without paying",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsStatDecades": "Jahrzehnte gesehen",
+    "@achievementsStatDecades": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestCombo": "Beste Kombo",
+    "@achievementsStatBestCombo": {
+        "description": "Counter label"
+    },
+    "achievementsStatCountries": "Länder gesehen",
+    "@achievementsStatCountries": {
+        "description": "Counter label"
+    },
+    "achievementsActivity": "Aktivität",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "achievementsBuyConfirm": "Das kaufen?",
+    "@achievementsBuyConfirm": {
+        "description": "Title of the dialog confirming a purchase"
+    },
+    "achievementsBoostBody": "Verdoppelt die Punktzahl für eine Stunde. Eine erneute Anwendung setzt die Stunde zurück.",
+    "@achievementsBoostBody": {
+        "description": "What the XP Boost power-up does"
+    },
+    "achievementsDoubleCreditBody": "Das Nächste, was du zu Ende schaust, zählt doppelt für deine Abzeichen.",
+    "@achievementsDoubleCreditBody": {
+        "description": "What the Double Credit power-up does"
+    },
+    "achievementsDaysWatched": "{count} Tage angesehen",
+    "@achievementsDaysWatched": {
+        "description": "How many days the user watched something",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "modernCardsOnMyMediaRowDescription": "Anpassbare Poster anzeigen, die sich beim Fokussieren vergrößern. Deaktivieren Sie diese Option, um immer ein Querformat-Miniaturbild anzuzeigen.",
+    "detailSectionLyrics": "Liedtext",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionSeerrRecommendations": "Empfehlungen",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "upcomingEpisodeToday": "Heute",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "chatYou": "Du",
+    "@chatYou": {
+        "description": "Stands for the signed-in user in chats and member lists"
+    },
+    "chatYouSaid": "Du: {text}",
+    "@chatYouSaid": {
+        "description": "Preview of the last chat message when the user sent it",
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "chatHint": "Schreib eine Nachricht",
+    "@chatHint": {
+        "description": "Hint of the chat message field"
+    },
+    "chatEdited": "bearbeitet",
+    "@chatEdited": {
+        "description": "Marks a chat message that was changed after sending"
+    },
+    "chatGroupName": "Gruppenname",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "achievementsStatBestWatchStreak": "Bester Watch-Streak",
+    "@achievementsStatBestWatchStreak": {
+        "description": "Counter label"
+    },
+    "externalRowSortName": "Name",
+    "transcodeAnamorphicVideoNotSupported": "Anamorphotische Videos werden nicht unterstützt.",
+    "setupStylePremiere": "Premiere",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupCurrent": "Aktuell",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "seerrDownloadFailed": "Download fehlgeschlagen",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "libraryStyleClassic": "Klassisch",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Modern",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "libraryStyleDocked": "Angedockt",
+    "@libraryStyleDocked": {
+        "description": "Library style option: a side panel on TV and desktop, a bottom bar on phones"
+    },
+    "bookLibraryStyleClassic": "Klassisch",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "musicLibraryStyleClassic": "Klassisch",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "bookInProgressCount": "{count} in Bearbeitung",
+    "@bookInProgressCount": {
+        "description": "How many books or audiobooks are started but not finished",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "libraryShowLabel": "Anzeigen",
+    "@libraryShowLabel": {
+        "description": "Library button that opens the played status filter, followed by its current value such as All or Unwatched"
+    },
+    "libraryOrderDescription": "Ihre Mediatheken erscheinen in dieser Reihenfolge unter „Meine Medien“, in den Zeilen für kürzlich hinzugefügte Inhalte sowie in der Navigationsleiste. Die Reihenfolge wird in Ihrem Server-Konto gespeichert, sodass sie auch in anderen Apps, bei denen Sie sich anmelden, übernommen wird.",
+    "@libraryOrderDescription": {
+        "description": "Explanation shown at the top of the Library Order settings screen"
+    },
+    "homeRowsExternalLists": "Externe Listen",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "autoDownloadDeleteNever": "Nie",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "autoDownloadChecking": "Wird geprüft…",
+    "@autoDownloadChecking": {
+        "description": "Subtitle while a subscription check is running"
+    },
+    "downloadNotificationRunning": "Wird heruntergeladen",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "advancedPlayback": "Erweiterte Wiedergabe",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "settingsDecodingAndRenderingSection": "Dekodierung & Rendering",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Tonspur",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Audioausgabe",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "playlistSortReleaseDate": "Veröffentlichungsdatum",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "Laufzeit",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortRandom": "Zufällig",
+    "@playlistSortRandom": {
+        "description": "Label for sorting playlist items randomly"
+    },
+    "librarySortDateAdded": "Hinzugefügt am",
+    "@librarySortDateAdded": {
+        "description": "Sort option: when an item was added to the server library"
+    },
+    "librarySortMyRating": "Deine Bewertung",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "librarySortAlbumArtist": "Album Interpret",
+    "@librarySortAlbumArtist": {
+        "description": "Sort option for music: by album artist"
+    },
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "detailsScreenBackdrop": "Hintergrund für den Detailbildschirm",
+    "@detailsScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the item details screen"
+    },
+    "detailsBackdropFit": "Einpassen",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "playbackInfoChannel": "Kanal",
+    "@playbackInfoChannel": {
+        "description": "Playback information row label: the Live TV channel being watched"
+    },
+    "playbackInfoDelivery": "Lieferung",
+    "@playbackInfoDelivery": {
+        "description": "Playback information row label: how the subtitles reach the player (embedded, external, burned in)"
+    },
+    "playbackInfoDevice": "Gerät",
+    "@playbackInfoDevice": {
+        "description": "Playback information row label: this device's model and operating system"
+    },
+    "playbackInfoDroppedFrames": "Verlorene Frames",
+    "@playbackInfoDroppedFrames": {
+        "description": "Playback information row label: how many video frames the player skipped"
+    },
+    "playerTransportDocked": "Angedockt",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "libraryZToA": "Z bis A",
+    "@libraryZToA": {
+        "description": "Sort order from Z to A"
+    },
+    "musicFilter": "Filter",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarSettingsView": "Ansicht",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Anzeigen",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsColorByType": "Typ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Abspielen",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "seasonalDensityLight": "Leicht",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "keyboardStyleDocked": "Angedockt",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "keyboardSpace": "Freizeichen",
+    "@keyboardSpace": {
+        "description": "Label on the on-screen keyboard's space bar, lowercase like a printed key"
+    },
+    "rendererModeAuto": "Automatisch",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "screensaverBackdropBlack": "Schwarz",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverSourceLibrariesDefault": "Alle (Standard)",
+    "@screensaverSourceLibrariesDefault": {
+        "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
+    },
+    "navYou": "Du",
+    "@navYou": {
+        "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
+    },
+    "bookSortZToA": "Z bis A",
+    "@bookSortZToA": {
+        "description": "Authors screen order, from Z back to A"
+    },
+    "siloApproveSignInApprove": "Genehmigen",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "adminExternalIdTypeArtist": "Künstler",
+    "keyboardStyleClassic": "Klassisch",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "keyboardHoldForAccents": "Für Akzente gedrückt halten",
+    "@keyboardHoldForAccents": {
+        "description": "On-screen keyboard hint next to an OK button cap: holding OK on a letter shows its accented versions"
+    },
+    "keyboardClose": "schließen",
+    "@keyboardClose": {
+        "description": "On-screen keyboard hint next to a Back button cap, lowercase like the hold for accents hint: Back closes the keyboard"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "sortBySize": "Größe",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByName": "Name",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsStatsBests": "Beste",
+    "@achievementsStatsBests": {
+        "description": "Section of a user's highest counters"
+    },
+    "seasonalDensityHeavy": "Stark",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "detailSectionSeerrPersonAppearances": "Auftritte",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionMoreLikeThis": "Mehr davon",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "adminEmbyConnect": "Emby Connect",
+    "adminGroupPlayback": "Wiedergabe",
+    "adminGroupPeople": "Personen",
+    "adminLogWatch": "Ansehen",
+    "achievementsDailyQuests": "Täglich",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "settingsAdvancedSection": "Fortschrittlich",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "librarySortParentalRating": "Altersfreigabe",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortDateEpisodeAdded": "Datum der Episoden-Hinzufügung",
+    "@librarySortDateEpisodeAdded": {
+        "description": "Sort option for series: when the newest episode was added"
+    },
+    "animationSpeedOff": "Aus",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "transcodeAudioSampleRateNotSupported": "Audio-Abtastrate wird nicht unterstützt",
+    "playlistSortLastPlayed": "Zuletzt gespielt",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "playlistSortPlayCount": "Anzahl der Wiedergaben",
+    "@playlistSortPlayCount": {
+        "description": "Label for sorting playlist items by play count"
+    },
+    "additionalParts": "Zusätzliche Inhalte",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "transcodeSubtitleBurnInAssDisabled": "ASS/SSA-Untertitel müssen transkodiert werden, da direct play deaktiviert ist.",
+    "achievementBadges": "Erfolgsabzeichen",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "actionButtonsOnScreen": "Aktionsschaltflächen auf dem Bildschirm",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "autoDownloadKeepAll": "Alle",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "subtitleBold": "Fettgedruckter Text",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "afterHoursCastSkipIntro": "Überspringe Intro",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStatic": "Statisch",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "detailSectionBiography": "Biografie",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "darkGray": "Dunkelgrau",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "blue": "Blau",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "detailSectionCast": "Cast",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "adminExternalIdTypeAlbumArtist": "Album Interpret",
+    "detailSectionChapters": "Kapitel",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Extras",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Sammlungen",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "adminPlayMethodDirectPlay": "Direkte Wiedergabe",
+    "adminTaskResultFailed": "Fehlgeschlagen",
+    "externalRowSortReleaseDate": "Veröffentlichungsdatum",
+    "externalRowSortRating": "Bewertung",
+    "externalRowSortShuffle": "Zufallswiedergabe",
+    "achievementsBadgeCount": "{unlocked} von {total} Abzeichen",
+    "@achievementsBadgeCount": {
+        "description": "How many badges are unlocked out of the total",
+        "placeholders": {
+            "unlocked": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuestCount": "{count} abgeschlossen",
+    "@achievementsQuestCount": {
+        "description": "How many quests are completed",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBestStreak": "Beste: {days} Tage",
+    "@achievementsBestStreak": {
+        "description": "The best watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsAppearance": "Erscheinungsbild",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsAvatars": "Avatare",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsStatsWatched": "Gesehen",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "achievementsStatDays": "Tage gesehen",
+    "@achievementsStatDays": {
+        "description": "Counter label"
+    },
+    "achievementsStatDaysSignedIn": "Tage angemeldet",
+    "@achievementsStatDaysSignedIn": {
+        "description": "Counter label"
+    },
+    "achievementsStatBadgesUnlocked": "Abzeichen freigeschaltet",
+    "@achievementsStatBadgesUnlocked": {
+        "description": "Counter label"
+    },
+    "achievementsBadgesEarned": "{count} Abzeichen verdient",
+    "@achievementsBadgesEarned": {
+        "description": "How many badges were earned in the recap period",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsDecline": "Ablehnen",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatLeave": "Gruppe verlassen",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "transcodeAudioCodecWithCodec": "Audio codec ({codec}) wird nicht direkt unterstützt.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioBitDepthNotSupported": "Audio bit Tiefe wird nicht unterstützt.",
+    "currentTime": "Aktuelle Zeit",
+    "@currentTime": {
+        "description": "The current time as it appears on a clock"
+    },
+    "hideHomeUnwatchedCount": "Anzahl ungesehener Elemente ausblenden",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    },
+    "downloadNotificationFailedTitle": "Download fehlgeschlagen",
+    "@downloadNotificationFailedTitle": {
+        "description": "System notification title for a failed download"
+    },
+    "modernCardsTransitionSpeedSubtitle": "Passt die Animationsgeschwindigkeit beim Erweitern fokussierter moderner Karten an",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "animationSpeedMedium": "Mittel",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "bottomNavbarTabsAvailable": "Verfügbar",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "detailsPage": "Detailseite",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "settingsSync": "Einstellungssynchronisation",
+    "@settingsSync": {
+        "description": "Settings screen for syncing settings through the Moonbase plugin"
+    },
+    "recordPromptNow": "Jetzt",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "musicMixMostPlayedSubtitle": "Deine Top 100",
+    "@musicMixMostPlayedSubtitle": {
+        "description": "Line under the Most Played mix card"
+    },
+    "holidayHalloween": "Halloween",
+    "@holidayHalloween": {
+        "description": "Seasonal row title for Halloween"
+    },
+    "holidayDiwali": "Diwali",
+    "@holidayDiwali": {
+        "description": "Seasonal row title for Diwali"
+    },
+    "showChapterMarkers": "Kapitelmarkierungen",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "savedMediaRead": "Lesen",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "librarySortArtist": "Künstler",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "librarySortGenre": "Genre",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "continueWatchingDefaultAction": "Standardaktion",
+    "@continueWatchingDefaultAction": {
+        "description": "Setting for default click action on Continue Watching and Next Up items"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "achievementsUnlockedMore": "+{count} mehr",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "screensaverGeneralSettings": "Allgemeine Einstellungen",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neon Pulse",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "setupStyleSpotlight": "Spotlight",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "setupStyleNouveau": "Nouveau",
+    "@setupStyleNouveau": {
+        "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+    },
+    "animationSpeedSlow": "Langsam",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedFast": "Schnell",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "achievementsRecap": "Rückblick",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "achievementsWeeklyQuests": "Wöchentlich",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Titel",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Benutzer",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsPeriodYear": "Erscheinungsjahr",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "setupStyleMinimalist": "Minimalistisch",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "bottomNavbarTabsAutomatic": "Automatisch",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "friendsMessages": "Nachrichten vom Serveradministrator",
+    "@friendsMessages": {
+        "description": "Entry that opens the list of chats"
+    },
+    "chatPhoto": "Bilder",
+    "@chatPhoto": {
+        "description": "Preview of a chat message that is an image"
+    },
+    "chatAdmin": "Admin",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Gruppe erstellen",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Details anzeigen",
+    "detailSectionTagline": "Schlagzeile",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Land",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatisch",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Buch",
+    "adminImageTypeMenu": "Menü",
+    "adminGroupOverview": "Übersicht",
+    "librarySortPlaylistOrder": "Wiedergabeliste Reihenfolge",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "seriesRecordingAllEpisodes": "Alle Episoden",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "homeScreenBackdropFullScreen": "Vollbildvorschau",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Vollbildvorschau",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "musicSortYear": "Erscheinungsjahr",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "settingsPreviewSaved": "Gespeichert",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "setupStyleStage": "Bühne",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupStyleQuickLook": "Schnellansicht",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupStyleFrost": "Frost",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "calendarReleaseDigital": "Digitale Reihenfolge",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarSettingsSpecials": "Sonderangebote",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Aktionen",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Beginn",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "watchPartyBackToClose": "Mit Zurück schließen",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
     }
 }

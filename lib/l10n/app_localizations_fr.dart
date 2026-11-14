@@ -6001,7 +6001,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Échec du téléchargement';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
@@ -12679,6 +12679,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderne';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Rangées d\'accueil';
 
   @override
@@ -15863,6 +15866,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cartes plus grandes, avec les titres en dessous.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint =>
       'Tout est centré, sur une seule colonne.';
 
@@ -18451,4 +18458,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Gauche et Droite déplacent le curseur.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

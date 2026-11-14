@@ -2474,7 +2474,7 @@
     "@storageManagement": {
         "description": "Title for the storage management screen"
     },
-    "storageBreakdown": "Varastoinnin erittely",
+    "storageBreakdown": "Tallennustilan Erittely",
     "@storageBreakdown": {
         "description": "Section title for storage breakdown"
     },
@@ -3279,11 +3279,11 @@
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
-    "storage": "Varastointi",
+    "storage": "Tallennustila",
     "@storage": {
         "description": "Section title for storage settings"
     },
-    "storageUsed": "Säilytys käytetty",
+    "storageUsed": "Käytetty tallennustila",
     "@storageUsed": {
         "description": "Label for storage used"
     },
@@ -6594,10 +6594,10 @@
     "settingsLiveTvDirectSubtitle": "Ota suora toisto käyttöön live TV:ssä",
     "settingsOpenGroups": "Järjestä Watch Partyt",
     "settingsOpenGroupsSubtitle": "Aloita uusi projekti tai liity jo käynnissä olevaan projektiin",
-    "settingsSyncplayEnabled": "Watch Partyt",
+    "settingsSyncplayEnabled": "Watch Party",
     "settingsSyncplayEnabledSubtitle": "Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa",
     "settingsSyncplayButton": "Watch Party painike",
-    "settingsSyncplayButtonSubtitle": "Näytä Watch Parties painike navigointipalkissa",
+    "settingsSyncplayButtonSubtitle": "Näytä Watch Party painike navigointipalkissa",
     "settingsSyncplayAdvancedCorrection": "Edistynyt korjaus",
     "settingsSyncplayAdvancedCorrectionSubtitle": "Viivästykset ja ylimääräinen siirtymä",
     "settingsSyncplaySyncCorrection": "Synkronointikorjaus",
@@ -18077,11 +18077,11 @@
     "@watchPartyResumeYours": {
         "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
     },
-    "watchParties": "Watch Parties",
+    "watchParties": "Watch Party",
     "@watchParties": {
         "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
     },
-    "watchPartyStartWith": "Aloita Watch Partyt",
+    "watchPartyStartWith": "Aloita Watch Party",
     "@watchPartyStartWith": {
         "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
     },
@@ -18172,7 +18172,7 @@
     "@watchPartyVotingNow": {
         "description": "Room card line: the lobby is voting on what to watch"
     },
-    "watchPartyNeedsMoonbase": "Watch Partyt tarvitsevat Moonbasen laajennuksen tällä palvelimella",
+    "watchPartyNeedsMoonbase": "Watch Party tarvitsee Moonbasen laajennuksen palvelimella",
     "@watchPartyNeedsMoonbase": {
         "description": "Title when the server has no Moonbase plugin to host watch parties"
     },
@@ -18204,7 +18204,7 @@
     "@watchPartyRemoved": {
         "description": "Shown after the host removed this member"
     },
-    "watchPartyYours": "Sinun watch partyt",
+    "watchPartyYours": "Watch Partysi",
     "@watchPartyYours": {
         "description": "Title of the lobby and party controls"
     },
@@ -18667,5 +18667,78 @@
     "settingsPreviewShowEpisodesNote": "Tämä muuttaa vain niiden kokoelmien rivejä, jotka on lisätty Rows-kohtaan. Kokoelma rivi näyttää samalta.",
     "@settingsPreviewShowEpisodesNote": {
         "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+    },
+    "recentlyAddedAndReleased": "Äskettäin lisättyjä ja julkaistuja",
+    "@recentlyAddedAndReleased": {
+        "description": "Section title for Recently Added and Recently Released home row settings"
+    },
+    "hideWatchedInRecentRows": "Piilota katsotut",
+    "@hideWatchedInRecentRows": {
+        "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+    },
+    "hideWatchedInRecentRowsDescription": "Piilota katsotut sisällöt ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -kotiriveiltä.",
+    "@hideWatchedInRecentRowsDescription": {
+        "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+    },
+    "seerrWaitingForImport": "Ladattu, odottaa tuontia",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Jumissa",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrDownloadFailed": "Lataaminen epäonnistui",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "seerrImportBlocked": "Tuonti estetty",
+    "@seerrImportBlocked": {
+        "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+    },
+    "seerrNotFoundYet": "Ei vielä löytynyt",
+    "@seerrNotFoundYet": {
+        "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+    },
+    "seerrGetDifferentRelease": "Hanki eri julkaisu",
+    "@seerrGetDifferentRelease": {
+        "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+    },
+    "seerrGetDifferentReleaseConfirm": "{service} poistaa {release} latausohjelmasta, estää sen lataamisen uudelleen ja etsii toisen julkaisun.",
+    "@seerrGetDifferentReleaseConfirm": {
+        "description": "Body of the confirm dialog for Get a different release",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            },
+            "release": {
+                "type": "String",
+                "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseDone": "Poistettu. {service} etsii toista julkaisua.",
+    "@seerrGetDifferentReleaseDone": {
+        "description": "Short confirmation after Get a different release removed the stuck download",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseFailed": "Latausta ei voitu poistaa",
+    "@seerrGetDifferentReleaseFailed": {
+        "description": "Error shown when Get a different release could not remove the stuck download"
+    },
+    "kidsModePinToSwitchUser": "Syötä lastentilan PIN-koodi siirtyäksesi {name}:iin",
+    "@kidsModePinToSwitchUser": {
+        "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
     }
 }

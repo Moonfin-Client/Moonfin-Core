@@ -1372,7 +1372,7 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_home_rows_style',
     defaultValue: PlatformDetection.useMobileUi
         ? HomeRowsStyle.v1
-        : HomeRowsStyle.v2,
+        : (PlatformDetection.isTV ? HomeRowsStyle.carousel : HomeRowsStyle.v2),
     values: HomeRowsStyle.values,
   );
 
@@ -3044,6 +3044,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30000,
   );
 
+  static final appleTvClickpadSeekMode = EnumPreference(
+    key: 'appleTvClickpadSeekMode',
+    defaultValue: AppleTvClickpadSeekMode.always,
+    values: AppleTvClickpadSeekMode.values,
+  );
+
   static final controlsHideDelay = Preference(
     key: 'controlsHideDelay',
     defaultValue: 5000,
@@ -3272,7 +3278,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final mediaBarTrailerPreview = Preference(
     key: 'mediaBarTrailerPreview',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final mediaBarTrailerAudio = Preference(

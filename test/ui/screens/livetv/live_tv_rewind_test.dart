@@ -17,6 +17,7 @@ import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_player_screen.dart';
@@ -496,6 +497,63 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
 
     expect(manager.seeks, [Duration.zero]);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('set to seek with the controls up, a press first shows them', (
+    tester,
+  ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.appleTvClickpadSeekMode,
+      AppleTvClickpadSeekMode.controlsVisible,
+    );
+    backend.window = const LiveSeekWindow(start: Duration.zero, edge: twoHours);
+    manager.state.setPosition(twoHours);
+    await pumpPlayer(tester);
+    await hideControls(tester);
+
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, isEmpty);
+    expect(find.byTooltip(l10n.liveTvJumpToLive), findsOneWidget);
+
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, [twoHours - const Duration(seconds: 10)]);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('set to seek only while paused, playback never seeks', (
+    tester,
+  ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.appleTvClickpadSeekMode,
+      AppleTvClickpadSeekMode.pausedOnly,
+    );
+    backend.window = const LiveSeekWindow(start: Duration.zero, edge: twoHours);
+    manager.state.setPosition(twoHours);
+    manager.state.setPlaying(true);
+    await pumpPlayer(tester);
+    await hideControls(tester);
+
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, isEmpty);
+
+    await manager.pause();
+    await tester.pump();
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, [twoHours - const Duration(seconds: 10)]);
+
+    // Resumed before the step lands, the next press drops it.
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    manager.state.setPlaying(true);
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, hasLength(1));
 
     await tester.pumpWidget(const SizedBox());
   });

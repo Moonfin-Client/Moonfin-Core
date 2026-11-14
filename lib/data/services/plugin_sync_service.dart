@@ -187,6 +187,11 @@ class PluginSyncService extends ChangeNotifier {
   /// plugin, or none at all, leaves it false.
   bool _clientLogSupported = false;
   bool get clientLogSupported => _pluginAvailable && _clientLogSupported;
+
+  /// Whether the plugin can deliver push, which is what starts Firebase on a
+  /// phone. Older plugins leave the flag out and all of them could push.
+  bool _pushSupported = false;
+  bool get pushSupported => _pluginAvailable && _pushSupported;
   String? _activeThemeCacheServerId;
 
   final _seerrNotifications =
@@ -326,6 +331,7 @@ class PluginSyncService extends ChangeNotifier {
     _calendarReminders = false;
     _arrQueueAvailable = false;
     _clientLogSupported = false;
+    _pushSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
     if (notify) {
@@ -445,6 +451,7 @@ class PluginSyncService extends ChangeNotifier {
         _readBool(pingResult, 'messagesSupported') ?? false,
       );
       _clientLogSupported = _readBool(pingResult, 'clientLogSupported') ?? false;
+      _pushSupported = _readBool(pingResult, 'pushSupported') ?? true;
       // The Emby port and older plugins leave this out, which hides the feature.
       _incompleteRecordings?.setSupported(
         _readBool(pingResult, 'incompleteRecordingsSupported') ?? false,

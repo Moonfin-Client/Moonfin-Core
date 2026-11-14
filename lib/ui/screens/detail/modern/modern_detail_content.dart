@@ -85,6 +85,7 @@ import '../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../preference/seerr_preferences.dart';
 import '../../../widgets/overlay_sheet.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
+import '../../../widgets/seerr/seerr_image_urls.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_request_dialog.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
@@ -2588,7 +2589,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (pieces.similar)
         _seerrTabRow(
           l10n.similar,
-          state.similar,
+          pieces.similarItems,
           firstFocusNode: _seerrSimilarFocusNode,
           onNavigateUp: above(_seerrSimilarFocusNode),
           onNavigateDown: below(_seerrSimilarFocusNode),
@@ -5218,7 +5219,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
     final posterPath = item.rawData['PosterPath'] as String?;
     if (posterPath != null && posterPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w342$posterPath';
+      return seerrImageUrl(seerrPosterBase, posterPath);
     }
     final profilePath = item.rawData['ProfilePath'] as String?;
     if (profilePath != null && profilePath.isNotEmpty) {

@@ -43,7 +43,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => 'Chưa giải quyết';
 
   @override
   String get animeMarkerRecap => 'Recap';
@@ -167,7 +167,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Tích cực';
 
   @override
   String get addUser => 'Thêm người dùng';
@@ -278,7 +278,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'Bộ sưu tập';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -467,7 +467,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'Buổi ra mắt';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -548,13 +548,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => 'Tự động';
 
   @override
   String get interfaceLayoutTv => 'TV';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'Máy tính để bàn';
 
   @override
   String get interfaceLayoutPhone => 'Phone';
@@ -589,14 +589,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get glassQualityReduced => 'Giảm bớt';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'Hiệu năng';
 
   @override
   String get performanceModeSubtitle =>
       'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => 'Tự động';
 
   @override
   String get performanceModeStandard => 'Standard';
@@ -612,7 +612,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Auto uses Impeller on boxes whose graphics run it smoothly and Skia everywhere else. Pick Skia if animations or video look wrong. Takes effect on the next launch.';
 
   @override
-  String get rendererModeAuto => 'Auto';
+  String get rendererModeAuto => 'Tự động';
 
   @override
   String get rendererModeSkia => 'Skia';
@@ -643,10 +643,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get keyboardStyleNative => 'Native';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'Cổ điển';
 
   @override
-  String get keyboardStyleGlass => 'Glass';
+  String get keyboardStyleGlass => 'Kính';
 
   @override
   String get keyboardStyleDocked => 'Docked';
@@ -1569,7 +1569,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get cast => 'Truyền';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'Truyền';
 
   @override
   String get trailer => 'Trailer';
@@ -2202,7 +2202,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => 'Xóa';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2211,7 +2211,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get keyNamePageDown => 'Page Down';
 
   @override
-  String get keyNameHome => 'Home';
+  String get keyNameHome => 'Trang chủ';
 
   @override
   String get keyNameEnd => 'End';
@@ -2581,7 +2581,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get premiere => 'Buổi ra mắt';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Lặp lại';
 
   @override
   String get guideTimeline => 'Dòng thời gian hướng dẫn';
@@ -2663,7 +2663,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => 'Tất cả các tập';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3042,7 +3042,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get savedMediaPlayNextUnwatched => 'Play next unwatched';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'Đọc';
 
   @override
   String get savedMediaCancelDownload => 'Cancel download';
@@ -3051,7 +3051,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sortBySize => 'Size';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'Tên';
 
   @override
   String get sortByDateAdded => 'Date added';
@@ -3279,16 +3279,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loadingAnimationSize => 'Animation Size';
 
   @override
-  String get loadingAnimationSizeThumbnail => 'Thumbnail';
+  String get loadingAnimationSizeThumbnail => 'Hình thu nhỏ';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => 'Bé nhỏ';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => 'Trung bình';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => 'Lớn';
 
   @override
   String get loadingAnimationPosition => 'Animation Position';
@@ -3321,7 +3321,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loadingAnimationPositionBottomRight => 'Bottom-Right';
 
   @override
-  String get loadingAnimationPositionBouncing => 'Bouncing';
+  String get loadingAnimationPositionBouncing => 'Chuyển động';
 
   @override
   String get loadingAnimationSpeed => 'Animation Speed';
@@ -3375,7 +3375,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seasonalDensityLight => 'Light';
 
   @override
-  String get seasonalDensityNormal => 'Normal';
+  String get seasonalDensityNormal => 'Bình thường';
 
   @override
   String get seasonalDensityHeavy => 'Heavy';
@@ -3402,10 +3402,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seasonalRowSubtitle => 'Seasonal';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'Quốc gia';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => 'Tự động';
 
   @override
   String get countryUnitedStates => 'United States';
@@ -3414,7 +3414,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get countryCanada => 'Canada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'Khác';
 
   @override
   String get seasonalRowHolidays => 'Holidays';
@@ -3715,14 +3715,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
 
   @override
-  String get detailMetadataStatus => 'Series Status';
+  String get detailMetadataStatus => 'Trạng thái loạt phim';
 
   @override
   String get detailMetadataStatusSubtitle =>
       'Shows whether the series is continuing, ended, or returning';
 
   @override
-  String get detailMetadataGenres => 'Genres';
+  String get detailMetadataGenres => 'Thể loại';
 
   @override
   String get detailMetadataSeerrAvailability => 'Seerr Availability';
@@ -3762,31 +3762,31 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailSectionGroupCollection => 'Collection pages';
 
   @override
-  String get detailSectionGroupOther => 'Other';
+  String get detailSectionGroupOther => 'Khác';
 
   @override
-  String get detailSectionLogo => 'Logo';
+  String get detailSectionLogo => 'biểu tượng';
 
   @override
   String get detailSectionLogoSubtitle => 'Shows the title as text when off';
 
   @override
-  String get detailSectionTagline => 'Tagline';
+  String get detailSectionTagline => 'Dòng giới thiệu';
 
   @override
-  String get detailSectionPoster => 'Poster';
+  String get detailSectionPoster => 'Áp phích';
 
   @override
   String get detailSectionVersionBadge => 'Version badge';
 
   @override
-  String get detailSectionUpNext => 'Next Up';
+  String get detailSectionUpNext => 'Tiếp theo';
 
   @override
-  String get detailSectionLyrics => 'Lyrics';
+  String get detailSectionLyrics => 'Lời bài hát';
 
   @override
-  String get detailSectionCast => 'Cast';
+  String get detailSectionCast => 'Truyền';
 
   @override
   String get detailSectionCastSubtitle => 'Also on collection pages';
@@ -3795,19 +3795,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailSectionCrew => 'Directors & writers';
 
   @override
-  String get detailSectionStudios => 'Studios';
+  String get detailSectionStudios => 'Phim trường';
 
   @override
-  String get detailSectionChapters => 'Chapters';
+  String get detailSectionChapters => 'chương';
 
   @override
-  String get detailSectionExtras => 'Extras';
+  String get detailSectionExtras => 'Nội dung thêm';
 
   @override
-  String get detailSectionCollections => 'Collections';
+  String get detailSectionCollections => 'Bộ sưu tập';
 
   @override
-  String get detailSectionMoreLikeThis => 'More Like This';
+  String get detailSectionMoreLikeThis => 'Tương tự thế này';
 
   @override
   String get detailSectionMoreLikeThisSubtitle =>
@@ -3839,7 +3839,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seerrStreamingOn => 'Streaming on';
 
   @override
-  String get detailSectionSeerrRecommendations => 'Recommendations';
+  String get detailSectionSeerrRecommendations => 'Khuyến nghị';
 
   @override
   String get detailSectionSeerrSimilar => 'Similar titles';
@@ -3848,7 +3848,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailSectionSeerrCollection => 'Collection banner';
 
   @override
-  String get detailSectionSeerrPersonAppearances => 'Appearances';
+  String get detailSectionSeerrPersonAppearances => 'Tác phẩm tham gia';
 
   @override
   String get detailSectionSeerrPersonCrew => 'Crew credits';
@@ -3857,7 +3857,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailSectionPersonPagesSubtitle => 'On person pages';
 
   @override
-  String get detailSectionBiography => 'Biography';
+  String get detailSectionBiography => 'Tiểu sử';
 
   @override
   String get detailSectionBirthplace => 'Birthplace';
@@ -3889,7 +3889,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get upcomingEpisodeToday => 'Today';
+  String get upcomingEpisodeToday => 'Hôm nay';
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
@@ -3967,10 +3967,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => 'Di chuyển lên';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => 'Di chuyển xuống';
 
   @override
   String get buttonOrderHint =>
@@ -4173,7 +4173,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsAudioDtsHdPassthrough => 'Truyền qua DTS-HD MA';
 
   @override
-  String get settingsAudioPassthroughMode => 'Passthrough';
+  String get settingsAudioPassthroughMode => 'Truyền qua';
 
   @override
   String get settingsAudioPassthroughModeDescription =>
@@ -4853,10 +4853,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Classic is the original header with icon buttons. Modern adds labeled sort, group and filter chips under the search. Docked keeps the controls in a bar at the bottom of the screen.';
 
   @override
-  String get libraryStyleClassic => 'Classic';
+  String get libraryStyleClassic => 'Cổ điển';
 
   @override
-  String get libraryStyleModern => 'Modern';
+  String get libraryStyleModern => 'Hiện đại';
 
   @override
   String get libraryStyleDocked => 'Docked';
@@ -4869,7 +4869,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Classic is the original shelves under a featured title. Reading Room leads with what you\'re reading on large cards. Bookstore browses the whole library in a grid.';
 
   @override
-  String get bookLibraryStyleClassic => 'Classic';
+  String get bookLibraryStyleClassic => 'Cổ điển';
 
   @override
   String get bookLibraryStyleReadingRoom => 'Reading Room';
@@ -4885,7 +4885,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
 
   @override
-  String get musicLibraryStyleClassic => 'Classic';
+  String get musicLibraryStyleClassic => 'Cổ điển';
 
   @override
   String get musicLibraryStyleQuickAccess => 'Quick Access';
@@ -5048,7 +5048,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mediaBarModeGallery => 'Gallery';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'Ngọn cờ';
 
   @override
   String get mediaBarModeAya => 'Aya';
@@ -5277,7 +5277,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => 'Danh sách bên ngoài';
 
   @override
   String get homeRowsStreamingServices => 'Streaming Services';
@@ -5428,7 +5428,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get clockModeBouncing => 'Chuyển động';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'Cài đặt chung';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5437,10 +5437,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get screensaverLibraryContent => 'Library Content';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => 'Phông nền';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'Đen';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5449,7 +5449,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get screensaverBackdropCalm => 'Calm';
 
   @override
-  String get screensaverBackdropNeonPulse => 'Neon Pulse';
+  String get screensaverBackdropNeonPulse => 'Xung neon';
 
   @override
   String get screensaverBackdropAurora => 'Aurora';
@@ -5655,7 +5655,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get networks => 'Mạng';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Thẻ';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5897,7 +5897,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seerrRequestedStatus => 'Đã yêu cầu';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Đang tải xuống';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -6684,7 +6684,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminTagMode => 'Tag mode';
 
   @override
-  String get adminEmbyConnect => 'Emby Connect';
+  String get adminEmbyConnect => 'Emby Kết nối';
 
   @override
   String get adminEmbyConnectUser => 'Emby Connect username or email';
@@ -6773,7 +6773,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'No channels yet. They show up here once a tuner is set up and the server has imported its channels.';
 
   @override
-  String get adminTranscodingHwaAdvanced => 'Advanced';
+  String get adminTranscodingHwaAdvanced => 'Trình độ cao';
 
   @override
   String get adminTranscodingHwaHelp =>
@@ -7169,7 +7169,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => 'Sách';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7225,7 +7225,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'Nghệ sĩ';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
@@ -7283,7 +7283,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => 'Xếp hạng';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7375,7 +7375,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => 'Bản ghi';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7543,7 +7543,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'Không có';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7554,7 +7554,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => 'Thất bại';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7812,7 +7812,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => 'Xem';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7825,16 +7825,16 @@ class AppLocalizationsVi extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => 'Tổng quan';
 
   @override
-  String get adminGroupLibrary => 'Library';
+  String get adminGroupLibrary => 'Thư viện';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => 'Phát lại';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => 'Mọi người';
 
   @override
   String get adminGroupSystem => 'System';
@@ -10010,7 +10010,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'Tác giả';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -10054,19 +10054,19 @@ class AppLocalizationsVi extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => 'Tên';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => 'Tổng quan';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'Thể loại';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'Mọi người';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -10076,13 +10076,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get adminMetadataLockFieldBirthLocation => 'Birth location';
 
   @override
-  String get adminMetadataLockFieldRuntime => 'Runtime';
+  String get adminMetadataLockFieldRuntime => 'Thời gian chạy';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'Phim trường';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'Thẻ';
 
   @override
   String get adminMetadataGenres => 'Thể loại';
@@ -11423,7 +11423,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trackActionPlayNext => 'Chơi tiếp';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => 'Xem chi tiết';
 
   @override
   String get trackActionAddToQueue => 'Thêm vào hàng đợi';
@@ -11871,7 +11871,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Đang tải xuống';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -12123,13 +12123,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Kiểm soát xem các luồng lớp nâng cao của cấu hình Dolby Vision có nên phát trực tiếp hay không.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'Tự động (đã bật AFTKRT)';
+  String get settingsAutoAftkrtEnabled => 'Tự động';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Đã bật trên thiết bị này';
+  String get settingsEnabledOnThisDevice => 'Đã bật';
 
   @override
-  String get settingsDisabledPreferTranscode => 'Đã tắt (ưu tiên chuyển mã)';
+  String get settingsDisabledPreferTranscode => 'Tắt';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12488,6 +12488,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeRowsStyleModern => 'Hiện đại';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Hàng nhà';
 
   @override
@@ -12618,13 +12621,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin Gợi ý';
 
   @override
   String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'Độ tương đồng TMDb';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -12676,7 +12679,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'Chọn tất cả';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12694,7 +12697,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'Bộ lọc';
 
   @override
   String get showHeader => 'Show';
@@ -12782,10 +12785,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => 'Tên';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => 'Ngày phát hành';
 
   @override
   String get externalRowSortRating => 'Rating';
@@ -12794,7 +12797,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'Phát ngẫu nhiên';
 
   @override
   String get audioPlaylists => 'Danh sách phát âm thanh';
@@ -13530,7 +13533,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Kiểu';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13660,7 +13663,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return '+$count thêm';
   }
 
   @override
@@ -13744,10 +13747,10 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'Hằng ngày';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'hàng tuần';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13798,7 +13801,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'Giao diện';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13808,7 +13811,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'Tựa đề';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13840,7 +13843,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'Đã xem';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -13921,7 +13924,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'Người dùng';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -13933,7 +13936,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'Hoạt động';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -14152,7 +14155,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => 'Sự suy sụp';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14332,7 +14335,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'Tên nhóm';
 
   @override
   String chatMemberCount(int count) {
@@ -14349,7 +14352,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chatOwner => 'Owner';
 
   @override
-  String get chatAdmin => 'Admin';
+  String get chatAdmin => 'Quản trị viên';
 
   @override
   String get chatMakeAdmin => 'Make admin';
@@ -14367,14 +14370,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'Rời khỏi nhóm';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'Tạo nhóm';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15303,7 +15306,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playlistTypes => 'Playlist Types';
 
   @override
-  String get playlistTypeVideo => 'Video';
+  String get playlistTypeVideo => 'Băng hình';
 
   @override
   String get playlistTypeMusicVideo => 'Music Video';
@@ -15312,10 +15315,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'Sách nói';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Sách';
 
   @override
   String get playlistTypePhoto => 'Photo';
@@ -15330,7 +15333,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'Danh sách phát âm thanh';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15472,10 +15475,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => 'Trailer';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => 'Nội dung thêm';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15511,10 +15514,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => 'Ngôn ngữ gốc';
 
   @override
-  String get seerrRuntime => 'Runtime';
+  String get seerrRuntime => 'Thời gian chạy';
 
   @override
   String get subtitleHdrSeparate => 'Separate HDR Style';
@@ -15635,16 +15638,20 @@ class AppLocalizationsVi extends AppLocalizations {
   String get setupOptional => 'Optional';
 
   @override
-  String get setupStyleClassic => 'Classic';
+  String get setupStyleClassic => 'Cổ điển';
 
   @override
-  String get setupStyleModern => 'Modern';
+  String get setupStyleModern => 'Hiện đại';
 
   @override
   String get setupRowsClassicHint => 'Compact. More rows on screen at once.';
 
   @override
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';
@@ -15682,7 +15689,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => 'Buổi ra mắt';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15966,7 +15973,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'Tất cả';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -16004,7 +16011,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'Không bao giờ';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -16073,7 +16080,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'Đang tải xuống';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -16211,13 +16218,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get animationSpeedSlow => 'Slow';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => 'Trung bình';
 
   @override
   String get animationSpeedFast => 'Fast';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'Tắt';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16282,13 +16289,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
-  String get bottomNavbarTabsAutomatic => 'Automatic';
+  String get bottomNavbarTabsAutomatic => 'Tự động';
 
   @override
   String get bottomNavbarTabsPinned => 'Pinned';
 
   @override
-  String get bottomNavbarTabsAvailable => 'Available';
+  String get bottomNavbarTabsAvailable => 'Có sẵn';
 
   @override
   String get bottomNavbarTabsReset => 'Reset to Automatic';
@@ -16441,7 +16448,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => 'Trình độ cao';
 
   @override
   String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
@@ -16524,16 +16531,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => 'Ngày phát hành';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
 
   @override
-  String get playlistSortRuntime => 'Runtime';
+  String get playlistSortRuntime => 'Thời gian chạy';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => 'Chơi lần cuối';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
@@ -16583,7 +16590,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get librarySortTrackNumber => 'Track Number';
 
   @override
-  String get librarySortGenre => 'Genre';
+  String get librarySortGenre => 'thể loại';
 
   @override
   String get librarySortFoldersFirst => 'Folders First';
@@ -16613,7 +16620,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailsBackdropFullScreen => 'Full Screen';
 
   @override
-  String get detailsBackdropFit => 'Fit';
+  String get detailsBackdropFit => 'Phù hợp';
 
   @override
   String get libraryBackdrops => 'Library Backdrops';
@@ -16984,7 +16991,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'Hiện nay';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -17091,7 +17098,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => 'Chấp thuận';
 
   @override
   String get siloApproveSignInDone =>
@@ -17684,7 +17691,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'Xem';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17726,7 +17733,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'Khuyến mãi';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17747,7 +17754,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'Kiểu';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17764,7 +17771,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'hành động';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17836,7 +17843,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'Phát';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17977,7 +17984,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'Bắt đầu';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -18087,7 +18094,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => 'Cố định';
 
   @override
   String get afterHoursCastStaticLine =>
@@ -18192,4 +18199,17 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

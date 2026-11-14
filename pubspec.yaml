@@ -4,8 +4,6 @@ publish_to: 'none'
 version: 3.1.0+30000163
 
 moonfin:
-  android_tv_version: 3.1.0
-  android_tv_build_number: 2000024
   beta: false
   beta_number: 1
 
@@ -190,6 +188,7 @@ dependencies:
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  firebase_app_installations: ^0.4.5
   pointer_interceptor: ^0.10.1+2
   flutter_markdown_plus: ^1.0.12
   markdown: ^7.3.1
