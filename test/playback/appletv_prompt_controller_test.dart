@@ -483,7 +483,7 @@ void main() {
       expect(h.commands.count('exitPlayback'), 0);
     });
 
-    test('queue replacement during a pending prompt drops stale Stop/Continue answers',
+    test('stop after the queue moved under the prompt still exits, unmarked',
         () async {
       final h = await harnessAtThreshold();
 
@@ -497,9 +497,27 @@ void main() {
 
       expect(h.commands.count('markPlayed'), 0);
       expect(h.commands.count('exitPlayback:finished'), 0);
-      expect(h.commands.count('exitPlayback'), 0);
+      expect(h.commands.count('exitPlayback'), 1);
       expect(h.commands.count('advanceNext'), 0);
       expect(h.commands.count('resume'), 0);
+    });
+
+    test('continue after the queue moved under the prompt does not advance '
+        'again', () async {
+      final h = await harnessAtThreshold();
+
+      h.tick(remainingMs: 900);
+      final play = h.controller.handleNextUpPlay();
+      await Future<void>.delayed(Duration.zero);
+
+      h.snapshot = _snapshot(currentId: 'ep_other');
+      h.controller.resolveStillWatching(shouldContinue: true);
+      await play;
+
+      expect(h.commands.count('advanceNext'), 0);
+      expect(h.commands.count('resume'), 0);
+      expect(h.commands.count('exitPlayback'), 0);
+      expect(h.controller.consecutiveEpisodes, 0);
     });
   });
 

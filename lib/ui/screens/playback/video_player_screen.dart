@@ -2773,8 +2773,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// A viewer reaching for the remote has answered the prompt's question.
   void _noteViewerActivity() => _consecutiveEpisodes = 0;
 
-  /// Returns false when the viewer chose to stop, so the caller can drop the
-  /// queue advance it was about to make.
+  /// Returns false when the caller should drop the queue advance it was about
+  /// to make, because the viewer chose to stop or the queue already moved.
   Future<bool> _checkStillWatching() async {
     final behavior = _prefs.get(UserPreferences.stillWatchingBehavior);
     if (behavior == StillWatchingBehavior.disabled) return true;
@@ -2783,10 +2783,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final pendingItem = _queue.currentItem;
     _manager.pause();
     final shouldContinue = await StillWatchingDialog.show(context);
-    if (!mounted || !identical(_queue.currentItem, pendingItem)) return false;
+    if (!mounted) return false;
+    // A group or remote can move the queue while the prompt is up. Stop still
+    // stops then, but only the episode it asked about counts as finished.
+    final sameItem = identical(_queue.currentItem, pendingItem);
     if (shouldContinue != true) {
-      _markCurrentItemPlayedForOutroSkip();
-      unawaited(_exitPlayback(finished: true));
+      if (sameItem) _markCurrentItemPlayedForOutroSkip();
+      unawaited(_exitPlayback(finished: sameItem));
       return false;
     }
 
@@ -2796,7 +2799,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // clears suppressAutoNext that callback ends the session and closes the
     // screen, which looks like continue exiting playback. The advance starts
     // the next episode on its own.
-    return true;
+    return sameItem;
   }
 
   // Skipping the credits counts as finishing, even when they start before the

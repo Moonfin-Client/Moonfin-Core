@@ -287,7 +287,7 @@ class AppleTvPlaybackPromptController {
     final pendingItemId = _queueSnapshot().currentId;
     _commands.pause();
     final presented = await _commands.showStillWatching();
-    if (_disposed || _queueSnapshot().currentId != pendingItemId) return false;
+    if (_disposed) return false;
     if (!presented) {
       // The modal couldn't present (something else was on screen). Fail
       // open: keep playing and keep the counter so the prompt retries after
@@ -300,15 +300,20 @@ class AppleTvPlaybackPromptController {
     _stillWatchingCompleter = completer;
     final shouldContinue = await completer.future;
     _stillWatchingCompleter = null;
-    if (_disposed || _queueSnapshot().currentId != pendingItemId) return false;
+    if (_disposed) return false;
 
+    // A group or remote can move the queue while the prompt is up. Stop still
+    // stops, but only the episode it asked about counts as finished, and
+    // continue doesn't advance a second time.
+    final sameItem = _queueSnapshot().currentId == pendingItemId;
     if (shouldContinue) {
       consecutiveEpisodes = 0;
+      if (!sameItem) return false;
       _commands.resume();
       return true;
     }
-    _markCurrentPlayed();
-    unawaited(_commands.exitPlayback(finished: true));
+    if (sameItem) _markCurrentPlayed();
+    unawaited(_commands.exitPlayback(finished: sameItem));
     return false;
   }
 
