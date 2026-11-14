@@ -5381,6 +5381,7 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: true,
       height: _gameRowHeight(posterSize, widget.prefs),
+      focusHeadroom: headroom,
       child: !showDescription
           ? cards
           : Column(
@@ -5568,6 +5569,7 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowHeight,
+      focusHeadroom: headroom,
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
@@ -5747,8 +5749,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     final rowPadding = 5.0 * metadataScale;
-    final topPadding =
-        rowPadding + _focusHeadroom(maxImageHeight, cardExpansion);
+    final headroom = _focusHeadroom(maxImageHeight, cardExpansion);
+    final topPadding = rowPadding + headroom;
     final lockedRowHeight = maxCardHeight + topPadding + rowPadding;
 
     final subtitle = _rowSubtitle(row, l10n);
@@ -5799,6 +5801,7 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowTotalHeight,
+      focusHeadroom: headroom,
       child: _withCarouselPanel(
         row: row,
         isCarousel: isCarousel,
@@ -6565,6 +6568,7 @@ class _ContentRowsState extends State<_ContentRows>
     required int rowIndex,
     required bool hasItems,
     required double height,
+    double focusHeadroom = 0,
     required Widget child,
   }) {
     final isRowsV2 = _isHomeRowsStyleV2();
@@ -6574,12 +6578,11 @@ class _ContentRowsState extends State<_ContentRows>
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         clipBehavior: Clip.none,
-        child: Column(
-          key: key,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-          Padding(
+        child: _HomeRowLabelLift(
+          columnKey: key,
+          headroom: focusHeadroom,
+          cards: child,
+          label: Padding(
             padding: EdgeInsets.fromLTRB(
               _kHomeRowLabelInset,
               homeRowHeaderTop(isRowsV2),
@@ -6671,6 +6674,8 @@ class _ContentRowsState extends State<_ContentRows>
                       icon: const Icon(Icons.chevron_left),
                       onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
                       visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: _headerControlSize,
                     ),
                   ),
                   Focus(
@@ -6681,18 +6686,22 @@ class _ContentRowsState extends State<_ContentRows>
                       icon: const Icon(Icons.chevron_right),
                       onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
                       visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: _headerControlSize,
                     ),
                   ),
                 ],
               ],
             ),
           ),
-          child,
-        ],
-      ),
+        ),
       ),
     );
   }
+
+  /// No taller than the title, so the arrows don't push the cards down.
+  /// Compact density takes 8 off the width, which leaves the two 32 wide.
+  static const _headerControlSize = BoxConstraints(minWidth: 40, minHeight: 24);
 
   static IconData _iconForCollectionType(String collectionType) {
     return switch (collectionType) {
@@ -7173,6 +7182,70 @@ class _LiveTvAction {
   final String destination;
 
   const _LiveTvAction(this.icon, this.label, this.destination);
+}
+
+/// A row's title band and its cards. The title sits on the cards, and while
+/// one of them holds focus or the mouse is on the row it rises by [headroom],
+/// the room a focused card grows into, so the card never covers it.
+class _HomeRowLabelLift extends StatefulWidget {
+  const _HomeRowLabelLift({
+    this.columnKey,
+    required this.headroom,
+    required this.label,
+    required this.cards,
+  });
+
+  final Key? columnKey;
+  final double headroom;
+  final Widget label;
+  final Widget cards;
+
+  @override
+  State<_HomeRowLabelLift> createState() => _HomeRowLabelLiftState();
+}
+
+class _HomeRowLabelLiftState extends State<_HomeRowLabelLift> {
+  bool _hovered = false;
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final column = Column(
+      key: widget.columnKey,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.headroom > 0)
+          TweenAnimationBuilder<double>(
+            tween: Tween(end: _hovered || _focused ? 0 : widget.headroom),
+            duration: navigationAnimationDuration,
+            curve: PlatformDetection.isAppleTV
+                ? Curves.easeOutCubic
+                : Curves.linear,
+            child: widget.label,
+            builder: (context, drop, label) =>
+                Transform.translate(offset: Offset(0, drop), child: label),
+          )
+        else
+          widget.label,
+        // Watches focus without taking it, so the card that has it is the
+        // one that lifts the title, not whichever row the scroll settled on.
+        Focus(
+          canRequestFocus: false,
+          skipTraversal: true,
+          onFocusChange: (has) => setState(() => _focused = has),
+          child: widget.cards,
+        ),
+      ],
+    );
+    // The whole row, title included, so the header arrows stay put while
+    // the mouse moves up to them.
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: column,
+    );
+  }
 }
 
 class _OverlayTopClipper extends CustomClipper<Rect> {
