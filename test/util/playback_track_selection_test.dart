@@ -107,6 +107,25 @@ void main() {
     });
   });
 
+  test('subtitles turned off this session stay off when the remembered track '
+      'is missing', () async {
+    await prefs.set(UserPreferences.fallbackSubtitleLanguage, 'ita');
+    await prefs.setSeriesSubtitlePreference(
+      _series,
+      const SeriesTrackPreference(language: 'eng'),
+    );
+    expect(
+      selectPlaybackSubtitleIndex(
+        subtitleStreams: _subtitles,
+        audioStreams: _audio,
+        prefs: prefs,
+        seriesId: _series,
+        session: const SessionTrackChoices(subtitleEnabled: false),
+      ),
+      -1,
+    );
+  });
+
   group('series track mode', () {
     /// Both tracks, a full and a forced Italian subtitle and a full English one.
     final subtitles = <Map<String, dynamic>>[
@@ -191,6 +210,20 @@ void main() {
     test('Dubbed with no dub keeps the original with full subtitles', () async {
       await prefs.setSeriesTrackMode(_series, SeriesTrackMode.dubbed);
       expect(pick(audio: [_audio.last]), (audio: 2, subtitle: 3));
+    });
+
+    test('Dubbed with no dub plays the original, not a remembered other dub',
+        () async {
+      await prefs.setSeriesAudioPreference(
+        _series,
+        const SeriesTrackPreference(language: 'jpn'),
+      );
+      await prefs.setSeriesTrackMode(_series, SeriesTrackMode.dubbed);
+      final audio = <Map<String, dynamic>>[
+        {'Type': 'Audio', 'Index': 1, 'Language': 'eng', 'IsDefault': true},
+        {'Type': 'Audio', 'Index': 2, 'Language': 'jpn'},
+      ];
+      expect(pick(audio: audio), (audio: 1, subtitle: 3));
     });
 
     test('Subbed falls back to full subtitles in another language', () async {

@@ -132,11 +132,12 @@ int? selectPlaybackSubtitleIndex({
 
   var preferredLanguage = session.subtitleLanguage;
   // No track in this episode carries the remembered one, so fall back to its
-  // language and make sure subtitles are on to show it. A remembered track
-  // with no language tag has nothing to fall back to.
+  // language and make sure subtitles are on to show it, unless the viewer
+  // turned them off during this session. A remembered track with no language
+  // tag has nothing to fall back to.
   if (preferredLanguage == null && seriesSubPref.language.isNotEmpty) {
     preferredLanguage = seriesSubPref.language;
-    if (subtitleMode == SubtitleMode.none) {
+    if (subtitleMode == SubtitleMode.none && session.subtitleEnabled != false) {
       subtitleMode = SubtitleMode.always;
     }
   }
@@ -179,8 +180,10 @@ String _viewerLanguage(UserPreferences prefs) {
   return ui.PlatformDispatcher.instance.locale.languageCode;
 }
 
-/// The audio a sub or dub mode asks for, or null when the episode has none,
-/// which leaves the usual choice to stand.
+/// The audio a sub or dub mode asks for: the original for Subbed, the
+/// viewer's language for Dubbed, and the original again when an episode has
+/// no dub. Null when the episode has neither, which leaves the usual choice
+/// to stand.
 int? _modeAudioIndex(
   SeriesTrackMode mode,
   List<Map<String, dynamic>> audioStreams,
@@ -201,17 +204,21 @@ int? _modeAudioIndex(
 
   if (mode == SeriesTrackMode.dubbed) {
     final dubs = usable.where((s) => matchLang(s['Language'], viewer)).toList();
-    if (dubs.isEmpty) return null;
-    return computeEffectiveAudioIndex(
-      audioStreams: dubs,
-      preferredAudioLanguage: viewer,
-      fallbackAudioLanguage: '',
-      preferDefaultAudioTrack:
-          prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
-      preferAudioDescription: preferAudioDescription,
-      lastExplicitAudioIndex: session.audioIndex,
-      lastExplicitAudioTitle: session.audioTitle,
-    );
+    if (dubs.isNotEmpty) {
+      return computeEffectiveAudioIndex(
+        audioStreams: dubs,
+        preferredAudioLanguage: viewer,
+        fallbackAudioLanguage: '',
+        preferDefaultAudioTrack:
+            prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ??
+            false,
+        preferAudioDescription: preferAudioDescription,
+        lastExplicitAudioIndex: session.audioIndex,
+        lastExplicitAudioTitle: session.audioTitle,
+      );
+    }
+    // No dub in this episode: the original, as Subbed would play it, rather
+    // than some other language the series happens to remember.
   }
 
   // An untagged track could just as well be the dub, so only a track tagged
