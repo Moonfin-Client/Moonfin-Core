@@ -27,8 +27,8 @@ List<String> moonbaseFeatures(AppLocalizations l10n, ServerType type) {
     if (fullPlugin) ...[
       l10n.setupTourBulletRequests,
       l10n.moonbaseFeatureRows,
-      l10n.moonbaseFeatureGames,
     ],
+    if (type.features.supportsRetroGames) l10n.moonbaseFeatureGames,
     if (type != ServerType.silo) l10n.moonbaseFeatureCalendar,
     if (!fullPlugin) l10n.moonbaseFeatureCollections,
     l10n.setupTourBulletThemes,

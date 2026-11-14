@@ -117,6 +117,29 @@ void main() {
       );
     });
 
+    test('routes home, forwarding serverId and userId', () {
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://home')),
+        '/home',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://home?serverId=srv-1&userId=user-1'),
+        ),
+        '/home?serverId=srv-1&userId=user-1',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://home?serverId=&userId='),
+        ),
+        '/home',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://home?id=abc')),
+        '/home',
+      );
+    });
+
     test('returns null for search without a query', () {
       expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://search')),

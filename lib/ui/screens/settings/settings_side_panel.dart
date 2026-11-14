@@ -40,6 +40,7 @@ import '../../util/home_row_title_localizer.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/game_cores.dart';
+import '../../../util/device_hinge.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/app_beta.dart';
 import '../../../util/app_distribution.dart';
@@ -166,6 +167,9 @@ Widget navigationSettingsScreenForTesting() =>
 @visibleForTesting
 Widget watchPartySettingsScreenForTesting() => const _SyncPlaySettingsScreen();
 
+@visibleForTesting
+Widget playerSettingsScreenForTesting() => const _VideoPlaybackScreen();
+
 bool get _showThemeEditorEntry =>
     PlatformDetection.isWeb && webRuntimeConfig.pluginMode;
 
@@ -275,7 +279,8 @@ class SettingsSidePanel extends ConsumerStatefulWidget
   ConsumerState<SettingsSidePanel> createState() => _SettingsSidePanelState();
 }
 
-class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
+class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
+    with HingeAware {
   final _preview = SettingsPreviewController();
   final _listNavKey = GlobalKey<NavigatorState>();
   final _listScope = FocusScopeNode(debugLabel: 'SettingsListColumn');
@@ -836,43 +841,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                       ),
                     ),
                     const SizedBox(width: 24),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: SettingsLivePreview(
-                              sceneFocus: _tv ? _scenesFocus : null,
-                              onLeaveScenes: _leaveScenes,
-                              // Up climbs to the category pill and Down stays.
-                              onScenesVertical: (isUp) {
-                                if (isUp) _pillFocus.requestFocus();
-                                return true;
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          // A fixed height, so the preview above doesn't
-                          // resize as descriptions get longer or shorter.
-                          Container(
-                            height:
-                                _inspectorFixedHeight +
-                                MediaQuery.textScalerOf(
-                                  context,
-                                ).scale(_inspectorTextHeight),
-                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                            decoration: BoxDecoration(
-                              color: AppColorScheme.surface,
-                              borderRadius: AppRadius.circular(18),
-                            ),
-                            child: const SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              child: SettingsPreviewInspector(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Expanded(child: _buildPreviewPane(context)),
                   ],
                 ),
               ),
@@ -880,6 +849,59 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           ),
         ),
       ),
+    );
+  }
+
+  /// The live preview with the focused setting's description under it.
+  ///
+  /// [sideBySide] puts the description beside the preview, for a pane too
+  /// short to stack them without shrinking the preview to a thumbnail.
+  Widget _buildPreviewPane(BuildContext context, {bool sideBySide = false}) {
+    final preview = SettingsLivePreview(
+      sceneFocus: _tv ? _scenesFocus : null,
+      onLeaveScenes: _leaveScenes,
+      // Up climbs to the category pill and Down stays.
+      onScenesVertical: (isUp) {
+        if (isUp) _pillFocus.requestFocus();
+        return true;
+      },
+    );
+    Widget inspector({double? height, ScrollPhysics? physics}) => Container(
+      height: height,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      decoration: BoxDecoration(
+        color: AppColorScheme.surface,
+        borderRadius: AppRadius.circular(18),
+      ),
+      child: SingleChildScrollView(
+        physics: physics,
+        child: const SettingsPreviewInspector(),
+      ),
+    );
+    if (sideBySide) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(flex: 3, child: preview),
+          const SizedBox(width: 16),
+          Expanded(flex: 2, child: inspector()),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(child: preview),
+        const SizedBox(height: 16),
+        // A fixed height, so the preview above doesn't resize as
+        // descriptions get longer or shorter.
+        inspector(
+          height:
+              _inspectorFixedHeight +
+              MediaQuery.textScalerOf(context).scale(_inspectorTextHeight),
+          physics: const NeverScrollableScrollPhysics(),
+        ),
+      ],
     );
   }
 
@@ -894,6 +916,20 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     final prefs = GetIt.instance<UserPreferences>();
     final previewHidden = prefs.get(UserPreferences.settingsPreviewHidden);
     final category = _searchedCategory ?? _categories[_categoryIndex];
+    // An opened folding phone or a tablet on its side has the room desktop
+    // uses to keep the preview beside the list.
+    final size = MediaQuery.sizeOf(context);
+    final twoPane =
+        PlatformDetection.hasTabletSizedScreen(size) &&
+        size.width > size.height;
+    final head = [
+      Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 8), child: search),
+      if (_categories.length > 1)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: pill,
+        ),
+    ];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -903,31 +939,66 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
         automaticallyImplyLeading: false,
         title: Text(l10n.settings),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 8), child: search),
-          if (_categories.length > 1)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: pill,
-            ),
-          if (!searching && category.preview)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: _PhoneLivePreview(
-                hidden: previewHidden,
-                onToggle: () async {
-                  await prefs.set(
-                    UserPreferences.settingsPreviewHidden,
-                    !previewHidden,
-                  );
-                  if (mounted) setState(() {});
-                },
+      // An opened folding phone keeps the clock in a screen corner, over the
+      // end of the search field.
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        // Half open like a laptop, the preview stands on the upper half and
+        // the settings lie on the lower one.
+        child: DeviceHinge.isLaptopPosture(context)
+            ? DeviceHinge.splitAtFold(
+                context,
+                topOffset: MediaQuery.paddingOf(context).top + kToolbarHeight,
+                upper: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: _buildPreviewPane(context, sideBySide: true),
+                ),
+                lower: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...head,
+                    Expanded(child: list),
+                  ],
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ...head,
+                  if (twoPane)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: list),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildPreviewPane(context)),
+                          ],
+                        ),
+                      ),
+                    )
+                  else ...[
+                    if (!searching && category.preview)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                        child: _PhoneLivePreview(
+                          hidden: previewHidden,
+                          onToggle: () async {
+                            await prefs.set(
+                              UserPreferences.settingsPreviewHidden,
+                              !previewHidden,
+                            );
+                            if (mounted) setState(() {});
+                          },
+                        ),
+                      ),
+                    Expanded(child: list),
+                  ],
+                ],
               ),
-            ),
-          Expanded(child: list),
-        ],
       ),
     );
   }

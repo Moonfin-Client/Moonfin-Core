@@ -58,7 +58,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get signIn => 'Bejelentkezés';
 
   @override
-  String get signingIn => 'Signing in...';
+  String get signingIn => 'Bejelentkezés...';
 
   @override
   String get empty => 'Üres';
@@ -167,7 +167,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'Aktív';
 
   @override
   String get addUser => 'Felhasználó hozzáadása';
@@ -467,7 +467,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'Bemutató';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -643,10 +643,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get keyboardStyleNative => 'Native';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'Klasszikus';
 
   @override
-  String get keyboardStyleGlass => 'Glass';
+  String get keyboardStyleGlass => 'Üveg';
 
   @override
   String get keyboardStyleDocked => 'Docked';
@@ -2204,7 +2204,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => 'Törlés';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2672,7 +2672,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => 'Összes epizód';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3957,10 +3957,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Toggle Upcoming Calendars from Radarr/Sonarr.';
-
-  @override
-  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+      'Choose what the Radarr and Sonarr rows show.';
 
   @override
   String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
@@ -3977,9 +3974,6 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Hide Movies Already on the Server';
-
-  @override
-  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
@@ -4857,6 +4851,16 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az összes csatlakoztatott szerver könyvtárainak megjelenítése';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
 
   @override
@@ -4878,7 +4882,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Classic is the original header with icon buttons. Modern adds labeled sort, group and filter chips under the search. Docked keeps the controls in a bar at the bottom of the screen.';
 
   @override
-  String get libraryStyleClassic => 'Classic';
+  String get libraryStyleClassic => 'Klasszikus';
 
   @override
   String get libraryStyleModern => 'Modern';
@@ -4894,7 +4898,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Classic is the original shelves under a featured title. Reading Room leads with what you\'re reading on large cards. Bookstore browses the whole library in a grid.';
 
   @override
-  String get bookLibraryStyleClassic => 'Classic';
+  String get bookLibraryStyleClassic => 'Klasszikus';
 
   @override
   String get bookLibraryStyleReadingRoom => 'Reading Room';
@@ -4910,7 +4914,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
 
   @override
-  String get musicLibraryStyleClassic => 'Classic';
+  String get musicLibraryStyleClassic => 'Klasszikus';
 
   @override
   String get musicLibraryStyleQuickAccess => 'Quick Access';
@@ -4961,7 +4965,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get searchBooks => 'Search books';
 
   @override
-  String get libraryShowLabel => 'Show';
+  String get libraryShowLabel => 'Megjelenítés';
 
   @override
   String get libraryAToZ => 'A to Z';
@@ -5069,13 +5073,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mediaBarModeOff => 'Ki';
 
   @override
-  String get mediaBarModeBookshelf => 'Bookshelf';
+  String get mediaBarModeBookshelf => 'Könyvespolc';
 
   @override
-  String get mediaBarModeGallery => 'Gallery';
+  String get mediaBarModeGallery => 'Galéria';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'Bannerkép';
 
   @override
   String get mediaBarModeAya => 'Aya';
@@ -5091,10 +5095,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get contentType => 'Tartalom típusa';
 
   @override
-  String get mediaBarSourceType => 'Source';
+  String get mediaBarSourceType => 'Forrás';
 
   @override
-  String get mediaBarSourceRandom => 'Random';
+  String get mediaBarSourceRandom => 'Véletlenszerű';
 
   @override
   String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
@@ -5304,7 +5308,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => 'Külső listák';
+
+  @override
+  String get homeRowsStreamingServices => 'Streaming Services';
 
   @override
   String get perRowSettings => 'Soronkénti beállítások';
@@ -5452,7 +5459,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get clockModeBouncing => 'Pattogó';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'Általános beállítások';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5461,10 +5468,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get screensaverLibraryContent => 'Library Content';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => 'Háttérkép';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'Fekete';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5482,10 +5489,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get screensaverAdditionalComponent => 'Additional Component';
 
   @override
-  String get screensaverComponentMoonfinLogo => 'Moonfin Logo';
+  String get screensaverComponentMoonfinLogo => 'Moonfin logo';
 
   @override
-  String get screensaverComponentRunner => 'Runner';
+  String get screensaverComponentRunner => 'Futó';
 
   @override
   String get screensaverComponentMovement => 'Component Movement';
@@ -5540,10 +5547,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'Watching on MDBList';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Show what MDBList users are currently watching';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5684,7 +5687,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get networks => 'Tévéadók';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Címkék';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5932,7 +5935,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get seerrRequestedStatus => 'Kért';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Letöltés';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -5958,6 +5961,37 @@ class AppLocalizationsHu extends AppLocalizations {
   String get seerrImportingStatus => 'Importálás';
 
   @override
+  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+
+  @override
+  String get seerrDownloadStalled => 'Stalled';
+
+  @override
+  String get seerrDownloadFailed => 'Download failed';
+
+  @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
+
+  @override
   String itemsCount(int count) {
     return '$count elem';
   }
@@ -5975,7 +6009,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get request => 'Igénylés';
 
   @override
-  String get request4k => 'Request 4K';
+  String get request4k => 'Igénylés 4K-ban';
 
   @override
   String get requested4k => '4K Requested';
@@ -6778,7 +6812,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'No channels yet. They show up here once a tuner is set up and the server has imported its channels.';
 
   @override
-  String get adminTranscodingHwaAdvanced => 'Advanced';
+  String get adminTranscodingHwaAdvanced => 'Speciális';
 
   @override
   String get adminTranscodingHwaHelp =>
@@ -7159,10 +7193,10 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get adminExternalIdTypePerson => 'Person';
+  String get adminExternalIdTypePerson => 'Személy';
 
   @override
-  String get adminExternalIdTypeArtist => 'Artist';
+  String get adminExternalIdTypeArtist => 'Előadó';
 
   @override
   String get adminExternalIdTypeAlbumArtist => 'Album Artist';
@@ -7174,7 +7208,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => 'Könyv';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7214,7 +7248,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminImageTypeDisc => 'Disc';
 
   @override
-  String get adminImageTypeMenu => 'Menu';
+  String get adminImageTypeMenu => 'Menü';
 
   @override
   String get adminActivityMediaDetails => 'Media details';
@@ -7230,7 +7264,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'Előadók';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
@@ -7288,7 +7322,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => 'Értékelések';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7380,7 +7414,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => 'Felvételek';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7548,7 +7582,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'Nincs';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7559,7 +7593,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => 'Sikertelen';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7817,7 +7851,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => 'Megtekintés';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7830,16 +7864,16 @@ class AppLocalizationsHu extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => 'Áttekintés';
 
   @override
-  String get adminGroupLibrary => 'Library';
+  String get adminGroupLibrary => 'Könyvtár';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => 'Lejátszás';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => 'Személyek';
 
   @override
   String get adminGroupSystem => 'System';
@@ -9947,7 +9981,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminMetadataDisplayOrderOriginalAirDate => 'Original air date';
 
   @override
-  String get adminMetadataDisplayOrderAbsolute => 'Absolute';
+  String get adminMetadataDisplayOrderAbsolute => 'Abszolút';
 
   @override
   String get adminMetadataDisplayOrderDvd => 'DVD';
@@ -10002,7 +10036,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminMetadataPersonKindActor => 'Actor';
 
   @override
-  String get adminMetadataPersonKindDirector => 'Director';
+  String get adminMetadataPersonKindDirector => 'Rendező';
 
   @override
   String get adminMetadataPersonKindComposer => 'Composer';
@@ -10038,13 +10072,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminMetadataPersonKindCreator => 'Creator';
 
   @override
-  String get adminMetadataPersonKindArtist => 'Artist';
+  String get adminMetadataPersonKindArtist => 'Előadó';
 
   @override
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'Szerző';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -10088,19 +10122,19 @@ class AppLocalizationsHu extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => 'Név';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => 'Áttekintés';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'Műfajok';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'Személyek';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -10110,13 +10144,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminMetadataLockFieldBirthLocation => 'Birth location';
 
   @override
-  String get adminMetadataLockFieldRuntime => 'Runtime';
+  String get adminMetadataLockFieldRuntime => 'Játékidő';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'Stúdiók';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'Címkék';
 
   @override
   String get adminMetadataGenres => 'Műfajok';
@@ -11363,6 +11397,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get kidsModeExitSubtitle => 'Enter your PIN to restore the full app';
 
   @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
+
+  @override
   String get pinIncorrect => 'Helytelen PIN-kód';
 
   @override
@@ -11468,7 +11507,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get trackActionPlayNext => 'Lejátszás következőként';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => 'Részletek megtekintése';
 
   @override
   String get trackActionAddToQueue => 'Hozzáadás a lejátszási sorhoz';
@@ -11920,7 +11959,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Letöltés';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -12178,10 +12217,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settingsAutoAftkrtEnabled => 'Automatikus';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Engedélyezve ezen az eszközön';
+  String get settingsEnabledOnThisDevice => 'Engedélyezve';
 
   @override
-  String get settingsDisabledPreferTranscode => 'Letiltva (inkább átkódolás)';
+  String get settingsDisabledPreferTranscode => 'Ki';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12237,7 +12276,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Előzetesek és bevezetők lejátszása a főfilm előtt';
 
   @override
-  String get settingsCinemaModeEpisodes => 'Cinema Mode for episodes';
+  String get settingsCinemaModeEpisodes => 'Mozi mód epizódokhoz';
 
   @override
   String get settingsCinemaModeEpisodesSubtitle =>
@@ -12547,6 +12586,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Kezdőképernyő sorai';
 
   @override
@@ -12677,13 +12719,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin ajánlásai';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Jellyfin Ajánlások';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb hasonlóság';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -12735,7 +12777,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'Összes kijelölése';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12753,10 +12795,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'Szűrők';
 
   @override
-  String get showHeader => 'Show';
+  String get showHeader => 'Megjelenítés';
 
   @override
   String get displayPlaylistsRows => 'Lejátszási listák sorainak megjelenítése';
@@ -12841,19 +12883,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => 'Név';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => 'Megjelenés dátuma';
 
   @override
-  String get externalRowSortRating => 'Rating';
+  String get externalRowSortRating => 'Értékelés';
 
   @override
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'Keverés';
 
   @override
   String get audioPlaylists => 'Audió lejátszási listák';
@@ -13591,7 +13633,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Típus';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13721,7 +13763,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return '+$count további';
   }
 
   @override
@@ -13740,7 +13782,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'How you compare with other users on this server';
 
   @override
-  String get achievementsRecap => 'Recap';
+  String get achievementsRecap => 'Összefoglaló';
 
   @override
   String get achievementsRecapSubtitle => 'What you watched recently';
@@ -13805,10 +13847,10 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'Napi';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'Heti';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13859,7 +13901,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'Megjelenés';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13869,7 +13911,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'Címek';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13894,14 +13936,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get achievementsPowerUps => 'Power-ups';
 
   @override
-  String get achievementsStats => 'Stats';
+  String get achievementsStats => 'Statisztikák';
 
   @override
   String get achievementsStatsSubtitle =>
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'Megtekintett';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -13982,7 +14024,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'Felhasználók';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -13994,7 +14036,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'Tevékenység';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -14213,7 +14255,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => 'Elutasítás';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14393,7 +14435,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'Csoport neve...';
 
   @override
   String chatMemberCount(int count) {
@@ -14410,7 +14452,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get chatOwner => 'Owner';
 
   @override
-  String get chatAdmin => 'Admin';
+  String get chatAdmin => 'Adminisztrátor';
 
   @override
   String get chatMakeAdmin => 'Make admin';
@@ -14428,14 +14470,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'Csoport elhagyása';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'Csoport létrehozása';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15362,7 +15404,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playlistTypes => 'Playlist Types';
 
   @override
-  String get playlistTypeVideo => 'Video';
+  String get playlistTypeVideo => 'Videó';
 
   @override
   String get playlistTypeMusicVideo => 'Music Video';
@@ -15371,16 +15413,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'Hangoskönyv';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Könyv';
 
   @override
   String get playlistTypePhoto => 'Photo';
 
   @override
-  String get playlistTypeMixed => 'Mixed';
+  String get playlistTypeMixed => 'Vegyes';
 
   @override
   String get videoPlaylistsSection => 'Video Playlists';
@@ -15389,7 +15431,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'Audió lejátszási listák';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15407,55 +15449,55 @@ class AppLocalizationsHu extends AppLocalizations {
   String get currentTime => 'Current Time';
 
   @override
-  String get playbackTimeDisplay => 'Progress Bar Time';
+  String get playbackTimeDisplay => 'Idő a folyamatjelzőn';
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose which time labels appear around the playback progress bar.';
+      'Válaszd ki, mely időadatok jelenjenek meg a lejátszási csúszka körül';
 
   @override
-  String get playbackTimeTotal => 'Total duration';
+  String get playbackTimeTotal => 'Teljes hossz';
 
   @override
-  String get playbackTimeRemaining => 'Time remaining';
+  String get playbackTimeRemaining => 'Hátralévő idő';
 
   @override
-  String get playbackTimeEndsAt => 'Ends at';
+  String get playbackTimeEndsAt => 'Vége';
 
   @override
-  String get playbackTimeElapsed => 'Time elapsed';
+  String get playbackTimeElapsed => 'Eltelt idő';
 
   @override
-  String get playbackTimeVideoSection => 'Video Player';
+  String get playbackTimeVideoSection => 'Videolejátszó';
 
   @override
-  String get playbackTimeMusicSection => 'Music Player';
+  String get playbackTimeMusicSection => 'Zenelejátszó';
 
   @override
   String get playbackTimeSlotDescription =>
       'Choose what is shown here, or hide it.';
 
   @override
-  String get playbackTimeAboveBarLeft => 'Above bar, left';
+  String get playbackTimeAboveBarLeft => 'A csúszka felett, balra';
 
   @override
-  String get playbackTimeAboveBarCenter => 'Above bar, center';
+  String get playbackTimeAboveBarCenter => 'A csúszka felett, középen';
 
   @override
-  String get playbackTimeAboveBarRight => 'Above bar, right';
+  String get playbackTimeAboveBarRight => 'A csúszka felett, jobbra';
 
   @override
-  String get playbackTimeBelowBarLeft => 'Below bar, left';
+  String get playbackTimeBelowBarLeft => 'A csúszka alatt, balra';
 
   @override
-  String get playbackTimeBelowBarCenter => 'Below bar, center';
+  String get playbackTimeBelowBarCenter => 'A csúszka alatt, középen';
 
   @override
-  String get playbackTimeBelowBarRight => 'Below bar, right';
+  String get playbackTimeBelowBarRight => 'A csúszka alatt, jobbra';
 
   @override
   String get settingsMusicPlaybackTimeDescription =>
-      'Choose what is shown on the right side of the music progress bar.';
+      'A zenei csúszka jobb oldalán jelenik meg';
 
   @override
   String get groupByTitle => 'Group By';
@@ -15464,10 +15506,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get groupByDecade => 'Decade (Year)';
 
   @override
-  String get groupByParentalRating => 'Parental Rating';
+  String get groupByParentalRating => 'Korhatárbesorolás';
 
   @override
-  String get groupByStudio => 'Studio';
+  String get groupByStudio => 'Stúdió';
 
   @override
   String get showAlphabeticalFilters => 'Show Alphabet';
@@ -15531,10 +15573,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => 'Előzetesek';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => 'Extrák';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15543,7 +15585,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get filterThemeVideos => 'Theme Videos';
 
   @override
-  String get source => 'Source';
+  String get source => 'Forrás';
 
   @override
   String get years => 'Years';
@@ -15555,7 +15597,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subtitleLanguage => 'Subtitle Language';
 
   @override
-  String get clearFilters => 'Clear Filters';
+  String get clearFilters => 'Szűrők törlése';
 
   @override
   String get seerrShortcutsRow => 'Seerr Browse';
@@ -15570,10 +15612,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => 'Eredeti nyelv';
 
   @override
-  String get seerrRuntime => 'Runtime';
+  String get seerrRuntime => 'Játékidő';
 
   @override
   String get subtitleHdrSeparate => 'Separate HDR Style';
@@ -15658,7 +15700,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Hide the progress bar on posters you\'ve started watching.';
 
   @override
-  String get hideHomeUnwatchedCount => 'Hide Unwatched Count';
+  String get hideHomeUnwatchedCount => 'Nem megtekintett darabszám elrejtése';
 
   @override
   String get hideHomeUnwatchedCountSubtitle =>
@@ -15694,7 +15736,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get setupOptional => 'Optional';
 
   @override
-  String get setupStyleClassic => 'Classic';
+  String get setupStyleClassic => 'Klasszikus';
 
   @override
   String get setupStyleModern => 'Modern';
@@ -15706,6 +15748,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Everything centred in one stack.';
 
   @override
@@ -15713,7 +15759,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Cinematic, with tabs for cast and extras.';
 
   @override
-  String get setupStyleSpotlight => 'Spotlight';
+  String get setupStyleSpotlight => 'Kiemelt';
 
   @override
   String get setupDetailSpotlightHint =>
@@ -15727,7 +15773,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Teljesképernyő, fülek helyett rendezett szekciókkal.';
 
   @override
-  String get setupStyleMinimalist => 'Minimalist';
+  String get setupStyleMinimalist => 'Minimalista';
 
   @override
   String get setupDetailMinimalistHint =>
@@ -15741,7 +15787,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => 'Bemutató';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15803,7 +15849,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get setupCurrent => 'Current';
+  String get setupCurrent => 'Jelenlegi';
 
   @override
   String get setupMoonbaseTitle => 'Add Moonbase to your server';
@@ -16025,7 +16071,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'Összes';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -16063,7 +16109,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'Soha';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -16132,7 +16178,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'Letöltés';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -16267,16 +16313,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get animationSpeedExtraSlow => 'Extra Slow';
 
   @override
-  String get animationSpeedSlow => 'Slow';
+  String get animationSpeedSlow => 'Lassú';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => 'Közepes';
 
   @override
-  String get animationSpeedFast => 'Fast';
+  String get animationSpeedFast => 'Gyors';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'Ki';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16341,13 +16387,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
-  String get bottomNavbarTabsAutomatic => 'Automatic';
+  String get bottomNavbarTabsAutomatic => 'Automatikus';
 
   @override
   String get bottomNavbarTabsPinned => 'Pinned';
 
   @override
-  String get bottomNavbarTabsAvailable => 'Available';
+  String get bottomNavbarTabsAvailable => 'Elérhető';
 
   @override
   String get bottomNavbarTabsReset => 'Reset to Automatic';
@@ -16387,7 +16433,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get integrations => 'Integrációk';
 
   @override
-  String get settingsSync => 'Settings Sync';
+  String get settingsSync => 'Beállítások szinkronizálása';
 
   @override
   String get settingsSyncSubtitle =>
@@ -16500,7 +16546,31 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => 'Speciális';
+
+  @override
+  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+
+  @override
+  String get settingsAudioStreamSection => 'Audio Stream';
+
+  @override
+  String get settingsAudioOutputSection => 'Audio Output';
+
+  @override
+  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+
+  @override
+  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+
+  @override
+  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+
+  @override
+  String get settingsRewatchSection => 'Rewatch';
+
+  @override
+  String get favoritesSwitchViewSection => 'Switch View';
 
   @override
   String get playerSettingsSubtitle =>
@@ -16559,22 +16629,22 @@ class AppLocalizationsHu extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => 'Megjelenés dátuma';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
 
   @override
-  String get playlistSortRuntime => 'Runtime';
+  String get playlistSortRuntime => 'Játékidő';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => 'Utoljára játszott';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
 
   @override
-  String get playlistSortRandom => 'Random';
+  String get playlistSortRandom => 'Véletlenszerű';
 
   @override
   String playlistFilterActiveCount(int count) {
@@ -16591,16 +16661,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playlistNoMatchingTracks => 'No tracks match the active filters';
 
   @override
-  String get librarySortPlaylistOrder => 'Playlist Order';
+  String get librarySortPlaylistOrder => 'Lejátszási lista sorrend';
 
   @override
-  String get librarySortDateAdded => 'Date Added';
+  String get librarySortDateAdded => 'Hozzáadás dátuma';
 
   @override
   String get librarySortDateEpisodeAdded => 'Date Episode Added';
 
   @override
-  String get librarySortParentalRating => 'Parental Rating';
+  String get librarySortParentalRating => 'Korhatárbesorolás';
 
   @override
   String get librarySortMyRating => 'My Rating';
@@ -16612,13 +16682,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get librarySortAlbum => 'Album';
 
   @override
-  String get librarySortArtist => 'Artist';
+  String get librarySortArtist => 'Előadó';
 
   @override
   String get librarySortTrackNumber => 'Track Number';
 
   @override
-  String get librarySortGenre => 'Genre';
+  String get librarySortGenre => 'Műfaj';
 
   @override
   String get librarySortFoldersFirst => 'Folders First';
@@ -16630,7 +16700,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeScreenBackdrop => 'Home Screen Backdrop';
 
   @override
-  String get homeScreenBackdropFullScreen => 'Full Screen';
+  String get homeScreenBackdropFullScreen => 'Teljesképernyő';
 
   @override
   String get homeScreenBackdropCorner => 'Corner';
@@ -16645,10 +16715,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get detailsBackdropSize => 'Backdrop Size';
 
   @override
-  String get detailsBackdropFullScreen => 'Full Screen';
+  String get detailsBackdropFullScreen => 'Teljesképernyő';
 
   @override
-  String get detailsBackdropFit => 'Fit';
+  String get detailsBackdropFit => 'Illesztés';
 
   @override
   String get libraryBackdrops => 'Library Backdrops';
@@ -16685,7 +16755,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playbackInfoTechnical => 'Technical';
 
   @override
-  String get playbackInfoDevice => 'Device';
+  String get playbackInfoDevice => 'Eszköz';
 
   @override
   String get playbackInfoAudioRoute => 'Audio Route';
@@ -17019,7 +17089,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'Most';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -17052,7 +17122,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get recordPromptAlreadyScheduled => 'Already set to record';
 
   @override
-  String get recordPromptTomorrow => 'Tomorrow';
+  String get recordPromptTomorrow => 'Holnap';
 
   @override
   String get recordNowOnly => 'Record Now Only';
@@ -17126,7 +17196,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => 'Jóváhagyás';
 
   @override
   String get siloApproveSignInDone =>
@@ -17218,7 +17288,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get siloPinHint => 'PIN';
 
   @override
-  String get siloPinUnlock => 'Unlock';
+  String get siloPinUnlock => 'Feloldás';
 
   @override
   String get siloPinRemember => 'Remember PIN on this device';
@@ -17428,7 +17498,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get musicSortYear => 'Year';
 
   @override
-  String get musicFilter => 'Filter';
+  String get musicFilter => 'Szűrő';
 
   @override
   String get musicGenreFilterTitle => 'Filter by Genre';
@@ -17532,6 +17602,71 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get settingsPreviewNotShown => 'Not shown in the preview';
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
+    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRows(
+    String group,
+    String disabled,
+  ) {
+    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String get settingsPreviewRowsOffInKidsMode =>
+      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+
+  @override
+  String settingsPreviewNeedsRowInRows(String disabled) {
+    return 'Turn on a row in Rows, under $disabled';
+  }
+
+  @override
+  String settingsPreviewNeedsSwitchAndRow(String setting) {
+    return 'Turn on $setting, then turn on a row in Rows';
+  }
+
+  @override
+  String get settingsPreviewKeptOffByKidsMode =>
+      'Kids Mode keeps this off Home';
+
+  @override
+  String get settingsPreviewAudioRowsEmpty =>
+      'There\'s no music to show, so Home leaves these rows out.';
+
+  @override
+  String get settingsPreviewRowsEmpty =>
+      'There\'s nothing to show in these rows, so Home leaves them out.';
+
+  @override
+  String get settingsPreviewCollectionsEmpty =>
+      'There are no collections to show, so Home leaves this row out.';
+
+  @override
+  String get settingsPreviewShowEpisodesNote =>
+      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
 
   @override
   String get settingsPreviewSaved => 'Saved';
@@ -17654,7 +17789,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'Megtekintés';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17676,7 +17811,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get calendarSettingsWhatShows => 'What shows';
 
   @override
-  String get calendarSettingsScope => 'Show';
+  String get calendarSettingsScope => 'Megjelenítés';
 
   @override
   String get calendarSettingsScopeDescription =>
@@ -17696,7 +17831,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'Különlegességek';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17717,7 +17852,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'Típus';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17734,7 +17869,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'Műveletek';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17806,7 +17941,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'Lejátszás';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17947,7 +18082,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'Kezdés';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -18057,7 +18192,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => 'Statikus';
 
   @override
   String get afterHoursCastStaticLine =>

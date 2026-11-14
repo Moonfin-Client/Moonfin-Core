@@ -6557,7 +6557,7 @@
     "settingsAutomationAndQueue": "Otomasyon ve Kuyruk",
     "settingsAutomationAndQueueSubtitle": "Otomatik oynatma ve sıralama",
     "settingsOfflineDownloadsSubtitle": "İndirme kalitesi, depolama sınırları ve kuyruk boyutu",
-    "settingsSyncplaySubtitle": "Grup oturumları için senkronizasyon mantığı",
+    "settingsSyncplaySubtitle": "Bu sunucudaki arkadaşlarınızla tam eşzamanlı olarak izleyin",
     "settingsAdvancedOptionsSubtitle": "Özel oynatıcı özellikleri. Bazı seçenekler oynatma sorunlarına neden olabileceğinden dikkatli kullanın",
     "settingsSkipIntrosAndOutros": "Giriş ve Jenerikleri atlansın mı?",
     "settingsPromptUser": "Kullanıcıya Sor",
@@ -6607,20 +6607,20 @@
     },
     "settingsLiveTvDirect": "Canlı TV Doğrudan Oynatma",
     "settingsLiveTvDirectSubtitle": "Canlı TV için doğrudan oynatmayı etkinleştirin",
-    "settingsOpenGroups": "Grupları Aç",
-    "settingsOpenGroupsSubtitle": "SyncPlay grupları oluşturun, katılın veya yönetin",
-    "settingsSyncplayEnabled": "SyncPlay Etkin",
-    "settingsSyncplayEnabledSubtitle": "Grup izleme özelliklerini etkinleştirin",
-    "settingsSyncplayButton": "SyncPlay Düğmesi",
-    "settingsSyncplayButtonSubtitle": "Gezinme çubuğunda SyncPlay düğmesini göster",
+    "settingsOpenGroups": "İzleme Partileri Aç",
+    "settingsOpenGroupsSubtitle": "Yeni bir grup başlatın veya devam edene katılın",
+    "settingsSyncplayEnabled": "İzleme Partileri",
+    "settingsSyncplayEnabledSubtitle": "Bu sunucudaki arkadaşlarınızla tam eşzamanlı olarak izleyin",
+    "settingsSyncplayButton": "İzleme Partileri Düğmesi",
+    "settingsSyncplayButtonSubtitle": "Gezinme çubuğunda İzleme Partileri düğmesini gösterin",
     "settingsSyncplayAdvancedCorrection": "Gelişmiş Düzeltme",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "Ayrıntılı senkronizasyon mantığını etkinleştirin",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "Gecikmeler ve ek sapma",
     "settingsSyncplaySyncCorrection": "Senkronizasyon Düzeltmesi",
-    "settingsSyncplaySyncCorrectionSubtitle": "Senkronize kalmak için oynatmayı otomatik olarak ayarlayın",
+    "settingsSyncplaySyncCorrectionSubtitle": "Bu cihazı odayla eşzamanlı tutun",
     "settingsSyncplaySpeedToSync": "Senkronizasyon Hızı",
-    "settingsSyncplaySpeedToSyncSubtitle": "Senkronize etmek için oynatma hızı ayarını kullanın",
+    "settingsSyncplaySpeedToSyncSubtitle": "Arayı kapatmak için biraz daha hızlı veya yavaş oynatın",
     "settingsSyncplaySkipToSync": "Senkronizasyona Geç",
-    "settingsSyncplaySkipToSyncSubtitle": "Senkronize etmek için aramayı kullanın",
+    "settingsSyncplaySkipToSyncSubtitle": "Fark çok açıldığında ileri atlayın",
     "settingsSyncplayMinimumSpeedDelay": "Minimum Hız Gecikmesi",
     "settingsSyncplayMaximumSpeedDelay": "Maksimum Hız Gecikmesi",
     "settingsSyncplaySpeedDuration": "Hız Süresi",
@@ -12065,7 +12065,7 @@
     "@detailSectionPhotoExif": {
         "description": "Details screen section: camera and image details on a photo's page"
     },
-    "buttonShownInSyncPlayGroup": "Yalnızca bir SyncPlay grubundayken gösterilir",
+    "buttonShownInSyncPlayGroup": "Yalnızca bir izleme partisi grubundayken gösterilir",
     "@buttonShownInSyncPlayGroup": {
         "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
     },
@@ -13222,7 +13222,7 @@
     "@watchPartyRoomCode": {
         "description": "Label for a Watch Party room's join code"
     },
-    "watchPartyStart": "İzleme Partisi başlat",
+    "watchPartyStart": "İzleme Partisi Başlat",
     "@watchPartyStart": {
         "description": "Button that opens a new Watch Party room"
     },
@@ -13258,7 +13258,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "İzleme Partisini bitir",
+    "watchPartyEnd": "Herkes için bitir",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -15178,7 +15178,7 @@
     "@settingsDetailsPageSubtitle": {
         "description": "Subtitle for the Details Page entry on the Appearance settings screen"
     },
-    "settingsPlaybackSubtitle": "Oynatıcı, kalite, ses, altyazılar, atlama ve SyncPlay",
+    "settingsPlaybackSubtitle": "Oynatıcı, kalite, ses, altyazılar, atlama ve izleme partileri",
     "@settingsPlaybackSubtitle": {
         "description": "Subtitle for the Playback settings root entry"
     },
@@ -15230,7 +15230,7 @@
     "@settingsSkippingAndQueueSection": {
         "description": "Section header on the Playback settings screen"
     },
-    "settingsWatchTogetherSection": "Birlikte İzleme",
+    "settingsWatchTogetherSection": "İzleme Partileri",
     "@settingsWatchTogetherSection": {
         "description": "Section header on the Playback settings screen for SyncPlay"
     },
@@ -16617,13 +16617,9 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.",
+    "upcomingCalendarsDescription": "Radarr ve Sonarr satırlarının ne göstereceğini seç.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
-    },
-    "enableRadarrCalendar": "Radarr Gelecek Takvimini Etkinleştir",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
     },
     "radarrCalendarShowCinema": "Gelecek Sinema Vizyonlarını Göster",
     "@radarrCalendarShowCinema": {
@@ -16652,10 +16648,6 @@
     "radarrCalendarHideDownloaded": "Sunucuda Zaten Olan Filmleri Gizle",
     "@radarrCalendarHideDownloaded": {
         "description": "Leaves out movies Radarr already downloaded from the calendar row"
-    },
-    "enableSonarrCalendar": "Sonarr'ın Yaklaşanlar Takvimini Etkinleştir",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Bölüm Bilgilerini Göster",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -16698,10 +16690,6 @@
     "mdblistWatchingNow": "MDBList'te İzleniyor",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "MDBList kullanıcılarının şu anda neler izlediğini göster",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowWatchersCount": "{count} izleyici",
     "@watchingNowWatchersCount": {
@@ -17375,5 +17363,1338 @@
     "settingsDateFormatDescription": "Takvim ve çıkış tarihleri için ay-gün, gün-ay veya yerel ayar varsayılanı arasında seçim yapın",
     "dateFormatSystem": "Yerel Varsayılan",
     "dateFormatMonthDay": "Ay / Gün (10 Kas)",
-    "dateFormatDayMonth": "Gün / Ay (10 Kas)"
+    "dateFormatDayMonth": "Gün / Ay (10 Kas)",
+    "episodeDirector": "Bölüm Yönetmeni",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (Bölüm Yönetmeni)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Bölüm Yazarı",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (Bölüm Yazarı)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Konuk Oyuncu",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (Konuk Oyuncu)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "seasonalRowAllYear": "Tüm Yıl Göster",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Tatil satırını tatil tarihleri dışında da göster. Her gün, işaretli tatillerden farklı biri gösterilir.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "recentlyAddedAndReleased": "Son Eklenenler ve Son Yayınlananlar",
+    "@recentlyAddedAndReleased": {
+        "description": "Section title for Recently Added and Recently Released home row settings"
+    },
+    "hideWatchedInRecentRows": "İzlenenleri Gizle",
+    "@hideWatchedInRecentRows": {
+        "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+    },
+    "hideWatchedInRecentRowsDescription": "İzlenen içerikleri Son Eklenenler ve Son Yayınlananlar ana ekran satırlarından gizle.",
+    "@hideWatchedInRecentRowsDescription": {
+        "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+    },
+    "screensaverDuringAudio": "Müzik ve Sesli Kitaplarda Göster",
+    "@screensaverDuringAudio": {
+        "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+    },
+    "screensaverDuringAudioDescription": "Ses çalarken ekran koruyucunun başlamasına izin ver; böylece kapak görseli saatlerce ekranda kalmaz.",
+    "@screensaverDuringAudioDescription": {
+        "description": "Description under the Show During Music and Audiobooks screensaver setting"
+    },
+    "sleepAfterIdle": "TV Uykuya Geçme Süresi",
+    "@sleepAfterIdle": {
+        "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+    },
+    "sleepAfterIdleDescriptionAndroid": "Bu süre boyunca hiçbir tuşa basılmazsa Moonfin kapanır; böylece TV'nizin kendi ekran koruyucusu ve uyku zamanlayıcısı devreye girebilir. Duraklatılmış içerik önce durdurulur, böylece kaldığınız yer korunur.",
+    "@sleepAfterIdleDescriptionAndroid": {
+        "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+    },
+    "sleepAfterIdleDescriptionAppleTv": "Bu süre boyunca hiçbir tuşa basılmazsa ekran, Apple TV'nizin kendi ekran koruyucusuna ve uyku ayarına devredilir. Moonfin açık kalır, böylece kaldığınız yerden devam edersiniz.",
+    "@sleepAfterIdleDescriptionAppleTv": {
+        "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+    },
+    "seerrWaitingForImport": "İndirildi, içe aktarma bekleniyor",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Takıldı",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrDownloadFailed": "İndirme başarısız",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "seerrImportBlocked": "İçe aktarma engellendi",
+    "@seerrImportBlocked": {
+        "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+    },
+    "seerrNotFoundYet": "Henüz bulunamadı",
+    "@seerrNotFoundYet": {
+        "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+    },
+    "seerrGetDifferentRelease": "Farklı bir sürüm al",
+    "@seerrGetDifferentRelease": {
+        "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+    },
+    "seerrGetDifferentReleaseConfirm": "{service}, {release} sürümünü indirme istemcisinden kaldıracak, yeniden alınmaması için engelleyecek ve başka bir sürüm arayacak.",
+    "@seerrGetDifferentReleaseConfirm": {
+        "description": "Body of the confirm dialog for Get a different release",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            },
+            "release": {
+                "type": "String",
+                "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseDone": "Kaldırıldı. {service} başka bir sürüm arıyor.",
+    "@seerrGetDifferentReleaseDone": {
+        "description": "Short confirmation after Get a different release removed the stuck download",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseFailed": "İndirme kaldırılamadı",
+    "@seerrGetDifferentReleaseFailed": {
+        "description": "Error shown when Get a different release could not remove the stuck download"
+    },
+    "syncPlayRepeatSubtitle": "Bir öğeyi veya tüm kuyruğu yeniden oynat",
+    "@syncPlayRepeatSubtitle": {
+        "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+    },
+    "syncPlayShuffleSubtitle": "Kuyruğu sırayla veya karışık oynat",
+    "@syncPlayShuffleSubtitle": {
+        "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+    },
+    "syncPlayParticipantYou": "Siz",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "syncPlayGroupSubtitle": "{participants} · {detail}",
+    "@syncPlayGroupSubtitle": {
+        "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+        "placeholders": {
+            "participants": {
+                "type": "String",
+                "example": "3 participants"
+            },
+            "detail": {
+                "type": "String",
+                "example": "nothing queued yet"
+            }
+        }
+    },
+    "syncPlayNothingQueued": "henüz kuyrukta bir şey yok",
+    "@syncPlayNothingQueued": {
+        "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+    },
+    "syncPlayOthersCanJoinHint": "Bu grup var olduğu sürece diğerleri kendi SyncPlay ekranlarından katılabilir.",
+    "@syncPlayOthersCanJoinHint": {
+        "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+    },
+    "syncPlayCreateGroupSubtitle": "Katılan herkesle birlikte izleyin",
+    "@syncPlayCreateGroupSubtitle": {
+        "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+    },
+    "syncPlayAvailableGroupsCount": "Kullanılabilir gruplar · {count}",
+    "@syncPlayAvailableGroupsCount": {
+        "description": "Heading of the SyncPlay available groups list with how many there are",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "2"
+            }
+        }
+    },
+    "syncPlayNoGroupsAvailableHint": "Bu sunucuda başkalarının oluşturduğu gruplar burada görünür.",
+    "@syncPlayNoGroupsAvailableHint": {
+        "description": "Second line of the empty state in the SyncPlay available groups list"
+    },
+    "syncPlayJoinReplacesQueueNote": "Bir gruba katılmak mevcut oynatma kuyruğunuzu değiştirebilir.",
+    "@syncPlayJoinReplacesQueueNote": {
+        "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+    },
+    "kidsModePinToSwitchUser": "{name} kullanıcısına geçmek için Çocuk Modu PIN'ini girin",
+    "@kidsModePinToSwitchUser": {
+        "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsHideControlsAfter": "Kontrolleri Gizleme Süresi",
+    "@settingsHideControlsAfter": {
+        "description": "Playback setting for how long the player controls stay on screen after the last input"
+    },
+    "settingsHideControlsAfterDescription": "Son tuşa basma, dokunma veya fare hareketinden sonra oynatıcı kontrollerinin ekranda ne kadar kalacağı.",
+    "@settingsHideControlsAfterDescription": {
+        "description": "Description under the Hide Controls After playback setting"
+    },
+    "settingsHdrControlsDimming": "HDR'de Kontrolleri Karart",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "Beyaz, HDR videonun yanında çok daha parlak görünür; bu yüzden video oynarken oynatıcı kontrolleri bu oranda kararır.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "watchPartyResumeYours": "Kaldığınız yer. Herkes buradan başlar.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchParties": "İzleme Partileri",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Partiyi Şununla Başlat",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Sohbet, tepkiler ve oylama. Moonbase üzerinde çalışır.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "Jellyfin'in kendi özelliği. Diğer Jellyfin uygulamalarındaki arkadaşlarınız da katılabilir.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Her iki türdeki odalara katılabilirsiniz. Bu seçim yalnızca sizin başlatacağınız türü belirler.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Parti sırasında",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Sohbeti videonun üzerinde göster",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Yeni mesajlar birkaç saniye görünür",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Parti bildirimleri",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Bu sunucuda biri parti başlattığında bana haber ver",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    },
+    "watchPartyJoinWithCode": "Kodla katıl",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "Bu sunucuda",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "Bu sunucuda {count}",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Katılmak için öğeye erişiminizin olması gerekir. Oda, son kişi ayrıldığında kapanır.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "İzleyebileceğiniz partiler burada görünür. Birinden kod mu aldınız? Kodla katıl'ı seçin.",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "Buraya davet bağlantısı yapıştırmak da işe yarar. Telefonda bağlantı, Moonfin'i doğrudan partiye açar.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} kişi izliyor} other{{count} kişi izliyor}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "{name} Partisi",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Herkes kontrol eder",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Ne izleneceği oylanıyor",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "İzleme Partileri için bu sunucuda Moonbase gerekir",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Sunucuyu yöneten kişiden Moonbase eklentisini kurmasını isteyin. Jellyfin'de SyncPlay bu olmadan da çalışır.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Bu PIN çalışmadı. Tekrar deneyin.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "Çok fazla deneme yapıldı. Bir dakika bekleyin.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Bu parti dolu.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Bu koda sahip bir oda yok.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "İzledikleri içeriğe erişiminiz yok.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "Ev sahibi sizi partiden çıkardı.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "İzleme partiniz",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Herhangi bir sohbete yapıştırın. Bu sunucuda, Moonfin'de Aç düğmesi olan bir sayfa açılır.",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Daveti gönderin",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Davet bağlantısını almak için telefonunuzla tarayın, ardından oradan gönderin. Ya da kodu paylaşın.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "Oynatma herkesin oynatıcısını bekler (en fazla 10 saniye), ardından 3, 2, 1 diye geri sayar.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "Senkronize",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Yetişiyor",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Arabelleğe alınıyor",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "İzlemiyor",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "Hazır",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Katılıyor",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Ev sahibi",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "{name} kişisinin oynatıcısı bekleniyor",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{{count} oynatıcı bekleniyor} other{{count} oynatıcı bekleniyor}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "{seconds} sn içinde yine de başlıyor",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Birlikte başlıyor",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} duraklattı",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} devam ettirdi",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} {time} konumuna atladı",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} katıldı",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} ayrıldı",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} {title} içeriğine geçti",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Artık ev sahibisiniz",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "{name} artık ev sahibi",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Artık herkes oynatmayı kontrol edebilir",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Artık oynatmayı yalnızca ev sahibi kontrol ediyor",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Oynatmayı yalnızca ev sahibi kontrol edebilir.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "Partiye yeniden bağlanılıyor...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Partiye geri döndünüz",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} partiyi sonlandırdı",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Sohbet",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Partiye gönder",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyBackToClose": "Kapatmak için Geri",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "watchPartyType": "Yaz",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyNoWay": "Olamaz",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Duraklat lütfen",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Hemen dönerim",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Bir daha!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "Aşk",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Vay",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Üzgün",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Ateş",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Patlamış mısır",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Ev sahibi yap",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Herkes oynatmayı kontrol edebilir",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Herkes oynatabilir, duraklatabilir ve atlayabilir",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "Oda PIN'i",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Kimse katılmadan önce PIN iste",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "4 ila 8 haneli",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Ayrıl",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Ayrıl · Ev sahibi: {name}",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} bir izleme partisi başlattı",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · lobide {count} kişi} other{{title} · lobide {count} kişi}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "Ana Ekrandaki İzleme Partileri'nde ilk sırada",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Bu davet, henüz eklemediğiniz bir sunucuya ait: {address}. Katılmak için sunucuyu ekleyip oturum açın.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleBold": "Kalın Metin",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "subtitleStrokeWidth": "Metin Kontur Kalınlığı",
+    "@subtitleStrokeWidth": {
+        "description": "Setting for how thick the outline around subtitle text is."
+    },
+    "subtitleFont": "Yazı Tipi",
+    "@subtitleFont": {
+        "description": "Setting for which font subtitles are drawn in."
+    },
+    "subtitleFontDescription": "Yazı tipleri, ilk kez seçtiğinizde Google Fonts'tan indirilir",
+    "@subtitleFontDescription": {
+        "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+    },
+    "subtitleFontDownloadFailed": "{font} indirilemedi",
+    "@subtitleFontDownloadFailed": {
+        "description": "Shown when a subtitle font could not be downloaded.",
+        "placeholders": {
+            "font": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleShadow": "Metin Gölgesi",
+    "@subtitleShadow": {
+        "description": "Toggle for a drop shadow behind subtitle text."
+    },
+    "subtitleShadowIntensity": "Gölge Yoğunluğu",
+    "@subtitleShadowIntensity": {
+        "description": "How dark the subtitle drop shadow is."
+    },
+    "subtitleShadowOffset": "Gölge Uzaklığı",
+    "@subtitleShadowOffset": {
+        "description": "How far the subtitle drop shadow sits from the text."
+    },
+    "subtitleShadowBlur": "Gölge Bulanıklığı",
+    "@subtitleShadowBlur": {
+        "description": "How soft the edge of the subtitle drop shadow is."
+    },
+    "bookFoldersAsSeries": "Kitap klasörlerini seri olarak ele al",
+    "@bookFoldersAsSeries": {
+        "description": "Setting to determine book series based on folders instead of item metadata"
+    },
+    "bookFoldersAsSeriesDescription": "Tek tek kitapların meta verilerine güvenmek yerine, kitap içeren klasörleri seri olarak ele al",
+    "@bookFoldersAsSeriesDescription": {
+        "description": "Explains the setting to determine book series based on folders instead of item metadata"
+    },
+    "removeWatchedAsk": "Bana sor",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "deleteFinishedDownloadTitle": "Bu indirme silinsin mi?",
+    "@deleteFinishedDownloadTitle": {
+        "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+    },
+    "deleteFinishedDownloadMessage": "{title} içeriğini izlemeyi bitirdiniz. Yer açmak için indirmesini silebilir ya da saklayıp bir daha sorulmamasını seçebilirsiniz.",
+    "@deleteFinishedDownloadMessage": {
+        "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notNow": "Şimdi Değil",
+    "@notNow": {
+        "description": "Button that closes a question without answering it, so it can be asked again later"
+    },
+    "settingsDecodingAndRenderingSection": "Kod Çözme ve Görüntü İşleme",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Ses Akışı",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Ses Çıkışı",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Doğrudan Aktarım Ayarları",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsSeerrHomePageRowsSection": "Seerr Ana Sayfa Satırları",
+    "@settingsSeerrHomePageRowsSection": {
+        "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+    },
+    "settingsSavedCustomHomeRowsSection": "Kayıtlı Özel Ana Ekran Satırları",
+    "@settingsSavedCustomHomeRowsSection": {
+        "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+    },
+    "settingsRewatchSection": "Yeniden İzle",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "favoritesSwitchViewSection": "Görünümü Değiştir",
+    "@favoritesSwitchViewSection": {
+        "description": "Section header in the Favorites display options for choosing between Home and Library view"
+    },
+    "siloPinRemember": "Bu cihazda PIN'i hatırla",
+    "@siloPinRemember": {
+        "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "settingsPreviewAudioRowsOffInHomeRows": "Albümler, Sanatçılar ve Ses Oynatma Listeleri kapalı. Birini göstermek için Satırlar bölümüne gidin, {disabled} altında {group} öğesini açın ve etkinleştirin.",
+    "@settingsPreviewAudioRowsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is on, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off audio rows are",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewAudioRowsOffInHomeRowsSwitchOff": "Ana Ekranda Albümleri, Sanatçıları veya Ses Oynatma Listelerini görmek için önce {setting} ayarını açın. Ardından Satırlar bölümüne gidin, {disabled} altında {group} öğesini açın ve birini etkinleştirin.",
+    "@settingsPreviewAudioRowsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is off, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the audio rows once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRows": "Koleksiyonlar satırı kapalı. Göstermek için Satırlar bölümüne gidin, {disabled} altında {group} öğesini açın ve etkinleştirin.",
+    "@settingsPreviewCollectionsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRowsSwitchOff": "Ana Ekranda Koleksiyonlar satırını görmek için önce {setting} ayarını açın. Ardından Satırlar bölümüne gidin, {disabled} altında {group} öğesini açın ve etkinleştirin.",
+    "@settingsPreviewCollectionsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is off, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Collections row once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Collections Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewRowsOffInKidsMode": "Çocuk Modu bu satırları Ana Ekranda göstermez; bu nedenle bu ayarlar Ana Ekranı değiştirmez.",
+    "@settingsPreviewRowsOffInKidsMode": {
+        "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+    },
+    "settingsPreviewNeedsRowInRows": "Satırlar bölümünde, {disabled} altından bir satırı açın",
+    "@settingsPreviewNeedsRowInRows": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+        "placeholders": {
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewNeedsSwitchAndRow": "{setting} ayarını açın, ardından Satırlar bölümünden bir satırı açın",
+    "@settingsPreviewNeedsSwitchAndRow": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is off. The Rows screen only lists those rows once the switch is on",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            }
+        }
+    },
+    "settingsPreviewKeptOffByKidsMode": "Çocuk Modu bunu Ana Ekranda göstermez",
+    "@settingsPreviewKeptOffByKidsMode": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
+    },
+    "settingsPreviewAudioRowsEmpty": "Gösterilecek müzik yok, bu yüzden Ana Ekran bu satırları dışarıda bırakır.",
+    "@settingsPreviewAudioRowsEmpty": {
+        "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
+    },
+    "settingsPreviewRowsEmpty": "Bu satırlarda gösterilecek bir şey yok, bu yüzden Ana Ekran bunları dışarıda bırakır.",
+    "@settingsPreviewRowsEmpty": {
+        "description": "Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out"
+    },
+    "settingsPreviewCollectionsEmpty": "Gösterilecek koleksiyon yok, bu yüzden Ana Ekran bu satırı dışarıda bırakır.",
+    "@settingsPreviewCollectionsEmpty": {
+        "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+    },
+    "settingsPreviewShowEpisodesNote": "Bu yalnızca Satırlar bölümünde eklenen tek bir koleksiyonun satırlarını değiştirir. Koleksiyonlar satırı aynı görünür.",
+    "@settingsPreviewShowEpisodesNote": {
+        "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+    },
+    "afterHoursTitle": "Mesai Sonrası",
+    "@afterHoursTitle": {
+        "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+    },
+    "afterHoursUnlocked": "Mesai Sonrası açıldı",
+    "@afterHoursUnlocked": {
+        "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+    },
+    "afterHoursPressesLeft": "{count, plural, =1{1 basış daha} other{{count} basış daha}}",
+    "@afterHoursPressesLeft": {
+        "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursTapsLeft": "{count, plural, =1{1 dokunuş daha} other{{count} dokunuş daha}}",
+    "@afterHoursTapsLeft": {
+        "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlay": "Oyna",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursLeaderboards": "Liderlik Tabloları",
+    "@afterHoursLeaderboards": {
+        "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+    },
+    "afterHoursTop3": "İlk 3",
+    "@afterHoursTop3": {
+        "description": "Heading over the three best scores in an arcade game"
+    },
+    "afterHoursScoresFrom": "{server} sunucusundaki puanlar",
+    "@afterHoursScoresFrom": {
+        "description": "Note saying the arcade scores shown come from the named server",
+        "placeholders": {
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "afterHoursScoresOnDevice": "Bu cihazdaki puanlar",
+    "@afterHoursScoresOnDevice": {
+        "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+    },
+    "afterHoursGameOver": "Oyun bitti",
+    "@afterHoursGameOver": {
+        "description": "Shown when a run in an arcade game ends"
+    },
+    "afterHoursNewRank": "Tabloda yeni #{rank}",
+    "@afterHoursNewRank": {
+        "description": "Shown when a finished arcade run places in the top 3, with its place",
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlayAgain": "Tekrar oyna",
+    "@afterHoursPlayAgain": {
+        "description": "Button that starts a new run of the same arcade game"
+    },
+    "afterHoursBackToArcade": "Oyun salonuna dön",
+    "@afterHoursBackToArcade": {
+        "description": "Button that leaves a finished game for the arcade menu"
+    },
+    "afterHoursArcade": "Salon",
+    "@afterHoursArcade": {
+        "description": "Short button on a phone that leaves a finished game for the arcade menu"
+    },
+    "afterHoursLandscapeNote": "Oynarken ekran yatay konuma döner",
+    "@afterHoursLandscapeNote": {
+        "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+    },
+    "afterHoursTouch": "Dokunmatik",
+    "@afterHoursTouch": {
+        "description": "Label before the touchscreen controls of an arcade game"
+    },
+    "afterHoursNewTag": "YENİ",
+    "@afterHoursNewTag": {
+        "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+    },
+    "afterHoursNoScores": "Henüz puan yok",
+    "@afterHoursNoScores": {
+        "description": "Shown in place of a leaderboard nobody has played yet"
+    },
+    "afterHoursPerfect": "MÜKEMMEL",
+    "@afterHoursPerfect": {
+        "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+    },
+    "afterHoursBoxSet": "KUTU SETİ",
+    "@afterHoursBoxSet": {
+        "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+    },
+    "afterHoursBufferRun": "Arabellek Koşusu",
+    "@afterHoursBufferRun": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+    },
+    "afterHoursBufferRunGenre": "Yerçekimini ters çeviren sonsuz koşu oyunu",
+    "@afterHoursBufferRunGenre": {
+        "description": "Kind of game Buffer Run is"
+    },
+    "afterHoursBufferRunPitch": "Yükleme ekranındaki koşucunun sonunda gidecek bir yeri var. Çift zıplama ve yerçekimi çevirme onu tavana taşır.",
+    "@afterHoursBufferRunPitch": {
+        "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+    },
+    "afterHoursBufferRunRemote": "Tamam zıplar, havada tekrar taraf değiştirir. Aşağı kayar. Tavanda Yukarı/Aşağı ters çalışır.",
+    "@afterHoursBufferRunRemote": {
+        "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursBufferRunTouch": "Dokunarak zıplayın; havada tekrar dokunarak taraf değiştirin. Kaymak için yönünüze kaydırın.",
+    "@afterHoursBufferRunTouch": {
+        "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForward": "İleri Sar",
+    "@afterHoursFastForward": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+    },
+    "afterHoursFastForwardGenre": "Üç şeritli koşu oyunu",
+    "@afterHoursFastForwardGenre": {
+        "description": "Kind of game Fast Forward is"
+    },
+    "afterHoursFastForwardPitch": "Üç lobi koridorunda bir koşu. Alçak engelleri atlayın ve patlamış mısır arabalarının kimse için kıpırdamadığını unutmayın.",
+    "@afterHoursFastForwardPitch": {
+        "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+    },
+    "afterHoursFastForwardRemote": "Yukarı ve Aşağı şerit değiştirir. Tamam zıplar.",
+    "@afterHoursFastForwardRemote": {
+        "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForwardTouch": "Şerit değiştirmek için yukarı veya aşağı kaydırın. Zıplamak için dokunun.",
+    "@afterHoursFastForwardTouch": {
+        "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawl": "Kablo Yılanı",
+    "@afterHoursCableCrawl": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+    },
+    "afterHoursCableCrawlGenre": "Izgara üzerinde yılan tarzı oyun",
+    "@afterHoursCableCrawlGenre": {
+        "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+    },
+    "afterHoursCableCrawlPitch": "Bir HDMI kablosunu TV ünitesinin arkasında yönlendirip sinyale bağlayın. Her sinyal çubuğu kabloyu uzatır.",
+    "@afterHoursCableCrawlPitch": {
+        "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+    },
+    "afterHoursCableCrawlRemote": "Oklar yön değiştirir. Kablo hiç durmaz.",
+    "@afterHoursCableCrawlRemote": {
+        "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawlTouch": "Yön değiştirmek için kaydırın.",
+    "@afterHoursCableCrawlTouch": {
+        "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStack": "Kutu İstifi",
+    "@afterHoursCaseStack": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+    },
+    "afterHoursCaseStackGenre": "Tek tuşlu istifleme oyunu",
+    "@afterHoursCaseStackGenre": {
+        "description": "Kind of game Case Stack is"
+    },
+    "afterHoursCaseStackPitch": "Raf boyunda bir Blu-ray kutusu kulesi kurun; her kutu kendi kütüphanenizden bir yapım. Kenardan taşan kısım kesilir, bu yüzden tam üstüne indirin.",
+    "@afterHoursCaseStackPitch": {
+        "description": "Two sentence description of the Case Stack arcade game"
+    },
+    "afterHoursCaseStackRemote": "Tamam kutuyu bırakır.",
+    "@afterHoursCaseStackRemote": {
+        "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStackTouch": "Bırakmak için herhangi bir yere dokunun.",
+    "@afterHoursCaseStackTouch": {
+        "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurge": "Piksel Temizliği",
+    "@afterHoursPixelPurge": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+    },
+    "afterHoursPixelPurgeGenre": "Raketli blok kırma oyunu",
+    "@afterHoursPixelPurgeGenre": {
+        "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+    },
+    "afterHoursPixelPurgePitch": "Kötü bir kodlama görüntüyü bloklu bozulmalarla doldurdu ve bunlar her saniye biraz daha aşağı iniyor. Oynat düğmesini ilerleme çubuğundan sektirerek bozulmalar çubuğa ulaşmadan temizleyin.",
+    "@afterHoursPixelPurgePitch": {
+        "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+    },
+    "afterHoursPixelPurgeRemote": "Sol ve Sağ kaydırıcıyı hareket ettirir. Top kendiliğinden fırlar.",
+    "@afterHoursPixelPurgeRemote": {
+        "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeTouch": "Kaydırıcıyı hareket ettirmek için sürükleyin.",
+    "@afterHoursPixelPurgeTouch": {
+        "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursHowToPlay": "Nasıl oynanır",
+    "@afterHoursHowToPlay": {
+        "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+    },
+    "afterHoursStart": "Başla",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "afterHoursBackToGame": "Oyuna dön",
+    "@afterHoursBackToGame": {
+        "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+    },
+    "afterHoursEnemies": "Düşmanlar",
+    "@afterHoursEnemies": {
+        "description": "Heading over the enemies on an arcade game's How to play card"
+    },
+    "afterHoursObstacles": "Engeller",
+    "@afterHoursObstacles": {
+        "description": "Heading over the obstacles on an arcade game's How to play card"
+    },
+    "afterHoursPowerups": "Güçlendiriciler",
+    "@afterHoursPowerups": {
+        "description": "Heading over the powerups on an arcade game's How to play card"
+    },
+    "afterHoursCastShieldLine": "Tek vuruşu karşılayan bir kalkan.",
+    "@afterHoursCastShieldLine": {
+        "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPointsLine": "Tanesi 25 puan.",
+    "@afterHoursCastPointsLine": {
+        "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastLagBat": "Gecikme Yarasası",
+    "@afterHoursCastLagBat": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastLagBatLine": "Baş hizasında süzülür. Altından kayın.",
+    "@afterHoursCastLagBatLine": {
+        "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGremlin": "Parazit Cini",
+    "@afterHoursCastGremlin": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGremlinLine": "Yerde veya tavanda size doğru zıplar. Atlayın.",
+    "@afterHoursCastGremlinLine": {
+        "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastCable": "Kablo Yumağı",
+    "@afterHoursCastCable": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastCableLine": "Yerde veya tavanda alçakta durur. Atlayın.",
+    "@afterHoursCastCableLine": {
+        "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBanner": "Arabellek Tabelası",
+    "@afterHoursCastBanner": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBannerLine": "Tabelanın altından kayın. Direği öbür tarafta duvar.",
+    "@afterHoursCastBannerLine": {
+        "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSkipIntro": "Girişi Atla",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSkipIntroLine": "Her şeyi parçalayan üç saniyelik atılış.",
+    "@afterHoursCastSkipIntroLine": {
+        "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcorn": "Patlamış Mısır",
+    "@afterHoursCastPopcorn": {
+        "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReel": "Kaçak Makara",
+    "@afterHoursCastRollingReel": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReelLine": "Şeridinizde sizden hızlı yuvarlanır. Atlayın.",
+    "@afterHoursCastRollingReelLine": {
+        "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastUsher": "Yer Gösterici",
+    "@afterHoursCastUsher": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastUsherLine": "Size doğru yürür, bir kez şerit değiştirir.",
+    "@afterHoursCastUsherLine": {
+        "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastVelvetRope": "Kadife Halat",
+    "@afterHoursCastVelvetRope": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastVelvetRopeLine": "Alçak. Atlayın ya da şerit değiştirin.",
+    "@afterHoursCastVelvetRopeLine": {
+        "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcornCart": "Patlamış Mısır Arabası",
+    "@afterHoursCastPopcornCart": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPopcornCartLine": "Atlanamayacak kadar yüksek. Şerit değiştirin.",
+    "@afterHoursCastPopcornCartLine": {
+        "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastFrontRowPass": "Ön Sıra Bileti",
+    "@afterHoursCastFrontRowPass": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnet": "Mıknatıs",
+    "@afterHoursCastMagnet": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnetLine": "Sekiz saniye boyunca tüm şeritlerden bilet çeker.",
+    "@afterHoursCastMagnetLine": {
+        "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTicket": "Bilet",
+    "@afterHoursCastTicket": {
+        "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBug": "Parazit Böceği",
+    "@afterHoursCastBug": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBugLine": "Rastgele dolaşır.",
+    "@afterHoursCastBugLine": {
+        "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTangle": "Kablo Dolaşığı",
+    "@afterHoursCastTangle": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastTangleLine": "Fişinizi yavaşça kovalar.",
+    "@afterHoursCastTangleLine": {
+        "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastStatic": "Parazit",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStaticLine": "Ölü hücre. Her üçüncü sinyalde biri belirir.",
+    "@afterHoursCastStaticLine": {
+        "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBrick": "Güç Adaptörü",
+    "@afterHoursCastBrick": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBrickLine": "Her beşinci sinyalde bir 2×2 blok.",
+    "@afterHoursCastBrickLine": {
+        "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGhost": "Hayalet",
+    "@afterHoursCastGhost": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGhostLine": "Beş saniye boyunca kenar dışında her şeyin içinden geçer.",
+    "@afterHoursCastGhostLine": {
+        "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSnip": "Kes",
+    "@afterHoursCastSnip": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSnipLine": "Kabloyu ikiye keser, bonus puan verir.",
+    "@afterHoursCastSnipLine": {
+        "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSignal": "Sinyal",
+    "@afterHoursCastSignal": {
+        "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSignalLine": "Puan verir ve iki bölüm daha ekler.",
+    "@afterHoursCastSignalLine": {
+        "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastShelfCat": "Raf Kedisi",
+    "@afterHoursCastShelfCat": {
+        "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastShelfCatLine": "Gelen kutuya pati atar, o kutu daha hızlı kayar.",
+    "@afterHoursCastShelfCatLine": {
+        "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBluCase": "Blu-ray Kutusu",
+    "@afterHoursCastBluCase": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBluCaseLine": "Kütüphanenizden bir yapım. Taşan kısım kesilir.",
+    "@afterHoursCastBluCaseLine": {
+        "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSteelbook": "Steelbook",
+    "@afterHoursCastSteelbook": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSteelbookLine": "Her onuncu kutu. Çok daha hızlı kayar.",
+    "@afterHoursCastSteelbookLine": {
+        "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPerfect": "Kusursuz Bırakış",
+    "@afterHoursCastPerfect": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPerfectLine": "Tam üstüne indirin, yığın biraz genişler.",
+    "@afterHoursCastPerfectLine": {
+        "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBoxSet": "Kutu Seti",
+    "@afterHoursCastBoxSet": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBoxSetLine": "Art arda üç kusursuz bırakış yığını çok genişletir.",
+    "@afterHoursCastBoxSetLine": {
+        "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastDeadPixel": "Ölü Piksel",
+    "@afterHoursCastDeadPixel": {
+        "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastDeadPixelLine": "Temizlenen bloklardan düşer. Yakalarsanız kaydırıcı küçülür.",
+    "@afterHoursCastDeadPixelLine": {
+        "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastMacroblock": "Makroblok",
+    "@afterHoursCastMacroblock": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMacroblockLine": "Tek vuruşta temizlenir.",
+    "@afterHoursCastMacroblockLine": {
+        "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastKeyframe": "Anahtar Kare",
+    "@afterHoursCastKeyframe": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastKeyframeLine": "Üç vuruş alır ve bir güçlendirici bırakır.",
+    "@afterHoursCastKeyframeLine": {
+        "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastHdrLine": "Sekiz saniye boyunca iki kat geniş kaydırıcı.",
+    "@afterHoursCastHdrLine": {
+        "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBufferNet": "Arabellek",
+    "@afterHoursCastBufferNet": {
+        "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBufferNetLine": "Kaydırıcının altında, bir ıskayı kurtaran ağ.",
+    "@afterHoursCastBufferNetLine": {
+        "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursBufferRunCardTouch": "Zıplamak için dokunun, havada tekrar dokunun: taraf değişir. Kaymak için yönünüze kaydırın.",
+    "@afterHoursBufferRunCardTouch": {
+        "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+    },
+    "afterHoursPixelPurgeCardRemote": "Sol ve Sağ kaydırıcıyı hareket ettirir.",
+    "@afterHoursPixelPurgeCardRemote": {
+        "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    }
 }

@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin_design/moonfin_design.dart' show AppColorScheme;
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -20,6 +21,7 @@ import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
+import 'package:moonfin/data/models/media_segment.dart';
 import 'package:moonfin/data/repositories/calendar_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/services/background_service.dart';
@@ -42,7 +44,10 @@ import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
 import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_common.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_controller.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
@@ -57,8 +62,10 @@ import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
+import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/trickplay.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/ui/widgets/seasonal/seasonal_effects.dart';
@@ -69,6 +76,7 @@ import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
 import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
+import 'package:moonfin/util/device_hinge.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_core/playback_core.dart'
     show PlaybackManager, QueueService;
@@ -293,6 +301,10 @@ void main() {
       UserPreferences.trickPlayVerticalPositionPercent.key,
       UserPreferences.trickPlayFollowScrubPosition.key,
       UserPreferences.trickPlayPauseWhileScrubbing.key,
+      UserPreferences.mediaSegmentCountdown.key,
+      UserPreferences.nextUpTimeout.key,
+      UserPreferences.showNextAirDate.key,
+      UserPreferences.replaceSkipOutroWithNextUp.key,
     ]) {
       expect(
         SettingsPreviewController.sceneForKey(key),
@@ -720,7 +732,12 @@ void main() {
       }
       for (final key in [
         'media_segment_actions',
+        'pref_media_segment_countdown',
         'next_up_behavior',
+        'next_up_timeout',
+        'pref_show_next_air_date',
+        'replace_skip_outro_with_next_up',
+        'trickplay_pause_while_scrubbing',
         'showDescriptionOnPause',
         null,
       ]) {
@@ -1530,6 +1547,157 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('the skip button draws the countdown being tried', (
+      tester,
+    ) async {
+      final key = UserPreferences.mediaSegmentCountdown.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Countdown', prefKey: key))
+        // The countdown still shows on an intro that skips itself.
+        ..tryValue('media_segment_actions', 'intro:skip,outro:askToSkip')
+        ..tryValue(key, MediaSegmentCountdown.both);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.player);
+      final skip = find.byType(SkipSegmentOverlay);
+      final ring = find.descendant(
+        of: skip,
+        matching: find.byType(CircularProgressIndicator),
+      );
+      expect(
+        tester.widget<SkipSegmentOverlay>(skip).segment.type,
+        MediaSegmentType.intro,
+      );
+      // 0:42 into an intro that ends at 1:30, with the seconds in the ring.
+      expect(
+        find.descendant(of: skip, matching: find.text('48')),
+        findsOneWidget,
+      );
+
+      controller.tryValue(key, MediaSegmentCountdown.timer);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsOneWidget);
+      expect(ring, findsNothing);
+
+      controller.tryValue(key, MediaSegmentCountdown.progressBar);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      expect(ring, findsOneWidget);
+
+      controller.tryValue(key, MediaSegmentCountdown.none);
+      await pumpPreview(tester, controller);
+      expect(ring, findsNothing);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Next Up Timeout shows the card counting down from it', (
+      tester,
+    ) async {
+      final key = UserPreferences.nextUpTimeout.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Timeout', prefKey: key))
+        ..tryValue('pref_media_segment_countdown', MediaSegmentCountdown.timer)
+        ..tryValue(key, 15000);
+      await pumpPreview(tester, controller);
+      final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+      expect(card.nextItem, isNotNull);
+      expect(card.countsDown, isFalse);
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+      // The player hides its controls when the card comes up.
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+      // It holds where it starts instead of running out.
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+
+      controller.tryValue(key, 0);
+      await pumpPreview(tester, controller);
+      expect(find.byType(NextUpOverlay), findsOneWidget);
+      expect(find.textContaining(l10n.endsIn('')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'Show Next Air Date draws the air date card, and none when off',
+      (tester) async {
+        final key = UserPreferences.showNextAirDate.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Air Date', prefKey: key))
+          ..tryValue(key, true);
+        await pumpPreview(tester, controller);
+        final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+        expect(card.airDate, isNotNull);
+        expect(card.nextItem, isNull);
+        expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+        controller.tryValue(key, false);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+        controller
+          ..tryValue(key, true)
+          ..tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'Replace Skip Outro puts the Up Next card in the button\'s place',
+      (tester) async {
+        final key = UserPreferences.replaceSkipOutroWithNextUp.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Replace', prefKey: key))
+          ..tryValue(key, false);
+        await pumpPreview(tester, controller);
+        final skip = find.byType(SkipSegmentOverlay);
+        expect(
+          tester.widget<SkipSegmentOverlay>(skip).segment.type,
+          MediaSegmentType.outro,
+        );
+        expect(find.byType(NextUpOverlay), findsNothing);
+
+        controller.tryValue(key, true);
+        await pumpPreview(tester, controller);
+        expect(skip, findsNothing);
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        // With Next Up off there's no card to put there.
+        controller.tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(skip, findsOneWidget);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Pause While Scrubbing shows whether a scrub pauses', (
+      tester,
+    ) async {
+      final key = UserPreferences.trickPlayPauseWhileScrubbing.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Pause', prefKey: key))
+        ..tryValue('trickplay_mode', TrickplayMode.single)
+        ..tryValue(key, true);
+      await pumpPreview(tester, controller);
+      expect(find.byType(Trickplay), findsOneWidget);
+      expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+      controller.tryValue(key, false);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+      // Without trickplay the player never pauses a scrub.
+      controller
+        ..tryValue(key, true)
+        ..tryValue('trickplay_mode', TrickplayMode.disabled);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('the screensaver settings show it over Home', (tester) async {
       final controller = SettingsPreviewController()
         ..focus(
@@ -1817,6 +1985,35 @@ void main() {
       expect(find.text('2020'), findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
+
+    testWidgets('the viewer\'s own score reads in the rating style tried', (
+      tester,
+    ) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Personal Rating Style',
+            prefKey: 'pref_personal_rating_style',
+          ),
+        )
+        ..tryValue('pref_detail_screen_style', DetailScreenStyle.modern);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.details);
+      expect(find.text('8.0'), findsOneWidget);
+
+      controller.tryValue(
+        'pref_personal_rating_style',
+        PersonalRatingStyle.stars,
+      );
+      await pumpPreview(tester, controller);
+      expect(find.text('4.0/5'), findsOneWidget);
+      expect(find.text('8.0'), findsNothing);
+
+      controller.clearTry('pref_personal_rating_style');
+      await pumpPreview(tester, controller);
+      expect(find.text('8.0'), findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   for (final scale in DesktopUiScale.values) {
@@ -1865,6 +2062,64 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
   }
+
+  testWidgets('Home grows with the UI scale a picker tries', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'UI Scale',
+          prefKey: 'pref_desktop_ui_scale',
+        ),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    Finder sizedTo(double height) => find.byWidgetPredicate(
+      (widget) => widget is SizedBox && widget.height == height,
+    );
+    double textScale() => MediaQuery.textScalerOf(
+      tester.element(find.text(_fakeItems().first.title).first),
+    ).scale(1);
+
+    await pump();
+    expect(controller.scene, SettingsPreviewScene.home);
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+
+    const tried = DesktopUiScale.extraLarge;
+    controller.tryValue('pref_desktop_ui_scale', tried);
+    await pump();
+    expect(
+      sizedTo(
+        InfoArea.fixedHeight(isMobile: false, desktopScale: tried.scaleFactor),
+      ),
+      findsOneWidget,
+    );
+    expect(sizedTo(150.0 * (0.8 * tried.scaleFactor)), findsWidgets);
+    expect(textScale(), closeTo(tried.scaleFactor, 1e-9));
+    expect(
+      GetIt.instance<UserPreferences>().get(UserPreferences.desktopUiScale),
+      DesktopUiScale.medium,
+    );
+
+    controller.clearTry('pref_desktop_ui_scale');
+    await pump();
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
@@ -2762,9 +3017,11 @@ void main() {
 
   group('the calendar scene', () {
     late _Sync sync;
+    late _Calendar calendar;
 
     setUp(() {
       registerFallbackValue(DateTime(2026));
+      registerFallbackValue(<String>{});
       sync = _Sync();
       when(() => sync.pluginAvailable).thenReturn(true);
       when(() => sync.seerrAvailable).thenReturn(false);
@@ -2775,7 +3032,7 @@ void main() {
       GetIt.instance.registerSingleton<PluginSyncService>(sync);
 
       final now = DateTime.now();
-      final calendar = _Calendar();
+      calendar = _Calendar();
       when(
         () => calendar.load(
           start: any(named: 'start'),
@@ -2809,7 +3066,21 @@ void main() {
             seasonNumber: 2,
             episodeNumber: 1,
           ),
+          CalendarEntry(
+            key: 'later',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 3)),
+            hasTime: true,
+            title: 'Later Show',
+            seasonNumber: 1,
+            episodeNumber: 2,
+          ),
         ]),
+      );
+      // Only the aired show is one the user follows.
+      when(() => calendar.seriesProgress(any())).thenAnswer(
+        (_) async => {'series': const CalendarSeriesProgress(favorite: true)},
       );
       GetIt.instance.registerSingleton<CalendarRepository>(calendar);
     });
@@ -2817,6 +3088,7 @@ void main() {
     test('its settings show on it, and ones it never draws stay put', () {
       for (final key in [
         UserPreferences.calendarStyle.key,
+        UserPreferences.calendarWeekStart.key,
         UserPreferences.calendarScope.key,
         UserPreferences.calendarShowBadges.key,
         UserPreferences.calendarColorBy.key,
@@ -2830,11 +3102,10 @@ void main() {
           reason: key,
         );
       }
-      // The release types are shared with the Upcoming Movies row, week start
-      // only changes the month grid, and the select action only acts on a press.
+      // The release types are shared with the Upcoming Movies row, and the
+      // select action only acts on a press.
       for (final key in [
         UserPreferences.radarrCalendarShowCinema.key,
-        UserPreferences.calendarWeekStart.key,
         UserPreferences.calendarSelectAction.key,
       ]) {
         expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
@@ -2924,6 +3195,265 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
+
+    /// The test font draws every glyph a full em wide, so the header's tab
+    /// chips run out of room sideways. A vertical overflow still fails.
+    void ignoreSidewaysOverflow() {
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        final message = details.exceptionAsString();
+        if (!message.contains('overflowed') ||
+            !(message.contains('on the right') ||
+                message.contains('on the left'))) {
+          onError?.call(details);
+        }
+      };
+      addTearDown(() => FlutterError.onError = onError);
+    }
+
+    testWidgets('a tablet or an open folding phone keeps the phone calendar '
+        'in the small frame', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      Finder named(String type) =>
+          find.byWidgetPredicate((w) => w.runtimeType.toString() == type);
+
+      for (final (size, hinge) in [
+        (const Size(1194, 834), HingeStatus.unknown),
+        (const Size(669, 951), HingeStatus.partiallyOpen),
+      ]) {
+        tester.view.physicalSize = size;
+        DeviceHinge.debugStatus = hinge;
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Upcoming Show'), findsWidgets, reason: '$size');
+        expect(named('_Preview'), findsNothing, reason: '$size');
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Week',
+            prefKey: 'pref_calendar_week_start',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(named('_MobileCell'), findsWidgets, reason: '$size');
+        expect(named('_WideCell'), findsNothing, reason: '$size');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
+    testWidgets('half open, the picked entry fits the upper half at large '
+        'text', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      tester.view.physicalSize = const Size(669, 951);
+      tester.view.devicePixelRatio = 1.0;
+      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      DeviceHinge.debugStatus = HingeStatus.partiallyOpen;
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      final controller = CalendarController();
+      addTearDown(controller.dispose);
+      unawaited(controller.load());
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: CalendarAgendaView(controller: controller)),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Upcoming Show'), findsWidgets);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    Future<void> settle(WidgetTester tester) async {
+      // One frame starts the load and the next draws what it found.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    /// Runs [body] with the desktop preview up, [style] saved and [prefKey]
+    /// in focus.
+    Future<void> withCalendar(
+      WidgetTester tester,
+      String prefKey,
+      Future<void> Function(SettingsPreviewController controller) body, {
+      CalendarStyle style = CalendarStyle.agenda,
+    }) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.calendarStyle,
+        style,
+      );
+      // The test font's glyphs are a full em wide, so the calendar's header
+      // chips only run out of room here. Anything else still fails.
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (!details.exceptionAsString().contains('overflowed')) {
+          onError?.call(details);
+        }
+      };
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      await settle(tester);
+      expect(controller.scene, SettingsPreviewScene.calendar);
+      await body(controller);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      FlutterError.onError = onError;
+      debugDefaultTargetPlatformOverride = null;
+    }
+
+    testWidgets('a tried scope filters the list before it\'s saved', (
+      tester,
+    ) async {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      await withCalendar(tester, 'pref_calendar_scope', (controller) async {
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        controller.tryValue('pref_calendar_scope', CalendarScope.myShows);
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsNothing);
+        expect(find.text(l10n.calendarNothingUpcoming), findsOneWidget);
+        expect(
+          GetIt.instance<UserPreferences>().get(UserPreferences.calendarScope),
+          CalendarScope.everything,
+        );
+
+        controller.clearTry('pref_calendar_scope');
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsWidgets);
+      });
+    });
+
+    testWidgets('a tried Color By colors the calendar before it\'s saved', (
+      tester,
+    ) async {
+      // A film still to come takes the film color by type and the accent by
+      // status, so the two can be told apart.
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'film',
+            kind: CalendarEntryKind.movie,
+            release: CalendarRelease.digital,
+            date: DateTime.now().add(const Duration(days: 2)),
+            hasTime: false,
+            title: 'Upcoming Film',
+          ),
+        ]),
+      );
+      Finder kicker(Color color) => find.byWidgetPredicate(
+        (widget) => widget is Text && widget.style?.color == color,
+      );
+      await withCalendar(tester, 'pref_calendar_color_by', (controller) async {
+        expect(find.text('Upcoming Film'), findsWidgets);
+        expect(kicker(calendarMovieColor), findsOneWidget);
+        expect(kicker(AppColorScheme.accent), findsNothing);
+
+        controller.tryValue('pref_calendar_color_by', CalendarColorBy.status);
+        await settle(tester);
+        expect(kicker(calendarMovieColor), findsNothing);
+        expect(kicker(AppColorScheme.accent), findsOneWidget);
+      });
+    });
+
+    testWidgets('a tried Image Type shapes the week\'s cards before it\'s '
+        'saved', (tester) async {
+      Finder art(double aspectRatio) => find.byWidgetPredicate(
+        (widget) => widget is CalendarArt && widget.aspectRatio == aspectRatio,
+      );
+      await withCalendar(tester, 'pref_calendar_image_type', (
+        controller,
+      ) async {
+        expect(find.text('Later Show'), findsOneWidget);
+        expect(art(2 / 3), findsOneWidget);
+
+        controller.tryValue(
+          'pref_calendar_image_type',
+          CalendarImageType.thumb,
+        );
+        await settle(tester);
+        expect(art(2 / 3), findsNothing);
+        expect(art(16 / 9), findsNWidgets(2));
+      }, style: CalendarStyle.countdown);
+    });
+
+    testWidgets('Week Start draws the month grid from the day tried', (
+      tester,
+    ) async {
+      double left(String day) => tester.getTopLeft(find.text(day)).dx;
+      await withCalendar(tester, 'pref_calendar_week_start', (
+        controller,
+      ) async {
+        expect(find.byType(CalendarMonthScreen), findsOneWidget);
+        // Auto in English starts on Sunday.
+        expect(left('Sun'), lessThan(left('Mon')));
+
+        controller.tryValue(
+          'pref_calendar_week_start',
+          CalendarWeekStart.monday,
+        );
+        await settle(tester);
+        expect(left('Mon'), lessThan(left('Sun')));
+
+        controller.clearTry('pref_calendar_week_start');
+        await settle(tester);
+        expect(left('Sun'), lessThan(left('Mon')));
+      });
+    });
   });
 
   group('the library scene', () {

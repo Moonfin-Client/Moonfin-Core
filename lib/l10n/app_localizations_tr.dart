@@ -1851,27 +1851,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get writers => 'SENARİSTLER';
 
   @override
-  String get episodeDirector => 'Episode Director';
+  String get episodeDirector => 'Bölüm Yönetmeni';
 
   @override
   String episodeDirectorWithRole(String role) {
-    return '$role (Episode Director)';
+    return '$role (Bölüm Yönetmeni)';
   }
 
   @override
-  String get episodeWriter => 'Episode Writer';
+  String get episodeWriter => 'Bölüm Yazarı';
 
   @override
   String episodeWriterWithRole(String role) {
-    return '$role (Episode Writer)';
+    return '$role (Bölüm Yazarı)';
   }
 
   @override
-  String get guestStar => 'Guest Star';
+  String get guestStar => 'Konuk Oyuncu';
 
   @override
   String guestStarWithRole(String role) {
-    return '$role (Guest Star)';
+    return '$role (Konuk Oyuncu)';
   }
 
   @override
@@ -3412,11 +3412,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bir özel günün satırını gizlemek için işaretini kaldırın.';
 
   @override
-  String get seasonalRowAllYear => 'Show All Year';
+  String get seasonalRowAllYear => 'Tüm Yıl Göster';
 
   @override
   String get seasonalRowAllYearDescription =>
-      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+      'Tatil satırını tatil tarihleri dışında da göster. Her gün, işaretli tatillerden farklı biri gösterilir.';
 
   @override
   String get holidayNewYear => 'Yılbaşı';
@@ -3929,10 +3929,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Radarr/Sonarr Gelecek Takvimlerini Aç/Kapat.';
-
-  @override
-  String get enableRadarrCalendar => 'Radarr Gelecek Takvimini Etkinleştir';
+      'Radarr ve Sonarr satırlarının ne göstereceğini seç.';
 
   @override
   String get radarrCalendarShowCinema => 'Gelecek Sinema Vizyonlarını Göster';
@@ -3949,10 +3946,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Sunucuda Zaten Olan Filmleri Gizle';
-
-  @override
-  String get enableSonarrCalendar =>
-      'Sonarr\'ın Yaklaşanlar Takvimini Etkinleştir';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Bölüm Bilgilerini Göster';
@@ -3977,7 +3970,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get buttonShownInSyncPlayGroup =>
-      'Yalnızca bir SyncPlay grubundayken gösterilir';
+      'Yalnızca bir izleme partisi grubundayken gösterilir';
 
   @override
   String get orientationLock => 'Döndürme Kiliti';
@@ -4835,6 +4828,16 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bağlı tüm sunuculardaki kitaplıkları göster';
 
   @override
+  String get recentlyAddedAndReleased => 'Son Eklenenler ve Son Yayınlananlar';
+
+  @override
+  String get hideWatchedInRecentRows => 'İzlenenleri Gizle';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'İzlenen içerikleri Son Eklenenler ve Son Yayınlananlar ana ekran satırlarından gizle.';
+
+  @override
   String get mergeRecentRowsByType => 'Son Satırları Türe Göre Birleştir';
 
   @override
@@ -5285,6 +5288,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsExternalLists => 'Harici Listeler';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Satır Başına Ayarlar';
 
   @override
@@ -5383,22 +5389,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dimmingLevel => 'Karartma Seviyesi';
 
   @override
-  String get screensaverDuringAudio => 'Show During Music and Audiobooks';
+  String get screensaverDuringAudio => 'Müzik ve Sesli Kitaplarda Göster';
 
   @override
   String get screensaverDuringAudioDescription =>
-      'Let the screensaver start while audio plays, so cover art doesn\'t sit on screen for hours.';
+      'Ses çalarken ekran koruyucunun başlamasına izin ver; böylece kapak görseli saatlerce ekranda kalmaz.';
 
   @override
-  String get sleepAfterIdle => 'Let TV Sleep After';
+  String get sleepAfterIdle => 'TV Uykuya Geçme Süresi';
 
   @override
   String get sleepAfterIdleDescriptionAndroid =>
-      'Close Moonfin after this long without a button press so your TV\'s own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.';
+      'Bu süre boyunca hiçbir tuşa basılmazsa Moonfin kapanır; böylece TV\'nizin kendi ekran koruyucusu ve uyku zamanlayıcısı devreye girebilir. Duraklatılmış içerik önce durdurulur, böylece kaldığınız yer korunur.';
 
   @override
   String get sleepAfterIdleDescriptionAppleTv =>
-      'After this long without a button press, hand the screen back to your Apple TV\'s own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.';
+      'Bu süre boyunca hiçbir tuşa basılmazsa ekran, Apple TV\'nizin kendi ekran koruyucusuna ve uyku ayarına devredilir. Moonfin açık kalır, böylece kaldığınız yerden devam edersiniz.';
 
   @override
   String get maxAgeRating => 'Maksimum Yaş Derecelendirmesi';
@@ -5517,10 +5523,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'MDBList\'te İzleniyor';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'MDBList kullanıcılarının şu anda neler izlediğini göster';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5930,6 +5932,37 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get seerrImportingStatus => 'İçe Aktarılıyor';
+
+  @override
+  String get seerrWaitingForImport => 'İndirildi, içe aktarma bekleniyor';
+
+  @override
+  String get seerrDownloadStalled => 'Takıldı';
+
+  @override
+  String get seerrDownloadFailed => 'İndirme başarısız';
+
+  @override
+  String get seerrImportBlocked => 'İçe aktarma engellendi';
+
+  @override
+  String get seerrNotFoundYet => 'Henüz bulunamadı';
+
+  @override
+  String get seerrGetDifferentRelease => 'Farklı bir sürüm al';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service, $release sürümünü indirme istemcisinden kaldıracak, yeniden alınmaması için engelleyecek ve başka bir sürüm arayacak.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Kaldırıldı. $service başka bir sürüm arıyor.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'İndirme kaldırılamadı';
 
   @override
   String itemsCount(int count) {
@@ -11017,13 +11050,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get syncPlayRepeat => 'Tekrarla';
 
   @override
-  String get syncPlayRepeatSubtitle => 'Replay one item or the whole queue';
+  String get syncPlayRepeatSubtitle =>
+      'Bir öğeyi veya tüm kuyruğu yeniden oynat';
 
   @override
   String get syncPlayRepeatOne => 'Tek Sefer';
 
   @override
-  String get syncPlayShuffleSubtitle => 'Play the queue in order or shuffled';
+  String get syncPlayShuffleSubtitle => 'Kuyruğu sırayla veya karışık oynat';
 
   @override
   String get syncPlayShuffleModeShuffled => 'Karıştır';
@@ -11032,7 +11066,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get syncPlayShuffleModeSorted => 'Sıralanmış';
 
   @override
-  String get syncPlayParticipantYou => 'You';
+  String get syncPlayParticipantYou => 'Siz';
 
   @override
   String syncPlayGroupSubtitle(String participants, String detail) {
@@ -11040,11 +11074,11 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get syncPlayNothingQueued => 'nothing queued yet';
+  String get syncPlayNothingQueued => 'henüz kuyrukta bir şey yok';
 
   @override
   String get syncPlayOthersCanJoinHint =>
-      'Others can join from their SyncPlay screen while this group exists.';
+      'Bu grup var olduğu sürece diğerleri kendi SyncPlay ekranlarından katılabilir.';
 
   @override
   String get syncPlaySyncCurrentQueue =>
@@ -11072,8 +11106,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get syncPlayCreateNewGroup => 'Yeni bir grup oluştur';
 
   @override
-  String get syncPlayCreateGroupSubtitle =>
-      'Watch together with everyone who joins';
+  String get syncPlayCreateGroupSubtitle => 'Katılan herkesle birlikte izleyin';
 
   @override
   String get syncPlayGroupName => 'Grup adı';
@@ -11089,7 +11122,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String syncPlayAvailableGroupsCount(int count) {
-    return 'Available groups · $count';
+    return 'Kullanılabilir gruplar · $count';
   }
 
   @override
@@ -11097,7 +11130,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get syncPlayNoGroupsAvailableHint =>
-      'Groups other people create on this server will show up here.';
+      'Bu sunucuda başkalarının oluşturduğu gruplar burada görünür.';
 
   @override
   String get syncPlayJoinGroupQuestion =>
@@ -11109,7 +11142,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get syncPlayJoinReplacesQueueNote =>
-      'Joining a group may replace your current playback queue.';
+      'Bir gruba katılmak mevcut oynatma kuyruğunuzu değiştirebilir.';
 
   @override
   String get syncPlayJoin => 'Katıl';
@@ -11311,6 +11344,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get kidsModeExitSubtitle =>
       'Tam uygulamaya dönmek için PIN\'inizi girin';
+
+  @override
+  String kidsModePinToSwitchUser(String name) {
+    return '$name kullanıcısına geçmek için Çocuk Modu PIN\'ini girin';
+  }
 
   @override
   String get pinIncorrect => 'Yanlış PIN';
@@ -12004,7 +12042,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsSyncplaySubtitle =>
-      'Grup oturumları için senkronizasyon mantığı';
+      'Bu sunucudaki arkadaşlarınızla tam eşzamanlı olarak izleyin';
 
   @override
   String get settingsSkipIntrosAndOutros => 'Giriş ve Jenerikleri atlansın mı?';
@@ -12155,18 +12193,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Hızlı ileri sarma tuşuna bastıktan sonra kaç saniye ileri atlanır.';
 
   @override
-  String get settingsHideControlsAfter => 'Hide Controls After';
+  String get settingsHideControlsAfter => 'Kontrolleri Gizleme Süresi';
 
   @override
   String get settingsHideControlsAfterDescription =>
-      'How long the player controls stay on screen after your last button press, tap or mouse move.';
+      'Son tuşa basma, dokunma veya fare hareketinden sonra oynatıcı kontrollerinin ekranda ne kadar kalacağı.';
 
   @override
-  String get settingsHdrControlsDimming => 'Dim Controls in HDR';
+  String get settingsHdrControlsDimming => 'HDR\'de Kontrolleri Karart';
 
   @override
   String get settingsHdrControlsDimmingDescription =>
-      'White looks far brighter next to HDR video, so the player controls dim by this much while it plays.';
+      'Beyaz, HDR videonun yanında çok daha parlak görünür; bu yüzden video oynarken oynatıcı kontrolleri bu oranda kararır.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>
@@ -12215,53 +12253,53 @@ class AppLocalizationsTr extends AppLocalizations {
       'Canlı TV için doğrudan oynatmayı etkinleştirin';
 
   @override
-  String get settingsOpenGroups => 'Grupları Aç';
+  String get settingsOpenGroups => 'İzleme Partileri Aç';
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'SyncPlay grupları oluşturun, katılın veya yönetin';
+      'Yeni bir grup başlatın veya devam edene katılın';
 
   @override
-  String get settingsSyncplayEnabled => 'SyncPlay Etkin';
+  String get settingsSyncplayEnabled => 'İzleme Partileri';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
-      'Grup izleme özelliklerini etkinleştirin';
+      'Bu sunucudaki arkadaşlarınızla tam eşzamanlı olarak izleyin';
 
   @override
-  String get settingsSyncplayButton => 'SyncPlay Düğmesi';
+  String get settingsSyncplayButton => 'İzleme Partileri Düğmesi';
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Gezinme çubuğunda SyncPlay düğmesini göster';
+      'Gezinme çubuğunda İzleme Partileri düğmesini gösterin';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Gelişmiş Düzeltme';
 
   @override
   String get settingsSyncplayAdvancedCorrectionSubtitle =>
-      'Ayrıntılı senkronizasyon mantığını etkinleştirin';
+      'Gecikmeler ve ek sapma';
 
   @override
   String get settingsSyncplaySyncCorrection => 'Senkronizasyon Düzeltmesi';
 
   @override
   String get settingsSyncplaySyncCorrectionSubtitle =>
-      'Senkronize kalmak için oynatmayı otomatik olarak ayarlayın';
+      'Bu cihazı odayla eşzamanlı tutun';
 
   @override
   String get settingsSyncplaySpeedToSync => 'Senkronizasyon Hızı';
 
   @override
   String get settingsSyncplaySpeedToSyncSubtitle =>
-      'Senkronize etmek için oynatma hızı ayarını kullanın';
+      'Arayı kapatmak için biraz daha hızlı veya yavaş oynatın';
 
   @override
   String get settingsSyncplaySkipToSync => 'Senkronizasyona Geç';
 
   @override
   String get settingsSyncplaySkipToSyncSubtitle =>
-      'Senkronize etmek için aramayı kullanın';
+      'Fark çok açıldığında ileri atlayın';
 
   @override
   String get settingsSyncplayMinimumSpeedDelay => 'Minimum Hız Gecikmesi';
@@ -12481,6 +12519,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get homeRowsStyleModern => 'Modern';
+
+  @override
+  String get homeRowsStyleCarousel => 'Carousel';
 
   @override
   String get homeRowsSection => 'Ana Sayfa Satırları';
@@ -13213,7 +13254,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get watchPartyRoomCode => 'Oda kodu';
 
   @override
-  String get watchPartyStart => 'İzleme Partisi başlat';
+  String get watchPartyStart => 'İzleme Partisi Başlat';
 
   @override
   String get watchPartyPickTitle =>
@@ -13254,8 +13295,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Buradaki herkesin ulaştığı en erken nokta.';
 
   @override
-  String get watchPartyResumeYours =>
-      'Where you left off. Everyone starts from there.';
+  String get watchPartyResumeYours => 'Kaldığınız yer. Herkes buradan başlar.';
 
   @override
   String watchPartyResumeNotStarted(int count) {
@@ -13275,7 +13315,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get watchPartyGuestsCanPause => 'Konuklar oynatıp duraklatabilir';
 
   @override
-  String get watchPartyEnd => 'İzleme Partisini bitir';
+  String get watchPartyEnd => 'Herkes için bitir';
 
   @override
   String get watchPartyEnded => 'İzleme Partisi sona erdi.';
@@ -13289,154 +13329,154 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get watchParties => 'Watch Parties';
+  String get watchParties => 'İzleme Partileri';
 
   @override
-  String get watchPartyStartWith => 'Start parties with';
+  String get watchPartyStartWith => 'Partiyi Şununla Başlat';
 
   @override
   String get watchPartyServiceMoonbaseHint =>
-      'Chat, reactions and voting. Runs on Moonbase.';
+      'Sohbet, tepkiler ve oylama. Moonbase üzerinde çalışır.';
 
   @override
   String get watchPartyServiceSyncPlayHint =>
-      'Jellyfin\'s own. Friends on other Jellyfin apps can join.';
+      'Jellyfin\'in kendi özelliği. Diğer Jellyfin uygulamalarındaki arkadaşlarınız da katılabilir.';
 
   @override
   String get watchPartyServiceNote =>
-      'You can join rooms of both kinds. This only picks what you start.';
+      'Her iki türdeki odalara katılabilirsiniz. Bu seçim yalnızca sizin başlatacağınız türü belirler.';
 
   @override
-  String get watchPartyDuringParty => 'During a party';
+  String get watchPartyDuringParty => 'Parti sırasında';
 
   @override
-  String get watchPartyChatOverlay => 'Show chat over the video';
+  String get watchPartyChatOverlay => 'Sohbeti videonun üzerinde göster';
 
   @override
   String get watchPartyChatOverlaySubtitle =>
-      'New messages show for a few seconds';
+      'Yeni mesajlar birkaç saniye görünür';
 
   @override
-  String get watchPartyAlerts => 'Party alerts';
+  String get watchPartyAlerts => 'Parti bildirimleri';
 
   @override
   String get watchPartyAlertsSubtitle =>
-      'Tell me when someone on this server starts one';
+      'Bu sunucuda biri parti başlattığında bana haber ver';
 
   @override
-  String get watchPartyJoinWithCode => 'Join with a code';
+  String get watchPartyJoinWithCode => 'Kodla katıl';
 
   @override
-  String get watchPartyOnThisServer => 'On this server';
+  String get watchPartyOnThisServer => 'Bu sunucuda';
 
   @override
   String watchPartyCountOnServer(int count) {
-    return '$count on this server';
+    return 'Bu sunucuda $count';
   }
 
   @override
   String get watchPartyRoomsHint =>
-      'You need access to the item to join. A room closes when its last person leaves.';
+      'Katılmak için öğeye erişiminizin olması gerekir. Oda, son kişi ayrıldığında kapanır.';
 
   @override
   String get watchPartyRoomsEmpty =>
-      'Parties you can watch show up here. Got a code from someone? Pick Join with a code.';
+      'İzleyebileceğiniz partiler burada görünür. Birinden kod mu aldınız? Kodla katıl\'ı seçin.';
 
   @override
   String get watchPartyPasteHint =>
-      'Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.';
+      'Buraya davet bağlantısı yapıştırmak da işe yarar. Telefonda bağlantı, Moonfin\'i doğrudan partiye açar.';
 
   @override
   String watchPartyWatchingCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count watching',
-      one: '$count watching',
+      other: '$count kişi izliyor',
+      one: '$count kişi izliyor',
     );
     return '$_temp0';
   }
 
   @override
   String watchPartyHostsParty(String name) {
-    return '$name\'s party';
+    return '$name Partisi';
   }
 
   @override
-  String get watchPartyEveryoneControlsShort => 'Everyone controls';
+  String get watchPartyEveryoneControlsShort => 'Herkes kontrol eder';
 
   @override
-  String get watchPartyVotingNow => 'Voting on what to watch';
+  String get watchPartyVotingNow => 'Ne izleneceği oylanıyor';
 
   @override
   String get watchPartyNeedsMoonbase =>
-      'Watch Parties need Moonbase on this server';
+      'İzleme Partileri için bu sunucuda Moonbase gerekir';
 
   @override
   String get watchPartyNeedsMoonbaseHint =>
-      'Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.';
+      'Sunucuyu yöneten kişiden Moonbase eklentisini kurmasını isteyin. Jellyfin\'de SyncPlay bu olmadan da çalışır.';
 
   @override
-  String get watchPartyWrongPin => 'That PIN didn\'t work. Try again.';
+  String get watchPartyWrongPin => 'Bu PIN çalışmadı. Tekrar deneyin.';
 
   @override
-  String get watchPartyTooManyTries => 'Too many tries. Wait a minute.';
+  String get watchPartyTooManyTries =>
+      'Çok fazla deneme yapıldı. Bir dakika bekleyin.';
 
   @override
-  String get watchPartyFull => 'This party is full.';
+  String get watchPartyFull => 'Bu parti dolu.';
 
   @override
-  String get watchPartyNoSuchCode => 'No room has that code.';
+  String get watchPartyNoSuchCode => 'Bu koda sahip bir oda yok.';
 
   @override
-  String get watchPartyNoAccess =>
-      'You don\'t have access to what they\'re watching.';
+  String get watchPartyNoAccess => 'İzledikleri içeriğe erişiminiz yok.';
 
   @override
-  String get watchPartyRemoved => 'The host removed you from the party.';
+  String get watchPartyRemoved => 'Ev sahibi sizi partiden çıkardı.';
 
   @override
-  String get watchPartyYours => 'Your watch party';
+  String get watchPartyYours => 'İzleme partiniz';
 
   @override
   String get watchPartyInviteHint =>
-      'Paste it in any chat. It opens a page on this server with an Open in Moonfin button.';
+      'Herhangi bir sohbete yapıştırın. Bu sunucuda, Moonfin\'de Aç düğmesi olan bir sayfa açılır.';
 
   @override
-  String get watchPartySendInvite => 'Send the invite';
+  String get watchPartySendInvite => 'Daveti gönderin';
 
   @override
   String get watchPartyScanInvite =>
-      'Scan with your phone to get the invite link, then send it from there. Or just share the code.';
+      'Davet bağlantısını almak için telefonunuzla tarayın, ardından oradan gönderin. Ya da kodu paylaşın.';
 
   @override
   String get watchPartyStartsTogether =>
-      'Play waits for everyone\'s player, 10 seconds at most, then counts down 3, 2, 1.';
+      'Oynatma herkesin oynatıcısını bekler (en fazla 10 saniye), ardından 3, 2, 1 diye geri sayar.';
 
   @override
-  String get watchPartyStatusInSync => 'In sync';
+  String get watchPartyStatusInSync => 'Senkronize';
 
   @override
-  String get watchPartyStatusCatchingUp => 'Catching up';
+  String get watchPartyStatusCatchingUp => 'Yetişiyor';
 
   @override
-  String get watchPartyStatusBuffering => 'Buffering';
+  String get watchPartyStatusBuffering => 'Arabelleğe alınıyor';
 
   @override
-  String get watchPartyStatusNotWatching => 'Not watching';
+  String get watchPartyStatusNotWatching => 'İzlemiyor';
 
   @override
-  String get watchPartyStatusReady => 'Ready';
+  String get watchPartyStatusReady => 'Hazır';
 
   @override
-  String get watchPartyStatusJoining => 'Joining';
+  String get watchPartyStatusJoining => 'Katılıyor';
 
   @override
-  String get watchPartyHost => 'Host';
+  String get watchPartyHost => 'Ev sahibi';
 
   @override
   String watchPartyWaitingFor(String name) {
-    return 'Waiting for $name\'s player';
+    return '$name kişisinin oynatıcısı bekleniyor';
   }
 
   @override
@@ -13444,156 +13484,156 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Waiting for $count players',
-      one: 'Waiting for $count player',
+      other: '$count oynatıcı bekleniyor',
+      one: '$count oynatıcı bekleniyor',
     );
     return '$_temp0';
   }
 
   @override
   String watchPartyStartingAnyway(int seconds) {
-    return 'Starting anyway in $seconds s';
+    return '$seconds sn içinde yine de başlıyor';
   }
 
   @override
-  String get watchPartyStartingTogether => 'Starting together';
+  String get watchPartyStartingTogether => 'Birlikte başlıyor';
 
   @override
   String watchPartyToastPaused(String name) {
-    return '$name paused';
+    return '$name duraklattı';
   }
 
   @override
   String watchPartyToastResumed(String name) {
-    return '$name resumed';
+    return '$name devam ettirdi';
   }
 
   @override
   String watchPartyToastSkipped(String name, String time) {
-    return '$name skipped to $time';
+    return '$name $time konumuna atladı';
   }
 
   @override
   String watchPartyToastJoined(String name) {
-    return '$name joined';
+    return '$name katıldı';
   }
 
   @override
   String watchPartyToastLeft(String name) {
-    return '$name left';
+    return '$name ayrıldı';
   }
 
   @override
   String watchPartyToastSwitched(String name, String title) {
-    return '$name switched to $title';
+    return '$name $title içeriğine geçti';
   }
 
   @override
-  String get watchPartyToastYouAreHost => 'You\'re the host now';
+  String get watchPartyToastYouAreHost => 'Artık ev sahibisiniz';
 
   @override
   String watchPartyToastNewHost(String name) {
-    return '$name is the host now';
+    return '$name artık ev sahibi';
   }
 
   @override
   String get watchPartyToastEveryoneControls =>
-      'Everyone can control playback now';
+      'Artık herkes oynatmayı kontrol edebilir';
 
   @override
   String get watchPartyToastHostControls =>
-      'Only the host controls playback now';
+      'Artık oynatmayı yalnızca ev sahibi kontrol ediyor';
 
   @override
   String get watchPartyOnlyHostControls =>
-      'Only the host can control playback.';
+      'Oynatmayı yalnızca ev sahibi kontrol edebilir.';
 
   @override
-  String get watchPartyToastReconnecting => 'Reconnecting to the party...';
+  String get watchPartyToastReconnecting => 'Partiye yeniden bağlanılıyor...';
 
   @override
-  String get watchPartyToastReconnected => 'Back in the party';
+  String get watchPartyToastReconnected => 'Partiye geri döndünüz';
 
   @override
   String watchPartyToastEnded(String name) {
-    return '$name ended the party';
+    return '$name partiyi sonlandırdı';
   }
 
   @override
-  String get watchPartyChat => 'Chat';
+  String get watchPartyChat => 'Sohbet';
 
   @override
-  String get watchPartySendToParty => 'Send to the party';
+  String get watchPartySendToParty => 'Partiye gönder';
 
   @override
-  String get watchPartyBackToClose => 'Back to close';
+  String get watchPartyBackToClose => 'Kapatmak için Geri';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Yaz';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
 
   @override
-  String get watchPartyReplyNoWay => 'No way';
+  String get watchPartyReplyNoWay => 'Olamaz';
 
   @override
-  String get watchPartyReplyPausePlease => 'Pause please';
+  String get watchPartyReplyPausePlease => 'Duraklat lütfen';
 
   @override
-  String get watchPartyReplyBrb => 'Brb';
+  String get watchPartyReplyBrb => 'Hemen dönerim';
 
   @override
-  String get watchPartyReplyAgain => 'Again!';
+  String get watchPartyReplyAgain => 'Bir daha!';
 
   @override
-  String get watchPartyReactionLove => 'Love';
+  String get watchPartyReactionLove => 'Aşk';
 
   @override
   String get watchPartyReactionHaha => 'Haha';
 
   @override
-  String get watchPartyReactionWow => 'Wow';
+  String get watchPartyReactionWow => 'Vay';
 
   @override
-  String get watchPartyReactionSad => 'Sad';
+  String get watchPartyReactionSad => 'Üzgün';
 
   @override
-  String get watchPartyReactionFire => 'Fire';
+  String get watchPartyReactionFire => 'Ateş';
 
   @override
-  String get watchPartyReactionPopcorn => 'Popcorn';
+  String get watchPartyReactionPopcorn => 'Patlamış mısır';
 
   @override
-  String get watchPartyMakeHost => 'Make host';
+  String get watchPartyMakeHost => 'Ev sahibi yap';
 
   @override
-  String get watchPartyEveryoneControls => 'Everyone can control playback';
+  String get watchPartyEveryoneControls => 'Herkes oynatmayı kontrol edebilir';
 
   @override
   String get watchPartyEveryoneControlsHint =>
-      'Anyone can play, pause and skip';
+      'Herkes oynatabilir, duraklatabilir ve atlayabilir';
 
   @override
-  String get watchPartyRoomPin => 'Room PIN';
+  String get watchPartyRoomPin => 'Oda PIN\'i';
 
   @override
-  String get watchPartyRoomPinHint => 'Ask for a PIN before anyone joins';
+  String get watchPartyRoomPinHint => 'Kimse katılmadan önce PIN iste';
 
   @override
-  String get watchPartyPinDigits => '4 to 8 digits';
+  String get watchPartyPinDigits => '4 ila 8 haneli';
 
   @override
-  String get watchPartyLeave => 'Leave';
+  String get watchPartyLeave => 'Ayrıl';
 
   @override
   String watchPartyLeaveHandsOver(String name) {
-    return 'Leave · $name hosts';
+    return 'Ayrıl · Ev sahibi: $name';
   }
 
   @override
   String watchPartyStartedBy(String name) {
-    return '$name started a watch party';
+    return '$name bir izleme partisi başlattı';
   }
 
   @override
@@ -13601,18 +13641,19 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$title · $count in the lobby',
-      one: '$title · $count in the lobby',
+      other: '$title · lobide $count kişi',
+      one: '$title · lobide $count kişi',
     );
     return '$_temp0';
   }
 
   @override
-  String get watchPartyFirstOnHome => 'It\'s first in Watch Parties on Home';
+  String get watchPartyFirstOnHome =>
+      'Ana Ekrandaki İzleme Partileri\'nde ilk sırada';
 
   @override
   String watchPartyAddServerQuestion(String address) {
-    return 'This invite is for a server you have not added yet, $address. Add it and sign in to join.';
+    return 'Bu davet, henüz eklemediğiniz bir sunucuya ait: $address. Katılmak için sunucuyu ekleyip oturum açın.';
   }
 
   @override
@@ -15517,34 +15558,34 @@ class AppLocalizationsTr extends AppLocalizations {
       'HDR\'de beyaz renkler SDR\'ye göre çok daha parlaktır; bu nedenle buradaki daha sönük bir stil göz almasını (parlama yapar) engeller';
 
   @override
-  String get subtitleBold => 'Bold Text';
+  String get subtitleBold => 'Kalın Metin';
 
   @override
-  String get subtitleStrokeWidth => 'Text Stroke Width';
+  String get subtitleStrokeWidth => 'Metin Kontur Kalınlığı';
 
   @override
-  String get subtitleFont => 'Font';
+  String get subtitleFont => 'Yazı Tipi';
 
   @override
   String get subtitleFontDescription =>
-      'Fonts are downloaded from Google Fonts the first time you pick them';
+      'Yazı tipleri, ilk kez seçtiğinizde Google Fonts\'tan indirilir';
 
   @override
   String subtitleFontDownloadFailed(String font) {
-    return 'Couldn\'t download $font';
+    return '$font indirilemedi';
   }
 
   @override
-  String get subtitleShadow => 'Text Shadow';
+  String get subtitleShadow => 'Metin Gölgesi';
 
   @override
-  String get subtitleShadowIntensity => 'Shadow Intensity';
+  String get subtitleShadowIntensity => 'Gölge Yoğunluğu';
 
   @override
-  String get subtitleShadowOffset => 'Shadow Offset';
+  String get subtitleShadowOffset => 'Gölge Uzaklığı';
 
   @override
-  String get subtitleShadowBlur => 'Shadow Blur';
+  String get subtitleShadowBlur => 'Gölge Bulanıklığı';
 
   @override
   String get scrollSensitivity => 'Kaydırma Hassasiyeti';
@@ -15642,6 +15683,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get setupRowsModernHint =>
       'Başlıkları altında olan daha büyük kartlar.';
+
+  @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
 
   @override
   String get setupDetailClassicHint =>
@@ -15872,11 +15917,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kitap ve sesli kitap kütüphanelerinizde Open Library ve LibriVox başlıklarına göz atın';
 
   @override
-  String get bookFoldersAsSeries => 'Treat book folders as series';
+  String get bookFoldersAsSeries => 'Kitap klasörlerini seri olarak ele al';
 
   @override
   String get bookFoldersAsSeriesDescription =>
-      'Treat folders containing books as series instead of relying on the individual books\' metadata';
+      'Tek tek kitapların meta verilerine güvenmek yerine, kitap içeren klasörleri seri olarak ele al';
 
   @override
   String get autoDownloadNewEpisodes => 'Yeni bölümleri otomatik indir';
@@ -15984,18 +16029,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kendi indirdiğiniz bölüm ve filmlerin ne zaman kaldırılacağı. Yalnızca bunu açtıktan sonra izlediğiniz öğeler kaldırılır';
 
   @override
-  String get removeWatchedAsk => 'Ask me';
+  String get removeWatchedAsk => 'Bana sor';
 
   @override
-  String get deleteFinishedDownloadTitle => 'Delete this download?';
+  String get deleteFinishedDownloadTitle => 'Bu indirme silinsin mi?';
 
   @override
   String deleteFinishedDownloadMessage(String title) {
-    return 'You finished $title. Delete its download to free up space, or keep it and stop asking.';
+    return '$title içeriğini izlemeyi bitirdiniz. Yer açmak için indirmesini silebilir ya da saklayıp bir daha sorulmamasını seçebilirsiniz.';
   }
 
   @override
-  String get notNow => 'Not Now';
+  String get notNow => 'Şimdi Değil';
 
   @override
   String get keepDownloaded => 'İndirilmiş Tut';
@@ -16400,7 +16445,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsPlaybackSubtitle =>
-      'Oynatıcı, kalite, ses, altyazılar, atlama ve SyncPlay';
+      'Oynatıcı, kalite, ses, altyazılar, atlama ve izleme partileri';
 
   @override
   String get settingsStorageSubtitle =>
@@ -16440,10 +16485,36 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsSkippingAndQueueSection => 'Atlama ve Sıra';
 
   @override
-  String get settingsWatchTogetherSection => 'Birlikte İzleme';
+  String get settingsWatchTogetherSection => 'İzleme Partileri';
 
   @override
   String get settingsAdvancedSection => 'Gelişmiş';
+
+  @override
+  String get settingsDecodingAndRenderingSection =>
+      'Kod Çözme ve Görüntü İşleme';
+
+  @override
+  String get settingsAudioStreamSection => 'Ses Akışı';
+
+  @override
+  String get settingsAudioOutputSection => 'Ses Çıkışı';
+
+  @override
+  String get settingsPassthroughSettingsSection => 'Doğrudan Aktarım Ayarları';
+
+  @override
+  String get settingsSeerrHomePageRowsSection => 'Seerr Ana Sayfa Satırları';
+
+  @override
+  String get settingsSavedCustomHomeRowsSection =>
+      'Kayıtlı Özel Ana Ekran Satırları';
+
+  @override
+  String get settingsRewatchSection => 'Yeniden İzle';
+
+  @override
+  String get favoritesSwitchViewSection => 'Görünümü Değiştir';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17157,7 +17228,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get siloPinUnlock => 'Kilidi aç';
 
   @override
-  String get siloPinRemember => 'Remember PIN on this device';
+  String get siloPinRemember => 'Bu cihazda PIN\'i hatırla';
 
   @override
   String get siloPinWrong => 'Bu PIN doğru değil.';
@@ -17473,6 +17544,71 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsPreviewNotShown => 'Önizlemede gösterilmez';
 
   @override
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
+    return 'Albümler, Sanatçılar ve Ses Oynatma Listeleri kapalı. Birini göstermek için Satırlar bölümüne gidin, $disabled altında $group öğesini açın ve etkinleştirin.';
+  }
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'Ana Ekranda Albümleri, Sanatçıları veya Ses Oynatma Listelerini görmek için önce $setting ayarını açın. Ardından Satırlar bölümüne gidin, $disabled altında $group öğesini açın ve birini etkinleştirin.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRows(
+    String group,
+    String disabled,
+  ) {
+    return 'Koleksiyonlar satırı kapalı. Göstermek için Satırlar bölümüne gidin, $disabled altında $group öğesini açın ve etkinleştirin.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'Ana Ekranda Koleksiyonlar satırını görmek için önce $setting ayarını açın. Ardından Satırlar bölümüne gidin, $disabled altında $group öğesini açın ve etkinleştirin.';
+  }
+
+  @override
+  String get settingsPreviewRowsOffInKidsMode =>
+      'Çocuk Modu bu satırları Ana Ekranda göstermez; bu nedenle bu ayarlar Ana Ekranı değiştirmez.';
+
+  @override
+  String settingsPreviewNeedsRowInRows(String disabled) {
+    return 'Satırlar bölümünde, $disabled altından bir satırı açın';
+  }
+
+  @override
+  String settingsPreviewNeedsSwitchAndRow(String setting) {
+    return '$setting ayarını açın, ardından Satırlar bölümünden bir satırı açın';
+  }
+
+  @override
+  String get settingsPreviewKeptOffByKidsMode =>
+      'Çocuk Modu bunu Ana Ekranda göstermez';
+
+  @override
+  String get settingsPreviewAudioRowsEmpty =>
+      'Gösterilecek müzik yok, bu yüzden Ana Ekran bu satırları dışarıda bırakır.';
+
+  @override
+  String get settingsPreviewRowsEmpty =>
+      'Bu satırlarda gösterilecek bir şey yok, bu yüzden Ana Ekran bunları dışarıda bırakır.';
+
+  @override
+  String get settingsPreviewCollectionsEmpty =>
+      'Gösterilecek koleksiyon yok, bu yüzden Ana Ekran bu satırı dışarıda bırakır.';
+
+  @override
+  String get settingsPreviewShowEpisodesNote =>
+      'Bu yalnızca Satırlar bölümünde eklenen tek bir koleksiyonun satırlarını değiştirir. Koleksiyonlar satırı aynı görünür.';
+
+  @override
   String get settingsPreviewSaved => 'Kaydedildi';
 
   @override
@@ -17717,18 +17853,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sonraki bölüm henüz kütüphanenizde değilse, bölüm sonu kartında ne zaman yayınlanacağı gösterilir';
 
   @override
-  String get afterHoursTitle => 'After Hours';
+  String get afterHoursTitle => 'Mesai Sonrası';
 
   @override
-  String get afterHoursUnlocked => 'After Hours unlocked';
+  String get afterHoursUnlocked => 'Mesai Sonrası açıldı';
 
   @override
   String afterHoursPressesLeft(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count more presses',
-      one: '1 more press',
+      other: '$count basış daha',
+      one: '1 basış daha',
     );
     return '$_temp0';
   }
@@ -17738,367 +17874,371 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count more taps',
-      one: '1 more tap',
+      other: '$count dokunuş daha',
+      one: '1 dokunuş daha',
     );
     return '$_temp0';
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'Oyna';
 
   @override
-  String get afterHoursLeaderboards => 'Leaderboards';
+  String get afterHoursLeaderboards => 'Liderlik Tabloları';
 
   @override
-  String get afterHoursTop3 => 'Top 3';
+  String get afterHoursTop3 => 'İlk 3';
 
   @override
   String afterHoursScoresFrom(String server) {
-    return 'Scores from $server';
+    return '$server sunucusundaki puanlar';
   }
 
   @override
-  String get afterHoursScoresOnDevice => 'Scores on this device';
+  String get afterHoursScoresOnDevice => 'Bu cihazdaki puanlar';
 
   @override
-  String get afterHoursGameOver => 'Game over';
+  String get afterHoursGameOver => 'Oyun bitti';
 
   @override
   String afterHoursNewRank(int rank) {
-    return 'New #$rank on the board';
+    return 'Tabloda yeni #$rank';
   }
 
   @override
-  String get afterHoursPlayAgain => 'Play again';
+  String get afterHoursPlayAgain => 'Tekrar oyna';
 
   @override
-  String get afterHoursBackToArcade => 'Back to the arcade';
+  String get afterHoursBackToArcade => 'Oyun salonuna dön';
 
   @override
-  String get afterHoursArcade => 'Arcade';
+  String get afterHoursArcade => 'Salon';
 
   @override
-  String get afterHoursLandscapeNote => 'Turns to landscape while you play';
+  String get afterHoursLandscapeNote => 'Oynarken ekran yatay konuma döner';
 
   @override
-  String get afterHoursTouch => 'Touch';
+  String get afterHoursTouch => 'Dokunmatik';
 
   @override
-  String get afterHoursNewTag => 'NEW';
+  String get afterHoursNewTag => 'YENİ';
 
   @override
-  String get afterHoursNoScores => 'No scores yet';
+  String get afterHoursNoScores => 'Henüz puan yok';
 
   @override
-  String get afterHoursPerfect => 'PERFECT';
+  String get afterHoursPerfect => 'MÜKEMMEL';
 
   @override
-  String get afterHoursBoxSet => 'BOX SET';
+  String get afterHoursBoxSet => 'KUTU SETİ';
 
   @override
-  String get afterHoursBufferRun => 'Buffer Run';
+  String get afterHoursBufferRun => 'Arabellek Koşusu';
 
   @override
-  String get afterHoursBufferRunGenre => 'Endless runner with a gravity flip';
+  String get afterHoursBufferRunGenre =>
+      'Yerçekimini ters çeviren sonsuz koşu oyunu';
 
   @override
   String get afterHoursBufferRunPitch =>
-      'The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.';
+      'Yükleme ekranındaki koşucunun sonunda gidecek bir yeri var. Çift zıplama ve yerçekimi çevirme onu tavana taşır.';
 
   @override
   String get afterHoursBufferRunRemote =>
-      'OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.';
+      'Tamam zıplar, havada tekrar taraf değiştirir. Aşağı kayar. Tavanda Yukarı/Aşağı ters çalışır.';
 
   @override
   String get afterHoursBufferRunTouch =>
-      'Tap to jump, and tap again in the air to flip. Swipe toward the side you\'re running on to slide.';
+      'Dokunarak zıplayın; havada tekrar dokunarak taraf değiştirin. Kaymak için yönünüze kaydırın.';
 
   @override
-  String get afterHoursFastForward => 'Fast Forward';
+  String get afterHoursFastForward => 'İleri Sar';
 
   @override
-  String get afterHoursFastForwardGenre => 'Three-lane runner';
+  String get afterHoursFastForwardGenre => 'Üç şeritli koşu oyunu';
 
   @override
   String get afterHoursFastForwardPitch =>
-      'A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don\'t move for anyone.';
+      'Üç lobi koridorunda bir koşu. Alçak engelleri atlayın ve patlamış mısır arabalarının kimse için kıpırdamadığını unutmayın.';
 
   @override
   String get afterHoursFastForwardRemote =>
-      'Up and Down change lanes. OK jumps.';
+      'Yukarı ve Aşağı şerit değiştirir. Tamam zıplar.';
 
   @override
   String get afterHoursFastForwardTouch =>
-      'Swipe up or down to change lanes. Tap to jump.';
+      'Şerit değiştirmek için yukarı veya aşağı kaydırın. Zıplamak için dokunun.';
 
   @override
-  String get afterHoursCableCrawl => 'Cable Crawl';
+  String get afterHoursCableCrawl => 'Kablo Yılanı';
 
   @override
-  String get afterHoursCableCrawlGenre => 'Grid crawler';
+  String get afterHoursCableCrawlGenre => 'Izgara üzerinde yılan tarzı oyun';
 
   @override
   String get afterHoursCableCrawlPitch =>
-      'Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.';
+      'Bir HDMI kablosunu TV ünitesinin arkasında yönlendirip sinyale bağlayın. Her sinyal çubuğu kabloyu uzatır.';
 
   @override
   String get afterHoursCableCrawlRemote =>
-      'Arrows turn. The cable never stops.';
+      'Oklar yön değiştirir. Kablo hiç durmaz.';
 
   @override
-  String get afterHoursCableCrawlTouch => 'Swipe to turn.';
+  String get afterHoursCableCrawlTouch => 'Yön değiştirmek için kaydırın.';
 
   @override
-  String get afterHoursCaseStack => 'Case Stack';
+  String get afterHoursCaseStack => 'Kutu İstifi';
 
   @override
-  String get afterHoursCaseStackGenre => 'One-button stacker';
+  String get afterHoursCaseStackGenre => 'Tek tuşlu istifleme oyunu';
 
   @override
   String get afterHoursCaseStackPitch =>
-      'Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.';
+      'Raf boyunda bir Blu-ray kutusu kulesi kurun; her kutu kendi kütüphanenizden bir yapım. Kenardan taşan kısım kesilir, bu yüzden tam üstüne indirin.';
 
   @override
-  String get afterHoursCaseStackRemote => 'OK drops the case.';
+  String get afterHoursCaseStackRemote => 'Tamam kutuyu bırakır.';
 
   @override
-  String get afterHoursCaseStackTouch => 'Tap anywhere to drop.';
+  String get afterHoursCaseStackTouch =>
+      'Bırakmak için herhangi bir yere dokunun.';
 
   @override
-  String get afterHoursPixelPurge => 'Pixel Purge';
+  String get afterHoursPixelPurge => 'Piksel Temizliği';
 
   @override
-  String get afterHoursPixelPurgeGenre => 'Paddle breaker';
+  String get afterHoursPixelPurgeGenre => 'Raketli blok kırma oyunu';
 
   @override
   String get afterHoursPixelPurgePitch =>
-      'A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.';
+      'Kötü bir kodlama görüntüyü bloklu bozulmalarla doldurdu ve bunlar her saniye biraz daha aşağı iniyor. Oynat düğmesini ilerleme çubuğundan sektirerek bozulmalar çubuğa ulaşmadan temizleyin.';
 
   @override
   String get afterHoursPixelPurgeRemote =>
-      'Left and Right slide the scrubber. The ball launches on its own.';
+      'Sol ve Sağ kaydırıcıyı hareket ettirir. Top kendiliğinden fırlar.';
 
   @override
-  String get afterHoursPixelPurgeTouch => 'Drag to slide the scrubber.';
+  String get afterHoursPixelPurgeTouch =>
+      'Kaydırıcıyı hareket ettirmek için sürükleyin.';
 
   @override
-  String get afterHoursHowToPlay => 'How to play';
+  String get afterHoursHowToPlay => 'Nasıl oynanır';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'Başla';
 
   @override
-  String get afterHoursBackToGame => 'Back to the game';
+  String get afterHoursBackToGame => 'Oyuna dön';
 
   @override
-  String get afterHoursEnemies => 'Enemies';
+  String get afterHoursEnemies => 'Düşmanlar';
 
   @override
-  String get afterHoursObstacles => 'Obstacles';
+  String get afterHoursObstacles => 'Engeller';
 
   @override
-  String get afterHoursPowerups => 'Powerups';
+  String get afterHoursPowerups => 'Güçlendiriciler';
 
   @override
-  String get afterHoursCastShieldLine => 'A shield that takes one hit.';
+  String get afterHoursCastShieldLine => 'Tek vuruşu karşılayan bir kalkan.';
 
   @override
-  String get afterHoursCastPointsLine => '25 points a piece.';
+  String get afterHoursCastPointsLine => 'Tanesi 25 puan.';
 
   @override
-  String get afterHoursCastLagBat => 'Lag Bat';
+  String get afterHoursCastLagBat => 'Gecikme Yarasası';
 
   @override
   String get afterHoursCastLagBatLine =>
-      'Swoops in at head height. Slide under it.';
+      'Baş hizasında süzülür. Altından kayın.';
 
   @override
-  String get afterHoursCastGremlin => 'Static Gremlin';
+  String get afterHoursCastGremlin => 'Parazit Cini';
 
   @override
   String get afterHoursCastGremlinLine =>
-      'Hops along the floor or the ceiling toward you. Jump it.';
+      'Yerde veya tavanda size doğru zıplar. Atlayın.';
 
   @override
-  String get afterHoursCastCable => 'Cable Coil';
+  String get afterHoursCastCable => 'Kablo Yumağı';
 
   @override
   String get afterHoursCastCableLine =>
-      'Low on the floor or the ceiling. Jump it.';
+      'Yerde veya tavanda alçakta durur. Atlayın.';
 
   @override
-  String get afterHoursCastBanner => 'Buffering Banner';
+  String get afterHoursCastBanner => 'Arabellek Tabelası';
 
   @override
   String get afterHoursCastBannerLine =>
-      'Slide under the sign. Its pole is a wall on the other side.';
+      'Tabelanın altından kayın. Direği öbür tarafta duvar.';
 
   @override
-  String get afterHoursCastSkipIntro => 'Skip Intro';
+  String get afterHoursCastSkipIntro => 'Girişi Atla';
 
   @override
   String get afterHoursCastSkipIntroLine =>
-      'Three seconds of dash that smashes anything.';
+      'Her şeyi parçalayan üç saniyelik atılış.';
 
   @override
-  String get afterHoursCastPopcorn => 'Popcorn';
+  String get afterHoursCastPopcorn => 'Patlamış Mısır';
 
   @override
-  String get afterHoursCastRollingReel => 'Loose Reel';
+  String get afterHoursCastRollingReel => 'Kaçak Makara';
 
   @override
   String get afterHoursCastRollingReelLine =>
-      'Rolls down your lane faster than you run. Jump it.';
+      'Şeridinizde sizden hızlı yuvarlanır. Atlayın.';
 
   @override
-  String get afterHoursCastUsher => 'Usher';
+  String get afterHoursCastUsher => 'Yer Gösterici';
 
   @override
   String get afterHoursCastUsherLine =>
-      'Walks toward you and changes lanes once.';
+      'Size doğru yürür, bir kez şerit değiştirir.';
 
   @override
-  String get afterHoursCastVelvetRope => 'Velvet Rope';
+  String get afterHoursCastVelvetRope => 'Kadife Halat';
 
   @override
-  String get afterHoursCastVelvetRopeLine => 'Low. Jump it or change lanes.';
+  String get afterHoursCastVelvetRopeLine =>
+      'Alçak. Atlayın ya da şerit değiştirin.';
 
   @override
-  String get afterHoursCastPopcornCart => 'Popcorn Cart';
+  String get afterHoursCastPopcornCart => 'Patlamış Mısır Arabası';
 
   @override
-  String get afterHoursCastPopcornCartLine => 'Too tall to jump. Change lanes.';
+  String get afterHoursCastPopcornCartLine =>
+      'Atlanamayacak kadar yüksek. Şerit değiştirin.';
 
   @override
-  String get afterHoursCastFrontRowPass => 'Front Row Pass';
+  String get afterHoursCastFrontRowPass => 'Ön Sıra Bileti';
 
   @override
-  String get afterHoursCastMagnet => 'Magnet';
+  String get afterHoursCastMagnet => 'Mıknatıs';
 
   @override
   String get afterHoursCastMagnetLine =>
-      'Pulls in tickets from every lane for eight seconds.';
+      'Sekiz saniye boyunca tüm şeritlerden bilet çeker.';
 
   @override
-  String get afterHoursCastTicket => 'Ticket';
+  String get afterHoursCastTicket => 'Bilet';
 
   @override
-  String get afterHoursCastBug => 'Interference Bug';
+  String get afterHoursCastBug => 'Parazit Böceği';
 
   @override
-  String get afterHoursCastBugLine => 'Wanders at random.';
+  String get afterHoursCastBugLine => 'Rastgele dolaşır.';
 
   @override
-  String get afterHoursCastTangle => 'Tangle';
+  String get afterHoursCastTangle => 'Kablo Dolaşığı';
 
   @override
-  String get afterHoursCastTangleLine => 'Slowly chases your plug.';
+  String get afterHoursCastTangleLine => 'Fişinizi yavaşça kovalar.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => 'Parazit';
 
   @override
   String get afterHoursCastStaticLine =>
-      'A dead cell. One appears every third signal.';
+      'Ölü hücre. Her üçüncü sinyalde biri belirir.';
 
   @override
-  String get afterHoursCastBrick => 'Power Brick';
+  String get afterHoursCastBrick => 'Güç Adaptörü';
 
   @override
-  String get afterHoursCastBrickLine => 'A 2 by 2 block every fifth signal.';
+  String get afterHoursCastBrickLine => 'Her beşinci sinyalde bir 2×2 blok.';
 
   @override
-  String get afterHoursCastGhost => 'Ghost';
+  String get afterHoursCastGhost => 'Hayalet';
 
   @override
   String get afterHoursCastGhostLine =>
-      'Five seconds of passing through everything but the edge.';
+      'Beş saniye boyunca kenar dışında her şeyin içinden geçer.';
 
   @override
-  String get afterHoursCastSnip => 'Snip';
+  String get afterHoursCastSnip => 'Kes';
 
   @override
-  String get afterHoursCastSnipLine =>
-      'Cuts the cable in half for bonus points.';
+  String get afterHoursCastSnipLine => 'Kabloyu ikiye keser, bonus puan verir.';
 
   @override
-  String get afterHoursCastSignal => 'Signal';
+  String get afterHoursCastSignal => 'Sinyal';
 
   @override
-  String get afterHoursCastSignalLine => 'Points, and two more segments.';
+  String get afterHoursCastSignalLine => 'Puan verir ve iki bölüm daha ekler.';
 
   @override
-  String get afterHoursCastShelfCat => 'Shelf Cat';
+  String get afterHoursCastShelfCat => 'Raf Kedisi';
 
   @override
   String get afterHoursCastShelfCatLine =>
-      'Bats a case as it comes in, so that one slides faster.';
+      'Gelen kutuya pati atar, o kutu daha hızlı kayar.';
 
   @override
-  String get afterHoursCastBluCase => 'Blu-ray Case';
+  String get afterHoursCastBluCase => 'Blu-ray Kutusu';
 
   @override
   String get afterHoursCastBluCaseLine =>
-      'A title from your library. The overhang gets trimmed off.';
+      'Kütüphanenizden bir yapım. Taşan kısım kesilir.';
 
   @override
   String get afterHoursCastSteelbook => 'Steelbook';
 
   @override
   String get afterHoursCastSteelbookLine =>
-      'Every tenth case. Slides much faster.';
+      'Her onuncu kutu. Çok daha hızlı kayar.';
 
   @override
-  String get afterHoursCastPerfect => 'Perfect Drop';
+  String get afterHoursCastPerfect => 'Kusursuz Bırakış';
 
   @override
   String get afterHoursCastPerfectLine =>
-      'Land it dead on and the stack grows a little wider.';
+      'Tam üstüne indirin, yığın biraz genişler.';
 
   @override
-  String get afterHoursCastBoxSet => 'Box Set';
+  String get afterHoursCastBoxSet => 'Kutu Seti';
 
   @override
   String get afterHoursCastBoxSetLine =>
-      'Three perfect drops in a row grow it a lot wider.';
+      'Art arda üç kusursuz bırakış yığını çok genişletir.';
 
   @override
-  String get afterHoursCastDeadPixel => 'Dead Pixel';
+  String get afterHoursCastDeadPixel => 'Ölü Piksel';
 
   @override
   String get afterHoursCastDeadPixelLine =>
-      'Falls from cleared blocks. Catching it shrinks the scrubber.';
+      'Temizlenen bloklardan düşer. Yakalarsanız kaydırıcı küçülür.';
 
   @override
-  String get afterHoursCastMacroblock => 'Macroblock';
+  String get afterHoursCastMacroblock => 'Makroblok';
 
   @override
-  String get afterHoursCastMacroblockLine => 'One hit clears it.';
+  String get afterHoursCastMacroblockLine => 'Tek vuruşta temizlenir.';
 
   @override
-  String get afterHoursCastKeyframe => 'Keyframe';
+  String get afterHoursCastKeyframe => 'Anahtar Kare';
 
   @override
   String get afterHoursCastKeyframeLine =>
-      'Takes three hits and drops a powerup.';
+      'Üç vuruş alır ve bir güçlendirici bırakır.';
 
   @override
   String get afterHoursCastHdrLine =>
-      'A scrubber twice as wide for eight seconds.';
+      'Sekiz saniye boyunca iki kat geniş kaydırıcı.';
 
   @override
-  String get afterHoursCastBufferNet => 'Buffer';
+  String get afterHoursCastBufferNet => 'Arabellek';
 
   @override
   String get afterHoursCastBufferNetLine =>
-      'A net under the scrubber that saves one miss.';
+      'Kaydırıcının altında, bir ıskayı kurtaran ağ.';
 
   @override
   String get afterHoursBufferRunCardTouch =>
-      'Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.';
+      'Zıplamak için dokunun, havada tekrar dokunun: taraf değişir. Kaymak için yönünüze kaydırın.';
 
   @override
   String get afterHoursPixelPurgeCardRemote =>
-      'Left and Right slide the scrubber.';
+      'Sol ve Sağ kaydırıcıyı hareket ettirir.';
 }

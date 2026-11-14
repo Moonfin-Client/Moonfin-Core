@@ -102,6 +102,8 @@ void main() {
       }
       expect(plex, contains(l10n.moonbaseFeatureCalendar));
       expect(silo, isNot(contains(l10n.moonbaseFeatureCalendar)));
+      expect(plex, contains(l10n.moonbaseFeatureGames));
+      expect(silo, isNot(contains(l10n.moonbaseFeatureGames)));
     });
 
     test('each server links its own install steps', () {

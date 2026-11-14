@@ -1398,7 +1398,9 @@ class _DisplaySettingsDialogState extends State<_DisplaySettingsDialog> {
               ),
             ),
             Divider(color: dividerColor),
-            _sectionHeader('Switch View'),
+            _sectionHeader(
+              AppLocalizations.of(context).favoritesSwitchViewSection,
+            ),
             _viewStyleRadioTile(vm, FavoritesViewStyle.home, 'Home View'),
             _viewStyleRadioTile(vm, FavoritesViewStyle.library, 'Library View'),
             Divider(color: dividerColor),

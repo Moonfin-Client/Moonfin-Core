@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -15,6 +14,7 @@ import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'calendar_common.dart';
 import 'calendar_controller.dart';
 
@@ -94,9 +94,7 @@ class _CalendarCountdownViewState extends State<CalendarCountdownView> {
         if (!identical(e, hero)) e,
     ];
     final poster =
-        GetIt.instance<UserPreferences>().get(
-          UserPreferences.calendarImageType,
-        ) ==
+        previewValue(context, UserPreferences.calendarImageType) ==
         CalendarImageType.poster;
     final children = <Widget>[
       if (mobile) _TitleRow(onFull: _openFull, mobile: true),
@@ -302,7 +300,9 @@ class _Hero extends StatelessWidget {
         Text(
           kicker.toUpperCase(),
           style: TextStyle(
-            color: counting ? calendarColor(e, c.now) : calendarReadyColor,
+            color: counting
+                ? calendarColor(context, e, c.now)
+                : calendarReadyColor,
             fontSize: 13,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
@@ -634,7 +634,7 @@ class _Card extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: calendarColor(e, c.now).withValues(alpha: 0.9),
+                color: calendarColor(context, e, c.now).withValues(alpha: 0.9),
                 fontSize: 12,
               ),
             ),

@@ -6544,7 +6544,7 @@
     "settingsAutomationAndQueue": "Automatització i cua",
     "settingsAutomationAndQueueSubtitle": "Reproducció i seqüenciació automàtica",
     "settingsOfflineDownloadsSubtitle": "Qualitat de la baixada, límits d'emmagatzematge i mida de la cua",
-    "settingsSyncplaySubtitle": "Lògica de sincronització per a sessions de grup",
+    "settingsSyncplaySubtitle": "Mira contingut amb amics d'aquest servidor, tots sincronitzats",
     "settingsAdvancedOptionsSubtitle": "Característiques especialitzades del reproductor. Feu servir amb precaució, ja que algunes opcions poden causar problemes de reproducció",
     "settingsSkipIntrosAndOutros": "Ometeu introduccions i altres?",
     "settingsPromptUser": "Usuari prompte",
@@ -6593,20 +6593,20 @@
     },
     "settingsLiveTvDirect": "Reproducció nativa de TV en directe",
     "settingsLiveTvDirectSubtitle": "Activa la reproducció directa per a la televisió en directe",
-    "settingsOpenGroups": "Grups oberts",
-    "settingsOpenGroupsSubtitle": "Crea, uneix-te o gestiona grups de SyncPlay",
-    "settingsSyncplayEnabled": "SyncPlay habilitat",
-    "settingsSyncplayEnabledSubtitle": "Activa les funcions de visualització en grup",
-    "settingsSyncplayButton": "Botó SyncPlay",
-    "settingsSyncplayButtonSubtitle": "Mostra el botó SyncPlay a la barra de navegació",
+    "settingsOpenGroups": "Watch Parties obertes",
+    "settingsOpenGroupsSubtitle": "Inicia'n una o uneix-te a una que ja hagi començat",
+    "settingsSyncplayEnabled": "Watch Parties",
+    "settingsSyncplayEnabledSubtitle": "Mira contingut amb amics d'aquest servidor, tots sincronitzats",
+    "settingsSyncplayButton": "Botó de Watch Parties",
+    "settingsSyncplayButtonSubtitle": "Mostra el botó de Watch Parties a la barra de navegació",
     "settingsSyncplayAdvancedCorrection": "Correcció avançada",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "Activa la lògica de sincronització detallada",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "Retards i desplaçament addicional",
     "settingsSyncplaySyncCorrection": "Correcció de sincronització",
-    "settingsSyncplaySyncCorrectionSubtitle": "Ajusta automàticament la reproducció per mantenir-se sincronitzat",
+    "settingsSyncplaySyncCorrectionSubtitle": "Mantén aquest dispositiu sincronitzat amb la sala",
     "settingsSyncplaySpeedToSync": "Velocitat per sincronitzar",
-    "settingsSyncplaySpeedToSyncSubtitle": "Utilitzeu l'ajust de velocitat de reproducció per sincronitzar",
-    "settingsSyncplaySkipToSync": "Passeu a la sincronització",
-    "settingsSyncplaySkipToSyncSubtitle": "Utilitzeu la cerca de sincronització",
+    "settingsSyncplaySpeedToSyncSubtitle": "Reprodueix una mica més ràpid o més lent per posar-te al dia",
+    "settingsSyncplaySkipToSync": "Salta per sincronitzar",
+    "settingsSyncplaySkipToSyncSubtitle": "Salta endavant quan vagi massa desfasat",
     "settingsSyncplayMinimumSpeedDelay": "Retard de velocitat mínima",
     "settingsSyncplayMaximumSpeedDelay": "Retard de velocitat màxima",
     "settingsSyncplaySpeedDuration": "Velocitat Durada",
@@ -13598,7 +13598,7 @@
     "@settingsDetailsPageSubtitle": {
         "description": "Subtitle for the Details Page entry on the Appearance settings screen"
     },
-    "settingsPlaybackSubtitle": "Reproductor, qualitat, àudio, subtítols, salts i SyncPlay",
+    "settingsPlaybackSubtitle": "Reproductor, qualitat, àudio, subtítols, salts i Watch Parties",
     "@settingsPlaybackSubtitle": {
         "description": "Subtitle for the Playback settings root entry"
     },
@@ -13650,7 +13650,7 @@
     "@settingsSkippingAndQueueSection": {
         "description": "Section header on the Playback settings screen"
     },
-    "settingsWatchTogetherSection": "Veure junts",
+    "settingsWatchTogetherSection": "Watch Parties",
     "@settingsWatchTogetherSection": {
         "description": "Section header on the Playback settings screen for SyncPlay"
     },
@@ -13936,7 +13936,7 @@
     "@shortcutSkipSegment": {
         "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
     },
-    "buttonShownInSyncPlayGroup": "Només es mostra quan ets en un grup de SyncPlay",
+    "buttonShownInSyncPlayGroup": "Només es mostra quan ets en una Watch Party",
     "@buttonShownInSyncPlayGroup": {
         "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
     },
@@ -16170,7 +16170,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "Finalitza la Watch Party",
+    "watchPartyEnd": "Finalitza per a tothom",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -16630,7 +16630,7 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Activa o desactiva els calendaris de properes estrenes de Radarr/Sonarr.",
+    "upcomingCalendarsDescription": "Tria què mostren les files de Radarr i Sonarr.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
     },
@@ -17000,10 +17000,6 @@
     "mdblistWatchingNow": "Ara es mira a MDBList",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "Mostra què miren ara mateix els usuaris de MDBList",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowLiveSummary": "{users} mirant ara · {movies} pel·lícules · {shows} sèries",
     "@watchingNowLiveSummary": {
@@ -17562,17 +17558,9 @@
             }
         }
     },
-    "enableRadarrCalendar": "Activa el calendari de properes estrenes de Radarr",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
-    },
     "calendarShowReleaseDate": "Mostra la data d'estrena a la pantalla d'inici",
     "@calendarShowReleaseDate": {
         "description": "Shows the release date under each item of a calendar row"
-    },
-    "enableSonarrCalendar": "Activa el calendari de properes estrenes de Sonarr",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Mostra la informació de l'episodi",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -18029,5 +18017,515 @@
     "afterHoursBufferRunCardTouch": "Toca per saltar; torna-hi a l'aire per canviar de costat. Fes lliscar el dit cap al teu costat per esmunyir-te.",
     "@afterHoursBufferRunCardTouch": {
         "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+    },
+    "episodeDirector": "Director de l'episodi",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (Director de l'episodi)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Escriptor de l'episodi",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (Escriptor de l'episodi)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Estrella convidada",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (Estrella convidada)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeYours": "On ho vas deixar. Tothom comença des d'aquí.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchParties": "Watch Parties",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Inicia les festes amb",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Xat, reaccions i votacions. Funciona amb Moonbase.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "El de Jellyfin. Els amics que facin servir altres apps de Jellyfin s'hi poden unir.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Pots unir-te a sales de tots dos tipus. Això només tria el que inicies tu.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Durant una festa",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Mostra el xat sobre el vídeo",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Els missatges nous es mostren uns segons",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Alertes de festes",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Avisa'm quan algú d'aquest servidor n'iniciï una",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    },
+    "watchPartyJoinWithCode": "Uneix-te amb un codi",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "En aquest servidor",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "{count} en aquest servidor",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Necessites accés a l'element per unir-t'hi. Una sala es tanca quan en surt l'última persona.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "Aquí apareixen les Watch Parties que pots veure. T'han passat un codi? Tria «Uneix-te amb un codi».",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "També hi pots enganxar un enllaç d'invitació. En un telèfon, l'enllaç obre Moonfin directament a la Watch Party.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} espectador} other{{count} espectadors}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "Watch Party de {name}",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Tothom controla",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Es vota què veure",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "Les Watch Parties necessiten Moonbase en aquest servidor",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Demana a qui gestiona el servidor que instal·li el connector Moonbase. A Jellyfin, SyncPlay funciona igualment sense aquest connector.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Aquest PIN no ha funcionat. Torna-ho a provar.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "Massa intents. Espera un minut.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Aquesta Watch Party és plena.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Cap sala no té aquest codi.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "No tens accés al que estan veient.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "L'amfitrió t'ha expulsat de la Watch Party.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "La teva Watch Party",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Enganxa'l a qualsevol xat. Obre una pàgina d'aquest servidor amb un botó «Obre a Moonfin».",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Envia la invitació",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Escaneja-ho amb el telèfon per obtenir l'enllaç d'invitació i envia'l des d'allà. O simplement comparteix el codi.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "La reproducció espera que el reproductor de tothom estigui a punt, 10 segons com a màxim, i després fa un compte enrere 3, 2, 1.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "Sincronitzat",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Posant-se al dia",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Carregant",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "No està mirant",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "A punt",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Unint-se",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Amfitrió",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "S'està esperant el reproductor de {name}",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{S'està esperant {count} reproductor} other{S'estan esperant {count} reproductors}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "Començarà igualment d'aquí a {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Comencem tots alhora",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} ha posat en pausa",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} ha reprès la reproducció",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} ha saltat a {time}",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} s'ha unit",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} ha marxat",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} ha canviat a {title}",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Ara ets l'amfitrió",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "Ara {name} és l'amfitrió",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Ara tothom pot controlar la reproducció",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Ara només l'amfitrió controla la reproducció",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Només l'amfitrió pot controlar la reproducció.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "S'està tornant a connectar a la Watch Party...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Has tornat a la Watch Party",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} ha finalitzat la Watch Party",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Xat",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Envia a la Watch Party",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyBackToClose": "Prem Enrere per tancar",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "watchPartyType": "Escriu",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyNoWay": "No pot ser",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Pausa, si us plau",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Ara torno",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Un altre cop!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "M'encanta",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Uau",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Trist",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Foc",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Crispetes",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Fes amfitrió",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Tothom pot controlar la reproducció",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Tothom pot reproduir, posar en pausa i saltar",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "PIN de la sala",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Demana un PIN abans que algú s'hi uneixi",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "De 4 a 8 dígits",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Surt",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Surt · {name} fa d'amfitrió",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} ha iniciat una Watch Party",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} a la sala d'espera} other{{title} · {count} a la sala d'espera}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "És la primera de la fila Watch Parties de l'inici",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Aquesta invitació és per a un servidor que encara no has afegit, {address}. Afegeix-lo i inicia la sessió per unir-t'hi.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinRemember": "Recorda el PIN en aquest dispositiu",
+    "@siloPinRemember": {
+        "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "settingsDecodingAndRenderingSection": "Descodificació i renderització",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Flux d'àudio",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Sortida d'àudio",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Configuració del passthrough",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsRewatchSection": "Torna a veure",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "seerrDownloadFailed": "Ha fallat la baixada",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

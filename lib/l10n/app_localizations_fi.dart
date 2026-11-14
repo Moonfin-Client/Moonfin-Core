@@ -1858,27 +1858,27 @@ class AppLocalizationsFi extends AppLocalizations {
   String get writers => 'KÄSIKIRJOITTAJAT';
 
   @override
-  String get episodeDirector => 'Episode Director';
+  String get episodeDirector => 'Jakson ohjaaja';
 
   @override
   String episodeDirectorWithRole(String role) {
-    return '$role (Episode Director)';
+    return '$role (jakson ohjaaja)';
   }
 
   @override
-  String get episodeWriter => 'Episode Writer';
+  String get episodeWriter => 'Jakson käsikirjoittaja';
 
   @override
   String episodeWriterWithRole(String role) {
-    return '$role (Episode Writer)';
+    return '$role (jakson käsikirjoittaja)';
   }
 
   @override
-  String get guestStar => 'Guest Star';
+  String get guestStar => 'Vierasnäyttelijä';
 
   @override
   String guestStarWithRole(String role) {
-    return '$role (Guest Star)';
+    return '$role (vierailija)';
   }
 
   @override
@@ -2978,7 +2978,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get storageManagement => 'Tallennuksen hallinta';
 
   @override
-  String get storageBreakdown => 'Varastoinnin erittely';
+  String get storageBreakdown => 'Tallennustilan Erittely';
 
   @override
   String get downloadedItems => 'Ladatut kohteet';
@@ -3954,11 +3954,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Näytä Radarrin/Sonarrin tulevat kalenterit.';
-
-  @override
-  String get enableRadarrCalendar =>
-      'Ota Radarrin tulevien tapahtumien kalenteri käyttöön';
+      'Valitse, mitä Radarr- ja Sonarr-rivit näyttävät.';
 
   @override
   String get radarrCalendarShowCinema => 'Näytä tulevat elokuvajulkaisut';
@@ -3976,10 +3972,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Piilota palvelimella jo olevat elokuvat';
-
-  @override
-  String get enableSonarrCalendar =>
-      'Ota Sonarrin tulevien tapahtumien kalenteri käyttöön';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Näytä jakson tiedot';
@@ -4004,7 +3996,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get buttonShownInSyncPlayGroup =>
-      'Näkyy vain, kun olet SyncPlay-ryhmässä';
+      'Näkyy vain, kun olet watch partyssä';
 
   @override
   String get orientationLock => 'Suuntalukitus';
@@ -4672,10 +4664,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lataa vain WiFi yhteyden ollessa kytkettynä';
 
   @override
-  String get storage => 'Varastointi';
+  String get storage => 'Tallennustila';
 
   @override
-  String get storageUsed => 'Säilytys käytetty';
+  String get storageUsed => 'Käytetty tallennustila';
 
   @override
   String get manage => 'Hallitse';
@@ -4852,6 +4844,16 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get showLibrariesFromAllServers =>
       'Näytä kaikkien yhdistettyjen palvelimien kirjastot';
+
+  @override
+  String get recentlyAddedAndReleased => 'Äskettäin lisättyjä ja julkaistuja';
+
+  @override
+  String get hideWatchedInRecentRows => 'Piilota katsotut';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Piilota katsotut sisällöt ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -kotiriveiltä.';
 
   @override
   String get mergeRecentRowsByType =>
@@ -5305,6 +5307,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsExternalLists => 'Ulkoiset listat';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Rivikohtaiset asetukset';
 
   @override
@@ -5538,10 +5543,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'Katsomassa MDBListissä';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Näytä, mitä MDBList-käyttäjät katsovat parhaillaan';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5950,6 +5951,37 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get seerrImportingStatus => 'Tuodaan';
+
+  @override
+  String get seerrWaitingForImport => 'Ladattu, odottaa tuontia';
+
+  @override
+  String get seerrDownloadStalled => 'Jumissa';
+
+  @override
+  String get seerrDownloadFailed => 'Lataaminen epäonnistui';
+
+  @override
+  String get seerrImportBlocked => 'Tuonti estetty';
+
+  @override
+  String get seerrNotFoundYet => 'Ei vielä löytynyt';
+
+  @override
+  String get seerrGetDifferentRelease => 'Hanki eri julkaisu';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service poistaa $release latausohjelmasta, estää sen lataamisen uudelleen ja etsii toisen julkaisun.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Poistettu. $service etsii toista julkaisua.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Latausta ei voitu poistaa';
 
   @override
   String itemsCount(int count) {
@@ -10022,7 +10054,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindWriter => 'Kirjailija';
 
   @override
-  String get adminMetadataPersonKindGuestStar => 'Vierailija';
+  String get adminMetadataPersonKindGuestStar => 'Vierasnäyttelijä';
 
   @override
   String get adminMetadataPersonKindProducer => 'Tuottaja';
@@ -11367,6 +11399,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Syötä PIN-koodisi, jotta voit palauttaa sovelluksen täysversio';
 
   @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Syötä lastentilan PIN-koodi siirtyäksesi $name:iin';
+  }
+
+  @override
   String get pinIncorrect => 'Väärä PIN koodi';
 
   @override
@@ -12063,7 +12100,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsSyncplaySubtitle =>
-      'Synkronointilogiikka ryhmäistunnoille';
+      'Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa';
 
   @override
   String get settingsSkipIntrosAndOutros => 'Ohitetaanko introt ja loppupalat?';
@@ -12275,53 +12312,53 @@ class AppLocalizationsFi extends AppLocalizations {
       'Ota suora toisto käyttöön live TV:ssä';
 
   @override
-  String get settingsOpenGroups => 'Avaa Ryhmät';
+  String get settingsOpenGroups => 'Järjestä Watch Partyt';
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'Luo SyncPlay ryhmiä, liity niihin tai hallinnoi niitä';
+      'Aloita uusi projekti tai liity jo käynnissä olevaan projektiin';
 
   @override
-  String get settingsSyncplayEnabled => 'SyncPlay käytössä';
+  String get settingsSyncplayEnabled => 'Watch Party';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
-      'Ota ryhmäkatseluominaisuudet käyttöön';
+      'Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa';
 
   @override
-  String get settingsSyncplayButton => 'SyncPlay painike';
+  String get settingsSyncplayButton => 'Watch Party painike';
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Näytä SyncPlay painike navigointipalkissa';
+      'Näytä Watch Party painike navigointipalkissa';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Edistynyt korjaus';
 
   @override
   String get settingsSyncplayAdvancedCorrectionSubtitle =>
-      'Ota hienorakeinen synkronointilogiikka käyttöön';
+      'Viivästykset ja ylimääräinen siirtymä';
 
   @override
-  String get settingsSyncplaySyncCorrection => 'Synkronoinnin korjaus';
+  String get settingsSyncplaySyncCorrection => 'Synkronointikorjaus';
 
   @override
   String get settingsSyncplaySyncCorrectionSubtitle =>
-      'Säädä toisto automaattisesti pysyäksesi synkronoituna';
+      'Sopeuta tämän laitteen toiminta huoneen olosuhteisiin';
 
   @override
-  String get settingsSyncplaySpeedToSync => 'Synkronointinopeus';
+  String get settingsSyncplaySpeedToSync => 'Synkronoinnin nopeus';
 
   @override
   String get settingsSyncplaySpeedToSyncSubtitle =>
-      'Käytä synkronointiin toistonopeuden säätöä';
+      'Toista hieman nopeammin tai hitaammin, jotta pysyt mukana';
 
   @override
-  String get settingsSyncplaySkipToSync => 'Siirry synkronointiin';
+  String get settingsSyncplaySkipToSync => 'Ohita synkronointi';
 
   @override
   String get settingsSyncplaySkipToSyncSubtitle =>
-      'Käytä etsintää synkronointiin';
+      'Siirry eteenpäin, kun se on liian kaukana';
 
   @override
   String get settingsSyncplayMinimumSpeedDelay => 'Miniminopeusviive';
@@ -12541,6 +12578,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get homeRowsStyleModern => 'Moderni';
+
+  @override
+  String get homeRowsStyleCarousel => 'Carousel';
 
   @override
   String get homeRowsSection => 'Kotirivit';
@@ -13276,14 +13316,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyRoomCode => 'Huoneen koodi';
 
   @override
-  String get watchPartyStart => 'Järjestä Watch Party';
+  String get watchPartyStart => 'Aloita Watch Party';
 
   @override
   String get watchPartyPickTitle =>
       'Avaa elokuva tai sarja ja valitse ”Katso ryhmän kanssa” -vaihtoehto, jotta voit valita, mitä kaikki katsovat.';
 
   @override
-  String get watchPartyWaitingForHost => 'Odotan, että isäntä valitsee jotain.';
+  String get watchPartyWaitingForHost =>
+      'Odotan, että järjestäjä valitsee jotain.';
 
   @override
   String get watchPartyShareCode =>
@@ -13317,7 +13358,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get watchPartyResumeYours =>
-      'Where you left off. Everyone starts from there.';
+      'Siitä, mihin jäit. Kaikki aloittavat siitä.';
 
   @override
   String watchPartyResumeNotStarted(int count) {
@@ -13337,7 +13378,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyGuestsCanPause => 'Vieraat voivat toistaa ja keskeyttää';
 
   @override
-  String get watchPartyEnd => 'Watch Party päättäjäiset';
+  String get watchPartyEnd => 'Päätepiste kaikille';
 
   @override
   String get watchPartyEnded => 'Watch Party on päättynyt.';
@@ -13351,62 +13392,62 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get watchParties => 'Watch Parties';
+  String get watchParties => 'Watch Party';
 
   @override
-  String get watchPartyStartWith => 'Start parties with';
+  String get watchPartyStartWith => 'Aloita Watch Party';
 
   @override
   String get watchPartyServiceMoonbaseHint =>
-      'Chat, reactions and voting. Runs on Moonbase.';
+      'Chat, reaktiot ja äänestys. Toimii Moonbase alustalla.';
 
   @override
   String get watchPartyServiceSyncPlayHint =>
-      'Jellyfin\'s own. Friends on other Jellyfin apps can join.';
+      'Jellyfinin oma. Muissa Jellyfin sovelluksissa olevat ystävät voivat liittyä mukaan.';
 
   @override
   String get watchPartyServiceNote =>
-      'You can join rooms of both kinds. This only picks what you start.';
+      'Voit liittyä molempiin huoneisiin. Tämä valitsee vain sen, jonka avaat.';
 
   @override
-  String get watchPartyDuringParty => 'During a party';
+  String get watchPartyDuringParty => 'Watch Partyjen aikana';
 
   @override
-  String get watchPartyChatOverlay => 'Show chat over the video';
+  String get watchPartyChatOverlay => 'Näytä keskustelu videon päällä';
 
   @override
   String get watchPartyChatOverlaySubtitle =>
-      'New messages show for a few seconds';
+      'Uudet viestit näkyvät muutaman sekunnin ajan';
 
   @override
-  String get watchPartyAlerts => 'Party alerts';
+  String get watchPartyAlerts => 'Watch Party ilmoitukset';
 
   @override
   String get watchPartyAlertsSubtitle =>
-      'Tell me when someone on this server starts one';
+      'Kerro minulle, kun joku tällä palvelimella aloittaa sellaisen';
 
   @override
-  String get watchPartyJoinWithCode => 'Join with a code';
+  String get watchPartyJoinWithCode => 'Liity koodilla';
 
   @override
-  String get watchPartyOnThisServer => 'On this server';
+  String get watchPartyOnThisServer => 'Tällä palvelimella';
 
   @override
   String watchPartyCountOnServer(int count) {
-    return '$count on this server';
+    return '$count tällä palvelimella';
   }
 
   @override
   String get watchPartyRoomsHint =>
-      'You need access to the item to join. A room closes when its last person leaves.';
+      'Liittyäksesi sinun on oltava pääsy kyseiseen kohteeseen. Huone sulkeutuu, kun viimeinen henkilö poistuu sieltä.';
 
   @override
   String get watchPartyRoomsEmpty =>
-      'Parties you can watch show up here. Got a code from someone? Pick Join with a code.';
+      'Täällä näkyvät ne watch partyt , joita voit seurata. Saitko joltakulta koodin? Valitse ”Liity koodilla”.';
 
   @override
   String get watchPartyPasteHint =>
-      'Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.';
+      'Kutsulinkin liittäminen tähän toimii myös. Puhelimella linkki avaa Moonfin-sovelluksen suoraan Watch Partyihin.';
 
   @override
   String watchPartyWatchingCount(int count) {
@@ -13421,84 +13462,86 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String watchPartyHostsParty(String name) {
-    return '$name\'s party';
+    return '$name:n Watch Partyt';
   }
 
   @override
-  String get watchPartyEveryoneControlsShort => 'Everyone controls';
+  String get watchPartyEveryoneControlsShort => 'Kaikki hallitsevat';
 
   @override
-  String get watchPartyVotingNow => 'Voting on what to watch';
+  String get watchPartyVotingNow => 'Äänestys siitä, mitä katsotaan';
 
   @override
   String get watchPartyNeedsMoonbase =>
-      'Watch Parties need Moonbase on this server';
+      'Watch Party tarvitsee Moonbasen laajennuksen palvelimella';
 
   @override
   String get watchPartyNeedsMoonbaseHint =>
-      'Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.';
+      'Pyydä palvelimen ylläpitäjää asentamaan Moonbase laajennus. Jellyfinissä SyncPlay toimii edelleen ilman sitä.';
 
   @override
-  String get watchPartyWrongPin => 'That PIN didn\'t work. Try again.';
+  String get watchPartyWrongPin =>
+      'Tuo PIN-koodi ei toiminut. Yritä uudelleen.';
 
   @override
-  String get watchPartyTooManyTries => 'Too many tries. Wait a minute.';
+  String get watchPartyTooManyTries => 'Liian monta yritystä. Odota hetki.';
 
   @override
-  String get watchPartyFull => 'This party is full.';
+  String get watchPartyFull => 'Tämä Watch Party on täynnä.';
 
   @override
-  String get watchPartyNoSuchCode => 'No room has that code.';
+  String get watchPartyNoSuchCode =>
+      'Missään huoneessa ei ole kyseistä koodia.';
 
   @override
   String get watchPartyNoAccess =>
-      'You don\'t have access to what they\'re watching.';
+      'Sinulla ei ole pääsyä siihen, mitä he katsovat.';
 
   @override
-  String get watchPartyRemoved => 'The host removed you from the party.';
+  String get watchPartyRemoved => 'Järjestäjä poisti sinut Watch Party:stä.';
 
   @override
-  String get watchPartyYours => 'Your watch party';
+  String get watchPartyYours => 'Watch Partysi';
 
   @override
   String get watchPartyInviteHint =>
-      'Paste it in any chat. It opens a page on this server with an Open in Moonfin button.';
+      'Liitä se mihin tahansa keskusteluun. Se avaa tällä palvelimella sivun, jossa on ”Avaa Moonfinissä” painike.';
 
   @override
-  String get watchPartySendInvite => 'Send the invite';
+  String get watchPartySendInvite => 'Lähetä kutsu';
 
   @override
   String get watchPartyScanInvite =>
-      'Scan with your phone to get the invite link, then send it from there. Or just share the code.';
+      'Skannaa koodi puhelimellasi saadaksesi kutsulinkin ja lähetä se sitten sieltä. Tai jaa vain koodi.';
 
   @override
   String get watchPartyStartsTogether =>
-      'Play waits for everyone\'s player, 10 seconds at most, then counts down 3, 2, 1.';
+      'Peli odottaa kaikkien pelaajien vuoroa enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.';
 
   @override
-  String get watchPartyStatusInSync => 'In sync';
+  String get watchPartyStatusInSync => 'Synkronoituna';
 
   @override
-  String get watchPartyStatusCatchingUp => 'Catching up';
+  String get watchPartyStatusCatchingUp => 'Kuroa umpeen';
 
   @override
-  String get watchPartyStatusBuffering => 'Buffering';
+  String get watchPartyStatusBuffering => 'Puskurointi';
 
   @override
-  String get watchPartyStatusNotWatching => 'Not watching';
+  String get watchPartyStatusNotWatching => 'En katso';
 
   @override
-  String get watchPartyStatusReady => 'Ready';
+  String get watchPartyStatusReady => 'Valmis';
 
   @override
-  String get watchPartyStatusJoining => 'Joining';
+  String get watchPartyStatusJoining => 'Liittyminen';
 
   @override
-  String get watchPartyHost => 'Host';
+  String get watchPartyHost => 'Järjestäjä';
 
   @override
   String watchPartyWaitingFor(String name) {
-    return 'Waiting for $name\'s player';
+    return 'Odotetaan $name:n liittymistä';
   }
 
   @override
@@ -13514,84 +13557,85 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String watchPartyStartingAnyway(int seconds) {
-    return 'Starting anyway in $seconds s';
+    return 'Aloitetaan joka tapauksessa $seconds s';
   }
 
   @override
-  String get watchPartyStartingTogether => 'Starting together';
+  String get watchPartyStartingTogether => 'Yhdessä aloittaminen';
 
   @override
   String watchPartyToastPaused(String name) {
-    return '$name paused';
+    return '$name keskeyttänyt';
   }
 
   @override
   String watchPartyToastResumed(String name) {
-    return '$name resumed';
+    return '$name jatkoi';
   }
 
   @override
   String watchPartyToastSkipped(String name, String time) {
-    return '$name skipped to $time';
+    return '$name siirtyi kohtaan $time';
   }
 
   @override
   String watchPartyToastJoined(String name) {
-    return '$name joined';
+    return '$name liittyi';
   }
 
   @override
   String watchPartyToastLeft(String name) {
-    return '$name left';
+    return '$name vasen';
   }
 
   @override
   String watchPartyToastSwitched(String name, String title) {
-    return '$name switched to $title';
+    return '$name vaihdettiin $title';
   }
 
   @override
-  String get watchPartyToastYouAreHost => 'You\'re the host now';
+  String get watchPartyToastYouAreHost => 'Sinä olet nyt järjestäjä';
 
   @override
   String watchPartyToastNewHost(String name) {
-    return '$name is the host now';
+    return '$name on nyt järjestäjä';
   }
 
   @override
   String get watchPartyToastEveryoneControls =>
-      'Everyone can control playback now';
+      'Kaikki voivat nyt hallita toistoa';
 
   @override
   String get watchPartyToastHostControls =>
-      'Only the host controls playback now';
+      'Vain järjestäjä hallitsee toistoa nyt';
 
   @override
   String get watchPartyOnlyHostControls =>
-      'Only the host can control playback.';
+      'Vain järjestäjä hallitsee toistoa nyt.';
 
   @override
-  String get watchPartyToastReconnecting => 'Reconnecting to the party...';
+  String get watchPartyToastReconnecting =>
+      'Yhteyden palauttaminen partyihin...';
 
   @override
-  String get watchPartyToastReconnected => 'Back in the party';
+  String get watchPartyToastReconnected => 'Takaisin partyihin';
 
   @override
   String watchPartyToastEnded(String name) {
-    return '$name ended the party';
+    return '$name lopetti partyn';
   }
 
   @override
   String get watchPartyChat => 'Chat';
 
   @override
-  String get watchPartySendToParty => 'Send to the party';
+  String get watchPartySendToParty => 'Lähetä Partyihin';
 
   @override
-  String get watchPartyBackToClose => 'Back to close';
+  String get watchPartyBackToClose => 'Sulkemaan';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Tyyppi';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13600,13 +13644,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyReplyNoWay => 'No way';
 
   @override
-  String get watchPartyReplyPausePlease => 'Pause please';
+  String get watchPartyReplyPausePlease => 'Odota hetki';
 
   @override
   String get watchPartyReplyBrb => 'Brb';
 
   @override
-  String get watchPartyReplyAgain => 'Again!';
+  String get watchPartyReplyAgain => 'Taas!';
 
   @override
   String get watchPartyReactionLove => 'Love';
@@ -13627,35 +13671,36 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyReactionPopcorn => 'Popcorn';
 
   @override
-  String get watchPartyMakeHost => 'Make host';
+  String get watchPartyMakeHost => 'Nimitä isännäksi';
 
   @override
-  String get watchPartyEveryoneControls => 'Everyone can control playback';
+  String get watchPartyEveryoneControls => 'Jokainen voi hallita toistoa';
 
   @override
   String get watchPartyEveryoneControlsHint =>
-      'Anyone can play, pause and skip';
+      'Kuka tahansa voi toistaa, keskeyttää ja ohittaa';
 
   @override
-  String get watchPartyRoomPin => 'Room PIN';
+  String get watchPartyRoomPin => 'Huoneen PIN';
 
   @override
-  String get watchPartyRoomPinHint => 'Ask for a PIN before anyone joins';
+  String get watchPartyRoomPinHint =>
+      'Pyydä PIN koodia ennen kuin kukaan liittyy ryhmään';
 
   @override
-  String get watchPartyPinDigits => '4 to 8 digits';
+  String get watchPartyPinDigits => '4–8 numeroa';
 
   @override
-  String get watchPartyLeave => 'Leave';
+  String get watchPartyLeave => 'Lähde';
 
   @override
   String watchPartyLeaveHandsOver(String name) {
-    return 'Leave · $name hosts';
+    return 'Poistu · $name palvelimelta';
   }
 
   @override
   String watchPartyStartedBy(String name) {
-    return '$name started a watch party';
+    return '$name järjesti watch partyn';
   }
 
   @override
@@ -13670,11 +13715,12 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get watchPartyFirstOnHome => 'It\'s first in Watch Parties on Home';
+  String get watchPartyFirstOnHome =>
+      'Ensimmäinen sija Watch Parties osiossa Home sivustolla';
 
   @override
   String watchPartyAddServerQuestion(String address) {
-    return 'This invite is for a server you have not added yet, $address. Add it and sign in to join.';
+    return 'Tämä kutsu koskee palvelinta, jota et ole vielä lisännyt: $address. Lisää se ja kirjaudu sisään liittyäksesi.';
   }
 
   @override
@@ -15710,6 +15756,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get setupRowsModernHint => 'Suuremmat kortit, joiden alla on otsikot.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Kaikki on koottu yhteen pinoon.';
 
   @override
@@ -16471,7 +16521,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsPlaybackSubtitle =>
-      'Toistin, laatu, ääni, tekstitys, kappaleiden ohitus ja SyncPlay';
+      'Toistolaite, laatu, ääni, tekstitys, kohtien ohittaminen ja katselutilaisuudet';
 
   @override
   String get settingsStorageSubtitle =>
@@ -16511,10 +16561,35 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsSkippingAndQueueSection => 'Ohitus & Jono';
 
   @override
-  String get settingsWatchTogetherSection => 'Katso Yhdessä';
+  String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
   String get settingsAdvancedSection => 'Edistynyt';
+
+  @override
+  String get settingsDecodingAndRenderingSection => 'Dekoodaus & Renderointi';
+
+  @override
+  String get settingsAudioStreamSection => 'Audio Striimi';
+
+  @override
+  String get settingsAudioOutputSection => 'Audio Uloslähtö';
+
+  @override
+  String get settingsPassthroughSettingsSection => 'Passthrough asetukset';
+
+  @override
+  String get settingsSeerrHomePageRowsSection => 'Seerr Rivi Kotisivulla';
+
+  @override
+  String get settingsSavedCustomHomeRowsSection =>
+      'Tallennetut mukautetut kotirivit';
+
+  @override
+  String get settingsRewatchSection => 'Katso uudelleen';
+
+  @override
+  String get favoritesSwitchViewSection => 'Vaihda näkymää';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17234,7 +17309,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get siloPinUnlock => 'Avaa';
 
   @override
-  String get siloPinRemember => 'Remember PIN on this device';
+  String get siloPinRemember => 'Tallenna PIN koodi tähän laitteeseen';
 
   @override
   String get siloPinWrong => 'Tuo PIN-koodi ei ole oikea.';
@@ -17548,6 +17623,71 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsPreviewNotShown => 'Ei näkyvissä esikatselussa';
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
+    return 'Albumit, artistit ja soittolistat on kaikki poistettu käytöstä. Jos haluat näyttää jonkin näistä, siirry kohtaan Rivit, avaa $group kohdasta$disabled ,ja ota se käyttöön.';
+  }
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'Jos haluat nähdä albumit, artistit tai äänisoittolistat Etusivulla, ota ensin käyttöön $setting Siirry sitten kohtaan Rivit, avaa $group kohdassa $disabled ja ota yksi niistä käyttöön.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRows(
+    String group,
+    String disabled,
+  ) {
+    return 'Kokoelmat rivi on poistettu käytöstä. Jos haluat tuoda sen näkyviin, siirry kohtaan Rivit, avaa $group kohdassa $disabled ja ota se käyttöön.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'Jos haluat nähdä Kokoelmat-rivin Etusivulla, ota ensin käyttöön $setting. Siirry sitten kohtaan Rivit, avaa $group kohdassa $disabled ja ota se käyttöön.';
+  }
+
+  @override
+  String get settingsPreviewRowsOffInKidsMode =>
+      'Kids Mode nämä rivit eivät näy aloitussivulla, joten nämä asetukset eivät vaikuta siihen.';
+
+  @override
+  String settingsPreviewNeedsRowInRows(String disabled) {
+    return 'Valitse rivi kohdassa Rivit, osiossa $disabled';
+  }
+
+  @override
+  String settingsPreviewNeedsSwitchAndRow(String setting) {
+    return 'Ota $setting käyttöön ja valitse sitten rivi kohdasta Rows';
+  }
+
+  @override
+  String get settingsPreviewKeptOffByKidsMode =>
+      'Kids Mode pitää tämän pois päältä Etusivu';
+
+  @override
+  String get settingsPreviewAudioRowsEmpty =>
+      'Musiikkia ei ole näytettävissä, joten Home jättää nämä rivit pois.';
+
+  @override
+  String get settingsPreviewRowsEmpty =>
+      'Näissä riveissä ei ole mitään näytettävää, joten Home jättää ne pois.';
+
+  @override
+  String get settingsPreviewCollectionsEmpty =>
+      'Näytettäviä kokoelmia ei ole, joten Home jättää tämän rivin pois.';
+
+  @override
+  String get settingsPreviewShowEpisodesNote =>
+      'Tämä muuttaa vain niiden kokoelmien rivejä, jotka on lisätty Rows-kohtaan. Kokoelma rivi näyttää samalta.';
 
   @override
   String get settingsPreviewSaved => 'Tallennettu';

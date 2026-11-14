@@ -241,7 +241,13 @@ class _SyncPlayScreenState extends ConsumerState<SyncPlayScreen> {
             ),
           ],
         ),
-        body: _buildBody(context, manager, l10n),
+        // An opened folding phone on its side keeps the clock in a top
+        // corner, over the Create group button.
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: _buildBody(context, manager, l10n),
+        ),
       ),
     );
   }

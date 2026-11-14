@@ -467,20 +467,17 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
-    // Moonbase for Plex has no push.
-    if (client.serverType != ServerType.plex) {
-      // Register the FCM token now that a session exists. Startup registration
-      // bails before login, so this is where closed-app push actually enrolls.
-      if (PlatformDetection.isMobile) {
-        try {
-          if (GetIt.instance.isRegistered<PushMessagingService>()) {
-            await GetIt.instance<PushMessagingService>()
-                .registerWithCurrentToken();
-          }
-        } catch (_) {}
-      }
-      await _pluginSyncService.syncNotificationPrefs(client);
+    // Register the FCM token now that a session exists. This is where Firebase
+    // first starts, and only when the plugin can deliver push.
+    if (PlatformDetection.isMobile) {
+      try {
+        if (GetIt.instance.isRegistered<PushMessagingService>()) {
+          await GetIt.instance<PushMessagingService>()
+              .registerWithCurrentToken();
+        }
+      } catch (_) {}
     }
+    await _pluginSyncService.syncNotificationPrefs(client);
 
     final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
@@ -529,9 +526,11 @@ class SessionRepository {
       }
 
       // init language prefs if not already set
-      if (serverUser.configuration != null) {
+      if (serverUser.configuration != null &&
+          GetIt.instance.isRegistered<UserPreferences>()) {
         GetIt.instance<UserPreferences>().initLanguagePrefs(
           serverUser.configuration!,
+          expectedProfileScope: '${serverId}_${user.id}',
         );
       }
     } on DioException catch (e) {
@@ -717,6 +716,15 @@ class SessionRepository {
     }());
   }
 
+  bool _hasOtherSignedInUser(String? serverId, String? userId) =>
+      _authStore.getServers().any(
+        (server) => _authStore.getUsers(server.id).any(
+          (u) =>
+              u.accessToken.isNotEmpty &&
+              !(u.serverId == serverId && u.id == userId),
+        ),
+      );
+
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
   List<PrivateUser> _siloSiblings(String serverId, String? userId) {
@@ -801,7 +809,9 @@ class SessionRepository {
     if (PlatformDetection.isMobile && !tokenKnownInvalid) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {
-          await GetIt.instance<PushMessagingService>().unregister();
+          await GetIt.instance<PushMessagingService>().unregister(
+            deleteToken: !_hasOtherSignedInUser(serverId, userId),
+          );
         }
       } catch (_) {}
     }
