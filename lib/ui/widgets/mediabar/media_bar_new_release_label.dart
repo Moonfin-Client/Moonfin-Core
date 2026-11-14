@@ -165,8 +165,17 @@ class MediaBarNewReleaseLine extends StatelessWidget {
     final days = calendarDaysBetween(DateTime.now(), local);
     if (days <= 0) return l10n.upcomingEpisodeToday;
     if (days == 1) return l10n.upcomingEpisodeTomorrow;
+    // Whole phrases, so an untranslated one never mixes in a local day name.
     if (days < 7) {
-      return l10n.mediaBarThisWeekday(DateFormat.EEEE(locale).format(local));
+      return switch (local.weekday) {
+        DateTime.monday => l10n.mediaBarThisMonday,
+        DateTime.tuesday => l10n.mediaBarThisTuesday,
+        DateTime.wednesday => l10n.mediaBarThisWednesday,
+        DateTime.thursday => l10n.mediaBarThisThursday,
+        DateTime.friday => l10n.mediaBarThisFriday,
+        DateTime.saturday => l10n.mediaBarThisSaturday,
+        _ => l10n.mediaBarThisSunday,
+      };
     }
     return l10n.mediaBarOnDate(DateFormat.MMMd(locale).format(local));
   }

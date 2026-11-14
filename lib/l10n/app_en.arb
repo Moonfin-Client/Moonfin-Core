@@ -6837,14 +6837,33 @@
   "@mediaBarUpcomingMovie": {
     "description": "Media bar label on a movie Radarr expects on the server soon"
   },
-  "mediaBarThisWeekday": "This {day}",
-  "@mediaBarThisWeekday": {
-    "description": "When something upcoming comes out later this week. The day is the weekday name",
-    "placeholders": {
-      "day": {
-        "type": "String"
-      }
-    }
+  "mediaBarThisMonday": "This Monday",
+  "@mediaBarThisMonday": {
+    "description": "Media bar: something upcoming comes out on Monday this week"
+  },
+  "mediaBarThisTuesday": "This Tuesday",
+  "@mediaBarThisTuesday": {
+    "description": "Media bar: something upcoming comes out on Tuesday this week"
+  },
+  "mediaBarThisWednesday": "This Wednesday",
+  "@mediaBarThisWednesday": {
+    "description": "Media bar: something upcoming comes out on Wednesday this week"
+  },
+  "mediaBarThisThursday": "This Thursday",
+  "@mediaBarThisThursday": {
+    "description": "Media bar: something upcoming comes out on Thursday this week"
+  },
+  "mediaBarThisFriday": "This Friday",
+  "@mediaBarThisFriday": {
+    "description": "Media bar: something upcoming comes out on Friday this week"
+  },
+  "mediaBarThisSaturday": "This Saturday",
+  "@mediaBarThisSaturday": {
+    "description": "Media bar: something upcoming comes out on Saturday this week"
+  },
+  "mediaBarThisSunday": "This Sunday",
+  "@mediaBarThisSunday": {
+    "description": "Media bar: something upcoming comes out on Sunday this week"
   },
   "mediaBarOnDate": "{date}",
   "@mediaBarOnDate": {

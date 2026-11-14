@@ -9172,11 +9172,47 @@ abstract class AppLocalizations {
   /// **'Coming Soon'**
   String get mediaBarUpcomingMovie;
 
-  /// When something upcoming comes out later this week. The day is the weekday name
+  /// Media bar: something upcoming comes out on Monday this week
   ///
   /// In en, this message translates to:
-  /// **'This {day}'**
-  String mediaBarThisWeekday(String day);
+  /// **'This Monday'**
+  String get mediaBarThisMonday;
+
+  /// Media bar: something upcoming comes out on Tuesday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Tuesday'**
+  String get mediaBarThisTuesday;
+
+  /// Media bar: something upcoming comes out on Wednesday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Wednesday'**
+  String get mediaBarThisWednesday;
+
+  /// Media bar: something upcoming comes out on Thursday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Thursday'**
+  String get mediaBarThisThursday;
+
+  /// Media bar: something upcoming comes out on Friday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Friday'**
+  String get mediaBarThisFriday;
+
+  /// Media bar: something upcoming comes out on Saturday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Saturday'**
+  String get mediaBarThisSaturday;
+
+  /// Media bar: something upcoming comes out on Sunday this week
+  ///
+  /// In en, this message translates to:
+  /// **'This Sunday'**
+  String get mediaBarThisSunday;
 
   /// When something upcoming comes out more than a week from now. The date is already formatted, like Nov 21
   ///

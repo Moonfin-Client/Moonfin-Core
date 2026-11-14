@@ -5222,9 +5222,25 @@ class AppLocalizationsMk extends AppLocalizations {
   String get mediaBarUpcomingMovie => 'Coming Soon';
 
   @override
-  String mediaBarThisWeekday(String day) {
-    return 'This $day';
-  }
+  String get mediaBarThisMonday => 'This Monday';
+
+  @override
+  String get mediaBarThisTuesday => 'This Tuesday';
+
+  @override
+  String get mediaBarThisWednesday => 'This Wednesday';
+
+  @override
+  String get mediaBarThisThursday => 'This Thursday';
+
+  @override
+  String get mediaBarThisFriday => 'This Friday';
+
+  @override
+  String get mediaBarThisSaturday => 'This Saturday';
+
+  @override
+  String get mediaBarThisSunday => 'This Sunday';
 
   @override
   String mediaBarOnDate(String date) {
