@@ -1086,6 +1086,29 @@ void main() {
       expect(played(vm, 'Arvistel'), isTrue);
     });
 
+    test('a series lookup that fails for some episodes still brings the '
+        'others up to date', () async {
+      signInToFakeServers();
+      a.series = [catalogMovie('s1', 'Arvistel', type: 'Series')];
+      a.seriesOf['e1'] = 's1';
+      await catalog.forceFullRead();
+      final vm = await viewModel(kind: UnifiedLibraryKind.series);
+      await vm.load();
+
+      // More episodes than one lookup asks about, the failing one first.
+      a.failingParentIds.add('lost');
+      a.setUserData('s1', {'Played': true});
+      final complete = await catalog.refreshSeriesOf([
+        'lost',
+        for (var i = 0; i < 99; i++) 'other$i',
+        'e1',
+      ]);
+
+      expect(complete, isFalse);
+      expect(a.parentRequests.last, ['e1']);
+      expect(played(vm, 'Arvistel'), isTrue);
+    });
+
     test('changed for one title brings only its card up to date', () async {
       signInToFakeServers();
       a.movies = numbered('a', [for (var i = 0; i < 40; i++) i]);

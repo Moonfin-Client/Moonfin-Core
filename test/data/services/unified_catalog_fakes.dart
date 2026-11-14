@@ -218,6 +218,9 @@ class FakeCatalogServer {
   /// The ids of each request for what holds them.
   final parentRequests = <List<String>>[];
 
+  /// A series lookup that asks about any of these fails.
+  final failingParentIds = <String>{};
+
   void Function()? afterUserDataRequest;
 
   ServerUserSession get session => fakeSession(
@@ -397,6 +400,9 @@ class FakeCatalogServer {
 
   Future<Map<String, dynamic>> _answerParents(List<String> ids) async {
     if (down) throw StateError('$id is down');
+    if (ids.any(failingParentIds.contains)) {
+      throw StateError('$id dropped the connection');
+    }
     parentRequests.add(ids);
     return {
       'Items': [

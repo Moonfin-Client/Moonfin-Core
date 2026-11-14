@@ -2222,6 +2222,7 @@ class UnifiedCatalogService extends ChangeNotifier {
         if (!entries.containsKey(id)) id,
     ];
     final series = <String>{};
+    var complete = true;
     for (final chunk in asked.slices(_userDataChunk)) {
       try {
         final response = await session.client.itemsApi
@@ -2247,11 +2248,16 @@ class UnifiedCatalogService extends ChangeNotifier {
           'UnifiedCatalog: watched series of ${session.server.name} not '
           'found: $e',
         );
-        return false;
+        complete = false;
       }
     }
-    if (series.isEmpty) return true;
-    return _refreshServerUserData(session, series.toList(), generation);
+    if (series.isEmpty) return complete;
+    final refreshed = await _refreshServerUserData(
+      session,
+      series.toList(),
+      generation,
+    );
+    return refreshed && complete;
   }
 
   Future<bool> _refreshServerUserData(
@@ -2259,6 +2265,7 @@ class UnifiedCatalogService extends ChangeNotifier {
     List<String> ids,
     int generation,
   ) async {
+    var complete = true;
     for (var start = 0; start < ids.length; start += _userDataChunk) {
       final chunk = ids.sublist(start, min(start + _userDataChunk, ids.length));
       try {
@@ -2285,10 +2292,10 @@ class UnifiedCatalogService extends ChangeNotifier {
         _logger.w(
           'UnifiedCatalog: watched state of ${session.server.name} not read: $e',
         );
-        return false;
+        complete = false;
       }
     }
-    return true;
+    return complete;
   }
 
   /// Applies [serverId]'s user data to its own copy, by item id. Another
