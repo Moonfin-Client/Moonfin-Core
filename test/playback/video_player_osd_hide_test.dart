@@ -514,6 +514,17 @@ void main() {
       }
     }
 
+    Future<void> pausedWithControlsUp(WidgetTester tester) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+      manager.state.setPlaying(false);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 300);
+    }
+
     test('grows from the set step to 30, 60 and 180 seconds', () {
       expect(
         [
@@ -621,14 +632,7 @@ void main() {
     testWidgets('set to seek only while paused, resuming drops a hold', (
       tester,
     ) async {
-      await GetIt.instance<UserPreferences>().set(
-        UserPreferences.appleTvClickpadSeekMode,
-        AppleTvClickpadSeekMode.pausedOnly,
-      );
-      await playOnTv(tester);
-      manager.state.setPlaying(false);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await advance(tester, 300);
+      await pausedWithControlsUp(tester);
 
       await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
       await advance(tester, 200);
@@ -636,6 +640,24 @@ void main() {
       await advance(tester, 600);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a hold ended before its first step stays ended', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPlaying(true);
+      await advance(tester, 400);
+      manager.state.setPlaying(false);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 600);
       expect(manager.seeks, isEmpty);
 
       await tester.pump(const Duration(seconds: 2));

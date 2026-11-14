@@ -3599,6 +3599,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     firstStep(back ? -_heldSeekBaseMs : _heldSeekBaseMs);
     _heldSeekTimer = Timer(_heldSeekStartDelay, () {
       _stepHeldSeek();
+      if (_heldSeekKey == null) return;
       _heldSeekTimer = Timer.periodic(_heldSeekStepEvery, (timer) {
         if (_heldSeekStartDelay + _heldSeekStepEvery * timer.tick >
             _heldSeekLimit) {
