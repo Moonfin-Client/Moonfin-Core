@@ -1748,7 +1748,9 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
   ];
 
   final banner = Padding(
-    padding: EdgeInsets.fromLTRB(16, _phone ? 24 : 0, 16, 8),
+    padding: _phone
+        ? const EdgeInsets.fromLTRB(16, 24, 16, 8)
+        : const EdgeInsets.fromLTRB(24, 0, 24, 8),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
