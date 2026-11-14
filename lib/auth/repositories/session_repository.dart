@@ -1190,7 +1190,7 @@ class SessionRepository {
     int startIndex,
     PlayMessage message,
   ) async {
-    _remoteNavigationGeneration++;
+    final generation = ++_remoteNavigationGeneration;
     _remoteSearch?.close();
     final item = items[startIndex];
     final isLiveTv = _isLiveTvItem(item);
@@ -1200,7 +1200,7 @@ class SessionRepository {
           )
         : true;
 
-    _ensurePlayerRouteForItem(item);
+    if (!await _ensurePlayerRouteForItem(item, generation)) return;
     await manager.playItems(
       items,
       startIndex: startIndex,
@@ -1224,11 +1224,31 @@ class SessionRepository {
         item.rawData['TimerId'] != null;
   }
 
-  void _ensurePlayerRouteForItem(AggregatedItem item) {
-    final currentPath = appRouter.routerDelegate.currentConfiguration.uri.path;
+  /// Opens the player [item] plays in, unless one is already open. Returns
+  /// false when a newer remote command took over while Live TV was closing.
+  Future<bool> _ensurePlayerRouteForItem(
+    AggregatedItem item,
+    int generation,
+  ) async {
+    // A pushed player leaves the configuration's uri on the page under it, so
+    // only the top route shows a player already open. Reading the uri pushed a
+    // second player, which a later Stop left behind empty.
+    final currentPath = _remoteRoutePath;
     if (currentPath == Destinations.videoPlayer ||
         currentPath == Destinations.audioPlayer) {
-      return;
+      return true;
+    }
+    if (currentPath == Destinations.liveTvPlayer) {
+      // Pushed over Live TV, the new player left it underneath for Stop to
+      // uncover. Live TV stops the manager when its page goes, so it has to be
+      // gone before the new item starts or it would stop that one too.
+      final liveTv = _closeDialogsAbovePage();
+      _leaveTopPage();
+      if (liveTv != null) {
+        await liveTv.completed;
+        await WidgetsBinding.instance.endOfFrame;
+      }
+      if (generation != _remoteNavigationGeneration) return false;
     }
 
     final mediaType = item.rawData['MediaType'] as String?;
@@ -1238,9 +1258,32 @@ class SessionRepository {
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    appRouter.push(
+    _router.push(
       isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );
+    return true;
+  }
+
+  /// Closes any dialog above the top page and returns that page, so a later
+  /// step can tell it is still the same page and not just one at its path.
+  PageRoute<dynamic>? _closeDialogsAbovePage() {
+    PageRoute<dynamic>? page;
+    _router.routerDelegate.navigatorKey.currentState?.popUntil((route) {
+      if (route is! PageRoute) return false;
+      page = route;
+      return true;
+    });
+    return page;
+  }
+
+  /// Leaves the top page the way the viewer's own Back would, or goes home
+  /// when nothing is under it.
+  void _leaveTopPage() {
+    if (_router.canPop()) {
+      _router.pop();
+    } else {
+      _router.go(Destinations.home);
+    }
   }
 
   Future<void> _handlePlaystateMessage(PlaystateMessage message) async {
@@ -1252,7 +1295,7 @@ class SessionRepository {
       case 'play':
         await manager.resume();
       case 'stop':
-        await manager.stop(userInitiated: false);
+        await _stopRemotePlayback(manager);
       case 'seek':
         final seek = _durationFromTicks(message.seekPositionTicks);
         if (seek != null) {
@@ -1277,6 +1320,41 @@ class SessionRepository {
       default:
         break;
     }
+  }
+
+  /// Screens that show what the playback manager plays, and so are left empty
+  /// once it stops.
+  static const _remoteStopPlayerRoutes = {
+    Destinations.videoPlayer,
+    Destinations.audioPlayer,
+    Destinations.liveTvPlayer,
+  };
+
+  /// Stops playback and leaves its player the way the viewer's own Back would,
+  /// so a remote Stop doesn't strand an empty player on screen. Any other page
+  /// stays where it is.
+  Future<void> _stopRemotePlayback(PlaybackManager manager) async {
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) {
+      await manager.stop(userInitiated: false);
+      return;
+    }
+    final generation = ++_remoteNavigationGeneration;
+    final player = _closeDialogsAbovePage();
+    final backend = manager.backend;
+    if (OverlaySheetController.hasOpenSheet) {
+      await OverlaySheetController.closeAllSheets();
+    }
+    // A PlayNow while the sheets closed started something this Stop predates.
+    if (generation != _remoteNavigationGeneration) return;
+    await manager.stop(userInitiated: false);
+    if (generation != _remoteNavigationGeneration) return;
+    if (backend is NativeApplePlayerBackend) await backend.dismissPlayer();
+    if (generation != _remoteNavigationGeneration) return;
+    // The player may have closed itself while playback stopped, or the viewer
+    // may have left it, even for another player at the same path.
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) return;
+    if (player != null && !player.isCurrent) return;
+    _leaveTopPage();
   }
 
   /// Moves playback by the same amount this device's own skip buttons use, so
