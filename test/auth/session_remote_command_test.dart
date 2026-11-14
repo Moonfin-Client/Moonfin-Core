@@ -787,6 +787,72 @@ void main() {
     });
   }
 
+  group('remote Stop', () {
+    Future<GoRouter> mountRouter(WidgetTester tester) async {
+      final router = GoRouter(
+        initialLocation: Destinations.home,
+        routes: [
+          for (final path in [
+            Destinations.home,
+            Destinations.search,
+            Destinations.videoPlayer,
+          ])
+            GoRoute(path: path, builder: (_, _) => Text(path)),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      return router;
+    }
+
+    SessionRepository receiverFor(GoRouter router) => SessionRepository(
+      _FakeAuthStore(),
+      _FakeAuthPrefs(),
+      _FakeCredentialStore(),
+      _FakeClientFactory(),
+      _FakeSocketHandler(),
+      _FakeServerRepository(),
+      _FakeUserRepository(),
+      _FakePluginSyncService(),
+      router: router,
+    );
+
+    testWidgets('closes the player it stopped', (tester) async {
+      final router = await mountRouter(tester);
+      final receiver = receiverFor(router);
+      unawaited(router.push(Destinations.videoPlayer));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, Destinations.videoPlayer);
+      await receiver.handleRemoteCommandForTest(
+        PlaystateMessage(command: 'Stop'),
+      );
+      await tester.pumpAndSettle();
+      expect(manager.calls, ['stop']);
+      expect(Destinations.isPlayerRoute(router.state.uri.path), isFalse);
+      expect(router.state.uri.path, Destinations.home);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+    });
+
+    testWidgets('leaves any other page where it is', (tester) async {
+      final router = await mountRouter(tester);
+      final receiver = receiverFor(router);
+      unawaited(router.push(Destinations.search));
+      await tester.pumpAndSettle();
+      await receiver.handleRemoteCommandForTest(
+        PlaystateMessage(command: 'Stop'),
+      );
+      await tester.pumpAndSettle();
+      expect(manager.calls, ['stop']);
+      expect(router.state.uri.path, Destinations.search);
+      expect(router.routerDelegate.currentConfiguration.matches.length, 2);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+    });
+  });
+
   group('play and pause', () {
     test('PlayPause pauses what is playing', () async {
       manager.state.setPlaying(true);

@@ -1252,7 +1252,7 @@ class SessionRepository {
       case 'play':
         await manager.resume();
       case 'stop':
-        await manager.stop(userInitiated: false);
+        await _stopRemotePlayback(manager);
       case 'seek':
         final seek = _durationFromTicks(message.seekPositionTicks);
         if (seek != null) {
@@ -1276,6 +1276,43 @@ class SessionRepository {
         await _remoteSkip(manager, forward: true);
       default:
         break;
+    }
+  }
+
+  /// Screens that show what the playback manager plays, and so are left empty
+  /// once it stops.
+  static const _remoteStopPlayerRoutes = {
+    Destinations.videoPlayer,
+    Destinations.audioPlayer,
+    Destinations.liveTvPlayer,
+  };
+
+  /// Stops playback and leaves its player the way the viewer's own Back would,
+  /// so a remote Stop doesn't strand an empty player on screen. Any other page
+  /// stays where it is.
+  Future<void> _stopRemotePlayback(PlaybackManager manager) async {
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) {
+      await manager.stop(userInitiated: false);
+      return;
+    }
+    final generation = ++_remoteNavigationGeneration;
+    _router.routerDelegate.navigatorKey.currentState?.popUntil(
+      (route) => route is PageRoute,
+    );
+    final backend = manager.backend;
+    if (OverlaySheetController.hasOpenSheet) {
+      await OverlaySheetController.closeAllSheets();
+    }
+    await manager.stop(userInitiated: false);
+    if (generation != _remoteNavigationGeneration) return;
+    if (backend is NativeApplePlayerBackend) await backend.dismissPlayer();
+    if (generation != _remoteNavigationGeneration) return;
+    // The player may have closed itself while playback stopped.
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) return;
+    if (_router.canPop()) {
+      _router.pop();
+    } else {
+      _router.go(Destinations.home);
     }
   }
 
