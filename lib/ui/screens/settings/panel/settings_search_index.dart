@@ -1790,7 +1790,17 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         audio.leaf(
           'pref_audio_passthrough_output',
           l10n.settingsAudioPassthroughOutput,
-          keywords: ['iec', 'audiotrack', 'bitstream', 'packer', 'kodi', 'raw'],
+          subtitle: l10n.settingsAudioPassthroughOutputDescription,
+          keywords: [
+            'iec',
+            'audiotrack',
+            'bitstream',
+            'packer',
+            'kodi',
+            'raw',
+            'no sound',
+            'silence',
+          ],
         ),
       audio.leaf(
         'pref_downmix_to_stereo',
