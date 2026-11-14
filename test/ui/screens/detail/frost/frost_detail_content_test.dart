@@ -13,6 +13,8 @@ import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart'
+    show DesktopUiScale;
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
@@ -21,6 +23,7 @@ import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_navbar.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -388,34 +391,85 @@ void main() {
     expect(narrow.height, closeTo(768, 0.01));
   });
 
-  test('a desktop window holds the stage to the UI scale', () {
-    final fourK = frostStageSize(
-      const BoxConstraints.tightFor(width: 3840, height: 2160),
-      maxMagnification: 1,
+  test('a window draws the stage at the UI scale while it fits', () {
+    Size stage(double width, double height, double uiScale) => frostStageSize(
+      BoxConstraints.tightFor(width: width, height: height),
+      uiScale: uiScale,
+      fill: false,
     );
-    expect(fourK.width, closeTo(3840, 0.01));
-    expect(fourK.height, closeTo(2160, 0.01));
-    final scaled = frostStageSize(
-      const BoxConstraints.tightFor(width: 3840, height: 2160),
-      maxMagnification: 1.6,
+
+    expect(stage(3840, 2160, 1), const Size(3840, 2160));
+    final big = stage(3840, 2160, 1.6);
+    expect(big.width, closeTo(2400, 0.01));
+    expect(big.height, closeTo(1350, 0.01));
+    final small = stage(3840, 2160, 0.9);
+    expect(small.width, closeTo(4266.67, 0.01));
+    expect(small.height, closeTo(2400, 0.01));
+    // 1280 by 720 at 1.6 doesn't fit 1920 by 1080, so it fills the room.
+    expect(stage(1920, 1080, 1.6), const Size(1280, 720));
+    expect(stage(800, 600, 1).width, closeTo(1280, 0.01));
+  });
+
+  test('a TV fills its room at the default UI scale and only shrinks from '
+      'there', () {
+    Size stage(double uiScale) => frostStageSize(
+      const BoxConstraints.tightFor(width: 1920, height: 1080),
+      uiScale: uiScale,
     );
-    expect(scaled.width, closeTo(2400, 0.01));
-    expect(scaled.height, closeTo(1350, 0.01));
-    // Under the cap the stage still fills the room, and never drops below
-    // 1280 by 720.
+
+    expect(stage(1), const Size(1280, 720));
+    expect(stage(1.6), const Size(1280, 720));
+    final small = stage(0.9);
+    expect(small.width, closeTo(1422.22, 0.01));
+    expect(small.height, closeTo(800, 0.01));
+  });
+
+  testWidgets('text gives back the part of the UI scale the stage carries', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(3840, 2160);
+    addTearDown(tester.view.reset);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    await prefs.set(
+      UserPreferences.desktopUiScale,
+      DesktopUiScale.greatGrandparents,
+    );
+    const box = Key('box');
+    late double textScale;
+
+    Future<void> pumpStage() async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(1.6)),
+            child: FrostStage(
+              navbarTop: false,
+              child: Builder(
+                builder: (context) {
+                  textScale = MediaQuery.textScalerOf(context).scale(1);
+                  return const Align(
+                    alignment: Alignment.topLeft,
+                    child: SizedBox(key: box, width: 100, height: 100),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    await pumpStage();
+    expect(textScale, closeTo(1, 0.001));
+    expect(tester.getRect(find.byKey(box)).width, closeTo(160, 0.01));
+
+    PlatformDetection.setTvMode(true);
+    await pumpStage();
+    expect(textScale, closeTo(1.6, 0.001));
     expect(
-      frostStageSize(
-        const BoxConstraints.tightFor(width: 1920, height: 1080),
-        maxMagnification: 1.6,
-      ),
-      const Size(1280, 720),
-    );
-    expect(
-      frostStageSize(
-        const BoxConstraints.tightFor(width: 800, height: 600),
-        maxMagnification: 1,
-      ).width,
-      closeTo(1280, 0.01),
+      tester.getRect(find.byKey(box)).width,
+      closeTo(100 * (3840 - 72) / 1280, 0.01),
     );
   });
 
