@@ -2063,10 +2063,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             .get(UserPreferences.appleTvClickpadSeekMode)
             .allowsSeek(
               controlsVisible: _infoVisible,
-              playing: _state.isPlaying,
+              playing: !_state.isPaused,
             );
         _clickpadBlockedKey = allowed ? null : event.logicalKey;
         if (!allowed) {
+          _seekCommitTimer?.cancel();
+          if (_seekTarget != null) setState(() => _seekTarget = null);
           _showInfo(focusButtons: false);
           return KeyEventResult.handled;
         }

@@ -3612,6 +3612,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _stepHeldSeek() {
+    if (!_clickpadSeekAllowed) {
+      _endHeldSeek();
+      _dropScrubSession(resume: false);
+      return;
+    }
     final ms = heldSeekStepMs(_heldSeekBaseMs, ++_heldSeekCount);
     _seekRelativeAccumulate(
       _heldSeekKey == LogicalKeyboardKey.arrowLeft ? -ms : ms,
@@ -3626,7 +3631,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   bool get _clickpadSeekAllowed => _prefs
       .get(UserPreferences.appleTvClickpadSeekMode)
-      .allowsSeek(controlsVisible: _controlsVisible, playing: _state.isPlaying);
+      .allowsSeek(controlsVisible: _controlsVisible, playing: !_state.isPaused);
 
   SubtitleViewConfiguration _buildSubtitleConfig() =>
       buildSubtitleViewConfiguration(
@@ -3819,7 +3824,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         // key-release and play is what commits. Otherwise release commits
         // directly.
         if (!_pauseDuringScrub) {
-          _commitPendingScrub();
+          if (_clickpadSeekAllowed) {
+            _commitPendingScrub();
+          } else {
+            _dropScrubSession(resume: false);
+          }
         }
       }
       return KeyEventResult.ignored;

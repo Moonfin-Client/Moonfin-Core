@@ -547,6 +547,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
     expect(manager.seeks, [twoHours - const Duration(seconds: 10)]);
 
+    // Resumed before the step lands, the next press drops it.
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    manager.state.setPlaying(true);
+    await press(tester, LogicalKeyboardKey.arrowLeft);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(manager.seeks, hasLength(1));
+
     await tester.pumpWidget(const SizedBox());
   });
 
