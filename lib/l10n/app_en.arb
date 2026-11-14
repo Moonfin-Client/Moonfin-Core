@@ -17686,5 +17686,13 @@
   "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+  },
+  "remoteMediaNotificationTitle": "Remote playback notification",
+  "@remoteMediaNotificationTitle": {
+    "description": "Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing"
+  },
+  "remoteMediaNotificationSubtitle": "Show system media controls when watching on another device",
+  "@remoteMediaNotificationSubtitle": {
+    "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
   }
 }

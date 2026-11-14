@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -11,6 +13,197 @@ import '../../l10n/app_localizations.dart';
 import '../util/error_message.dart';
 import '../../util/audio_labels.dart';
 import 'overlay_sheet.dart';
+
+Object? _activeCastControlsToken;
+
+String _formatCastDuration(Duration d) {
+  final h = d.inHours;
+  final m = d.inMinutes.remainder(60);
+  final s = d.inSeconds.remainder(60);
+  if (h > 0) {
+    return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+  return '$m:${s.toString().padLeft(2, '0')}';
+}
+
+String _castKindLabel(AppLocalizations l10n, CastTargetKind kind) =>
+    switch (kind) {
+      CastTargetKind.googleCast => l10n.castGoogleCast,
+      CastTargetKind.airPlay => l10n.castAirPlay,
+      CastTargetKind.dlna => l10n.castDlna,
+      CastTargetKind.jellyfinSession => l10n.castRemotePlayback,
+    };
+
+Future<void> _runCastAction(
+  ScaffoldMessengerState? messenger,
+  AppLocalizations l10n,
+  Future<void> Function() action,
+) async {
+  try {
+    await action();
+  } catch (e) {
+    if (messenger == null || !messenger.mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.castControlFailed(describeError(e, l10n))),
+      ),
+    );
+  }
+}
+
+/// Opens the transport and volume control sheet for the active [CastService]
+/// target (Google Cast, AirPlay, DLNA, or Jellyfin cast session).
+void showCastControlsSheet(
+  BuildContext context, {
+  CastService? castService,
+}) {
+  if (_activeCastControlsToken != null) return;
+  final service = castService ?? GetIt.instance<CastService>();
+  final kind = service.activeKindNotifier.value;
+  if (kind == null) return;
+
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  final stateVal = service.remoteStateNotifier.value;
+  final positionTicks = service.remotePositionNotifier.value;
+  final token = Object();
+  _activeCastControlsToken = token;
+
+  showFocusRestoringModalBottomSheet<void>(
+    context: context,
+    backgroundColor: AppColorScheme.surface,
+    builder: (ctx) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: Text(
+              l10n.castKindControls(_castKindLabel(l10n, kind)),
+              style: TextStyle(
+                color: AppColorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: stateVal != null
+                ? Text(
+                    '${stateVal[0].toUpperCase()}${stateVal.substring(1)}'
+                    ' · ${_formatCastDuration(Duration(microseconds: positionTicks ~/ 10))}',
+                    style: TextStyle(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.54),
+                    ),
+                  )
+                : null,
+          ),
+          if (kind != CastTargetKind.airPlay)
+            // The level arrives after the sheet is already open for a
+            // receiver that has to be asked for it, so the whole tile
+            // follows the notifier rather than a value read once here.
+            ValueListenableBuilder<double?>(
+              valueListenable: service.remoteVolumeNotifier,
+              builder: (context, vol, _) => ListTile(
+                leading: Icon(
+                  Icons.volume_up_rounded,
+                  color: AppColorScheme.onSurface,
+                ),
+                title: Text(
+                  l10n.castDeviceVolume,
+                  style: TextStyle(color: AppColorScheme.onSurface),
+                ),
+                subtitle: vol == null
+                    ? Text(
+                        l10n.castVolumeUnavailable,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface.withValues(alpha: 0.54),
+                        ),
+                      )
+                    : SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: AppColorScheme.accent,
+                          inactiveTrackColor:
+                              AppColorScheme.onSurface.withValues(alpha: 0.24),
+                          thumbColor: AppColorScheme.onSurface,
+                          overlayColor:
+                              AppColorScheme.onSurface.withValues(alpha: 0.24),
+                        ),
+                        child: Slider(
+                          value: vol.clamp(0.0, 1.0),
+                          min: 0,
+                          max: 1,
+                          onChanged: (value) {
+                            service.remoteVolumeNotifier.value = value;
+                            unawaited(
+                              _runCastAction(
+                                messenger,
+                                l10n,
+                                () => service.setVolume(kind, volume: value),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                trailing: vol == null
+                    ? null
+                    : Text(
+                        '${(vol * 100).round()}%',
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
+              ),
+            ),
+          ListTile(
+            leading: Icon(
+              Icons.play_arrow_rounded,
+              color: AppColorScheme.onSurface,
+            ),
+            title: Text(
+              l10n.play,
+              style: TextStyle(color: AppColorScheme.onSurface),
+            ),
+            onTap: () {
+              Navigator.of(ctx).pop();
+              unawaited(_runCastAction(messenger, l10n, () => service.play(kind)));
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.pause_rounded,
+              color: AppColorScheme.onSurface,
+            ),
+            title: Text(
+              l10n.pause,
+              style: TextStyle(color: AppColorScheme.onSurface),
+            ),
+            onTap: () {
+              Navigator.of(ctx).pop();
+              unawaited(
+                _runCastAction(messenger, l10n, () => service.pause(kind)),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.stop_rounded,
+              color: AppColorScheme.onSurface,
+            ),
+            title: Text(
+              l10n.castStopKind(_castKindLabel(l10n, kind)),
+              style: TextStyle(color: AppColorScheme.onSurface),
+            ),
+            onTap: () {
+              Navigator.of(ctx).pop();
+              unawaited(_runCastAction(messenger, l10n, () => service.stop(kind)));
+            },
+          ),
+        ],
+      ),
+    ),
+  ).whenComplete(() {
+    if (identical(_activeCastControlsToken, token)) {
+      _activeCastControlsToken = null;
+    }
+  });
+}
 
 class CastMiniPlayer extends StatelessWidget {
   const CastMiniPlayer({super.key});
@@ -80,14 +273,6 @@ class _CastMiniPlayerContentState extends State<_CastMiniPlayerContent> {
     );
   }
 
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60);
-    final s = d.inSeconds.remainder(60);
-    if (h > 0) return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
-
   IconData get _kindIcon => switch (_kind) {
         CastTargetKind.googleCast => Icons.cast_connected,
         CastTargetKind.airPlay => Icons.airplay,
@@ -95,12 +280,7 @@ class _CastMiniPlayerContentState extends State<_CastMiniPlayerContent> {
         CastTargetKind.jellyfinSession => Icons.devices,
       };
 
-  String _kindLabel(AppLocalizations l10n) => switch (_kind) {
-        CastTargetKind.googleCast => l10n.castGoogleCast,
-        CastTargetKind.airPlay => l10n.castAirPlay,
-        CastTargetKind.dlna => l10n.castDlna,
-        CastTargetKind.jellyfinSession => l10n.castRemotePlayback,
-      };
+  String _kindLabel(AppLocalizations l10n) => _castKindLabel(l10n, _kind);
 
   Future<void> _doAction(Future<void> Function() action) async {
     try {
@@ -126,98 +306,7 @@ class _CastMiniPlayerContentState extends State<_CastMiniPlayerContent> {
   }
 
   void _showFullControls() {
-    final l10n = AppLocalizations.of(context);
-    final stateVal = _castService.remoteStateNotifier.value;
-    final positionTicks = _castService.remotePositionNotifier.value;
-
-    showFocusRestoringModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColorScheme.surface,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text(
-                  l10n.castKindControls(_kindLabel(l10n)),
-                  style: TextStyle(color: AppColorScheme.onSurface, fontWeight: FontWeight.w600),
-                ),
-                subtitle: stateVal != null
-                    ? Text(
-                        '${stateVal[0].toUpperCase()}${stateVal.substring(1)}'
-                        ' · ${_formatDuration(Duration(microseconds: positionTicks ~/ 10))}',
-                        style: TextStyle(color: AppColorScheme.onSurface.withValues(alpha: 0.54)),
-                      )
-                    : null,
-              ),
-              if (_kind != CastTargetKind.airPlay)
-                // The level arrives after the sheet is already open for a
-                // receiver that has to be asked for it, so the whole tile
-                // follows the notifier rather than a value read once here.
-                ValueListenableBuilder<double?>(
-                  valueListenable: _castService.remoteVolumeNotifier,
-                  builder: (context, vol, _) => ListTile(
-                    leading: Icon(Icons.volume_up_rounded, color: AppColorScheme.onSurface),
-                    title: Text(l10n.castDeviceVolume, style: TextStyle(color: AppColorScheme.onSurface)),
-                    subtitle: vol == null
-                        ? Text(l10n.castVolumeUnavailable, style: TextStyle(color: AppColorScheme.onSurface.withValues(alpha: 0.54)))
-                        : SliderTheme(
-                            data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: AppColorScheme.accent,
-                              inactiveTrackColor: AppColorScheme.onSurface.withValues(alpha: 0.24),
-                              thumbColor: AppColorScheme.onSurface,
-                              overlayColor: AppColorScheme.onSurface.withValues(alpha: 0.24),
-                            ),
-                            child: Slider(
-                              value: vol.clamp(0.0, 1.0),
-                              min: 0,
-                              max: 1,
-                              onChanged: (value) {
-                                _castService.remoteVolumeNotifier.value = value;
-                                _doAction(
-                                  () => _castService.setVolume(_kind, volume: value),
-                                );
-                              },
-                            ),
-                          ),
-                    trailing: vol == null
-                        ? null
-                        : Text(
-                            '${(vol * 100).round()}%',
-                            style: TextStyle(color: AppColorScheme.onSurface.withValues(alpha: 0.7)),
-                          ),
-                  ),
-                ),
-              ListTile(
-                leading: Icon(Icons.play_arrow_rounded, color: AppColorScheme.onSurface),
-                title: Text(l10n.play, style: TextStyle(color: AppColorScheme.onSurface)),
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _doAction(() => _castService.play(_kind));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.pause_rounded, color: AppColorScheme.onSurface),
-                title: Text(l10n.pause, style: TextStyle(color: AppColorScheme.onSurface)),
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _doAction(() => _castService.pause(_kind));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.stop_rounded, color: AppColorScheme.onSurface),
-                title: Text(l10n.castStopKind(_kindLabel(l10n)), style: TextStyle(color: AppColorScheme.onSurface)),
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _doAction(() => _castService.stop(_kind));
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    showCastControlsSheet(context, castService: _castService);
   }
 
   void _showTrackSelector({required bool audio}) {

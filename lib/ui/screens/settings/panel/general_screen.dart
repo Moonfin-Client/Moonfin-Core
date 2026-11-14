@@ -152,6 +152,13 @@ class _GeneralScreenState extends State<_GeneralScreen> {
                     subtitle: l10n.showConfirmationBeforeExiting,
                     icon: Icons.exit_to_app,
                   ),
+                  if (PlatformDetection.isAndroid && !PlatformDetection.isTV)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.remoteMediaNotification,
+                      title: l10n.remoteMediaNotificationTitle,
+                      subtitle: l10n.remoteMediaNotificationSubtitle,
+                      icon: Icons.cast_connected,
+                    ),
                 ],
               ),
             ],

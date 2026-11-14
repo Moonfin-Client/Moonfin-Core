@@ -596,6 +596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.showConfirmationBeforeExiting,
         keywords: ['quit', 'close'],
       ),
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV)
+      general.leaf(
+        'remote_media_notification',
+        l10n.remoteMediaNotificationTitle,
+        subtitle: l10n.remoteMediaNotificationSubtitle,
+        keywords: ['remote', 'notification', 'cast', 'media', 'controls'],
+      ),
     if (PlatformDetection.isAndroid)
       general.leaf('pref_performance_mode', l10n.performanceMode, keywords: [
         'memory',
