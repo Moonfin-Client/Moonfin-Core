@@ -951,13 +951,16 @@ void main() {
   });
 
   group('resuming from a pause with the controls up', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
     Future<void> resume(
       WidgetTester tester,
       LogicalKeyboardKey key, {
       required bool hideOnResume,
     }) async {
-      PlatformDetection.setTvMode(true);
-      addTearDown(() => PlatformDetection.setTvMode(false));
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.hideControlsOnResume,
         hideOnResume,
@@ -1003,8 +1006,6 @@ void main() {
     testWidgets('a resume with the controls hidden still shows them', (
       tester,
     ) async {
-      PlatformDetection.setTvMode(true);
-      addTearDown(() => PlatformDetection.setTvMode(false));
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.hideControlsOnResume,
         true,

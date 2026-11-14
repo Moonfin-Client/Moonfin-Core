@@ -11277,6 +11277,10 @@
   "@settingsHideControlsOnResumeDescription": {
     "description": "Description under the Hide Controls When Resuming playback setting"
   },
+  "settingsHideControlsOnResumeDescriptionApple": "When you press play on a paused video, the player controls disappear right away instead of waiting. Doesn't apply to the native player.",
+  "@settingsHideControlsOnResumeDescriptionApple": {
+    "description": "Description under the Hide Controls When Resuming playback setting on iPhone, iPad and Apple TV, where the setting has no effect on the native player"
+  },
   "settingsHdrControlsDimming": "Dim Controls in HDR",
   "@settingsHdrControlsDimming": {
     "description": "Playback setting for how much the player controls dim while HDR video plays"

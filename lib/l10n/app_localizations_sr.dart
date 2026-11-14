@@ -12291,6 +12291,10 @@ class AppLocalizationsSr extends AppLocalizations {
       'When you press play on a paused video, the player controls disappear right away instead of waiting.';
 
   @override
+  String get settingsHideControlsOnResumeDescriptionApple =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting. Doesn\'t apply to the native player.';
+
+  @override
   String get settingsHdrControlsDimming => 'Dim Controls in HDR';
 
   @override

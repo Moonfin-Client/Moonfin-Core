@@ -21436,6 +21436,12 @@ abstract class AppLocalizations {
   /// **'When you press play on a paused video, the player controls disappear right away instead of waiting.'**
   String get settingsHideControlsOnResumeDescription;
 
+  /// Description under the Hide Controls When Resuming playback setting on iPhone, iPad and Apple TV, where the setting has no effect on the native player
+  ///
+  /// In en, this message translates to:
+  /// **'When you press play on a paused video, the player controls disappear right away instead of waiting. Doesn\'t apply to the native player.'**
+  String get settingsHideControlsOnResumeDescriptionApple;
+
   /// Playback setting for how much the player controls dim while HDR video plays
   ///
   /// In en, this message translates to:

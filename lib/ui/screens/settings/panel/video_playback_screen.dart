@@ -202,7 +202,10 @@ class _VideoPlaybackScreen extends StatelessWidget {
               SwitchPreferenceTile(
                 preference: UserPreferences.hideControlsOnResume,
                 title: l10n.settingsHideControlsOnResume,
-                subtitle: l10n.settingsHideControlsOnResumeDescription,
+                // The native player keeps its own controls.
+                subtitle: offersApplePlayerChoice
+                    ? l10n.settingsHideControlsOnResumeDescriptionApple
+                    : l10n.settingsHideControlsOnResumeDescription,
                 icon: Icons.play_circle_outline,
               ),
               SliderPreferenceTile(

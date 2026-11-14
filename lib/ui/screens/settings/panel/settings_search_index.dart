@@ -1612,7 +1612,9 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf(
       'hideControlsOnResume',
       l10n.settingsHideControlsOnResume,
-      subtitle: l10n.settingsHideControlsOnResumeDescription,
+      subtitle: offersApplePlayerChoice
+          ? l10n.settingsHideControlsOnResumeDescriptionApple
+          : l10n.settingsHideControlsOnResumeDescription,
       keywords: ['osd', 'unpause', 'play', 'auto hide', 'player ui'],
     ),
     video.leaf(
