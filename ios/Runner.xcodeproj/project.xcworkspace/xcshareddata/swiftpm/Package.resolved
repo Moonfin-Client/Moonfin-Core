@@ -14,7 +14,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RadicalMuffinMan/AetherEngine",
       "state" : {
-        "revision" : "d55f374108310435cb877a2f550e19ee996f92ba"
+        "revision" : "34f149ba2dd483f490dca13a5a3027d58a9956f5"
       }
     },
     {
@@ -22,8 +22,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/app-check.git",
       "state" : {
-        "revision" : "3e33dd27dd4c69bd81c7c81fe61d8ccf58846902",
-        "version" : "11.3.1"
+        "revision" : "97f7d74dd0e8f3d0fe5fc75cc8957aa73bdc948a",
+        "version" : "11.3.2"
       }
     },
     {
@@ -67,8 +67,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/superuser404notfound/FFmpegBuild",
       "state" : {
-        "revision" : "2c7977df9c3e337e4d6a46cc506d7914d7d2b61e",
-        "version" : "3.10.1"
+        "revision" : "2ff2238f6b65d7686e71c8aa9e45fa4e26f33e1d",
+        "version" : "3.14.0"
       }
     },
     {
@@ -76,8 +76,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "42e81d245e30e49ea6a5830cf2842d44a1591270",
-        "version" : "12.15.0"
+        "revision" : "42cf1417c51c5e3bfbae5d3ab89b778f8fdc4bb8",
+        "version" : "12.19.3"
       }
     },
     {
@@ -85,8 +85,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googleads/google-ads-on-device-conversion-ios-sdk",
       "state" : {
-        "revision" : "dc39082d8881109d35b94b1c122164c0e8d08a55",
-        "version" : "3.6.1"
+        "revision" : "0208e2681ec81f8a9c81084696f60fcce26cb7ee",
+        "version" : "3.7.0"
       }
     },
     {
@@ -94,8 +94,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "144855f40d8668927f256a3045f7fdc4c3f4338b",
-        "version" : "12.15.0"
+        "revision" : "b8455dd2ff55cc269fda7a4f9eac6c1e3588c53f",
+        "version" : "12.19.2"
       }
     },
     {
@@ -112,8 +112,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "9f183ae842be978784f2963a343682e0c46d8fb3",
-        "version" : "8.1.2"
+        "revision" : "5459ee5603def3db0fe14ca522185f42c48d978e",
+        "version" : "8.1.5"
       }
     },
     {
@@ -130,8 +130,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "c0ac7575d70050c2973ba2318bd5af47f8e8153a",
-        "version" : "5.3.0"
+        "revision" : "724a52eea6329b7e12d3ad8300d76ca9f3895fcc",
+        "version" : "5.3.1"
       }
     },
     {
@@ -166,8 +166,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/superuser404notfound/LibDovi",
       "state" : {
-        "revision" : "0d7cce1d6836a30d13a3a2326e50a153af53f014",
-        "version" : "2.1.0"
+        "revision" : "caff700968700467c089a3f38c8b4180620518b5",
+        "version" : "2.2.0"
       }
     },
     {

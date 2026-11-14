@@ -348,6 +348,75 @@ void main() {
       expect(client.profileToken, isNull);
     });
 
+    test('a remembered PIN keeps its proof', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1');
+
+      storage.forgetUnrememberedPin(teen());
+
+      expect(storage.remembersPin(teen()), isTrue);
+      expect(storage.needsPin(teen()), isFalse);
+    });
+
+    test('a PIN asked every time loses its proof and keeps the choice',
+        () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+      expect(storage.needsPin(teen()), isFalse);
+
+      storage.forgetUnrememberedPin(teen());
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
+    test('a PIN asked every time keeps its proof off the disk', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      expect(store.getSiloProfileToken('s1', '9', 'teen'), {'remember': false});
+      expect(storage.profileToken(teen()), 'pvt_1');
+
+      // The next start reads the same preferences into a new store.
+      final nextStart = AuthenticationStore();
+      await nextStart.init();
+      final nextStorage = SiloTokenStorage(nextStart);
+      expect(nextStorage.needsPin(teen()), isTrue);
+      expect(nextStorage.remembersPin(teen()), isFalse);
+    });
+
+    test('remembering a PIN again stores its proof', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+      await storage.saveProfileToken(teen(), 'pvt_2');
+
+      storage.forgetUnrememberedPin(teen());
+
+      expect(storage.remembersPin(teen()), isTrue);
+      expect(storage.profileToken(teen()), 'pvt_2');
+    });
+
+    test('a refused proof of a PIN asked every time goes, keeping the choice',
+        () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      await storage.forgetProfileToken(teen());
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
+    test('a new sign-in keeps which PINs are asked every time', () async {
+      await storage.save('s1', '9', _pair('1'));
+      await storage.saveProfileToken(teen(), 'pvt_1', remember: false);
+
+      await storage.save('s1', '9', _pair('2'), newLogin: true);
+
+      expect(storage.needsPin(teen()), isTrue);
+      expect(storage.remembersPin(teen()), isFalse);
+    });
+
     test('a new sign-in drops the proofs of the old login', () async {
       await storage.save('s1', '9', _pair('1'));
       await storage.saveProfileToken(teen(), 'pvt_1');

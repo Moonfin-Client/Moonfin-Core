@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,6 +36,11 @@ String _idOf(String collection) =>
 void main() {
   late UserPreferences prefs;
   late _MockSyncService sync;
+  // Whether the plugin can fill the calendar rows. The other external rows
+  // stay unavailable, the way they are with no plugin.
+  var calendarsAvailable = false;
+  // Whether the plugin can fill the outside chart rows.
+  var chartsAvailable = false;
 
   setUpAll(() => registerFallbackValue(HomeSectionType.none));
 
@@ -72,6 +79,26 @@ void main() {
     sync = _MockSyncService();
     when(() => sync.pluginAvailable).thenReturn(false);
     when(() => sync.seerrAvailable).thenReturn(false);
+    calendarsAvailable = false;
+    chartsAvailable = false;
+    when(
+      () => sync.externalRowAvailable(
+        any(),
+        serverBuildsSeasonal: any(named: 'serverBuildsSeasonal'),
+      ),
+    ).thenAnswer((call) {
+      final type = call.positionalArguments.first as HomeSectionType;
+      if (type == HomeSectionType.radarrCalendar ||
+          type == HomeSectionType.sonarrCalendar) {
+        return calendarsAvailable;
+      }
+      final chart = imdbChartSections.contains(type) ||
+          UserPreferences.isTmdbSectionType(type) ||
+          externalCharts.containsKey(type) ||
+          type == HomeSectionType.mdblistWatchingNow;
+      if (chart) return chartsAvailable;
+      return type == HomeSectionType.seasonal ? false : null;
+    });
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
   });
 
@@ -185,6 +212,28 @@ void main() {
     });
   }
 
+  testWidgets('outside lists are grouped by where they come from', (
+    tester,
+  ) async {
+    chartsAvailable = true;
+    await pump(tester, InterfaceLayout.phone);
+
+    final headers = ['IMDb', 'TMDB', 'Streaming Services', 'MDBList', 'JustWatch'];
+    for (final header in headers) {
+      expect(find.text(header), findsOneWidget, reason: header);
+    }
+    final tops = [for (final header in headers) top(tester, header)];
+    expect(tops, orderedEquals([...tops]..sort()));
+
+    await tester.tap(find.text('IMDb'));
+    await tester.tap(find.text('Streaming Services'));
+    await tester.pumpAndSettle();
+    // Under its source's header a row drops the prefix.
+    expect(find.text('Top 250 Movies'), findsOneWidget);
+    expect(find.text('IMDb Top 250 Movies'), findsNothing);
+    expect(find.text('Popular on Netflix'), findsOneWidget);
+  });
+
   testWidgets('rows switched off where they live stay out of the editor', (
     tester,
   ) async {
@@ -198,8 +247,7 @@ void main() {
     tester,
   ) async {
     await prefs.set(UserPreferences.displayStudiosRows, true);
-    await prefs.set(UserPreferences.enableRadarrCalendar, true);
-    await prefs.set(UserPreferences.enableSonarrCalendar, true);
+    calendarsAvailable = true;
     when(() => sync.seerrAvailable).thenReturn(true);
     final seerrPrefs = _MockSeerrPreferences();
     when(() => seerrPrefs.isSeerrHomeRowEnabled(any())).thenAnswer(
@@ -247,6 +295,25 @@ void main() {
     expect(enabledInPrefs('Pixar'), isFalse);
     expect(top(tester, 'Pixar'), greaterThan(top(tester, 'Disabled')));
     expect(find.byIcon(Icons.drag_handle), findsNWidgets(handles));
+  });
+
+  testWidgets('the rows open before the empty checks answer', (tester) async {
+    final items = GetIt.instance<MediaServerClient>().itemsApi;
+    when(
+      () => items.getItems(
+        parentId: any(named: 'parentId'),
+        limit: 1,
+        recursive: true,
+      ),
+    ).thenAnswer((_) => Completer<Map<String, dynamic>>().future);
+
+    await pump(tester, InterfaceLayout.phone);
+    await tester.tap(find.text('Collections').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pixar'));
+    await tester.pumpAndSettle();
+
+    expect(enabledInPrefs('Pixar'), isTrue);
   });
 
   testWidgets('on a phone a long press drags an enabled row to a new place', (

@@ -35,9 +35,9 @@ env:
 
 jobs:
   build-web-bundle:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -54,7 +54,8 @@ jobs:
       - name: Build web bundle
         run: |
           flutter pub get
-          flutter build web --wasm --release --base-href "/Moonfin/Web/"
+          flutter build web --wasm --release --no-web-resources-cdn --base-href "/Moonfin/Web/"
+          bash scripts/fetch-web-fonts.sh build/web
 
       - name: Ensure jq is available
         run: |
@@ -126,7 +127,7 @@ jobs:
           echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
 
       - name: Upload bundle artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: moonfin-web-bundle-${{ steps.version.outputs.semver }}
           path: |
@@ -137,7 +138,7 @@ jobs:
 
       - name: Upload assets to release
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ steps.package.outputs.tarball }}

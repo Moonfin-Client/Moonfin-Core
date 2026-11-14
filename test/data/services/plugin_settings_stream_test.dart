@@ -23,6 +23,7 @@ class _MockSessionRepository extends Mock implements SessionRepository {}
 /// write into, the way the server holds it open between events.
 class _StreamAdapter implements HttpClientAdapter {
   final List<StreamController<Uint8List>> streams = [];
+  final List<RequestOptions> streamRequests = [];
 
   void send(String text) =>
       streams.last.add(Uint8List.fromList(utf8.encode(text)));
@@ -37,6 +38,7 @@ class _StreamAdapter implements HttpClientAdapter {
     if (path.endsWith('/Moonfin/Settings/Stream')) {
       final body = StreamController<Uint8List>();
       streams.add(body);
+      streamRequests.add(options);
       return ResponseBody(
         body.stream,
         200,
@@ -131,6 +133,31 @@ void main() {
 
         expect(adapter.streams, hasLength(1));
         expect(heard.single.title, 'New request');
+        service.dispose();
+      });
+    });
+
+    test('Moonbase for Plex streams from the companion', () {
+      when(() => client.serverType).thenReturn(ServerType.plex);
+      when(() => client.baseUrl).thenReturn('http://plex.test:32400');
+      fakeAsync((async) {
+        final heard = <SeerrNotificationEvent>[];
+        service.seerrNotifications.listen(heard.add);
+        service.syncOnLogin(client, serverId: 'srv1');
+        async.elapse(const Duration(seconds: 5));
+        adapter.send(':connected\n\n');
+        adapter.send(
+          'data: ${jsonEncode(_seerrEvent(route: '/item/777'))}\n\n',
+        );
+        async.flushMicrotasks();
+
+        final request = adapter.streamRequests.single;
+        expect(
+          request.uri.toString(),
+          'http://plex.test:32500/Moonfin/Settings/Stream',
+        );
+        expect(request.headers['X-Plex-Token'], 'token');
+        expect(heard.single.route, '/item/777');
         service.dispose();
       });
     });

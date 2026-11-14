@@ -7,6 +7,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../screens/detail/detail_layout_metrics.dart';
+import '../../screens/detail/frost/frost_detail_content.dart';
 import '../../screens/detail/spotlight/spotlight_landscape_layout.dart';
 import '../top_toolbar.dart';
 import 'skeleton_shimmer.dart';
@@ -48,7 +49,73 @@ class DetailScreenSkeleton extends StatelessWidget {
         DetailScreenStyle.stage => _buildStage(context),
         DetailScreenStyle.premiere => _buildPremiere(context),
         DetailScreenStyle.quickLook => _buildQuickLook(context),
+        DetailScreenStyle.frost => _buildFrost(context),
       },
+    );
+  }
+
+  /// The glass window with the toolbar over its foot and the tab bar under
+  /// it, or on a phone the sheet's title block over the art.
+  Widget _buildFrost(BuildContext context) {
+    if (!detailUsesLandscapeLayout(context)) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          MediaQuery.sizeOf(context).height * 0.46,
+          20,
+          0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SkeletonBox(width: 220, height: 28),
+            const SizedBox(height: 10),
+            const SkeletonBox(width: 160, height: 12),
+            const SizedBox(height: 16),
+            SkeletonBox(height: 38, borderRadius: BorderRadius.circular(19)),
+          ],
+        ),
+      );
+    }
+    return FrostStage(
+      navbarTop:
+          _effectivePrefs?.get(UserPreferences.navbarPosition) ==
+          NavbarPosition.top,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 24,
+            right: 24,
+            top: 12,
+            bottom: 146,
+            child: SkeletonBox(borderRadius: BorderRadius.circular(44)),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 106,
+            child: Center(
+              child: SkeletonBox(
+                width: 500,
+                height: 76,
+                borderRadius: BorderRadius.circular(38),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 36,
+            child: Center(
+              child: SkeletonBox(
+                width: 640,
+                height: 60,
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

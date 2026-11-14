@@ -12,8 +12,9 @@ int latestMediaFetchLimitForCollection(
   String? collectionType, {
   required int defaultLimit,
   required int maxLimit,
+  bool hideWatched = false,
 }) {
-  if (_isTvCollectionType(collectionType)) {
+  if (_isTvCollectionType(collectionType) || hideWatched) {
     final expandedLimit = defaultLimit * 4;
     if (expandedLimit > maxLimit) {
       return maxLimit;
@@ -74,19 +75,52 @@ String genericDescriptorForCollectionType(
   };
 }
 
+int? _toNullableInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+bool isRawItemWatchedForRecentRow(Map<String, dynamic> rawData) {
+  final userData = rawData['UserData'];
+  if (userData is! Map) return false;
+  if (userData['Played'] == true) return true;
+  final type = rawData['Type']?.toString();
+  final unplayedCount = _toNullableInt(userData['UnplayedItemCount']);
+  final childCount = _toNullableInt(rawData['ChildCount']);
+  if ((type == 'Series' || type == 'Season') &&
+      unplayedCount != null &&
+      unplayedCount <= 0 &&
+      (childCount == null || childCount > 0)) {
+    return true;
+  }
+  return false;
+}
+
+bool _isItemWatchedForRecentRow(AggregatedItem item) =>
+    isRawItemWatchedForRecentRow(item.rawData);
+
 List<AggregatedItem> normalizeLatestMediaItems(
   List<AggregatedItem> items, {
   String? collectionType,
   required int limit,
+  bool hideWatched = false,
 }) {
+  final sourceItems = hideWatched
+      ? items.where((item) => !_isItemWatchedForRecentRow(item)).toList()
+      : items;
+
   // Paging asks without a collection type, so a row that opened with series
   // cards would start handing back seasons part way along.
   final shouldCollapse =
       _isTvCollectionType(collectionType) ||
       (collectionType == null &&
-          items.any((i) => i.type == 'Episode' || i.type == 'Season'));
+          sourceItems.any((i) => i.type == 'Episode' || i.type == 'Season'));
 
-  final normalized = shouldCollapse ? _collapseLatestTvItems(items) : items;
+  final normalized = shouldCollapse
+      ? _collapseLatestTvItems(sourceItems)
+      : sourceItems;
 
   if (normalized.length <= limit) {
     return normalized;

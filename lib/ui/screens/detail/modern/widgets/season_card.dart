@@ -72,6 +72,12 @@ class SeasonCard extends StatelessWidget {
     final cardWidth = width ?? (landscape ? 130.0 : 90.0);
     final cardHeight = height ?? (landscape ? 195.0 : 135.0);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final seerrStyle = SeerrMediaStatus.hasDot(seerrStatus)
+        ? seerrBadgeStyle()
+        : null;
+    final bannerInset = seerrStyle == SeerrBadgeStyle.banner
+        ? kSeerrStatusBannerHeight
+        : 0.0;
 
     return FocusableWrapper(
       focusNode: focusNode,
@@ -117,30 +123,37 @@ class SeasonCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (SeerrMediaStatus.hasDot(seerrStatus))
+              if (seerrStyle == SeerrBadgeStyle.badge)
                 Positioned(
                   top: 6,
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
+                )
+              else if (seerrStyle == SeerrBadgeStyle.banner)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SeerrStatusBanner(status: seerrStatus),
                 ),
-              // Top left, dropped below the Seerr dot when there is one so the two stack
-              // rather than overlap. The watched badges sit top right, so the two
-              // never collide.
+              // Top left, dropped below the Seerr dot or banner when there is one so
+              // the two stack rather than overlap. The watched badges sit top right,
+              // under a banner too.
               if (badge != null)
                 Positioned(
-                  top: SeerrMediaStatus.hasDot(seerrStatus) ? 30 : 6,
+                  top: seerrStyle == SeerrBadgeStyle.badge ? 30 : bannerInset + 6,
                   left: 6,
                   child: badge!,
                 ),
               if (isPlayed)
                 Positioned(
-                  top: 6,
+                  top: bannerInset + 6,
                   right: 6,
                   child: MediaWatchedBadge(size: 22),
                 )
               else if (unplayedCount != null && unplayedCount! > 0)
                 Positioned(
-                  top: 6,
+                  top: bannerInset + 6,
                   right: 6,
                   child: MediaUnplayedBadge(count: unplayedCount!),
                 ),

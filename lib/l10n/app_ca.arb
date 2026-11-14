@@ -6544,7 +6544,7 @@
     "settingsAutomationAndQueue": "Automatització i cua",
     "settingsAutomationAndQueueSubtitle": "Reproducció i seqüenciació automàtica",
     "settingsOfflineDownloadsSubtitle": "Qualitat de la baixada, límits d'emmagatzematge i mida de la cua",
-    "settingsSyncplaySubtitle": "Lògica de sincronització per a sessions de grup",
+    "settingsSyncplaySubtitle": "Mira contingut amb amics d'aquest servidor, tots sincronitzats",
     "settingsAdvancedOptionsSubtitle": "Característiques especialitzades del reproductor. Feu servir amb precaució, ja que algunes opcions poden causar problemes de reproducció",
     "settingsSkipIntrosAndOutros": "Ometeu introduccions i altres?",
     "settingsPromptUser": "Usuari prompte",
@@ -6593,20 +6593,20 @@
     },
     "settingsLiveTvDirect": "Reproducció nativa de TV en directe",
     "settingsLiveTvDirectSubtitle": "Activa la reproducció directa per a la televisió en directe",
-    "settingsOpenGroups": "Grups oberts",
-    "settingsOpenGroupsSubtitle": "Crea, uneix-te o gestiona grups de SyncPlay",
-    "settingsSyncplayEnabled": "SyncPlay habilitat",
-    "settingsSyncplayEnabledSubtitle": "Activa les funcions de visualització en grup",
-    "settingsSyncplayButton": "Botó SyncPlay",
-    "settingsSyncplayButtonSubtitle": "Mostra el botó SyncPlay a la barra de navegació",
+    "settingsOpenGroups": "Watch Parties obertes",
+    "settingsOpenGroupsSubtitle": "Inicia'n una o uneix-te a una que ja hagi començat",
+    "settingsSyncplayEnabled": "Watch Parties",
+    "settingsSyncplayEnabledSubtitle": "Mira contingut amb amics d'aquest servidor, tots sincronitzats",
+    "settingsSyncplayButton": "Botó de Watch Parties",
+    "settingsSyncplayButtonSubtitle": "Mostra el botó de Watch Parties a la barra de navegació",
     "settingsSyncplayAdvancedCorrection": "Correcció avançada",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "Activa la lògica de sincronització detallada",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "Retards i desplaçament addicional",
     "settingsSyncplaySyncCorrection": "Correcció de sincronització",
-    "settingsSyncplaySyncCorrectionSubtitle": "Ajusta automàticament la reproducció per mantenir-se sincronitzat",
+    "settingsSyncplaySyncCorrectionSubtitle": "Mantén aquest dispositiu sincronitzat amb la sala",
     "settingsSyncplaySpeedToSync": "Velocitat per sincronitzar",
-    "settingsSyncplaySpeedToSyncSubtitle": "Utilitzeu l'ajust de velocitat de reproducció per sincronitzar",
-    "settingsSyncplaySkipToSync": "Passeu a la sincronització",
-    "settingsSyncplaySkipToSyncSubtitle": "Utilitzeu la cerca de sincronització",
+    "settingsSyncplaySpeedToSyncSubtitle": "Reprodueix una mica més ràpid o més lent per posar-te al dia",
+    "settingsSyncplaySkipToSync": "Salta per sincronitzar",
+    "settingsSyncplaySkipToSyncSubtitle": "Salta endavant quan vagi massa desfasat",
     "settingsSyncplayMinimumSpeedDelay": "Retard de velocitat mínima",
     "settingsSyncplayMaximumSpeedDelay": "Retard de velocitat màxima",
     "settingsSyncplaySpeedDuration": "Velocitat Durada",
@@ -7518,7 +7518,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis.",
+    "detailScreenStyleSubtitle": "Com es mostra una pel·lícula o una sèrie quan l'obres.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11290,7 +11290,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Mostra les insígnies de disponibilitat de temporades a les pàgines de detalls dels mitjans",
+    "showSeerrAvailabilityBadgesDescription": "Mostra l'estat de Seerr als pòsters i a les temporades de tota l'aplicació",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -13598,7 +13598,7 @@
     "@settingsDetailsPageSubtitle": {
         "description": "Subtitle for the Details Page entry on the Appearance settings screen"
     },
-    "settingsPlaybackSubtitle": "Reproductor, qualitat, àudio, subtítols, salts i SyncPlay",
+    "settingsPlaybackSubtitle": "Reproductor, qualitat, àudio, subtítols, salts i Watch Parties",
     "@settingsPlaybackSubtitle": {
         "description": "Subtitle for the Playback settings root entry"
     },
@@ -13650,7 +13650,7 @@
     "@settingsSkippingAndQueueSection": {
         "description": "Section header on the Playback settings screen"
     },
-    "settingsWatchTogetherSection": "Veure junts",
+    "settingsWatchTogetherSection": "Watch Parties",
     "@settingsWatchTogetherSection": {
         "description": "Section header on the Playback settings screen for SyncPlay"
     },
@@ -13936,7 +13936,7 @@
     "@shortcutSkipSegment": {
         "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
     },
-    "buttonShownInSyncPlayGroup": "Només es mostra quan ets en un grup de SyncPlay",
+    "buttonShownInSyncPlayGroup": "Només es mostra quan ets en una Watch Party",
     "@buttonShownInSyncPlayGroup": {
         "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
     },
@@ -16170,7 +16170,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "Finalitza la Watch Party",
+    "watchPartyEnd": "Finalitza per a tothom",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -16519,5 +16519,2013 @@
     "accountActive": "Actiu",
     "@accountActive": {
         "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStyleStage": "Escenari",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Estrena",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStyleStage": "Escenari",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupDetailStageHint": "El pòster al davant, amb el botó de reproducció a sota i els detalls al costat.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupStylePremiere": "Estrena",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupDetailPremiereHint": "El títol centrat sobre un teló de fons a pantalla completa, amb tota la resta a sota al llarg de la pàgina.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Vista ràpida",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Esmerilat",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Obre la pàgina completa",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Prem Enrere per tancar",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} de {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrBadgeStyle": "Estil de la insígnia",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "«Insígnia» posa el punt de Seerr en una cantonada. «Bàner» mostra l'estat a la part superior del pòster.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Insígnia",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "setupStyleQuickLook": "Vista ràpida",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Un calaix sobre la pantalla on eres, amb el botó de reproducció i el més bàsic, i la pàgina completa a només una pulsació.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Esmerilat",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "El títol en una finestra de vidre sobre la seva il·lustració difuminada, amb pestanyes sota els botons.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "smartSearch": "Cerca intel·ligent",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "Cerca intel·ligent a {seerr}",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
+    },
+    "mergedCalendarRow": "Properes estrenes",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Calendaris de Radarr i Sonarr",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "calendarReleaseDigital": "Digital",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Calendaris de properes estrenes",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Tria què mostren les files de Radarr i Sonarr.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "sinceYouWatchedRowTitle": "Ja que vas veure",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedSource": "Font de les recomanacions",
+    "sinceYouWatchedSourceLocal": "Recomanacions Moonfin",
+    "sinceYouWatchedSourceServer": "Recomanacions Jellyfin",
+    "sinceYouWatchedSourceOnline": "Similitud de TMDb",
+    "sinceYouWatchedSourceType": "Tipus de font",
+    "sinceYouWatchedSourceTypeDescription": "Tria el tipus d'elements que es recomanaran",
+    "sinceYouWatchedSourceItem": "Element font",
+    "sinceYouWatchedSourceItemDescription": "Tria en quin element d'origen es basen les recomanacions",
+    "sinceYouWatchedRecentlyWatched": "Vist recentment",
+    "sinceYouWatchedIncludeWatched": "Inclou el que ja s'ha vist",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Inclou els elements vistos a les recomanacions",
+    "playbackInfoAudioOutput": "Sortida",
+    "@playbackInfoAudioOutput": {
+        "description": "Playback information row in the Audio section: how the audio leaves the device"
+    },
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarSettingsView": "Veure",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Mostra",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsScopeEverything": "Tot",
+    "@calendarSettingsScopeEverything": {
+        "description": "Calendar Show choice that lists every episode and movie"
+    },
+    "calendarSettingsSpecials": "Especials",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsColorByType": "Tipus",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "calendarSettingsActions": "Accions",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "syncPlayParticipantYou": "Tu",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "subtitleBold": "Text en negreta",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "subtitleFont": "Tipus de lletra",
+    "@subtitleFont": {
+        "description": "Setting for which font subtitles are drawn in."
+    },
+    "afterHoursPlay": "Reprodueix",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursStart": "Inici",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "afterHoursCastSkipIntro": "Salta la introducció",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStatic": "Estàtic",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "calendarSettingsStyleAgenda": "Agenda",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "calendarAllDay": "Tot el dia",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "calendarSettingsUnmonitoredSubtitle": "Mostra també els episodis i les pel·lícules que Sonarr i Radarr no tenen configurats per baixar",
+    "@calendarSettingsUnmonitoredSubtitle": {
+        "description": "Subtitle of the Include unmonitored calendar setting"
+    },
+    "calendar": "Calendari",
+    "@calendar": {
+        "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+    },
+    "calendarSettingsStyle": "Estil del calendari",
+    "@calendarSettingsStyle": {
+        "description": "Calendar setting that picks what the Calendar button opens"
+    },
+    "calendarSettingsImageType": "Imatge de la targeta",
+    "@calendarSettingsImageType": {
+        "description": "Calendar setting for the artwork on the Countdown rows"
+    },
+    "calendarReleaseCinema": "Cinema",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarSettingsColorBy": "Color segons",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+    },
+    "calendarComingUpThisWeek": "Properament aquesta setmana",
+    "@calendarComingUpThisWeek": {
+        "description": "Calendar row of episodes and movies airing in the next seven days"
+    },
+    "calendarProblemFailed": "No s'ha pogut carregar el calendari.",
+    "@calendarProblemFailed": {
+        "description": "Calendar message when loading fails"
+    },
+    "calendarSettingsStyleCountdown": "Compte enrere",
+    "@calendarSettingsStyleCountdown": {
+        "description": "Calendar style that counts down to the next episode or movie"
+    },
+    "calendarUnitDays": "dies",
+    "@calendarUnitDays": {
+        "description": "Unit under the days number of the calendar countdown"
+    },
+    "calendarRowSeeAllSubtitle": "Acaba les files de properes estrenes amb una targeta que obre el calendari",
+    "@calendarRowSeeAllSubtitle": {
+        "description": "Subtitle of the See All card setting"
+    },
+    "calendarBadgeSeasonFinale": "Final de temporada",
+    "@calendarBadgeSeasonFinale": {
+        "description": "Tag on the last episode of a season"
+    },
+    "calendarFullCalendar": "Calendari complet",
+    "@calendarFullCalendar": {
+        "description": "Button on the calendar that opens the month grid"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Amaga els títols i les imatges dels episodis de les sèries que no tens al dia",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "calendarUnitHours": "h",
+    "@calendarUnitHours": {
+        "description": "Unit under the hours number of the calendar countdown"
+    },
+    "calendarStatusInLibrary": "A la biblioteca",
+    "@calendarStatusInLibrary": {
+        "description": "Tag on a calendar entry that is already on the server"
+    },
+    "calendarSettingsUnmonitored": "Inclou els no monitorats",
+    "@calendarSettingsUnmonitored": {
+        "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+    },
+    "calendarSettingsBadgesSubtitle": "Marca les estrenes, els finals i les temporades noves",
+    "@calendarSettingsBadgesSubtitle": {
+        "description": "Subtitle of the Premiere and finale tags calendar setting"
+    },
+    "calendarBadgeMidseasonFinale": "Final de mitja temporada",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarMovieDetails": "Detalls de la pel·lícula",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarSettingsScopeMyShows": "Les meves sèries",
+    "@calendarSettingsScopeMyShows": {
+        "description": "Calendar Show choice that lists only series the user favorited or started watching"
+    },
+    "calendarSettingsScopeDescription": "«Les meves sèries» mostra les sèries que has marcat com a preferides o que has començat a veure",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "calendarBadgeNew": "NOU",
+    "@calendarBadgeNew": {
+        "description": "Short tag on a month grid day that has a premiere"
+    },
+    "afterHoursNewTag": "NOU",
+    "@afterHoursNewTag": {
+        "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+    },
+    "calendarBadgeSeasonPremiere": "Temporada nova",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "showNextAirDate": "Data de la propera emissió al final",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "calendarProblemNotConfigured": "Encara no hi ha cap servidor de Sonarr o Radarr enllaçat.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarNotMonitored": "No monitorat",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarNothingRecent": "No s'ha emès res recentment",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarNothingUpcoming": "No hi ha res previst",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarEmptyDay": "No hi ha res aquest dia",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarSettingsSelectDetails": "Obre els detalls",
+    "@calendarSettingsSelectDetails": {
+        "description": "Selecting an item choice that opens the details page"
+    },
+    "calendarReleasePhysical": "Format físic",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "calendarSettingsSelectPlay": "Reprodueix si és a la biblioteca",
+    "@calendarSettingsSelectPlay": {
+        "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+    },
+    "calendarSettingsBadges": "Etiquetes d'estrena i de final",
+    "@calendarSettingsBadges": {
+        "description": "Calendar setting that marks premieres and finales on the calendar"
+    },
+    "calendarReadyToWatch": "Llest per veure",
+    "@calendarReadyToWatch": {
+        "description": "Calendar row of recent episodes and movies that are already in the library"
+    },
+    "calendarRecentlyAired": "Emès recentment",
+    "@calendarRecentlyAired": {
+        "description": "Calendar tab listing episodes and movies from the last few days"
+    },
+    "calendarSettingsRequestButton": "Botó de sol·licitud",
+    "@calendarSettingsRequestButton": {
+        "description": "Calendar setting that shows the request button on missing titles"
+    },
+    "watchPartyResumeAt": "Reprèn a {time}",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarSettingsSpecialsSubtitle": "Episodis de la temporada 0, com ara extres i especials de festes",
+    "@calendarSettingsSpecialsSubtitle": {
+        "description": "Subtitle of the Specials calendar setting"
+    },
+    "calendarRowSeeAll": "Targeta «Veure-ho tot»",
+    "@calendarRowSeeAll": {
+        "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+    },
+    "calendarSettingsSelectAction": "En seleccionar un element",
+    "@calendarSettingsSelectAction": {
+        "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+    },
+    "calendarBadgeSeriesFinale": "Final de la sèrie",
+    "@calendarBadgeSeriesFinale": {
+        "description": "Tag on the last episode of a series"
+    },
+    "calendarBadgeSeriesPremiere": "Estrena de la sèrie",
+    "@calendarBadgeSeriesPremiere": {
+        "description": "Tag on the first episode of a series"
+    },
+    "showCalendarButton": "Mostra el botó del calendari",
+    "@showCalendarButton": {
+        "description": "Settings toggle that adds the Calendar button to the navigation bar"
+    },
+    "showCalendarButtonSubtitle": "Mostra el calendari de properes estrenes d'episodis i pel·lícules a la barra de navegació",
+    "@showCalendarButtonSubtitle": {
+        "description": "Subtitle of the Show Calendar Button setting"
+    },
+    "radarrCalendarShowCinema": "Mostra les properes estrenes al cinema",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Mostra les properes estrenes digitals",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Mostra les properes estrenes en format físic",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "calendarSettingsSpoilerSafe": "Sense espòilers",
+    "@calendarSettingsSpoilerSafe": {
+        "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+    },
+    "watchPartyStartFromBeginning": "Comença des del principi",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "calendarStartsIn": "Comença d'aquí a",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarSettingsSubtitle": "Estil, filtres i accions del calendari",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "calendarSettingsImageTypeDescription": "La il·lustració de les files de compte enrere",
+    "@calendarSettingsImageTypeDescription": {
+        "description": "Description of the Card image calendar setting"
+    },
+    "calendarProblemAdminsOnly": "En aquest servidor, el calendari només és per als administradors.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "watchPartyResumeEarliest": "El punt menys avançat al qual ha arribat algú de la sala.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "calendarSettingsColorByDescription": "«Tipus» distingeix els episodis de les pel·lícules. «Estat» mostra què hi ha a la biblioteca, què arriba aviat o què falta.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "calendarUpcoming": "Properament",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarSettingsWeekStart": "La setmana comença",
+    "@calendarSettingsWeekStart": {
+        "description": "Calendar setting for the first day of the week in the month grid"
+    },
+    "calendarSettingsSelectActionDescription": "Què fa OK o un toc en un element que ja és a la biblioteca",
+    "@calendarSettingsSelectActionDescription": {
+        "description": "Description of the Selecting an item calendar setting"
+    },
+    "calendarSettingsWhatShows": "Què es mostra",
+    "@calendarSettingsWhatShows": {
+        "description": "Calendar settings section header for which episodes and movies the calendar lists"
+    },
+    "calendarSettingsStyleDescription": "Què obre el botó del calendari. En tots dos casos, el mes complet és a un botó de distància.",
+    "@calendarSettingsStyleDescription": {
+        "description": "Description of the Calendar style setting"
+    },
+    "showNextAirDateSubtitle": "Quan el següent episodi encara no és a la biblioteca, la targeta de final d'episodi indica quan s'emet",
+    "@showNextAirDateSubtitle": {
+        "description": "Subtitle of the Next air date at the end setting"
+    },
+    "watchPartyResumeWhere": "On ho va deixar {name}, el punt menys avançat de la sala.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarDayAtTime": "{day} a les {time}",
+    "@calendarDayAtTime": {
+        "description": "When an episode airs, like Today at 9:00 PM",
+        "placeholders": {
+            "day": {
+                "type": "String",
+                "example": "Today"
+            },
+            "time": {
+                "type": "String",
+                "example": "9:00 PM"
+            }
+        }
+    },
+    "mdblistWatchingNow": "Ara es mira a MDBList",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "watchingNowLiveSummary": "{users} mirant ara · {movies} pel·lícules · {shows} sèries",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} han mirat avui · {movies} pel·lícules · {shows} sèries",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowWatchersCount": "{count} mirant",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mediaBarSourceNewReleases": "Temporades i episodis nous",
+    "@mediaBarSourceNewReleases": {
+        "description": "Media bar source: series with episodes that aired recently"
+    },
+    "mediaBarNewReleaseBanner": "Bàner de novetat",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags series in the media bar when new episodes aired recently"
+    },
+    "mediaBarNewReleaseBannerDescription": "Destaca les sèries amb una temporada nova o episodis nous emesos recentment.",
+    "mediaBarNewReleaseDays": "Període de novetat",
+    "@mediaBarNewReleaseDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Quant de temps després de l'emissió d'un episodi encara es considera nou.",
+    "mediaBarNewSeries": "Sèrie nova",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Temporada nova",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Episodis nous",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "moonbaseFeatureCalendar": "Un calendari del que arriba aviat",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "setupMoonbaseHint": "Un connector de servidor gratuït que desbloqueja més funcions de Moonfin",
+    "@setupMoonbaseHint": {
+        "description": "Line under the Moonbase row on the last setup wizard step"
+    },
+    "setupMoonbaseTitle": "Afegeix Moonbase al servidor",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "moonbaseFeatureRows": "Files personalitzades a partir de les teves llistes preferides",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "moonbaseFeatureRatings": "Valoracions addicionals i ressenyes de TMDB",
+    "@moonbaseFeatureRatings": {
+        "description": "Moonbase dialog feature"
+    },
+    "removeFromPlaylistFailed": "No s'ha pogut eliminar de la llista de reproducció",
+    "@removeFromPlaylistFailed": {
+        "description": "Error shown when removing an item from a playlist fails"
+    },
+    "sonarrCalendarHideDownloaded": "Amaga els episodis que ja són al servidor",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Amaga les pel·lícules que ja són al servidor",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "setupMoonbaseInstalling": "S'està instal·lant Moonbase...",
+    "@setupMoonbaseInstalling": {
+        "description": "Shown in the Moonbase dialog while the plugin installs"
+    },
+    "setupMoonbaseManualSteps": "Cal fer uns quants passos al servidor per instal·lar-lo. Els tens tots en aquest enllaç.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "moonbaseFeatureMessages": "Missatges de l'administrador del servidor",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "setupMoonbaseInstallFailed": "No s'ha pogut instal·lar Moonbase. {error}",
+    "@setupMoonbaseInstallFailed": {
+        "description": "Shown in the Moonbase dialog when installing or restarting failed",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "setupMoonbaseIntro": "Moonbase és gratuït i s'executa al teu servidor. Amb ell, Moonfin obté:",
+    "@setupMoonbaseIntro": {
+        "description": "First line of the Moonbase dialog, followed by a list of features"
+    },
+    "setupMoonbaseInstalled": "Moonbase està instal·lat. S'activarà quan es reiniciï el servidor, cosa que aturarà tot el que s'estigui reproduint ara mateix.",
+    "@setupMoonbaseInstalled": {
+        "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+    },
+    "setupMoonbaseAskAdmin": "Només un administrador del servidor el pot instal·lar. Envia-li aquest enllaç.",
+    "@setupMoonbaseAskAdmin": {
+        "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+    },
+    "showPosterLabels": "Etiquetes dels pòsters",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "removeFromPlaylist": "Elimina de la llista de reproducció",
+    "@removeFromPlaylist": {
+        "description": "Context menu action to remove an item from a playlist"
+    },
+    "moonbaseFeatureGames": "Jocs retro amb partides desades sincronitzades",
+    "@moonbaseFeatureGames": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureSync": "Configuració sincronitzada entre els teus dispositius",
+    "@moonbaseFeatureSync": {
+        "description": "Moonbase dialog feature"
+    },
+    "setupMoonbaseRestarting": "El servidor s'està reiniciant. Moonbase s'activarà quan torni a estar disponible.",
+    "@setupMoonbaseRestarting": {
+        "description": "Shown while the server restarts after Moonbase was installed"
+    },
+    "moonbaseFeatureCollections": "El teu propi ordre per a cada col·lecció",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "radarrCalendarRowSubtitle": "Calendari de Radarr",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Calendari de Sonarr",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "seasonalRowAllYear": "Mostra tot l'any",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Mostra una fila de festes també fora de les dates festives, amb una festa marcada diferent cada dia.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "afterHoursTitle": "After Hours",
+    "@afterHoursTitle": {
+        "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+    },
+    "afterHoursUnlocked": "S'ha desbloquejat After Hours",
+    "@afterHoursUnlocked": {
+        "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+    },
+    "afterHoursBufferRun": "Buffer Run",
+    "@afterHoursBufferRun": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+    },
+    "afterHoursBufferRunGenre": "Corredor infinit amb inversió de gravetat",
+    "@afterHoursBufferRunGenre": {
+        "description": "Kind of game Buffer Run is"
+    },
+    "afterHoursFastForward": "Fast Forward",
+    "@afterHoursFastForward": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+    },
+    "afterHoursFastForwardGenre": "Corredor de tres carrils",
+    "@afterHoursFastForwardGenre": {
+        "description": "Kind of game Fast Forward is"
+    },
+    "afterHoursCableCrawl": "Cable Crawl",
+    "@afterHoursCableCrawl": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+    },
+    "afterHoursCableCrawlGenre": "Serp en quadrícula",
+    "@afterHoursCableCrawlGenre": {
+        "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+    },
+    "afterHoursCaseStack": "Case Stack",
+    "@afterHoursCaseStack": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+    },
+    "afterHoursCaseStackGenre": "Apilador d'un sol botó",
+    "@afterHoursCaseStackGenre": {
+        "description": "Kind of game Case Stack is"
+    },
+    "afterHoursPixelPurge": "Pixel Purge",
+    "@afterHoursPixelPurge": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+    },
+    "afterHoursPixelPurgeGenre": "Trencamaons",
+    "@afterHoursPixelPurgeGenre": {
+        "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+    },
+    "afterHoursLeaderboards": "Classificacions",
+    "@afterHoursLeaderboards": {
+        "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+    },
+    "afterHoursNoScores": "Encara no hi ha puntuacions",
+    "@afterHoursNoScores": {
+        "description": "Shown in place of a leaderboard nobody has played yet"
+    },
+    "afterHoursGameOver": "Fi de la partida",
+    "@afterHoursGameOver": {
+        "description": "Shown when a run in an arcade game ends"
+    },
+    "afterHoursNewRank": "Nou #{rank} a la classificació",
+    "@afterHoursNewRank": {
+        "description": "Shown when a finished arcade run places in the top 3, with its place",
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlayAgain": "Torna a jugar",
+    "@afterHoursPlayAgain": {
+        "description": "Button that starts a new run of the same arcade game"
+    },
+    "afterHoursBackToArcade": "Torna a la sala de jocs",
+    "@afterHoursBackToArcade": {
+        "description": "Button that leaves a finished game for the arcade menu"
+    },
+    "afterHoursScoresFrom": "Puntuacions de {server}",
+    "@afterHoursScoresFrom": {
+        "description": "Note saying the arcade scores shown come from the named server",
+        "placeholders": {
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "afterHoursScoresOnDevice": "Puntuacions d'aquest dispositiu",
+    "@afterHoursScoresOnDevice": {
+        "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+    },
+    "afterHoursFastForwardRemote": "Amunt i Avall canvien de carril. OK salta.",
+    "@afterHoursFastForwardRemote": {
+        "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawlRemote": "Les fletxes giren. El cable no s'atura mai.",
+    "@afterHoursCableCrawlRemote": {
+        "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCastLagBat": "Ratpenat del retard",
+    "@afterHoursCastLagBat": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastLagBatLine": "Baixa en picat a l'altura del cap. Esmuny-te per sota.",
+    "@afterHoursCastLagBatLine": {
+        "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGremlin": "Follet d'estàtica",
+    "@afterHoursCastGremlin": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGremlinLine": "Salta per terra o pel sostre cap a tu. Salta'l.",
+    "@afterHoursCastGremlinLine": {
+        "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastCable": "Rotlle de cable",
+    "@afterHoursCastCable": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastCableLine": "Baix, a terra o al sostre. Salta'l.",
+    "@afterHoursCastCableLine": {
+        "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBanner": "Cartell carregant",
+    "@afterHoursCastBanner": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastShieldLine": "Un escut que aguanta un cop.",
+    "@afterHoursCastShieldLine": {
+        "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSkipIntroLine": "Tres segons d'embranzida que ho destrossen tot.",
+    "@afterHoursCastSkipIntroLine": {
+        "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcorn": "Crispetes",
+    "@afterHoursCastPopcorn": {
+        "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPointsLine": "25 punts cadascuna.",
+    "@afterHoursCastPointsLine": {
+        "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastRollingReel": "Bobina solta",
+    "@afterHoursCastRollingReel": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReelLine": "Roda pel teu carril més de pressa del que corres. Salta-la.",
+    "@afterHoursCastRollingReelLine": {
+        "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastUsher": "Acomodador",
+    "@afterHoursCastUsher": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastUsherLine": "Camina cap a tu i canvia de carril un cop.",
+    "@afterHoursCastUsherLine": {
+        "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastVelvetRope": "Cordó de vellut",
+    "@afterHoursCastVelvetRope": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastVelvetRopeLine": "Baix. Salta'l o canvia de carril.",
+    "@afterHoursCastVelvetRopeLine": {
+        "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcornCart": "Carretó de crispetes",
+    "@afterHoursCastPopcornCart": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPopcornCartLine": "Massa alt per saltar-lo. Canvia de carril.",
+    "@afterHoursCastPopcornCartLine": {
+        "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastFrontRowPass": "Passi de primera fila",
+    "@afterHoursCastFrontRowPass": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnet": "Imant",
+    "@afterHoursCastMagnet": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnetLine": "Atrau les entrades de tots els carrils durant vuit segons.",
+    "@afterHoursCastMagnetLine": {
+        "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTicket": "Entrada",
+    "@afterHoursCastTicket": {
+        "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBug": "Insecte d'interferències",
+    "@afterHoursCastBug": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBugLine": "Va voltant a l'atzar.",
+    "@afterHoursCastBugLine": {
+        "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTangle": "Embolic",
+    "@afterHoursCastTangle": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastTangleLine": "Persegueix lentament el teu endoll.",
+    "@afterHoursCastTangleLine": {
+        "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastStaticLine": "Una cel·la morta. N'apareix una cada tres senyals.",
+    "@afterHoursCastStaticLine": {
+        "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBrick": "Transformador",
+    "@afterHoursCastBrick": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBrickLine": "Un bloc de 2 per 2 cada cinc senyals.",
+    "@afterHoursCastBrickLine": {
+        "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGhost": "Fantasma",
+    "@afterHoursCastGhost": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGhostLine": "Cinc segons travessant-ho tot menys la vora.",
+    "@afterHoursCastGhostLine": {
+        "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSnip": "Tisorada",
+    "@afterHoursCastSnip": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSnipLine": "Talla el cable per la meitat per obtenir punts extra.",
+    "@afterHoursCastSnipLine": {
+        "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSignal": "Senyal",
+    "@afterHoursCastSignal": {
+        "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSignalLine": "Punts i dos segments més.",
+    "@afterHoursCastSignalLine": {
+        "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastShelfCat": "Gat de la prestatgeria",
+    "@afterHoursCastShelfCat": {
+        "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBluCase": "Capsa de Blu-ray",
+    "@afterHoursCastBluCase": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSteelbook": "Steelbook",
+    "@afterHoursCastSteelbook": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSteelbookLine": "Una de cada deu capses. Llisca molt més de pressa.",
+    "@afterHoursCastSteelbookLine": {
+        "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPerfect": "Caiguda perfecta",
+    "@afterHoursCastPerfect": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPerfectLine": "Encerta-la de ple i la pila s'eixampla una mica.",
+    "@afterHoursCastPerfectLine": {
+        "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBoxSet": "Estoig",
+    "@afterHoursCastBoxSet": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastDeadPixel": "Píxel mort",
+    "@afterHoursCastDeadPixel": {
+        "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMacroblock": "Macrobloc",
+    "@afterHoursCastMacroblock": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMacroblockLine": "Un cop l'elimina.",
+    "@afterHoursCastMacroblockLine": {
+        "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastKeyframe": "Fotograma clau",
+    "@afterHoursCastKeyframe": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastKeyframeLine": "Aguanta tres cops i deixa anar un potenciador.",
+    "@afterHoursCastKeyframeLine": {
+        "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastHdrLine": "Una barra de progrés el doble d'ampla durant vuit segons.",
+    "@afterHoursCastHdrLine": {
+        "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBufferNet": "Búfer",
+    "@afterHoursCastBufferNet": {
+        "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBufferNetLine": "Una xarxa sota la barra que salva una errada.",
+    "@afterHoursCastBufferNetLine": {
+        "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursEnemies": "Enemics",
+    "@afterHoursEnemies": {
+        "description": "Heading over the enemies on an arcade game's How to play card"
+    },
+    "afterHoursObstacles": "Obstacles",
+    "@afterHoursObstacles": {
+        "description": "Heading over the obstacles on an arcade game's How to play card"
+    },
+    "afterHoursPowerups": "Potenciadors",
+    "@afterHoursPowerups": {
+        "description": "Heading over the powerups on an arcade game's How to play card"
+    },
+    "afterHoursHowToPlay": "Com s'hi juga",
+    "@afterHoursHowToPlay": {
+        "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+    },
+    "afterHoursBackToGame": "Torna al joc",
+    "@afterHoursBackToGame": {
+        "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+    },
+    "afterHoursBufferRunRemote": "OK salta; torna-hi a l'aire per canviar de costat. Avall per esmunyir-te. Al sostre, Amunt i Avall s'inverteixen.",
+    "@afterHoursBufferRunRemote": {
+        "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStackRemote": "OK deixa caure la capsa.",
+    "@afterHoursCaseStackRemote": {
+        "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeCardRemote": "Esquerra i Dreta mouen la barra.",
+    "@afterHoursPixelPurgeCardRemote": {
+        "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "afterHoursCastBannerLine": "Esmuny-te sota el cartell. El pal és una paret a l'altra banda.",
+    "@afterHoursCastBannerLine": {
+        "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastShelfCatLine": "Colpeja una capsa quan arriba i fa que llisqui més de pressa.",
+    "@afterHoursCastShelfCatLine": {
+        "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBluCaseLine": "Un títol de la teva biblioteca. El que sobresurt es retalla.",
+    "@afterHoursCastBluCaseLine": {
+        "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBoxSetLine": "Tres caigudes perfectes seguides l'eixamplen molt més.",
+    "@afterHoursCastBoxSetLine": {
+        "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastDeadPixelLine": "Cau dels blocs eliminats. Si l'atrapes, la barra s'escurça.",
+    "@afterHoursCastDeadPixelLine": {
+        "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "noOtherAudioTracks": "No hi ha cap altra pista d'àudio",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "playerMatchingDisplayRate": "S'està ajustant la pantalla a {fps} fps…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "radarrCalendarRow": "Properes pel·lícules (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Properes sèries (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Avui} =1{Demà} other{D'aquí a {days} dies}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarShowReleaseDate": "Mostra la data d'estrena a la pantalla d'inici",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Mostra la informació de l'episodi",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Combina els calendaris de Sonarr i Radarr",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "sinceYouWatched": "Ja que vas veure",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedItemRowTitle": "Ja que vas veure «{title}»",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Fila {number} de «Ja que vas veure»",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Mostra les files de «Ja que vas veure»",
+    "displaySinceYouWatchedRowsSubtitle": "Mostra i personalitza les files de «Ja que vas veure» a les seccions d'inici.",
+    "sinceYouWatchedSourceDescription": "Tria la font de les recomanacions (Recomanacions Moonfin, l'algorisme local personalitzat; Recomanacions Jellyfin, el motor del servidor; o les mètriques de similitud de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr).",
+    "sinceYouWatchedNumRows": "Nombre de files a afegir",
+    "sinceYouWatchedNumRowsDescription": "Tria quantes files de «Ja que vas veure» vols mostrar (1-5)",
+    "cadenceSlowdown": "24 fps fluids en un televisor de 60 Hz",
+    "cadenceSlowdownSubtitle": "Quan Match Frame Rate està desactivat, reprodueix el vídeo de 24 fps un 0,1 % més lent perquè s'ajusti al televisor sense perdre fotogrames. No s'utilitza quan l'àudio passa directament a un receptor.",
+    "cadenceTipTitle": "Activa Match Frame Rate",
+    "cadenceTipMessage": "Aquest vídeo no es pot reproduir de manera fluida amb la freqüència de refresc actual del televisor. A l'Apple TV, obre Settings > Video and Audio > Match Content i activa Match Frame Rate.",
+    "cadenceTipSlowdownHint": "O activa «24 fps fluids en un televisor de 60 Hz» a Moonfin, a Reproducció > Qualitat i descodificació.",
+    "watchPartyResumeNotStarted": "{count, plural, =1{1 persona encara no l'ha començat.} other{{count} persones encara no l'han començat.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoServerCompatibilityCheck": "Comprovació de compatibilitat del servidor",
+    "@playbackInfoServerCompatibilityCheck": {
+        "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+    },
+    "playbackInfoBitrateUnavailable": "Taxa de bits no disponible",
+    "@playbackInfoBitrateUnavailable": {
+        "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+    },
+    "playbackInfoNoteLiveRelay": "El servidor retransmet el canal sense convertir-lo.",
+    "@playbackInfoNoteLiveRelay": {
+        "description": "Playback information note under the play method for a live TV channel the server passes through"
+    },
+    "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+    "@playbackInfoFrameRateFrom": {
+        "description": "Playback information frame rate with where the player got it",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateSourceHeader": "capçalera del flux",
+    "@playbackInfoRateSourceHeader": {
+        "description": "Playback information: the frame rate came from the video stream's own header"
+    },
+    "playbackInfoRateSourceMeasured": "mesurada",
+    "@playbackInfoRateSourceMeasured": {
+        "description": "Playback information: the frame rate was measured from the video's frame timing"
+    },
+    "playbackInfoRateSourceServer": "servidor",
+    "@playbackInfoRateSourceServer": {
+        "description": "Playback information: the frame rate came from the server's description of the media"
+    },
+    "playbackInfoServerFrameRate": "Velocitat de fotogrames del servidor",
+    "@playbackInfoServerFrameRate": {
+        "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+    },
+    "playbackInfoScan": "Escombratge",
+    "@playbackInfoScan": {
+        "description": "Playback information row: whether the video is progressive or interlaced"
+    },
+    "playbackInfoProgressive": "Progressiu",
+    "@playbackInfoProgressive": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoInterlaced": "Entrellaçat",
+    "@playbackInfoInterlaced": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoRepeatedFields": "Amb telecinema (camps repetits)",
+    "@playbackInfoRepeatedFields": {
+        "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+    },
+    "playbackInfoHdmiOutput": "Sortida HDMI",
+    "@playbackInfoHdmiOutput": {
+        "description": "Playback information row: the display mode the device is sending"
+    },
+    "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+    "@playbackInfoDisplayMode": {
+        "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+        "placeholders": {
+            "width": {
+                "type": "String"
+            },
+            "height": {
+                "type": "String"
+            },
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateCorrections": "Correccions de freqüència",
+    "@playbackInfoRateCorrections": {
+        "description": "Playback information row: how many times live TV changed the display rate after it started"
+    },
+    "playbackInfoPassthroughOf": "Passthrough ({codec})",
+    "@playbackInfoPassthroughOf": {
+        "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDecodedTo": "Descodificat ({channels})",
+    "@playbackInfoDecodedTo": {
+        "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfileUnknown": "El servidor no ha pogut verificar el perfil {codec} d'aquest flux.",
+    "@playbackInfoWhyVideoProfileUnknown": {
+        "description": "Playback information reason when the server could not determine the video profile",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarRemindMe": "Recorda-m'ho",
+    "@calendarRemindMe": {
+        "description": "Button that asks for a notification when an episode or movie lands in the library"
+    },
+    "calendarReminderSet": "Recordatori definit",
+    "@calendarReminderSet": {
+        "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+    },
+    "calendarReminderFailed": "No s'ha pogut desar el recordatori",
+    "@calendarReminderFailed": {
+        "description": "Message when setting or removing a calendar reminder fails"
+    },
+    "calendarProblemNeedsSeerr": "Cal que un administrador iniciï la sessió a Seerr a Moonfin perquè es pugui carregar el calendari.",
+    "@calendarProblemNeedsSeerr": {
+        "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Mostra el botó de sol·licitud de Seerr a les pel·lícules i temporades que falten",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "calendarSettingsReminders": "Recordatoris",
+    "@calendarSettingsReminders": {
+        "description": "Calendar setting that offers the Remind me button"
+    },
+    "calendarSettingsRemindersSubtitle": "Mostra «Recorda-m'ho», que envia una notificació quan un títol arriba a la biblioteca",
+    "@calendarSettingsRemindersSubtitle": {
+        "description": "Subtitle of the Reminders calendar setting"
+    },
+    "showPosterLabelsSubtitle": "Mostra les etiquetes als pòsters, com ara 4K o HDR.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "seerrSeriesMatchDescription": "No hem pogut trobar automàticament aquesta sèrie. Tria la correcta a continuació.",
+    "@seerrSeriesMatchDescription": {
+        "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+    },
+    "seerrSeriesNoMatch": "No hem trobat cap coincidència per a aquesta sèrie, així que no es pot sol·licitar.",
+    "@seerrSeriesNoMatch": {
+        "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+    },
+    "seerrSeriesMatchFailed": "Sonarr no ha trobat cap coincidència per a aquesta sèrie o no s'hi ha pogut connectar. Torna-ho a provar o comprova la sèrie a Seerr.",
+    "@seerrSeriesMatchFailed": {
+        "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+    },
+    "removeFromPlaylistConfirm": "Vols eliminar {item} de {playlist}?",
+    "@removeFromPlaylistConfirm": {
+        "description": "Confirmation shown before removing an item from a playlist",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "playlist": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsDateFormat": "Format de la data",
+    "settingsDateFormatDescription": "Tria entre mes-dia, dia-mes o el format predeterminat de la configuració regional per a les dates del calendari i d'estrena",
+    "dateFormatSystem": "Predeterminat de la configuració regional",
+    "dateFormatMonthDay": "Mes / Dia (nov. 10)",
+    "dateFormatDayMonth": "Dia / Mes (10 nov.)",
+    "screensaverDuringAudio": "Mostra durant la música i els audiollibres",
+    "@screensaverDuringAudio": {
+        "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+    },
+    "screensaverDuringAudioDescription": "Permet que el salvapantalles s'activi mentre es reprodueix àudio, perquè la portada no es quedi hores a la pantalla.",
+    "@screensaverDuringAudioDescription": {
+        "description": "Description under the Show During Music and Audiobooks screensaver setting"
+    },
+    "sleepAfterIdle": "Deixa que el televisor entri en repòs després de",
+    "@sleepAfterIdle": {
+        "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+    },
+    "sleepAfterIdleDescriptionAndroid": "Tanca Moonfin després d'aquest temps sense prémer cap botó perquè el salvapantalles i el temporitzador de repòs del televisor puguin prendre el relleu. Abans s'atura el que estigui en pausa, de manera que conserva el punt on es reprèn.",
+    "@sleepAfterIdleDescriptionAndroid": {
+        "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+    },
+    "sleepAfterIdleDescriptionAppleTv": "Després d'aquest temps sense prémer cap botó, torna la pantalla al salvapantalles i a la configuració de repòs de l'Apple TV. Moonfin es manté obert, de manera que continues just on ho havies deixat.",
+    "@sleepAfterIdleDescriptionAppleTv": {
+        "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+    },
+    "syncPlayRepeatSubtitle": "Torna a reproduir un element o tota la cua",
+    "@syncPlayRepeatSubtitle": {
+        "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+    },
+    "syncPlayShuffleSubtitle": "Reprodueix la cua en ordre o de manera aleatòria",
+    "@syncPlayShuffleSubtitle": {
+        "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+    },
+    "syncPlayGroupSubtitle": "{participants} · {detail}",
+    "@syncPlayGroupSubtitle": {
+        "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+        "placeholders": {
+            "participants": {
+                "type": "String",
+                "example": "3 participants"
+            },
+            "detail": {
+                "type": "String",
+                "example": "nothing queued yet"
+            }
+        }
+    },
+    "syncPlayNothingQueued": "encara no hi ha res a la cua",
+    "@syncPlayNothingQueued": {
+        "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+    },
+    "syncPlayOthersCanJoinHint": "Els altres s'hi poden unir des de la seva pantalla de SyncPlay mentre aquest grup existeixi.",
+    "@syncPlayOthersCanJoinHint": {
+        "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+    },
+    "syncPlayCreateGroupSubtitle": "Mira-ho amb tothom qui s'hi uneixi",
+    "@syncPlayCreateGroupSubtitle": {
+        "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+    },
+    "syncPlayAvailableGroupsCount": "Grups disponibles · {count}",
+    "@syncPlayAvailableGroupsCount": {
+        "description": "Heading of the SyncPlay available groups list with how many there are",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "2"
+            }
+        }
+    },
+    "syncPlayNoGroupsAvailableHint": "Els grups que creïn altres persones en aquest servidor apareixeran aquí.",
+    "@syncPlayNoGroupsAvailableHint": {
+        "description": "Second line of the empty state in the SyncPlay available groups list"
+    },
+    "syncPlayJoinReplacesQueueNote": "Unir-te a un grup pot substituir la teva cua de reproducció actual.",
+    "@syncPlayJoinReplacesQueueNote": {
+        "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+    },
+    "settingsHideControlsAfter": "Amaga els controls després de",
+    "@settingsHideControlsAfter": {
+        "description": "Playback setting for how long the player controls stay on screen after the last input"
+    },
+    "settingsHideControlsAfterDescription": "Quant de temps es mantenen els controls del reproductor a la pantalla després de l'última pulsació de botó, toc o moviment del ratolí.",
+    "@settingsHideControlsAfterDescription": {
+        "description": "Description under the Hide Controls After playback setting"
+    },
+    "settingsHdrControlsDimming": "Atenua els controls en HDR",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "El blanc es veu molt més brillant al costat del vídeo HDR, així que els controls del reproductor s'atenuen aquesta quantitat mentre es reprodueix.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "subtitleStrokeWidth": "Gruix del contorn del text",
+    "@subtitleStrokeWidth": {
+        "description": "Setting for how thick the outline around subtitle text is."
+    },
+    "subtitleFontDescription": "Els tipus de lletra es baixen de Google Fonts la primera vegada que els tries",
+    "@subtitleFontDescription": {
+        "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+    },
+    "subtitleFontDownloadFailed": "No s'ha pogut baixar {font}",
+    "@subtitleFontDownloadFailed": {
+        "description": "Shown when a subtitle font could not be downloaded.",
+        "placeholders": {
+            "font": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleShadow": "Ombra del text",
+    "@subtitleShadow": {
+        "description": "Toggle for a drop shadow behind subtitle text."
+    },
+    "subtitleShadowIntensity": "Intensitat de l'ombra",
+    "@subtitleShadowIntensity": {
+        "description": "How dark the subtitle drop shadow is."
+    },
+    "subtitleShadowOffset": "Desplaçament de l'ombra",
+    "@subtitleShadowOffset": {
+        "description": "How far the subtitle drop shadow sits from the text."
+    },
+    "subtitleShadowBlur": "Difuminat de l'ombra",
+    "@subtitleShadowBlur": {
+        "description": "How soft the edge of the subtitle drop shadow is."
+    },
+    "bookFoldersAsSeries": "Tracta les carpetes de llibres com a sèries",
+    "@bookFoldersAsSeries": {
+        "description": "Setting to determine book series based on folders instead of item metadata"
+    },
+    "bookFoldersAsSeriesDescription": "Tracta les carpetes que contenen llibres com a sèries en lloc de basar-te en les metadades de cada llibre",
+    "@bookFoldersAsSeriesDescription": {
+        "description": "Explains the setting to determine book series based on folders instead of item metadata"
+    },
+    "removeWatchedAsk": "Pregunta-m'ho",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "deleteFinishedDownloadTitle": "Vols suprimir aquesta baixada?",
+    "@deleteFinishedDownloadTitle": {
+        "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+    },
+    "deleteFinishedDownloadMessage": "Has acabat {title}. Suprimeix-ne la baixada per alliberar espai, o conserva-la i no t'ho tornarem a preguntar.",
+    "@deleteFinishedDownloadMessage": {
+        "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notNow": "Ara no",
+    "@notNow": {
+        "description": "Button that closes a question without answering it, so it can be asked again later"
+    },
+    "afterHoursPressesLeft": "{count, plural, =1{1 pulsació més} other{{count} pulsacions més}}",
+    "@afterHoursPressesLeft": {
+        "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursTapsLeft": "{count, plural, =1{1 toc més} other{{count} tocs més}}",
+    "@afterHoursTapsLeft": {
+        "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursTop3": "Top 3",
+    "@afterHoursTop3": {
+        "description": "Heading over the three best scores in an arcade game"
+    },
+    "afterHoursArcade": "Sala de jocs",
+    "@afterHoursArcade": {
+        "description": "Short button on a phone that leaves a finished game for the arcade menu"
+    },
+    "afterHoursLandscapeNote": "Gira a horitzontal mentre jugues",
+    "@afterHoursLandscapeNote": {
+        "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+    },
+    "afterHoursTouch": "Tàctil",
+    "@afterHoursTouch": {
+        "description": "Label before the touchscreen controls of an arcade game"
+    },
+    "afterHoursPerfect": "PERFECTE",
+    "@afterHoursPerfect": {
+        "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+    },
+    "afterHoursBoxSet": "ESTOIG",
+    "@afterHoursBoxSet": {
+        "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+    },
+    "afterHoursBufferRunPitch": "El corredor de la pantalla de càrrega per fi té on anar. El doble salt i la inversió de gravetat el porten al sostre.",
+    "@afterHoursBufferRunPitch": {
+        "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+    },
+    "afterHoursBufferRunTouch": "Toca per saltar i torna a tocar a l'aire per invertir la gravetat. Fes lliscar el dit cap al costat per on corres per esmunyir-te.",
+    "@afterHoursBufferRunTouch": {
+        "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForwardPitch": "Un esprint per tres passadissos del vestíbul. Salta per sobre de les coses baixes i recorda que els carretons de crispetes no s'aparten per ningú.",
+    "@afterHoursFastForwardPitch": {
+        "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+    },
+    "afterHoursFastForwardTouch": "Fes lliscar el dit amunt o avall per canviar de carril. Toca per saltar.",
+    "@afterHoursFastForwardTouch": {
+        "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawlPitch": "Guia un cable HDMI per darrere del moble de la tele i connecta'l al senyal. Cada barra el fa més llarg.",
+    "@afterHoursCableCrawlPitch": {
+        "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+    },
+    "afterHoursCableCrawlTouch": "Fes lliscar el dit per girar.",
+    "@afterHoursCableCrawlTouch": {
+        "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStackPitch": "Construeix una torre de capses de Blu-ray fins a l'alçada de la prestatgeria, cadascuna amb un títol de la teva biblioteca. El que sobresurt es retalla, així que encerta-les de ple.",
+    "@afterHoursCaseStackPitch": {
+        "description": "Two sentence description of the Case Stack arcade game"
+    },
+    "afterHoursCaseStackTouch": "Toca on sigui per deixar caure.",
+    "@afterHoursCaseStackTouch": {
+        "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgePitch": "Una codificació dolenta ha deixat la imatge plena d'artefactes de blocs, i baixen una mica cada segon. Fes rebotar el botó de reproducció a la barra de progrés per eliminar-los abans que hi arribin.",
+    "@afterHoursPixelPurgePitch": {
+        "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+    },
+    "afterHoursPixelPurgeRemote": "Esquerra i Dreta mouen la barra. La bola surt sola.",
+    "@afterHoursPixelPurgeRemote": {
+        "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeTouch": "Arrossega per moure la barra.",
+    "@afterHoursPixelPurgeTouch": {
+        "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursBufferRunCardTouch": "Toca per saltar; torna-hi a l'aire per canviar de costat. Fes lliscar el dit cap al teu costat per esmunyir-te.",
+    "@afterHoursBufferRunCardTouch": {
+        "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+    },
+    "episodeDirector": "Director de l'episodi",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (Director de l'episodi)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Escriptor de l'episodi",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (Escriptor de l'episodi)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Estrella convidada",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (Estrella convidada)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeYours": "On ho vas deixar. Tothom comença des d'aquí.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchParties": "Watch Parties",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Inicia les festes amb",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Xat, reaccions i votacions. Funciona amb Moonbase.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "El de Jellyfin. Els amics que facin servir altres apps de Jellyfin s'hi poden unir.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Pots unir-te a sales de tots dos tipus. Això només tria el que inicies tu.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Durant una festa",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Mostra el xat sobre el vídeo",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Els missatges nous es mostren uns segons",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Alertes de festes",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Avisa'm quan algú d'aquest servidor n'iniciï una",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    },
+    "watchPartyJoinWithCode": "Uneix-te amb un codi",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "En aquest servidor",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "{count} en aquest servidor",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Necessites accés a l'element per unir-t'hi. Una sala es tanca quan en surt l'última persona.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "Aquí apareixen les Watch Parties que pots veure. T'han passat un codi? Tria «Uneix-te amb un codi».",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "També hi pots enganxar un enllaç d'invitació. En un telèfon, l'enllaç obre Moonfin directament a la Watch Party.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} espectador} other{{count} espectadors}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "Watch Party de {name}",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Tothom controla",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Es vota què veure",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "Les Watch Parties necessiten Moonbase en aquest servidor",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Demana a qui gestiona el servidor que instal·li el connector Moonbase. A Jellyfin, SyncPlay funciona igualment sense aquest connector.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Aquest PIN no ha funcionat. Torna-ho a provar.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "Massa intents. Espera un minut.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Aquesta Watch Party és plena.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Cap sala no té aquest codi.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "No tens accés al que estan veient.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "L'amfitrió t'ha expulsat de la Watch Party.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "La teva Watch Party",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Enganxa'l a qualsevol xat. Obre una pàgina d'aquest servidor amb un botó «Obre a Moonfin».",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Envia la invitació",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Escaneja-ho amb el telèfon per obtenir l'enllaç d'invitació i envia'l des d'allà. O simplement comparteix el codi.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "La reproducció espera que el reproductor de tothom estigui a punt, 10 segons com a màxim, i després fa un compte enrere 3, 2, 1.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "Sincronitzat",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Posant-se al dia",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Carregant",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "No està mirant",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "A punt",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Unint-se",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Amfitrió",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "S'està esperant el reproductor de {name}",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{S'està esperant {count} reproductor} other{S'estan esperant {count} reproductors}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "Començarà igualment d'aquí a {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Comencem tots alhora",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} ha posat en pausa",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} ha reprès la reproducció",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} ha saltat a {time}",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} s'ha unit",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} ha marxat",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} ha canviat a {title}",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Ara ets l'amfitrió",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "Ara {name} és l'amfitrió",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Ara tothom pot controlar la reproducció",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Ara només l'amfitrió controla la reproducció",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Només l'amfitrió pot controlar la reproducció.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "S'està tornant a connectar a la Watch Party...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Has tornat a la Watch Party",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} ha finalitzat la Watch Party",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Xat",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Envia a la Watch Party",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyBackToClose": "Prem Enrere per tancar",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "watchPartyType": "Escriu",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyNoWay": "No pot ser",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Pausa, si us plau",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Ara torno",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Un altre cop!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "M'encanta",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Uau",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Trist",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Foc",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Crispetes",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Fes amfitrió",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Tothom pot controlar la reproducció",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Tothom pot reproduir, posar en pausa i saltar",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "PIN de la sala",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Demana un PIN abans que algú s'hi uneixi",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "De 4 a 8 dígits",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Surt",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Surt · {name} fa d'amfitrió",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} ha iniciat una Watch Party",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} a la sala d'espera} other{{title} · {count} a la sala d'espera}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "És la primera de la fila Watch Parties de l'inici",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Aquesta invitació és per a un servidor que encara no has afegit, {address}. Afegeix-lo i inicia la sessió per unir-t'hi.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinRemember": "Recorda el PIN en aquest dispositiu",
+    "@siloPinRemember": {
+        "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "settingsDecodingAndRenderingSection": "Descodificació i renderització",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Flux d'àudio",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Sortida d'àudio",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Configuració del passthrough",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsRewatchSection": "Torna a veure",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "seerrDownloadFailed": "Ha fallat la baixada",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

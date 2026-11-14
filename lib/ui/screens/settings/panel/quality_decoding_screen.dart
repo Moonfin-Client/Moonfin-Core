@@ -55,7 +55,7 @@ class _QualityDecodingScreen extends StatelessWidget {
             ],
           ),
 
-          const _SectionHeader('Decoding & Rendering'),
+          _SectionHeader(l10n.settingsDecodingAndRenderingSection),
           adaptiveListSection(
             children: [
               // Hidden on Apple TV: AetherEngine always uses VideoToolbox for
@@ -90,6 +90,13 @@ class _QualityDecodingScreen extends StatelessWidget {
                   icon: Icons.memory,
                 ),
               if (DisplayHdrProbe.isSupported) const _RedetectDisplayTile(),
+              if (PlatformDetection.isAppleTV)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.cadenceSlowdown,
+                  title: l10n.cadenceSlowdown,
+                  subtitle: l10n.cadenceSlowdownSubtitle,
+                  icon: Icons.speed,
+                ),
               if (isAndroidTv)
                 EnumPreferenceTile<RefreshRateSwitchingBehavior>(
                   preference: UserPreferences.refreshRateSwitchingBehavior,

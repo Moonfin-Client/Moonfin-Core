@@ -54,7 +54,11 @@ void main() {
         _Server(events, fail: fail),
         _Offline(events),
         canReachServer: () => reachable,
-        onStopped: (stopped) => events.add('stopped ${stopped['Id']}'),
+        onStopped: (stopped, resolution, position) => events.add(
+          'stopped ${stopped['Id']}'
+          '${resolution.isLocalMedia ? ' from its download' : ''}'
+          ' at ${position.inSeconds}s',
+        ),
       );
 
   test('a streamed stop is reported before anything hears of it', () async {
@@ -64,17 +68,21 @@ void main() {
       Duration.zero,
     );
 
-    expect(events, ['reported', 'stopped episode-1']);
+    expect(events, ['reported', 'stopped episode-1 at 0s']);
   });
 
   test('a downloaded stop is recorded and reported first', () async {
     await service().onPlaybackStop(
       item,
       _resolution(local: true),
-      Duration.zero,
+      const Duration(minutes: 40),
     );
 
-    expect(events, ['recorded', 'reported', 'stopped episode-1']);
+    expect(events, [
+      'recorded',
+      'reported',
+      'stopped episode-1 from its download at 2400s',
+    ]);
   });
 
   test('a downloaded stop offline still tells the listener', () async {
@@ -84,7 +92,7 @@ void main() {
       Duration.zero,
     );
 
-    expect(events, ['recorded', 'stopped episode-1']);
+    expect(events, ['recorded', 'stopped episode-1 from its download at 0s']);
   });
 
   test('a failed streamed report still tells the listener', () async {
@@ -97,6 +105,6 @@ void main() {
       throwsStateError,
     );
 
-    expect(events, ['reported', 'stopped episode-1']);
+    expect(events, ['reported', 'stopped episode-1 at 0s']);
   });
 }

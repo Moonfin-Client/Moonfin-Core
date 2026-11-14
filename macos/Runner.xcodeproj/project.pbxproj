@@ -41,6 +41,7 @@
 		B0751379C9C582670D9B5B0B /* SubtitleFontLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F587942E0024D8B11C40C3FE /* SubtitleFontLocator.swift */; };
 		BAC8382FD5504F2304388AEC /* libass in Frameworks */ = {isa = PBXBuildFile; productRef = 21E4756219CF9B3C28F53FC9 /* libass */; };
 		C45E75A8B525038BA99A6F42 /* AppleTvThemeMusicChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 628760915031C6D43C16745F /* AppleTvThemeMusicChannel.swift */; };
+		A7C5D1000000000000000004 /* AppleArcadeSoundChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C5D1000000000000000003 /* AppleArcadeSoundChannel.swift */; };
 		EA646F11FC2E7E5045B5A0FB /* EngineTrustPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5B2CDBEA803A61630EC38 /* EngineTrustPolicy.swift */; };
 		7A404869B4E3F4E89D33BD30 /* ClientIdentityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA80BF4940085D170A2BEBD /* ClientIdentityStore.swift */; };
 		8C48B0B1C9A65F1DCDEB5820 /* MoonfinURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2236253F57320848A04DB1E /* MoonfinURLSession.swift */; };
@@ -103,6 +104,7 @@
 		5C42FC11E9762F637A0E3AE5 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		5C4DDE0DB134246DD2F3D49D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		628760915031C6D43C16745F /* AppleTvThemeMusicChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleTvThemeMusicChannel.swift; path = ../../../tvos/Runner/AppleTvThemeMusicChannel.swift; sourceTree = "<group>"; };
+		A7C5D1000000000000000003 /* AppleArcadeSoundChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleArcadeSoundChannel.swift; path = ../../../tvos/Runner/AppleArcadeSoundChannel.swift; sourceTree = "<group>"; };
 		66D508874A22AB77D25AF7E0 /* MacosAetherVideoPlatformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacosAetherVideoPlatformView.swift; sourceTree = "<group>"; };
 		6F34DBD260C2ADC6F64A8D2A /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 				C36B66D5A31C21358F339649 /* SubtitleOverlay.swift */,
 				47A9772EBAFCDD593F932DB5 /* AppleTvPreviewChannel.swift */,
 				628760915031C6D43C16745F /* AppleTvThemeMusicChannel.swift */,
+				A7C5D1000000000000000003 /* AppleArcadeSoundChannel.swift */,
 			);
 			name = Playback;
 			path = Runner/Playback;
@@ -522,6 +525,7 @@
 				5313B8C31F568022D36053EC /* SubtitleOverlay.swift in Sources */,
 				4AB6FBC40570979761F31A0B /* AppleTvPreviewChannel.swift in Sources */,
 				C45E75A8B525038BA99A6F42 /* AppleTvThemeMusicChannel.swift in Sources */,
+				A7C5D1000000000000000004 /* AppleArcadeSoundChannel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -901,7 +905,7 @@
 			repositoryURL = "https://github.com/RadicalMuffinMan/AetherEngine";
 			requirement = {
 				kind = revision;
-				revision = d55f374108310435cb877a2f550e19ee996f92ba;
+				revision = 34f149ba2dd483f490dca13a5a3027d58a9956f5;
 			};
 		};
 		755057A94BFFB3D132856F38 /* XCRemoteSwiftPackageReference "libass-build" */ = {

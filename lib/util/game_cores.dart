@@ -433,11 +433,10 @@ const Map<String, Map<String, String>> coreOptionDefaults = {
   'melonds': {'melonds_touch_mode': 'Touch'},
 };
 
-/// Windows-only additions to [coreOptionDefaults].
-const Map<String, Map<String, String>> windowsCoreOptionDefaults = {
+/// Additions to [coreOptionDefaults] for the Windows and Linux hosts.
+const Map<String, Map<String, String>> softwareOnlyCoreOptionDefaults = {
   'mupen64plus_next': {
-    // The Windows host has no OpenGL backend, so the GLideN64 default can't
-    // render.
+    // Neither host has an OpenGL backend, so the GLideN64 default can't render.
     'mupen64plus-rdp-plugin': 'angrylion',
     'mupen64plus-rsp-plugin': 'parallel',
   },
@@ -450,7 +449,8 @@ Map<String, String>? withCoreOptionDefaults(
 ) {
   final defaults = {
     ...?coreOptionDefaults[coreId],
-    if (PlatformDetection.isWindows) ...?windowsCoreOptionDefaults[coreId],
+    if (PlatformDetection.isWindows || PlatformDetection.isLinux)
+      ...?softwareOnlyCoreOptionDefaults[coreId],
   };
   if (defaults.isEmpty) return settings;
   return {...defaults, ...?settings};

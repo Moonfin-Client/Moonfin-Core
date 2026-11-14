@@ -8,9 +8,11 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/image_fetch_priority.dart';
 import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/offline_aware_image.dart';
+import 'photo_slideshow_scheduler.dart';
 
 class PhotoPlayerScreen extends StatefulWidget {
   final String itemId;
@@ -28,12 +30,16 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
 
   List<AggregatedItem> _items = [];
   int _currentIndex = 0;
-  bool _isPlaying = false;
   bool _controlsVisible = true;
-  Timer? _slideshowTimer;
   Timer? _hideTimer;
 
   static const _slideshowInterval = Duration(seconds: 5);
+  static const _photoTransition = Duration(milliseconds: 400);
+
+  late final _slideshow = PhotoSlideshowScheduler(
+    interval: _slideshowInterval,
+    onAdvance: _next,
+  );
 
   @override
   void initState() {
@@ -45,7 +51,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
 
   @override
   void dispose() {
-    _slideshowTimer?.cancel();
+    _slideshow.dispose();
     _hideTimer?.cancel();
     _transformController.dispose();
     super.dispose();
@@ -80,16 +86,19 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
             )
             .toList();
         final idx = items.indexWhere((i) => i.id == widget.itemId);
+        if (!mounted) return;
         setState(() {
           _items = items;
           _currentIndex = idx >= 0 ? idx : 0;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _items = [item];
           _currentIndex = 0;
         });
       }
+      _onPhotoShown();
     } catch (_) {}
   }
 
@@ -105,6 +114,45 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     if (index < 0 || index >= _items.length) return;
     _transformController.value = Matrix4.identity();
     setState(() => _currentIndex = index);
+    _onPhotoShown();
+  }
+
+  /// Completes once the photo at [index] has loaded (or failed to), using
+  /// the same provider [_buildPhotoView] paints, so it shares that load
+  /// rather than fetching the photo a second time.
+  Future<void> _photoReady(
+    int index, {
+    ImageFetchPriority priority = ImageFetchPriority.normal,
+  }) {
+    if (!mounted || index < 0 || index >= _items.length) {
+      return Future.value();
+    }
+    final url = _getImageUrl(_items[index]);
+    if (url == null) return Future.value();
+    return precacheImage(
+      ArtworkDecode.provider(url, headers: artworkFetchHeaders(url, priority)),
+      context,
+      onError: (_, _) {},
+    );
+  }
+
+  /// Completes once the current photo has loaded and the crossfade to it has
+  /// finished.
+  Future<void> _currentPhotoShown([Future<void>? ready]) => Future.wait([
+    ready ?? _photoReady(_currentIndex),
+    Future<void>.delayed(_photoTransition),
+  ]);
+
+  /// Restarts the slideshow countdown for the current photo, then preloads
+  /// the next one so it's ready when its turn comes.
+  void _onPhotoShown() {
+    final ready = _photoReady(_currentIndex);
+    _slideshow.photoChanged(_currentPhotoShown(ready));
+    if (_items.length < 2) return;
+    final nextIndex = (_currentIndex + 1) % _items.length;
+    ready.whenComplete(() {
+      if (mounted) _photoReady(nextIndex, priority: ImageFetchPriority.low);
+    });
   }
 
   void _next() {
@@ -124,12 +172,12 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
   }
 
   void _toggleSlideshow() {
-    setState(() => _isPlaying = !_isPlaying);
-    if (_isPlaying) {
-      _slideshowTimer = Timer.periodic(_slideshowInterval, (_) => _next());
+    if (_slideshow.isRunning) {
+      _slideshow.stop();
     } else {
-      _slideshowTimer?.cancel();
+      _slideshow.start(_currentPhotoShown());
     }
+    setState(() {});
   }
 
   void _showControlsTemporarily() {
@@ -190,7 +238,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
     }
 
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 400),
+      duration: _photoTransition,
       child: InteractiveViewer(
         key: ValueKey(item.id),
         transformationController: _transformController,
@@ -309,7 +357,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
                 const SizedBox(width: 24),
                 IconButton(
                   icon: AdaptiveIcon(
-                    _isPlaying ? Icons.pause : Icons.play_arrow,
+                    _slideshow.isRunning ? Icons.pause : Icons.play_arrow,
                     color: AppColorScheme.onSurface,
                     size: 40,
                   ),

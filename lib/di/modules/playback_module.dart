@@ -51,6 +51,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
 import '../../watch_party/silo_watch_party_manager.dart';
+import '../../watch_party/watch_party_rooms_service.dart';
 import '../../util/platform_detection.dart';
 import '../../util/episode_playability.dart';
 import '../../util/season_queue_context.dart';
@@ -443,9 +444,10 @@ void registerPlaybackModule() {
           : LogLevel.debug,
     );
   });
-  manager.autoBitrateProvider = AutoBitrateService(
-    _getIt<MediaServerClientFactory>(),
-  ).measuredBpsForActiveServer;
+  final autoBitrate = AutoBitrateService(_getIt<MediaServerClientFactory>());
+  manager
+    ..autoBitrateProvider = autoBitrate.measuredBpsForActiveServer
+    ..savedAutoBitrateProvider = autoBitrate.savedBpsForActiveServer;
 
   // The streams of one kind belonging to whatever is playing, or null when
   // that isn't an episode and so has no series to remember a choice for.
@@ -802,6 +804,13 @@ void registerPlaybackModule() {
   _getIt.registerLazySingleton<SiloWatchPartyManager>(
     () => SiloWatchPartyManager(_getIt<PlaybackManager>()),
   );
+  _getIt.registerLazySingleton<WatchPartyRoomsService>(
+    () => WatchPartyRoomsService(
+      _getIt<SiloWatchPartyManager>(),
+      _getIt<UserPreferences>(),
+      _getIt<SyncPlayManager>(),
+    ),
+  );
 
   _getIt.registerLazySingleton<AudiobookBookmarksService>(
     () => AudiobookBookmarksService(),
@@ -911,14 +920,22 @@ void setActiveStreamResolver(MediaServerClient client) {
 /// Smart downloads and the remove-watched rule react as soon as an item
 /// stops, rather than waiting for the server's debounced user data event or
 /// the next reconnect.
-void _onItemStopped(dynamic item) {
+void _onItemStopped(
+  dynamic item,
+  StreamResolutionResult resolution,
+  Duration position,
+) {
   if (item is! AggregatedItem) return;
   if (item.type == 'Episode' && _getIt.isRegistered<AutoDownloadService>()) {
     _getIt<AutoDownloadService>().onEpisodeStopped(item.serverId);
   }
   if (removeWatchedTypes.contains(item.type) &&
       _getIt.isRegistered<RemoveWatchedService>()) {
-    _getIt<RemoveWatchedService>().onItemStopped(item.id);
+    final removeWatched = _getIt<RemoveWatchedService>();
+    if (resolution.isLocalMedia) {
+      removeWatched.onDownloadStopped(item, position);
+    }
+    removeWatched.onItemStopped(item.id);
   }
   // Plex sends no user data events, so the new resume point and watched state
   // have to be asked for. Plex items don't name their server, so one without

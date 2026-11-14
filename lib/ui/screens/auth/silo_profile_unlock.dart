@@ -13,12 +13,15 @@ import '../../../auth/services/silo_token_storage.dart';
 import '../../../auth/store/authentication_store.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/silo_failure_message.dart';
 import '../../widgets/overlay_sheet.dart';
 import 'silo_secret_field.dart';
 
 /// Before switching to Silo profile [user] on [server], asks for its PIN
-/// when it's locked and has no live proof, and keeps the proof Silo gives.
+/// when it's locked and has no live proof, and keeps the proof Silo gives,
+/// for good or, when the person asks to be asked every time, until the app
+/// starts again or another profile is switched to.
 /// True when the profile can be used now (no PIN needed, or the right one
 /// entered), false when the dialog was closed.
 ///
@@ -62,7 +65,8 @@ Future<bool> unlockSiloProfileIfNeeded(
     return await SiloPinDialog.show(
       context,
       profileName: user.name,
-      onSubmit: (pin) async {
+      rememberPin: storage.remembersPin(user),
+      onSubmit: (pin, remember) async {
         final result = await checker.profilesApi.verifyPin(user.id, pin);
         if (result case SiloPinAccepted(
           :final profileToken,
@@ -72,6 +76,7 @@ Future<bool> unlockSiloProfileIfNeeded(
             user,
             profileToken,
             expiresAt: expiresAt,
+            remember: remember,
           );
         }
         return result;
@@ -88,27 +93,36 @@ Future<bool> unlockSiloProfileIfNeeded(
 /// obscured text field, not the digit pad of Moonfin's own app PIN. A wrong
 /// PIN keeps the dialog open. After five, Silo locks the profile for five
 /// minutes, and the dialog says how long is left. [onSubmit] checks the PIN
-/// (`SiloProfilesApi.verifyPin`) and is only called when the person submits.
+/// (`SiloProfilesApi.verifyPin`) and is only called when the person submits,
+/// with whether the PIN should be remembered on this device ([rememberPin]
+/// is where that box starts).
 class SiloPinDialog extends StatefulWidget {
   const SiloPinDialog({
     super.key,
     required this.profileName,
     required this.onSubmit,
+    this.rememberPin = true,
   });
 
   final String profileName;
-  final Future<SiloPinResult> Function(String pin) onSubmit;
+  final Future<SiloPinResult> Function(String pin, bool remember) onSubmit;
+  final bool rememberPin;
 
   /// True when the right PIN was entered, false when the dialog was closed.
   static Future<bool> show(
     BuildContext context, {
     required String profileName,
-    required Future<SiloPinResult> Function(String pin) onSubmit,
+    required Future<SiloPinResult> Function(String pin, bool remember)
+    onSubmit,
+    bool rememberPin = true,
   }) async {
     final unlocked = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (_) =>
-          SiloPinDialog(profileName: profileName, onSubmit: onSubmit),
+      builder: (_) => SiloPinDialog(
+        profileName: profileName,
+        onSubmit: onSubmit,
+        rememberPin: rememberPin,
+      ),
     );
     return unlocked == true;
   }
@@ -123,16 +137,19 @@ class _SiloPinDialogState extends State<SiloPinDialog> {
 
   final _controller = TextEditingController();
   final _fieldFocus = FocusNode();
+  final _rememberFocus = FocusNode();
   final _submitFocus = FocusNode();
   final _tvKey = GlobalKey<CustomTVTextFieldState>();
 
   bool _busy = false;
   String? _error;
+  late bool _remember = widget.rememberPin;
 
   @override
   void dispose() {
     _controller.dispose();
     _fieldFocus.dispose();
+    _rememberFocus.dispose();
     _submitFocus.dispose();
     super.dispose();
   }
@@ -153,7 +170,7 @@ class _SiloPinDialogState extends State<SiloPinDialog> {
     SiloPinResult result;
     String? failure;
     try {
-      result = await widget.onSubmit(pin);
+      result = await widget.onSubmit(pin, _remember);
     } on DioException catch (e) {
       result = const SiloPinRejected();
       failure = SiloFailure.of(e)?.message(l10n) ?? l10n.siloPinFailed;
@@ -227,8 +244,44 @@ class _SiloPinDialogState extends State<SiloPinDialog> {
                     label: l10n.siloPinHint,
                     autofocus: true,
                     enabled: !_busy,
-                    down: _submitFocus,
+                    down: _rememberFocus,
                     onSubmitted: (_) => _submit(),
+                  ),
+                  const SizedBox(height: 8),
+                  // A remote's down goes on to Unlock rather than to whichever
+                  // button default traversal picks, and up back to the PIN.
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    onKeyEvent: (_, event) {
+                      if (!event.isActionable) return KeyEventResult.ignored;
+                      final target = event.logicalKey.isDownKey
+                          ? _submitFocus
+                          : event.logicalKey.isUpKey
+                          ? _fieldFocus
+                          : null;
+                      if (target == null) return KeyEventResult.ignored;
+                      target.requestFocus();
+                      return KeyEventResult.handled;
+                    },
+                    // The box behind paints over a ListTile's ink without one.
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: CheckboxListTile(
+                        focusNode: _rememberFocus,
+                        value: _remember,
+                        onChanged: _busy
+                            ? null
+                            : (value) => setState(() => _remember = value ?? true),
+                        title: Text(
+                          l10n.siloPinRemember,
+                          style: TextStyle(color: onSurface),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ),
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),

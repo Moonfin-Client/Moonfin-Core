@@ -1,15 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
-import 'package:moonfin/ui/screens/home/home_screen.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
+import 'package:server_core/server_core.dart' show ImageApi;
 import 'package:shared_preferences/shared_preferences.dart';
 
 HomeRow _row(String id, [HomeRowType rowType = HomeRowType.pluginDynamic]) =>
     HomeRow(id: id, title: id, rowType: rowType);
+
+/// A 200 px tall card at 1x, with series thumbnails off.
+String? _resolveRowImageUrl(
+  AggregatedItem item,
+  ImageApi imageApi,
+  ImageType imageType,
+) => resolveRowImageUrl(item, imageApi, 200, imageType, false, 1);
 
 /// Every built-in section, the way the sections screen fills the list in,
 /// with the media bar first since it also matches recently released rows.
@@ -22,6 +31,38 @@ List<HomeSectionConfig> _everySection({bool radarrEnabled = true}) => [
         enabled: type != HomeSectionType.radarrCalendar || radarrEnabled,
       ),
 ];
+
+/// Names the image kind and tag in the url so a test can tell which one a
+/// card asked for.
+class _TagEchoImageApi implements ImageApi {
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) => 'http://fake/$itemId/Primary?tag=${tag ?? ''}';
+
+  @override
+  String getThumbImageUrl(String itemId, {int? maxWidth, String? tag}) =>
+      'http://fake/$itemId/Thumb?tag=${tag ?? ''}';
+
+  @override
+  String getBannerImageUrl(String itemId, {int? maxWidth, String? tag}) =>
+      'http://fake/$itemId/Banner?tag=${tag ?? ''}';
+
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+AggregatedItem _studio(
+  Map<String, String> imageTags, {
+  String type = 'Studio',
+}) => AggregatedItem(
+  id: 'studio1',
+  serverId: 'srv',
+  rawData: {'Id': 'studio1', 'Type': type, 'ImageTags': imageTags},
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -181,7 +222,7 @@ void main() {
     }
 
     ImageType imageType(HomeRow row, UserPreferences prefs) =>
-        HomeScreen.homeRowImageTypeForRow(row, prefs);
+        homeRowImageTypeForRow(row, prefs);
 
     test('reaches the rows keyed apart from their section id', () async {
       final prefs = await createPreferences();
@@ -225,13 +266,13 @@ void main() {
             selected,
           );
           expect(
-            HomeScreen.isRowModern(standalone, prefs),
-            HomeScreen.isRowModern(resume, prefs),
+            isHomeRowModern(standalone, prefs),
+            isHomeRowModern(resume, prefs),
           );
           expect(imageType(standalone, prefs), selected);
           expect(
-            HomeScreen.isRowModern(bundled, prefs),
-            HomeScreen.isRowModern(resume, prefs),
+            isHomeRowModern(bundled, prefs),
+            isHomeRowModern(resume, prefs),
           );
           expect(imageType(bundled, prefs), ImageType.banner);
         }
@@ -304,4 +345,94 @@ void main() {
       expect(imageType(_row('seasonal'), prefs), ImageType.banner);
     });
   });
+
+  group('Studio card artwork', () {
+    final api = _TagEchoImageApi();
+
+    test('a poster row falls back to the Thumb Jellyfin gives studios', () {
+      expect(
+        _resolveRowImageUrl(
+          _studio({'Thumb': 't1'}),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Thumb?tag=t1',
+      );
+    });
+
+    test('a network gets the same fallback', () {
+      expect(
+        _resolveRowImageUrl(
+          _studio({'Thumb': 't1'}, type: 'Network'),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Thumb?tag=t1',
+      );
+    });
+
+    test('a studio with no artwork still asks for nothing', () {
+      expect(
+        _resolveRowImageUrl(_studio({}), api, ImageType.poster),
+        isNull,
+      );
+    });
+
+    test('a Primary still wins over the Thumb', () {
+      expect(
+        _resolveRowImageUrl(
+          _studio({'Primary': 'p1', 'Thumb': 't1'}),
+          api,
+          ImageType.poster,
+        ),
+        'http://fake/studio1/Primary?tag=p1',
+      );
+    });
+
+    test('a banner row keeps the Banner ahead of the Thumb', () {
+      expect(
+        _resolveRowImageUrl(
+          _studio({'Banner': 'b1', 'Thumb': 't1'}),
+          api,
+          ImageType.banner,
+        ),
+        'http://fake/studio1/Banner?tag=b1',
+      );
+    });
+
+    test('a banner row asks for a Primary as wide as the banner card', () {
+      final widths = _PrimaryWidthImageApi();
+      _resolveRowImageUrl(
+        _studio({'Primary': 'p1'}),
+        widths,
+        ImageType.poster,
+      );
+      _resolveRowImageUrl(
+        _studio({'Primary': 'p1'}),
+        widths,
+        ImageType.banner,
+      );
+      expect(widths.maxWidths[0], greaterThanOrEqualTo(200 * 16 / 9));
+      expect(
+        widths.maxWidths[1],
+        greaterThanOrEqualTo(200 * kBannerAspectRatio),
+      );
+    });
+  });
+}
+
+/// Records the width each Primary request asks for.
+class _PrimaryWidthImageApi extends _TagEchoImageApi {
+  final maxWidths = <int?>[];
+
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) {
+    maxWidths.add(maxWidth);
+    return super.getPrimaryImageUrl(itemId, tag: tag);
+  }
 }

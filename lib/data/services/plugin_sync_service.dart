@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart' show plexItemToJellyfin;
 import 'package:server_silo/server_silo.dart';
 
 import '../../auth/services/silo_token_storage.dart';
@@ -117,14 +118,80 @@ class PluginSyncService extends ChangeNotifier {
   /// TMDB overview, score, logo and trailer.
   bool _tmdbDetailsSupported = false;
   bool get tmdbDetailsAvailable => _pluginAvailable && _tmdbDetailsSupported;
+
+  /// Whether the plugin serves the JustWatch and TMDB discover chart rows.
+  bool _discoverChartsSupported = false;
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
+  bool _smartSearchEnabled = false;
+  bool get smartSearchEnabled => _pluginAvailable && _smartSearchEnabled;
+
+  /// Whether this user can open the arr calendar. Off when no Sonarr or Radarr
+  /// is linked, or the admin kept the calendar to admins.
+  bool _calendarAvailable = false;
+  bool get calendarAvailable => _pluginAvailable && _calendarAvailable;
+
+  /// Whether the server can fill the external row [type] (IMDb, TMDB, MDBList
+  /// Watching Now, seasonal and the calendars), which decides both whether the
+  /// row picker offers it and whether Home draws it. Null for every other row.
+  /// [serverBuildsSeasonal] says whether the server makes its own seasonal row
+  /// (Silo), and it's only asked when the plugin can't fill that row.
+  bool? externalRowAvailable(
+    prefs.HomeSectionType type, {
+    bool Function()? serverBuildsSeasonal,
+  }) {
+    if (prefs.imdbChartSections.contains(type)) return _pluginAvailable;
+    if (prefs.externalCharts[type] case final chart?) {
+      if (!_pluginAvailable ||
+          (chart.needsDiscoverCharts && !_discoverChartsSupported)) {
+        return false;
+      }
+      return chart.usesMdblist
+          ? _mdblistAvailable ||
+                _prefs.get(UserPreferences.mdblistApiKey).trim().isNotEmpty
+          : _tmdbAvailable ||
+                _prefs.get(UserPreferences.tmdbApiKey).trim().isNotEmpty;
+    }
+    if (UserPreferences.isTmdbSectionType(type)) {
+      return _pluginAvailable &&
+          (_tmdbAvailable ||
+              _prefs.get(UserPreferences.tmdbApiKey).trim().isNotEmpty);
+    }
+    return switch (type) {
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        _pluginAvailable &&
+            (_mdblistAvailable ||
+                _prefs.get(UserPreferences.mdblistApiKey).trim().isNotEmpty),
+      prefs.HomeSectionType.seasonal =>
+        _pluginAvailable || (serverBuildsSeasonal?.call() ?? false),
+      prefs.HomeSectionType.radarrCalendar ||
+      prefs.HomeSectionType.sonarrCalendar => calendarAvailable,
+      _ => null,
+    };
+  }
+  int _calendarDaysBack = 14;
+  int get calendarDaysBack => _calendarDaysBack;
+  int _calendarDaysAhead = 90;
+  int get calendarDaysAhead => _calendarDaysAhead;
+  bool _calendarReminders = false;
+  bool get calendarRemindersAvailable => _pluginAvailable && _calendarReminders;
+
+  /// Whether the plugin can read a title's Radarr/Sonarr queue, which says why
+  /// a download is stuck. Older plugins, and ones without Seerr set up, leave
+  /// it out.
+  bool _arrQueueAvailable = false;
+  bool get arrQueueAvailable => _pluginAvailable && _arrQueueAvailable;
 
   /// Whether the server will take an uploaded diagnostic report. An older
   /// plugin, or none at all, leaves it false.
   bool _clientLogSupported = false;
   bool get clientLogSupported => _pluginAvailable && _clientLogSupported;
+
+  /// Whether the plugin can deliver push, which is what starts Firebase on a
+  /// phone. Older plugins leave the flag out and all of them could push.
+  bool _pushSupported = false;
+  bool get pushSupported => _pluginAvailable && _pushSupported;
   String? _activeThemeCacheServerId;
 
   final _seerrNotifications =
@@ -226,6 +293,11 @@ class PluginSyncService extends ChangeNotifier {
     return value is String ? value : null;
   }
 
+  int? _readCount(Map<String, dynamic> data, String key) {
+    final value = _readValue(data, key);
+    return value is num && value >= 0 ? value.toInt() : null;
+  }
+
   void resetState({
     bool notify = true,
     bool stopStream = true,
@@ -250,8 +322,16 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbPersonLinksSupported = false;
     _tmdbReviewsSupported = false;
     _tmdbDetailsSupported = false;
+    _discoverChartsSupported = false;
     _recommendationsSupported = false;
+    _smartSearchEnabled = false;
+    _calendarAvailable = false;
+    _calendarDaysBack = 14;
+    _calendarDaysAhead = 90;
+    _calendarReminders = false;
+    _arrQueueAvailable = false;
     _clientLogSupported = false;
+    _pushSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
     _activeThemeCacheServerId = null;
     if (notify) {
@@ -298,11 +378,7 @@ class PluginSyncService extends ChangeNotifier {
     // home rows, no Seerr proxy, no plugin push enrollment. The messages flag
     // is cleared too, since only a ping would otherwise reset it after a
     // session on a server that had the plugin.
-    final features = FeatureDetector(
-      serverType: client.serverType,
-      serverVersion: '',
-    );
-    if (!features.supportsMoonfinPlugin) {
+    if (!client.features.supportsMoonfinPlugin) {
       _stopSettingsStream();
       _messages?.setSupported(false);
       _setPluginSeerrEnabled(client, false);
@@ -359,13 +435,23 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'tmdbReviewsSupported') ?? false;
       _tmdbDetailsSupported =
           _readBool(pingResult, 'tmdbDetailsSupported') ?? false;
+      _discoverChartsSupported =
+          _readBool(pingResult, 'discoverChartsSupported') ?? false;
       _recommendationsSupported =
           _readBool(pingResult, 'recommendationsSupported') ?? false;
+      _smartSearchEnabled =
+          _readBool(pingResult, 'smartSearchEnabled') ?? false;
+      _calendarAvailable = _readBool(pingResult, 'calendarAvailable') ?? false;
+      _calendarDaysBack = _readCount(pingResult, 'calendarDaysBack') ?? 14;
+      _calendarDaysAhead = _readCount(pingResult, 'calendarDaysAhead') ?? 90;
+      _calendarReminders = _readBool(pingResult, 'calendarReminders') ?? false;
+      _arrQueueAvailable = _readBool(pingResult, 'arrQueueAvailable') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
       );
       _clientLogSupported = _readBool(pingResult, 'clientLogSupported') ?? false;
+      _pushSupported = _readBool(pingResult, 'pushSupported') ?? true;
       // The Emby port and older plugins leave this out, which hides the feature.
       _incompleteRecordings?.setSupported(
         _readBool(pingResult, 'incompleteRecordingsSupported') ?? false,
@@ -705,10 +791,10 @@ class PluginSyncService extends ChangeNotifier {
   /// on its own.
   Future<void> _startSettingsStream(MediaServerClient client) async {
     // Emby servers have no SSE endpoint, so plugin events arrive over the
-    // session websocket instead. Moonbase for Silo and Plex can't stream, so
-    // settings arrive at sign-in and on a manual sync. Don't loop on 501
-    // reconnects here.
-    if (client.serverType != ServerType.jellyfin) return;
+    // session websocket instead. Moonbase for Silo can't stream, so settings
+    // arrive at sign-in and on a manual sync. Don't loop on 501 reconnects
+    // here.
+    if (!client.features.supportsPluginSettingsStream) return;
 
     if (!_pluginAvailable || !_prefs.get(UserPreferences.pluginSyncEnabled)) {
       return;
@@ -917,6 +1003,9 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   Future<void> pushNotificationPrefs(MediaServerClient client) async {
+    // Cleared once the server has them, so a change that never got there goes
+    // up at the next sign-in instead of being replaced by the server's copy.
+    await _seerrPrefs.setNotificationPrefsUnsynced(true);
     if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
       debugPrint('PluginSync: skip pushNotificationPrefs, plugin unavailable');
       return;
@@ -942,6 +1031,36 @@ class PluginSyncService extends ChangeNotifier {
           headers: {...headers, 'Content-Type': 'application/json'},
         ),
       );
+      await _seerrPrefs.setNotificationPrefsUnsynced(false);
+    } catch (_) {}
+  }
+
+  /// Takes the notification choices the server keeps for this user, so a new
+  /// install shows them instead of pushing its defaults over them.
+  Future<void> syncNotificationPrefs(MediaServerClient client) async {
+    if (_seerrPrefs.notificationPrefsUnsynced) {
+      return pushNotificationPrefs(client);
+    }
+    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+
+    try {
+      final ep = await moonbaseEndpoint(client, _dio);
+      if (ep == null) return;
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/Notifications/Prefs',
+        options: Options(headers: ep.headers),
+      );
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return;
+      for (final (key, save) in <(String, Future<void> Function(bool))>[
+        ('notifyOnNewRequests', _seerrPrefs.setNotifyOnNewRequests),
+        ('notifyOnLibraryAdded', _seerrPrefs.setNotifyOnLibraryAdded),
+        ('notifyOnIssues', _seerrPrefs.setNotifyOnIssues),
+        ('notifyOnNewMedia', _seerrPrefs.setNotifyOnNewMedia),
+      ]) {
+        final value = _readBool(data, key);
+        if (value != null) await save(value);
+      }
     } catch (_) {}
   }
 
@@ -954,7 +1073,7 @@ class PluginSyncService extends ChangeNotifier {
     required String platform,
     required String deviceId,
   }) async {
-    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) {
+    if (!_pluginAvailable || !client.features.supportsPushNotifications) {
       debugPrint('PluginSync: skip registerPushDevice, plugin unavailable');
       return false;
     }
@@ -988,7 +1107,9 @@ class PluginSyncService extends ChangeNotifier {
     MediaServerClient client, {
     required String deviceId,
   }) async {
-    if (!_pluginAvailable || !serverHasMoonfinPlugin(client)) return;
+    if (!_pluginAvailable || !client.features.supportsPushNotifications) {
+      return;
+    }
 
     try {
       final ep = await moonbaseEndpoint(client, _dio);
@@ -1308,8 +1429,18 @@ class PluginSyncService extends ChangeNotifier {
         },
         options: Options(headers: headers),
       );
-      if (response.data is Map<String, dynamic>) {
-        return response.data as Map<String, dynamic>;
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        if (client.serverType != ServerType.plex) return data;
+        // Moonbase for Plex answers with Plex's own metadata.
+        return {
+          ...data,
+          'Items': [
+            for (final raw
+                in (data['Items'] as List? ?? const []).whereType<Map>())
+              plexItemToJellyfin(raw.cast<String, dynamic>()),
+          ],
+        };
       }
     } catch (e) {
       debugPrint('[PluginSyncService] fetchSimilarItems failed: $e');
@@ -1317,12 +1448,38 @@ class PluginSyncService extends ChangeNotifier {
     return null;
   }
 
+  /// Moonbase's natural-language search. Null when the admin has it off or
+  /// the plugin is older, both of which answer 404.
+  Future<Map<String, dynamic>?> fetchSmartSearch(
+    MediaServerClient client,
+    String query, {
+    int limit = 20,
+  }) async {
+    final ep = await moonbaseEndpoint(client, _dio);
+    if (ep == null) return null;
+
+    try {
+      final response = await _dio.get(
+        '${ep.base}/Moonfin/SmartSearch',
+        queryParameters: {'query': query, 'limit': limit},
+        options: Options(headers: ep.headers),
+      );
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      }
+    } catch (e) {
+      debugPrint('[PluginSyncService] fetchSmartSearch failed: $e');
+    }
+    return null;
+  }
+
   /// The seasonal Home row Moonbase built for this user. [country] is the
   /// viewer's two letter code, ZZ for "other", or null to let the server fall
-  /// back to its own.
+  /// back to its own. [allYear] asks for a row outside the holiday dates too.
   Future<Map<String, dynamic>?> fetchSeasonalRow(
     MediaServerClient client, {
     String? country,
+    bool allYear = false,
   }) async {
     final ep = await moonbaseEndpoint(client, _dio);
     if (ep == null) return null;
@@ -1331,11 +1488,21 @@ class PluginSyncService extends ChangeNotifier {
     try {
       final response = await _dio.get(
         '${ep.base}/Moonfin/Seasonal/Row',
-        queryParameters: {'country': ?country},
+        queryParameters: {'country': ?country, if (allYear) 'allYear': true},
         options: Options(headers: headers),
       );
-      if (response.data is Map<String, dynamic>) {
-        return response.data as Map<String, dynamic>;
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        if (client.serverType != ServerType.plex) return data;
+        // Moonbase for Plex answers with Plex's own metadata.
+        return {
+          ...data,
+          'items': [
+            for (final raw
+                in (data['items'] as List? ?? const []).whereType<Map>())
+              plexItemToJellyfin(raw.cast<String, dynamic>()),
+          ],
+        };
       }
     } catch (e) {
       debugPrint('[PluginSyncService] fetchSeasonalRow failed: $e');
@@ -1725,20 +1892,18 @@ class PluginSyncService extends ChangeNotifier {
               }
               continue;
             }
-            if (type == prefs.HomeSectionType.radarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableRadarrCalendar);
-              final idx = sections.indexWhere((s) => s.type == type);
-              if (idx >= 0) {
-                sections[idx] = sections[idx].copyWith(enabled: localEnabled);
-              } else {
-                sections.add(
-                  HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
-                );
-              }
-              continue;
-            }
-            if (type == prefs.HomeSectionType.sonarrCalendar) {
-              final localEnabled = _prefs.get(UserPreferences.enableSonarrCalendar);
+            // These rows follow their own synced switch, not the row order.
+            final toggle = switch (type) {
+              prefs.HomeSectionType.radarrCalendar =>
+                UserPreferences.enableRadarrCalendar,
+              prefs.HomeSectionType.sonarrCalendar =>
+                UserPreferences.enableSonarrCalendar,
+              prefs.HomeSectionType.mdblistWatchingNow =>
+                UserPreferences.mdblistWatchingNowEnabled,
+              _ => null,
+            };
+            if (toggle != null) {
+              final localEnabled = _prefs.get(toggle);
               final idx = sections.indexWhere((s) => s.type == type);
               if (idx >= 0) {
                 sections[idx] = sections[idx].copyWith(enabled: localEnabled);
@@ -1858,6 +2023,13 @@ class PluginSyncService extends ChangeNotifier {
         );
         continue;
       }
+      if (type == prefs.HomeSectionType.mdblistWatchingNow) {
+        final localEnabled = _prefs.get(UserPreferences.mdblistWatchingNowEnabled);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
       sections.add(
         HomeSectionConfig(type: type, enabled: false, order: order++),
       );
@@ -1889,8 +2061,10 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-      final enabled = type == prefs.HomeSectionType.seasonal &&
-          _prefs.get(UserPreferences.seasonalRowEnabled);
+      final enabled = (type == prefs.HomeSectionType.seasonal &&
+              _prefs.get(UserPreferences.seasonalRowEnabled)) ||
+          (type == prefs.HomeSectionType.mdblistWatchingNow &&
+              _prefs.get(UserPreferences.mdblistWatchingNowEnabled));
       sections.add(
         HomeSectionConfig(type: type, enabled: enabled, order: order++),
       );
@@ -2352,6 +2526,8 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.enableSonarrCalendar,
       prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
       prefs.HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
+      prefs.HomeSectionType.mdblistWatchingNow =>
+        UserPreferences.mdblistWatchingNowEnabled,
       prefs.HomeSectionType.sinceYouWatched1 =>
         UserPreferences.sinceYouWatched1Enabled,
       prefs.HomeSectionType.sinceYouWatched2 =>

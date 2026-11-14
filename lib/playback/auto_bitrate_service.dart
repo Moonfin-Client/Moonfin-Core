@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/offline/connectivity_aware_media_server_client.dart';
 import '../data/services/log_service.dart';
@@ -19,6 +21,8 @@ import '../data/services/media_server_client_factory.dart';
 /// time it takes to arrive gives bits per second. Plex has no such route, so
 /// the start of a file in its library is read instead, a probe's size at a
 /// time.
+///
+/// Each server address keeps its last measurement across launches.
 class AutoBitrateService {
   AutoBitrateService(this._clientFactory);
 
@@ -33,6 +37,7 @@ class AutoBitrateService {
   static const _requestTimeout = Duration(seconds: 8);
   static const _probeBudget = Duration(seconds: 5);
   static const _cacheLifetime = Duration(minutes: 15);
+  static const _storeKey = 'auto_bitrate_measurements';
 
   /// The ceiling the bitrate setting starts on, used when nothing could be
   /// measured.
@@ -48,27 +53,21 @@ class AutoBitrateService {
 
   final _cache = <String, ({int bps, DateTime measuredAt})>{};
   final _inFlight = <String, Future<int?>>{};
+  late final Future<void> _loaded = _load();
 
-  /// Bits per second to cap the active server's streams at, or null offline
-  /// or with no server, where there's nothing to cap.
-  Future<int?> measuredBpsForActiveServer() {
-    if (_clientFactory.clients.isEmpty) return Future.value(null);
-    // Offline playback would otherwise wait out the probe's timeout before
-    // the local file starts.
-    if (shouldUseOfflineCatalog()) return Future.value(null);
-    // The signed in server, since the newest client the factory made can be
-    // another saved server's.
-    final client = _clientFactory.clientForServerOrActive(null);
-    // Silo has no bandwidth test route, and its playback start takes the
-    // client's bandwidth as input and applies the server's own policy, so
-    // there is nothing to measure against.
-    if (client.serverType == ServerType.silo) return Future.value(null);
+  /// Bits per second to cap the active server's streams at, measured now
+  /// unless the saved measurement is recent, or null offline or with no
+  /// server, where there's nothing to cap.
+  Future<int?> measuredBpsForActiveServer() async {
+    final client = _measurableClient();
+    if (client == null) return null;
+    await _loaded;
 
     final key = client.baseUrl;
     final cached = _cache[key];
     if (cached != null &&
         DateTime.now().difference(cached.measuredAt) < _cacheLifetime) {
-      return Future.value(cached.bps);
+      return cached.bps;
     }
 
     // One measurement per server at a time, so a burst of plays does not
@@ -76,6 +75,54 @@ class AutoBitrateService {
     return _inFlight[key] ??= _measure(client).whenComplete(() {
       _inFlight.remove(key);
     });
+  }
+
+  /// The last measurement saved for the active server however old it is, or
+  /// the starting ceiling before the first one. Never runs a test.
+  Future<int?> savedBpsForActiveServer() async {
+    final client = _measurableClient();
+    if (client == null) return null;
+    await _loaded;
+    return _cache[client.baseUrl]?.bps ?? _fallbackBps;
+  }
+
+  MediaServerClient? _measurableClient() {
+    if (_clientFactory.clients.isEmpty) return null;
+    // Offline playback would otherwise wait out the probe's timeout before
+    // the local file starts.
+    if (shouldUseOfflineCatalog()) return null;
+    // The signed in server, since the newest client the factory made can be
+    // another saved server's.
+    final client = _clientFactory.clientForServerOrActive(null);
+    if (!client.features.supportsBandwidthTest) return null;
+    return client;
+  }
+
+  Future<void> _load() async {
+    try {
+      final raw = (await SharedPreferences.getInstance()).getString(_storeKey);
+      if (raw == null) return;
+      (jsonDecode(raw) as Map<String, dynamic>).forEach((url, entry) {
+        if (entry case [final int bps, final int measuredAt]) {
+          _cache[url] = (
+            bps: bps,
+            measuredAt: DateTime.fromMillisecondsSinceEpoch(measuredAt),
+          );
+        }
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _save() async {
+    try {
+      await (await SharedPreferences.getInstance()).setString(
+        _storeKey,
+        jsonEncode({
+          for (final MapEntry(:key, :value) in _cache.entries)
+            key: [value.bps, value.measuredAt.millisecondsSinceEpoch],
+        }),
+      );
+    } catch (_) {}
   }
 
   /// Runs [sample] over the probe sizes and returns the last rate it got, or
@@ -172,6 +219,7 @@ class AutoBitrateService {
       }
       final bps = min((measured * _safetyFactor).round(), _maxBps);
       _cache[client.baseUrl] = (bps: bps, measuredAt: DateTime.now());
+      unawaited(_save());
       log.log(LogCategory.playback, 'Auto bitrate: measured ${bps}bps');
       return bps;
     } finally {

@@ -41,15 +41,24 @@ class WatchNextPublisher(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updateWatchNext(items: List<Map<String, Any?>>) {
-        val incomingIds = items.mapNotNull { it["id"] as? String }.toSet()
+        val incomingById = items.mapNotNull { item ->
+            (item["id"] as? String)?.let { it to item }
+        }.toMap()
         val current = currentPrograms()
 
         val stale = current.filter { program ->
             val pid = program.internalProviderId
+            val incoming = pid?.let { incomingById[it] }
             !program.isBrowsable ||
-                pid == null ||
-                pid !in incomingIds ||
-                program.watchNextType == WatchNextPrograms.WATCH_NEXT_TYPE_CONTINUE
+                incoming == null ||
+                program.watchNextType == WatchNextPrograms.WATCH_NEXT_TYPE_CONTINUE ||
+                // A Next Up entry that has since been started must be rewritten
+                // as Continue, otherwise it keeps WATCH_NEXT_TYPE_NEXT, no
+                // progress and its old engagement time.
+                ((incoming["resumePositionMs"] as? Number)?.toLong() ?: 0L) > 0L ||
+                // Also rewrites entries whose poster changed, such as ones saved
+                // by older builds with the server token in the URI.
+                program.posterArtUri?.toString() != incoming["posterUri"]
         }
         for (program in stale) {
             context.contentResolver.delete(

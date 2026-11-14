@@ -85,6 +85,17 @@ class _GeneralScreenState extends State<_GeneralScreen> {
                   subtitle: l10n.settingsTwentyFourHourClockSubtitle,
                   icon: Icons.schedule,
                 ),
+                EnumPreferenceTile<DateFormatSetting>(
+                  preference: UserPreferences.dateFormat,
+                  title: l10n.settingsDateFormat,
+                  description: l10n.settingsDateFormatDescription,
+                  icon: Icons.calendar_today_outlined,
+                  labelOf: (v) => switch (v) {
+                    DateFormatSetting.system => l10n.dateFormatSystem,
+                    DateFormatSetting.monthDay => l10n.dateFormatMonthDay,
+                    DateFormatSetting.dayMonth => l10n.dateFormatDayMonth,
+                  },
+                ),
               ],
             ),
             if (showInput) ...[

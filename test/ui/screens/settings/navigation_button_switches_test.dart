@@ -52,6 +52,7 @@ void main() {
     final sync = _Sync();
     when(() => sync.seerrAvailable).thenReturn(false);
     when(() => sync.pluginAvailable).thenReturn(false);
+    when(() => sync.calendarAvailable).thenReturn(false);
     GetIt.instance.registerSingleton<PluginSyncService>(sync);
     final seerr = _Seerr();
     when(() => seerr.enabled).thenReturn(false);
@@ -127,6 +128,8 @@ void main() {
     tester,
   ) async {
     signIn(canDownload: true);
+    // Watch Parties are on by default, so this starts from off.
+    await prefs.set(UserPreferences.syncPlayEnabled, false);
     await pump(tester);
     expect(find.text(l10n.settingsSyncplayButton), findsNothing);
 

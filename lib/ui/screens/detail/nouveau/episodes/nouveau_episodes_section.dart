@@ -16,6 +16,7 @@ import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
 import '../../../../widgets/focus/hub_focus_memory.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
+import '../../../../widgets/scroll_edge_arrows.dart';
 import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
 import '../../item_detail_screen.dart';
@@ -212,11 +213,17 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
     var initialIndex = HubFocusMemory.peek(_episodeHubKey);
 
     if (initialIndex == null) {
+      // An episode's page opens the rail on itself, anything else on next up.
+      final onScreen = _vm.item?.type == 'Episode'
+          ? episodes.indexWhere((episode) => episode.id == _vm.item?.id)
+          : -1;
       final nextUpIndex = nextUpEpisode == null
           ? 0
           : episodes.indexWhere((episode) => episode.id == nextUpEpisode.id);
 
-      initialIndex = nextUpIndex < 0 ? 0 : nextUpIndex;
+      initialIndex = onScreen >= 0
+          ? onScreen
+          : (nextUpIndex < 0 ? 0 : nextUpIndex);
 
       HubFocusMemory.set(_episodeHubKey, initialIndex);
     }
@@ -1007,82 +1014,85 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
         child: SizedBox(
           width: layout.viewportWidth,
           height: layout.railHeight,
-          child: LockedFocusRow<AggregatedItem>(
-            key: _episodeRowKey,
-            items: episodes,
-            itemKey: (item, _) => '${item.serverId}|${item.id}',
-            hubKey: _episodeHubKey,
+          child: ScrollEdgeArrows(
             controller: scrollController,
-            height: layout.railHeight,
-            itemExtent: layout.itemExtent,
-            clipBehavior: Clip.none,
-            onTap: (_, episode) {
-              _playEpisode(context, episode);
-            },
-            onLongPress: (_, episode) {
-              _showEpisodeContextMenu(context, episode);
-            },
-            onIndexChanged: (index, episode) {
-              _handleEpisodeIndexChanged(index, episode);
-            },
-            onVerticalNavigation: (isUp) {
-              return _handleEpisodeVerticalNavigation(isUp, episodes);
-            },
-            onLeftEdge: _navbarIsLeft ? _handleEpisodeLeftEdge : null,
-            itemBuilder: (context, episode, index, isFocused) {
-              final hasPrevious = index > 0;
+            child: LockedFocusRow<AggregatedItem>(
+              key: _episodeRowKey,
+              items: episodes,
+              itemKey: (item, _) => '${item.serverId}|${item.id}',
+              hubKey: _episodeHubKey,
+              controller: scrollController,
+              height: layout.railHeight,
+              itemExtent: layout.itemExtent,
+              clipBehavior: Clip.none,
+              onTap: (_, episode) {
+                _playEpisode(context, episode);
+              },
+              onLongPress: (_, episode) {
+                _showEpisodeContextMenu(context, episode);
+              },
+              onIndexChanged: (index, episode) {
+                _handleEpisodeIndexChanged(index, episode);
+              },
+              onVerticalNavigation: (isUp) {
+                return _handleEpisodeVerticalNavigation(isUp, episodes);
+              },
+              onLeftEdge: _navbarIsLeft ? _handleEpisodeLeftEdge : null,
+              itemBuilder: (context, episode, index, isFocused) {
+                final hasPrevious = index > 0;
 
-              final hasNext = index < episodes.length - 1;
+                final hasNext = index < episodes.length - 1;
 
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: hasNext ? layout.cardSpacing : 0,
-                ),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: NouveauLandscapeMediaCard(
-                    key: _episodeCardKey(episode),
-                    item: episode,
-                    imageUrl: _imageUrl(episode),
-                    width: layout.cardWidth,
-                    imageHeight: layout.imageHeight,
-                    compactLayout: layout.compact,
-                    isNextUp: episode.id == nextUpEpisode?.id,
-                    isFocused: isFocused,
-                    suppressArtworkFocus:
-                        _focusedEpisodeDetailsId == episode.id,
-                    onArtworkSelect: () {
-                      _playEpisode(context, episode);
-                    },
-                    onContextAction: () {
-                      _showEpisodeContextMenu(context, episode);
-                    },
-                    onDetailsFocusChange: (hasFocus) {
-                      _handleEpisodeDetailsFocusChange(episode, hasFocus);
-                    },
-                    onDetailsNavigateUp: () {
-                      _focusEpisodeArtwork(index);
-
-                      return true;
-                    },
-                    onDetailsNavigateDown: widget.onNavigateDown,
-                    onDetailsNavigateLeft: hasPrevious
-                        ? () {
-                            _focusEpisodeArtwork(index - 1);
-                          }
-                        : null,
-                    onDetailsNavigateRight: hasNext
-                        ? () {
-                            _focusEpisodeArtwork(index + 1);
-                          }
-                        : null,
-                    onDetailsSelect: () {
-                      _openEpisodeDetails(context, episode);
-                    },
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: hasNext ? layout.cardSpacing : 0,
                   ),
-                ),
-              );
-            },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: NouveauLandscapeMediaCard(
+                      key: _episodeCardKey(episode),
+                      item: episode,
+                      imageUrl: _imageUrl(episode),
+                      width: layout.cardWidth,
+                      imageHeight: layout.imageHeight,
+                      compactLayout: layout.compact,
+                      isNextUp: episode.id == nextUpEpisode?.id,
+                      isFocused: isFocused,
+                      suppressArtworkFocus:
+                          _focusedEpisodeDetailsId == episode.id,
+                      onArtworkSelect: () {
+                        _playEpisode(context, episode);
+                      },
+                      onContextAction: () {
+                        _showEpisodeContextMenu(context, episode);
+                      },
+                      onDetailsFocusChange: (hasFocus) {
+                        _handleEpisodeDetailsFocusChange(episode, hasFocus);
+                      },
+                      onDetailsNavigateUp: () {
+                        _focusEpisodeArtwork(index);
+
+                        return true;
+                      },
+                      onDetailsNavigateDown: widget.onNavigateDown,
+                      onDetailsNavigateLeft: hasPrevious
+                          ? () {
+                              _focusEpisodeArtwork(index - 1);
+                            }
+                          : null,
+                      onDetailsNavigateRight: hasNext
+                          ? () {
+                              _focusEpisodeArtwork(index + 1);
+                            }
+                          : null,
+                      onDetailsSelect: () {
+                        _openEpisodeDetails(context, episode);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),

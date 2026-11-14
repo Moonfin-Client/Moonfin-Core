@@ -95,6 +95,9 @@ final class NativeApplePlayerViewController: UIViewController {
     var onSelectEpisodesSeason: ((String) -> Void)?
     var onSelectEpisode: ((String) -> Void)?
     var onEpisodesClosed: (() -> Void)?
+    /// In a watch party, play and pause are asked of the room, which moves
+    /// every player, so this one doesn't move itself.
+    var onPartyAction: (([String: Any]) -> Void)?
     var baseSubtitlePos = 92
     private var didAttachSurface = false
     /// Set while the channel takes the player off screen for Flutter UI, so
@@ -107,6 +110,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private var updateTimer: Timer?
     private var lastShowAt: TimeInterval = 0
     private var osdDismissed = false
+    private weak var subtitleDelayPanel: SubtitleDelayPanelViewController?
     private var subtitlesRaised = false
 
     private var skipForwardMs = 30000
@@ -146,6 +150,14 @@ final class NativeApplePlayerViewController: UIViewController {
     private var syncPlayGroupName = ""
     private var syncPlayParticipants: [String] = []
     private var syncPlayIgnoreWait = false
+    private var party: WatchPartyState?
+    private let partyOverlay = WatchPartyOverlayView()
+    private weak var partyPanel: WatchPartyPanelViewController?
+    #if os(iOS)
+    /// Set by a key press and cleared by a touch, so the focus ring only shows
+    /// to someone using a keyboard.
+    private var keyboardDriven = false
+    #endif
     private var stillWatchingShown = false
     private var selectedBitrateMbps = -1
     private var logoUrlString = ""
@@ -204,7 +216,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private var subtitleLoadingAboveOsd: NSLayoutConstraint?
     private var subtitleLoadingInCorner: NSLayoutConstraint?
 
-    private var isLive = false
+    private(set) var isLive = false
     private var liveProgram:
         (
             name: String, episodeTitle: String, episodeLine: String, startMs: Int, endMs: Int,
@@ -383,7 +395,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private let pauseTitleLabel = UILabel()
     private let pauseTextLabel = UILabel()
 
-    private var chapters: [(title: String, startMs: Int)] = []
+    private var chapters: [(title: String, startMs: Int, imageUrl: String)] = []
     private var showChapterMarkers = false
 
     private var timeSlots = TimeSlotConfig()
@@ -414,6 +426,18 @@ final class NativeApplePlayerViewController: UIViewController {
         layoutHeader()
         rebuildStats()
         restyleForTheme()
+        setupPartyOverlay()
+    }
+
+    private func setupPartyOverlay() {
+        partyOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(partyOverlay)
+        NSLayoutConstraint.activate([
+            partyOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            partyOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            partyOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            partyOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
     }
 
     func applyThemeConfig(_ args: [String: Any]) {
@@ -442,7 +466,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
-    private static func color(fromARGB value: Int) -> UIColor {
+    nonisolated static func color(fromARGB value: Int) -> UIColor {
         let a = CGFloat((value >> 24) & 0xFF) / 255.0
         let r = CGFloat((value >> 16) & 0xFF) / 255.0
         let g = CGFloat((value >> 8) & 0xFF) / 255.0
@@ -1388,6 +1412,7 @@ final class NativeApplePlayerViewController: UIViewController {
             if !subtitleTracks.isEmpty, osdShows(.subtitles) { ids.append(.subtitles) }
             if osdShows(.quality) { ids.append(.quality) }
             if liveRecord != nil { ids.append(.record) }
+            if canFavorite, osdShows(.favorite) { ids.append(.favorite) }
             if !streamInfoSections.isEmpty, osdShows(.info) { ids.append(.info) }
         } else {
             // Both always present, because they step chapters before they
@@ -1408,7 +1433,7 @@ final class NativeApplePlayerViewController: UIViewController {
             if !subtitleTracks.isEmpty || canDownloadSubtitles { secondary.append(.subtitles) }
             if audioTracks.count > 1 { secondary.append(.audio) }
             if hasCast { secondary.append(.cast) }
-            if syncPlayEnabled { secondary.append(.syncplay) }
+            if syncPlayEnabled || party != nil { secondary.append(.syncplay) }
             secondary.append(.quality)
             secondary.append(.zoom)
             if !streamInfoSections.isEmpty { secondary.append(.info) }
@@ -1544,7 +1569,9 @@ final class NativeApplePlayerViewController: UIViewController {
                 return nil
             }
             let title = (entry["title"] as? String) ?? ""
-            return (title: title, startMs: startMs)
+            return (
+                title: title, startMs: startMs,
+                imageUrl: (entry["imageUrl"] as? String) ?? "")
         }
 
         // Gates the scrubber marks alone. The chapters array still arrives in
@@ -1851,14 +1878,30 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
+    #if os(iOS)
+    // A keyboard's presses only reach the first responder.
+    override var canBecomeFirstResponder: Bool { true }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if keyboardDriven {
+            keyboardDriven = false
+            updateFocusHighlight()
+        }
+        super.touchesBegan(touches, with: event)
+    }
+    #endif
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isOnScreen = true
+        #if os(iOS)
+        becomeFirstResponder()
+        #endif
         player.notifySurfaceReady()
         focusedZone = .buttons
         focusedControlIndex = controls.firstIndex(of: .playPause) ?? 0
         updateFocusHighlight()
-        showOsd()
+        if !partyHolding { showOsd() }
         updateTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) {
             [weak self] _ in
             Task { @MainActor in self?.updateOsd() }
@@ -2088,14 +2131,25 @@ final class NativeApplePlayerViewController: UIViewController {
             super.pressesBegan(presses, with: event)
             return
         }
+        #if os(iOS)
+        if presses.contains(where: { $0.key != nil }), !keyboardDriven {
+            keyboardDriven = true
+            updateFocusHighlight()
+        }
+        // Escape has no menu recognizer behind it on iPhone and iPad.
+        if presses.contains(where: { $0.remoteType == .menu }) {
+            handleMenuTap()
+            return
+        }
+        #endif
         if nextUpVisible {
             for press in presses {
-                _ = handleNavigationPress(press.type)
+                _ = handleNavigationPress(press.remoteType)
             }
             return
         }
         for press in presses {
-            if handleNavigationPress(press.type) { return }
+            if handleNavigationPress(press.remoteType) { return }
         }
         super.pressesBegan(presses, with: event)
     }
@@ -2207,6 +2261,16 @@ final class NativeApplePlayerViewController: UIViewController {
         case .rightArrow:
             seekOrMoveFocus(forward: true)
             return true
+        #if os(tvOS)
+        case .pageUp, .pageDown:
+            // A remote's channel buttons arrive as page presses. They follow the
+            // guide's order like the carousel and wrap at the ends.
+            guard isLive, channelList.count > 1 else { return false }
+            let step = type == .pageUp ? 1 : -1
+            let next = (selectedChannelIndex + step + channelList.count) % channelList.count
+            onSelectChannel?(channelList[next].channelId)
+            return true
+        #endif
         default:
             break
         }
@@ -2468,7 +2532,7 @@ final class NativeApplePlayerViewController: UIViewController {
         case .favorite:
             onToggleFavorite?()
         case .syncplay:
-            presentSyncPlay()
+            if party != nil { presentWatchParty() } else { presentSyncPlay() }
         case .goLive:
             player.seekToLiveEdge()
             if isPaused() { togglePlayPause() }
@@ -2520,6 +2584,62 @@ final class NativeApplePlayerViewController: UIViewController {
                 self.stillWatchingShown = false
                 self.onStillWatchingStop?()
             })
+        presentPanel(panel)
+    }
+
+    /// The wait and the 3, 2, 1 sit where the transport controls would.
+    private var partyHolding: Bool { party?.waitingTitle != nil || party?.countdownTo != nil }
+
+    func applyWatchParty(_ args: [String: Any]?) {
+        let wasActive = party != nil
+        let wasHolding = partyHolding
+        party = args.map(WatchPartyState.init)
+        partyOverlay.accent = themeAccent
+        partyOverlay.apply(party)
+        // Dismissed like Back does, so a paused player doesn't keep them up.
+        if partyHolding, !wasHolding {
+            osdDismissed = true
+            hideOsd()
+        }
+        if wasActive != (party != nil) { rebuildControls() }
+        if let party {
+            partyPanel?.apply(party)
+        } else if let panel = partyPanel {
+            (panel.parent ?? panel).dismiss(animated: true)
+        }
+    }
+
+    func showWatchPartyEvent(_ args: [String: Any]) {
+        guard party != nil else { return }
+        let text = (args["text"] as? String) ?? ""
+        let name = (args["name"] as? String) ?? ""
+        switch args["type"] as? String {
+        case "toast": partyOverlay.showToast(text: text, icon: (args["icon"] as? String) ?? "")
+        case "chat": partyOverlay.showChat(name: name, text: text)
+        case "reaction": partyOverlay.showReaction(kind: (args["kind"] as? String) ?? "", name: name)
+        default: break
+        }
+    }
+
+    private func presentWatchParty() {
+        guard let party else { return }
+        #if os(iOS)
+        let showsFocus = keyboardDriven
+        #else
+        let showsFocus = true
+        #endif
+        let panel = WatchPartyPanelViewController(
+            state: party,
+            accent: themeAccent,
+            surface: hasThemeConfig ? glassSurface : UIColor(white: 0.1, alpha: 1),
+            showsFocus: showsFocus,
+            onAction: { [weak self] action in self?.onPartyAction?(action) },
+            onClosed: { [weak self] in
+                #if os(iOS)
+                self?.becomeFirstResponder()
+                #endif
+            })
+        partyPanel = panel
         presentPanel(panel)
     }
 
@@ -2580,13 +2700,14 @@ final class NativeApplePlayerViewController: UIViewController {
     private func updateFocusHighlight() {
         for (id, container) in controlViews {
             #if os(tvOS)
-            let isFocused =
-                focusedZone == .buttons && controls.indices.contains(focusedControlIndex)
-                && controls[focusedControlIndex] == id
+            let showsFocus = true
             #else
-            // A touch screen has no focus to show.
-            let isFocused = false
+            // A touch screen has no focus to show until a key is pressed.
+            let showsFocus = keyboardDriven
             #endif
+            let isFocused =
+                showsFocus && focusedZone == .buttons && controls.indices.contains(focusedControlIndex)
+                && controls[focusedControlIndex] == id
             container.backgroundColor =
                 isFocused ? .white : UIColor(white: 1, alpha: 0)
             controlIcons[id]?.tintColor =
@@ -2621,7 +2742,7 @@ final class NativeApplePlayerViewController: UIViewController {
         case .channels: return "Channels"
         case .guide: return "Guide"
         case .favorite: return isFavorite ? "Remove from Favorites" : "Add to Favorites"
-        case .syncplay: return "SyncPlay"
+        case .syncplay: return party?.string("button", "Watch Party") ?? "SyncPlay"
         case .goLive: return "Jump to Live"
         case .record: return liveRecord?.timer == true ? "Cancel Recording" : "Record"
         case .orientation: return orientationLock == true ? "Unlock Orientation" : "Lock Landscape"
@@ -2631,8 +2752,10 @@ final class NativeApplePlayerViewController: UIViewController {
     private func updateTooltip() {
         #if os(iOS)
         // The tooltip names the focused button, and a touch screen has none.
-        tooltipView.isHidden = true
-        return
+        if !keyboardDriven {
+            tooltipView.isHidden = true
+            return
+        }
         #endif
         guard focusedZone == .buttons,
             controls.indices.contains(focusedControlIndex),
@@ -2662,6 +2785,17 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func togglePlayPause() {
+        if party != nil {
+            if scrubTargetMs != nil {
+                commitScrub()
+                return
+            }
+            switch player.state {
+            case .playing, .buffering, .opening: onPartyAction?(["event": "pause"])
+            default: onPartyAction?(["event": "play"])
+            }
+            return
+        }
         // During a paused scrub session play means go to the scrubbed spot
         // and carry on from there, not resume where the video was paused.
         #if os(tvOS)
@@ -2694,7 +2828,7 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private var pauseDuringScrub: Bool {
-        hasTrickplayPreview && trickplayPauseWhileScrubbing
+        hasTrickplayPreview && trickplayPauseWhileScrubbing && party == nil
     }
 
     // Pauses once per session so the preview has a still frame to sit on,
@@ -2739,7 +2873,8 @@ final class NativeApplePlayerViewController: UIViewController {
         scrubFrozenMs = target
         scrubCommitId += 1
         let commitId = scrubCommitId
-        player.seek(to: Double(target) / 1000.0)
+        // A party moves the room, and the room moves this player.
+        if party == nil { player.seek(to: Double(target) / 1000.0) }
         onUserSeek?(target)
         renderProgress()
         updateTrickplay()
@@ -2822,7 +2957,7 @@ final class NativeApplePlayerViewController: UIViewController {
         abandonScrubSession()
         let durationMs = Int(player.duration * 1000)
         let clamped = durationMs > 0 ? min(durationMs, max(0, ms)) : max(0, ms)
-        player.seek(to: Double(clamped) / 1000.0)
+        if party == nil { player.seek(to: Double(clamped) / 1000.0) }
         onUserSeek?(clamped)
     }
 
@@ -3066,6 +3201,7 @@ final class NativeApplePlayerViewController: UIViewController {
     /// The dim, the top bar, the bottom bar and, on iOS, the centered
     /// transport come and go together.
     private func setOsdAlpha(_ alpha: CGFloat) {
+        partyOverlay.setBottomInset(alpha > 0.5 ? 300 : 0)
         osdScrim.alpha = alpha
         osdContainer.alpha = alpha
         topContainer.alpha = alpha
@@ -3160,7 +3296,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         if showControls {
             sheet.addAction(makePlayerAction(title: subtitleText("delayLabel") + "…", style: .default) {
-                [weak self] _ in self?.presentSubtitleDelayMenu(secondary: secondary)
+                [weak self] _ in self?.presentSubtitleDelayPanel(secondary: secondary)
             })
             if secondary || (subtitleControls["showPrimaryAppearance"] as? Bool ?? true) {
                 for field in secondary ? ["sizeAdjustment", "textColor", "verticalOffset"] : ["primaryFontSize", "primaryVerticalOffset"] {
@@ -3188,41 +3324,56 @@ final class NativeApplePlayerViewController: UIViewController {
         }
     }
 
-    /// Reopen the delay menu after each adjustment so the user can keep changing it
-    /// with the remote.
-    private func presentSubtitleDelayMenu(secondary: Bool = false) {
-        let current = secondary ? player.secondaryDelayAdjustment : player.subtitleOverlay.delaySeconds
-        let sheet = self.makePlayerMenu(
-            title: subtitleText(secondary ? "secondaryDelayLabel" : "delayLabel"),
-            message: String(format: "%+.1f s", current),
-            preferredStyle: .actionSheet)
-        for step in [-0.5, -0.1, 0.1, 0.5] {
-            sheet.addAction(
-                self.makePlayerAction(title: String(format: "%+.1f s", step), style: .default) {
-                    [weak self] _ in self?.applySubtitleDelay(current + step, secondary: secondary)
-                })
+    /// The delay sits at the top, clear of the subtitles it moves, and the
+    /// controls step aside until it closes.
+    private func presentSubtitleDelayPanel(secondary: Bool) {
+        let panel = SubtitleDelayPanelViewController(
+            secondary: secondary,
+            label: subtitleText(secondary ? "secondaryDelayLabel" : "delayLabel"),
+            resetTitle: subtitleText("reset"),
+            delay: secondary ? player.secondaryDelayAdjustment : player.subtitleOverlay.delaySeconds,
+            accent: themeAccent,
+            showsTimeline: !isLive,
+            position: { [weak self] in self?.player.currentTime ?? 0 },
+            applyDelay: { [weak self] seconds in
+                self?.applySubtitleDelay(seconds, secondary: secondary) ?? seconds
+            })
+        panel.onClosed = { [weak self] in self?.showOsd() }
+        subtitleDelayPanel = panel
+        hideOsd()
+        presentPanel(panel)
+        if !isLive {
+            onSubtitleAction?(["event": "loadSubtitleCues", "secondary": secondary])
         }
-        if current != 0 {
-            sheet.addAction(
-                self.makePlayerAction(title: subtitleText("reset"), style: .default) {
-                    [weak self] _ in self?.applySubtitleDelay(0, secondary: secondary)
-                })
-        }
-        sheet.addAction(self.makePlayerAction(title: subtitleText("done"), style: .cancel))
-        presentSheet(sheet, from: .subtitles)
     }
 
-    private func applySubtitleDelay(_ seconds: TimeInterval, secondary: Bool = false) {
+    func showSubtitleCues(_ args: [String: Any]) {
+        guard let panel = subtitleDelayPanel,
+            panel.secondary == (args["secondary"] as? Bool ?? false)
+        else { return }
+        panel.setCues(
+            ((args["cues"] as? [[Any]]) ?? []).compactMap { entry in
+                guard entry.count == 3,
+                    let start = (entry[0] as? NSNumber)?.doubleValue,
+                    let end = (entry[1] as? NSNumber)?.doubleValue,
+                    let text = entry[2] as? String
+                else { return nil }
+                return SubtitleTimelineView.Cue(
+                    start: start, end: end, text: text.replacingOccurrences(of: "\n", with: " "))
+            })
+    }
+
+    private func applySubtitleDelay(_ seconds: TimeInterval, secondary: Bool) -> TimeInterval {
         let rounded = (seconds * 10).rounded() / 10
         if secondary {
             let bounded = min(max(rounded, -5), 5)
             player.setSecondarySubtitleDelay(bounded)
             onSubtitleAction?(["event": "setSecondarySubtitleDelay", "delayMs": Int((bounded * 1000).rounded())])
-        } else {
-            player.setSubtitleDelay(rounded)
-            onSubtitleDelayChanged?(Int((rounded * 1000).rounded()))
+            return bounded
         }
-        presentSubtitleDelayMenu(secondary: secondary)
+        player.setSubtitleDelay(rounded)
+        onSubtitleDelayChanged?(Int((rounded * 1000).rounded()))
+        return rounded
     }
 
     private func presentSubtitleAppearanceMenu(field: String) {
@@ -3421,19 +3572,29 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func presentChapterMenu() {
-        let sheet = self.makePlayerMenu(
-            title: "Chapters", message: nil, preferredStyle: .actionSheet)
-        for chapter in chapters {
-            let stamp = formatTime(Double(chapter.startMs) / 1000.0)
-            sheet.addAction(
-                self.makePlayerAction(title: "\(chapter.title) · \(stamp)", style: .default) {
-                    [weak self] _ in
-                    self?.seekDirect(toMs: chapter.startMs)
-                    self?.showOsd()
-                })
+        let chapters = self.chapters
+        guard !chapters.isEmpty else { return }
+        let positionMs = Int(player.currentTime * 1000)
+        let panel = CardRowPanelViewController(
+            title: "Chapters",
+            cards: chapters.map {
+                (
+                    title: $0.title, subtitle: formatTime(Double($0.startMs) / 1000.0),
+                    imageUrl: $0.imageUrl)
+            },
+            itemSize: CGSize(width: 400, height: 300),
+            imageHeight: 225,
+            currentIndex: chapters.lastIndex { $0.startMs <= positionMs } ?? 0,
+            accent: themeAccent,
+            placeholderSymbol: "film"
+        ) { [weak self] index in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.seekDirect(toMs: chapters[index].startMs)
+                self.showOsd()
+            }
         }
-        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
-        presentSheet(sheet, from: .chapters)
+        presentPanel(panel)
     }
 
     private func presentSpeedMenu() {
@@ -3522,8 +3683,18 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func presentCastPanel() {
-        let panel = CastPanelViewController(people: castPeople) { [weak self] personId in
-            guard let self else { return }
+        let people = castPeople
+        let panel = CardRowPanelViewController(
+            title: "Cast & Crew",
+            cards: people.map { (title: $0.name, subtitle: $0.subtitle, imageUrl: $0.imageUrl) },
+            itemSize: CGSize(width: 240, height: 360),
+            imageHeight: 280,
+            currentIndex: nil,
+            accent: themeAccent,
+            placeholderSymbol: "person.fill"
+        ) { [weak self] index in
+            let personId = people[index].personId
+            guard let self, !personId.isEmpty else { return }
             self.dismiss(animated: true) {
                 self.onOpenCastPerson?(personId)
             }
@@ -3773,7 +3944,7 @@ final class NativeApplePlayerViewController: UIViewController {
         updateLoadingOverlay()
 
         let shouldShow =
-            !cinemaSkipActive && !osdDismissed && !nextUpVisible
+            !cinemaSkipActive && !osdDismissed && !nextUpVisible && subtitleDelayPanel == nil
             && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
         updateSubtitleLoadingPill(osdShown: shouldShow)
@@ -4009,7 +4180,7 @@ extension NativeApplePlayerViewController {
     /// for a hold. Live can't run ahead of the broadcast.
     private var canHoldForSpeed: Bool {
         presentedViewController == nil && !nextUpVisible && !cinemaSkipActive && !isLive
-            && !isOsdOnScreen && scrubTargetMs == nil && player.state == .playing
+            && !isOsdOnScreen && scrubTargetMs == nil && player.state == .playing && party == nil
     }
 
     @objc private func handleSpeedHold(_ recognizer: UILongPressGestureRecognizer) {
@@ -4466,18 +4637,39 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
     }
 }
 
-private final class CastPanelViewController: UIViewController, RemotePlayerNavigable, UICollectionViewDataSource,
-    UICollectionViewDelegate
+/// A row of cards over the player, used by the cast and chapter panels.
+/// It opens on the card at `currentIndex` and marks it with the accent.
+private final class CardRowPanelViewController: UIViewController, RemotePlayerNavigable,
+    UICollectionViewDataSource, UICollectionViewDelegate
 {
-    private let people: [(name: String, subtitle: String, imageUrl: String, personId: String)]
-    private let onSelect: (String) -> Void
+    private let panelTitle: String
+    private let cards: [(title: String, subtitle: String, imageUrl: String)]
+    private let itemSize: CGSize
+    private let imageHeight: CGFloat
+    private let currentIndex: Int?
+    private let accent: UIColor
+    private let placeholderSymbol: String
+    private let onSelect: (Int) -> Void
     private var collectionView: UICollectionView!
+    private var scrolledToCurrent = false
 
     init(
-        people: [(name: String, subtitle: String, imageUrl: String, personId: String)],
-        onSelect: @escaping (String) -> Void
+        title: String,
+        cards: [(title: String, subtitle: String, imageUrl: String)],
+        itemSize: CGSize,
+        imageHeight: CGFloat,
+        currentIndex: Int?,
+        accent: UIColor,
+        placeholderSymbol: String,
+        onSelect: @escaping (Int) -> Void
     ) {
-        self.people = people
+        self.panelTitle = title
+        self.cards = cards
+        self.itemSize = itemSize
+        self.imageHeight = imageHeight
+        self.currentIndex = currentIndex
+        self.accent = accent
+        self.placeholderSymbol = placeholderSymbol
         self.onSelect = onSelect
         super.init(nibName: nil, bundle: nil)
     }
@@ -4492,14 +4684,14 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
 
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = "Cast & Crew"
+        title.text = panelTitle
         title.font = .systemFont(ofSize: 40, weight: .bold)
         title.textColor = .white
         view.addSubview(title)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 240, height: 360)
+        layout.itemSize = itemSize
         layout.minimumLineSpacing = 36
         layout.sectionInset = UIEdgeInsets(top: 0, left: 90, bottom: 0, right: 90)
 
@@ -4508,7 +4700,7 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(CastCell.self, forCellWithReuseIdentifier: "cast")
+        collectionView.register(CardRowCell.self, forCellWithReuseIdentifier: "card")
         view.addSubview(collectionView)
 
         NSLayoutConstraint.activate([
@@ -4517,38 +4709,53 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 40),
-            collectionView.heightAnchor.constraint(equalToConstant: 420),
+            collectionView.heightAnchor.constraint(equalToConstant: itemSize.height + 60),
         ])
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard !scrolledToCurrent, let currentIndex, currentIndex < cards.count else { return }
+        scrolledToCurrent = true
+        collectionView.layoutIfNeeded()
+        collectionView.scrollToItem(
+            at: IndexPath(item: currentIndex, section: 0), at: .centeredHorizontally,
+            animated: false)
+    }
+
+    func indexPathForPreferredFocusedView(in collectionView: UICollectionView) -> IndexPath? {
+        cards.isEmpty ? nil : IndexPath(item: currentIndex ?? 0, section: 0)
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int)
         -> Int
     {
-        people.count
+        cards.count
     }
 
     func collectionView(
         _ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell =
-            collectionView.dequeueReusableCell(withReuseIdentifier: "cast", for: indexPath)
-            as! CastCell
-        let person = people[indexPath.item]
-        cell.configure(name: person.name, subtitle: person.subtitle, imageUrl: person.imageUrl)
+            collectionView.dequeueReusableCell(withReuseIdentifier: "card", for: indexPath)
+            as! CardRowCell
+        let card = cards[indexPath.item]
+        cell.configure(
+            name: card.title, subtitle: card.subtitle, imageUrl: card.imageUrl,
+            imageHeight: imageHeight, placeholderSymbol: placeholderSymbol,
+            isCurrent: indexPath.item == currentIndex, accent: accent)
         return cell
     }
 
     func collectionView(
         _ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath
     ) {
-        let person = people[indexPath.item]
-        guard !person.personId.isEmpty else { return }
-        onSelect(person.personId)
+        onSelect(indexPath.item)
     }
 
     func handleRemoteNavigation(_ command: String) {
         if command == "back" { dismiss(animated: true); return }
-        guard !people.isEmpty else { return }
+        guard !cards.isEmpty else { return }
         let system = UIFocusSystem.focusSystem(for: view)
         let cell = system?.focusedItem as? UICollectionViewCell
         let focused = cell.flatMap { collectionView.indexPath(for: $0) }
@@ -4557,7 +4764,8 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
             return
         }
         let delta = command == "moveleft" ? -1 : command == "moveright" ? 1 : 0
-        let index = focused.map { min(people.count - 1, max(0, $0.item + delta)) } ?? 0
+        let index =
+            focused.map { min(cards.count - 1, max(0, $0.item + delta)) } ?? (currentIndex ?? 0)
         let target = IndexPath(item: index, section: 0)
         collectionView.scrollToItem(at: target, at: .centeredHorizontally, animated: false)
         collectionView.layoutIfNeeded()
@@ -4576,11 +4784,15 @@ private final class CastPanelViewController: UIViewController, RemotePlayerNavig
     }
 }
 
-private final class CastCell: UICollectionViewCell {
+private final class CardRowCell: UICollectionViewCell {
     private let imageView = UIImageView()
     private let nameLabel = UILabel()
     private let roleLabel = UILabel()
     private var imageUrl = ""
+    private var imageHeight: NSLayoutConstraint!
+    private var placeholder: UIImage?
+    private var isCurrent = false
+    private var accent = UIColor.white
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -4590,12 +4802,16 @@ private final class CastCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 12
         imageView.backgroundColor = UIColor(white: 0.2, alpha: 1)
+        imageView.tintColor = UIColor(white: 1, alpha: 0.5)
         contentView.addSubview(imageView)
 
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.font = .systemFont(ofSize: 24, weight: .semibold)
         nameLabel.textColor = .white
         nameLabel.numberOfLines = 1
+        #if os(tvOS)
+        nameLabel.enablesMarqueeWhenAncestorFocused = true
+        #endif
         contentView.addSubview(nameLabel)
 
         roleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -4604,11 +4820,12 @@ private final class CastCell: UICollectionViewCell {
         roleLabel.numberOfLines = 1
         contentView.addSubview(roleLabel)
 
+        imageHeight = imageView.heightAnchor.constraint(equalToConstant: 280)
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 280),
+            imageHeight,
 
             nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -4624,21 +4841,41 @@ private final class CastCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(name: String, subtitle: String, imageUrl: String) {
+    func configure(
+        name: String, subtitle: String, imageUrl: String, imageHeight: CGFloat,
+        placeholderSymbol: String, isCurrent: Bool, accent: UIColor
+    ) {
         nameLabel.text = name
         roleLabel.text = subtitle
         roleLabel.isHidden = subtitle.isEmpty
+        self.imageHeight.constant = imageHeight
+        self.isCurrent = isCurrent
+        self.accent = accent
+        placeholder = UIImage(
+            systemName: placeholderSymbol,
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 56))
+        updateBorder()
         self.imageUrl = imageUrl
-        imageView.image = nil
+        show(nil)
         guard !imageUrl.isEmpty, let url = URL(string: imageUrl) else { return }
         let expected = imageUrl
         MoonfinURLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             let image = data.flatMap { UIImage(data: $0) }
             DispatchQueue.main.async {
                 guard let self, self.imageUrl == expected else { return }
-                self.imageView.image = image
+                self.show(image)
             }
         }.resume()
+    }
+
+    private func show(_ image: UIImage?) {
+        imageView.image = image ?? placeholder
+        imageView.contentMode = image == nil ? .center : .scaleAspectFill
+    }
+
+    private func updateBorder() {
+        imageView.layer.borderWidth = isFocused || isCurrent ? 4 : 0
+        imageView.layer.borderColor = (isFocused ? UIColor.white : accent).cgColor
     }
 
     override func didUpdateFocus(
@@ -4648,8 +4885,7 @@ private final class CastCell: UICollectionViewCell {
             let focused = self.isFocused
             self.imageView.transform =
                 focused ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
-            self.imageView.layer.borderWidth = focused ? 4 : 0
-            self.imageView.layer.borderColor = UIColor.white.cgColor
+            self.updateBorder()
         }
     }
 }
@@ -5077,6 +5313,277 @@ private final class SyncPlayPanelViewController: UIViewController, RemotePlayerN
             return
         }
         super.pressesBegan(presses, with: event)
+    }
+}
+
+private final class SubtitleDelayPanelViewController: UIViewController, RemotePlayerNavigable {
+    let secondary: Bool
+    var onClosed: (() -> Void)?
+    private let label: String
+    private let resetTitle: String
+    private var delay: TimeInterval
+    private let accent: UIColor
+    private let showsTimeline: Bool
+    private let position: () -> TimeInterval
+    private let applyDelay: (TimeInterval) -> TimeInterval
+    private let valueLabel = UILabel()
+    private let timeline = SubtitleTimelineView()
+    private var buttons: [UIButton] = []
+    private var resetButton: UIButton?
+    private var displayLink: CADisplayLink?
+
+    init(
+        secondary: Bool, label: String, resetTitle: String, delay: TimeInterval,
+        accent: UIColor, showsTimeline: Bool, position: @escaping () -> TimeInterval,
+        applyDelay: @escaping (TimeInterval) -> TimeInterval
+    ) {
+        self.secondary = secondary
+        self.label = label
+        self.resetTitle = resetTitle
+        self.delay = delay
+        self.accent = accent
+        self.showsTimeline = showsTimeline
+        self.position = position
+        self.applyDelay = applyDelay
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Nothing dims the picture, so each step's effect shows while it's made.
+        view.backgroundColor = .clear
+
+        let panel = UIView()
+        panel.translatesAutoresizingMaskIntoConstraints = false
+        panel.backgroundColor = UIColor(white: 0.1, alpha: 0.92)
+        panel.layer.cornerRadius = 22
+        view.addSubview(panel)
+
+        let title = UILabel()
+        title.text = label
+        title.font = .systemFont(ofSize: 26, weight: .semibold)
+        title.textColor = UIColor(white: 1, alpha: 0.7)
+        valueLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .bold)
+        valueLabel.textColor = accent
+        valueLabel.setContentHuggingPriority(.required, for: .horizontal)
+        let header = UIStackView(arrangedSubviews: [title, valueLabel])
+
+        let steps = UIStackView()
+        steps.distribution = .fillEqually
+        steps.spacing = 16
+        for step in [-0.5, -0.1, 0, 0.1, 0.5] {
+            var config = UIButton.Configuration.plain()
+            config.title = step == 0 ? resetTitle : String(format: "%+.1f s", step)
+            config.cornerStyle = .capsule
+            config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 12, bottom: 16, trailing: 12)
+            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer {
+                var attributes = $0
+                attributes.font = .systemFont(ofSize: 28, weight: .semibold)
+                return attributes
+            }
+            let button = UIButton(configuration: config)
+            // A filled pill reads as a button on a touch screen, and the remote's
+            // focus turns it white the way the player's own controls do.
+            button.configurationUpdateHandler = { button in
+                let lit = button.isFocused
+                button.configuration?.baseForegroundColor = lit ? .black : .white
+                button.configuration?.background.backgroundColor = UIColor(
+                    white: 1, alpha: lit ? 1 : button.isHighlighted ? 0.28 : 0.14)
+            }
+            button.addAction(
+                UIAction { [weak self] _ in
+                    guard let self else { return }
+                    self.setDelay(step == 0 ? 0 : self.delay + step)
+                }, for: .primaryActionTriggered)
+            if step == 0 { resetButton = button }
+            buttons.append(button)
+            steps.addArrangedSubview(button)
+        }
+
+        timeline.accent = accent
+        timeline.isHidden = !showsTimeline
+        timeline.heightAnchor.constraint(equalToConstant: 100).isActive = true
+
+        let stack = UIStackView(arrangedSubviews: [header, steps, timeline])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 20
+        panel.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            panel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            panel.widthAnchor.constraint(equalToConstant: 1080),
+            stack.topAnchor.constraint(equalTo: panel.topAnchor, constant: 28),
+            stack.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -28),
+            stack.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 40),
+            stack.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -40),
+        ])
+        setDelay(delay, apply: false)
+    }
+
+    override var preferredFocusEnvironments: [UIFocusEnvironment] {
+        resetButton.map { [$0] } ?? super.preferredFocusEnvironments
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard showsTimeline, displayLink == nil else { return }
+        let link = CADisplayLink(target: self, selector: #selector(tick))
+        link.preferredFramesPerSecond = 30
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        displayLink?.invalidate()
+        displayLink = nil
+        onClosed?()
+        onClosed = nil
+    }
+
+    /// An empty list means the track has no lines to show, such as an image one.
+    func setCues(_ cues: [SubtitleTimelineView.Cue]) {
+        timeline.cues = cues
+        timeline.isHidden = cues.isEmpty
+        tick()
+    }
+
+    private func setDelay(_ seconds: TimeInterval, apply: Bool = true) {
+        delay = apply ? applyDelay(seconds) : seconds
+        valueLabel.text = String(format: "%+.1f s", delay)
+        timeline.delay = delay
+        timeline.setNeedsDisplay()
+    }
+
+    @objc private func tick() {
+        timeline.position = position()
+        timeline.setNeedsDisplay()
+    }
+
+    func handleRemoteNavigation(_ command: String) {
+        let system = UIFocusSystem.focusSystem(for: view)
+        let focused = buttons.firstIndex { $0 === system?.focusedItem }
+        switch command {
+        case "back":
+            dismiss(animated: true)
+        case "select":
+            if let focused { buttons[focused].sendActions(for: .primaryActionTriggered) }
+        case "moveleft", "moveright":
+            let step = command == "moveright" ? 1 : -1
+            let next = min(max((focused ?? buttons.count / 2) + step, 0), buttons.count - 1)
+            system?.requestFocusUpdate(to: buttons[next])
+            system?.updateFocusIfNeeded()
+        default:
+            break
+        }
+    }
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses where press.type == .menu {
+            dismiss(animated: true)
+            return
+        }
+        super.pressesBegan(presses, with: event)
+    }
+}
+
+/// The lines around the playhead on a ten second window. The delay moves the
+/// lines rather than the playhead, so they slide under a fixed mark the same
+/// way the subtitles shift against the picture.
+private final class SubtitleTimelineView: UIView {
+    struct Cue {
+        let start: TimeInterval
+        let end: TimeInterval
+        let text: String
+    }
+
+    private static let window: TimeInterval = 10
+    private static let rulerHeight: CGFloat = 26
+
+    var cues: [Cue] = []
+    var position: TimeInterval = 0
+    var delay: TimeInterval = 0
+    var accent: UIColor = .white
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isOpaque = false
+        contentMode = .redraw
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func draw(_ rect: CGRect) {
+        let start = max(0, position - Self.window / 2)
+        let end = start + Self.window
+        let width = bounds.width
+        func x(_ time: TimeInterval) -> CGFloat { CGFloat((time - start) / Self.window) * width }
+
+        let rulerStyle: [NSAttributedString.Key: Any] = [
+            .font: UIFont.monospacedDigitSystemFont(ofSize: 18, weight: .regular),
+            .foregroundColor: UIColor(white: 1, alpha: 0.54),
+        ]
+        var second = start.rounded(.up)
+        while second <= end {
+            let whole = Int(second)
+            let text = String(format: "%d:%02d", whole / 60, whole % 60) as NSString
+            let size = text.size(withAttributes: rulerStyle)
+            let left = x(second) - size.width / 2
+            // A time at the very edge would be cut in half, so it's left out.
+            if left >= 0, left + size.width <= width {
+                text.draw(at: CGPoint(x: left, y: 0), withAttributes: rulerStyle)
+            }
+            second += 1
+        }
+
+        let track = CGRect(
+            x: 0, y: Self.rulerHeight + 6, width: width,
+            height: bounds.height - Self.rulerHeight - 6)
+        let trackPath = UIBezierPath(roundedRect: track, cornerRadius: 12)
+        UIColor(white: 0, alpha: 0.35).setFill()
+        trackPath.fill()
+        UIColor(white: 1, alpha: 0.12).setStroke()
+        trackPath.stroke()
+
+        UIGraphicsGetCurrentContext()?.saveGState()
+        trackPath.addClip()
+        let font = UIFont.systemFont(ofSize: 20)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byTruncatingTail
+        for cue in cues {
+            let from = cue.start + delay
+            let to = cue.end + delay
+            if from >= end { break }
+            if to <= start { continue }
+            let active = position >= from && position <= to
+            let left = max(0, x(from))
+            // A line too short to see still gets a sliver, so it doesn't vanish.
+            let bar = CGRect(
+                x: left, y: track.minY + 10,
+                width: max(min(width, x(to)) - left, 4), height: track.height - 20)
+            (active ? accent.withAlphaComponent(0.85) : UIColor(white: 1, alpha: 0.16)).setFill()
+            UIBezierPath(roundedRect: bar, cornerRadius: 6).fill()
+            let textRect = bar.insetBy(dx: 10, dy: (bar.height - font.lineHeight) / 2)
+            guard textRect.width > 0 else { continue }
+            (cue.text as NSString).draw(
+                in: textRect,
+                withAttributes: [
+                    .font: font,
+                    .foregroundColor: active ? UIColor.white : UIColor(white: 1, alpha: 0.7),
+                    .paragraphStyle: paragraph,
+                ])
+        }
+        UIColor.white.setFill()
+        UIRectFill(CGRect(x: x(position) - 1.5, y: track.minY, width: 3, height: track.height))
+        UIGraphicsGetCurrentContext()?.restoreGState()
     }
 }
 

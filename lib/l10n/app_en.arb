@@ -336,7 +336,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes. Stage leads with the poster, with play under it and the details beside it. Premiere centers the title over a backdrop that fills the screen, with every section down the page under it. Quick Look opens a drawer over the screen you were on, with the full page a press away.",
+  "detailScreenStyleSubtitle": "How a movie or show looks when you open it.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -558,6 +558,10 @@
   "detailScreenStyleQuickLook": "Quick Look",
   "@detailScreenStyleQuickLook": {
     "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+  },
+  "detailScreenStyleFrost": "Frost",
+  "@detailScreenStyleFrost": {
+    "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
   },
   "quickLookOpenFullPage": "Open full page",
   "@quickLookOpenFullPage": {
@@ -2191,6 +2195,10 @@
   "@audioTrack": {
     "description": "Dialog title for audio track selection"
   },
+  "noOtherAudioTracks": "No other audio tracks",
+  "@noOtherAudioTracks": {
+    "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+  },
   "subtitleTrack": "Subtitle Track",
   "@subtitleTrack": {
     "description": "Dialog title for subtitle track selection"
@@ -2414,6 +2422,45 @@
   "writers": "WRITERS",
   "@writers": {
     "description": "Metadata label for writers"
+  },
+  "episodeDirector": "Episode Director",
+  "@episodeDirector": {
+    "description": "Role label for an episode director"
+  },
+  "episodeDirectorWithRole": "{role} (Episode Director)",
+  "@episodeDirectorWithRole": {
+    "description": "Role label formatting an episode director with an existing role description",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeWriter": "Episode Writer",
+  "@episodeWriter": {
+    "description": "Role label for an episode writer"
+  },
+  "episodeWriterWithRole": "{role} (Episode Writer)",
+  "@episodeWriterWithRole": {
+    "description": "Role label formatting an episode writer with an existing role description",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "guestStar": "Guest Star",
+  "@guestStar": {
+    "description": "Role label for a guest star"
+  },
+  "guestStarWithRole": "{role} (Guest Star)",
+  "@guestStarWithRole": {
+    "description": "Role label formatting a character role as a guest star",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
   },
   "studio": "STUDIO",
   "@studio": {
@@ -3673,6 +3720,15 @@
       }
     }
   },
+  "playerMatchingDisplayRate": "Matching display to {fps} fps…",
+  "@playerMatchingDisplayRate": {
+    "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+    "placeholders": {
+      "fps": {
+        "type": "String"
+      }
+    }
+  },
   "failedToLoadRecordings": "Failed to load recordings",
   "@failedToLoadRecordings": {
     "description": "Error when recordings fail to load"
@@ -4270,6 +4326,14 @@
   "@watchedIndicators": {
     "description": "Setting for watched indicator display"
   },
+  "showPosterLabels": "Poster Labels",
+  "@showPosterLabels": {
+    "description": "Setting that shows or hides the labels the server admin adds to posters"
+  },
+  "showPosterLabelsSubtitle": "Show the labels on posters, such as 4K or HDR.",
+  "@showPosterLabelsSubtitle": {
+    "description": "Subtitle of the Poster Labels setting"
+  },
   "always": "Always",
   "@always": {
     "description": "Option: always"
@@ -4569,6 +4633,14 @@
   "seasonalRowHolidaysHint": "Untick a holiday to hide its row.",
   "@seasonalRowHolidaysHint": {
     "description": "Hint under the holiday checklist"
+  },
+  "seasonalRowAllYear": "Show All Year",
+  "@seasonalRowAllYear": {
+    "description": "Setting that shows the seasonal row outside the holiday dates"
+  },
+  "seasonalRowAllYearDescription": "Show a holiday row outside the holiday dates too, a different ticked holiday each day.",
+  "@seasonalRowAllYearDescription": {
+    "description": "Explains the Show All Year setting for the seasonal row"
   },
   "holidayNewYear": "New Year's",
   "@holidayNewYear": {
@@ -5161,6 +5233,90 @@
   "@upcomingEpisodeTomorrow": {
     "description": "Upcoming episode airs tomorrow"
   },
+  "radarrCalendarRow": "Upcoming Movies (Radarr)",
+  "@radarrCalendarRow": {
+    "description": "Home row title for upcoming movies from the Radarr calendar"
+  },
+  "sonarrCalendarRow": "Upcoming TV Shows (Sonarr)",
+  "@sonarrCalendarRow": {
+    "description": "Home row title for upcoming episodes from the Sonarr calendar"
+  },
+  "mergedCalendarRow": "Upcoming Releases",
+  "@mergedCalendarRow": {
+    "description": "Home row title when the Radarr and Sonarr calendars are merged"
+  },
+  "arrCalendarsRowSubtitle": "Radarr and Sonarr Calendars",
+  "@arrCalendarsRowSubtitle": {
+    "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+  },
+  "radarrCalendarRowSubtitle": "Radarr Calendar",
+  "@radarrCalendarRowSubtitle": {
+    "description": "Subtitle under the Radarr calendar home row"
+  },
+  "sonarrCalendarRowSubtitle": "Sonarr Calendar",
+  "@sonarrCalendarRowSubtitle": {
+    "description": "Subtitle under the Sonarr calendar home row"
+  },
+  "calendarReleaseIn": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})",
+  "@calendarReleaseIn": {
+    "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+    "placeholders": {
+      "days": {"type": "int"},
+      "date": {"type": "String"}
+    }
+  },
+  "calendarReleaseCinema": "Cinema",
+  "@calendarReleaseCinema": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+  },
+  "calendarReleaseDigital": "Digital",
+  "@calendarReleaseDigital": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+  },
+  "calendarReleasePhysical": "Physical",
+  "@calendarReleasePhysical": {
+    "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+  },
+  "upcomingCalendars": "Upcoming Calendars",
+  "@upcomingCalendars": {
+    "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+  },
+  "upcomingCalendarsDescription": "Choose what the Radarr and Sonarr rows show.",
+  "@upcomingCalendarsDescription": {
+    "description": "Subtitle of the Upcoming Calendars settings entry"
+  },
+  "radarrCalendarShowCinema": "Show Upcoming Cinema Releases",
+  "@radarrCalendarShowCinema": {
+    "description": "Includes cinema release dates in the Radarr calendar row"
+  },
+  "radarrCalendarShowDigital": "Show Upcoming Digital Releases",
+  "@radarrCalendarShowDigital": {
+    "description": "Includes digital release dates in the Radarr calendar row"
+  },
+  "radarrCalendarShowPhysical": "Show Upcoming Physical Releases",
+  "@radarrCalendarShowPhysical": {
+    "description": "Includes physical release dates in the Radarr calendar row"
+  },
+  "calendarShowReleaseDate": "Show Release Date on Home Screen",
+  "@calendarShowReleaseDate": {
+    "description": "Shows the release date under each item of a calendar row"
+  },
+  "radarrCalendarHideDownloaded": "Hide Movies Already on the Server",
+  "@radarrCalendarHideDownloaded": {
+    "description": "Leaves out movies Radarr already downloaded from the calendar row"
+  },
+  "sonarrCalendarShowEpisodeInfo": "Display Episode Information",
+  "@sonarrCalendarShowEpisodeInfo": {
+    "description": "Shows the season and episode number in the Sonarr calendar row"
+  },
+  "sonarrCalendarHideDownloaded": "Hide Episodes Already on the Server",
+  "@sonarrCalendarHideDownloaded": {
+    "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+  },
+  "mergeRadarrSonarrCalendars": "Merge Sonarr and Radarr Calendars",
+  "@mergeRadarrSonarrCalendars": {
+    "description": "Shows the Radarr and Sonarr calendars as a single home row"
+  },
   "moveUp": "Move Up",
   "@moveUp": {
     "description": "Moves a button one place earlier in its row"
@@ -5173,7 +5329,7 @@
   "@buttonOrderHint": {
     "description": "Explains how to reorder the buttons in a row"
   },
-  "buttonShownInSyncPlayGroup": "Only shows while you're in a SyncPlay group",
+  "buttonShownInSyncPlayGroup": "Only shows while you're in a watch party",
   "@buttonShownInSyncPlayGroup": {
     "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
   },
@@ -6222,6 +6378,18 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "recentlyAddedAndReleased": "Recently Added and Released",
+  "@recentlyAddedAndReleased": {
+    "description": "Section title for Recently Added and Recently Released home row settings"
+  },
+  "hideWatchedInRecentRows": "Hide Watched",
+  "@hideWatchedInRecentRows": {
+    "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+  },
+  "hideWatchedInRecentRowsDescription": "Hide watched content from Recently Added and Recently Released home rows.",
+  "@hideWatchedInRecentRowsDescription": {
+    "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+  },
   "mergeRecentRowsByType": "Merge Recent Rows by Type",
   "@mergeRecentRowsByType": {
     "description": "Setting for merging recently added and recently released libraries by media type"
@@ -6508,6 +6676,32 @@
   "@mediaBarSourceRandom": {
     "description": "Media bar source: any eligible title"
   },
+  "mediaBarSourceNewReleases": "New Seasons & Episodes",
+  "@mediaBarSourceNewReleases": {
+    "description": "Media bar source: series with episodes that aired recently"
+  },
+  "mediaBarNewReleaseBanner": "New Release Banner",
+  "@mediaBarNewReleaseBanner": {
+    "description": "Setting that flags series in the media bar when new episodes aired recently"
+  },
+  "mediaBarNewReleaseBannerDescription": "Flag series with a new season or new episodes that aired recently.",
+  "mediaBarNewReleaseDays": "New Release Window",
+  "@mediaBarNewReleaseDays": {
+    "description": "Setting for how many days an episode counts as new in the media bar"
+  },
+  "mediaBarNewReleaseDaysDescription": "How long after an episode airs it still counts as new.",
+  "mediaBarNewSeries": "New Series",
+  "@mediaBarNewSeries": {
+    "description": "Media bar label on a series whose first season was released recently"
+  },
+  "mediaBarNewSeason": "New Season",
+  "@mediaBarNewSeason": {
+    "description": "Media bar label on a series whose latest season was released all at once recently"
+  },
+  "mediaBarNewEpisodes": "New Episodes",
+  "@mediaBarNewEpisodes": {
+    "description": "Media bar label on a series with one or more episodes that aired recently"
+  },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {
     "description": "Content type: movies and TV shows"
@@ -6733,7 +6927,11 @@
   },
   "homeRowsExternalLists": "External Lists",
   "@homeRowsExternalLists": {
-    "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    "description": "Home Rows editor: heading of the group of disabled rows from custom lists a user set up, such as their own MDBList, TMDB or Letterboxd lists"
+  },
+  "homeRowsStreamingServices": "Streaming Services",
+  "@homeRowsStreamingServices": {
+    "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
   },
   "perRowSettings": "Per-Row Settings",
   "@perRowSettings": {
@@ -6859,6 +7057,26 @@
   "dimmingLevel": "Dimming Level",
   "@dimmingLevel": {
     "description": "Setting for dimming level"
+  },
+  "screensaverDuringAudio": "Show During Music and Audiobooks",
+  "@screensaverDuringAudio": {
+    "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+  },
+  "screensaverDuringAudioDescription": "Let the screensaver start while audio plays, so cover art doesn't sit on screen for hours.",
+  "@screensaverDuringAudioDescription": {
+    "description": "Description under the Show During Music and Audiobooks screensaver setting"
+  },
+  "sleepAfterIdle": "Let TV Sleep After",
+  "@sleepAfterIdle": {
+    "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+  },
+  "sleepAfterIdleDescriptionAndroid": "Close Moonfin after this long without a button press so your TV's own screensaver and sleep timer can take over. Anything paused is stopped first, so it keeps its resume point.",
+  "@sleepAfterIdleDescriptionAndroid": {
+    "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+  },
+  "sleepAfterIdleDescriptionAppleTv": "After this long without a button press, hand the screen back to your Apple TV's own screensaver and sleep setting. Moonfin stays open, so you pick up right where you left off.",
+  "@sleepAfterIdleDescriptionAppleTv": {
+    "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
   },
   "maxAgeRating": "Max Age Rating",
   "@maxAgeRating": {
@@ -7012,6 +7230,49 @@
   "additionalRatings": "Additional Ratings",
   "@additionalRatings": {
     "description": "Setting for additional ratings"
+  },
+  "mdblistWatchingNow": "Watching on MDBList",
+  "@mdblistWatchingNow": {
+    "description": "Title of the Watching on MDBList home row"
+  },
+  "watchingNowWatchersCount": "{count} watching",
+  "@watchingNowWatchersCount": {
+    "description": "Badge on Watching on MDBList card showing current watchers count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchingNowLiveSummary": "{users} watching now · {movies} movies · {shows} shows",
+  "@watchingNowLiveSummary": {
+    "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+    "placeholders": {
+      "users": {
+        "type": "String"
+      },
+      "movies": {
+        "type": "String"
+      },
+      "shows": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingNowLiveSummaryToday": "{users} watched today · {movies} movies · {shows} shows",
+  "@watchingNowLiveSummaryToday": {
+    "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+    "placeholders": {
+      "users": {
+        "type": "String"
+      },
+      "movies": {
+        "type": "String"
+      },
+      "shows": {
+        "type": "String"
+      }
+    }
   },
   "showMdbListAndTmdbRatings": "Show MDBList and TMDB ratings",
   "@showMdbListAndTmdbRatings": {
@@ -7221,11 +7482,23 @@
   },
   "showSeerrAvailabilityBadges": "Show Seerr Availability Badges",
   "@showSeerrAvailabilityBadges": {
-    "description": "Setting title for showing Seerr availability badges on media details pages"
+    "description": "Setting title for showing Seerr availability badges on posters across the app"
   },
-  "showSeerrAvailabilityBadgesDescription": "Show season availability badges on media details pages",
+  "showSeerrAvailabilityBadgesDescription": "Show the Seerr status on posters and seasons across the app",
   "@showSeerrAvailabilityBadgesDescription": {
-    "description": "Setting description for showing Seerr availability badges on media details pages"
+    "description": "Setting description for showing Seerr availability badges on posters across the app"
+  },
+  "seerrBadgeStyle": "Badge Style",
+  "@seerrBadgeStyle": {
+    "description": "Setting title for how posters show their Seerr status"
+  },
+  "seerrBadgeStyleDescription": "Badge puts Seerr's dot in a corner. Banner runs the status across the top of the poster.",
+  "@seerrBadgeStyleDescription": {
+    "description": "Setting description for the Seerr badge style choices"
+  },
+  "seerrBadgeStyleBadge": "Badge",
+  "@seerrBadgeStyleBadge": {
+    "description": "Seerr badge style that shows a status dot in a poster corner"
   },
   "seerrNotificationsSection": "Notifications",
   "@seerrNotificationsSection": {
@@ -7510,6 +7783,58 @@
   "@seerrImportingStatus": {
     "description": "Label when a Seerr download has finished and is importing"
   },
+  "seerrWaitingForImport": "Downloaded, waiting for import",
+  "@seerrWaitingForImport": {
+    "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+  },
+  "seerrDownloadStalled": "Stalled",
+  "@seerrDownloadStalled": {
+    "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+  },
+  "seerrDownloadFailed": "Download failed",
+  "@seerrDownloadFailed": {
+    "description": "Label on the Seerr download bar when the download client reports the download as failed"
+  },
+  "seerrImportBlocked": "Import blocked",
+  "@seerrImportBlocked": {
+    "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+  },
+  "seerrNotFoundYet": "Not found yet",
+  "@seerrNotFoundYet": {
+    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+  },
+  "seerrGetDifferentRelease": "Get a different release",
+  "@seerrGetDifferentRelease": {
+    "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+  },
+  "seerrGetDifferentReleaseConfirm": "{service} will remove {release} from the download client, block it so it isn't grabbed again, and search for another release.",
+  "@seerrGetDifferentReleaseConfirm": {
+    "description": "Body of the confirm dialog for Get a different release",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      },
+      "release": {
+        "type": "String",
+        "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseDone": "Removed. {service} is searching for another release.",
+  "@seerrGetDifferentReleaseDone": {
+    "description": "Short confirmation after Get a different release removed the stuck download",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseFailed": "Couldn't remove the download",
+  "@seerrGetDifferentReleaseFailed": {
+    "description": "Error shown when Get a different release could not remove the stuck download"
+  },
   "itemsCount": "{count} Items",
   "@itemsCount": {
     "description": "Status bar item count",
@@ -7688,6 +8013,18 @@
   "seerrSeriesContinuing": "Series Continuing · Future Seasons Can Be Requested",
   "@seerrSeriesContinuing": {
     "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
+  },
+  "seerrSeriesMatchDescription": "We couldn't match this series automatically. Pick the right one below.",
+  "@seerrSeriesMatchDescription": {
+    "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+  },
+  "seerrSeriesNoMatch": "We couldn't find a match for this series, so it can't be requested.",
+  "@seerrSeriesNoMatch": {
+    "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+  },
+  "seerrSeriesMatchFailed": "Sonarr couldn't find a match for this series, or couldn't be reached. Try again, or check the series on Seerr.",
+  "@seerrSeriesMatchFailed": {
+    "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
   },
   "advancedOptions": "Advanced Options",
   "@advancedOptions": {
@@ -10142,9 +10479,37 @@
   "syncPlayIgnoreWaitSubtitle": "Don't hold the group up while this device buffers",
   "syncPlayContinueLocallyNoWait": "Continue locally without waiting for slow members",
   "syncPlayRepeat": "Repeat",
+  "syncPlayRepeatSubtitle": "Replay one item or the whole queue",
+  "@syncPlayRepeatSubtitle": {
+    "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+  },
   "syncPlayRepeatOne": "One",
+  "syncPlayShuffleSubtitle": "Play the queue in order or shuffled",
+  "@syncPlayShuffleSubtitle": {
+    "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+  },
   "syncPlayShuffleModeShuffled": "Shuffled",
   "syncPlayShuffleModeSorted": "Sorted",
+  "syncPlayParticipantYou": "You",
+  "@syncPlayParticipantYou": {
+    "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+  },
+  "syncPlayGroupSubtitle": "{participants} · {detail}",
+  "@syncPlayGroupSubtitle": {
+    "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+    "placeholders": {
+      "participants": {"type": "String", "example": "3 participants"},
+      "detail": {"type": "String", "example": "nothing queued yet"}
+    }
+  },
+  "syncPlayNothingQueued": "nothing queued yet",
+  "@syncPlayNothingQueued": {
+    "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+  },
+  "syncPlayOthersCanJoinHint": "Others can join from their SyncPlay screen while this group exists.",
+  "@syncPlayOthersCanJoinHint": {
+    "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+  },
   "syncPlaySyncCurrentQueue": "Sync current playback queue",
   "syncPlaySyncCurrentQueueSubtitle": "Replace the group queue with what is playing locally",
   "syncPlayLeaveGroup": "Leave group",
@@ -10158,13 +10523,32 @@
   },
   "syncPlayPlayNow": "Play now",
   "syncPlayCreateNewGroup": "Create a new group",
+  "syncPlayCreateGroupSubtitle": "Watch together with everyone who joins",
+  "@syncPlayCreateGroupSubtitle": {
+    "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+  },
   "syncPlayGroupName": "Group name",
   "syncPlayDefaultGroupName": "My SyncPlay Group",
   "syncPlayCreateGroup": "Create group",
   "syncPlayAvailableGroups": "Available groups",
+  "syncPlayAvailableGroupsCount": "Available groups · {count}",
+  "@syncPlayAvailableGroupsCount": {
+    "description": "Heading of the SyncPlay available groups list with how many there are",
+    "placeholders": {
+      "count": {"type": "int", "example": "2"}
+    }
+  },
   "syncPlayNoGroupsAvailable": "No groups available",
+  "syncPlayNoGroupsAvailableHint": "Groups other people create on this server will show up here.",
+  "@syncPlayNoGroupsAvailableHint": {
+    "description": "Second line of the empty state in the SyncPlay available groups list"
+  },
   "syncPlayJoinGroupQuestion": "Join SyncPlay group?",
   "syncPlayJoinGroupWarning": "Joining a SyncPlay group may replace your current playback queue. Continue?",
+  "syncPlayJoinReplacesQueueNote": "Joining a group may replace your current playback queue.",
+  "@syncPlayJoinReplacesQueueNote": {
+    "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+  },
   "syncPlayJoin": "Join",
   "syncPlayStateIdle": "Idle",
   "syncPlayStateWaiting": "Waiting",
@@ -10286,6 +10670,15 @@
   "@kidsModeExitSubtitle": {
     "description": "Explanation under the Exit Kids Mode entry"
   },
+  "kidsModePinToSwitchUser": "Enter the Kids Mode PIN to switch to {name}",
+  "@kidsModePinToSwitchUser": {
+    "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pinIncorrect": "Incorrect PIN",
   "pinTryAgainIn": "Too many attempts. Try again in {wait}.",
   "@pinTryAgainIn": {
@@ -10384,6 +10777,22 @@
   "playlistCreateNew": "Create New Playlist",
   "playlistNoneFound": "No playlists found",
   "addToPlaylist": "Add to Playlist",
+  "removeFromPlaylist": "Remove from Playlist",
+  "@removeFromPlaylist": {
+    "description": "Context menu action to remove an item from a playlist"
+  },
+  "removeFromPlaylistConfirm": "Remove {item} from {playlist}?",
+  "@removeFromPlaylistConfirm": {
+    "description": "Confirmation shown before removing an item from a playlist",
+    "placeholders": {
+      "item": {"type": "String"},
+      "playlist": {"type": "String"}
+    }
+  },
+  "removeFromPlaylistFailed": "Failed to remove from playlist",
+  "@removeFromPlaylistFailed": {
+    "description": "Error shown when removing an item from a playlist fails"
+  },
 
   "lyricsNotAvailable": "No lyrics available",
   "upNext": "Up Next",
@@ -10662,6 +11071,11 @@
   "settingsHomePage": "Home Page",
   "settingsTwentyFourHourClock": "24-Hour Clock",
   "settingsTwentyFourHourClockSubtitle": "Use 24-hour time formatting wherever the clock is shown",
+  "settingsDateFormat": "Date Format",
+  "settingsDateFormatDescription": "Choose between month-day, day-month, or locale default for calendar and release dates",
+  "dateFormatSystem": "Locale Default",
+  "dateFormatMonthDay": "Month / Day (Nov 10)",
+  "dateFormatDayMonth": "Day / Month (10 Nov)",
   "settingsShowShuffleButtonInNavigation": "Show the shuffle button in the navigation bar",
   "settingsShowGenresButtonInNavigation": "Show the genres button in the navigation bar",
   "settingsShowFavoritesButtonInNavigation": "Show the favorites button in the navigation bar",
@@ -10774,7 +11188,7 @@
   "settingsShuffleContentTypeFilter": "Shuffle Content Type Filter",
   "settingsAudioPreferencesSubtitle": "Audio tracks, processing, and passthrough options",
   "settingsAutomationAndQueueSubtitle": "Automated playback and sequencing",
-  "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
+  "settingsSyncplaySubtitle": "Watch with friends on this server, everyone in step",
   "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
   "settingsMediaSegmentTypeAction": "{segment} Segments",
   "@settingsMediaSegmentTypeAction": {
@@ -10847,6 +11261,22 @@
   "settingsFortyFiveSeconds": "45 seconds",
   "settingsSixtySeconds": "60 seconds",
   "settingsSkipForwardLengthDescription": "How many seconds to jump forward after pressing the fast forward button.",
+  "settingsHideControlsAfter": "Hide Controls After",
+  "@settingsHideControlsAfter": {
+    "description": "Playback setting for how long the player controls stay on screen after the last input"
+  },
+  "settingsHideControlsAfterDescription": "How long the player controls stay on screen after your last button press, tap or mouse move.",
+  "@settingsHideControlsAfterDescription": {
+    "description": "Description under the Hide Controls After playback setting"
+  },
+  "settingsHdrControlsDimming": "Dim Controls in HDR",
+  "@settingsHdrControlsDimming": {
+    "description": "Playback setting for how much the player controls dim while HDR video plays"
+  },
+  "settingsHdrControlsDimmingDescription": "White looks far brighter next to HDR video, so the player controls dim by this much while it plays.",
+  "@settingsHdrControlsDimmingDescription": {
+    "description": "Description under the Dim Controls in HDR playback setting"
+  },
   "settingsBitstreamAc3ToExternalDecoder": "Bitstream AC3 to external decoder",
   "settingsCinemaMode": "Cinema Mode",
   "settingsCinemaModeSubtitle": "Play trailers/prerolls before a main feature",
@@ -10874,20 +11304,20 @@
   },
   "settingsLiveTvDirect": "Live TV Direct Play",
   "settingsLiveTvDirectSubtitle": "Enable direct play for Live TV",
-  "settingsOpenGroups": "Open Groups",
-  "settingsOpenGroupsSubtitle": "Create, join, or manage SyncPlay groups",
-  "settingsSyncplayEnabled": "SyncPlay Enabled",
-  "settingsSyncplayEnabledSubtitle": "Enable group watching features",
-  "settingsSyncplayButton": "SyncPlay Button",
-  "settingsSyncplayButtonSubtitle": "Show the SyncPlay button on the navigation bar",
-  "settingsSyncplayAdvancedCorrection": "Advanced Correction",
-  "settingsSyncplayAdvancedCorrectionSubtitle": "Enable fine-grained sync logic",
-  "settingsSyncplaySyncCorrection": "Sync Correction",
-  "settingsSyncplaySyncCorrectionSubtitle": "Automatically adjust playback to stay in sync",
-  "settingsSyncplaySpeedToSync": "Speed to Sync",
-  "settingsSyncplaySpeedToSyncSubtitle": "Use playback speed adjustment to sync",
-  "settingsSyncplaySkipToSync": "Skip to Sync",
-  "settingsSyncplaySkipToSyncSubtitle": "Use seeking to sync",
+  "settingsOpenGroups": "Open Watch Parties",
+  "settingsOpenGroupsSubtitle": "Start one or join one in progress",
+  "settingsSyncplayEnabled": "Watch Parties",
+  "settingsSyncplayEnabledSubtitle": "Watch with friends on this server, everyone in step",
+  "settingsSyncplayButton": "Watch Parties button",
+  "settingsSyncplayButtonSubtitle": "Show the Watch Parties button on the navigation bar",
+  "settingsSyncplayAdvancedCorrection": "Advanced correction",
+  "settingsSyncplayAdvancedCorrectionSubtitle": "Delays and extra offset",
+  "settingsSyncplaySyncCorrection": "Sync correction",
+  "settingsSyncplaySyncCorrectionSubtitle": "Keep this device in step with the room",
+  "settingsSyncplaySpeedToSync": "Speed to sync",
+  "settingsSyncplaySpeedToSyncSubtitle": "Play a little faster or slower to catch up",
+  "settingsSyncplaySkipToSync": "Skip to sync",
+  "settingsSyncplaySkipToSyncSubtitle": "Jump ahead when it's too far off",
   "settingsSyncplayMinimumSpeedDelay": "Minimum Speed Delay",
   "settingsSyncplayMaximumSpeedDelay": "Maximum Speed Delay",
   "settingsSyncplaySpeedDuration": "Speed Duration",
@@ -11095,9 +11525,13 @@
   "bottomBar": "Bottom Bar",
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
+  "homeRowsStyleCarousel": "Carousel",
+  "@homeRowsStyleCarousel": {
+    "description": "Name of the home row style that shows a large details panel under each row's posters"
+  },
   "homeRowsSection": "Home Rows",
   "rowsType": "Row Type",
-  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.",
   "modernCardsOnMyMediaRow": "Modern cards on My Media row",
   "modernCardsOnMyMediaRowDescription": "Display customizable posters that expand on focus. Disable to always show landscape thumbnail.",
   "sortOrder": "Sort Order",
@@ -11124,6 +11558,48 @@
   "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
   "displayStudiosRows": "Display Studio Row",
   "displayStudiosRowsSubtitle": "Show Studio row in Home Sections.",
+  "sinceYouWatched": "Since You Watched",
+  "@sinceYouWatched": {
+    "description": "Settings section header for the Since You Watched rows"
+  },
+  "sinceYouWatchedRowTitle": "Since you watched",
+  "@sinceYouWatchedRowTitle": {
+    "description": "Home row title for a Since You Watched row before its source item is known"
+  },
+  "sinceYouWatchedItemRowTitle": "Since you watched \"{title}\"",
+  "@sinceYouWatchedItemRowTitle": {
+    "description": "Home row title for recommendations based on an item the user watched",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sinceYouWatchedRowNumber": "Since You Watched Row {number}",
+  "@sinceYouWatchedRowNumber": {
+    "description": "Name of one of the Since You Watched rows in the home sections list",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "displaySinceYouWatchedRows": "Display Since You Watched Rows",
+  "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
+  "sinceYouWatchedSource": "Recommendation Source",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceOnline": "TMDb Similarity",
+  "sinceYouWatchedSourceType": "Source Type",
+  "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
+  "sinceYouWatchedSourceItem": "Source Item",
+  "sinceYouWatchedSourceItemDescription": "Choose which source item to base recommendations on",
+  "sinceYouWatchedRecentlyWatched": "Recently Watched",
+  "sinceYouWatchedNumRows": "Number of Rows to Add",
+  "sinceYouWatchedNumRowsDescription": "Choose how many Since You Watched rows to display (1-5)",
+  "sinceYouWatchedIncludeWatched": "Include Previously Watched",
+  "sinceYouWatchedIncludeWatchedSubtitle": "Include watched items in recommendations",
   "studiosRowSorting": "Studio Row Sorting",
   "studiosRowSortingDescription": "Studio row by name, recently added, and more.",
   "studiosRowSortOrderDescription": "Choose Ascending or Descending sort order.",
@@ -11196,6 +11672,11 @@
   "hevcSoftwareDirectPlaySubtitle": "Play HEVC up to 1080p from the original file instead of asking the server to transcode it. This Apple TV decodes it in software, so heavy 10-bit or high bitrate files may stutter.",
   "av1SoftwareUhdDirectPlay": "Direct Play 4K AV1 (Software Decode)",
   "av1SoftwareUhdDirectPlaySubtitle": "Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.",
+  "cadenceSlowdown": "Smooth 24 fps on a 60 Hz TV",
+  "cadenceSlowdownSubtitle": "When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.",
+  "cadenceTipTitle": "Turn On Match Frame Rate",
+  "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
+  "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",
   "useExternalPlayer": "Always Use External Player",
   "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
   "externalPlayerLiveTvOnly": "Live TV Only",
@@ -11364,7 +11845,7 @@
   "@watchPartyRoomCode": {
     "description": "Label for a Watch Party room's join code"
   },
-  "watchPartyStart": "Start a Watch Party",
+  "watchPartyStart": "Start a watch party",
   "@watchPartyStart": {
     "description": "Button that opens a new Watch Party room"
   },
@@ -11392,6 +11873,45 @@
   "@watchPartyStartForEveryone": {
     "description": "Host button that starts the staged item for the whole Watch Party"
   },
+  "watchPartyResumeAt": "Resume at {time}",
+  "@watchPartyResumeAt": {
+    "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyStartFromBeginning": "Start from the beginning",
+  "@watchPartyStartFromBeginning": {
+    "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+  },
+  "watchPartyResumeWhere": "Where {name} left off, the earliest anyone here has reached.",
+  "@watchPartyResumeWhere": {
+    "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyResumeEarliest": "The earliest point anyone here has reached.",
+  "@watchPartyResumeEarliest": {
+    "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+  },
+  "watchPartyResumeYours": "Where you left off. Everyone starts from there.",
+  "@watchPartyResumeYours": {
+    "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+  },
+  "watchPartyResumeNotStarted": "{count, plural, =1{1 person hasn't started it yet.} other{{count} people haven't started it yet.}}",
+  "@watchPartyResumeNotStarted": {
+    "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "watchPartyBackToLobby": "Back to the lobby",
   "@watchPartyBackToLobby": {
     "description": "Host button that stops Watch Party playback"
@@ -11400,7 +11920,7 @@
   "@watchPartyGuestsCanPause": {
     "description": "Host switch for guest transport control in a Watch Party"
   },
-  "watchPartyEnd": "End Watch Party",
+  "watchPartyEnd": "End for everyone",
   "@watchPartyEnd": {
     "description": "Host button that closes the Watch Party room for everyone"
   },
@@ -11417,6 +11937,445 @@
     "description": "The item a Watch Party host has staged",
     "placeholders": {
       "title": {
+        "type": "String"
+      }
+    }
+  },
+  "watchParties": "Watch Parties",
+  "@watchParties": {
+    "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+  },
+  "watchPartyStartWith": "Start parties with",
+  "@watchPartyStartWith": {
+    "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+  },
+  "watchPartyServiceMoonbaseHint": "Chat, reactions and voting. Runs on Moonbase.",
+  "@watchPartyServiceMoonbaseHint": {
+    "description": "Line under the Watch Party choice of the Start parties with setting"
+  },
+  "watchPartyServiceSyncPlayHint": "Jellyfin's own. Friends on other Jellyfin apps can join.",
+  "@watchPartyServiceSyncPlayHint": {
+    "description": "Line under the SyncPlay choice of the Start parties with setting"
+  },
+  "watchPartyServiceNote": "You can join rooms of both kinds. This only picks what you start.",
+  "@watchPartyServiceNote": {
+    "description": "Note under the Start parties with setting"
+  },
+  "watchPartyDuringParty": "During a party",
+  "@watchPartyDuringParty": {
+    "description": "Section heading on the Watch Parties settings page"
+  },
+  "watchPartyChatOverlay": "Show chat over the video",
+  "@watchPartyChatOverlay": {
+    "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+  },
+  "watchPartyChatOverlaySubtitle": "New messages show for a few seconds",
+  "@watchPartyChatOverlaySubtitle": {
+    "description": "Line under the Show chat over the video setting"
+  },
+  "watchPartyAlerts": "Party alerts",
+  "@watchPartyAlerts": {
+    "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+  },
+  "watchPartyAlertsSubtitle": "Tell me when someone on this server starts one",
+  "@watchPartyAlertsSubtitle": {
+    "description": "Line under the Party alerts setting"
+  },
+  "watchPartyJoinWithCode": "Join with a code",
+  "@watchPartyJoinWithCode": {
+    "description": "TV button on the Watch Parties screen that opens the room code field"
+  },
+  "watchPartyOnThisServer": "On this server",
+  "@watchPartyOnThisServer": {
+    "description": "Heading of the list of rooms on the Watch Parties screen"
+  },
+  "watchPartyCountOnServer": "{count} on this server",
+  "@watchPartyCountOnServer": {
+    "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyRoomsHint": "You need access to the item to join. A room closes when its last person leaves.",
+  "@watchPartyRoomsHint": {
+    "description": "Note under the room list on the Watch Parties screen"
+  },
+  "watchPartyRoomsEmpty": "Parties you can watch show up here. Got a code from someone? Pick Join with a code.",
+  "@watchPartyRoomsEmpty": {
+    "description": "Empty room list on the Watch Parties screen"
+  },
+  "watchPartyPasteHint": "Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.",
+  "@watchPartyPasteHint": {
+    "description": "Hint under the room code field on the Watch Parties screen"
+  },
+  "watchPartyWatchingCount": "{count, plural, one{{count} watching} other{{count} watching}}",
+  "@watchPartyWatchingCount": {
+    "description": "How many people are in a room, on room cards",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyHostsParty": "{name}'s party",
+  "@watchPartyHostsParty": {
+    "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyEveryoneControlsShort": "Everyone controls",
+  "@watchPartyEveryoneControlsShort": {
+    "description": "Room card tag: every member can play, pause and skip"
+  },
+  "watchPartyVotingNow": "Voting on what to watch",
+  "@watchPartyVotingNow": {
+    "description": "Room card line: the lobby is voting on what to watch"
+  },
+  "watchPartyNeedsMoonbase": "Watch Parties need Moonbase on this server",
+  "@watchPartyNeedsMoonbase": {
+    "description": "Title when the server has no Moonbase plugin to host watch parties"
+  },
+  "watchPartyNeedsMoonbaseHint": "Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.",
+  "@watchPartyNeedsMoonbaseHint": {
+    "description": "Body under the Watch Parties need Moonbase title"
+  },
+  "watchPartyWrongPin": "That PIN didn't work. Try again.",
+  "@watchPartyWrongPin": {
+    "description": "Join error: wrong room PIN"
+  },
+  "watchPartyTooManyTries": "Too many tries. Wait a minute.",
+  "@watchPartyTooManyTries": {
+    "description": "Join error: too many wrong PINs"
+  },
+  "watchPartyFull": "This party is full.",
+  "@watchPartyFull": {
+    "description": "Join error: the room has no space left"
+  },
+  "watchPartyNoSuchCode": "No room has that code.",
+  "@watchPartyNoSuchCode": {
+    "description": "Join error: no room with that code"
+  },
+  "watchPartyNoAccess": "You don't have access to what they're watching.",
+  "@watchPartyNoAccess": {
+    "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+  },
+  "watchPartyRemoved": "The host removed you from the party.",
+  "@watchPartyRemoved": {
+    "description": "Shown after the host removed this member"
+  },
+  "watchPartyYours": "Your watch party",
+  "@watchPartyYours": {
+    "description": "Title of the lobby and party controls"
+  },
+  "watchPartyInviteHint": "Paste it in any chat. It opens a page on this server with an Open in Moonfin button.",
+  "@watchPartyInviteHint": {
+    "description": "Hint under Copy invite link in the lobby"
+  },
+  "watchPartySendInvite": "Send the invite",
+  "@watchPartySendInvite": {
+    "description": "TV lobby heading over the invite QR code"
+  },
+  "watchPartyScanInvite": "Scan with your phone to get the invite link, then send it from there. Or just share the code.",
+  "@watchPartyScanInvite": {
+    "description": "TV lobby line next to the invite QR code"
+  },
+  "watchPartyStartsTogether": "Play waits for everyone's player, 10 seconds at most, then counts down 3, 2, 1.",
+  "@watchPartyStartsTogether": {
+    "description": "Lobby note on how a party starts"
+  },
+  "watchPartyStatusInSync": "In sync",
+  "@watchPartyStatusInSync": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusCatchingUp": "Catching up",
+  "@watchPartyStatusCatchingUp": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusBuffering": "Buffering",
+  "@watchPartyStatusBuffering": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusNotWatching": "Not watching",
+  "@watchPartyStatusNotWatching": {
+    "description": "Member status in a watch party"
+  },
+  "watchPartyStatusReady": "Ready",
+  "@watchPartyStatusReady": {
+    "description": "Member status in a watch party lobby"
+  },
+  "watchPartyStatusJoining": "Joining",
+  "@watchPartyStatusJoining": {
+    "description": "Member status in a watch party lobby"
+  },
+  "watchPartyHost": "Host",
+  "@watchPartyHost": {
+    "description": "Tag on the host in a watch party's people list"
+  },
+  "watchPartyWaitingFor": "Waiting for {name}'s player",
+  "@watchPartyWaitingFor": {
+    "description": "Shown while a party waits for one member's player to load",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyWaitingForCount": "{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}",
+  "@watchPartyWaitingForCount": {
+    "description": "Shown while a party waits for several members' players to load",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyStartingAnyway": "Starting anyway in {seconds} s",
+  "@watchPartyStartingAnyway": {
+    "description": "Countdown until the party starts without the players still loading",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyStartingTogether": "Starting together",
+  "@watchPartyStartingTogether": {
+    "description": "Under the 3, 2, 1 countdown when a party starts"
+  },
+  "watchPartyToastPaused": "{name} paused",
+  "@watchPartyToastPaused": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastResumed": "{name} resumed",
+  "@watchPartyToastResumed": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastSkipped": "{name} skipped to {time}",
+  "@watchPartyToastSkipped": {
+    "description": "Toast in a watch party, the time like 1:14:02",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastJoined": "{name} joined",
+  "@watchPartyToastJoined": {
+    "description": "Toast and chat line in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastLeft": "{name} left",
+  "@watchPartyToastLeft": {
+    "description": "Toast and chat line in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastSwitched": "{name} switched to {title}",
+  "@watchPartyToastSwitched": {
+    "description": "Toast and chat line when the host picks another item",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastYouAreHost": "You're the host now",
+  "@watchPartyToastYouAreHost": {
+    "description": "Toast in a watch party"
+  },
+  "watchPartyToastNewHost": "{name} is the host now",
+  "@watchPartyToastNewHost": {
+    "description": "Toast in a watch party",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyToastEveryoneControls": "Everyone can control playback now",
+  "@watchPartyToastEveryoneControls": {
+    "description": "Toast when the host lets everyone control playback"
+  },
+  "watchPartyToastHostControls": "Only the host controls playback now",
+  "@watchPartyToastHostControls": {
+    "description": "Toast when the host takes playback control back"
+  },
+  "watchPartyOnlyHostControls": "Only the host can control playback.",
+  "@watchPartyOnlyHostControls": {
+    "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+  },
+  "watchPartyToastReconnecting": "Reconnecting to the party...",
+  "@watchPartyToastReconnecting": {
+    "description": "Toast when the connection to the room drops"
+  },
+  "watchPartyToastReconnected": "Back in the party",
+  "@watchPartyToastReconnected": {
+    "description": "Toast when the connection to the room is back"
+  },
+  "watchPartyToastEnded": "{name} ended the party",
+  "@watchPartyToastEnded": {
+    "description": "Toast when the host closes the room",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyChat": "Chat",
+  "@watchPartyChat": {
+    "description": "Tab and button for a watch party's chat"
+  },
+  "watchPartySendToParty": "Send to the party",
+  "@watchPartySendToParty": {
+    "description": "Hint in the watch party chat field"
+  },
+  "watchPartyBackToClose": "Back to close",
+  "@watchPartyBackToClose": {
+    "description": "TV hint on the watch party quick bar"
+  },
+  "watchPartyType": "Type",
+  "@watchPartyType": {
+    "description": "TV quick bar button that opens the keyboard to type a chat message"
+  },
+  "watchPartyReplyHaha": "Haha",
+  "@watchPartyReplyHaha": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyNoWay": "No way",
+  "@watchPartyReplyNoWay": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyPausePlease": "Pause please",
+  "@watchPartyReplyPausePlease": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReplyBrb": "Brb",
+  "@watchPartyReplyBrb": {
+    "description": "TV quick reply in a watch party chat, short for be right back"
+  },
+  "watchPartyReplyAgain": "Again!",
+  "@watchPartyReplyAgain": {
+    "description": "TV quick reply in a watch party chat"
+  },
+  "watchPartyReactionLove": "Love",
+  "@watchPartyReactionLove": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionHaha": "Haha",
+  "@watchPartyReactionHaha": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionWow": "Wow",
+  "@watchPartyReactionWow": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionSad": "Sad",
+  "@watchPartyReactionSad": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionFire": "Fire",
+  "@watchPartyReactionFire": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyReactionPopcorn": "Popcorn",
+  "@watchPartyReactionPopcorn": {
+    "description": "Name of a watch party reaction"
+  },
+  "watchPartyMakeHost": "Make host",
+  "@watchPartyMakeHost": {
+    "description": "Host action on a member of the watch party"
+  },
+  "watchPartyEveryoneControls": "Everyone can control playback",
+  "@watchPartyEveryoneControls": {
+    "description": "Host setting of a watch party"
+  },
+  "watchPartyEveryoneControlsHint": "Anyone can play, pause and skip",
+  "@watchPartyEveryoneControlsHint": {
+    "description": "Line under Everyone can control playback"
+  },
+  "watchPartyRoomPin": "Room PIN",
+  "@watchPartyRoomPin": {
+    "description": "Host setting of a watch party, and the title of the PIN dialog"
+  },
+  "watchPartyRoomPinHint": "Ask for a PIN before anyone joins",
+  "@watchPartyRoomPinHint": {
+    "description": "Line under Room PIN"
+  },
+  "watchPartyPinDigits": "4 to 8 digits",
+  "@watchPartyPinDigits": {
+    "description": "Hint in the room PIN field"
+  },
+  "watchPartyLeave": "Leave",
+  "@watchPartyLeave": {
+    "description": "Button that leaves the watch party"
+  },
+  "watchPartyLeaveHandsOver": "Leave · {name} hosts",
+  "@watchPartyLeaveHandsOver": {
+    "description": "Host button that leaves, naming who takes over",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyStartedBy": "{name} started a watch party",
+  "@watchPartyStartedBy": {
+    "description": "Party alert title",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}",
+  "@watchPartyInLobbyCount": {
+    "description": "Party alert body",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchPartyFirstOnHome": "It's first in Watch Parties on Home",
+  "@watchPartyFirstOnHome": {
+    "description": "Line on the TV party alert banner"
+  },
+  "watchPartyAddServerQuestion": "This invite is for a server you have not added yet, {address}. Add it and sign in to join.",
+  "@watchPartyAddServerQuestion": {
+    "description": "Dialog when a party link names a server the app does not have",
+    "placeholders": {
+      "address": {
         "type": "String"
       }
     }
@@ -13300,6 +14259,47 @@
   "@subtitleHdrSeparateSubtitle": {
     "description": "Explains why a separate HDR subtitle style is worth setting."
   },
+  "subtitleBold": "Bold Text",
+  "@subtitleBold": {
+    "description": "Toggle that draws subtitles in a bold weight."
+  },
+  "subtitleStrokeWidth": "Text Stroke Width",
+  "@subtitleStrokeWidth": {
+    "description": "Setting for how thick the outline around subtitle text is."
+  },
+  "subtitleFont": "Font",
+  "@subtitleFont": {
+    "description": "Setting for which font subtitles are drawn in."
+  },
+  "subtitleFontDescription": "Fonts are downloaded from Google Fonts the first time you pick them",
+  "@subtitleFontDescription": {
+    "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+  },
+  "subtitleFontDownloadFailed": "Couldn't download {font}",
+  "@subtitleFontDownloadFailed": {
+    "description": "Shown when a subtitle font could not be downloaded.",
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleShadow": "Text Shadow",
+  "@subtitleShadow": {
+    "description": "Toggle for a drop shadow behind subtitle text."
+  },
+  "subtitleShadowIntensity": "Shadow Intensity",
+  "@subtitleShadowIntensity": {
+    "description": "How dark the subtitle drop shadow is."
+  },
+  "subtitleShadowOffset": "Shadow Offset",
+  "@subtitleShadowOffset": {
+    "description": "How far the subtitle drop shadow sits from the text."
+  },
+  "subtitleShadowBlur": "Shadow Blur",
+  "@subtitleShadowBlur": {
+    "description": "How soft the edge of the subtitle drop shadow is."
+  },
   "scrollSensitivity": "Scroll Sensitivity",
   "@scrollSensitivity": {
     "description": "Title of the desktop setting that scales mouse wheel scrolling."
@@ -13412,6 +14412,10 @@
   "@setupRowsModernHint": {
     "description": "What the modern home row style gives you"
   },
+  "setupRowsCarouselHint": "Posters with a large details panel underneath.",
+  "@setupRowsCarouselHint": {
+    "description": "What the carousel home row style gives you"
+  },
   "setupDetailClassicHint": "Everything centred in one stack.",
   "@setupDetailClassicHint": {
     "description": "What the classic detail screen style gives you"
@@ -13467,6 +14471,14 @@
   "setupDetailQuickLookHint": "A drawer over the screen you were on, with play and the basics, and the full page a press away.",
   "@setupDetailQuickLookHint": {
     "description": "What the Quick Look detail screen style gives you"
+  },
+  "setupStyleFrost": "Frost",
+  "@setupStyleFrost": {
+    "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+  },
+  "setupDetailFrostHint": "The title in a glass window over its blurred art, with tabs under the buttons.",
+  "@setupDetailFrostHint": {
+    "description": "What the Frost detail screen style gives you"
   },
   "setupNavbarStyleQuestion": "How should the bottom bar look?",
   "@setupNavbarStyleQuestion": {
@@ -13527,6 +14539,75 @@
   "setupCurrent": "Current",
   "@setupCurrent": {
     "description": "Tag beside the option that is chosen right now in a setup wizard list"
+  },
+  "setupMoonbaseTitle": "Add Moonbase to your server",
+  "@setupMoonbaseTitle": {
+    "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+  },
+  "setupMoonbaseHint": "A free server plugin that unlocks more of Moonfin",
+  "@setupMoonbaseHint": {
+    "description": "Line under the Moonbase row on the last setup wizard step"
+  },
+  "setupMoonbaseIntro": "Moonbase is free and runs on your server. With it, Moonfin gets:",
+  "@setupMoonbaseIntro": {
+    "description": "First line of the Moonbase dialog, followed by a list of features"
+  },
+  "setupMoonbaseAskAdmin": "Only a server admin can install it. Send them this link.",
+  "@setupMoonbaseAskAdmin": {
+    "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseManualSteps": "It takes a few steps on your server to install. They're all at this link.",
+  "@setupMoonbaseManualSteps": {
+    "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+  },
+  "setupMoonbaseInstalling": "Installing Moonbase...",
+  "@setupMoonbaseInstalling": {
+    "description": "Shown in the Moonbase dialog while the plugin installs"
+  },
+  "setupMoonbaseInstalled": "Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.",
+  "@setupMoonbaseInstalled": {
+    "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+  },
+  "setupMoonbaseRestarting": "The server is restarting. Moonbase turns on once it's back.",
+  "@setupMoonbaseRestarting": {
+    "description": "Shown while the server restarts after Moonbase was installed"
+  },
+  "moonbaseFeatureSync": "Settings synced across your devices",
+  "@moonbaseFeatureSync": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRatings": "Extra ratings and TMDB reviews",
+  "@moonbaseFeatureRatings": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureRows": "Custom rows from your favorite lists",
+  "@moonbaseFeatureRows": {
+    "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+  },
+  "moonbaseFeatureGames": "Retro games with synced saves",
+  "@moonbaseFeatureGames": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureCalendar": "A calendar of what's coming up",
+  "@moonbaseFeatureCalendar": {
+    "description": "Moonbase dialog feature, upcoming episodes and movies"
+  },
+  "moonbaseFeatureCollections": "Your own order for each collection",
+  "@moonbaseFeatureCollections": {
+    "description": "Moonbase dialog feature"
+  },
+  "moonbaseFeatureMessages": "Messages from your server admin",
+  "@moonbaseFeatureMessages": {
+    "description": "Moonbase dialog feature"
+  },
+  "setupMoonbaseInstallFailed": "Moonbase couldn't be installed. {error}",
+  "@setupMoonbaseInstallFailed": {
+    "description": "Shown in the Moonbase dialog when installing or restarting failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "setupTvHint": "Up and down to preview · OK to choose · Back twice to skip",
   "@setupTvHint": {
@@ -13603,6 +14684,14 @@
   "showBookDiscoverTabDescription": "Browse titles from Open Library and LibriVox in your book and audiobook libraries",
   "@showBookDiscoverTabDescription": {
     "description": "Explains the setting that shows or hides the discovery tab in book libraries"
+  },
+  "bookFoldersAsSeries": "Treat book folders as series",
+  "@bookFoldersAsSeries" : {
+    "description": "Setting to determine book series based on folders instead of item metadata"
+  },
+  "bookFoldersAsSeriesDescription": "Treat folders containing books as series instead of relying on the individual books' metadata",
+  "@bookFoldersAsSeriesDescription": {
+    "description": "Explains the setting to determine book series based on folders instead of item metadata"
   },
   "autoDownloadNewEpisodes": "Auto-download new episodes",
   "@autoDownloadNewEpisodes": {
@@ -13728,6 +14817,27 @@
   "removeWatchedDownloadsSubtitle": "When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed",
   "@removeWatchedDownloadsSubtitle": {
     "description": "Explains the remove-watched-downloads setting"
+  },
+  "removeWatchedAsk": "Ask me",
+  "@removeWatchedAsk": {
+    "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+  },
+  "deleteFinishedDownloadTitle": "Delete this download?",
+  "@deleteFinishedDownloadTitle": {
+    "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+  },
+  "deleteFinishedDownloadMessage": "You finished {title}. Delete its download to free up space, or keep it and stop asking.",
+  "@deleteFinishedDownloadMessage": {
+    "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notNow": "Not Now",
+  "@notNow": {
+    "description": "Button that closes a question without answering it, so it can be asked again later"
   },
   "keepDownloaded": "Keep Downloaded",
   "@keepDownloaded": {
@@ -14233,7 +15343,7 @@
   "@settingsDetailsPageSubtitle": {
     "description": "Subtitle for the Details Page entry on the Appearance settings screen"
   },
-  "settingsPlaybackSubtitle": "Player, quality, audio, subtitles, skipping, and SyncPlay",
+  "settingsPlaybackSubtitle": "Player, quality, audio, subtitles, skipping, and watch parties",
   "@settingsPlaybackSubtitle": {
     "description": "Subtitle for the Playback settings root entry"
   },
@@ -14285,13 +15395,45 @@
   "@settingsSkippingAndQueueSection": {
     "description": "Section header on the Playback settings screen"
   },
-  "settingsWatchTogetherSection": "Watch Together",
+  "settingsWatchTogetherSection": "Watch Parties",
   "@settingsWatchTogetherSection": {
     "description": "Section header on the Playback settings screen for SyncPlay"
   },
   "settingsAdvancedSection": "Advanced",
   "@settingsAdvancedSection": {
     "description": "Section header on the Playback settings screen"
+  },
+  "settingsDecodingAndRenderingSection": "Decoding & Rendering",
+  "@settingsDecodingAndRenderingSection": {
+    "description": "Section header on the Quality & Decoding settings screen"
+  },
+  "settingsAudioStreamSection": "Audio Stream",
+  "@settingsAudioStreamSection": {
+    "description": "Section header on the Audio settings screen for the default audio track choices"
+  },
+  "settingsAudioOutputSection": "Audio Output",
+  "@settingsAudioOutputSection": {
+    "description": "Section header on the Audio settings screen for the passthrough mode"
+  },
+  "settingsPassthroughSettingsSection": "Passthrough Settings",
+  "@settingsPassthroughSettingsSection": {
+    "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+  },
+  "settingsSeerrHomePageRowsSection": "Seerr Home Page Rows",
+  "@settingsSeerrHomePageRowsSection": {
+    "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+  },
+  "settingsSavedCustomHomeRowsSection": "Saved Custom Home Rows",
+  "@settingsSavedCustomHomeRowsSection": {
+    "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+  },
+  "settingsRewatchSection": "Rewatch",
+  "@settingsRewatchSection": {
+    "description": "Section header on the Home Sections settings screen for the Rewatch row"
+  },
+  "favoritesSwitchViewSection": "Switch View",
+  "@favoritesSwitchViewSection": {
+    "description": "Section header in the Favorites display options for choosing between Home and Library view"
   },
   "playerSettingsSubtitle": "Controls, seeking, player buttons, and trick play",
   "@playerSettingsSubtitle": {
@@ -14484,6 +15626,14 @@
     "description": "Playback information row label: the Live TV program on now"
   },
   "playbackInfoWhy": "Why",
+  "playbackInfoServerCompatibilityCheck": "Server compatibility check",
+  "@playbackInfoServerCompatibilityCheck": {
+    "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+  },
+  "playbackInfoBitrateUnavailable": "Bitrate unavailable",
+  "@playbackInfoBitrateUnavailable": {
+    "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+  },
   "@playbackInfoWhy": {
     "description": "Playback information row label: why the server isn't sending the original file as is"
   },
@@ -14583,6 +15733,99 @@
   "@playbackInfoNoteDirectStream": {
     "description": "Playback information note under the play method for direct stream"
   },
+  "playbackInfoNoteLiveRelay": "The server is relaying the channel without converting it.",
+  "@playbackInfoNoteLiveRelay": {
+    "description": "Playback information note under the play method for a live TV channel the server passes through"
+  },
+  "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+  "@playbackInfoFrameRateFrom": {
+    "description": "Playback information frame rate with where the player got it",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoRateSourceHeader": "stream header",
+  "@playbackInfoRateSourceHeader": {
+    "description": "Playback information: the frame rate came from the video stream's own header"
+  },
+  "playbackInfoRateSourceMeasured": "measured",
+  "@playbackInfoRateSourceMeasured": {
+    "description": "Playback information: the frame rate was measured from the video's frame timing"
+  },
+  "playbackInfoRateSourceServer": "server",
+  "@playbackInfoRateSourceServer": {
+    "description": "Playback information: the frame rate came from the server's description of the media"
+  },
+  "playbackInfoServerFrameRate": "Server Frame Rate",
+  "@playbackInfoServerFrameRate": {
+    "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+  },
+  "playbackInfoScan": "Scan",
+  "@playbackInfoScan": {
+    "description": "Playback information row: whether the video is progressive or interlaced"
+  },
+  "playbackInfoProgressive": "Progressive",
+  "@playbackInfoProgressive": {
+    "description": "Playback information scan type"
+  },
+  "playbackInfoInterlaced": "Interlaced",
+  "@playbackInfoInterlaced": {
+    "description": "Playback information scan type"
+  },
+  "playbackInfoRepeatedFields": "Telecined (repeated fields)",
+  "@playbackInfoRepeatedFields": {
+    "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+  },
+  "playbackInfoHdmiOutput": "HDMI Output",
+  "@playbackInfoHdmiOutput": {
+    "description": "Playback information row: the display mode the device is sending"
+  },
+  "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+  "@playbackInfoDisplayMode": {
+    "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+    "placeholders": {
+      "width": {
+        "type": "String"
+      },
+      "height": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoRateCorrections": "Rate Corrections",
+  "@playbackInfoRateCorrections": {
+    "description": "Playback information row: how many times live TV changed the display rate after it started"
+  },
+  "playbackInfoAudioOutput": "Output",
+  "@playbackInfoAudioOutput": {
+    "description": "Playback information row in the Audio section: how the audio leaves the device"
+  },
+  "playbackInfoPassthroughOf": "Passthrough ({codec})",
+  "@playbackInfoPassthroughOf": {
+    "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoDecodedTo": "Decoded ({channels})",
+  "@playbackInfoDecodedTo": {
+    "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+    "placeholders": {
+      "channels": {
+        "type": "String"
+      }
+    }
+  },
   "playbackInfoNoteTranscodeVideo": "The server is converting the video so this device can play it.",
   "@playbackInfoNoteTranscodeVideo": {
     "description": "Playback information note under the play method when only the video is transcoded"
@@ -14659,6 +15902,15 @@
   "playbackInfoWhyVideoCodec": "This device can't play {codec} video",
   "@playbackInfoWhyVideoCodec": {
     "description": "Playback information reason: the video codec, like HEVC or AV1, isn't supported",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoProfileUnknown": "The server couldn't verify this stream's {codec} profile.",
+  "@playbackInfoWhyVideoProfileUnknown": {
+    "description": "Playback information reason when the server could not determine the video profile",
     "placeholders": {
       "codec": {
         "type": "String"
@@ -15169,6 +16421,10 @@
   "@siloPinUnlock": {
     "description": "Button in the Silo profile PIN dialog that checks the PIN"
   },
+  "siloPinRemember": "Remember PIN on this device",
+  "@siloPinRemember": {
+    "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+  },
   "siloPinWrong": "That PIN isn't right.",
   "@siloPinWrong": {
     "description": "Shown in the Silo profile PIN dialog when the PIN doesn't match"
@@ -15189,10 +16445,6 @@
   "siloPinFailed": "The PIN couldn't be checked. Try again.",
   "@siloPinFailed": {
     "description": "Shown in the Silo profile PIN dialog when the check failed (no network, server error)"
-  },
-  "siloSignOutAccount": "Sign out of the Silo account",
-  "@siloSignOutAccount": {
-    "description": "Account menu button shown for a Silo household profile when other profiles of the same Silo account are stored on this device: signs all of them out and ends the login (Sign out alone removes only the current profile)"
   },
   "trailerCount": "{count, plural, =1{1 trailer} other{{count} trailers}}",
   "@trailerCount": {
@@ -15551,8 +16803,888 @@
   "@settingsPreviewNotShown": {
     "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
   },
+  "settingsPreviewAudioRowsOffInHomeRows": "Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewAudioRowsOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is on, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off audio rows are",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "General"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewAudioRowsOffInHomeRowsSwitchOff": "To see Albums, Artists or Audio Playlists on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn one on.",
+  "@settingsPreviewAudioRowsOffInHomeRowsSwitchOff": {
+    "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is off, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the audio rows once the switch is on, so it gives the steps in that order",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Audio Rows"
+      },
+      "group": {
+        "type": "String",
+        "example": "General"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewCollectionsOffInHomeRows": "The Collections row is turned off. To show it, go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewCollectionsOffInHomeRows": {
+    "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Collections"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewCollectionsOffInHomeRowsSwitchOff": "To see the Collections row on Home, first turn on {setting}. Then go to Rows, open {group} under {disabled}, and turn it on.",
+  "@settingsPreviewCollectionsOffInHomeRowsSwitchOff": {
+    "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is off, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Collections row once the switch is on, so it gives the steps in that order",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Collections Rows"
+      },
+      "group": {
+        "type": "String",
+        "example": "Collections"
+      },
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewRowsOffInKidsMode": "Kids Mode keeps these rows off Home, so these settings don't change it.",
+  "@settingsPreviewRowsOffInKidsMode": {
+    "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+  },
+  "settingsPreviewNeedsRowInRows": "Turn on a row in Rows, under {disabled}",
+  "@settingsPreviewNeedsRowInRows": {
+    "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+    "placeholders": {
+      "disabled": {
+        "type": "String",
+        "example": "Disabled"
+      }
+    }
+  },
+  "settingsPreviewNeedsSwitchAndRow": "Turn on {setting}, then turn on a row in Rows",
+  "@settingsPreviewNeedsSwitchAndRow": {
+    "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is off. The Rows screen only lists those rows once the switch is on",
+    "placeholders": {
+      "setting": {
+        "type": "String",
+        "example": "Display Audio Rows"
+      }
+    }
+  },
+  "settingsPreviewKeptOffByKidsMode": "Kids Mode keeps this off Home",
+  "@settingsPreviewKeptOffByKidsMode": {
+    "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
+  },
+  "settingsPreviewAudioRowsEmpty": "There's no music to show, so Home leaves these rows out.",
+  "@settingsPreviewAudioRowsEmpty": {
+    "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
+  },
+  "settingsPreviewRowsEmpty": "There's nothing to show in these rows, so Home leaves them out.",
+  "@settingsPreviewRowsEmpty": {
+    "description": "Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out"
+  },
+  "settingsPreviewCollectionsEmpty": "There are no collections to show, so Home leaves this row out.",
+  "@settingsPreviewCollectionsEmpty": {
+    "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+  },
+  "settingsPreviewShowEpisodesNote": "This only changes rows for a single collection added in Rows. The Collections row looks the same.",
+  "@settingsPreviewShowEpisodesNote": {
+    "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+  },
   "settingsPreviewSaved": "Saved",
   "@settingsPreviewSaved": {
     "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+  },
+  "smartSearch": "Smart Search",
+  "@smartSearch": {
+    "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+  },
+  "smartSearchOnSeerr": "Smart Search on {seerr}",
+  "@smartSearchOnSeerr": {
+    "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+    "placeholders": {
+      "seerr": {
+        "type": "String",
+        "example": "Seerr"
+      }
+    }
+  },
+  "calendar": "Calendar",
+  "@calendar": {
+    "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+  },
+  "showCalendarButton": "Show Calendar Button",
+  "@showCalendarButton": {
+    "description": "Settings toggle that adds the Calendar button to the navigation bar"
+  },
+  "showCalendarButtonSubtitle": "Show the calendar of upcoming episodes and movies in the navigation bar",
+  "@showCalendarButtonSubtitle": {
+    "description": "Subtitle of the Show Calendar Button setting"
+  },
+  "calendarFullCalendar": "Full calendar",
+  "@calendarFullCalendar": {
+    "description": "Button on the calendar that opens the month grid"
+  },
+  "calendarUpcoming": "Upcoming",
+  "@calendarUpcoming": {
+    "description": "Calendar tab listing episodes and movies that haven't aired yet"
+  },
+  "calendarRecentlyAired": "Recently aired",
+  "@calendarRecentlyAired": {
+    "description": "Calendar tab listing episodes and movies from the last few days"
+  },
+  "calendarRemindMe": "Remind me",
+  "@calendarRemindMe": {
+    "description": "Button that asks for a notification when an episode or movie lands in the library"
+  },
+  "calendarReminderSet": "Reminder set",
+  "@calendarReminderSet": {
+    "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+  },
+  "calendarReminderFailed": "Couldn't save the reminder",
+  "@calendarReminderFailed": {
+    "description": "Message when setting or removing a calendar reminder fails"
+  },
+  "calendarReadyToWatch": "Ready to watch",
+  "@calendarReadyToWatch": {
+    "description": "Calendar row of recent episodes and movies that are already in the library"
+  },
+  "calendarComingUpThisWeek": "Coming up this week",
+  "@calendarComingUpThisWeek": {
+    "description": "Calendar row of episodes and movies airing in the next seven days"
+  },
+  "calendarNothingUpcoming": "Nothing coming up",
+  "@calendarNothingUpcoming": {
+    "description": "Calendar message when no episodes or movies are scheduled"
+  },
+  "calendarNothingRecent": "Nothing aired recently",
+  "@calendarNothingRecent": {
+    "description": "Calendar message when nothing aired in the last few days"
+  },
+  "calendarEmptyDay": "Nothing on this day",
+  "@calendarEmptyDay": {
+    "description": "Calendar message under a day with no episodes or movies"
+  },
+  "calendarStartsIn": "Starts in",
+  "@calendarStartsIn": {
+    "description": "Label over the countdown to the next episode or movie"
+  },
+  "calendarUnitDays": "days",
+  "@calendarUnitDays": {
+    "description": "Unit under the days number of the calendar countdown"
+  },
+  "calendarUnitHours": "hr",
+  "@calendarUnitHours": {
+    "description": "Unit under the hours number of the calendar countdown"
+  },
+  "calendarUnitMinutes": "min",
+  "@calendarUnitMinutes": {
+    "description": "Unit under the minutes number of the calendar countdown"
+  },
+  "calendarDayAtTime": "{day} at {time}",
+  "@calendarDayAtTime": {
+    "description": "When an episode airs, like Today at 9:00 PM",
+    "placeholders": {
+      "day": {
+        "type": "String",
+        "example": "Today"
+      },
+      "time": {
+        "type": "String",
+        "example": "9:00 PM"
+      }
+    }
+  },
+  "calendarAllDay": "All day",
+  "@calendarAllDay": {
+    "description": "Time column of a calendar entry with no time of day, like a movie release"
+  },
+  "calendarBadgeSeriesPremiere": "Series premiere",
+  "@calendarBadgeSeriesPremiere": {
+    "description": "Tag on the first episode of a series"
+  },
+  "calendarBadgeSeasonPremiere": "New season",
+  "@calendarBadgeSeasonPremiere": {
+    "description": "Tag on the first episode of a new season"
+  },
+  "calendarBadgeSeasonFinale": "Finale",
+  "@calendarBadgeSeasonFinale": {
+    "description": "Tag on the last episode of a season"
+  },
+  "calendarBadgeMidseasonFinale": "Midseason finale",
+  "@calendarBadgeMidseasonFinale": {
+    "description": "Tag on the last episode before a season's mid-season break"
+  },
+  "calendarBadgeSeriesFinale": "Series finale",
+  "@calendarBadgeSeriesFinale": {
+    "description": "Tag on the last episode of a series"
+  },
+  "calendarBadgeNew": "NEW",
+  "@calendarBadgeNew": {
+    "description": "Short tag on a month grid day that has a premiere"
+  },
+  "calendarStatusInLibrary": "In library",
+  "@calendarStatusInLibrary": {
+    "description": "Tag on a calendar entry that is already on the server"
+  },
+  "calendarNotMonitored": "Not monitored",
+  "@calendarNotMonitored": {
+    "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+  },
+  "calendarMovieDetails": "Movie details",
+  "@calendarMovieDetails": {
+    "description": "Button that opens a movie's details page from the calendar"
+  },
+  "calendarProblemAdminsOnly": "The calendar is limited to admins on this server.",
+  "@calendarProblemAdminsOnly": {
+    "description": "Calendar message when the server admin keeps the calendar to admins"
+  },
+  "calendarProblemNeedsSeerr": "An admin needs to sign in to Seerr in Moonfin before the calendar can load.",
+  "@calendarProblemNeedsSeerr": {
+    "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+  },
+  "calendarProblemNotConfigured": "No Sonarr or Radarr server is linked yet.",
+  "@calendarProblemNotConfigured": {
+    "description": "Calendar message when the server has no Sonarr or Radarr"
+  },
+  "calendarProblemFailed": "Couldn't load the calendar.",
+  "@calendarProblemFailed": {
+    "description": "Calendar message when loading fails"
+  },
+  "calendarSettingsSubtitle": "Style, filters and actions for the calendar",
+  "@calendarSettingsSubtitle": {
+    "description": "Subtitle of the Calendar entry under Integrations in settings"
+  },
+  "calendarSettingsView": "View",
+  "@calendarSettingsView": {
+    "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+  },
+  "calendarSettingsStyle": "Calendar style",
+  "@calendarSettingsStyle": {
+    "description": "Calendar setting that picks what the Calendar button opens"
+  },
+  "calendarSettingsStyleDescription": "What the Calendar button opens. The full month is one button away in both.",
+  "@calendarSettingsStyleDescription": {
+    "description": "Description of the Calendar style setting"
+  },
+  "calendarSettingsStyleAgenda": "Agenda",
+  "@calendarSettingsStyleAgenda": {
+    "description": "Calendar style that lists episodes and movies day by day"
+  },
+  "calendarSettingsStyleCountdown": "Countdown",
+  "@calendarSettingsStyleCountdown": {
+    "description": "Calendar style that counts down to the next episode or movie"
+  },
+  "calendarSettingsWeekStart": "Week starts on",
+  "@calendarSettingsWeekStart": {
+    "description": "Calendar setting for the first day of the week in the month grid"
+  },
+  "calendarSettingsWhatShows": "What shows",
+  "@calendarSettingsWhatShows": {
+    "description": "Calendar settings section header for which episodes and movies the calendar lists"
+  },
+  "calendarSettingsScope": "Show",
+  "@calendarSettingsScope": {
+    "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+  },
+  "calendarSettingsScopeDescription": "My shows keeps the series you favorited or started watching",
+  "@calendarSettingsScopeDescription": {
+    "description": "Description of the calendar Show setting"
+  },
+  "calendarSettingsScopeEverything": "Everything",
+  "@calendarSettingsScopeEverything": {
+    "description": "Calendar Show choice that lists every episode and movie"
+  },
+  "calendarSettingsScopeMyShows": "My shows",
+  "@calendarSettingsScopeMyShows": {
+    "description": "Calendar Show choice that lists only series the user favorited or started watching"
+  },
+  "calendarSettingsUnmonitored": "Include unmonitored",
+  "@calendarSettingsUnmonitored": {
+    "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+  },
+  "calendarSettingsUnmonitoredSubtitle": "Also list episodes and movies Sonarr and Radarr aren't set to download",
+  "@calendarSettingsUnmonitoredSubtitle": {
+    "description": "Subtitle of the Include unmonitored calendar setting"
+  },
+  "calendarSettingsSpecials": "Specials",
+  "@calendarSettingsSpecials": {
+    "description": "Calendar setting that lists special episodes, the ones in season 0"
+  },
+  "calendarSettingsSpecialsSubtitle": "Season 0 episodes, like extras and holiday specials",
+  "@calendarSettingsSpecialsSubtitle": {
+    "description": "Subtitle of the Specials calendar setting"
+  },
+  "calendarSettingsBadges": "Premiere and finale tags",
+  "@calendarSettingsBadges": {
+    "description": "Calendar setting that marks premieres and finales on the calendar"
+  },
+  "calendarSettingsBadgesSubtitle": "Mark premieres, finales and new seasons",
+  "@calendarSettingsBadgesSubtitle": {
+    "description": "Subtitle of the Premiere and finale tags calendar setting"
+  },
+  "calendarSettingsColorBy": "Color by",
+  "@calendarSettingsColorBy": {
+    "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+  },
+  "calendarSettingsColorByDescription": "Type tells episodes from movies. Status shows what's in your library, coming up or missing.",
+  "@calendarSettingsColorByDescription": {
+    "description": "Description of the Color by calendar setting"
+  },
+  "calendarSettingsColorByType": "Type",
+  "@calendarSettingsColorByType": {
+    "description": "Color by choice that colors episodes and movies differently"
+  },
+  "calendarSettingsImageType": "Card image",
+  "@calendarSettingsImageType": {
+    "description": "Calendar setting for the artwork on the Countdown rows"
+  },
+  "calendarSettingsImageTypeDescription": "The artwork on the Countdown rows",
+  "@calendarSettingsImageTypeDescription": {
+    "description": "Description of the Card image calendar setting"
+  },
+  "calendarSettingsSpoilerSafe": "Spoiler safe",
+  "@calendarSettingsSpoilerSafe": {
+    "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+  },
+  "calendarSettingsSpoilerSafeSubtitle": "Hide episode titles and stills for shows you're behind on",
+  "@calendarSettingsSpoilerSafeSubtitle": {
+    "description": "Subtitle of the Spoiler safe calendar setting"
+  },
+  "calendarSettingsActions": "Actions",
+  "@calendarSettingsActions": {
+    "description": "Calendar settings section header for what buttons and selecting an entry do"
+  },
+  "calendarSettingsSelectAction": "Selecting an item",
+  "@calendarSettingsSelectAction": {
+    "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+  },
+  "calendarSettingsSelectActionDescription": "What OK or a tap does on something that's already in your library",
+  "@calendarSettingsSelectActionDescription": {
+    "description": "Description of the Selecting an item calendar setting"
+  },
+  "calendarSettingsSelectDetails": "Open details",
+  "@calendarSettingsSelectDetails": {
+    "description": "Selecting an item choice that opens the details page"
+  },
+  "calendarSettingsSelectPlay": "Play when in library",
+  "@calendarSettingsSelectPlay": {
+    "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+  },
+  "calendarSettingsRequestButton": "Request button",
+  "@calendarSettingsRequestButton": {
+    "description": "Calendar setting that shows the request button on missing titles"
+  },
+  "calendarSettingsRequestButtonSubtitle": "Show the Seerr request button on missing movies and seasons",
+  "@calendarSettingsRequestButtonSubtitle": {
+    "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+  },
+  "calendarSettingsReminders": "Reminders",
+  "@calendarSettingsReminders": {
+    "description": "Calendar setting that offers the Remind me button"
+  },
+  "calendarSettingsRemindersSubtitle": "Show Remind me, which sends a notification when a title lands in your library",
+  "@calendarSettingsRemindersSubtitle": {
+    "description": "Subtitle of the Reminders calendar setting"
+  },
+  "calendarRowSeeAll": "See All card",
+  "@calendarRowSeeAll": {
+    "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+  },
+  "calendarRowSeeAllSubtitle": "End the upcoming rows with a card that opens the calendar",
+  "@calendarRowSeeAllSubtitle": {
+    "description": "Subtitle of the See All card setting"
+  },
+  "showNextAirDate": "Next air date at the end",
+  "@showNextAirDate": {
+    "description": "Playback setting that says when the next episode airs at the end of an episode"
+  },
+  "showNextAirDateSubtitle": "When the next episode isn't in your library yet, the end of episode card says when it airs",
+  "@showNextAirDateSubtitle": {
+    "description": "Subtitle of the Next air date at the end setting"
+  },
+  "afterHoursTitle": "After Hours",
+  "@afterHoursTitle": {
+    "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+  },
+  "afterHoursUnlocked": "After Hours unlocked",
+  "@afterHoursUnlocked": {
+    "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+  },
+  "afterHoursPressesLeft": "{count, plural, =1{1 more press} other{{count} more presses}}",
+  "@afterHoursPressesLeft": {
+    "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursTapsLeft": "{count, plural, =1{1 more tap} other{{count} more taps}}",
+  "@afterHoursTapsLeft": {
+    "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursPlay": "Play",
+  "@afterHoursPlay": {
+    "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+  },
+  "afterHoursLeaderboards": "Leaderboards",
+  "@afterHoursLeaderboards": {
+    "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+  },
+  "afterHoursTop3": "Top 3",
+  "@afterHoursTop3": {
+    "description": "Heading over the three best scores in an arcade game"
+  },
+  "afterHoursScoresFrom": "Scores from {server}",
+  "@afterHoursScoresFrom": {
+    "description": "Note saying the arcade scores shown come from the named server",
+    "placeholders": {
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "afterHoursScoresOnDevice": "Scores on this device",
+  "@afterHoursScoresOnDevice": {
+    "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+  },
+  "afterHoursGameOver": "Game over",
+  "@afterHoursGameOver": {
+    "description": "Shown when a run in an arcade game ends"
+  },
+  "afterHoursNewRank": "New #{rank} on the board",
+  "@afterHoursNewRank": {
+    "description": "Shown when a finished arcade run places in the top 3, with its place",
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHoursPlayAgain": "Play again",
+  "@afterHoursPlayAgain": {
+    "description": "Button that starts a new run of the same arcade game"
+  },
+  "afterHoursBackToArcade": "Back to the arcade",
+  "@afterHoursBackToArcade": {
+    "description": "Button that leaves a finished game for the arcade menu"
+  },
+  "afterHoursArcade": "Arcade",
+  "@afterHoursArcade": {
+    "description": "Short button on a phone that leaves a finished game for the arcade menu"
+  },
+  "afterHoursLandscapeNote": "Turns to landscape while you play",
+  "@afterHoursLandscapeNote": {
+    "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+  },
+  "afterHoursTouch": "Touch",
+  "@afterHoursTouch": {
+    "description": "Label before the touchscreen controls of an arcade game"
+  },
+  "afterHoursNewTag": "NEW",
+  "@afterHoursNewTag": {
+    "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+  },
+  "afterHoursNoScores": "No scores yet",
+  "@afterHoursNoScores": {
+    "description": "Shown in place of a leaderboard nobody has played yet"
+  },
+  "afterHoursPerfect": "PERFECT",
+  "@afterHoursPerfect": {
+    "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+  },
+  "afterHoursBoxSet": "BOX SET",
+  "@afterHoursBoxSet": {
+    "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+  },
+  "afterHoursBufferRun": "Buffer Run",
+  "@afterHoursBufferRun": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+  },
+  "afterHoursBufferRunGenre": "Endless runner with a gravity flip",
+  "@afterHoursBufferRunGenre": {
+    "description": "Kind of game Buffer Run is"
+  },
+  "afterHoursBufferRunPitch": "The runner from the loading screen finally gets somewhere to go. Double jump and gravity flips it onto the ceiling.",
+  "@afterHoursBufferRunPitch": {
+    "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+  },
+  "afterHoursBufferRunRemote": "OK jumps, again mid-air to flip sides. Down slides. On the ceiling Up and Down swap.",
+  "@afterHoursBufferRunRemote": {
+    "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursBufferRunTouch": "Tap to jump, and tap again in the air to flip. Swipe toward the side you're running on to slide.",
+  "@afterHoursBufferRunTouch": {
+    "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursFastForward": "Fast Forward",
+  "@afterHoursFastForward": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+  },
+  "afterHoursFastForwardGenre": "Three-lane runner",
+  "@afterHoursFastForwardGenre": {
+    "description": "Kind of game Fast Forward is"
+  },
+  "afterHoursFastForwardPitch": "A sprint down three lobby aisles. Hop the low stuff, and remember the popcorn carts don't move for anyone.",
+  "@afterHoursFastForwardPitch": {
+    "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+  },
+  "afterHoursFastForwardRemote": "Up and Down change lanes. OK jumps.",
+  "@afterHoursFastForwardRemote": {
+    "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursFastForwardTouch": "Swipe up or down to change lanes. Tap to jump.",
+  "@afterHoursFastForwardTouch": {
+    "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCableCrawl": "Cable Crawl",
+  "@afterHoursCableCrawl": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+  },
+  "afterHoursCableCrawlGenre": "Grid crawler",
+  "@afterHoursCableCrawlGenre": {
+    "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+  },
+  "afterHoursCableCrawlPitch": "Steer an HDMI cable around the back of the TV cabinet and plug into signal. Every bar makes it longer.",
+  "@afterHoursCableCrawlPitch": {
+    "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+  },
+  "afterHoursCableCrawlRemote": "Arrows turn. The cable never stops.",
+  "@afterHoursCableCrawlRemote": {
+    "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCableCrawlTouch": "Swipe to turn.",
+  "@afterHoursCableCrawlTouch": {
+    "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCaseStack": "Case Stack",
+  "@afterHoursCaseStack": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+  },
+  "afterHoursCaseStackGenre": "One-button stacker",
+  "@afterHoursCaseStackGenre": {
+    "description": "Kind of game Case Stack is"
+  },
+  "afterHoursCaseStackPitch": "Build a shelf-high tower of Blu-ray cases, each one a title from your own library. Whatever hangs over the edge gets trimmed off, so land them dead on.",
+  "@afterHoursCaseStackPitch": {
+    "description": "Two sentence description of the Case Stack arcade game"
+  },
+  "afterHoursCaseStackRemote": "OK drops the case.",
+  "@afterHoursCaseStackRemote": {
+    "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursCaseStackTouch": "Tap anywhere to drop.",
+  "@afterHoursCaseStackTouch": {
+    "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursPixelPurge": "Pixel Purge",
+  "@afterHoursPixelPurge": {
+    "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+  },
+  "afterHoursPixelPurgeGenre": "Paddle breaker",
+  "@afterHoursPixelPurgeGenre": {
+    "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+  },
+  "afterHoursPixelPurgePitch": "A bad encode left the picture full of blocky artifacts, and they creep down a little every second. Bounce the play button off the seek bar to clear them before they reach it.",
+  "@afterHoursPixelPurgePitch": {
+    "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+  },
+  "afterHoursPixelPurgeRemote": "Left and Right slide the scrubber. The ball launches on its own.",
+  "@afterHoursPixelPurgeRemote": {
+    "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursPixelPurgeTouch": "Drag to slide the scrubber.",
+  "@afterHoursPixelPurgeTouch": {
+    "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+  },
+  "afterHoursHowToPlay": "How to play",
+  "@afterHoursHowToPlay": {
+    "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+  },
+  "afterHoursStart": "Start",
+  "@afterHoursStart": {
+    "description": "Button on the How to play card that starts the game. Start as in begin playing"
+  },
+  "afterHoursBackToGame": "Back to the game",
+  "@afterHoursBackToGame": {
+    "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+  },
+  "afterHoursEnemies": "Enemies",
+  "@afterHoursEnemies": {
+    "description": "Heading over the enemies on an arcade game's How to play card"
+  },
+  "afterHoursObstacles": "Obstacles",
+  "@afterHoursObstacles": {
+    "description": "Heading over the obstacles on an arcade game's How to play card"
+  },
+  "afterHoursPowerups": "Powerups",
+  "@afterHoursPowerups": {
+    "description": "Heading over the powerups on an arcade game's How to play card"
+  },
+  "afterHoursCastShieldLine": "A shield that takes one hit.",
+  "@afterHoursCastShieldLine": {
+    "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPointsLine": "25 points a piece.",
+  "@afterHoursCastPointsLine": {
+    "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastLagBat": "Lag Bat",
+  "@afterHoursCastLagBat": {
+    "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastLagBatLine": "Swoops in at head height. Slide under it.",
+  "@afterHoursCastLagBatLine": {
+    "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastGremlin": "Static Gremlin",
+  "@afterHoursCastGremlin": {
+    "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastGremlinLine": "Hops along the floor or the ceiling toward you. Jump it.",
+  "@afterHoursCastGremlinLine": {
+    "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastCable": "Cable Coil",
+  "@afterHoursCastCable": {
+    "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastCableLine": "Low on the floor or the ceiling. Jump it.",
+  "@afterHoursCastCableLine": {
+    "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBanner": "Buffering Banner",
+  "@afterHoursCastBanner": {
+    "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBannerLine": "Slide under the sign. Its pole is a wall on the other side.",
+  "@afterHoursCastBannerLine": {
+    "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSkipIntro": "Skip Intro",
+  "@afterHoursCastSkipIntro": {
+    "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSkipIntroLine": "Three seconds of dash that smashes anything.",
+  "@afterHoursCastSkipIntroLine": {
+    "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPopcorn": "Popcorn",
+  "@afterHoursCastPopcorn": {
+    "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastRollingReel": "Loose Reel",
+  "@afterHoursCastRollingReel": {
+    "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastRollingReelLine": "Rolls down your lane faster than you run. Jump it.",
+  "@afterHoursCastRollingReelLine": {
+    "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastUsher": "Usher",
+  "@afterHoursCastUsher": {
+    "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastUsherLine": "Walks toward you and changes lanes once.",
+  "@afterHoursCastUsherLine": {
+    "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastVelvetRope": "Velvet Rope",
+  "@afterHoursCastVelvetRope": {
+    "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastVelvetRopeLine": "Low. Jump it or change lanes.",
+  "@afterHoursCastVelvetRopeLine": {
+    "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPopcornCart": "Popcorn Cart",
+  "@afterHoursCastPopcornCart": {
+    "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastPopcornCartLine": "Too tall to jump. Change lanes.",
+  "@afterHoursCastPopcornCartLine": {
+    "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastFrontRowPass": "Front Row Pass",
+  "@afterHoursCastFrontRowPass": {
+    "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMagnet": "Magnet",
+  "@afterHoursCastMagnet": {
+    "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMagnetLine": "Pulls in tickets from every lane for eight seconds.",
+  "@afterHoursCastMagnetLine": {
+    "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastTicket": "Ticket",
+  "@afterHoursCastTicket": {
+    "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBug": "Interference Bug",
+  "@afterHoursCastBug": {
+    "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBugLine": "Wanders at random.",
+  "@afterHoursCastBugLine": {
+    "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastTangle": "Tangle",
+  "@afterHoursCastTangle": {
+    "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastTangleLine": "Slowly chases your plug.",
+  "@afterHoursCastTangleLine": {
+    "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastStatic": "Static",
+  "@afterHoursCastStatic": {
+    "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastStaticLine": "A dead cell. One appears every third signal.",
+  "@afterHoursCastStaticLine": {
+    "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBrick": "Power Brick",
+  "@afterHoursCastBrick": {
+    "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBrickLine": "A 2 by 2 block every fifth signal.",
+  "@afterHoursCastBrickLine": {
+    "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastGhost": "Ghost",
+  "@afterHoursCastGhost": {
+    "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastGhostLine": "Five seconds of passing through everything but the edge.",
+  "@afterHoursCastGhostLine": {
+    "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSnip": "Snip",
+  "@afterHoursCastSnip": {
+    "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSnipLine": "Cuts the cable in half for bonus points.",
+  "@afterHoursCastSnipLine": {
+    "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSignal": "Signal",
+  "@afterHoursCastSignal": {
+    "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSignalLine": "Points, and two more segments.",
+  "@afterHoursCastSignalLine": {
+    "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastShelfCat": "Shelf Cat",
+  "@afterHoursCastShelfCat": {
+    "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastShelfCatLine": "Bats a case as it comes in, so that one slides faster.",
+  "@afterHoursCastShelfCatLine": {
+    "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBluCase": "Blu-ray Case",
+  "@afterHoursCastBluCase": {
+    "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBluCaseLine": "A title from your library. The overhang gets trimmed off.",
+  "@afterHoursCastBluCaseLine": {
+    "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastSteelbook": "Steelbook",
+  "@afterHoursCastSteelbook": {
+    "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastSteelbookLine": "Every tenth case. Slides much faster.",
+  "@afterHoursCastSteelbookLine": {
+    "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastPerfect": "Perfect Drop",
+  "@afterHoursCastPerfect": {
+    "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastPerfectLine": "Land it dead on and the stack grows a little wider.",
+  "@afterHoursCastPerfectLine": {
+    "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBoxSet": "Box Set",
+  "@afterHoursCastBoxSet": {
+    "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBoxSetLine": "Three perfect drops in a row grow it a lot wider.",
+  "@afterHoursCastBoxSetLine": {
+    "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastDeadPixel": "Dead Pixel",
+  "@afterHoursCastDeadPixel": {
+    "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastDeadPixelLine": "Falls from cleared blocks. Catching it shrinks the scrubber.",
+  "@afterHoursCastDeadPixelLine": {
+    "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastMacroblock": "Macroblock",
+  "@afterHoursCastMacroblock": {
+    "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastMacroblockLine": "One hit clears it.",
+  "@afterHoursCastMacroblockLine": {
+    "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastKeyframe": "Keyframe",
+  "@afterHoursCastKeyframe": {
+    "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastKeyframeLine": "Takes three hits and drops a powerup.",
+  "@afterHoursCastKeyframeLine": {
+    "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastHdrLine": "A scrubber twice as wide for eight seconds.",
+  "@afterHoursCastHdrLine": {
+    "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursCastBufferNet": "Buffer",
+  "@afterHoursCastBufferNet": {
+    "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+  },
+  "afterHoursCastBufferNetLine": "A net under the scrubber that saves one miss.",
+  "@afterHoursCastBufferNetLine": {
+    "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+  },
+  "afterHoursBufferRunCardTouch": "Tap to jump, again mid-air to flip sides. Swipe toward your side to slide.",
+  "@afterHoursBufferRunCardTouch": {
+    "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+  },
+  "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
+  "@afterHoursPixelPurgeCardRemote": {
+    "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
   }
 }

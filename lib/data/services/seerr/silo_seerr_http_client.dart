@@ -696,6 +696,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     'backdropPath': d['backdrop_path'],
     'overview': d['overview'],
     'status': d['status'],
+    'contentRating': d['content_rating'],
     'voteAverage': d['vote_average'],
     'voteCount': d['vote_count'],
     'genres': [
@@ -953,6 +954,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int? profileId,
     String? rootFolder,
     int? serverId,
+    int? tvdbId,
   }) async {
     final d = await _detail(mediaType, mediaId);
     final year = d['year'];
@@ -1011,11 +1013,14 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     final items = body['items'] is List ? body['items'] as List : [];
     final results = [
       for (final t in items.whereType<Map>())
-        _discoverItem({
-          ...t,
-          'availability': 'missing',
-          'release_date': t['release_date'],
-        }),
+        {
+          ..._discoverItem({
+            ...t,
+            'availability': 'missing',
+            'release_date': t['release_date'],
+          }),
+          'contentRating': t['content_rating'],
+        },
     ];
     return {
       'page': 1,
@@ -1075,6 +1080,13 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   @override
   Future<List<dynamic>> getSonarrServers() async => const [];
+
+  /// Silo adds series itself, so there is no Sonarr match to pick. Throwing
+  /// rather than answering empty keeps the request sheet from reading it as a
+  /// series that has no match.
+  @override
+  Future<List<dynamic>> lookupSonarrSeries(int tmdbId) async =>
+      throw UnsupportedError('Silo has no Sonarr lookup');
 
   @override
   Future<List<dynamic>> getRadarrSettings() async => const [];
@@ -1222,6 +1234,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     required String username,
     required String password,
     String authType = 'jellyfin',
+    String? authToken,
   }) async {
     final status = await getMoonfinStatus();
     return MoonfinLoginResponse(
@@ -1233,11 +1246,11 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   }
 
   @override
-  Future<MoonfinQuickConnectResult> moonfinQuickConnectLogin({
+  Future<MoonfinSsoResult> moonfinQuickConnectLogin({
     String? username,
   }) async {
     final status = await getMoonfinStatus();
-    return MoonfinQuickConnectResult(
+    return MoonfinSsoResult(
       success: status.authenticated,
       seerrUserId: status.seerrUserId,
       displayName: status.displayName,

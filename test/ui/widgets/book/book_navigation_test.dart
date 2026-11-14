@@ -53,22 +53,36 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  for (final type in ['Book', 'AudioBook']) {
+  for (final type in ['Book', 'AudioBook', 'BookSeries']) {
     testWidgets('a $type opens its details', (tester) async {
       await pumpRouter(tester);
       await open(tester, _item(type));
 
-      expect(find.text('/item/id-1?serverId=server'), findsOneWidget);
+      expect(find.text('/item/id-1?serverId=server&libraryId=lib-1'), findsOneWidget);
     });
   }
 
-  testWidgets('a series named only by metadata searches the library', (
+  testWidgets('a series named with a slash still opens its details', (
     tester,
   ) async {
     await pumpRouter(tester);
-    await open(tester, _item('BookSeries'));
+    await open(
+      tester,
+      AggregatedItem(
+        id: 'bookSeries:Fate/Zero',
+        serverId: 'server',
+        rawData: {
+          'Id': 'bookSeries:Fate/Zero',
+          'Name': 'Fate/Zero',
+          'Type': 'BookSeries',
+        },
+      ),
+    );
 
-    expect(find.text('/search?libraryId=lib-1&query=Dune'), findsOneWidget);
+    expect(
+      find.text('/item/bookSeries:Fate%2FZero?serverId=server&libraryId=lib-1'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a series folder opens the folder', (tester) async {

@@ -16,6 +16,7 @@ const _nouveau = DetailScreenStyle.nouveau;
 const _minimalist = DetailScreenStyle.minimalist;
 const _stage = DetailScreenStyle.stage;
 const _premiere = DetailScreenStyle.premiere;
+const _frost = DetailScreenStyle.frost;
 
 /// Where a [DetailSection] sits on the settings screen.
 enum DetailSectionGroup { header, sections, seerr, person, collection, other }
@@ -63,6 +64,7 @@ enum DetailSection {
     _nouveau,
     _stage,
     _premiere,
+    _frost,
   }),
   crew('crew', Icons.movie_creation_outlined, DetailSectionGroup.sections, {
     _classic,
@@ -71,6 +73,7 @@ enum DetailSection {
     _nouveau,
     _stage,
     _premiere,
+    _frost,
   }),
   studios('studios', Icons.business_outlined, DetailSectionGroup.sections, {
     _classic,
@@ -79,6 +82,7 @@ enum DetailSection {
     _nouveau,
     _stage,
     _premiere,
+    _frost,
   }),
   chapters('chapters', Icons.bookmarks_outlined, DetailSectionGroup.sections, {
     _classic,
@@ -94,6 +98,7 @@ enum DetailSection {
     _minimalist,
     _stage,
     _premiere,
+    _frost,
   }),
   collections(
     'collections',
@@ -105,7 +110,7 @@ enum DetailSection {
     'moreLikeThis',
     Icons.recommend_outlined,
     DetailSectionGroup.sections,
-    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere, _frost},
   ),
   reviews(
     'reviews',
@@ -117,18 +122,19 @@ enum DetailSection {
     'moreEpisodes',
     Icons.view_list_outlined,
     DetailSectionGroup.sections,
-    {_classic, _modern, _spotlight, _stage, _premiere},
+    {_classic, _modern, _spotlight, _stage, _premiere, _frost},
   ),
   mediaInfo('mediaInfo', Icons.info_outline, DetailSectionGroup.sections, {
     _modern,
     _nouveau,
     _spotlight,
+    _frost,
   }),
   seerrGenresTags(
     'seerrGenresTags',
     Icons.sell_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere, _frost},
   ),
   seerrStats('seerrStats', Icons.bar_chart, DetailSectionGroup.seerr, {
     _classic,
@@ -137,24 +143,25 @@ enum DetailSection {
     _nouveau,
     _stage,
     _premiere,
+    _frost,
   }),
   seerrStreaming(
     'seerrStreaming',
     Icons.live_tv_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere, _frost},
   ),
   seerrRecommendations(
     'seerrRecommendations',
     Icons.auto_awesome_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere, _frost},
   ),
   seerrSimilar(
     'seerrSimilar',
     Icons.grid_view_outlined,
     DetailSectionGroup.seerr,
-    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere},
+    {_classic, _modern, _spotlight, _nouveau, _stage, _premiere, _frost},
   ),
   seerrCollection(
     'seerrCollection',
@@ -227,7 +234,7 @@ enum DetailSection {
 
   /// Whether picking [style] can put this section on screen. Minimalist only
   /// draws video pages and hands every other page to Spotlight, so it also
-  /// shows whatever Spotlight does. Stage and Premiere hand people and
+  /// shows whatever Spotlight does. Stage, Premiere and Frost hand people and
   /// collections to Modern the same way, and Quick Look's full page is Modern.
   bool isAvailableIn(DetailScreenStyle style) =>
       styles.contains(style) ||
@@ -236,7 +243,8 @@ enum DetailSection {
       (style == DetailScreenStyle.quickLook &&
           styles.contains(DetailScreenStyle.modern)) ||
       ((style == DetailScreenStyle.stage ||
-              style == DetailScreenStyle.premiere) &&
+              style == DetailScreenStyle.premiere ||
+              style == DetailScreenStyle.frost) &&
           _drawnByModern &&
           styles.contains(DetailScreenStyle.modern));
 

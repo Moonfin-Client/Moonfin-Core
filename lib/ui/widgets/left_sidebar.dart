@@ -1101,7 +1101,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                   _SidebarItem(
                     key: const ValueKey('sidebar-syncplay'),
                     icon: Icons.groups_rounded,
-                    label: l10n.syncPlay,
+                    label: l10n.watchParties,
                     baseColor: nextMainSidebarColor(),
                     showLabel: _showLabels,
                     onPressed: () {
@@ -1133,6 +1133,25 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       }
                       _markNavigationAwayFromSidebar();
                       context.navigateTopLevel(Destinations.seerrDiscover);
+                    },
+                  ),
+                if (!kidsMode &&
+                    _prefs.get(UserPreferences.showCalendarButton) &&
+                    GetIt.instance<PluginSyncService>().calendarAvailable)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-calendar'),
+                    baseColor: nextMainSidebarColor(),
+                    icon: Icons.calendar_month_rounded,
+                    label: l10n.calendar,
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      if (_isActive(Destinations.calendar)) {
+                        _exitSidebarToContent();
+                        return;
+                      }
+                      _markNavigationAwayFromSidebar();
+                      context.navigateTopLevel(Destinations.calendar);
                     },
                   ),
                 if (showLibraries && showLibrariesIndividually)

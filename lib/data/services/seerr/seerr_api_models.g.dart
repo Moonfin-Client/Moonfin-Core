@@ -146,6 +146,8 @@ SeerrDownloadingItem _$SeerrDownloadingItemFromJson(
   size: (json['size'] as num?)?.toInt(),
   sizeLeft: (json['sizeLeft'] as num?)?.toInt(),
   downloadId: json['downloadId'] as String?,
+  status: json['status'] as String?,
+  timeLeft: json['timeLeft'] as String?,
 );
 
 Map<String, dynamic> _$SeerrDownloadingItemToJson(
@@ -154,6 +156,8 @@ Map<String, dynamic> _$SeerrDownloadingItemToJson(
   'size': instance.size,
   'sizeLeft': instance.sizeLeft,
   'downloadId': instance.downloadId,
+  'status': instance.status,
+  'timeLeft': instance.timeLeft,
 };
 
 SeerrExternalIds _$SeerrExternalIdsFromJson(Map<String, dynamic> json) =>
@@ -237,6 +241,7 @@ SeerrDiscoverItem _$SeerrDiscoverItemFromJson(Map<String, dynamic> json) =>
       voteCount: (json['voteCount'] as num?)?.toInt(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       adult: json['adult'] as bool? ?? false,
+      contentRating: json['contentRating'] as String?,
       mediaInfo: json['mediaInfo'] == null
           ? null
           : SeerrMediaInfo.fromJson(json['mediaInfo'] as Map<String, dynamic>),
@@ -264,6 +269,7 @@ Map<String, dynamic> _$SeerrDiscoverItemToJson(SeerrDiscoverItem instance) =>
       'voteCount': instance.voteCount,
       'popularity': instance.popularity,
       'adult': instance.adult,
+      'contentRating': instance.contentRating,
       'mediaInfo': instance.mediaInfo,
       'character': instance.character,
       'job': instance.job,
@@ -283,6 +289,7 @@ SeerrMovieDetails _$SeerrMovieDetailsFromJson(
   releaseDate: json['releaseDate'] as String?,
   status: json['status'] as String?,
   runtime: (json['runtime'] as num?)?.toInt(),
+  contentRating: json['contentRating'] as String?,
   budget: (json['budget'] as num?)?.toInt(),
   revenue: (json['revenue'] as num?)?.toInt(),
   voteAverage: (json['voteAverage'] as num?)?.toDouble(),
@@ -334,6 +341,7 @@ Map<String, dynamic> _$SeerrMovieDetailsToJson(SeerrMovieDetails instance) =>
       'releaseDate': instance.releaseDate,
       'status': instance.status,
       'runtime': instance.runtime,
+      'contentRating': instance.contentRating,
       'budget': instance.budget,
       'revenue': instance.revenue,
       'voteAverage': instance.voteAverage,
@@ -364,6 +372,7 @@ SeerrTvDetails _$SeerrTvDetailsFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String?,
       numberOfSeasons: (json['numberOfSeasons'] as num?)?.toInt(),
       numberOfEpisodes: (json['numberOfEpisodes'] as num?)?.toInt(),
+      contentRating: json['contentRating'] as String?,
       voteAverage: (json['voteAverage'] as num?)?.toDouble(),
       voteCount: (json['voteCount'] as num?)?.toInt(),
       popularity: (json['popularity'] as num?)?.toDouble(),
@@ -425,6 +434,7 @@ Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
       'status': instance.status,
       'numberOfSeasons': instance.numberOfSeasons,
       'numberOfEpisodes': instance.numberOfEpisodes,
+      'contentRating': instance.contentRating,
       'voteAverage': instance.voteAverage,
       'voteCount': instance.voteCount,
       'popularity': instance.popularity,
@@ -1065,12 +1075,31 @@ Map<String, dynamic> _$SeerrLanguageProfileToJson(
   SeerrLanguageProfile instance,
 ) => <String, dynamic>{'id': instance.id, 'name': instance.name};
 
+SeerrSonarrSeries _$SeerrSonarrSeriesFromJson(Map<String, dynamic> json) =>
+    SeerrSonarrSeries(
+      tvdbId: (json['tvdbId'] as num).toInt(),
+      title: json['title'] as String,
+      year: (json['year'] as num?)?.toInt(),
+      overview: json['overview'] as String?,
+      remotePoster: json['remotePoster'] as String?,
+    );
+
+Map<String, dynamic> _$SeerrSonarrSeriesToJson(SeerrSonarrSeries instance) =>
+    <String, dynamic>{
+      'tvdbId': instance.tvdbId,
+      'title': instance.title,
+      'year': instance.year,
+      'overview': instance.overview,
+      'remotePoster': instance.remotePoster,
+    };
+
 SeerrSeason _$SeerrSeasonFromJson(Map<String, dynamic> json) => SeerrSeason(
   id: (json['id'] as num?)?.toInt(),
   seasonNumber: (json['seasonNumber'] as num).toInt(),
   episodeCount: (json['episodeCount'] as num?)?.toInt(),
   name: json['name'] as String?,
   airDate: json['airDate'] as String?,
+  posterPath: json['posterPath'] as String?,
 );
 
 Map<String, dynamic> _$SeerrSeasonToJson(SeerrSeason instance) =>
@@ -1080,6 +1109,7 @@ Map<String, dynamic> _$SeerrSeasonToJson(SeerrSeason instance) =>
       'episodeCount': instance.episodeCount,
       'name': instance.name,
       'airDate': instance.airDate,
+      'posterPath': instance.posterPath,
     };
 
 SeerrRequestCounts _$SeerrRequestCountsFromJson(Map<String, dynamic> json) =>

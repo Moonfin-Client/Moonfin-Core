@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
@@ -258,6 +259,32 @@ class MdbListRepository {
     return tmdbId;
   }
 
+  Future<MdbListWatchingNowData?> getWatchingNow({
+    MediaServerClient? client,
+  }) async {
+    final effectiveClient = client ?? _client;
+    final ep = await moonbaseEndpoint(effectiveClient, _dio);
+    if (ep == null) return null;
+
+    try {
+      final url = '${ep.base}/Moonfin/MdbList/WatchingNow';
+      final response = await _dio.get(
+        url,
+        queryParameters: {
+          'profile': GetIt.instance<PluginSyncService>().currentDeviceProfile,
+        },
+        options: Options(headers: ep.headers),
+      );
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return null;
+      return MdbListWatchingNowData.fromJson(data);
+    } catch (e) {
+      debugPrint('[MdbListRepository] getWatchingNow error: $e');
+      return null;
+    }
+  }
+
   void clearCache() {
     _cache.clear();
     _pending.clear();
@@ -287,3 +314,76 @@ class MdbListRepository {
     }
   }
 }
+
+class MdbListWatchingNowItemData {
+  final String publicId;
+  final int? tmdbId;
+  final String imdbId;
+  final String mediaType;
+  final String title;
+  final int? year;
+  final String? backdrop;
+  final String? logo;
+  final int watchers;
+
+  const MdbListWatchingNowItemData({
+    required this.publicId,
+    this.tmdbId,
+    required this.imdbId,
+    required this.mediaType,
+    required this.title,
+    this.year,
+    this.backdrop,
+    this.logo,
+    required this.watchers,
+  });
+
+  factory MdbListWatchingNowItemData.fromJson(Map<String, dynamic> json) =>
+      MdbListWatchingNowItemData(
+        publicId: json['public_id'] as String? ?? '',
+        tmdbId: (json['tmdb_id'] as num?)?.toInt(),
+        imdbId: json['imdb_id'] as String? ?? '',
+        mediaType: json['media_type'] as String? ?? 'movie',
+        title: json['title'] as String? ?? '',
+        year: (json['year'] as num?)?.toInt(),
+        backdrop: json['backdrop'] as String?,
+        logo: json['logo'] as String?,
+        watchers: (json['watchers'] as num?)?.toInt() ?? 0,
+      );
+}
+
+class MdbListWatchingNowData {
+  final String? builtAt;
+  final String? mode;
+  final int users;
+  final int movies;
+  final int shows;
+  final List<MdbListWatchingNowItemData> items;
+  final String? error;
+
+  const MdbListWatchingNowData({
+    this.builtAt,
+    this.mode,
+    required this.users,
+    required this.movies,
+    required this.shows,
+    required this.items,
+    this.error,
+  });
+
+  factory MdbListWatchingNowData.fromJson(Map<String, dynamic> json) =>
+      MdbListWatchingNowData(
+        builtAt: json['built_at'] as String?,
+        mode: json['mode'] as String?,
+        users: (json['users'] as num?)?.toInt() ?? 0,
+        movies: (json['movies'] as num?)?.toInt() ?? 0,
+        shows: (json['shows'] as num?)?.toInt() ?? 0,
+        items: (json['items'] as List?)
+                ?.map((i) =>
+                    MdbListWatchingNowItemData.fromJson(i as Map<String, dynamic>))
+                .toList() ??
+            const [],
+        error: json['error'] as String?,
+      );
+}
+

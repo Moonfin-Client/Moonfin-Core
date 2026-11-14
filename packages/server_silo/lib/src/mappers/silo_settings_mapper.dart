@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 const siloUserConfigurationKeys = [
   siloLibraryOrderKey,
   siloDisabledLibrariesKey,
+  siloHideWatchedItemsKey,
   siloAudioLanguageKey,
   siloSubtitleLanguageKey,
   siloSubtitleModeKey,
@@ -22,6 +23,9 @@ const siloLibraryOrderKey = 'ui.library_order';
 /// Libraries the profile hid from its own browsing (Jellyfin
 /// `MyMediaExcludes`). Not access control: Silo enforces access elsewhere.
 const siloDisabledLibrariesKey = 'ui.disabled_library_ids';
+
+/// Whether Silo hides watched items from Home (`HidePlayedInLatest`).
+const siloHideWatchedItemsKey = 'home.hide_watched_items';
 
 const siloAudioLanguageKey = 'playback.audio_language';
 const siloSubtitleLanguageKey = 'playback.subtitle_language';
@@ -45,6 +49,7 @@ Map<String, dynamic> siloSettingsToUserConfiguration(
   return {
     'OrderedViews': _libraryIds(values[siloLibraryOrderKey]),
     'MyMediaExcludes': _libraryIds(values[siloDisabledLibrariesKey]),
+    'HidePlayedInLatest': values[siloHideWatchedItemsKey] as bool? ?? false,
     'EnableNextEpisodeAutoPlay': values[siloAutoPlayNextKey] as bool? ?? true,
     'AudioLanguagePreference': ?jsonText(values[siloAudioLanguageKey]),
     'SubtitleLanguagePreference': ?jsonText(values[siloSubtitleLanguageKey]),
@@ -60,6 +65,7 @@ Map<String, dynamic> siloSettingsToUserConfiguration(
 Map<String, Object?> userConfigurationToSiloSettings({
   required List<String> orderedViews,
   required List<String> myMediaExcludes,
+  bool hidePlayedInLatest = false,
   required bool enableNextEpisodeAutoPlay,
   required String? audioLanguagePreference,
   required String? subtitleLanguagePreference,
@@ -73,6 +79,7 @@ Map<String, Object?> userConfigurationToSiloSettings({
   return {
     siloLibraryOrderKey: _toIntIds(orderedViews),
     siloDisabledLibrariesKey: _toIntIds(myMediaExcludes),
+    siloHideWatchedItemsKey: hidePlayedInLatest,
     siloAudioLanguageKey: jsonText(audioLanguagePreference),
     siloSubtitleLanguageKey: jsonText(subtitleLanguagePreference),
     siloSubtitleModeKey: subtitles.mode,

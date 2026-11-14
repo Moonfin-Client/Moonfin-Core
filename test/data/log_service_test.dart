@@ -1,13 +1,31 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/services/log_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_jellyfin/server_jellyfin.dart';
+import 'package:server_plex/server_plex.dart';
+import 'package:server_silo/server_silo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _FakeClientFactory extends Fake implements MediaServerClientFactory {}
+class _FakeClientFactory extends Fake implements MediaServerClientFactory {
+  _FakeClientFactory([this.active]);
+
+  final MediaServerClient? active;
+
+  @override
+  MediaServerClient getActiveClient() =>
+      active ?? (throw StateError('No active server clients'));
+}
+
+class _FakeSync extends Fake implements PluginSyncService {
+  @override
+  bool clientLogSupported = false;
+}
 
 const _device = DeviceInfo(
   id: 'dev-1',
@@ -16,13 +34,20 @@ const _device = DeviceInfo(
   appVersion: '0.0.0',
 );
 
-Future<LogService> _service({bool loggingEnabled = false}) async {
+Future<LogService> _service({
+  bool loggingEnabled = false,
+  MediaServerClient? active,
+}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     if (loggingEnabled) 'pref_diagnostic_logging_enabled': true,
   });
   final store = PreferenceStore();
   await store.init();
-  return LogService(UserPreferences(store), _FakeClientFactory(), _device);
+  return LogService(
+    UserPreferences(store),
+    _FakeClientFactory(active),
+    _device,
+  );
 }
 
 void main() {
@@ -116,6 +141,42 @@ void main() {
       assertRedacted(
         'GET https://my-server.com/Items?api_key=deadbeefcafe&limit=10',
         'api_key=[REDACTED]&limit=10',
+      );
+    });
+
+    test('redacts passwords, refresh tokens, secrets and signatures', () {
+      assertRedacted(
+        'POST /token refresh_token=abc123&client_secret=s3cr3t',
+        'refresh_token=[REDACTED]&client_secret=[REDACTED]',
+      );
+      assertRedacted('login password=hunter2', 'password=[REDACTED]');
+      assertRedacted(
+        'GET /Videos/1/stream?expires=99&sig=a1b2c3',
+        'expires=99&sig=[REDACTED]',
+      );
+    });
+
+    test('redacts emails and home folder names', () {
+      assertRedacted('signed in as jane.doe@example.com', 'as [REDACTED]');
+      assertRedacted(
+        'switch to 1920x1080@23.976 for 23.976fps content',
+        'switch to 1920x1080@23.976 for',
+      );
+      assertRedacted(
+        'open /home/jane/Videos/x.mkv failed',
+        '/home/[REDACTED]/Videos/x.mkv',
+      );
+      assertRedacted(
+        r'open C:\Users\jane\Videos\x.mkv failed',
+        r'\Users\[REDACTED]\Videos',
+      );
+      assertRedacted(
+        'GET /Users/0123456789abcdef0123456789abcdef/Items',
+        '/Users/0123456789abcdef0123456789abcdef/Items',
+      );
+      assertRedacted(
+        'GET /Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+        '/Users/01234567-89ab-cdef-0123-456789abcdef/Views',
       );
     });
 
@@ -288,6 +349,39 @@ void main() {
       expect(text, contains('entry 7'));
       expect(text, isNot(contains('entry 6')));
       expect(text, contains('Entries: 3'));
+    });
+  });
+
+  group('uploading to the server', () {
+    tearDown(() => GetIt.instance.reset());
+
+    test('Plex and Silo take reports once Moonbase says it does', () async {
+      final sync = _FakeSync();
+      GetIt.instance.registerSingleton<PluginSyncService>(sync);
+
+      for (final client in <MediaServerClient>[
+        PlexMediaServerClient(baseUrl: 'http://plex:32400', deviceInfo: _device),
+        SiloMediaServerClient(baseUrl: 'https://silo', deviceInfo: _device),
+      ]) {
+        final logs = await _service(active: client);
+        sync.clientLogSupported = false;
+        expect(logs.canUploadToServer, isFalse, reason: '${client.serverType}');
+        expect(logs.uploadUnavailableReason, contains('Moonbase'));
+        sync.clientLogSupported = true;
+        expect(logs.canUploadToServer, isTrue, reason: '${client.serverType}');
+      }
+    });
+
+    test('Jellyfin takes reports without Moonbase', () async {
+      GetIt.instance.registerSingleton<PluginSyncService>(_FakeSync());
+      final logs = await _service(
+        active: JellyfinMediaServerClient(
+          baseUrl: 'https://jf',
+          deviceInfo: _device,
+        ),
+      );
+
+      expect(logs.canUploadToServer, isTrue);
     });
   });
 }

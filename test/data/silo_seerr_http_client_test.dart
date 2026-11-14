@@ -265,6 +265,7 @@ void main() {
         {
           ..._severance,
           'genres': ['Drama'],
+          'content_rating': 'TV-MA',
           'networks': ['Apple TV+'],
           'cast': [
             {'name': 'Adam Scott', 'character': 'Mark', 'order': 0},
@@ -286,9 +287,35 @@ void main() {
     expect(tv.seasons.map((s) => s.seasonNumber), [1, 2]);
     expect(tv.mediaInfo!.seasons!.map((s) => s.status), [5, 3]);
     expect(tv.genres.single.name, 'Drama');
+    expect(tv.contentRating, 'TV-MA');
     expect(tv.credits!.cast.single.name, 'Adam Scott');
     final similar = SeerrDiscoverPage.fromJson(await client.getSimilarTv(95396));
     expect(similar.results.single.id, 949);
+  });
+
+  test('a watchlist title keeps its age rating and release year', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/watchlist/titles': (
+        200,
+        {
+          'items': [
+            {
+              ..._severance,
+              'content_rating': 'TV-MA',
+              'release_date': '2022-02-18',
+            },
+          ],
+        },
+      ),
+    });
+    final page = SeerrDiscoverPage.fromJson(
+      await _client(silo).getWatchlist(),
+    );
+
+    final item = page.results.single;
+    expect(item.contentRating, 'TV-MA');
+    expect(item.firstAirDate, '2022-02-18');
   });
 
   test('a request carries the title Silo needs, and keeps Silo ids exact',

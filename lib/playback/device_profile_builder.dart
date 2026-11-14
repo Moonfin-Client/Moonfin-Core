@@ -212,6 +212,13 @@ class DeviceProfileBuilder {
     // the TS profile and encode H264, which renders. It also limits HLS copies
     // to what AVFoundation can decode.
     bool hevcRequiresFmp4Hls = false,
+    // Keeps profile 5 Dolby Vision out of HLS copies, for a player that reads
+    // the copied video as plain HEVC and would show it green and purple.
+    bool hlsCopyPlaysAsPlainHevc = false,
+    // Keeps E-AC-3 above 5.1 out of MPEG-TS, for a player that reads the
+    // second substream carrying the extra channels as a new format and
+    // restarts its decoder on every frame.
+    bool mpegTsSplitsEac3Substreams = false,
     // Keeps hevc out of both HLS offers, for a device that only decodes HEVC
     // from the original file.
     bool hevcDirectPlayOnly = false,
@@ -552,6 +559,8 @@ class DeviceProfileBuilder {
       allowDolbyVisionProfile7ElDirectPlay:
           allowDolbyVisionProfile7ElDirectPlay,
       hevcRequiresFmp4Hls: hevcRequiresFmp4Hls,
+      hlsCopyPlaysAsPlainHevc: hlsCopyPlaysAsPlainHevc,
+      mpegTsSplitsEac3Substreams: mpegTsSplitsEac3Substreams,
       webCapabilities: webCapabilities,
     );
 
@@ -1188,6 +1197,8 @@ class DeviceProfileBuilder {
     required bool knownHevcDoviHdr10PlusBug,
     required bool allowDolbyVisionProfile7ElDirectPlay,
     required bool hevcRequiresFmp4Hls,
+    required bool hlsCopyPlaysAsPlainHevc,
+    required bool mpegTsSplitsEac3Substreams,
     required WebPlaybackCapabilities? webCapabilities,
   }) {
     final profiles = <Map<String, dynamic>>[];
@@ -1599,13 +1610,17 @@ class DeviceProfileBuilder {
     // server keep the Dolby Vision config on a copy, and leaving out the
     // enhancement layer gets profile 7 stripped to its HDR10 base layer. This
     // has to come before the general entry since the server takes the first
-    // match.
-    if (hevcRequiresFmp4Hls) {
+    // match. A player that reads the copy as plain HEVC gets the same entry
+    // without profile 5.
+    if (hevcRequiresFmp4Hls || hlsCopyPlaysAsPlainHevc) {
       final hlsRangeTypes = _expandVideoRangeTypeAliases(
         _videoRangeTypes.difference(<String>{
           ...unsupportedRangeTypesHevc,
-          'DOVI_WITH_EL',
-          'DOVI_WITH_ELHDR10_PLUS',
+          if (hevcRequiresFmp4Hls) ...const <String>[
+            'DOVI_WITH_EL',
+            'DOVI_WITH_ELHDR10_PLUS',
+          ],
+          if (hlsCopyPlaysAsPlainHevc) 'DOVI',
         }),
       ).toList()..sort();
       profiles.add(
@@ -1625,16 +1640,17 @@ class DeviceProfileBuilder {
           // players refuse, and 8.2 gets dvh1 until 12.2, so both stay plain
           // hvc1 copies.
           applyConditions: <Map<String, dynamic>>[
-            for (final rangeType in const <String>[
-              'DOVIWithHLG',
-              'DOVIWithSDR',
-            ])
-              _condition(
-                condition: 'NotEquals',
-                property: 'VideoRangeType',
-                value: rangeType,
-                isRequired: false,
-              ),
+            if (hevcRequiresFmp4Hls)
+              for (final rangeType in const <String>[
+                'DOVIWithHLG',
+                'DOVIWithSDR',
+              ])
+                _condition(
+                  condition: 'NotEquals',
+                  property: 'VideoRangeType',
+                  value: rangeType,
+                  isRequired: false,
+                ),
           ],
         ),
       );
@@ -1738,6 +1754,24 @@ class DeviceProfileBuilder {
               condition: 'LessThanEqual',
               property: 'AudioSampleRate',
               value: '$_bridgedAudioMaxSampleRate',
+            ),
+          ],
+        ),
+      );
+    }
+
+    // The server then copies an E-AC-3 track above 5.1 into its fMP4 offer.
+    if (mpegTsSplitsEac3Substreams) {
+      profiles.add(
+        _codecProfile(
+          type: 'VideoAudio',
+          container: 'ts',
+          codec: 'eac3',
+          conditions: <Map<String, dynamic>>[
+            _condition(
+              condition: 'LessThanEqual',
+              property: 'AudioChannels',
+              value: '6',
             ),
           ],
         ),

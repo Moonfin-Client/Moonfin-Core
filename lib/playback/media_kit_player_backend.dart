@@ -26,6 +26,7 @@ import 'mpv_frame_sampler.dart';
 import 'pending_subtitle_choice.dart';
 import 'secondary_subtitle_position.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_fonts.dart';
 
 class _ParsedMpvConfCacheEntry {
   final DateTime modified;
@@ -178,6 +179,14 @@ class _MediaKitDeviceProfileCapabilities {
     );
   }
 }
+
+/// The loudest the app's own player volume goes, in percent. Windows and
+/// Linux play through mpv, which amplifies past full scale. The players on
+/// macOS and the web stop at 100.
+double get maxPlayerVolume =>
+    PlatformDetection.isWindows || PlatformDetection.isLinux
+    ? MediaKitPlayerBackend.maxVolume
+    : 100;
 
 class MediaKitPlayerBackend extends PlayerBackend
     with SubtitleDelayState, WidgetsBindingObserver
@@ -587,6 +596,9 @@ class MediaKitPlayerBackend extends PlayerBackend
   static bool get _useLibass =>
       PlatformDetection.isAndroid || PlatformDetection.isIOS;
 
+  /// mpv amplifies past 100, but its own default ceiling is 130.
+  static const double maxVolume = 150;
+
   // libass needs a font with CJK glyphs bundled or Asian subtitles show as
   // tofu. The family name has to match the font's internal name.
   static const String _libassFontAsset = 'assets/fonts/NotoSansCJK-Regular.otf';
@@ -677,6 +689,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       // re-open the stream until the read gives up, so this bounds how long a
       // resume can sit frozen.
       _nativeSetProperty(platform, 'network-timeout', '20');
+      // Before the custom mpv.conf, so a volume-max there still wins.
+      _nativeSetProperty(platform, 'volume-max', maxVolume.toStringAsFixed(0));
       // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
       // through in seconds, so bursty networks stutter. A larger demuxer
       // budget keeps a real runway on desktop, but a filled 256MiB cache on
@@ -924,6 +938,12 @@ class MediaKitPlayerBackend extends PlayerBackend
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
     await _configureAndroidLibassFonts();
+    if (_player.platform is NativePlayer) {
+      await _writeSubtitleFont(
+        _player.platform as NativePlayer,
+        _lastFontFamily ?? _prefs.get(UserPreferences.subtitlesFont),
+      );
+    }
     await _applyAudioPassthroughOptions();
     // Applied once and before the custom mpv.conf, which is only re-applied
     // when it changes, so the user's own values still win.
@@ -2420,13 +2440,23 @@ class MediaKitPlayerBackend extends PlayerBackend
     try {
       final native = _player.platform as NativePlayer;
       final assEnabled = _prefs.get(UserPreferences.assDirectPlay);
+      // Scale keeps the authored ASS styling and only applies sub-scale. At
+      // the default size the track stays exactly as authored.
       await _nativeSetProperty(
         native,
         'sub-ass-override',
-        assEnabled ? 'no' : 'force',
+        !assEnabled ? 'force' : (_assSubtitleScale == 1 ? 'no' : 'scale'),
       );
+      await _writeSubtitleFontSize(native);
     } catch (_) {}
   }
+
+  // The size setting as a multiple of an ASS track's own sizes. Both subtitle
+  // profiles default to 20, which leaves the track as authored.
+  double get _assSubtitleScale =>
+      _primaryIsAssSubtitle && _prefs.get(UserPreferences.assDirectPlay)
+      ? (_lastFontSize ?? 20) / 20
+      : 1;
 
   Future<void> _notifyNativeHandleReady() async {
     final onNativeHandleReady = _onNativeHandleReady;
@@ -3021,6 +3051,8 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-ass', 'yes');
     if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyAssOverrideMode();
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _applyPendingSecondarySubtitle();
     if (_isLatestSubtitleSelection(generation)) {
       await _refreshStackedSecondaryPosition(force: true);
@@ -3046,26 +3078,34 @@ class MediaKitPlayerBackend extends PlayerBackend
       await _nativeSetProperty(native, 'sub-visibility', 'no');
     } catch (_) {}
     if (!_isLatestSubtitleSelection(generation)) return;
+    await _applyAssOverrideMode();
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _applyPendingSecondarySubtitle();
     if (_isLatestSubtitleSelection(generation)) {
       await _refreshStackedSecondaryPosition(force: true);
     }
   }
 
+  // media_kit lists its 'auto' and 'no' entries before mpv has read the
+  // file. A track picked that early is undone when mpv finds a different
+  // layout than the last file and resets to the default track.
+  static bool _fileTracksLoaded(Tracks tracks) =>
+      tracks.video.any((t) => t.id != 'auto' && t.id != 'no') ||
+      tracks.audio.any((t) => t.id != 'auto' && t.id != 'no');
+
   @override
   Future<void> waitForTracksReady() async {
     _updateStaleState();
-    if (!_isStale && _player.state.tracks.audio.isNotEmpty) {
+    if (!_isStale && _fileTracksLoaded(_player.state.tracks)) {
       return;
     }
     try {
-      final tracks = await _player.stream.tracks
+      await _player.stream.tracks
           .firstWhere((t) {
             _updateStaleState();
-            return !_isStale && t.audio.isNotEmpty;
+            return !_isStale && _fileTracksLoaded(t);
           })
           .timeout(const Duration(seconds: 5));
-      if (tracks.audio.isEmpty) return;
     } catch (_) {}
   }
 
@@ -3101,7 +3141,7 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   Future<void> setVolume(double volume) async {
-    await _player.setVolume(volume.clamp(0, 100));
+    await _player.setVolume(volume.clamp(0, maxVolume));
   }
 
   @override
@@ -3412,7 +3452,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
       final secondaryHeight = _subtitleHeight(
         secondaryMeasurementText,
-        fontSize * secondaryScale,
+        fontSize * primaryScale * secondaryScale,
         availableWidth,
       );
       final primaryAnchor = mpvPrimaryStackingAnchor(alignment, margin: margin);
@@ -3523,6 +3563,12 @@ class MediaKitPlayerBackend extends PlayerBackend
   double? _lastFontSize;
   int? _lastFontWeight;
   double? _lastVerticalOffset;
+  double? _lastStrokeScale;
+  int? _lastShadowColor;
+  double? _lastShadowOffset;
+  double? _lastShadowBlur;
+  String? _lastFontFamily;
+  bool _assScaleWritten = false;
 
   @override
   Future<void> configureSubtitleStyle({
@@ -3532,6 +3578,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     if (textColor != null) _lastTextColor = textColor;
     if (backgroundColor != null) _lastBackgroundColor = backgroundColor;
@@ -3539,6 +3590,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (fontSize != null) _lastFontSize = fontSize;
     if (fontWeight != null) _lastFontWeight = fontWeight;
     if (verticalOffset != null) _lastVerticalOffset = verticalOffset;
+    if (strokeScale != null) _lastStrokeScale = strokeScale;
+    if (shadowColor != null) _lastShadowColor = shadowColor;
+    if (shadowOffset != null) _lastShadowOffset = shadowOffset;
+    if (shadowBlur != null) _lastShadowBlur = shadowBlur;
+    if (fontFamily != null) _lastFontFamily = fontFamily;
 
     try {
       await _writeSubtitleStyle(_player.platform as NativePlayer);
@@ -3554,8 +3610,15 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     final backgroundColor = _lastBackgroundColor;
     if (backgroundColor != null) {
+      // The shadow is sized on the same 720 line canvas as the text.
+      final textSize = mpvSubtitleFontSize(
+        _lastFontSize ?? UserPreferences.subtitlesTextSize.defaultValue,
+      );
       for (final entry in subtitleBackgroundMpvProperties(
         backgroundColor,
+        shadowColor: _lastShadowColor ?? 0,
+        shadowOffset: (_lastShadowOffset ?? 0) * textSize,
+        shadowBlur: (_lastShadowBlur ?? 0) * textSize,
       ).entries) {
         await _nativeSetProperty(native, entry.key, entry.value);
       }
@@ -3567,9 +3630,12 @@ class MediaKitPlayerBackend extends PlayerBackend
         'sub-border-color',
         _argbToMpvColor(strokeColor),
       );
-      await _nativeSetProperty(native, 'sub-border-size', '2');
+      await _nativeSetProperty(
+        native,
+        'sub-border-size',
+        (2 * (_lastStrokeScale ?? 1)).round().toString(),
+      );
     }
-    await _writeSubtitleFontSize(native);
     final fontWeight = _lastFontWeight;
     if (fontWeight != null) {
       // mpv holds this across titles, so it has to be written either way or a
@@ -3585,16 +3651,28 @@ class MediaKitPlayerBackend extends PlayerBackend
       final marginY = (verticalOffset * 720).round();
       await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
     }
+    final fontFamily = _lastFontFamily;
+    if (fontFamily != null) await _writeSubtitleFont(native, fontFamily);
     // Last, because it decides whether the colors above reach an ASS subtitle
-    // at all.
+    // at all, and it writes the size.
     await _applyAssOverrideMode();
     await _refreshStackedSecondaryPosition(force: true);
   }
 
   Future<void> _writeSubtitleFontSize(NativePlayer native) async {
+    final assScale = _assSubtitleScale;
+    // Left alone until an ASS track needs it, so a custom mpv.conf keeps its
+    // own value.
+    if (assScale != 1 || _assScaleWritten) {
+      await _nativeSetProperty(native, 'sub-scale', assScale.toString());
+      _assScaleWritten = assScale != 1;
+    }
     final fontSize = _lastFontSize;
     if (fontSize == null) return;
-    final mpvSize = mpvSubtitleFontSize(fontSize) * _textSubtitleScale;
+    // sub-scale reaches plain text too, a secondary SRT included, so its base
+    // size is divided back down.
+    final mpvSize =
+        mpvSubtitleFontSize(fontSize) * _textSubtitleScale / assScale;
     await _nativeSetProperty(
       native,
       'sub-font-size',
@@ -3685,15 +3763,59 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   /// mpv uses sub-back-color for a shadow until a background box is selected.
   /// Reset both style and padding when the background becomes transparent.
-  static Map<String, String> subtitleBackgroundMpvProperties(int color) {
+  /// The box takes the place of a shadow, and libass blurs the outline along
+  /// with the shadow since it has no blur for the shadow alone.
+  static Map<String, String> subtitleBackgroundMpvProperties(
+    int color, {
+    int shadowColor = 0,
+    double shadowOffset = 0,
+    double shadowBlur = 0,
+  }) {
     final hasBackground = ((color >> 24) & 0xff) != 0;
+    final hasShadow = !hasBackground && shadowColor != 0;
     return {
-      'sub-back-color': _argbToMpvColor(color),
+      'sub-back-color': _argbToMpvColor(hasShadow ? shadowColor : color),
       'sub-border-style': hasBackground
           ? 'background-box'
           : 'outline-and-shadow',
-      'sub-shadow-offset': hasBackground ? '4' : '0',
+      'sub-shadow-offset': hasBackground
+          ? '4'
+          : hasShadow
+          ? shadowOffset.toStringAsFixed(1)
+          : '0',
+      'sub-blur': hasShadow ? shadowBlur.toStringAsFixed(1) : '0',
     };
+  }
+
+  /// Points libass at the picked font. mpv only reads the fonts folder as a
+  /// track loads, so this also runs before each stream opens. A font that
+  /// can't be placed leaves the player's own.
+  Future<void> _writeSubtitleFont(NativePlayer native, String family) async {
+    var font = _useLibass ? _libassFontFamily : 'sans-serif';
+    try {
+      final files = await SubtitleFonts.instance.files(family);
+      if (files != null) {
+        // Android and iOS already give libass a folder of bundled fonts, so
+        // the picked one joins them there.
+        final folder = _useLibass
+            ? (await _tryNativeGetProperty(native, 'sub-fonts-dir'))?.trim()
+            : null;
+        if (folder == null || folder.isEmpty) {
+          await _nativeSetProperty(
+            native,
+            'sub-fonts-dir',
+            File(files.regular).parent.path,
+          );
+        } else {
+          for (final path in [files.regular, files.bold]) {
+            final target = File('$folder/${path.split('/').last}');
+            if (!await target.exists()) await File(path).copy(target.path);
+          }
+        }
+        font = family;
+      }
+    } catch (_) {}
+    await _nativeSetProperty(native, 'sub-font', font);
   }
 
   Stream<T> _mergeWithStale<T>(

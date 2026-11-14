@@ -189,7 +189,8 @@ class AuthenticationStore {
   ///
   /// A refresh renews the same login, so the profiles' PIN proofs, which are
   /// bound to that login, are kept. A new login ([newLogin], at sign-in)
-  /// drops them because Silo no longer accepts them.
+  /// drops them because Silo no longer accepts them, keeping only which
+  /// profiles ask for their PIN every time.
   Future<void> putSiloTokens(
     String serverId,
     String accountId,
@@ -203,9 +204,16 @@ class AuthenticationStore {
       serverData[_siloAccountsKey] as Map? ?? {},
     );
     final previous = accounts[accountId];
-    final proofs = newLogin || previous is! Map
-        ? null
-        : previous[_profileTokensKey];
+    final kept = previous is Map ? previous[_profileTokensKey] : null;
+    final proofs = !newLogin
+        ? kept
+        : kept is Map
+        ? {
+            for (final entry in kept.entries)
+              if (entry.value is Map && entry.value['remember'] == false)
+                entry.key: {'remember': false},
+          }
+        : null;
     accounts[accountId] = {
       'tokens': tokens,
       if (proofs is Map && proofs.isNotEmpty) _profileTokensKey: proofs,

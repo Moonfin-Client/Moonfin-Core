@@ -229,6 +229,7 @@ class SiloItemsApi
         return _seriesEpisodes(
           parentId,
           filters: filters,
+          minPremiereDate: minPremiereDate,
           startIndex: startIndex,
           limit: limit,
         );
@@ -1156,12 +1157,14 @@ class SiloItemsApi
 
   /// A series' episodes for an item query with the series as parent and
   /// episodes as the type: every season's, in Silo's order (season, then
-  /// episode), `IsPlayed`/`IsUnplayed` applied, then sliced. The sort asked
-  /// for is ignored: Moonfin asks this for "the first episode" or "any
-  /// unwatched one", and the natural order answers both.
+  /// episode), `IsPlayed`/`IsUnplayed` and the premiere date floor applied,
+  /// then sliced. The sort asked for is ignored: Moonfin asks this for "the
+  /// first episode", "any unwatched one" or "the ones aired lately", and the
+  /// natural order answers each once the floor is applied.
   Future<Map<String, dynamic>> _seriesEpisodes(
     String seriesId, {
     List<String>? filters,
+    DateTime? minPremiereDate,
     int? startIndex,
     int? limit,
   }) async {
@@ -1171,9 +1174,16 @@ class SiloItemsApi
     final all = (await getEpisodes(seriesId))['Items'] as List;
     final episodes = [
       for (final e in all.cast<Map<String, dynamic>>())
-        if (_matchesPlayedFilter(e, flags)) e,
+        if (_matchesPlayedFilter(e, flags) &&
+            (minPremiereDate == null || _premieredSince(e, minPremiereDate)))
+          e,
     ];
     return _slice(episodes, startIndex: startIndex, limit: limit);
+  }
+
+  static bool _premieredSince(Map<String, dynamic> item, DateTime floor) {
+    final premiered = DateTime.tryParse(item['PremiereDate'] as String? ?? '');
+    return premiered != null && !premiered.isBefore(floor);
   }
 
   static bool _matchesPlayedFilter(
@@ -1950,6 +1960,9 @@ class SiloItemsApi
     _changedSeries.clear();
   }
 
+  /// Forgets the cached `home.hide_watched_items` read after settings change.
+  void forgetHideWatched() => _hideWatched.forget();
+
   /// Of [itemIds], those whose user data may have changed: one this client
   /// changed in the last [_changedTtl], or a season or episode of a show
   /// that had something changed (marking an episode moves the season's and
@@ -2339,6 +2352,7 @@ class SiloItemsApi
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final libraryId = _libraryIdOf(parentId);
     if (parentId != null && libraryId == null) return _empty(0);
@@ -2350,7 +2364,7 @@ class SiloItemsApi
     if (scope == null) return _empty(0);
     final today = _clock().toLocal();
     final tomorrow = DateTime(today.year, today.month, today.day + 1);
-    final hideWatched = await _hidesWatchedOnHome();
+    final shouldHideWatched = hideWatched ?? await _hidesWatchedOnHome();
     return _page(
       {
         'library_id': ?libraryId,
@@ -2367,7 +2381,7 @@ class SiloItemsApi
               },
             ],
           },
-          if (hideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
+          if (shouldHideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
         ]),
         'image_size': siloListImageSize,
       },
@@ -2537,6 +2551,7 @@ class SiloItemsApi
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async => _emptyList;
 
   @override

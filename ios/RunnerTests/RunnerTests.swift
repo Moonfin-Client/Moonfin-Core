@@ -23,6 +23,7 @@ private func assertReloadEventOrder(_ restoresBeforeReady: Bool,
 @MainActor
 private extension SubtitleOverlay {
     var caption: UILabel { subviews.compactMap { $0 as? UILabel }.last! }
+    var outline: UILabel { subviews.compactMap { $0 as? UILabel }.first! }
     var groups: [SubtitleOverlay] { subviews.compactMap { $0 as? SubtitleOverlay } }
     var images: [UIImageView] {
         subviews.compactMap { $0 as? UIImageView }.filter { !$0.isHidden && $0.image != nil }
@@ -34,6 +35,13 @@ private extension SubtitleOverlay {
     func style(fontSize: Double? = nil, offset: Double? = nil) {
         applyStyle(textColor: nil, backgroundColor: nil, strokeColor: nil,
                    fontSize: fontSize, fontWeight: nil, verticalOffset: offset)
+    }
+    func look(strokeColor: Int? = nil, fontWeight: Int? = nil, strokeScale: Double? = nil,
+              shadowColor: Int? = nil, fontPath: String? = nil, boldFontPath: String? = nil) {
+        applyStyle(textColor: nil, backgroundColor: nil, strokeColor: strokeColor,
+                   fontSize: nil, fontWeight: fontWeight, verticalOffset: nil,
+                   strokeScale: strokeScale, shadowColor: shadowColor, shadowOffset: 0.08,
+                   shadowBlur: 0.05, fontPath: fontPath, boldFontPath: boldFontPath)
     }
 }
 
@@ -303,6 +311,86 @@ final class RunnerTests: XCTestCase {
         XCTAssertFalse(reset.fontDescriptor.symbolicTraits.contains(.traitItalic))
     }
 
+    private static func repoFont(_ name: String) -> String {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appendingPathComponent("../../assets/fonts/\(name).ttf").standardized.path
+    }
+    private let robotoRegular = RunnerTests.repoFont("Roboto-Regular")
+    private let robotoBold = RunnerTests.repoFont("Roboto-Bold")
+
+    private func font(_ label: UILabel) -> UIFont {
+        label.attributedText!.attribute(.font, at: 0, effectiveRange: nil) as! UIFont
+    }
+
+    private func shadow(_ label: UILabel) -> NSShadow? {
+        label.attributedText!.attribute(.shadow, at: 0, effectiveRange: nil) as? NSShadow
+    }
+
+    private func strokeWidth(_ label: UILabel) -> CGFloat {
+        label.attributedText!.attribute(.strokeWidth, at: 0, effectiveRange: nil) as! CGFloat
+    }
+
+    @MainActor
+    func testDownloadedFontReplacesTheSystemFontUntilThePathIsCleared() {
+        XCTAssertTrue(FileManager.default.fileExists(atPath: robotoRegular))
+        let overlay = SubtitleOverlay(frame: CGRect(x: 0, y: 0, width: 800, height: 400))
+        overlay.show([cue("Font")])
+        let system = font(overlay.caption).familyName
+        XCTAssertNotEqual(system, "Roboto")
+        overlay.look(fontWeight: 400, fontPath: robotoRegular, boldFontPath: robotoBold)
+        XCTAssertEqual(font(overlay.caption).familyName, "Roboto")
+        XCTAssertEqual(font(overlay.outline).familyName, "Roboto")
+        XCTAssertFalse(font(overlay.caption).fontName.contains("Bold"))
+        overlay.look(fontWeight: 700)
+        XCTAssertTrue(font(overlay.caption).fontName.contains("Bold"))
+        overlay.look(fontPath: "", boldFontPath: "")
+        XCTAssertEqual(font(overlay.caption).familyName, system)
+    }
+
+    @MainActor
+    func testShadowRidesTheOutlineCopyWhenThereIsOneAndTheFillOtherwise() {
+        let overlay = SubtitleOverlay(frame: CGRect(x: 0, y: 0, width: 800, height: 400))
+        overlay.show([cue("Shadow")])
+        XCTAssertNil(shadow(overlay.caption))
+        XCTAssertNil(shadow(overlay.outline))
+        overlay.look(shadowColor: 0xCC000000)
+        let cast = shadow(overlay.outline)!
+        XCTAssertNil(shadow(overlay.caption))
+        let size = font(overlay.caption).pointSize
+        XCTAssertEqual(cast.shadowOffset.width, 0.08 * size, accuracy: 0.01)
+        XCTAssertEqual(cast.shadowOffset.height, 0.08 * size, accuracy: 0.01)
+        XCTAssertEqual(cast.shadowBlurRadius, 0.05 * size, accuracy: 0.01)
+        XCTAssertLessThan(strokeWidth(overlay.outline), 0)
+        overlay.look(strokeColor: 0)
+        XCTAssertNotNil(shadow(overlay.caption))
+        XCTAssertNil(shadow(overlay.outline))
+        overlay.look(strokeColor: 0xFF000000, shadowColor: 0)
+        XCTAssertNil(shadow(overlay.caption))
+        XCTAssertNil(shadow(overlay.outline))
+    }
+
+    @MainActor
+    func testStrokeScaleWidensTheOutlineCopy() {
+        let overlay = SubtitleOverlay(frame: CGRect(x: 0, y: 0, width: 800, height: 400))
+        overlay.show([cue("Stroke")])
+        let normal = strokeWidth(overlay.outline)
+        XCTAssertGreaterThan(normal, 0)
+        overlay.look(strokeScale: 2)
+        XCTAssertEqual(strokeWidth(overlay.outline), normal * 2, accuracy: 0.001)
+        overlay.look(strokeScale: 1)
+        XCTAssertEqual(strokeWidth(overlay.outline), normal, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testSecondaryPicksUpThePrimaryShadowAndFont() {
+        let f = OverlayPair()
+        f.primary.look(shadowColor: 0xCC000000, fontPath: robotoRegular, boldFontPath: robotoBold)
+        f.secondary.applySecondaryStyle(from: f.primary, fontSize: nil, textColor: nil)
+        f.secondary.show([cue("Secondary")])
+        XCTAssertEqual(font(f.secondary.caption).familyName, "Roboto")
+        XCTAssertNotNil(shadow(f.secondary.outline))
+    }
+
     @MainActor
     func testPrimaryGroupsKeepStyleAndAvoidCollisionsThroughControlsAndGaps() {
         for centered in [false, true] {
@@ -555,5 +643,40 @@ final class RunnerTests: XCTestCase {
             XCTAssertEqual(Set([f.primary.caption.text, nested.caption.text]), Set(["\(name) top", "\(name) bottom"]))
             XCTAssertEqual(nested.delaySeconds, delay, accuracy: 0.001)
         }
+    }
+}
+
+@MainActor
+final class DisplayCadenceTests: XCTestCase {
+    private func fits(_ fps: Double, _ hz: Double) -> Bool {
+        AetherPlayerWrapper.cadenceFits(contentFps: fps, panelHz: hz)
+    }
+
+    private func slows(_ fps: Double, _ hz: Double) -> Bool {
+        AetherPlayerWrapper.cadenceSlowdownApplies(contentFps: fps, panelHz: hz)
+    }
+
+    func testRatesThatPlayEvenlyAreLeftAlone() {
+        XCTAssertTrue(fits(24000.0 / 1001, 60000.0 / 1001))
+        XCTAssertTrue(fits(30000.0 / 1001, 60000.0 / 1001))
+        XCTAssertTrue(fits(24, 24))
+        XCTAssertTrue(fits(24, 60))
+        XCTAssertTrue(fits(25, 50))
+        XCTAssertFalse(slows(24000.0 / 1001, 60000.0 / 1001))
+    }
+
+    // The reporter's Apple TV read 59.941 Hz for a 24.000 fps title.
+    func testRatesJustAboveAFitAreSlowedToIt() {
+        XCTAssertFalse(fits(24, 59.941))
+        XCTAssertTrue(slows(24, 59.941))
+        XCTAssertTrue(slows(30, 60000.0 / 1001))
+        XCTAssertTrue(slows(60, 60000.0 / 1001))
+    }
+
+    func testRatesNoSlowdownCanFixOnlyGetTheTip() {
+        XCTAssertFalse(fits(25, 60000.0 / 1001))
+        XCTAssertFalse(slows(25, 60000.0 / 1001))
+        XCTAssertFalse(fits(50, 60))
+        XCTAssertFalse(slows(50, 60))
     }
 }

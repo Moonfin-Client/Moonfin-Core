@@ -7,13 +7,16 @@ import 'package:server_silo/server_silo.dart';
 
 void main() {
   late List<String> sent;
+  late List<bool> remembered;
   late bool? closedWith;
 
   Future<void> open(
     WidgetTester tester,
-    Future<SiloPinResult> Function(String pin) answer,
-  ) async {
+    Future<SiloPinResult> Function(String pin) answer, {
+    bool rememberPin = true,
+  }) async {
     sent = [];
+    remembered = [];
     closedWith = null;
     await tester.pumpWidget(
       MaterialApp(
@@ -26,8 +29,10 @@ void main() {
                 closedWith = await SiloPinDialog.show(
                   context,
                   profileName: 'Teen',
-                  onSubmit: (pin) {
+                  rememberPin: rememberPin,
+                  onSubmit: (pin, remember) {
                     sent.add(pin);
+                    remembered.add(remember);
                     return answer(pin);
                   },
                 );
@@ -59,6 +64,33 @@ void main() {
     expect(sent, ['correct horse']);
     expect(closedWith, isTrue);
     expect(find.byType(SiloPinDialog), findsNothing);
+  });
+
+  testWidgets('remembers the PIN unless the box is unticked', (tester) async {
+    await open(tester, (_) async => const SiloPinAccepted('pvt_1'));
+    await enter(tester, '1');
+    expect(remembered, [true]);
+
+    await open(tester, (_) async => const SiloPinAccepted('pvt_1'));
+    await tester.tap(find.text('Remember PIN on this device'));
+    await tester.pump();
+    await enter(tester, '1');
+    expect(remembered, [false]);
+  });
+
+  testWidgets('the box starts as last chosen', (tester) async {
+    await open(
+      tester,
+      (_) async => const SiloPinAccepted('pvt_1'),
+      rememberPin: false,
+    );
+
+    expect(
+      tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+      isFalse,
+    );
+    await enter(tester, '1');
+    expect(remembered, [false]);
   });
 
   testWidgets('a wrong PIN stays open, says so and clears the field', (

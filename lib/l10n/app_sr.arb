@@ -1418,7 +1418,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 нумера} one{{count} нумера} few{{count} нумере} other{{count} нумера}}",
+    "trackCount": "{count, plural, one{{count} нумера} few{{count} нумере} other{{count} нумера}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1427,7 +1427,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 поглавље} one{{count} поглавље} few{{count} поглавља} other{{count} поглавља}}",
+    "chapterCount": "{count, plural, one{{count} поглавље} few{{count} поглавља} other{{count} поглавља}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -7151,7 +7151,7 @@
     "analyticsTopArtists": "Водећи извођачи",
     "analyticsTopAuthors": "Водећи аутори",
     "analyticsTopContributors": "Водећи сарадници",
-    "analyticsLibrariesCount": "{count, plural, =1{1 медијатека} one{{count} медијатека} few{{count} медијатеке} other{{count} медијатека}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} медијатека} few{{count} медијатеке} other{{count} медијатека}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -11810,7 +11810,7 @@
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
-    "friendsUnreadCount": "{count, plural, =0{Нема непрочитаних порука} =1{1 непрочитана порука} one{{count} непрочитана порука} few{{count} непрочитане поруке} other{{count} непрочитаних порука}}",
+    "friendsUnreadCount": "{count, plural, =0{Нема непрочитаних порука} one{{count} непрочитана порука} few{{count} непрочитане поруке} other{{count} непрочитаних порука}}",
     "@friendsUnreadCount": {
         "description": "How many chat messages are unread",
         "placeholders": {
@@ -11823,7 +11823,7 @@
     "@friendsRequests": {
         "description": "Entry that opens pending friend requests"
     },
-    "friendsRequestCount": "{count, plural, =0{Ништа не чека на ваш одговор} =1{1 захтев чека на ваш одговор} one{{count} захтев чека на ваш одговор} few{{count} захтева чекају на ваш одговор} other{{count} захтева чека на ваш одговор}}",
+    "friendsRequestCount": "{count, plural, =0{Ништа не чека на ваш одговор} one{{count} захтев чека на ваш одговор} few{{count} захтева чекају на ваш одговор} other{{count} захтева чека на ваш одговор}}",
     "@friendsRequestCount": {
         "description": "How many friend requests wait for an answer",
         "placeholders": {
@@ -12168,7 +12168,7 @@
     "@chatGroupName": {
         "description": "Label of the group chat name field"
     },
-    "chatMemberCount": "{count, plural, =1{1 члан} one{{count} члан} few{{count} члана} other{{count} чланова}}",
+    "chatMemberCount": "{count, plural, one{{count} члан} few{{count} члана} other{{count} чланова}}",
     "@chatMemberCount": {
         "description": "How many people are in a group chat",
         "placeholders": {
@@ -13578,5 +13578,220 @@
     "bookReadingUnavailableTitle": "Књиге не могу да се читају на Епл ТВ-у",
     "@bookReadingUnavailableTitle": {
         "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
+    },
+    "advancedPlayback": "Напредна репродукција",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "settingsAdvancedSection": "Напредно",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "Датум изласка",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "Рунтиме",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Последње пуштено",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "libraryStyleClassic": "Класични",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Модерни",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminExternalIdTypeArtist": "Извођач",
+    "adminMetadataFieldArtists": "Извођачи",
+    "adminMetadataFieldAlbum": "Албум",
+    "adminMetadataSectionRatings": "Оцене",
+    "adminLiveTvTabRecordings": "Снимци",
+    "adminLogLevelNone": "Ниједан",
+    "adminTaskResultFailed": "Неуспешно",
+    "adminLogWatch": "Гледај",
+    "adminGroupLibrary": "Библиотека",
+    "adminGroupPlayback": "Репродукција",
+    "adminGroupPeople": "Особе",
+    "librarySortAlbum": "Албум",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortArtist": "Извођач",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "librarySortGenre": "Жанр",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "Класични",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "Спољне листе",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby Connect",
+    "adminTranscodingHwaAdvanced": "Напредно",
+    "musicLibraryStyleClassic": "Класични",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "playbackInfoChannel": "Канал",
+    "@playbackInfoChannel": {
+        "description": "Playback information row label: the Live TV channel being watched"
+    },
+    "recordPromptNow": "Сада",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "Фит",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "Име",
+    "externalRowSortReleaseDate": "Датум изласка",
+    "externalRowSortShuffle": "Насумично",
+    "siloApproveSignInApprove": "Одобри",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "Активно",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "Премијера",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "Премијера",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "Тип",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Пусти",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "Статични",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "Тип",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "settingsAudioStreamSection": "Аудио стрим",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Аудио излаз",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "playlistSortRandom": "Насумично",
+    "@playlistSortRandom": {
+        "description": "Label for sorting playlist items randomly"
+    },
+    "libraryStyleDocked": "Усидрена",
+    "@libraryStyleDocked": {
+        "description": "Library style option: a side panel on TV and desktop, a bottom bar on phones"
+    },
+    "libraryShowLabel": "Прикажи",
+    "@libraryShowLabel": {
+        "description": "Library button that opens the played status filter, followed by its current value such as All or Unwatched"
+    },
+    "adminExternalIdTypeBook": "Књига",
+    "adminImageTypeMenu": "Мени",
+    "adminGroupOverview": "Преглед",
+    "librarySortPlaylistOrder": "Редослед на листи за репродукцију",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "librarySortParentalRating": "Родитељска оцена",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortMyRating": "Моја оцена",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "seriesRecordingAllEpisodes": "Све епизоде",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "playerTransportDocked": "Усидрена",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "recordPromptTomorrow": "Сутра",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "homeScreenBackdropFullScreen": "Цео екран",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Цео екран",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "musicSortYear": "Година",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "siloTooManyAttemptsWait": "Превише покушаја. Покушајте поново за {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseDigital": "Дигитални",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "sinceYouWatchedSourceLocal": "Мунфинове препоруке",
+    "sinceYouWatchedSourceServer": "Препоруке Џелифина (Jellyfin)",
+    "sinceYouWatchedSourceOnline": "Сличност према ТМДБ-у (TMDb)",
+    "calendarSettingsView": "Погледај",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsScope": "Прикажи",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsSpecials": "Специјалне епизоде",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Радње",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "syncPlayParticipantYou": "Ви",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "afterHoursStart": "Почетак",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "seerrDownloadFailed": "Преузимање није успело",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

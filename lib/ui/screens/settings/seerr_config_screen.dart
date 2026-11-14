@@ -310,7 +310,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   }
 
   Future<void> _pushNotificationPrefs() async {
-    if (!_syncService.pluginAvailable) return;
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
     await _syncService.pushNotificationPrefs(client);
@@ -508,6 +507,10 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
           _SeerrLoginCard(
             status: _seerrStatus,
             statusLoading: _statusLoading,
+            plex:
+                GetIt.instance.isRegistered<MediaServerClient>() &&
+                GetIt.instance<MediaServerClient>().serverType ==
+                    ServerType.plex,
             onSignIn: _signInToSeerr,
             onSignOut: _signOutFromSeerr,
             firstFocusNode: _accountCardFocusNode,
@@ -606,6 +609,18 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
               onChanged: _setShowAvailabilityBadges,
             ),
           ),
+          if (_userPreferences.get(UserPreferences.showSeerrAvailabilityBadges))
+            EnumPreferenceTile<SeerrBadgeStyle>(
+              preference: UserPreferences.seerrBadgeStyle,
+              title: l10n.seerrBadgeStyle,
+              description: l10n.seerrBadgeStyleDescription,
+              icon: Icons.label_outline,
+              labelOf: (style) => switch (style) {
+                SeerrBadgeStyle.badge => l10n.seerrBadgeStyleBadge,
+                SeerrBadgeStyle.banner => l10n.bannerLabel,
+              },
+              onChanged: _pushSync,
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Align(
@@ -847,9 +862,14 @@ class _SeerrLoginCard extends StatefulWidget {
   final FocusNode firstFocusNode;
   final VoidCallback onMoveUp;
 
+  /// Signs in with the Plex account signed in to the app instead of a
+  /// Jellyfin username and password.
+  final bool plex;
+
   const _SeerrLoginCard({
     required this.status,
     required this.statusLoading,
+    this.plex = false,
     required this.onSignIn,
     required this.onSignOut,
     required this.firstFocusNode,
@@ -879,9 +899,13 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
   final _usernameTvFieldKey = GlobalKey<CustomTVTextFieldState>();
   final _passwordTvFieldKey = GlobalKey<CustomTVTextFieldState>();
 
-  String _authType = 'jellyfin';
+  late String _authType = _firstAuthType;
   bool _submitting = false;
   String? _errorMessage;
+
+  String get _firstAuthType => widget.plex ? 'plex' : 'jellyfin';
+
+  bool get _needsCredentials => _authType != 'plex';
 
   BoxDecoration _boxDecoration(BuildContext context, {required bool focused}) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -917,7 +941,8 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
   }
 
   bool get _canSignIn {
-    return !_submitting && _usernameController.text.trim().isNotEmpty;
+    return !_submitting &&
+        (!_needsCredentials || _usernameController.text.trim().isNotEmpty);
   }
 
   @override
@@ -1136,7 +1161,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       if (leftFocus != null) {
         leftFocus.requestFocus();
-        _setAuthType('jellyfin');
+        _setAuthType(_firstAuthType);
       }
       return KeyEventResult.handled;
     }
@@ -1153,7 +1178,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
       return KeyEventResult.handled;
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      _usernameFocus.requestFocus();
+      (_needsCredentials ? _usernameFocus : _signInFocus).requestFocus();
       return KeyEventResult.handled;
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -1166,7 +1191,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
   KeyEventResult _onJellyfinAuthKey(FocusNode node, KeyEvent event) {
     return _onAuthOptionKey(
       event,
-      currentAuthType: 'jellyfin',
+      currentAuthType: _firstAuthType,
       rightFocus: _localAuthFocus,
     );
   }
@@ -1207,7 +1232,8 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
       return KeyEventResult.handled;
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      _passwordFocus.requestFocus();
+      (_needsCredentials ? _passwordFocus : widget.firstFocusNode)
+          .requestFocus();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -1408,8 +1434,8 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
           child: FocusTraversalOrder(
             order: const NumericFocusOrder(0),
             child: _buildAuthOption(
-              authType: 'jellyfin',
-              label: l10n.jellyfinAccount,
+              authType: _firstAuthType,
+              label: widget.plex ? l10n.signInWithPlex : l10n.jellyfinAccount,
               focusNode: widget.firstFocusNode,
               onKeyEvent: PlatformDetection.isTV ? _onJellyfinAuthKey : null,
             ),
@@ -1629,46 +1655,48 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                 ),
                 const SizedBox(height: 14),
                 _buildAuthTypeSelector(l10n),
-                const SizedBox(height: 12),
-                FocusTraversalOrder(
-                  order: const NumericFocusOrder(1),
-                  child: _buildCredentialsField(
-                    label: isLocalAuth ? l10n.email : l10n.username,
-                    controller: _usernameController,
-                    focusNode: _usernameFocus,
-                    tvFieldKey: _usernameTvFieldKey,
-                    tvType: TextFieldType.other,
-                    obscureText: false,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: isLocalAuth
-                        ? TextInputType.emailAddress
-                        : TextInputType.text,
-                    autofillHints: [
-                      if (isLocalAuth)
-                        AutofillHints.email
-                      else
-                        AutofillHints.username,
-                    ],
-                    onSubmitted: () => _passwordFocus.requestFocus(),
-                    onTvKey: _onUsernameKey,
+                if (_needsCredentials) ...[
+                  const SizedBox(height: 12),
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(1),
+                    child: _buildCredentialsField(
+                      label: isLocalAuth ? l10n.email : l10n.username,
+                      controller: _usernameController,
+                      focusNode: _usernameFocus,
+                      tvFieldKey: _usernameTvFieldKey,
+                      tvType: TextFieldType.other,
+                      obscureText: false,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: isLocalAuth
+                          ? TextInputType.emailAddress
+                          : TextInputType.text,
+                      autofillHints: [
+                        if (isLocalAuth)
+                          AutofillHints.email
+                        else
+                          AutofillHints.username,
+                      ],
+                      onSubmitted: () => _passwordFocus.requestFocus(),
+                      onTvKey: _onUsernameKey,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                FocusTraversalOrder(
-                  order: const NumericFocusOrder(2),
-                  child: _buildCredentialsField(
-                    label: l10n.password,
-                    controller: _passwordController,
-                    focusNode: _passwordFocus,
-                    tvFieldKey: _passwordTvFieldKey,
-                    tvType: TextFieldType.password,
-                    obscureText: true,
-                    textInputAction: TextInputAction.done,
-                    keyboardType: TextInputType.visiblePassword,
-                    onSubmitted: _submitSignIn,
-                    onTvKey: _onPasswordKey,
+                  const SizedBox(height: 12),
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(2),
+                    child: _buildCredentialsField(
+                      label: l10n.password,
+                      controller: _passwordController,
+                      focusNode: _passwordFocus,
+                      tvFieldKey: _passwordTvFieldKey,
+                      tvType: TextFieldType.password,
+                      obscureText: true,
+                      textInputAction: TextInputAction.done,
+                      keyboardType: TextInputType.visiblePassword,
+                      onSubmitted: _submitSignIn,
+                      onTvKey: _onPasswordKey,
+                    ),
                   ),
-                ),
+                ],
                 if (_errorMessage != null) ...[
                   const SizedBox(height: 10),
                   Text(

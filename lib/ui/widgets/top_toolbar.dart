@@ -994,6 +994,10 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         !kidsMode &&
         _prefs.get(UserPreferences.showSeerrButton) &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
+    final showCalendar =
+        !kidsMode &&
+        _prefs.get(UserPreferences.showCalendarButton) &&
+        GetIt.instance<PluginSyncService>().calendarAvailable;
     final l10n = AppLocalizations.of(context);
     final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
     // Desktop/macOS keeps the dropdown; inline fan-out is only used where
@@ -1136,7 +1140,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                     key: const ValueKey('toolbar_syncplay'),
                     forceExpanded: alwaysExpanded,
                     icon: Icons.groups_rounded,
-                    label: l10n.syncPlay,
+                    label: l10n.watchParties,
                     baseColor: nextNavColor(),
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
@@ -1161,6 +1165,23 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                     onPressed: () {
                       if (_isActive(Destinations.seerrDiscover)) return;
                       context.navigateTopLevel(Destinations.seerrDiscover);
+                    },
+                  ),
+                ),
+              ],
+              if (showCalendar) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_calendar'),
+                    forceExpanded: alwaysExpanded,
+                    baseColor: nextNavColor(),
+                    icon: Icons.calendar_month_rounded,
+                    label: l10n.calendar,
+                    onPressed: () {
+                      if (_isActive(Destinations.calendar)) return;
+                      context.navigateTopLevel(Destinations.calendar);
                     },
                   ),
                 ),

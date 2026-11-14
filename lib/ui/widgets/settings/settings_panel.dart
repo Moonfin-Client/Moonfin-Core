@@ -237,11 +237,14 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 
 extension SettingsPush on BuildContext {
   /// [previewPath] is the screen's place in Settings when it isn't the tile
-  /// that opened it, as with a search result.
+  /// that opened it, as with a search result. Pass [autofocus] false for a
+  /// screen that picks its own initial focus, so its first control (usually
+  /// the back arrow) isn't focused under a mouse.
   Future<void> pushSettingsScreen(
     Widget screen, {
     FocusNode? returnFocus,
     List<String>? previewPath,
+    bool autofocus = true,
   }) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
     final opener = SettingsPreviewScope.maybeOf(this)?.focused?.title ?? '';
@@ -253,7 +256,7 @@ extension SettingsPush on BuildContext {
           PageRouteBuilder(
             pageBuilder: (_, _, _) => SettingsPreviewPath(
               path: path,
-              child: _AutoFocusWrapper(child: screen),
+              child: autofocus ? _AutoFocusWrapper(child: screen) : screen,
             ),
             transitionDuration: const Duration(milliseconds: 160),
             reverseTransitionDuration: const Duration(milliseconds: 130),

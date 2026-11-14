@@ -1,4 +1,5 @@
 import 'letterbox_crop.dart';
+import 'stream_credentials.dart';
 
 enum SubtitleRendererMode { native, assOverlay }
 
@@ -122,6 +123,13 @@ abstract class PlayerBackend {
   Stream<bool> get playingStream;
   Stream<bool> get bufferingStream;
   Stream<bool> get completedStream;
+  /// Backend error events. A backend may report a terminal video decoder
+  /// startup failure as `event: playerError`, `recoverable: true`, and
+  /// `kind: video_decoder_failure` after its bounded local startup recovery
+  /// attempts are exhausted. If the backend also emits a generic error for
+  /// that same failure, both events carry the same `decoderFailureEventId`.
+  /// This kind is backend-neutral; consumers must not infer backend-specific
+  /// renderer, codec, device, or retry details from it.
   Stream<Map<String, dynamic>>? get errorStream => null;
 
   /// Whether the player has been told to play. Null on engines that don't
@@ -178,6 +186,10 @@ abstract class PlayerBackend {
     String? language,
     String? codec,
   });
+
+  /// [shadowColor] is zero for no shadow. [shadowOffset] and [shadowBlur] are
+  /// fractions of the text size, and [fontFamily] is empty for the player's
+  /// own font.
   Future<void> configureSubtitleStyle({
     int? textColor,
     int? backgroundColor,
@@ -185,6 +197,11 @@ abstract class PlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   });
 
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode);
@@ -238,6 +255,13 @@ abstract class PlayerBackend {
   /// did nothing, and the caller must escalate rather than wait for a recovery
   /// that is never coming.
   Future<bool> resumeLiveEdge() async => false;
+
+  /// Gives the stream that is playing new credentials (see
+  /// [StreamCredentialRefresher]) without reopening it, returning whether
+  /// its next requests carry them. False means the engine can't change a
+  /// stream it has opened, and the caller has to reopen it to renew them.
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async =>
+      false;
 
   /// Where a live stream can be sought within, or null when it keeps nothing
   /// to go back to, as a tuner's raw transport stream doesn't.

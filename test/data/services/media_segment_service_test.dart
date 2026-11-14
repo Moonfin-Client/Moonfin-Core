@@ -106,4 +106,34 @@ void main() {
       expect(svc.checkPosition(const Duration(seconds: 40)).isNew, isTrue);
     });
   });
+
+  test('a skip into the last second lands a second before the end', () {
+    const duration = Duration(minutes: 40);
+    expect(
+      skipLandingBeforeEnd(duration, duration),
+      duration - const Duration(seconds: 1),
+    );
+    expect(
+      skipLandingBeforeEnd(duration + const Duration(seconds: 5), duration),
+      duration - const Duration(seconds: 1),
+    );
+    const early = Duration(minutes: 39);
+    expect(skipLandingBeforeEnd(early, duration), early);
+    expect(skipLandingBeforeEnd(duration, Duration.zero), duration);
+  });
+
+  test('credits run to the end when they stop within 5 seconds of it', () {
+    const duration = Duration(minutes: 40);
+    expect(outroRunsToEnd(duration, duration), isTrue);
+    expect(
+      outroRunsToEnd(duration - const Duration(seconds: 5), duration),
+      isTrue,
+    );
+    expect(
+      outroRunsToEnd(duration - const Duration(seconds: 6), duration),
+      isFalse,
+    );
+    expect(outroRunsToEnd(null, duration), isTrue);
+    expect(outroRunsToEnd(const Duration(minutes: 30), Duration.zero), isTrue);
+  });
 }

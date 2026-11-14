@@ -130,10 +130,6 @@ void main() {
     expect(marquee, findsOneWidget);
     expect(tester.getSize(marquee).height, greaterThan(45));
     expect(
-      tester.widget<MarqueeText>(marquee).millisPerPixel,
-      kLiveTvDescriptionMarqueeMillisPerPixel,
-    );
-    expect(
       find.descendant(of: marquee, matching: find.byType(Scrollable)),
       findsOneWidget,
     );
@@ -144,16 +140,21 @@ void main() {
     );
     expect(meta.top, closeTo(channel.top, 3));
 
-    await tester.pump(const Duration(milliseconds: 1600));
-    await tester.pump(const Duration(milliseconds: 500));
     final scroller = find.descendant(
       of: marquee,
       matching: find.byType(Scrollable),
     );
-    expect(
-      tester.state<ScrollableState>(scroller).position.pixels,
-      greaterThan(0),
-    );
+    double offset() => tester.state<ScrollableState>(scroller).position.pixels;
+
+    // Long enough to read the first lines before anything moves.
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(offset(), 0);
+    for (var i = 0; i < 30 && offset() == 0; i++) {
+      await tester.pump(const Duration(seconds: 1));
+    }
+    expect(offset(), greaterThan(0));
   });
 
   testWidgets('guide channel logo uses the zero-fade bounded image', (

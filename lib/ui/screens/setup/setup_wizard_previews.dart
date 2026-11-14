@@ -8,11 +8,13 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/media_bar_slide_item.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/repositories/media_bar_repository.dart';
 import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/repositories/poster_badge_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
 import '../../../data/services/library_scope_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -39,16 +41,21 @@ import '../../widgets/bottom_nav/dock_bar.dart';
 import '../../widgets/bottom_nav/split_bar.dart';
 import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/carousel_panel.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
+import '../../widgets/poster_badges.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
+import '../../widgets/mediabar/media_bar_new_release_label.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/user_avatar_image.dart';
 import '../detail/detail_buttons.dart';
 import '../detail/detail_layout_metrics.dart';
+import '../detail/frost/frost_detail_content.dart' show frostStageSize;
+import '../home/home_backdrop.dart';
 
 /// The artwork behind every preview, shared with the home screen.
 ///
@@ -90,13 +97,42 @@ abstract final class SetupPreviewData {
     final override = debugOverride;
     if (override != null) return override.value;
     final loaded = _viewModel?.items ?? const [];
-    return loaded.isNotEmpty ? loaded : _fallbackItems.value;
+    return _drawn = keepDrawn(
+      _drawn,
+      loaded.isNotEmpty ? loaded : _fallbackItems.value,
+    );
+  }
+
+  /// The titles the previews last drew. A change to the bar's style or to what
+  /// it shows reloads it with a fresh random pick, and following that would
+  /// swap the sample under the person looking at it.
+  static List<MediaBarSlideItem> _drawn = const [];
+
+  /// [drawn] kept in its order, each title swapped for its newer copy when
+  /// [next] still has it, then topped up from [next] or cut to its count.
+  @visibleForTesting
+  static List<MediaBarSlideItem> keepDrawn(
+    List<MediaBarSlideItem> drawn,
+    List<MediaBarSlideItem> next,
+  ) {
+    if (drawn.isEmpty || next.isEmpty) return next;
+    final fresh = {
+      for (final item in next) (item.serverId, item.itemId): item,
+    };
+    return [
+      for (final item in drawn)
+        fresh.remove((item.serverId, item.itemId)) ?? item,
+      ...fresh.values,
+    ].take(next.length).toList();
   }
 
   static bool _loading = false;
   static bool _loadingLibraries = false;
 
   static Future<void> ensureLoaded() async {
+    // Each screen of previews starts from the bar's current titles, which
+    // also drops the last server's after a switch.
+    _drawn = const [];
     if (debugOverride != null) return;
     unawaited(loadLibraries());
     if (_loading) return;
@@ -203,15 +239,13 @@ Size _designSize() {
 bool get _tv => PlatformDetection.useLeanbackUi;
 bool get _phone => PlatformDetection.useMobileUi;
 
-/// The saved UI scale, which Home sizes its rows and info area by.
-double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
-    ? GetIt.instance<UserPreferences>()
-          .get(UserPreferences.desktopUiScale)
-          .scaleFactor
-    : 1.0;
+/// The UI scale, which Home sizes its rows and info area by.
+double _desktopScale(BuildContext context) =>
+    previewValue(context, UserPreferences.desktopUiScale).scaleFactor;
 
-/// TV rows render at 0.8 of the desktop size, same as _rowPlatformScale.
-double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
+/// TV rows render at 0.8 of the desktop size, same as homeRowPlatformScale.
+double _rowScale(BuildContext context) =>
+    (_tv ? 0.8 : 1.0) * _desktopScale(context);
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
 
@@ -354,6 +388,8 @@ Widget _sampleRatings(
   bool? badges,
   bool singleLine = false,
   bool inlineChips = false,
+  bool columns = false,
+  double columnTextScale = 1,
 }) => RatingsRow(
   ratings: _sampleScores,
   communityRating: item.communityRating ?? 7.8,
@@ -365,6 +401,8 @@ Widget _sampleRatings(
   showBadges: badges ?? previewValue(context, settings.badges),
   singleLine: singleLine,
   inlineChips: inlineChips,
+  columns: columns,
+  columnTextScale: columnTextScale,
 );
 
 Color _overlayColor(BuildContext context) => OverlayColorPalette.resolveColor(
@@ -382,25 +420,128 @@ double _overlayOpacity(BuildContext context) =>
 // ---------------------------------------------------------------------------
 
 Widget mediaBarPreview(String mode) => _liveOrFallback(
-  live: (context, items) => switch (mode) {
-    UserPreferences.mediaBarModeMakd => _makdBar(context, items),
-    UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
-    UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
-    UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
-    UserPreferences.mediaBarModeAya => _ayaBar(context, items),
-    // The rows carry the whole screen with the bar off, so the preview packs
-    // them tighter than the style default to show more than one.
-    UserPreferences.mediaBarModeOff => _homeRowsScreen(
-      context,
-      items,
-      modern: !_phone,
-      rowGapOverride: 24,
-    ),
-    _ => _moonfinBar(context, items),
+  live: (context, titles) {
+    final items = _withNewReleasePreview(context, titles);
+    final peek = _rowPeekCover(context, mode);
+    final bar = _mediaBarModePreview(context, mode, items, rowPeek: peek);
+    if (peek == 0) return bar;
+    return ClipRect(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          bar,
+          Positioned(
+            left: 0,
+            right: 0,
+            top: _designSize().height - peek,
+            child: _homeRowsColumn(
+              context,
+              items,
+              modern: previewValue(
+                context,
+                UserPreferences.homeRowsStyle,
+              ).usesModernCards,
+              infoArea: false,
+            ),
+          ),
+        ],
+      ),
+    );
   },
   fallback: _fallbackMediaBar(mode),
   fallbackAspect: 16 / 7,
 );
+
+/// [mode]'s bar. Moonfin and MakD keep their backdrop under a row peeking
+/// [rowPeek] up into the bar and lift their content above it, and the others
+/// shrink to what's left, as on Home.
+Widget _mediaBarModePreview(
+  BuildContext context,
+  String mode,
+  List<MediaBarSlideItem> items, {
+  double rowPeek = 0,
+}) => switch (mode) {
+  UserPreferences.mediaBarModeMakd => _makdBar(context, items, rowPeek),
+  UserPreferences.mediaBarModeBookshelf => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _bookshelfBar(context, items),
+  ),
+  UserPreferences.mediaBarModeGallery => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _galleryBar(context, items),
+  ),
+  UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
+  UserPreferences.mediaBarModeAya => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _ayaBar(context, items),
+  ),
+  // The rows carry the whole screen with the bar off, so the preview packs
+  // them tighter than the style default to show more than one.
+  UserPreferences.mediaBarModeOff => _homeRowsScreen(
+    context,
+    items,
+    modern: !_phone,
+    rowGapOverride: 24,
+  ),
+  _ => _moonfinBar(context, items, rowPeek),
+};
+
+/// The titles the preview draws, with the new release banner on the first one
+/// while the switch is on and on none while it is off. The bar only finds a
+/// release when one aired lately, so a series stands in with a sample. With no
+/// series there's nothing to flag, as on the bar.
+List<MediaBarSlideItem> _withNewReleasePreview(
+  BuildContext context,
+  List<MediaBarSlideItem> items,
+) {
+  if (!previewValue(context, UserPreferences.mediaBarNewReleaseBanner)) {
+    return [for (final item in items) item.withNewRelease(null)];
+  }
+  final flagged = items.indexWhere((item) => item.newRelease != null);
+  final series = items.indexWhere((item) => item.itemType == 'Series');
+  if (flagged < 0 && series < 0) return items;
+  final lead = flagged >= 0 ? flagged : series;
+  final first = items[lead].newRelease != null
+      ? items[lead]
+      : items[lead].withNewRelease(
+          const MediaBarNewReleaseInfo(
+            kind: MediaBarNewRelease.newSeason,
+            season: 2,
+          ),
+        );
+  return [
+    first,
+    for (var i = 0; i < items.length; i++)
+      if (i != lead) items[i],
+  ];
+}
+
+/// [title] with the new release banner under it, the way every mode but
+/// bookshelf draws it. Phones keep the label alone.
+Widget _titleWithRelease(
+  MediaBarSlideItem item,
+  Widget title, {
+  bool center = false,
+}) {
+  final release = item.newRelease;
+  if (release == null) return title;
+  final alignment = center
+      ? CrossAxisAlignment.center
+      : CrossAxisAlignment.start;
+  return Column(
+    crossAxisAlignment: alignment,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      title,
+      const SizedBox(height: 8),
+      MediaBarNewReleaseLine(
+        release: release,
+        showMessage: !_phone,
+        alignment: alignment,
+      ),
+    ],
+  );
+}
 
 /// On phones the bar takes 55 percent of the screen (46 for makd) and the
 /// rows carry on beneath, which is exactly what the preview shows too.
@@ -509,7 +650,11 @@ Widget _metadataWrap(
   );
 }
 
-Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _moonfinBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -532,6 +677,12 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Phones carry the label in the card, its own first line.
+          if (_phone)
+            if (item.newRelease case final release?) ...[
+              MediaBarNewReleaseLine(release: release, showMessage: false),
+              const SizedBox(height: 6),
+            ],
           _metadataWrap(item),
           const SizedBox(height: 6),
           _sampleRatings(context, item, UserPreferences.mediaBarRatings),
@@ -561,23 +712,26 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         Positioned(
           top: 56,
           left: 40,
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: 280,
-            height: 120,
-            fallbackStyle: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              height: 1.05,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: 280,
+              height: 120,
+              fallbackStyle: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                height: 1.05,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
         ),
       Positioned(
         left: 0,
         right: 0,
-        bottom: 0,
+        bottom: rowPeek,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -605,7 +759,7 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 0,
         right: 0,
-        bottom: 8,
+        bottom: 8 + rowPeek,
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -633,7 +787,11 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
   return _phone ? _phoneBarScreen(context, items, bar) : bar;
 }
 
-Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _makdBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -649,17 +807,21 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
         ColoredBox(color: AppColorScheme.scrim.withValues(alpha: 0.26)),
         Align(
           alignment: const Alignment(0, -0.1),
-          child: _logoOrTitle(
+          child: _titleWithRelease(
             item,
-            width: (size.width * 0.7).clamp(190.0, 380.0),
-            height: (barHeight * 0.18).clamp(58.0, 112.0),
-            alignment: Alignment.center,
-            fallbackStyle: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+            _logoOrTitle(
+              item,
+              width: (size.width * 0.7).clamp(190.0, 380.0),
+              height: (barHeight * 0.18).clamp(58.0, 112.0),
+              alignment: Alignment.center,
+              fallbackStyle: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
+            center: true,
           ),
         ),
         Positioned(
@@ -742,22 +904,25 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 50,
         top: size.height * 0.22,
-        child: _logoOrTitle(
+        child: _titleWithRelease(
           item,
-          width: (size.width * 0.45).clamp(220.0, 640.0),
-          height: (size.height * 0.35).clamp(90.0, 300.0),
-          fallbackStyle: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w800,
-            height: 1.05,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
+          _logoOrTitle(
+            item,
+            width: (size.width * 0.45).clamp(220.0, 640.0),
+            height: (size.height * 0.35).clamp(90.0, 300.0),
+            fallbackStyle: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              height: 1.05,
+              color: AppColorScheme.onSurface,
+              shadows: _textShadows,
+            ),
           ),
         ),
       ),
       Positioned(
         left: 50,
-        bottom: 20,
+        bottom: 20 + rowPeek,
         width: contentWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -794,7 +959,7 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       Positioned(
         right: 20,
-        bottom: 24,
+        bottom: 24 + rowPeek,
         child: _dots(
           count: 5,
           active: 9,
@@ -1240,24 +1405,27 @@ Widget _galleryBar(BuildContext context, List<MediaBarSlideItem> items) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                active.title.toUpperCase(),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.02,
-                                  letterSpacing: 1.0,
-                                  color: AppColorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 12,
-                                      color: AppColorScheme.scrim.withValues(
-                                        alpha: 0.7,
+                              _titleWithRelease(
+                                active,
+                                Text(
+                                  active.title.toUpperCase(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.02,
+                                    letterSpacing: 1.0,
+                                    color: AppColorScheme.onSurface,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 12,
+                                        color: AppColorScheme.scrim.withValues(
+                                          alpha: 0.7,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -1425,6 +1593,11 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
     if (active.runtime != null) _runtimeText(active.runtime),
     if (active.officialRating != null) active.officialRating!,
   ];
+  final metaStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+  );
 
   final bar = Stack(
     children: [
@@ -1513,13 +1686,29 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  metaParts.join('  ·  '),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                // The label leads the meta line, like the real carousel.
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (active.newRelease case final release?) ...[
+                      MediaBarNewReleaseLine(
+                        release: release,
+                        showMessage: false,
+                        alignment: CrossAxisAlignment.center,
+                      ),
+                      Text('  ·  ', style: metaStyle),
+                    ],
+                    Flexible(
+                      child: Text(
+                        metaParts.join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: metaStyle,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 _sampleRatings(
@@ -1585,20 +1774,23 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _logoOrTitle(
+                  _titleWithRelease(
                     item,
-                    width: 240,
-                    height: 56,
-                    fallbackStyle: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: AppColorScheme.onSurface,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10,
-                          color: AppColorScheme.scrim.withValues(alpha: 0.8),
-                        ),
-                      ],
+                    _logoOrTitle(
+                      item,
+                      width: 240,
+                      height: 56,
+                      fallbackStyle: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColorScheme.onSurface,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: AppColorScheme.scrim.withValues(alpha: 0.8),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -1686,23 +1878,27 @@ Widget _ayaBar(BuildContext context, List<MediaBarSlideItem> items) {
             Positioned(
               left: 44,
               top: 40,
-              child: _logoOrTitle(
-                item,
-                width: 340,
-                height: 100,
-                alignment: Alignment.topLeft,
-                fallbackStyle: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                  height: 1.0,
-                  color: AppColorScheme.onSurface,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20,
-                      color: AppColorScheme.scrim.withValues(alpha: 0.72),
-                    ),
-                  ],
+              // Phones show Aya's poster bare, so no banner there.
+              child: _titleWithRelease(
+                _phone ? item.withNewRelease(null) : item,
+                _logoOrTitle(
+                  item,
+                  width: 340,
+                  height: 100,
+                  alignment: Alignment.topLeft,
+                  fallbackStyle: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                    height: 1.0,
+                    color: AppColorScheme.onSurface,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 20,
+                        color: AppColorScheme.scrim.withValues(alpha: 0.72),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1759,42 +1955,104 @@ Widget navbarPreview(NavbarPosition position) => _liveOrFallback(
 /// Home as the settings live preview draws it: the navbar where it's set, with
 /// its buttons, labels and clock, over the rows in their set style and size.
 /// Values a settings picker is trying stand in for the saved ones.
-Widget settingsHomePreview() {
+/// [focusCard] holds the first card in focus in Classic rows too, so Focus
+/// Color has a ring to show on.
+Widget settingsHomePreview({bool focusCard = false}) {
   final position = GetIt.instance.isRegistered<UserPreferences>()
       ? GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition)
       : NavbarPosition.top;
   return _liveOrFallback(
     live: (context, items) {
-      final modern =
-          previewValue(context, UserPreferences.homeRowsStyle) ==
-          HomeRowsStyle.v2;
+      final modern = previewValue(
+        context,
+        UserPreferences.homeRowsStyle,
+      ).usesModernCards;
       // Modern rows hold the first card in focus, the way Home looks with a
       // row in focus, so the card's grown state and its details show.
-      return switch (previewValue(context, UserPreferences.navbarPosition)) {
+      final focusFirst = modern || focusCard;
+      final home = switch (previewValue(
+        context,
+        UserPreferences.navbarPosition,
+      )) {
         NavbarPosition.top => _topNavbarPreview(
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.left => _leftNavbarPreview(
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.bottom => _bottomNavbarPreview(
           context,
           items,
           previewValue(context, UserPreferences.bottomNavbarStyle),
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
       };
+      final backdrop = settingsHomeBackdropStyle(context);
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (backdrop != UserPreferences.homeBackdropOff)
+            HomeBackdrop(
+              url: items.first.backdropUrl,
+              blurAmount: previewValue(
+                context,
+                UserPreferences.browsingBackgroundBlurAmount,
+              ).toDouble(),
+              style: backdrop,
+            ),
+          const HomeGradientScrim(),
+          home,
+        ],
+      );
     },
     fallback: _fallbackNavbar(position),
   );
 }
+
+/// The backdrop Home draws. A phone only has the switch and always fills the
+/// screen, and a style the picker is trying shows before the switch follows it.
+String settingsHomeBackdropStyle(BuildContext context) {
+  final enabled = previewValue(context, UserPreferences.homeBackdropEnabled);
+  if (_phone) {
+    return enabled
+        ? UserPreferences.homeBackdropFullScreen
+        : UserPreferences.homeBackdropOff;
+  }
+  final trying =
+      SettingsPreviewScope.maybeOf(context)
+          ?.isTrying(UserPreferences.homeBackdropStyle.key) ??
+      false;
+  return enabled || trying
+      ? previewValue(context, UserPreferences.homeBackdropStyle)
+      : UserPreferences.homeBackdropOff;
+}
+
+/// [body] as a screen under the navbar the live preview draws over Home, for a
+/// screen that keeps its own room for the bar.
+Widget settingsNavbarPreviewOver(Widget body) => _screen(
+  Builder(
+    builder: (context) {
+      final items = SetupPreviewData.items;
+      return switch (previewValue(context, UserPreferences.navbarPosition)) {
+        NavbarPosition.top => _topNavbarPreview(context, items, body: body),
+        NavbarPosition.left => _leftNavbarPreview(context, items, body: body),
+        NavbarPosition.bottom => _bottomNavbarPreview(
+          context,
+          items,
+          previewValue(context, UserPreferences.bottomNavbarStyle),
+          body: body,
+        ),
+      };
+    },
+  ),
+);
 
 typedef _NavButton = ({
   Widget Function(double size, Color color) icon,
@@ -1805,9 +2063,14 @@ bool get _seerrAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().seerrAvailable;
 
+bool get _calendarAvailable =>
+    GetIt.instance.isRegistered<PluginSyncService>() &&
+    GetIt.instance<PluginSyncService>().calendarAvailable;
+
+/// The real bar waits for something saved, so it never offers a way into an
+/// empty screen.
 bool get _downloadsAvailable =>
-    GetIt.instance.isRegistered<UserRepository>() &&
-    DownloadsNavSlot.isAvailable();
+    DownloadsNavSlot.isSupported() && DownloadsNavSlot.hasSavedMedia();
 
 /// The user's libraries for a navbar that lists them one by one, minus the
 /// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
@@ -1882,12 +2145,14 @@ List<_NavButton> _navButtons(
     if (!kids &&
         on(UserPreferences.syncPlayEnabled) &&
         on(UserPreferences.showSyncPlayButton))
-      icon(Icons.groups_rounded, l10n.syncPlay),
+      icon(Icons.groups_rounded, l10n.watchParties),
     if (!kids && on(UserPreferences.showSeerrButton) && _seerrAvailable)
       (
         icon: (size, color) => SeerrIcon(size: size, color: color),
         label: seerrLabel,
       ),
+    if (!kids && on(UserPreferences.showCalendarButton) && _calendarAvailable)
+      icon(Icons.calendar_month_rounded, l10n.calendar),
     if (libraries && on(UserPreferences.showLibrariesIndividually))
       for (final (glyph, label) in _navLibraries(
         l10n,
@@ -2025,6 +2290,7 @@ Widget _navbarRows(
 Widget _topNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2090,7 +2356,7 @@ Widget _topNavbarPreview(
     ),
   );
 
-  return Column(
+  final screen = Column(
     children: [
       SizedBox(
         height: toolbarHeight,
@@ -2132,14 +2398,24 @@ Widget _topNavbarPreview(
           ),
         ),
       ),
-      Expanded(
-        child: _navbarRows(
-          context,
-          items,
-          modern: modern,
-          focusFirst: focusFirst,
+      if (body == null)
+        Expanded(
+          child: _navbarRows(
+            context,
+            items,
+            modern: modern,
+            focusFirst: focusFirst,
+          ),
         ),
-      ),
+    ],
+  );
+  if (body == null) return screen;
+  // A screen with its own top inset runs under the bar, which floats over it
+  // the way the real one does.
+  return Stack(
+    children: [
+      Positioned.fill(child: body),
+      Positioned.fill(child: screen),
     ],
   );
 }
@@ -2149,6 +2425,7 @@ Widget _topNavbarPreview(
 Widget _leftNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2164,14 +2441,16 @@ Widget _leftNavbarPreview(
   return Stack(
     children: [
       Positioned.fill(
-        left: railInset,
-        child: _navbarRows(
-          context,
-          items,
-          topInset: 24,
-          modern: modern,
-          focusFirst: focusFirst,
-        ),
+        left: body == null ? railInset : 0,
+        child:
+            body ??
+            _navbarRows(
+              context,
+              items,
+              topInset: 24,
+              modern: modern,
+              focusFirst: focusFirst,
+            ),
       ),
       Positioned(
         left: 0,
@@ -2209,6 +2488,7 @@ Widget _bottomNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items,
   BottomNavbarStyle style, {
+  Widget? body,
   bool? modern,
   bool focusFirst = false,
 }) {
@@ -2225,6 +2505,8 @@ Widget _bottomNavbarPreview(
     showLiveTv: previewValue(context, UserPreferences.showLiveTvButton),
     showSeerr: previewValue(context, UserPreferences.showSeerrButton),
     seerrAvailable: _seerrAvailable,
+    showCalendar: previewValue(context, UserPreferences.showCalendarButton),
+    calendarAvailable: _calendarAvailable,
   );
   final views = [
     for (final item in resolveBarItems(
@@ -2273,13 +2555,15 @@ Widget _bottomNavbarPreview(
   return Stack(
     children: [
       Positioned.fill(
-        child: _navbarRows(
-          context,
-          items,
-          topInset: 24,
-          modern: modern,
-          focusFirst: focusFirst,
-        ),
+        child:
+            body ??
+            _navbarRows(
+              context,
+              items,
+              topInset: 24,
+              modern: modern,
+              focusFirst: focusFirst,
+            ),
       ),
       Align(
         alignment: Alignment.bottomCenter,
@@ -2424,22 +2708,27 @@ Widget _fallbackNavbar(NavbarPosition position) {
 // Home rows
 // ---------------------------------------------------------------------------
 
-Widget homeRowsPreview({required bool modern}) => _liveOrFallback(
-  live: (context, items) => _homeRowsScreen(
-    context,
-    items,
-    modern: modern,
-    // Modern's whole point is the focused card, so its preview holds the
-    // first card in that state with the text block it grows underneath.
-    focusFirst: modern,
-  ),
-  fallback: _fallbackHomeRows(modern: modern),
-);
+/// [carousel] picks Carousel over Modern for a modern preview. Left null it
+/// follows the Row Type setting.
+Widget homeRowsPreview({required bool modern, bool? carousel}) =>
+    _liveOrFallback(
+      live: (context, items) => _homeRowsScreen(
+        context,
+        items,
+        modern: modern,
+        carousel: carousel,
+        // Modern's whole point is the focused card, so its preview holds the
+        // first card in that state with the text block it grows underneath.
+        focusFirst: modern,
+      ),
+      fallback: _fallbackHomeRows(modern: modern),
+    );
 
 Widget _homeRowsScreen(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
 }) {
@@ -2451,6 +2740,7 @@ Widget _homeRowsScreen(
         context,
         items,
         modern: modern,
+        carousel: carousel,
         focusFirst: focusFirst,
         rowGapOverride: rowGapOverride,
       ),
@@ -2458,15 +2748,99 @@ Widget _homeRowsScreen(
   );
 }
 
+/// The sample item as a library item, for widgets that only take those.
+AggregatedItem _slideAsItem(MediaBarSlideItem item) => AggregatedItem(
+  id: item.itemId,
+  serverId: item.serverId,
+  rawData: {
+    'Name': item.title,
+    'Type': item.itemType,
+    'Overview': item.overview,
+    'ProductionYear': item.year,
+    'OfficialRating': item.officialRating,
+    'Genres': item.genres,
+    'CommunityRating': item.communityRating,
+    'CriticRating': item.criticRating,
+    if (item.runtime case final runtime?)
+      'RunTimeTicks': runtime.inMicroseconds * 10,
+  },
+);
+
+/// The colours of the 4K and HDR10 built-in labels.
+const _sampleLabels = [
+  PosterBadge(label: '4K', color: '#7C3AED'),
+  PosterBadge(label: 'HDR', color: '#CA8A04'),
+];
+
+/// Sample labels on the preview's posters, only for someone whose server gives
+/// them labels, so the preview never shows what the app never will.
+bool _showSampleLabels(BuildContext context) {
+  if (!GetIt.instance.isRegistered<PosterBadgeRepository>() ||
+      GetIt.instance<PosterBadgeRepository>().available.value != true) {
+    return false;
+  }
+  return previewValue(context, UserPreferences.showPosterLabels);
+}
+
+/// The sample rows' poster and thumb heights at the card size being looked at.
+/// Modern's sample posters are drawn larger than Home's. Carousel's keep
+/// Home's size, so its panel fits under them as it does on Home.
+(double, double) _sampleCardHeights(
+  BuildContext context, {
+  required bool modern,
+  bool carousel = false,
+}) {
+  final posterSize = previewValue(context, UserPreferences.posterSize);
+  return (
+    (modern && !carousel ? 240.0 : 150.0) *
+        _rowScale(context) *
+        posterSize.portraitHeight /
+        PosterSize.medium.portraitHeight,
+    110.0 *
+        _rowScale(context) *
+        posterSize.landscapeHeight /
+        PosterSize.medium.landscapeHeight,
+  );
+}
+
+/// How much of the media bar the first Home row covers while Peek Home Rows
+/// is on: its title and the top half of its cards, as on Home. Zero where
+/// Home doesn't peek.
+double _rowPeekCover(BuildContext context, String mode) {
+  if (_phone ||
+      !previewValue(context, UserPreferences.mediaBarRowPeek) ||
+      !UserPreferences.mediaBarModeAllowsRowPeek(mode) ||
+      previewValue(context, UserPreferences.fullScreenRows)) {
+    return 0;
+  }
+  final style = previewValue(context, UserPreferences.homeRowsStyle);
+  final modern = style.usesModernCards;
+  final (poster, thumb) = _sampleCardHeights(
+    context,
+    modern: modern,
+    carousel: style == HomeRowsStyle.carousel,
+  );
+  // The title band's padding and line of text, then the cards' top padding.
+  final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
+  return header + (modern ? poster : thumb) / 2;
+}
+
 Widget _homeRowsColumn(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
+  bool infoArea = true,
 }) {
   final l10n = AppLocalizations.of(context);
-  final scale = _rowScale;
+  final scale = _rowScale(context);
+  final isCarousel =
+      modern &&
+      (carousel ??
+          previewValue(context, UserPreferences.homeRowsStyle) ==
+              HomeRowsStyle.carousel);
 
   Widget header(String title) => Padding(
     padding: modern
@@ -2482,84 +2856,126 @@ Widget _homeRowsColumn(
     ),
   );
 
+  Widget focusRing() => Positioned(
+    top: -3.5,
+    bottom: -3.5,
+    left: -3.5,
+    right: -3.5,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius:
+            ThemeRegistry.active.borders.cardRadius + AppRadius.circular(3.5),
+        border: Border.fromBorderSide(
+          ThemeRegistry.active.borders.focusBorder.copyWith(
+            color: Color(
+              previewValue(context, UserPreferences.focusColor).colorValue,
+            ),
+            width: 3.0,
+          ),
+        ),
+      ),
+    ),
+  );
+
   Widget card(
     MediaBarSlideItem item, {
     required double height,
     required double aspect,
     String? imageUrl,
     double? progress,
+    List<PosterBadge> labels = const [],
+    bool focused = false,
   }) {
     final width = height * aspect;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: width,
-          height: height,
-          child: ClipRRect(
-            borderRadius: ThemeRegistry.active.borders.cardRadius,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _artwork(imageUrl ?? item.posterUrl),
-                if (progress != null)
-                  Positioned(
-                    left: 6,
-                    right: 6,
-                    bottom: 6,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: SizedBox(
-                        height: 6,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: (progress * 100).round(),
-                              child: ColoredBox(color: AppColorScheme.accent),
-                            ),
-                            Expanded(
-                              flex: 100 - (progress * 100).round(),
-                              child: ColoredBox(
-                                color: AppColorScheme.scrim.withValues(
-                                  alpha: 0.54,
-                                ),
-                              ),
-                            ),
-                          ],
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: width,
+              height: height,
+              child: ClipRRect(
+                borderRadius: ThemeRegistry.active.borders.cardRadius,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _artwork(imageUrl ?? item.posterUrl),
+                    if (labels.isNotEmpty)
+                      Positioned(
+                        top: 6,
+                        left: 6,
+                        child: PosterBadgeSample(
+                          badges: labels,
+                          scale: 0.85 * scale,
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                    if (progress != null)
+                      Positioned(
+                        left: 6,
+                        right: 6,
+                        bottom: 6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: SizedBox(
+                            height: 6,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.accent,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 100 - (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.scrim.withValues(
+                                      alpha: 0.54,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            if (focused) focusRing(),
+          ],
         ),
-        const SizedBox(height: 6),
-        SizedBox(
-          width: width,
-          child: Text(
-            item.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
+          SizedBox(
+            width: width,
+            child: Text(
+              item.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
-          Text(
-            '${item.year}',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-              shadows: _textShadows,
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
+              ),
             ),
-          ),
+        ],
       ],
     );
   }
@@ -2582,15 +2998,11 @@ Widget _homeRowsColumn(
     ),
   );
 
-  final posterSize = previewValue(context, UserPreferences.posterSize);
-  final posterScale =
-      posterSize.portraitHeight / PosterSize.medium.portraitHeight;
-  final posterHeight = (modern ? 240.0 : 150.0) * scale * posterScale;
-  final thumbHeight =
-      110.0 *
-      scale *
-      posterSize.landscapeHeight /
-      PosterSize.medium.landscapeHeight;
+  final (posterHeight, thumbHeight) = _sampleCardHeights(
+    context,
+    modern: modern,
+    carousel: isCarousel,
+  );
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
   final showOverview = !previewValue(
     context,
@@ -2620,90 +3032,76 @@ Widget _homeRowsColumn(
                 child: _artwork(item.backdropUrl ?? item.posterUrl),
               ),
             ),
-            Positioned(
-              top: -3.5,
-              bottom: -3.5,
-              left: -3.5,
-              right: -3.5,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      ThemeRegistry.active.borders.cardRadius +
-                      AppRadius.circular(3.5),
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.focusBorder.copyWith(
-                      width: 3.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            focusRing(),
           ],
         ),
-        const SizedBox(height: 6),
-        Text(
-          item.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
-          ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
+        // Carousel shows all of this in its panel instead.
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
           Text(
-            '${item.year}',
+            item.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: AppColorScheme.onSurface,
               shadows: _textShadows,
             ),
           ),
-        const SizedBox(height: 4),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(width: width, height: 76),
-            Positioned(
-              left: 0,
-              top: 0,
-              width: width * 2.4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _sampleRatings(
-                    context,
-                    item,
-                    UserPreferences.homeRowsRatings,
-                    personal: true,
-                    singleLine: !_phone,
-                  ),
-                  if (showOverview && item.overview != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        item.overview!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.4,
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                          shadows: _textShadows,
-                        ),
-                      ),
-                    ),
-                ],
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
               ),
             ),
-          ],
-        ),
+          const SizedBox(height: 4),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(width: width, height: 76),
+              Positioned(
+                left: 0,
+                top: 0,
+                width: width * 2.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _sampleRatings(
+                      context,
+                      item,
+                      UserPreferences.homeRowsRatings,
+                      personal: true,
+                      singleLine: !_phone,
+                    ),
+                    if (showOverview && item.overview != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          item.overview!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                            shadows: _textShadows,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -2714,9 +3112,10 @@ Widget _homeRowsColumn(
     int offset = 0,
     bool withFocus = false,
   }) {
+    final showLabels = _showSampleLabels(context);
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
-        if (withFocus && i == 0)
+        if (withFocus && i == 0 && modern)
           focusedCard(_itemAt(items, offset))
         else
           card(
@@ -2725,23 +3124,60 @@ Widget _homeRowsColumn(
             aspect: thumbs ? 16 / 9 : 2 / 3,
             imageUrl: thumbs ? _itemAt(items, i + offset).backdropUrl : null,
             progress: thumbs && i == 0 ? 0.35 : (thumbs && i == 1 ? 0.7 : null),
+            // Not every file has both, as in a real library.
+            labels: !showLabels || i % 3 == 2
+                ? const []
+                : (i % 3 == 0 ? _sampleLabels : _sampleLabels.sublist(0, 1)),
+            focused: withFocus && i == 0,
           ),
     ];
+    final desktopScale = _desktopScale(context);
+    final panelItem = _itemAt(items, offset);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [header(title), cardsRow(cards)],
+      children: [
+        header(title),
+        cardsRow(cards),
+        if (isCarousel) ...[
+          SizedBox(height: carouselPanelGap(desktopScale)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
+            child: SizedBox(
+              height: carouselPanelHeight(desktopScale),
+              child: CarouselPanel(
+                item: _slideAsItem(panelItem),
+                desktopScale: desktopScale,
+                backdropUrl: panelItem.backdropUrl,
+                ratings: _sampleRatings(
+                  context,
+                  panelItem,
+                  UserPreferences.homeRowsRatings,
+                  personal: true,
+                  singleLine: !_phone,
+                ),
+                showOverview: showOverview,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  // Classic TV keeps the info overlay band above the rows, so its preview
-  // starts with one. Modern shows its metadata under the focused card instead.
-  final infoOverlay = !modern && _tv
+  // Classic keeps the info overlay band above the rows while Info Overlay is
+  // on, so its preview starts with one. Modern shows its metadata under the
+  // focused card instead.
+  final infoOverlay =
+      infoArea &&
+          !modern &&
+          !_phone &&
+          previewValue(context, UserPreferences.homeRowInfoOverlay)
       ? Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
           child: SizedBox(
             height: InfoArea.fixedHeight(
               isMobile: false,
-              desktopScale: _desktopScale,
+              desktopScale: _desktopScale(context),
             ),
             // Right after the UI scale changes, the saved scale can be read
             // here a frame before the text picks it up, so a column that's
@@ -2837,6 +3273,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
       DetailScreenStyle.stage => _stageDetail(context, items.first),
       DetailScreenStyle.premiere => _premiereDetail(context, items.first),
       DetailScreenStyle.quickLook => _quickLookDetail(context, items),
+      DetailScreenStyle.frost => _frostDetail(context, items.first),
     };
   },
   fallback: _fallbackDetail(style),
@@ -2986,17 +3423,19 @@ List<Widget> _techChips(BuildContext context, {double gap = 6}) {
   ];
 }
 
-/// The backdrop shown whole under the toolbar when a phone has Backdrop Size
-/// on Fit.
-Widget _detailBackdropFit(BuildContext context, Widget art) =>
-    DetailBackdropFit(
-      prefs: GetIt.instance<UserPreferences>(),
-      fits:
-          _phone &&
-          previewValue(context, UserPreferences.detailsBackdropSize) ==
-              UserPreferences.detailsBackdropFit,
-      child: art,
-    );
+/// The details backdrop as its settings draw it: left out when it's switched
+/// off, and shown whole under the toolbar when a phone has Backdrop Size on Fit.
+Widget _detailBackdrop(BuildContext context, Widget art) =>
+    previewValue(context, UserPreferences.detailsBackdropEnabled)
+    ? DetailBackdropFit(
+        prefs: GetIt.instance<UserPreferences>(),
+        fits:
+            _phone &&
+            previewValue(context, UserPreferences.detailsBackdropSize) ==
+                UserPreferences.detailsBackdropFit,
+        child: art,
+      )
+    : const SizedBox.shrink();
 
 /// The details background setting from 0 to 1. Classic blurs its backdrop by
 /// it and every other style dims its backdrop by it instead.
@@ -3103,7 +3542,7 @@ Widget _detailPreviewScaffold(
     fit: StackFit.expand,
     children: [
       ColoredBox(color: base),
-      _detailBackdropFit(
+      _detailBackdrop(
         context,
         _artwork(
           item.backdropUrl,
@@ -3392,9 +3831,8 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      if (item.backdropUrl != null &&
-          previewValue(context, UserPreferences.detailsBackdropEnabled))
-        _detailBackdropFit(
+      if (item.backdropUrl != null)
+        _detailBackdrop(
           context,
           sigma > 0
               ? ImageFiltered(
@@ -3659,7 +4097,7 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      _detailBackdrop(context, _artwork(item.backdropUrl)),
       ColoredBox(
         color: AppColors.black.withValues(
           alpha: 0.35 + 0.5 * _detailBackgroundAmount(context),
@@ -3735,138 +4173,186 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   );
 }
 
-/// The poster on the left with play under it and the title beside it, or
-/// stacked under a centered poster on a phone.
+/// The poster on the left with play and the circles under it and the title,
+/// ratings and tracks beside it, or the same parts stacked under a centered
+/// poster on a phone.
 Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
+  final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
-  final posterWidth = landscape ? 78.0 : 66.0;
-  final metaStyle = TextStyle(
-    fontSize: landscape ? 11 : 10,
-    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-  );
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final posterWidth = landscape ? 258.0 : 160.0;
+  final buttons = _detailButtons(context, auto: 3);
 
   final poster = SizedBox(
     width: posterWidth,
     child: AspectRatio(
       aspectRatio: 2 / 3,
       child: ClipRRect(
-        borderRadius: AppRadius.circular(6),
+        borderRadius: AppRadius.circular(8),
         child: _artwork(item.posterUrl ?? item.backdropUrl),
       ),
     ),
   );
-  final buttons = Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: 6,
+  final tracks = Wrap(
+    spacing: 8,
+    runSpacing: 8,
     children: [
-      Container(
-        height: landscape ? 20 : 18,
-        decoration: BoxDecoration(
-          color: AppColorScheme.accent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: [
-          for (final (icon, _) in _detailButtons(context, auto: 3))
-            Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.18),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 11, color: AppColorScheme.onSurface),
+      for (final label in [l10n.audio, l10n.subtitles])
+        Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.22),
             ),
-        ],
-      ),
+          ),
+          child: Center(
+            widthFactor: 1,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+              ),
+            ),
+          ),
+        ),
     ],
   );
   final text = Column(
     crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 6,
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Text(
-        item.title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          fontSize: landscape ? 18 : 15,
+      _logoOrTitle(
+        item,
+        width: landscape ? 400 : 300,
+        height: landscape ? 110 : 72,
+        alignment: landscape ? Alignment.topLeft : Alignment.bottomLeft,
+        fallbackStyle: TextStyle(
+          fontSize: landscape ? 42 : 28,
           fontWeight: FontWeight.w700,
           color: AppColorScheme.onSurface,
         ),
       ),
-      if (meta.isNotEmpty)
-        Text(
-          meta,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: metaStyle,
+      const SizedBox(height: 10),
+      _modernDetailMeta(item),
+      ..._techChips(context),
+      const SizedBox(height: 8),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
+      if (item.overview != null) ...[
+        const SizedBox(height: 10),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Text(
+            item.overview!,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.45,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+            ),
+          ),
         ),
-      if (item.overview != null && item.overview!.isNotEmpty)
-        Text(
-          item.overview!,
-          maxLines: landscape ? 3 : 2,
-          overflow: TextOverflow.ellipsis,
-          style: metaStyle,
-        ),
-      Row(spacing: 5, children: [_bar(46, 12, _weak), _bar(40, 12, _weak)]),
+      ],
+      const SizedBox(height: 16),
+      tracks,
     ],
   );
+
+  final page = landscape
+      ? Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: posterWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  poster,
+                  const SizedBox(height: 18),
+                  _detailPlayPill(context, landscape: true),
+                  const SizedBox(height: 14),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final (icon, _) in buttons)
+                        _detailCircleButton(icon, 52),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 44),
+            Expanded(child: text),
+          ],
+        )
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: poster),
+            const SizedBox(height: 20),
+            text,
+            const SizedBox(height: 20),
+            ..._detailActionRow(context, landscape: false, buttons: buttons),
+          ],
+        );
 
   return Stack(
     fit: StackFit.expand,
     children: [
-      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      _detailBackdrop(context, _artwork(item.backdropUrl)),
       ColoredBox(
         color: AppColors.black.withValues(
           alpha: 0.55 + 0.3 * _detailBackgroundAmount(context),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-        child: landscape
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: posterWidth,
-                    child: Column(
-                      spacing: 8,
-                      children: [poster, buttons],
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(child: text),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Center(child: poster),
-                  text,
-                ],
-              ),
+      ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          maxHeight: double.infinity,
+          child: Padding(
+            padding: landscape
+                ? const EdgeInsets.fromLTRB(53, 100, 53, 0)
+                : const EdgeInsets.fromLTRB(20, 100, 20, 0),
+            child: page,
+          ),
+        ),
       ),
     ],
   );
 }
 
-/// The title centered over a backdrop that fills the preview, with play and
-/// the circles under it, and on a TV a hint that the page runs on.
+/// The title centered over a backdrop that fills the preview with play and
+/// the circles under it, then the ratings where the page's sections start
+/// and on a TV a hint that the page runs on.
 Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   final landscape = !_phone;
   final base = AppColorScheme.background;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' • ');
+  final buttons = _detailButtons(context, auto: 4);
+  final titleStyle = TextStyle(
+    fontSize: landscape ? 56 : 32,
+    fontWeight: FontWeight.w700,
+    letterSpacing: landscape ? 4 : 2,
+    color: AppColorScheme.onSurface,
+  );
 
   return Stack(
     fit: StackFit.expand,
     children: [
-      _artwork(item.backdropUrl),
+      ColoredBox(color: base),
+      _detailBackdrop(
+        context,
+        _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+      ),
       DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -3879,114 +4365,38 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
               ),
               base.withValues(alpha: 0),
             ],
-            stops: const [0.05, 0.45, 0.8],
+            stops: const [0.05, 0.5, 0.85],
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+        padding: landscape
+            ? const EdgeInsets.fromLTRB(100, 0, 100, 16)
+            : const EdgeInsets.fromLTRB(20, 0, 20, 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 6,
           children: [
-            Text(
-              item.title.toUpperCase(),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: landscape ? 20 : 17,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppColorScheme.onSurface,
+            if (item.logoUrl != null)
+              _logoOrTitle(
+                item,
+                width: landscape ? 580 : 320,
+                height: landscape ? 150 : 90,
+                alignment: Alignment.bottomCenter,
+                fallbackStyle: titleStyle,
+              )
+            else
+              Text(
+                item.title.toUpperCase(),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle,
               ),
-            ),
-            if (meta.isNotEmpty)
+            if (meta.isNotEmpty) ...[
+              const SizedBox(height: 12),
               Text(
                 meta,
                 textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: landscape ? 11 : 10,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-                ),
-              ),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 4,
-              runSpacing: 4,
-              children: [
-                Container(
-                  width: 54,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.accent,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                ),
-                for (final (icon, _) in _detailButtons(context, auto: 4))
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.18),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      icon,
-                      size: 11,
-                      color: AppColorScheme.onSurface,
-                    ),
-                  ),
-              ],
-            ),
-            if (_tv)
-              Icon(
-                Icons.keyboard_arrow_down,
-                size: 14,
-                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-/// The drawer down the right over a dimmed row of titles, or the sheet up
-/// from the foot of a phone.
-Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
-  final landscape = !_phone;
-  final item = items.first;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
-
-  final panel = ColoredBox(
-    color: Color.alphaBlend(
-      AppColorScheme.onSurface.withValues(alpha: 0.03),
-      AppColorScheme.background,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (landscape)
-          SizedBox(
-            height: 52,
-            child: _artwork(item.backdropUrl, alignment: Alignment.topCenter),
-          )
-        else
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Center(child: _bar(18, 3, _weak)),
-          ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [
-              Text(
-                item.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -3995,54 +4405,579 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
                   color: AppColorScheme.onSurface,
                 ),
               ),
-              if (meta.isNotEmpty)
+            ],
+            if (item.overview != null) ...[
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 840),
+                child: Text(
+                  item.overview!,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.82),
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 22),
+            if (landscape)
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  _detailPlayPill(context, landscape: true),
+                  for (final (icon, _) in buttons)
+                    _detailCircleButton(icon, 52),
+                ],
+              )
+            else
+              ..._detailActionRow(context, landscape: false, buttons: buttons),
+            const SizedBox(height: 22),
+            _sampleRatings(
+              context,
+              item,
+              UserPreferences.detailsRatings,
+              personal: true,
+              singleLine: true,
+            ),
+            if (_tv) ...[
+              const SizedBox(height: 10),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 32,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.65),
+              ),
+            ],
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+/// The art blurred behind a glass window that holds it sharp, with the
+/// toolbar over its foot and the tab bar under it, laid out on the same stage
+/// as the real page. A phone gets the glass sheet over the art with the
+/// buttons in a capsule.
+Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
+  final l10n = AppLocalizations.of(context);
+  final buttons = _detailButtons(context, auto: 4);
+  final meta = _modernDetailMeta(item);
+  const glass = Color(0xE6303036);
+  const muted = Color(0x99EBEBF5);
+
+  Widget playPill({required bool phone}) => Container(
+    height: phone ? 48 : 60,
+    constraints: BoxConstraints(minWidth: phone ? 140 : 200),
+    padding: EdgeInsets.symmetric(horizontal: phone ? 20 : 28),
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: 0.86),
+      borderRadius: BorderRadius.circular(phone ? 24 : 30),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.play_arrow, size: 22, color: Colors.black),
+        const SizedBox(width: 8),
+        Text(
+          l10n.play,
+          style: TextStyle(
+            fontSize: phone ? 17 : 19,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    ),
+  );
+  final circles = [
+    for (final (icon, _) in buttons)
+      SizedBox.square(
+        dimension: _phone ? 46 : 60,
+        child: Icon(icon, size: _phone ? 22 : 25, color: Colors.white),
+      ),
+  ];
+  final ratings = _sampleRatings(
+    context,
+    item,
+    UserPreferences.detailsRatings,
+    personal: true,
+    columns: true,
+    columnTextScale: _phone ? 1 : 1.3,
+  );
+  final showArt = previewValue(context, UserPreferences.detailsBackdropEnabled);
+  final environment = [
+    if (showArt)
+      ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: _artwork(item.backdropUrl),
+      ),
+    ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
+  ];
+
+  if (_phone) {
+    final height = _designSize().height;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ...environment,
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: height * 0.62,
+          child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (rect) => const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white, Colors.transparent],
+              stops: [0, 0.62, 1],
+            ).createShader(rect),
+            child: showArt
+                ? _artwork(item.backdropUrl, alignment: Alignment.topCenter)
+                : const SizedBox.shrink(),
+          ),
+        ),
+        Positioned(
+          top: height * 0.42,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            decoration: const BoxDecoration(
+              color: Color(0xE61E1E22),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(38)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: _bar(36, 5, const Color(0x52FFFFFF))),
+                const SizedBox(height: 14),
+                Text(
+                  item.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    height: 1.13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                meta,
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: const Color(0x14FFFFFF),
+                    borderRadius: BorderRadius.circular(19),
+                  ),
+                  child: Row(
+                    spacing: 2,
+                    children: [
+                      for (final (index, label) in [
+                        l10n.overview,
+                        l10n.cast,
+                        l10n.similar,
+                        l10n.details,
+                      ].indexed)
+                        Expanded(
+                          child: Container(
+                            height: 32,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: index == 0
+                                  ? const Color(0x33FFFFFF)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: index == 0 ? Colors.white : muted,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: const BoxDecoration(
+                    border: Border.symmetric(
+                      horizontal: BorderSide(
+                        color: Color(0x29FFFFFF),
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: ratings,
+                  ),
+                ),
+                if (item.overview != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    item.overview!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.38,
+                      color: Color(0xE0FFFFFF),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 12,
+          right: 12,
+          bottom: 12,
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xE63A3A40),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: double.infinity, child: playPill(phone: true)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: circles,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  final tabs = [
+    (Icons.smart_display_outlined, l10n.overview),
+    (Icons.people_outline, l10n.castAndCrew),
+    (Icons.grid_view, l10n.moreLikeThis),
+    (Icons.info_outline, l10n.details),
+  ];
+  final window = ClipRRect(
+    borderRadius: AppRadius.circular(44),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        const ColoredBox(color: Color(0x5C1C1C20)),
+        if (showArt) _artwork(item.backdropUrl),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [Color(0xF20C0C0E), Color(0xBD0C0C0E), Color(0x000C0C0E)],
+              stops: [0, 0.5, 0.8],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(56, 0, 56, 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 64,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -1.6,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              meta,
+              const SizedBox(height: 14),
+              Container(
+                height: 100,
+                decoration: const BoxDecoration(
+                  border: Border.symmetric(
+                    horizontal: BorderSide(color: Color(0x24FFFFFF)),
+                  ),
+                ),
+                child: ratings,
+              ),
+              if (item.overview != null) ...[
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 744,
+                  child: Text(
+                    item.overview!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.44,
+                      color: Color(0xE6FFFFFF),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ...environment,
+      LayoutBuilder(
+        builder: (context, constraints) => FittedBox(
+          child: SizedBox.fromSize(
+            size: frostStageSize(constraints),
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  top: 12,
+                  bottom: 146,
+                  child: window,
+                ),
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 106,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: glass,
+                        borderRadius: BorderRadius.circular(38),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          playPill(phone: false),
+                          const SizedBox(width: 6),
+                          ...circles,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 36,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: glass,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 4,
+                        children: [
+                          for (final (index, (icon, label)) in tabs.indexed)
+                            Container(
+                              height: 48,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: index == 0
+                                    ? const Color(0x29FFFFFF)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(icon, size: 22, color: Colors.white),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    label,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+/// The drawer down the right over a dimmed row of titles, or the sheet up
+/// from the foot of a phone, with the backdrop, the title, its ratings, play
+/// and the circles, and Open full page at its foot.
+Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
+  final l10n = AppLocalizations.of(context);
+  final landscape = !_phone;
+  final item = items.first;
+  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final buttons = _detailButtons(context, auto: 4);
+  final surface = Color.alphaBlend(
+    AppColorScheme.onSurface.withValues(alpha: 0.03),
+    AppColorScheme.background,
+  );
+  final inset = landscape ? 28.0 : 20.0;
+  final showArt = previewValue(context, UserPreferences.detailsBackdropEnabled);
+
+  final panel = ColoredBox(
+    color: surface,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (landscape && !showArt)
+          const SizedBox(height: 64)
+        else if (landscape)
+          SizedBox(
+            height: 230,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _artwork(item.backdropUrl, alignment: Alignment.topCenter),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [surface.withValues(alpha: 0), surface],
+                      stops: const [0.4, 1],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 14),
+            child: Center(
+              child: _bar(
+                36,
+                5,
+                AppColorScheme.onSurface.withValues(alpha: 0.3),
+              ),
+            ),
+          ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: inset),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: landscape ? 30 : 26,
+                  height: 1.15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+              if (meta.isNotEmpty) ...[
+                const SizedBox(height: 6),
                 Text(
                   meta,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 9,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColorScheme.onSurface,
                   ),
                 ),
-              Row(
-                spacing: 3,
-                children: [
-                  Container(
-                    width: 30,
-                    height: 13,
-                    decoration: BoxDecoration(
-                      color: AppColorScheme.accent,
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                  ),
-                  for (final (icon, _) in _detailButtons(context, auto: 4))
-                    Container(
-                      width: 13,
-                      height: 13,
-                      decoration: BoxDecoration(
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.18),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 8,
-                        color: AppColorScheme.onSurface,
-                      ),
-                    ),
-                ],
+              ],
+              const SizedBox(height: 8),
+              _sampleRatings(
+                context,
+                item,
+                UserPreferences.detailsRatings,
+                personal: true,
+                labels: false,
               ),
+              const SizedBox(height: 16),
+              ..._detailActionRow(
+                context,
+                landscape: landscape,
+                buttons: buttons,
+              ),
+              if (item.overview != null) ...[
+                const SizedBox(height: 14),
+                Text(
+                  item.overview!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.82),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
         const Spacer(),
         Container(
-          height: 12,
-          margin: const EdgeInsets.all(8),
+          height: 50,
+          margin: EdgeInsets.fromLTRB(inset, 8, inset, 24),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(25),
             border: Border.all(
               color: AppColorScheme.onSurface.withValues(alpha: 0.25),
+            ),
+          ),
+          child: Text(
+            l10n.quickLookOpenFullPage,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: AppColorScheme.onSurface,
             ),
           ),
         ),
@@ -4055,18 +4990,18 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
     children: [
       ColoredBox(color: AppColorScheme.background),
       Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(40),
         child: Align(
           alignment: Alignment.topLeft,
           child: Row(
-            spacing: 6,
+            spacing: 14,
             children: [
-              for (final shown in items.take(5))
+              for (final shown in items.take(landscape ? 5 : 2))
                 Expanded(
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
                     child: ClipRRect(
-                      borderRadius: AppRadius.circular(4),
+                      borderRadius: AppRadius.circular(10),
                       child: _artwork(shown.posterUrl ?? shown.backdropUrl),
                     ),
                   ),
@@ -4084,7 +5019,7 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
           child: ClipRRect(
             borderRadius: landscape
                 ? BorderRadius.zero
-                : const BorderRadius.vertical(top: Radius.circular(10)),
+                : const BorderRadius.vertical(top: Radius.circular(28)),
             child: panel,
           ),
         ),
@@ -4581,6 +5516,46 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.frost) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        ColoredBox(color: AppColors.black.withValues(alpha: 0.45)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 26),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColorScheme.surface.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 5,
+                children: [_bar(56, 8, _strong), _bar(40, 5, _weak)],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 17,
+          child: Center(child: _bar(60, 12, _weak)),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 4,
+          child: Center(child: _bar(80, 8, _weak)),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.quickLook) {
     return Stack(
       fit: StackFit.expand,

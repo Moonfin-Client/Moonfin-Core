@@ -64,7 +64,12 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 
   private let castDiscoveryDelaySeconds: TimeInterval = 1.5
   private let castSessionStartTimeoutSeconds: TimeInterval = 15
+  // The Cast SDK reports to Google once it starts, so it waits until it's needed.
   private var hasConfiguredGoogleCast = false
+  private var castWasActive: Bool {
+    get { UserDefaults.standard.bool(forKey: "moonfin.castWasActive") }
+    set { UserDefaults.standard.set(newValue, forKey: "moonfin.castWasActive") }
+  }
   private var isCastDiscoveryActive = false
   private var pendingCastRequest: PendingCastRequest?
   private var castErrorReported = false
@@ -80,6 +85,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   private var nativeVideoChannel: NativeApplePlayerChannel?
   private var pipController: IosPiPController?
   private var themeMusicChannel: AppleTvThemeMusicChannel?
+  private var arcadeSoundChannel: AppleArcadeSoundChannel?
   private var previewChannel: AppleTvPreviewChannel?
   private var sfSymbolChannel: FlutterMethodChannel?
 
@@ -172,7 +178,12 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    configureGoogleCast()
+    // Starting it here lets a cast that was still running when the app closed
+    // reconnect.
+    if castWasActive {
+      configureGoogleCast()
+      castWasActive = currentCastSession() != nil
+    }
     startEngineIfNeeded()
     registerBackgroundRefresh()
 
@@ -335,6 +346,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
       // Theme music + inline previews: AVFoundation channels shared with tvOS
       // (same channel names, so the Dart callers work unchanged on iOS).
       self.themeMusicChannel = AppleTvThemeMusicChannel(messenger: messenger)
+      self.arcadeSoundChannel = AppleArcadeSoundChannel(messenger: messenger)
       // FlutterEngine isn't a FlutterTextureRegistry on iOS, so the registry
       // has to come off a plugin registrar.
       if let previewRegistrar = sharedEngine.registrar(forPlugin: "moonfin_appletv_preview") {
@@ -836,6 +848,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 
   private func discoverGoogleCastTargets(result: @escaping FlutterResult) {
     DispatchQueue.main.async {
+      self.configureGoogleCast()
       let discoveryManager = GCKCastContext.sharedInstance().discoveryManager
       discoveryManager.startDiscovery()
 
@@ -878,6 +891,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 
   private func stopGoogleCastDiscovery() {
     DispatchQueue.main.async {
+      guard self.hasConfiguredGoogleCast else { return }
       let discoveryManager = GCKCastContext.sharedInstance().discoveryManager
       if self.isCastDiscoveryActive {
         discoveryManager.remove(self)
@@ -922,6 +936,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     result: @escaping FlutterResult
   ) {
     DispatchQueue.main.async {
+      self.configureGoogleCast()
       let context = GCKCastContext.sharedInstance()
       let sessionManager = context.sessionManager
 
@@ -1137,8 +1152,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     action: @escaping (GCKRemoteMediaClient) -> Void
   ) {
     DispatchQueue.main.async {
-      let sessionManager = GCKCastContext.sharedInstance().sessionManager
-      guard let session = sessionManager.currentCastSession else {
+      guard let session = self.currentCastSession() else {
         result(
           FlutterError(
             code: "NO_CAST_SESSION",
@@ -1165,6 +1179,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   }
 
   func sessionManager(_ sessionManager: GCKSessionManager, didStart session: GCKSession) {
+    castWasActive = true
     if let castSession = session as? GCKCastSession {
       castSession.remoteMediaClient?.add(self)
       emitCurrentGoogleCastStatus(from: castSession.remoteMediaClient)
@@ -1174,6 +1189,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   }
 
   func sessionManager(_ sessionManager: GCKSessionManager, didResumeSession session: GCKSession) {
+    castWasActive = true
     if let castSession = session as? GCKCastSession {
       castSession.remoteMediaClient?.add(self)
       emitCurrentGoogleCastStatus(from: castSession.remoteMediaClient)
@@ -1191,6 +1207,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   }
 
   func sessionManager(_ sessionManager: GCKSessionManager, didFailToResumeSessionWithError error: Error) {
+    castWasActive = false
     emitGoogleCastEvent(state: "error", message: error.localizedDescription)
     completePendingCastWithError(
       code: "CAST_RESUME_FAILED",
@@ -1199,6 +1216,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   }
 
   func sessionManager(_ sessionManager: GCKSessionManager, didEnd session: GCKSession, withError error: Error?) {
+    castWasActive = false
     if let castSession = session as? GCKCastSession {
       castSession.remoteMediaClient?.remove(self)
     }
@@ -1310,6 +1328,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   }
 
   fileprivate func currentCastSession() -> GCKCastSession? {
+    guard hasConfiguredGoogleCast else { return nil }
     return GCKCastContext.sharedInstance().sessionManager.currentCastSession
   }
 }

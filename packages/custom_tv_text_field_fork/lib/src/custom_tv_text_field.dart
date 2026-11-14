@@ -807,8 +807,13 @@ class _FieldDisplay extends StatelessWidget {
 
                 final textSpan = TextSpan(
                   children: [
-                    if (isEmpty)
+                    // The hint looks typed with the cursor after it, so it
+                    // gives way while the keyboard is open. The zero-width
+                    // space holds the line height so the field doesn't shrink.
+                    if (isEmpty && !showCursor)
                       TextSpan(text: widget.hint, style: hintStyle)
+                    else if (isEmpty)
+                      TextSpan(text: '\u200B', style: textStyle)
                     else if (before.isNotEmpty)
                       TextSpan(text: before, style: textStyle),
                     cursorSpan,

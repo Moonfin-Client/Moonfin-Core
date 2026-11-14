@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/media_bar_slide_item.dart';
+import 'media_bar_nav_arrow.dart';
+import 'media_bar_new_release_label.dart';
 import 'media_bar_title.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
@@ -250,14 +252,18 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     final isMobile = PlatformDetection.useMobileUi;
     // A phone's bar is about 2:1, where a banner would be a thin strip.
     final bannerUrl = isMobile ? null : item.bannerUrl;
-    final navbarAtTop =
-        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+    final navbarAtTop = navbarPosition == NavbarPosition.top;
     final topInset = isMobile
         ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
         : 0.0;
+    // The left sidebar is drawn over the banner, so the banner starts past it.
+    final sidebarInset =
+        !isMobile && navbarPosition == NavbarPosition.left ? 56.0 : 0.0;
+    final showArrows = items.length > 1 && PlatformDetection.useDesktopUi;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
+      padding: EdgeInsets.fromLTRB(16 + sidebarInset, topInset, 16, 8),
       child: Focus(
         focusNode: widget.focusNode,
         autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
@@ -317,7 +323,8 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                       ),
                     ),
                     Positioned(
-                      left: 20,
+                      // Leaves room for the previous arrow.
+                      left: showArrows ? 72 : 20,
                       right: 20,
                       bottom: 16,
                       child: _content(
@@ -332,6 +339,14 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                         top: 12,
                         right: 16,
                         child: _Dots(count: items.length, active: index),
+                      ),
+                    if (showArrows)
+                      ...mediaBarNavArrows(
+                        context,
+                        onPrevious: index > 0
+                            ? () => _setIndex(index - 1)
+                            : null,
+                        onNext: () => _setIndex(index + 1),
                       ),
                   ],
                 ),
@@ -423,8 +438,15 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             )
           else
             MediaBarTitle(title: item.title, shadows: shadows),
+        if (item.newRelease case final release?) ...[
+          if (showTitle) const SizedBox(height: 8),
+          MediaBarNewReleaseLine(
+            release: release,
+            showMessage: !PlatformDetection.useMobileUi,
+          ),
+        ],
         if (meta.isNotEmpty) ...[
-          if (showTitle) const SizedBox(height: 6),
+          if (showTitle || item.newRelease != null) const SizedBox(height: 6),
           Text(
             meta,
             maxLines: 1,

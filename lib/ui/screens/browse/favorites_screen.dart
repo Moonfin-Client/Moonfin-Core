@@ -631,6 +631,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final serverItemId = item.serverId == 'seerr' ? null : item.id;
     return MediaCard(
       animeMarkerItemId: serverItemId,
+      posterBadgeItemId: serverItemId,
       recordingItemId: serverItemId,
       title: item.name,
       subtitle: _cardSubtitle(item),
@@ -761,6 +762,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   final itemAspectRatio = _itemAspectRatio(item);
 
                   Widget card = MediaCard(
+                    posterBadgeItemId: item.id,
                     recordingItemId: item.id,
                     title: item.name,
                     subtitle: _cardSubtitle(item),
@@ -1396,7 +1398,9 @@ class _DisplaySettingsDialogState extends State<_DisplaySettingsDialog> {
               ),
             ),
             Divider(color: dividerColor),
-            _sectionHeader('Switch View'),
+            _sectionHeader(
+              AppLocalizations.of(context).favoritesSwitchViewSection,
+            ),
             _viewStyleRadioTile(vm, FavoritesViewStyle.home, 'Home View'),
             _viewStyleRadioTile(vm, FavoritesViewStyle.library, 'Library View'),
             Divider(color: dividerColor),

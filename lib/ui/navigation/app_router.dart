@@ -28,6 +28,7 @@ import '../screens/auth/server_select_screen.dart';
 import '../screens/auth/startup_screen.dart';
 import '../screens/web_diagnostics_screen.dart';
 import '../screens/browse/all_genres_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 import '../screens/browse/collection_screen.dart';
 import '../screens/browse/favorites_screen.dart';
 import '../screens/browse/folder_browse_screen.dart';
@@ -82,6 +83,7 @@ import '../screens/setup/setup_wizard_screen.dart';
 import 'destinations.dart';
 import 'focus_route_observer.dart';
 import 'route_lifecycle_observer.dart';
+import '../screens/watch_party/watch_together_route.dart';
 
 const _authRoutes = {
   Destinations.startup,
@@ -329,6 +331,15 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: Destinations.watchParty,
+      builder: (context, state) => WatchPartyLinkScreen(
+        code: state.uri.queryParameters['code'],
+        serverId: state.uri.queryParameters['serverId'],
+        address: state.uri.queryParameters['address'],
+        switched: state.uri.queryParameters['userId'] != null,
+      ),
+    ),
+    GoRoute(
       path: Destinations.search,
       builder: (context, state) => SearchScreen(
         key: state.extra is RemoteSearchSession ? ObjectKey(state.extra) : null,
@@ -385,6 +396,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.allGenres,
       builder: (context, state) => const AllGenresScreen(),
+    ),
+    GoRoute(
+      path: Destinations.calendar,
+      builder: (context, state) => const CalendarScreen(),
+      routes: [
+        GoRoute(
+          path: 'month',
+          builder: (context, state) => const CalendarMonthScreen(),
+        ),
+      ],
     ),
     GoRoute(
       path: Destinations.allFavorites,
@@ -456,8 +477,10 @@ final appRouter = GoRouter(
         final genreId = state.uri.queryParameters['genreId']!;
         final parentId = state.uri.queryParameters['parentId'];
         final includeType = state.uri.queryParameters['includeType'];
+        final serverId = state.uri.queryParameters['serverId'];
         return LibraryBrowseScreen(
           libraryId: parentId ?? '',
+          serverId: serverId,
           genreId: genreId,
           genreName: genreName,
           includeItemTypes: includeType != null ? [includeType] : null,
@@ -468,7 +491,12 @@ final appRouter = GoRouter(
       path: Destinations.studioBrowse,
       builder: (context, state) {
         final studioName = state.pathParameters['studioName']!;
-        return LibraryBrowseScreen(libraryId: '', studioName: studioName);
+        final serverId = state.uri.queryParameters['serverId'];
+        return LibraryBrowseScreen(
+          libraryId: '',
+          serverId: serverId,
+          studioName: studioName,
+        );
       },
     ),
 
@@ -480,6 +508,7 @@ final appRouter = GoRouter(
         final serverId = state.uri.queryParameters['serverId'];
         final autoPlay = state.uri.queryParameters['autoPlay'] == 'true';
         final contextSeasonId = state.uri.queryParameters['seasonContext'];
+        final libraryId = state.uri.queryParameters['libraryId'];
         return ItemDetailScreen(
           // The browsed season decides which episode list this screen loads, so
           // a change of context has to remount rather than reuse the view model.
@@ -489,6 +518,7 @@ final appRouter = GoRouter(
           autoPlay: autoPlay,
           contextSeasonId: contextSeasonId,
           quickLook: quickLook,
+          libraryId: libraryId,
         );
       }),
       routes: [

@@ -645,6 +645,33 @@ void main() {
     });
   });
 
+  group('DeviceProfileBuilder E-AC-3 in MPEG-TS', () {
+    List<dynamic>? tsEac3Conditions(Map<String, dynamic> profile) {
+      for (final codecProfile in profile['CodecProfiles'] as List<dynamic>) {
+        if (codecProfile['Container'] == 'ts' &&
+            codecProfile['Codec'] == 'eac3') {
+          return codecProfile['Conditions'] as List<dynamic>;
+        }
+      }
+      return null;
+    }
+
+    test('a player that splits the substreams keeps 7.1 out of TS', () {
+      final conditions = tsEac3Conditions(
+        DeviceProfileBuilder.build(mpegTsSplitsEac3Substreams: true),
+      );
+
+      expect(conditions, hasLength(1));
+      expect(conditions!.single['Property'], 'AudioChannels');
+      expect(conditions.single['Condition'], 'LessThanEqual');
+      expect(conditions.single['Value'], '6');
+    });
+
+    test('other players are left alone', () {
+      expect(tsEac3Conditions(DeviceProfileBuilder.build()), isNull);
+    });
+  });
+
   group('DeviceProfileBuilder stereo TrueHD', () {
     test('a player whose decoder stalls on it asks for surround only', () {
       expect(
@@ -1121,6 +1148,30 @@ void main() {
       );
 
       expect(_hlsHevcCodecProfile(profile, 'VideoRangeType'), isNull);
+    });
+
+    test('a player that reads HLS copies as plain HEVC gets profile 5 '
+        'encoded on HLS and still direct plays it', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        supportsHevcMain10: true,
+        supportsHevcDolbyVision: true,
+        supportsHevcHdr10: true,
+        supportsDvProfile5: true,
+        hlsCopyPlaysAsPlainHevc: true,
+      );
+
+      final hls = _hlsHevcRangeTypes(profile);
+      expect(hls, isNot(contains('DOVI')));
+      expect(hls, containsAll(<String>['SDR', 'HDR10', 'DOVIWithHDR10']));
+      expect(
+        _hlsHevcCodecProfile(profile, 'VideoRangeType'),
+        isNot(contains('ApplyConditions')),
+      );
+      expect(
+        _codecUnsupportedRangeTypes(profile, 'hevc'),
+        isNot(contains('DOVI')),
+      );
     });
   });
 

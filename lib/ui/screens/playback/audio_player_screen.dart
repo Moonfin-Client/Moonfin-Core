@@ -137,7 +137,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       }),
     ]);
     unawaited(_activeMedia3Backend?.setVolume(100.0));
-    if (PlatformDetection.isDesktop) {
+    if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
       _playerVolume = _prefs
           .get(UserPreferences.playerVolume)
           .clamp(0.0, 100.0)
@@ -623,7 +623,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   Future<void> _showOverflowSheet(AggregatedItem item) async {
-    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0];
     const sleepOptions = <String, Duration?>{
       'Off': null,
       '15 min': Duration(minutes: 15),
@@ -1692,7 +1692,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   void _applyPlayerVolume() {
-    if (!PlatformDetection.isDesktop) return;
+    if (!PlatformDetection.isDesktop && !PlatformDetection.isWeb) return;
     unawaited(_manager.backend?.setVolume(_playerVolume));
   }
 

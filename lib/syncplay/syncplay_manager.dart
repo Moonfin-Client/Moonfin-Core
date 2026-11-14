@@ -84,6 +84,21 @@ class SyncPlayManager extends ChangeNotifier {
   bool _applyingRemoteCommand = false;
   final Map<String, String> _itemTitleCache = {};
   final Set<String> _pendingTitleLookups = {};
+  /// Server users keyed by lower-cased name, for participant avatars. The
+  /// group only carries names, so the list is fetched once per server.
+  final Map<String, ServerUser> _usersByName = {};
+  bool _usersLoaded = false;
+  bool _usersLoading = false;
+  DateTime? _usersFailedAt;
+  int _usersGeneration = 0;
+
+  /// How long a failed user-list fetch waits before the next try, so a
+  /// server that refuses it isn't asked again on every rebuild.
+  static const Duration usersRetryDelay = Duration(minutes: 1);
+
+  /// The time source for that retry delay; tests replace it.
+  @visibleForTesting
+  DateTime Function() usersClock = DateTime.now;
 
   final StreamController<SyncPlayUiEvent> _uiEventsController =
       StreamController<SyncPlayUiEvent>.broadcast();
@@ -132,8 +147,7 @@ class SyncPlayManager extends ChangeNotifier {
   bool get syncPlayServerSupported {
     final client = _currentClient;
     if (client == null) return false;
-    return client.serverType == ServerType.jellyfin &&
-        client.syncPlayApi != null;
+    return client.features.supportsSyncPlay && client.syncPlayApi != null;
   }
 
   bool get syncPlayEnabled => syncPlayConfigured && syncPlayServerSupported;
@@ -168,8 +182,14 @@ class SyncPlayManager extends ChangeNotifier {
 
   MediaServerClient? get _currentClient {
     if (_currentClientRef != null) return _currentClientRef;
+    // The signed-in session's server. The factory's newest client can be
+    // another saved server when a device has several.
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<MediaServerClient>()) {
+      return getIt<MediaServerClient>();
+    }
     try {
-      final factory = GetIt.instance<MediaServerClientFactory>();
+      final factory = getIt<MediaServerClientFactory>();
       return factory.getActiveClient();
     } catch (_) {
       return null;
@@ -188,6 +208,59 @@ class SyncPlayManager extends ChangeNotifier {
       unawaited(_fetchItemTitle(itemId));
     }
     return null;
+  }
+
+  /// The avatar URL for the participant called [name], or null while the
+  /// user list is still loading or when that user has no picture. The first
+  /// call fetches the list in the background and notifies when it lands.
+  String? participantImageUrlFor(String name) {
+    if (!_usersLoaded) {
+      final failedAt = _usersFailedAt;
+      final waiting =
+          failedAt != null &&
+          usersClock().difference(failedAt) < usersRetryDelay;
+      if (!_usersLoading && !waiting) unawaited(_loadUsers());
+      return null;
+    }
+    final user = _usersByName[name.trim().toLowerCase()];
+    final tag = user?.primaryImageTag;
+    if (user == null || tag == null || tag.isEmpty) return null;
+    final client = _currentClient;
+    if (client == null) return null;
+    // The tag in the URL keeps a replaced avatar from being served from cache.
+    final uri = Uri.parse(client.imageApi.getUserImageUrl(user.id));
+    return uri.replace(queryParameters: {
+      ...uri.queryParameters,
+      'tag': tag,
+      'width': '96',
+    }).toString();
+  }
+
+  Future<void> _loadUsers() async {
+    final client = _currentClient;
+    if (client == null) return;
+    _usersLoading = true;
+    final generation = _usersGeneration;
+    try {
+      final users = await client.adminUsersApi.getUsers();
+      // The server was switched while this was loading; drop the result.
+      if (generation != _usersGeneration) return;
+      _usersByName.clear();
+      for (final user in users) {
+        final name = user.name?.trim().toLowerCase();
+        if (name != null && name.isNotEmpty) _usersByName[name] = user;
+      }
+      _usersLoaded = true;
+      _usersFailedAt = null;
+      notifyListeners();
+    } catch (e) {
+      if (generation != _usersGeneration) return;
+      // Names still render with initials until a retry succeeds.
+      _usersFailedAt = usersClock();
+      _logger.w('SyncPlay user list failed', error: e);
+    } finally {
+      if (generation == _usersGeneration) _usersLoading = false;
+    }
   }
 
   Future<void> _fetchItemTitle(String itemId) async {
@@ -211,6 +284,11 @@ class SyncPlayManager extends ChangeNotifier {
     if (_activeServerId == newId) return;
     _activeServerId = newId;
     _currentClientRef = client;
+    _usersByName.clear();
+    _usersLoaded = false;
+    _usersLoading = false;
+    _usersFailedAt = null;
+    _usersGeneration++;
     if (_state.enabled) {
       _resetState();
     }

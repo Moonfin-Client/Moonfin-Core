@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
@@ -12,6 +13,8 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 
 import '../../../data/services/log_service.dart';
+import '../../../data/services/user_data_sync.dart';
+import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
@@ -27,11 +30,14 @@ import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/focus/dpad_keys.dart';
+import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/player_edge_drag.dart';
 import '../../../util/system_ui.dart';
+import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -63,6 +69,7 @@ class LiveTvPlayerScreen extends StatefulWidget {
 
 class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     with WidgetsBindingObserver, ImmersiveSystemUi {
+  late List<GuideChannel> _syncedChannels;
   final _manager = GetIt.instance<PlaybackManager>();
   // media_kit isn't registered on platforms that run a different backend, so
   // ask the container rather than listing them.
@@ -91,6 +98,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   late int _currentIndex;
+  bool _leavingPlayer = false;
   bool _infoVisible = true;
   Timer? _hideTimer;
   bool _isStopping = false;
@@ -202,6 +210,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
   final _tvRecordFocus = FocusNode(debugLabel: 'LiveTvRecord');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
+  final _tvFavoriteFocus = FocusNode(debugLabel: 'LiveTvFavorite');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
   final _tvSkipBackFocus = FocusNode(debugLabel: 'LiveTvSkipBack');
   final _tvSkipForwardFocus = FocusNode(debugLabel: 'LiveTvSkipForward');
@@ -235,6 +244,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   @override
   void initState() {
     super.initState();
+    _syncedChannels = [
+      for (final channel in widget.channels) channel.withSyncedUserData(),
+    ];
+    userDataSync.addListener(_onChannelUserDataChanged);
     _screensaverController.setPlaybackActive(true);
     _screensaverPlayingSub = _state.playingStream.listen(
       _screensaverController.setPlaybackActive,
@@ -273,6 +286,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
     _tvRecordFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
+    _tvFavoriteFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _tvSkipBackFocus.addListener(_onControlFocusChanged);
     _tvSkipForwardFocus.addListener(_onControlFocusChanged);
@@ -308,6 +322,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   @override
   void dispose() {
+    userDataSync.removeListener(_onChannelUserDataChanged);
     _screensaverPlayingSub?.cancel();
     _screensaverController.setPlaybackActive(false);
     _carouselPrewarm?.dispose();
@@ -360,6 +375,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
     _tvRecordFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
+    _tvFavoriteFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _tvSkipBackFocus.removeListener(_onControlFocusChanged);
     _tvSkipForwardFocus.removeListener(_onControlFocusChanged);
@@ -372,6 +388,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.dispose();
     _tvRecordFocus.dispose();
     _tvBitrateFocus.dispose();
+    _tvFavoriteFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     _tvSkipBackFocus.dispose();
     _tvSkipForwardFocus.dispose();
@@ -519,7 +536,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _initPlayerVolume() {
     _playerVolume = _prefs
         .get(UserPreferences.playerVolume)
-        .clamp(0.0, 100.0)
+        .clamp(0.0, maxPlayerVolume)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _manager.reportVolumeState(
@@ -535,7 +552,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   void _setPlayerVolume(double fraction) {
-    final level = (fraction * 100).clamp(0.0, 100.0).toDouble();
+    final level = (fraction * 100).clamp(0.0, maxPlayerVolume).toDouble();
     setState(() => _playerVolume = level);
     unawaited(_manager.backend?.setVolume(level));
     _manager.reportVolumeState(volume: level, isMuted: level <= 0);
@@ -806,7 +823,43 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  GuideChannel get _currentChannel => widget.channels[_currentIndex];
+  GuideChannel get _currentChannel => _syncedChannels[_currentIndex];
+
+  @override
+  void didUpdateWidget(covariant LiveTvPlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.channels, widget.channels)) {
+      _syncedChannels = [
+        for (final channel in widget.channels) channel.withSyncedUserData(),
+      ];
+    }
+  }
+
+  void _onChannelUserDataChanged() {
+    if (!mounted) return;
+    final updated = GuideChannel.withSyncedUserDataAll(_syncedChannels);
+    if (updated != null) setState(() => _syncedChannels = updated);
+  }
+
+  Future<void> _toggleChannelFavorite() async {
+    final channel = _currentChannel;
+    try {
+      await ItemMutationRepository(_client).setFavorite(
+        channel.id,
+        isFavorite: !channel.isFavorite,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).failedToUpdateFavoriteChannel,
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   Future<bool> _playCurrentChannel() async {
     // A channel change starts a new stream, so whatever caption choice is
@@ -969,6 +1022,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       if (!mounted || _isStopping) return;
       final current = ModalRoute.of(context);
       if (current != null && !current.isCurrent) return;
+      // Focus still on a closing dialog: the framework hands it back once
+      // the dialog is gone, and that change runs this check again.
+      final now = FocusManager.instance.primaryFocus;
+      if (now != null && !now.canRequestFocus) return;
       _focusPlayerRoot();
     });
   }
@@ -1106,7 +1163,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       final refreshed = await _fetchCurrentProgram();
       if (!mounted || _isStopping) return;
       if (!refreshed || !_canRecordCurrentProgram || _recordingState == null) {
-        message = l10n.failedToLoadRecordings;
+        // An empty guide clears the program. A failed refresh leaves the old
+        // one in place.
+        message = refreshed || _currentProgram == null
+            ? l10n.noProgramData
+            : l10n.failedToLoadRecordings;
         return;
       }
       final program = _currentProgram!;
@@ -1184,9 +1245,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _scheduleHide() {
     _hideTimer?.cancel();
-    final hideDelay = PlatformDetection.useMobileUi
-        ? const Duration(seconds: 8)
-        : const Duration(seconds: 5);
+    final hideDelay = _prefs.resolveControlsHideDelay();
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       if (_isOverlayInteractionActive) {
@@ -1212,6 +1271,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_hasSubtitleChoices) _tvSubtitleFocus,
     _tvBitrateFocus,
     if (_canRecordCurrentProgram) _tvRecordFocus,
+    _tvFavoriteFocus,
     _tvPlaybackInfoFocus,
   ];
 
@@ -1288,7 +1348,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _warmChannelCarousel() {
     if (!PlatformDetection.isTV || widget.channels.length < 2) return;
     final prewarm = _carouselPrewarm ??= ChannelCarouselPrewarm(_client);
-    prewarm.tuned(widget.channels, _currentChannel.id);
+    prewarm.tuned(_syncedChannels, _currentChannel.id);
   }
 
   void _showChannelCarousel() {
@@ -1591,6 +1651,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         title: l10n.audioTrack,
         options: options,
         selectedIndex: selected >= 0 ? selected : null,
+        closeKeys: {LogicalKeyboardKey.mediaAudioTrack},
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -1642,6 +1703,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           captionPosition: selectedCaption,
           streamCount: streams.length,
         ),
+        closeKeys: {LogicalKeyboardKey.closedCaptionToggle},
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -1730,6 +1792,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       player: playerEngineName(_manager.backend),
       device: device,
       audioRoute: playbackAudioRoute(resolution?.mediaSourceId),
+      nativeStatus: switch (_manager.backend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 
@@ -1797,6 +1863,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         verticalOffset: style.verticalOffset,
+        strokeScale: style.strokeScale,
+        shadowColor: style.shadowColor,
+        shadowOffset: style.shadowOffset,
+        shadowBlur: style.shadowBlur,
+        fontFamily: style.fontFamily,
       ),
     );
   }
@@ -1809,9 +1880,65 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         subtitleStreamIndex: _manager.subtitleStreamIndex,
       );
 
+  Future<void> _openRecordings() =>
+      _leavePlayerFor(Destinations.liveTvRecordings);
+
+  Future<void> _openFullGuide() => _leavePlayerFor(Destinations.liveTvGuide);
+
+  /// Stops playback and opens [route] in the player's place.
+  Future<void> _leavePlayerFor(String route) async {
+    if (_leavingPlayer || _isStopping) return;
+    _leavingPlayer = true;
+    try {
+      _isStopping = true;
+      await _manager.stop(userInitiated: false);
+      await _releasePlayerDisplayMode();
+      // Pop rather than replace, so whoever opened the player sees it close
+      // (the guide reloads and restores focus) and Back returns there.
+      if (mounted) {
+        final router = GoRouter.of(context);
+        final matches = router.routerDelegate.currentConfiguration.matches;
+        final below = matches.length < 2
+            ? null
+            : matches[matches.length - 2].matchedLocation;
+        Navigator.of(context).pop();
+        // Opened from that page already: closing the player returns there.
+        if (below != route) unawaited(router.push(route));
+      }
+    } finally {
+      _leavingPlayer = false;
+    }
+  }
+
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.guide) {
+      if (event is KeyDownEvent) {
+        if (_isGuidePickerOpen) {
+          _closeGuideOverlay();
+        } else {
+          if (_isCarouselOpen) _dismissChannelCarousel();
+          unawaited(_openFullGuide());
+        }
+      }
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey.isRecordingsKey && !_isGuidePickerOpen) {
+      if (event is KeyDownEvent) {
+        if (_isCarouselOpen) _dismissChannelCarousel();
+        unawaited(_openRecordings());
+      }
+      return KeyEventResult.handled;
+    }
+
+    // Stop leaves the player even with the guide or channel list open.
+    if (event.logicalKey == LogicalKeyboardKey.mediaStop) {
+      if (event is KeyDownEvent) unawaited(_exitPlayback());
+      return KeyEventResult.handled;
     }
 
     // While either in-player picker is open it owns all navigation keys.
@@ -1821,6 +1948,38 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
 
     switch (event.logicalKey) {
+      case LogicalKeyboardKey.closedCaptionToggle:
+        if (event is KeyDownEvent && _hasSubtitleChoices) {
+          _showSubtitleSelector();
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.mediaAudioTrack:
+        if (event is KeyDownEvent) {
+          if (_streamsOfType('Audio').length > 1) {
+            _showAudioSelector();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context).noOtherAudioTracks),
+              ),
+            );
+          }
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.channelUp:
+      case LogicalKeyboardKey.channelDown:
+        if (event is KeyDownEvent) {
+          final delta = event.logicalKey == LogicalKeyboardKey.channelUp
+              ? 1
+              : -1;
+          // Follows the guide's order, like the carousel, and wraps around.
+          final next = (_currentIndex + delta) % widget.channels.length;
+          if (next != _currentIndex) unawaited(_switchChannel(next));
+        }
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.mediaRecord:
+        if (event is KeyDownEvent) unawaited(_showRecordingDialog());
+        return KeyEventResult.handled;
       case LogicalKeyboardKey.arrowUp:
         if (PlatformDetection.isTV) {
           _showChannelCarousel();
@@ -2108,6 +2267,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         currentChannel: _currentChannel,
         onChannelSelected: _onGuideChannelSelected,
         onClose: _closeGuideOverlay,
+        onOpenRecordings: _openRecordings,
         backController: _guideBackController,
       ),
     );
@@ -2117,7 +2277,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     return Positioned.fill(
       child: ChannelCarouselOverlay(
         client: _client,
-        channels: widget.channels,
+        channels: _syncedChannels,
         currentChannelId: _currentChannel.id,
         selectionRevision: _carouselSelectionRevision,
         onChannelSelected: _onCarouselChannelSelected,
@@ -2141,11 +2301,42 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           // put two on screen at once.
           if (_liveRecoveryStatus != null) return const SizedBox.shrink();
           if (snap.data != true) return const SizedBox.shrink();
-          return Center(
-            child: CircularProgressIndicator(color: AppColorScheme.accent),
+          return _withDisplayMatchFps(
+            (fps) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: AppColorScheme.accent),
+                  if (fps != null) ...[
+                    const SizedBox(height: AppSpacing.spaceMd),
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      ).playerMatchingDisplayRate(frameRateLabel(fps)),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: AppTypography.fontSizeMd,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           );
         },
       ),
+    );
+  }
+
+  /// Rebuilds with the rate the display is switching to, while the start or
+  /// a live correction waits for the TV.
+  Widget _withDisplayMatchFps(Widget Function(double? fps) builder) {
+    final notifier = _activeMedia3Backend?.displayMatchFps;
+    if (notifier == null) return builder(null);
+    return ValueListenableBuilder<double?>(
+      valueListenable: notifier,
+      builder: (context, fps, _) => builder(fps),
     );
   }
 
@@ -2514,6 +2705,20 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           ],
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
+            focusNode: PlatformDetection.isTV ? _tvFavoriteFocus : null,
+            icon: _currentChannel.isFavorite
+                ? Icons.favorite
+                : Icons.favorite_border,
+            iconColor: _currentChannel.isFavorite
+                ? Theme.of(context).colorScheme.error
+                : Colors.white,
+            tooltip: _currentChannel.isFavorite
+                ? l10n.unfavoriteChannel
+                : l10n.favoriteChannel,
+            onPressed: () => unawaited(_toggleChannelFavorite()),
+          ),
+          const SizedBox(width: AppSpacing.spaceSm),
+          _buildOverlayControlButton(
             focusNode: PlatformDetection.isTV ? _tvPlaybackInfoFocus : null,
             icon: Icons.info_outline_rounded,
             tooltip: l10n.playbackInformation,
@@ -2544,6 +2749,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                         ),
                         child: Slider(
                           value: _playerVolume / 100,
+                          max: maxPlayerVolume / 100,
                           activeColor: AppColorScheme.accent,
                           inactiveColor: Colors.white24,
                           onChangeStart: (_) => _hideTimer?.cancel(),

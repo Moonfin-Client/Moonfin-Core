@@ -6,7 +6,7 @@ import '../../../preference/user_preferences.dart';
 import 'settings_section_header.dart';
 
 /// The mock screen the settings live preview draws.
-enum SettingsPreviewScene { home, details, player, search }
+enum SettingsPreviewScene { home, details, player, search, calendar, library }
 
 /// What the focused settings tile tells the preview about itself.
 class SettingsPreviewEntry {
@@ -60,6 +60,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_live_tv_button': SettingsPreviewScene.home,
     'pref_show_syncplay_button': SettingsPreviewScene.home,
     'pref_show_seerr_button': SettingsPreviewScene.home,
+    'pref_show_calendar_button': SettingsPreviewScene.home,
     'pref_show_libraries_in_toolbar': SettingsPreviewScene.home,
     'pref_show_libraries_individually': SettingsPreviewScene.home,
     'pref_show_downloads_button': SettingsPreviewScene.home,
@@ -67,12 +68,16 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_server_messages_button': SettingsPreviewScene.home,
     'navbarColor': SettingsPreviewScene.home,
     'navbarOpacity': SettingsPreviewScene.home,
+    'focus_color': SettingsPreviewScene.home,
+    'pref_desktop_ui_scale': SettingsPreviewScene.home,
     'pref_home_rows_style': SettingsPreviewScene.home,
     'pref_home_rows_fullscreen': SettingsPreviewScene.home,
     'poster_size': SettingsPreviewScene.home,
+    'pref_show_poster_labels': SettingsPreviewScene.home,
     'mediaBarMode': SettingsPreviewScene.home,
     'mediaBarOverlayColor': SettingsPreviewScene.home,
     'mediaBarOverlayOpacity': SettingsPreviewScene.home,
+    'mediaBarRowPeek': SettingsPreviewScene.home,
     'mediaBarEnableAdditionalRatings': SettingsPreviewScene.home,
     'mediaBarEnabledRatings': SettingsPreviewScene.home,
     'mediaBarShowRatingLabels': SettingsPreviewScene.home,
@@ -82,7 +87,46 @@ class SettingsPreviewController extends ChangeNotifier {
     'homeRowsShowRatingLabels': SettingsPreviewScene.home,
     'homeRowsShowRatingBadges': SettingsPreviewScene.home,
     'pref_hide_home_media_description': SettingsPreviewScene.home,
+    'pref_show_home_backdrop': SettingsPreviewScene.home,
+    'pref_home_backdrop_style': SettingsPreviewScene.home,
+    'seasonal_surprise': SettingsPreviewScene.home,
+    'seasonal_density': SettingsPreviewScene.home,
+    'pref_display_audio_rows': SettingsPreviewScene.home,
+    'pref_audio_rows_sort_by': SettingsPreviewScene.home,
+    'pref_audio_rows_sort_order': SettingsPreviewScene.home,
+    'pref_display_collections_rows': SettingsPreviewScene.home,
+    'pref_collections_row_sort_by': SettingsPreviewScene.home,
+    'pref_collections_row_sort_order': SettingsPreviewScene.home,
+    'pref_collections_row_show_episodes': SettingsPreviewScene.home,
+    'pref_display_favorites_rows': SettingsPreviewScene.home,
+    'pref_favorites_row_sort_by': SettingsPreviewScene.home,
+    'pref_favorites_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_genres_rows': SettingsPreviewScene.home,
+    'pref_genres_row_sort_by': SettingsPreviewScene.home,
+    'pref_genres_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_playlists_rows': SettingsPreviewScene.home,
+    'pref_playlists_row_sort_by': SettingsPreviewScene.home,
+    'pref_playlists_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_studios_rows': SettingsPreviewScene.home,
+    'pref_studios_row_sort_by': SettingsPreviewScene.home,
+    'pref_studios_row_sort_order': SettingsPreviewScene.home,
+    'home_sections_config': SettingsPreviewScene.home,
+    'pref_merge_continue_watching_next_up': SettingsPreviewScene.home,
+    'pref_merge_recent_rows_by_type': SettingsPreviewScene.home,
+    'pref_display_rewatch_row': SettingsPreviewScene.home,
+    'pref_display_since_you_watched_rows': SettingsPreviewScene.home,
+    'seasonal_row_enabled': SettingsPreviewScene.home,
+    'pref_hide_home_watch_progress': SettingsPreviewScene.home,
+    'pref_hide_home_unwatched_count': SettingsPreviewScene.home,
+    'pref_watched_indicator_behavior': SettingsPreviewScene.home,
+    'pref_media_type_badge_behavior': SettingsPreviewScene.home,
+    'pref_enable_series_thumbnails': SettingsPreviewScene.home,
+    'pref_card_focus_expansion': SettingsPreviewScene.home,
+    'pref_classic_home_rows_padding': SettingsPreviewScene.home,
+    'pref_modern_home_rows_padding': SettingsPreviewScene.home,
+    'pref_home_row_info_overlay': SettingsPreviewScene.home,
     'pref_detail_screen_style': SettingsPreviewScene.details,
+    'pref_personal_rating_style': SettingsPreviewScene.details,
     'pref_hide_details_media_description': SettingsPreviewScene.details,
     'pref_show_details_backdrop': SettingsPreviewScene.details,
     'pref_details_backdrop_size': SettingsPreviewScene.details,
@@ -130,6 +174,12 @@ class SettingsPreviewController extends ChangeNotifier {
     'subtitles_text_size': SettingsPreviewScene.player,
     'subtitles_text_weight': SettingsPreviewScene.player,
     'subtitles_offset_position': SettingsPreviewScene.player,
+    'subtitles_stroke_width': SettingsPreviewScene.player,
+    'subtitles_shadow': SettingsPreviewScene.player,
+    'subtitles_shadow_intensity': SettingsPreviewScene.player,
+    'subtitles_shadow_offset': SettingsPreviewScene.player,
+    'subtitles_shadow_blur': SettingsPreviewScene.player,
+    'subtitles_font': SettingsPreviewScene.player,
     'secondary_subtitle_size_adjustment': SettingsPreviewScene.player,
     'secondary_subtitle_offset_adjustment': SettingsPreviewScene.player,
     'secondary_subtitle_text_color': SettingsPreviewScene.player,
@@ -143,7 +193,11 @@ class SettingsPreviewController extends ChangeNotifier {
     'subtitles_use_embedded_styles': SettingsPreviewScene.player,
     'subtitles_use_embedded_font_sizes': SettingsPreviewScene.player,
     'media_segment_actions': SettingsPreviewScene.player,
+    'pref_media_segment_countdown': SettingsPreviewScene.player,
     'next_up_behavior': SettingsPreviewScene.player,
+    'next_up_timeout': SettingsPreviewScene.player,
+    'pref_show_next_air_date': SettingsPreviewScene.player,
+    'replace_skip_outro_with_next_up': SettingsPreviewScene.player,
     'loading_animation_image': SettingsPreviewScene.player,
     'loading_animation_size': SettingsPreviewScene.player,
     'loading_animation_position': SettingsPreviewScene.player,
@@ -155,13 +209,36 @@ class SettingsPreviewController extends ChangeNotifier {
     'trickplay_follow_scrub_position': SettingsPreviewScene.player,
     'trickplay_pause_while_scrubbing': SettingsPreviewScene.player,
     'pref_keyboard_style': SettingsPreviewScene.search,
+    'pref_calendar_style': SettingsPreviewScene.calendar,
+    'pref_calendar_week_start': SettingsPreviewScene.calendar,
+    'pref_calendar_scope': SettingsPreviewScene.calendar,
+    'pref_calendar_show_episodes': SettingsPreviewScene.calendar,
+    'pref_calendar_show_movies': SettingsPreviewScene.calendar,
+    'pref_calendar_libraries': SettingsPreviewScene.calendar,
+    'pref_calendar_unmonitored': SettingsPreviewScene.calendar,
+    'pref_calendar_specials': SettingsPreviewScene.calendar,
+    'pref_calendar_badges': SettingsPreviewScene.calendar,
+    'pref_calendar_color_by': SettingsPreviewScene.calendar,
+    'pref_calendar_image_type': SettingsPreviewScene.calendar,
+    'pref_calendar_spoiler_safe': SettingsPreviewScene.calendar,
+    'pref_calendar_request_button': SettingsPreviewScene.calendar,
+    'pref_calendar_reminders': SettingsPreviewScene.calendar,
+    'pref_library_style': SettingsPreviewScene.library,
+    'pref_group_items_into_collections': SettingsPreviewScene.library,
+    'pref_show_media_details_on_library_page': SettingsPreviewScene.library,
+    'pref_library_card_titles': SettingsPreviewScene.library,
+    'pref_use_detailed_sub_headings': SettingsPreviewScene.library,
+    'pref_hide_backdrops_in_libraries': SettingsPreviewScene.library,
+    'pref_music_library_style': SettingsPreviewScene.library,
+    'pref_book_library_style': SettingsPreviewScene.library,
   };
 
-  /// The screensaver comes on over Home, so every one of its settings shows
-  /// there.
+  /// The screensaver comes on over Home, and each row's image type shows on
+  /// Home, so all of those settings show there.
   static SettingsPreviewScene? sceneForKey(String? key) => key == null
       ? null
-      : key.startsWith('pref_screensaver_')
+      : key.startsWith('pref_screensaver_') ||
+            key.startsWith('homeRowImageType_')
       ? SettingsPreviewScene.home
       : _sceneByKey[key];
 
@@ -217,6 +294,11 @@ class SettingsPreviewController extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// Whether [context] is a screen drawn inside the settings live preview,
+/// which leaves focus, the navbar and the app's backdrop to the real one.
+bool inSettingsPreview(BuildContext context) =>
+    SettingsPreviewScope.maybeOf(context) != null;
 
 class SettingsPreviewScope
     extends InheritedNotifier<SettingsPreviewController> {

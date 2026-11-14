@@ -78,9 +78,13 @@ class PreferenceStore {
   }
 
   Future<void> set<T>(Preference<T> preference, T value) async {
-    final write = (() async {
-      final key = preference.key;
+    final key = preference.key;
+    // On Windows and Linux every write rewrites the whole prefs file on the UI
+    // thread, so a value that's already stored isn't written again.
+    final stored = preference is EnumPreference ? (value as Enum).name : value;
+    if (_isStored(key, stored)) return;
 
+    final write = (() async {
       if (preference is EnumPreference) {
         await _requirePrefs.setString(key, (value as Enum).name);
         return;
@@ -103,6 +107,18 @@ class PreferenceStore {
     })();
 
     await _trackWrite(write);
+  }
+
+  bool _isStored(String key, Object? value) {
+    final current = _requirePrefs.get(key);
+    if (current is List && value is List) {
+      if (current.length != value.length) return false;
+      for (var i = 0; i < value.length; i++) {
+        if (current[i] != value[i]) return false;
+      }
+      return true;
+    }
+    return current != null && current == value;
   }
 
   Future<void> flushPendingWrites() async {

@@ -18,10 +18,14 @@ class PlayerVolumeControl extends StatelessWidget {
     required this.volume,
     required this.onChanged,
     required this.onToggleMute,
+    this.max = 1,
   });
 
-  /// The current level, from 0 to 1.
+  /// The current level, from 0 to [max].
   final double volume;
+
+  /// Above 1 where the player can amplify past full scale.
+  final double max;
   final ValueChanged<double> onChanged;
   final VoidCallback onToggleMute;
 
@@ -53,7 +57,11 @@ class PlayerVolumeControl extends StatelessWidget {
               thumbColor: AppColorScheme.rangeThumb,
               overlayColor: AppColorScheme.rangeThumb.withValues(alpha: 0.2),
             ),
-            child: Slider(value: volume.clamp(0.0, 1.0), onChanged: onChanged),
+            child: Slider(
+              value: volume.clamp(0.0, max),
+              max: max,
+              onChanged: onChanged,
+            ),
           ),
         ),
       ],

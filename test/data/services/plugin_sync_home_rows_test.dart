@@ -186,6 +186,20 @@ void main() {
     expect(prefs.get(UserPreferences.sinceYouWatched3Enabled), isFalse);
   });
 
+  test('a row order without sections keeps Watching Now on when its switch '
+      'is', () async {
+    await prefs.set(UserPreferences.mdblistWatchingNowEnabled, true);
+    adapter.resolvedProfile = {
+      'homeRowOrder': ['resume'],
+    };
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+
+    final watchingNow = prefs.homeSectionsConfig.firstWhere(
+      (c) => c.type == HomeSectionType.mdblistWatchingNow,
+    );
+    expect(watchingNow.enabled, isTrue);
+  });
+
   group('Seerr slider rows', () {
     final slider = seerrSliderSection(
       const SeerrDiscoverSlider(
@@ -232,6 +246,34 @@ void main() {
 
       expect(sliders(), hasLength(1));
       expect(sliders().single.enabled, isFalse);
+    });
+  });
+
+  group('Row Type', () {
+    Future<void> pushStyle(String style) async {
+      adapter.resolvedProfile = {'homeRowsStyle': style};
+      await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+    }
+
+    test('a synced Carousel is applied', () async {
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+
+      await pushStyle('carousel');
+
+      expect(
+        prefs.get(UserPreferences.homeRowsStyle),
+        HomeRowsStyle.carousel,
+      );
+    });
+
+    // Builds from before Carousel get it from newer clients this way, and
+    // keep the style they have.
+    test("a style this build doesn't know leaves the setting alone", () async {
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+
+      await pushStyle('someFutureStyle');
+
+      expect(prefs.get(UserPreferences.homeRowsStyle), HomeRowsStyle.v2);
     });
   });
 }

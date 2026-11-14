@@ -1025,7 +1025,7 @@
             }
         }
     },
-    "view": "Näytä",
+    "view": "Näkymä",
     "@view": {
         "description": "Action button label for viewing a photo"
     },
@@ -1305,7 +1305,7 @@
     "@downloadAllQuality": {
         "description": "Title for download quality picker when downloading all"
     },
-    "downloadQuality": "Lataa laatu",
+    "downloadQuality": "Lataamisen Laatu",
     "@downloadQuality": {
         "description": "Title for download quality picker for a single item"
     },
@@ -2032,7 +2032,7 @@
     "@themeSystem": {
         "description": "Reader theme option for system default"
     },
-    "themeLight": "Teema: Valo",
+    "themeLight": "Teema: Vaalea",
     "@themeLight": {
         "description": "Reader theme option for light mode"
     },
@@ -2474,7 +2474,7 @@
     "@storageManagement": {
         "description": "Title for the storage management screen"
     },
-    "storageBreakdown": "Varastoinnin erittely",
+    "storageBreakdown": "Tallennustilan Erittely",
     "@storageBreakdown": {
         "description": "Section title for storage breakdown"
     },
@@ -3279,11 +3279,11 @@
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
-    "storage": "Varastointi",
+    "storage": "Tallennustila",
     "@storage": {
         "description": "Section title for storage settings"
     },
-    "storageUsed": "Säilytys käytetty",
+    "storageUsed": "Käytetty tallennustila",
     "@storageUsed": {
         "description": "Label for storage used"
     },
@@ -4513,7 +4513,7 @@
     "select": "Valitse",
     "send": "Lähetä",
     "sessions": "Istunnot",
-    "set": "Sarja",
+    "set": "Aseta",
     "status": "Tila",
     "stop": "Pysäytä",
     "streaming": "Suoratoisto",
@@ -6074,7 +6074,7 @@
     "adminPlaybackTranscodeTempPath": "Transkoodaus lämpötilapolku",
     "adminPlaybackSegmentDeletion": "Salli segmentin poistaminen",
     "adminPlaybackSegmentKeep": "Segmentin säilytys (sekuntia)",
-    "adminPlaybackThrottleBuffering": "Kaasun puskurointi",
+    "adminPlaybackThrottleBuffering": "Puskuroinnin rajoitus",
     "adminResumeMinPct": "Minimi jatkamisprosentti",
     "adminResumeMinPctSubtitle": "Sisältöä on toistettava tämän prosenttiosuuden yli, jotta edistyminen tallentuu",
     "adminResumeMaxPct": "Maksimi jatkamisprosentti",
@@ -6333,7 +6333,7 @@
     "trackActionAddToQueue": "Lisää jonoon",
     "trackActionAddToPlaylist": "Lisää soittolistaan",
     "trackActionCancelDownload": "Keskeytä lataus",
-    "trackActionDeleteFromPlaylist": "Poista soittolistasta",
+    "trackActionDeleteFromPlaylist": "Poista soittolistalta",
     "trackActionMoveUp": "Siirrä ylös",
     "trackActionMoveDown": "Siirrä alas",
     "trackActionRemoveFromFavorites": "Poista suosikeista",
@@ -6543,7 +6543,7 @@
     "settingsAutomationAndQueue": "Automaatio ja jono",
     "settingsAutomationAndQueueSubtitle": "Automaattinen toisto ja sekvenssi",
     "settingsOfflineDownloadsSubtitle": "Latausten laatu, tallennusrajat ja jonon koko",
-    "settingsSyncplaySubtitle": "Synkronointilogiikka ryhmäistunnoille",
+    "settingsSyncplaySubtitle": "Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa",
     "settingsAdvancedOptionsSubtitle": "Erikoistuneet soittimen ominaisuudet. Käytä varoen, sillä jotkin vaihtoehdot voivat aiheuttaa toistoongelmia",
     "settingsSkipIntrosAndOutros": "Ohitetaanko introt ja loppupalat?",
     "settingsPromptUser": "Kehota käyttäjää",
@@ -6592,20 +6592,20 @@
     },
     "settingsLiveTvDirect": "Suora TV lähetys",
     "settingsLiveTvDirectSubtitle": "Ota suora toisto käyttöön live TV:ssä",
-    "settingsOpenGroups": "Avaa Ryhmät",
-    "settingsOpenGroupsSubtitle": "Luo SyncPlay ryhmiä, liity niihin tai hallinnoi niitä",
-    "settingsSyncplayEnabled": "SyncPlay käytössä",
-    "settingsSyncplayEnabledSubtitle": "Ota ryhmäkatseluominaisuudet käyttöön",
-    "settingsSyncplayButton": "SyncPlay painike",
-    "settingsSyncplayButtonSubtitle": "Näytä SyncPlay painike navigointipalkissa",
+    "settingsOpenGroups": "Järjestä Watch Partyt",
+    "settingsOpenGroupsSubtitle": "Aloita uusi projekti tai liity jo käynnissä olevaan projektiin",
+    "settingsSyncplayEnabled": "Watch Party",
+    "settingsSyncplayEnabledSubtitle": "Katso ystävien kanssa tällä palvelimella, kaikki samassa tahdissa",
+    "settingsSyncplayButton": "Watch Party painike",
+    "settingsSyncplayButtonSubtitle": "Näytä Watch Party painike navigointipalkissa",
     "settingsSyncplayAdvancedCorrection": "Edistynyt korjaus",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "Ota hienorakeinen synkronointilogiikka käyttöön",
-    "settingsSyncplaySyncCorrection": "Synkronoinnin korjaus",
-    "settingsSyncplaySyncCorrectionSubtitle": "Säädä toisto automaattisesti pysyäksesi synkronoituna",
-    "settingsSyncplaySpeedToSync": "Synkronointinopeus",
-    "settingsSyncplaySpeedToSyncSubtitle": "Käytä synkronointiin toistonopeuden säätöä",
-    "settingsSyncplaySkipToSync": "Siirry synkronointiin",
-    "settingsSyncplaySkipToSyncSubtitle": "Käytä etsintää synkronointiin",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "Viivästykset ja ylimääräinen siirtymä",
+    "settingsSyncplaySyncCorrection": "Synkronointikorjaus",
+    "settingsSyncplaySyncCorrectionSubtitle": "Sopeuta tämän laitteen toiminta huoneen olosuhteisiin",
+    "settingsSyncplaySpeedToSync": "Synkronoinnin nopeus",
+    "settingsSyncplaySpeedToSyncSubtitle": "Toista hieman nopeammin tai hitaammin, jotta pysyt mukana",
+    "settingsSyncplaySkipToSync": "Ohita synkronointi",
+    "settingsSyncplaySkipToSyncSubtitle": "Siirry eteenpäin, kun se on liian kaukana",
     "settingsSyncplayMinimumSpeedDelay": "Miniminopeusviive",
     "settingsSyncplayMaximumSpeedDelay": "Suurin nopeuden viive",
     "settingsSyncplaySpeedDuration": "Nopeuden kesto",
@@ -7287,7 +7287,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetyn moonfin asettelun versio. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on hero first asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista.",
+    "detailScreenStyleSubtitle": "Miltä elokuva tai sarja näyttää, kun sen avaa.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7303,7 +7303,7 @@
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. \tPoista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.",
+    "expandedTabsSubtitle": "Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. Poista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
@@ -8447,7 +8447,7 @@
     "adminNetworkingLocalSubnetsHint": "Pilkulla tai rivinvaihdolla erotettu luettelo IP-osoitteista tai CIDR-aliverkoista, jotka katsotaan lähiverkoksi.",
     "adminNetworkingPublishedUris": "Julkaistut palvelimen URI-osoitteet",
     "adminNetworkingPublishedUriHint": "Yhdistä aliverkko tai osoite julkaistuun URL-osoitteeseen, esim. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Kuristuksen viive (sekuntia)",
+    "adminPlaybackThrottleDelay": "Rajoituksen viive (sekuntia)",
     "adminPlaybackEnableSubtitleExtraction": "Salli tekstitysten purku lennossa",
     "adminGeneralEnableSlowResponse": "Ota hitaiden vastausten varoitukset käyttöön",
     "adminGeneralQuickConnect": "Ota Quick Connect käyttöön",
@@ -9516,7 +9516,7 @@
     "adminMetadataPersonKindDirector": "Ohjaaja",
     "adminMetadataPersonKindComposer": "Säveltäjä",
     "adminMetadataPersonKindWriter": "Kirjailija",
-    "adminMetadataPersonKindGuestStar": "Vierailija",
+    "adminMetadataPersonKindGuestStar": "Vierasnäyttelijä",
     "adminMetadataPersonKindProducer": "Tuottaja",
     "adminMetadataPersonKindConductor": "Kapellimestari",
     "adminMetadataPersonKindLyricist": "Sanoittaja",
@@ -9797,7 +9797,7 @@
     "@personalRatingMine": {
         "description": "Label under the viewer's own rating in the ratings row."
     },
-    "increase": "Lisää",
+    "increase": "Lisäys",
     "@increase": {
         "description": "Action that increases a numeric personal rating."
     },
@@ -11290,7 +11290,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Näytä kauden saatavuustiedot mediatietosivuilla",
+    "showSeerrAvailabilityBadgesDescription": "Näytä Seerr tila julisteissa ja kausissa kaikkialla sovelluksessa",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -12127,7 +12127,7 @@
     "@achievementsStatsServer": {
         "description": "Section of figures covering every user"
     },
-    "achievementsStatsClock": "Koska katsoit",
+    "achievementsStatsClock": "Kun katsot",
     "@achievementsStatsClock": {
         "description": "Header above the hour of day chart"
     },
@@ -13602,7 +13602,7 @@
     "@settingsDetailsPageSubtitle": {
         "description": "Subtitle for the Details Page entry on the Appearance settings screen"
     },
-    "settingsPlaybackSubtitle": "Toistin, laatu, ääni, tekstitys, kappaleiden ohitus ja SyncPlay",
+    "settingsPlaybackSubtitle": "Toistolaite, laatu, ääni, tekstitys, kohtien ohittaminen ja katselutilaisuudet",
     "@settingsPlaybackSubtitle": {
         "description": "Subtitle for the Playback settings root entry"
     },
@@ -13654,7 +13654,7 @@
     "@settingsSkippingAndQueueSection": {
         "description": "Section header on the Playback settings screen"
     },
-    "settingsWatchTogetherSection": "Katso Yhdessä",
+    "settingsWatchTogetherSection": "Watch Parties",
     "@settingsWatchTogetherSection": {
         "description": "Section header on the Playback settings screen for SyncPlay"
     },
@@ -13940,7 +13940,7 @@
     "@shortcutSkipSegment": {
         "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
     },
-    "buttonShownInSyncPlayGroup": "Näkyy vain, kun olet SyncPlay-ryhmässä",
+    "buttonShownInSyncPlayGroup": "Näkyy vain, kun olet watch partyssä",
     "@buttonShownInSyncPlayGroup": {
         "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
     },
@@ -16150,7 +16150,7 @@
     "@watchPartyRoomCode": {
         "description": "Label for a Watch Party room's join code"
     },
-    "watchPartyStart": "Järjestä Watch Party",
+    "watchPartyStart": "Aloita Watch Party",
     "@watchPartyStart": {
         "description": "Button that opens a new Watch Party room"
     },
@@ -16158,7 +16158,7 @@
     "@watchPartyPickTitle": {
         "description": "How a Watch Party host picks what to watch"
     },
-    "watchPartyWaitingForHost": "Odotan, että isäntä valitsee jotain.",
+    "watchPartyWaitingForHost": "Odotan, että järjestäjä valitsee jotain.",
     "@watchPartyWaitingForHost": {
         "description": "Shown to Watch Party guests before anything is picked"
     },
@@ -16186,7 +16186,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "Watch Party päättäjäiset",
+    "watchPartyEnd": "Päätepiste kaikille",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -16535,5 +16535,2210 @@
     "accountActive": "Aktiivinen",
     "@accountActive": {
         "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStyleStage": "Stage",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStylePremiere": "Premiere",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStyleStage": "Stage",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupDetailStageHint": "Edessä oleva juliste, jonka alla on ohjelma ja jonka vieressä on lisätietoja.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupStylePremiere": "Premiere",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "setupDetailPremiereHint": "Otsikko oli keskitetty koko näytön kokoisen taustakuvan päälle, ja kaikki muu oli sijoitettu sivun alaosaan.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
+    },
+    "detailScreenStyleQuickLook": "Pikakatsaus",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Pakkanen",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Avaa koko sivu",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Takaisin sulkemiseen",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} of {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrBadgeStyle": "Tunnuksen tyyli",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "Badge sijoittaa Seerrin pisteen kulmaan. Bannerissa tilatiedot näkyvät julisteen yläreunassa.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Merkki",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "setupStyleQuickLook": "Pikakatsaus",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupDetailQuickLookHint": "Auki avautuva valikko, jossa näkyy se näyttö, jolla olit, sekä toistopainike ja perustoiminnot, ja koko sivu avautuu yhdellä painalluksella.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupStyleFrost": "Pakkanen",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "setupDetailFrostHint": "Lasiruudussa oleva otsikko sumennetun taiteen yläpuolella, ja painikkeiden alla olevat välilehdet.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "smartSearch": "Älykäs haku",
+    "@smartSearch": {
+        "description": "Title of the search results row with library titles the server's natural-language search matched to a vague query"
+    },
+    "smartSearchOnSeerr": "Älykäs haku päällä {seerr}",
+    "@smartSearchOnSeerr": {
+        "description": "Title of the search results row with titles not in the library that the server's natural-language search found, which open in Seerr",
+        "placeholders": {
+            "seerr": {
+                "type": "String",
+                "example": "Seerr"
+            }
+        }
+    },
+    "noOtherAudioTracks": "Ei muita ääniraitoja",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "playerMatchingDisplayRate": "Näytön sovittaminen {fps} fps:ään…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "radarrCalendarRow": "Tulevat elokuvat (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Tulevat TV-ohjelmat (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Tulevat julkaisut",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Radarr ja Sonarr kalenterit",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Radarr kalenteri",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Sonarr kalenteri",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Elokuvateatteri",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Digitaalinen",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Fyysinen",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Tulevat tapahtumakalenteri",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Valitse, mitä Radarr- ja Sonarr-rivit näyttävät.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "radarrCalendarShowCinema": "Näytä tulevat elokuvajulkaisut",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Näytä tulevat digitaaliset julkaisut",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Näytä tulevat fyysiset julkaisut",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "calendarShowReleaseDate": "Näytä julkaisupäivä aloitusnäytössä",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Piilota palvelimella jo olevat elokuvat",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Näytä jakson tiedot",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Piilota palvelimella jo olevat jaksot",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Yhdistä Sonarr- ja Radarr-kalenterit",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "mediaBarSourceNewReleases": "Uudet kaudet ja jaksot",
+    "@mediaBarSourceNewReleases": {
+        "description": "Media bar source: series with episodes that aired recently"
+    },
+    "mediaBarNewReleaseBanner": "Uuden julkaisun banneri",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags series in the media bar when new episodes aired recently"
+    },
+    "mediaBarNewReleaseBannerDescription": "Merkitse sarjat, joiden uusi kausi tai uudet jaksot on äskettäin alkanut.",
+    "mediaBarNewReleaseDays": "Uuden julkaisun aikataulu",
+    "@mediaBarNewReleaseDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Kuinka kauan jakson esittämisen jälkeen sitä pidetään vielä uutena.",
+    "mediaBarNewSeries": "Uusi sarja",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Uusi kausi",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Uudet jaksot",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "mdblistWatchingNow": "Katsomassa MDBListissä",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "watchingNowWatchersCount": "{count} katselee",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchingNowLiveSummary": "{users} katsomassa juuri nyt · {movies} elokuvaa · {shows} sarjaa",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} katsoi tänään · {movies} elokuvaa · {shows} sarjaa",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatched": "Sen jälkeen, kun katsoit",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "Koska katsoit",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "Koska katsoit \"{title}\"",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Koska katsoit rivi {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Näytä rivit, jotka olet katsonut",
+    "displaySinceYouWatchedRowsSubtitle": "Näytä ja muokkaa katsomiasi rivejä Etusivun osioissa.",
+    "sinceYouWatchedSource": "Suosituksen lähde",
+    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
+    "sinceYouWatchedSourceLocal": "Moonfin suosittelee",
+    "sinceYouWatchedSourceServer": "Jellyfin suosittelee",
+    "sinceYouWatchedSourceOnline": "TMDb:n samankaltaisuus",
+    "sinceYouWatchedSourceType": "Lähdetyyppi",
+    "sinceYouWatchedSourceTypeDescription": "Valitse suositeltavien tuotteiden tyyppi",
+    "sinceYouWatchedSourceItem": "Lähdekohde",
+    "sinceYouWatchedSourceItemDescription": "Valitse, mihin lähde-eriin suositukset perustuvat",
+    "sinceYouWatchedRecentlyWatched": "Viimeksi katsotut",
+    "sinceYouWatchedNumRows": "Lisättävien rivien määrä",
+    "sinceYouWatchedNumRowsDescription": "Valitse, kuinka monta Siitä lähtien, kun katsoit -riviä haluat näyttää (1–5)",
+    "sinceYouWatchedIncludeWatched": "Sisällytä aiemmin katsotut",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Sisällytä katsotut kohteet suosituksiin",
+    "cadenceSlowdown": "Tasainen 24 fps 60 Hz:n televisiossa",
+    "cadenceSlowdownSubtitle": "Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.",
+    "cadenceTipTitle": "Ota käyttöön kuvataajuuden täsmäys",
+    "cadenceTipMessage": "Tätä videota ei voi toistaa sujuvasti televisiosi nykyisellä virkistystaajuudella. Avaa Apple TV:ssä Asetukset > Video ja ääni > Sovita sisältö ja ota käyttöön Sovita kuvataajuus.",
+    "cadenceTipSlowdownHint": "Tai ota Moonfin-ohjelmassa käyttöön ”Smooth 24 fps on a 60 Hz TV” -asetus kohdassa Playback > Quality & Decoding.",
+    "watchPartyResumeAt": "Jatka {time}",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartFromBeginning": "Aloita alusta",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeWhere": "Siitä, mihin {name} jäi, on pisimmälle päässyt kukaan täällä.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeEarliest": "Aikaisin piste, johon kukaan täällä on päässyt.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "watchPartyResumeNotStarted": "{count, plural, =1{1 kukaan ei ole vielä aloittanut sitä.} other{{count} ihmiset eivät ole vielä aloittaneet sitä.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackInfoServerCompatibilityCheck": "Palvelimen yhteensopivuustarkistus",
+    "@playbackInfoServerCompatibilityCheck": {
+        "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+    },
+    "playbackInfoBitrateUnavailable": "Bittinopeutta ei saatavilla",
+    "@playbackInfoBitrateUnavailable": {
+        "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+    },
+    "playbackInfoNoteLiveRelay": "Palvelin välittää kanavan muuntamatta sitä.",
+    "@playbackInfoNoteLiveRelay": {
+        "description": "Playback information note under the play method for a live TV channel the server passes through"
+    },
+    "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+    "@playbackInfoFrameRateFrom": {
+        "description": "Playback information frame rate with where the player got it",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            },
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateSourceHeader": "stream header",
+    "@playbackInfoRateSourceHeader": {
+        "description": "Playback information: the frame rate came from the video stream's own header"
+    },
+    "playbackInfoRateSourceMeasured": "mitattu",
+    "@playbackInfoRateSourceMeasured": {
+        "description": "Playback information: the frame rate was measured from the video's frame timing"
+    },
+    "playbackInfoRateSourceServer": "palvelin",
+    "@playbackInfoRateSourceServer": {
+        "description": "Playback information: the frame rate came from the server's description of the media"
+    },
+    "playbackInfoServerFrameRate": "Palvelimen kuvanpäivitysnopeus",
+    "@playbackInfoServerFrameRate": {
+        "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+    },
+    "playbackInfoScan": "Skannaa",
+    "@playbackInfoScan": {
+        "description": "Playback information row: whether the video is progressive or interlaced"
+    },
+    "playbackInfoProgressive": "Progressiivinen",
+    "@playbackInfoProgressive": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoInterlaced": "Lomitettu",
+    "@playbackInfoInterlaced": {
+        "description": "Playback information scan type"
+    },
+    "playbackInfoRepeatedFields": "Telecined (toistuvat kentät)",
+    "@playbackInfoRepeatedFields": {
+        "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+    },
+    "playbackInfoHdmiOutput": "HDMI-lähtö",
+    "@playbackInfoHdmiOutput": {
+        "description": "Playback information row: the display mode the device is sending"
+    },
+    "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+    "@playbackInfoDisplayMode": {
+        "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+        "placeholders": {
+            "width": {
+                "type": "String"
+            },
+            "height": {
+                "type": "String"
+            },
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoRateCorrections": "Säätökorjaukset",
+    "@playbackInfoRateCorrections": {
+        "description": "Playback information row: how many times live TV changed the display rate after it started"
+    },
+    "playbackInfoAudioOutput": "Lähtö",
+    "@playbackInfoAudioOutput": {
+        "description": "Playback information row in the Audio section: how the audio leaves the device"
+    },
+    "playbackInfoPassthroughOf": "Läpivienti ({codec})",
+    "@playbackInfoPassthroughOf": {
+        "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoDecodedTo": "Koodattu ({channels})",
+    "@playbackInfoDecodedTo": {
+        "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+        "placeholders": {
+            "channels": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackInfoWhyVideoProfileUnknown": "Palvelin ei pystynyt vahvistamaan tämän lähetyksen {codec}-profiilia.",
+    "@playbackInfoWhyVideoProfileUnknown": {
+        "description": "Playback information reason when the server could not determine the video profile",
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "calendar": "Kalenteri",
+    "@calendar": {
+        "description": "Name of the screen of upcoming episodes and movies from Sonarr and Radarr, on the navigation bar and as the screen title"
+    },
+    "showCalendarButton": "Näytä kalenteri painike",
+    "@showCalendarButton": {
+        "description": "Settings toggle that adds the Calendar button to the navigation bar"
+    },
+    "showCalendarButtonSubtitle": "Näytä tulevien jaksojen ja elokuvien kalenteri navigointipalkissa",
+    "@showCalendarButtonSubtitle": {
+        "description": "Subtitle of the Show Calendar Button setting"
+    },
+    "calendarFullCalendar": "Koko kalenteri",
+    "@calendarFullCalendar": {
+        "description": "Button on the calendar that opens the month grid"
+    },
+    "calendarUpcoming": "Tulevat tapahtumat",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarRecentlyAired": "Äskettäin esitetty",
+    "@calendarRecentlyAired": {
+        "description": "Calendar tab listing episodes and movies from the last few days"
+    },
+    "calendarRemindMe": "Muistuta minua",
+    "@calendarRemindMe": {
+        "description": "Button that asks for a notification when an episode or movie lands in the library"
+    },
+    "calendarReminderSet": "Muistutus asetukset",
+    "@calendarReminderSet": {
+        "description": "Button label once a reminder is set. Pressing it again removes the reminder"
+    },
+    "calendarReminderFailed": "Muistutusta ei voitu tallentaa",
+    "@calendarReminderFailed": {
+        "description": "Message when setting or removing a calendar reminder fails"
+    },
+    "calendarReadyToWatch": "Valmista katsottavaksi",
+    "@calendarReadyToWatch": {
+        "description": "Calendar row of recent episodes and movies that are already in the library"
+    },
+    "calendarComingUpThisWeek": "Tällä viikolla ohjelmassa",
+    "@calendarComingUpThisWeek": {
+        "description": "Calendar row of episodes and movies airing in the next seven days"
+    },
+    "calendarNothingUpcoming": "Ei tulossa mitään",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarNothingRecent": "Viime aikoina ei ole lähetetty mitään",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarEmptyDay": "Tänään ei ole mitään",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarStartsIn": "Aloittaa",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarUnitDays": "päivää",
+    "@calendarUnitDays": {
+        "description": "Unit under the days number of the calendar countdown"
+    },
+    "calendarUnitHours": "hr",
+    "@calendarUnitHours": {
+        "description": "Unit under the hours number of the calendar countdown"
+    },
+    "calendarUnitMinutes": "min",
+    "@calendarUnitMinutes": {
+        "description": "Unit under the minutes number of the calendar countdown"
+    },
+    "calendarDayAtTime": "{day} at {time}",
+    "@calendarDayAtTime": {
+        "description": "When an episode airs, like Today at 9:00 PM",
+        "placeholders": {
+            "day": {
+                "type": "String",
+                "example": "Today"
+            },
+            "time": {
+                "type": "String",
+                "example": "9:00 PM"
+            }
+        }
+    },
+    "calendarAllDay": "Koko päivän",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "calendarBadgeSeriesPremiere": "Sarjan ensiesitys",
+    "@calendarBadgeSeriesPremiere": {
+        "description": "Tag on the first episode of a series"
+    },
+    "calendarBadgeSeasonPremiere": "Uusi kausi",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "calendarBadgeSeasonFinale": "Finaali",
+    "@calendarBadgeSeasonFinale": {
+        "description": "Tag on the last episode of a season"
+    },
+    "calendarBadgeMidseasonFinale": "Kauden puolivälin finaali",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarBadgeSeriesFinale": "Sarjan finaali",
+    "@calendarBadgeSeriesFinale": {
+        "description": "Tag on the last episode of a series"
+    },
+    "calendarBadgeNew": "UUTTA",
+    "@calendarBadgeNew": {
+        "description": "Short tag on a month grid day that has a premiere"
+    },
+    "calendarStatusInLibrary": "Kirjastossa",
+    "@calendarStatusInLibrary": {
+        "description": "Tag on a calendar entry that is already on the server"
+    },
+    "calendarNotMonitored": "Ei seurata",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarMovieDetails": "Elokuvan tiedot",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarProblemAdminsOnly": "Kalenteri on rajoitettu tämän palvelimen järjestelmänvalvojille.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "calendarProblemNeedsSeerr": "Järjestelmänvalvojan on kirjauduttava Seerr-palveluun Moonfinissä, ennen kuin kalenteri voidaan ladata.",
+    "@calendarProblemNeedsSeerr": {
+        "description": "Calendar message when the server can't reach Sonarr and Radarr yet"
+    },
+    "calendarProblemNotConfigured": "Sonarr- tai Radarr-palvelinta ei ole vielä liitetty.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarProblemFailed": "Kalenteria ei voitu ladata.",
+    "@calendarProblemFailed": {
+        "description": "Calendar message when loading fails"
+    },
+    "calendarSettingsSubtitle": "Kalenterin tyylit, suodattimet ja toiminnot",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "calendarSettingsView": "Näkymä",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsStyle": "Kalenterin tyyli",
+    "@calendarSettingsStyle": {
+        "description": "Calendar setting that picks what the Calendar button opens"
+    },
+    "calendarSettingsStyleDescription": "Mitä ”Kalenteri”-painike avaa. Kummassakin koko kuukausi avautuu yhdellä painalluksella.",
+    "@calendarSettingsStyleDescription": {
+        "description": "Description of the Calendar style setting"
+    },
+    "calendarSettingsStyleAgenda": "Esityslista",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "calendarSettingsStyleCountdown": "Lähtölaskenta",
+    "@calendarSettingsStyleCountdown": {
+        "description": "Calendar style that counts down to the next episode or movie"
+    },
+    "calendarSettingsWeekStart": "Viikko alkaa",
+    "@calendarSettingsWeekStart": {
+        "description": "Calendar setting for the first day of the week in the month grid"
+    },
+    "calendarSettingsWhatShows": "Mitä ohjelmia",
+    "@calendarSettingsWhatShows": {
+        "description": "Calendar settings section header for which episodes and movies the calendar lists"
+    },
+    "calendarSettingsScope": "Sarja",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "calendarSettingsScopeDescription": "My Shows palvelu tallentaa sarjat, jotka olet merkinnyt suosikeiksi tai joiden katsomisen olet aloittanut",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "calendarSettingsScopeEverything": "Kaikki",
+    "@calendarSettingsScopeEverything": {
+        "description": "Calendar Show choice that lists every episode and movie"
+    },
+    "calendarSettingsScopeMyShows": "Minun sarjat",
+    "@calendarSettingsScopeMyShows": {
+        "description": "Calendar Show choice that lists only series the user favorited or started watching"
+    },
+    "calendarSettingsUnmonitored": "Sisällytä ei seuratut",
+    "@calendarSettingsUnmonitored": {
+        "description": "Calendar setting that also lists titles Sonarr and Radarr won't download"
+    },
+    "calendarSettingsUnmonitoredSubtitle": "Luettele myös ne jaksot ja elokuvat, joita Sonarr ja Radarr eivät ole asetettuja lataamaan",
+    "@calendarSettingsUnmonitoredSubtitle": {
+        "description": "Subtitle of the Include unmonitored calendar setting"
+    },
+    "calendarSettingsSpecials": "Erikoisjaksot",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsSpecialsSubtitle": "Kauden 0 jaksot, kuten lisämateriaalia ja juhlapyhäerikoisjaksot",
+    "@calendarSettingsSpecialsSubtitle": {
+        "description": "Subtitle of the Specials calendar setting"
+    },
+    "calendarSettingsBadges": "”Premiere”- ja ”finale” tunnisteet",
+    "@calendarSettingsBadges": {
+        "description": "Calendar setting that marks premieres and finales on the calendar"
+    },
+    "calendarSettingsBadgesSubtitle": "Sarjojen ensiesitykset, finaalit ja uudet kaudet",
+    "@calendarSettingsBadgesSubtitle": {
+        "description": "Subtitle of the Premiere and finale tags calendar setting"
+    },
+    "calendarSettingsColorBy": "Väritä",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
+    },
+    "calendarSettingsColorByDescription": "Tyyppi kertoo, ovatko kyseessä sarjan jaksot vai elokuvat. Tila kertoo, mitä kirjastossasi on, mitä on tulossa tai mitä puuttuu.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "calendarSettingsColorByType": "Tyyppi",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "calendarSettingsImageType": "Kortin kuva",
+    "@calendarSettingsImageType": {
+        "description": "Calendar setting for the artwork on the Countdown rows"
+    },
+    "calendarSettingsImageTypeDescription": "Countdown rivien kuvitus",
+    "@calendarSettingsImageTypeDescription": {
+        "description": "Description of the Card image calendar setting"
+    },
+    "calendarSettingsSpoilerSafe": "Ei sisällä spoilereita",
+    "@calendarSettingsSpoilerSafe": {
+        "description": "Calendar setting that hides episode details for shows the user hasn't caught up on"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Piilota niiden sarjojen jaksonimikkeet ja kuvat, joiden katsomisessa olet jäljessä",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "calendarSettingsActions": "Toimenpiteet",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "calendarSettingsSelectAction": "Kohteen valitseminen",
+    "@calendarSettingsSelectAction": {
+        "description": "Calendar setting for what OK or a tap does on an entry that is in the library"
+    },
+    "calendarSettingsSelectActionDescription": "Mitä ”OK” painike tai napautus tekee kohteelle, joka on jo kirjastossasi",
+    "@calendarSettingsSelectActionDescription": {
+        "description": "Description of the Selecting an item calendar setting"
+    },
+    "calendarSettingsSelectDetails": "Avaa tiedot",
+    "@calendarSettingsSelectDetails": {
+        "description": "Selecting an item choice that opens the details page"
+    },
+    "calendarSettingsSelectPlay": "Toista kirjastossa ollessa",
+    "@calendarSettingsSelectPlay": {
+        "description": "Selecting an item choice that starts playback when the episode or movie is in the library"
+    },
+    "calendarSettingsRequestButton": "Pyydä painike",
+    "@calendarSettingsRequestButton": {
+        "description": "Calendar setting that shows the request button on missing titles"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Näytä ”Pyydä Seerriltä” painike puuttuvien elokuvien ja kausien kohdalla",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "calendarSettingsReminders": "Muistutukset",
+    "@calendarSettingsReminders": {
+        "description": "Calendar setting that offers the Remind me button"
+    },
+    "calendarSettingsRemindersSubtitle": "Näytä ”Muistuta minua” toiminto, joka lähettää ilmoituksen, kun teos lisätään kirjastoosi",
+    "@calendarSettingsRemindersSubtitle": {
+        "description": "Subtitle of the Reminders calendar setting"
+    },
+    "calendarRowSeeAll": "Katso kaikki kortti",
+    "@calendarRowSeeAll": {
+        "description": "Home Screen setting that ends the upcoming episode and movie rows with a card that opens the calendar"
+    },
+    "calendarRowSeeAllSubtitle": "Lopeta seuraavat rivit kortilla, joka avaa kalenterin",
+    "@calendarRowSeeAllSubtitle": {
+        "description": "Subtitle of the See All card setting"
+    },
+    "showNextAirDate": "Seuraava lähetyspäivä lopussa",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "showNextAirDateSubtitle": "Jos seuraava jakso ei ole vielä kirjastossasi, jakson lopussa näkyvässä kortissa kerrotaan, milloin se lähetetään",
+    "@showNextAirDateSubtitle": {
+        "description": "Subtitle of the Next air date at the end setting"
+    },
+    "showPosterLabels": "Julisteiden tunnisteet",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "showPosterLabelsSubtitle": "Näytä julisteissa olevat merkinnät, kuten 4K tai HDR.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "seerrSeriesMatchDescription": "Emme pystyneet tunnistamaan tätä sarjaa automaattisesti. Valitse oikea vaihtoehto alla olevista.",
+    "@seerrSeriesMatchDescription": {
+        "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+    },
+    "seerrSeriesNoMatch": "Emme löytäneet tätä sarjaa, joten sitä ei voi pyytää.",
+    "@seerrSeriesNoMatch": {
+        "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+    },
+    "seerrSeriesMatchFailed": "Sonarr ei löytänyt tälle sarjalle vastaavuutta tai palvelua ei saatu yhteyttä. Yritä uudelleen tai tarkista sarja Seerr palvelusta.",
+    "@seerrSeriesMatchFailed": {
+        "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+    },
+    "removeFromPlaylist": "Poista soittolistalta",
+    "@removeFromPlaylist": {
+        "description": "Context menu action to remove an item from a playlist"
+    },
+    "removeFromPlaylistConfirm": "Poistetaanko {item} {playlist}:sta?",
+    "@removeFromPlaylistConfirm": {
+        "description": "Confirmation shown before removing an item from a playlist",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "playlist": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromPlaylistFailed": "Poistaminen soittolistasta epäonnistui",
+    "@removeFromPlaylistFailed": {
+        "description": "Error shown when removing an item from a playlist fails"
+    },
+    "setupMoonbaseTitle": "Lisää Moonbase palvelimellesi",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "setupMoonbaseHint": "Ilmainen palvelinlaajennus, joka avaa lisää Moonfinin ominaisuuksia",
+    "@setupMoonbaseHint": {
+        "description": "Line under the Moonbase row on the last setup wizard step"
+    },
+    "setupMoonbaseIntro": "Moonbase on ilmainen ja toimii omalla palvelimellasi. Sen avulla Moonfin saa:",
+    "@setupMoonbaseIntro": {
+        "description": "First line of the Moonbase dialog, followed by a list of features"
+    },
+    "setupMoonbaseAskAdmin": "Vain palvelimen järjestelmänvalvoja voi asentaa sen. Lähetä hänelle tämä linkki.",
+    "@setupMoonbaseAskAdmin": {
+        "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseManualSteps": "Asennus vaatii muutaman vaiheen palvelimellasi. Ne kaikki löytyvät tästä linkistä.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseInstalling": "Moonbase asennetaan...",
+    "@setupMoonbaseInstalling": {
+        "description": "Shown in the Moonbase dialog while the plugin installs"
+    },
+    "setupMoonbaseInstalled": "Moonbase on asennettu. Se käynnistyy palvelimen uudelleenkäynnistyksen yhteydessä, jolloin kaikki parhaillaan käynnissä olevat toistot keskeytyvät.",
+    "@setupMoonbaseInstalled": {
+        "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+    },
+    "setupMoonbaseRestarting": "Palvelin käynnistyy uudelleen. Moonbase käynnistyy, kun palvelin on jälleen toiminnassa.",
+    "@setupMoonbaseRestarting": {
+        "description": "Shown while the server restarts after Moonbase was installed"
+    },
+    "moonbaseFeatureSync": "Asetukset synkronoidaan laitteiden välillä",
+    "@moonbaseFeatureSync": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureRatings": "Lisäarvostelut ja TMDB arvostelut",
+    "@moonbaseFeatureRatings": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureRows": "Mukautetut rivit suosikkilistoistasi",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "moonbaseFeatureGames": "Retropelit, joissa tallennukset synkronoidaan",
+    "@moonbaseFeatureGames": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureCalendar": "Tulevien tapahtumien kalenteri",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "moonbaseFeatureCollections": "Oma tilauksesi kustakin kokoelmasta",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureMessages": "Viestit palvelimen järjestelmänvalvojalta",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "setupMoonbaseInstallFailed": "Moonbase sovellusta ei voitu asentaa. {error}",
+    "@setupMoonbaseInstallFailed": {
+        "description": "Shown in the Moonbase dialog when installing or restarting failed",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsDateFormat": "Päivämäärämuoto",
+    "settingsDateFormatDescription": "Valitse kalenterin ja julkaisupäivien osalta joko kuukausi-päivä-, päivä-kuukausi- tai paikallisen oletusasetuksen",
+    "dateFormatSystem": "Kieliasetuksen oletusarvo",
+    "dateFormatMonthDay": "Kuukausi / Päivä (10. marraskuuta)",
+    "dateFormatDayMonth": "Päivä / Kuukausi (10. marraskuuta)",
+    "seasonalRowAllYear": "Näytä koko vuosi",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Näytä lomarivi myös lomapäivien ulkopuolella, jokaiselle päivälle eri merkitty lomapäivä.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "screensaverDuringAudio": "Näytä musiikin ja äänikirjojen aikana",
+    "@screensaverDuringAudio": {
+        "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+    },
+    "screensaverDuringAudioDescription": "Anna näytönsäästäjän käynnistyä äänen soidessa, jotta levyn kansikuva ei jää näkyviin ruudulle tuntikausiksi.",
+    "@screensaverDuringAudioDescription": {
+        "description": "Description under the Show During Music and Audiobooks screensaver setting"
+    },
+    "sleepAfterIdle": "Anna television sammua itsestään",
+    "@sleepAfterIdle": {
+        "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+    },
+    "sleepAfterIdleDescriptionAndroid": "Sulje Moonfin, kun olet ollut näin kauan painamatta mitään painiketta, jotta television oma näytönsäästäjä ja lepotila voivat ottaa ohjat. Kaikki keskeytetyt toistot pysäytetään ensin, jolloin niiden jatkokohta säilyy.",
+    "@sleepAfterIdleDescriptionAndroid": {
+        "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+    },
+    "sleepAfterIdleDescriptionAppleTv": "Kun näytöllä ei ole tapahtunut mitään pitkään aikaan, näyttö palaa Apple TV:n omaan näytönsäästäjään ja lepotilaan. Moonfin pysyy auki, joten voit jatkaa juuri siitä, mihin jäit.",
+    "@sleepAfterIdleDescriptionAppleTv": {
+        "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+    },
+    "syncPlayRepeatSubtitle": "Toista yksi kohde tai koko jono",
+    "@syncPlayRepeatSubtitle": {
+        "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+    },
+    "syncPlayShuffleSubtitle": "Toista kappaleet järjestyksessä tai satunnaisessa järjestyksessä",
+    "@syncPlayShuffleSubtitle": {
+        "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+    },
+    "syncPlayParticipantYou": "Sinä",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "syncPlayGroupSubtitle": "{participants} · {detail}",
+    "@syncPlayGroupSubtitle": {
+        "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+        "placeholders": {
+            "participants": {
+                "type": "String",
+                "example": "3 participants"
+            },
+            "detail": {
+                "type": "String",
+                "example": "nothing queued yet"
+            }
+        }
+    },
+    "syncPlayNothingQueued": "jonossa ei ole vielä mitään",
+    "@syncPlayNothingQueued": {
+        "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+    },
+    "syncPlayOthersCanJoinHint": "Muut voivat liittyä ryhmään SyncPlay-näytöltään niin kauan kuin tämä ryhmä on olemassa.",
+    "@syncPlayOthersCanJoinHint": {
+        "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+    },
+    "syncPlayCreateGroupSubtitle": "Katsotaan yhdessä kaikkien osallistujien kanssa",
+    "@syncPlayCreateGroupSubtitle": {
+        "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+    },
+    "syncPlayAvailableGroupsCount": "Saatavilla olevat ryhmät · {count}",
+    "@syncPlayAvailableGroupsCount": {
+        "description": "Heading of the SyncPlay available groups list with how many there are",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "2"
+            }
+        }
+    },
+    "syncPlayNoGroupsAvailableHint": "Tällä palvelimella muiden käyttäjien luomat ryhmät näkyvät tässä.",
+    "@syncPlayNoGroupsAvailableHint": {
+        "description": "Second line of the empty state in the SyncPlay available groups list"
+    },
+    "syncPlayJoinReplacesQueueNote": "Ryhmään liittyminen saattaa korvata nykyisen toistojonosi.",
+    "@syncPlayJoinReplacesQueueNote": {
+        "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+    },
+    "settingsHideControlsAfter": "Piilota hallintapainikkeet sen jälkeen, kun",
+    "@settingsHideControlsAfter": {
+        "description": "Playback setting for how long the player controls stay on screen after the last input"
+    },
+    "settingsHideControlsAfterDescription": "Kuinka kauan ohjauselementit pysyvät ruudulla viimeisen painikkeen painalluksen, napautuksen tai hiiren liikkeen jälkeen.",
+    "@settingsHideControlsAfterDescription": {
+        "description": "Description under the Hide Controls After playback setting"
+    },
+    "settingsHdrControlsDimming": "HDR tilan himmennysohjaimet",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "Valkoinen näyttää huomattavasti kirkkaammalta HDR-videon vieressä, joten soittimen säätimet himmentävät kuvaa tämän verran videon toiston aikana.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "subtitleBold": "Lihavoitu teksti",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "subtitleStrokeWidth": "Tekstin viivan leveys",
+    "@subtitleStrokeWidth": {
+        "description": "Setting for how thick the outline around subtitle text is."
+    },
+    "subtitleFont": "Fontti",
+    "@subtitleFont": {
+        "description": "Setting for which font subtitles are drawn in."
+    },
+    "subtitleFontDescription": "Fontit ladataan Google Fontsista, kun valitset ne ensimmäisen kerran",
+    "@subtitleFontDescription": {
+        "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+    },
+    "subtitleFontDownloadFailed": "{font} Lataaminen epäonnistui",
+    "@subtitleFontDownloadFailed": {
+        "description": "Shown when a subtitle font could not be downloaded.",
+        "placeholders": {
+            "font": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleShadow": "Tekstin varjo",
+    "@subtitleShadow": {
+        "description": "Toggle for a drop shadow behind subtitle text."
+    },
+    "subtitleShadowIntensity": "Varjon voimakkuus",
+    "@subtitleShadowIntensity": {
+        "description": "How dark the subtitle drop shadow is."
+    },
+    "subtitleShadowOffset": "Varjon siirtymä",
+    "@subtitleShadowOffset": {
+        "description": "How far the subtitle drop shadow sits from the text."
+    },
+    "subtitleShadowBlur": "Varjon sumennus",
+    "@subtitleShadowBlur": {
+        "description": "How soft the edge of the subtitle drop shadow is."
+    },
+    "bookFoldersAsSeries": "Käsittele kirjakansioita sarjoina",
+    "@bookFoldersAsSeries": {
+        "description": "Setting to determine book series based on folders instead of item metadata"
+    },
+    "bookFoldersAsSeriesDescription": "Käsittele kirjoja sisältäviä kansioita sarjoina sen sijaan, että luottaisit yksittäisten kirjojen metatietoihin",
+    "@bookFoldersAsSeriesDescription": {
+        "description": "Explains the setting to determine book series based on folders instead of item metadata"
+    },
+    "removeWatchedAsk": "Kysy minulta",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "deleteFinishedDownloadTitle": "Haluatko poistaa tämän latauksen?",
+    "@deleteFinishedDownloadTitle": {
+        "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+    },
+    "deleteFinishedDownloadMessage": "Olet suorittanut pelin {title}. Poista sen lataustiedosto vapauttaaksesi tilaa, tai säilytä se ja lopeta kyselyt.",
+    "@deleteFinishedDownloadMessage": {
+        "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notNow": "Ei nyt",
+    "@notNow": {
+        "description": "Button that closes a question without answering it, so it can be asked again later"
+    },
+    "afterHoursTitle": "After Hours",
+    "@afterHoursTitle": {
+        "description": "Name of the hidden arcade in Settings > About. A product name, keep it short"
+    },
+    "afterHoursUnlocked": "After Hours avattu",
+    "@afterHoursUnlocked": {
+        "description": "Toast when the seventh press on the Version row opens the hidden arcade"
+    },
+    "afterHoursPressesLeft": "{count, plural, =1{1 more press} other{{count} more presses}}",
+    "@afterHoursPressesLeft": {
+        "description": "Toast counting down the remote presses on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursTapsLeft": "{count, plural, =1{1 more tap} other{{count} more taps}}",
+    "@afterHoursTapsLeft": {
+        "description": "Toast counting down the taps on the Version row left before the hidden arcade opens",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlay": "Toista",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursLeaderboards": "Tulostaulukot",
+    "@afterHoursLeaderboards": {
+        "description": "Title of the screen and the card that show the top 3 scores for every arcade game"
+    },
+    "afterHoursTop3": "Top 3",
+    "@afterHoursTop3": {
+        "description": "Heading over the three best scores in an arcade game"
+    },
+    "afterHoursScoresFrom": "Tulokset palvelimelta {server}",
+    "@afterHoursScoresFrom": {
+        "description": "Note saying the arcade scores shown come from the named server",
+        "placeholders": {
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "afterHoursScoresOnDevice": "Tämän laitteen tulokset",
+    "@afterHoursScoresOnDevice": {
+        "description": "Note saying the arcade scores shown are the ones kept on this device, because the server has none"
+    },
+    "afterHoursGameOver": "Peli päättynyt",
+    "@afterHoursGameOver": {
+        "description": "Shown when a run in an arcade game ends"
+    },
+    "afterHoursNewRank": "Uusi #{rank} tulostaululla",
+    "@afterHoursNewRank": {
+        "description": "Shown when a finished arcade run places in the top 3, with its place",
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            }
+        }
+    },
+    "afterHoursPlayAgain": "Pelaa uudelleen",
+    "@afterHoursPlayAgain": {
+        "description": "Button that starts a new run of the same arcade game"
+    },
+    "afterHoursBackToArcade": "Takaisin pelihalliin",
+    "@afterHoursBackToArcade": {
+        "description": "Button that leaves a finished game for the arcade menu"
+    },
+    "afterHoursArcade": "Pelihalli",
+    "@afterHoursArcade": {
+        "description": "Short button on a phone that leaves a finished game for the arcade menu"
+    },
+    "afterHoursLandscapeNote": "Muuttuu vaakasuuntaiseksi pelatessasi",
+    "@afterHoursLandscapeNote": {
+        "description": "Note under the Play button on a phone: the screen rotates to landscape during the game"
+    },
+    "afterHoursTouch": "Kosketus",
+    "@afterHoursTouch": {
+        "description": "Label before the touchscreen controls of an arcade game"
+    },
+    "afterHoursNewTag": "UUSI",
+    "@afterHoursNewTag": {
+        "description": "Short tag on the leaderboard row the player just set. Keep it very short"
+    },
+    "afterHoursNoScores": "Tuloksia ei ole vielä",
+    "@afterHoursNoScores": {
+        "description": "Shown in place of a leaderboard nobody has played yet"
+    },
+    "afterHoursPerfect": "TÄYDELLINEN",
+    "@afterHoursPerfect": {
+        "description": "Flashes in the Case Stack arcade game when a case lands exactly on the one below"
+    },
+    "afterHoursBoxSet": "BOX SARJA",
+    "@afterHoursBoxSet": {
+        "description": "Flashes in the Case Stack arcade game on every third perfect landing in a row, which widens the stack. A box set of discs"
+    },
+    "afterHoursBufferRun": "Puskuri ajo",
+    "@afterHoursBufferRun": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. A pun on video buffering"
+    },
+    "afterHoursBufferRunGenre": "Loputon juoksupeli, jossa on painovoimakäännös",
+    "@afterHoursBufferRunGenre": {
+        "description": "Kind of game Buffer Run is"
+    },
+    "afterHoursBufferRunPitch": "Latausnäytön juoksija pääsee vihdoin jonnekin. Kaksinkertaisella hypyllä ja painovoimakäännöllä hän pääsee kattoon.",
+    "@afterHoursBufferRunPitch": {
+        "description": "Two sentence description of the Buffer Run arcade game. The runner is the running figure of the app's loading animation"
+    },
+    "afterHoursBufferRunRemote": "OK, hyppää, taas ilmassa kääntyäksesi toiselle puolelle. Liukua alas. Katossa vaihda ylös ja alas.",
+    "@afterHoursBufferRunRemote": {
+        "description": "Remote controls of the Buffer Run arcade game. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursBufferRunTouch": "Napauta hypätäksesi ja napauta uudelleen ilmassa tehdäksesi volttia. Pyyhkäise juoksusuuntaasi kohti liukua varten.",
+    "@afterHoursBufferRunTouch": {
+        "description": "Touchscreen controls of the Buffer Run arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForward": "Nopea kelaus eteenpäin",
+    "@afterHoursFastForward": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About. Named after the playback control"
+    },
+    "afterHoursFastForwardGenre": "Kolmiraita-juoksija",
+    "@afterHoursFastForwardGenre": {
+        "description": "Kind of game Fast Forward is"
+    },
+    "afterHoursFastForwardPitch": "Sprintti kolmen aulakäytävän läpi. Hyppää matalien esteiden yli ja muista, että popcorn-kärryt eivät väistä ketään.",
+    "@afterHoursFastForwardPitch": {
+        "description": "Two sentence description of the Fast Forward arcade game, set in a cinema lobby"
+    },
+    "afterHoursFastForwardRemote": "Ylös ja alas vaihdetaan kaistaa. OK hyppää.",
+    "@afterHoursFastForwardRemote": {
+        "description": "Remote controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursFastForwardTouch": "Vaihda kaistaa pyyhkäisemällä ylös tai alas. Napauta hypätäksesi.",
+    "@afterHoursFastForwardTouch": {
+        "description": "Touchscreen controls of the Fast Forward arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawl": "Cable Crawl",
+    "@afterHoursCableCrawl": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you steer an HDMI cable"
+    },
+    "afterHoursCableCrawlGenre": "Grid crawler",
+    "@afterHoursCableCrawlGenre": {
+        "description": "Kind of game Cable Crawl is, a snake-like game on a grid"
+    },
+    "afterHoursCableCrawlPitch": "Vie HDMI kaapeli televisiokaapin takapuolelle ja kytke se signaaliliitäntään. Jokainen palkki pidentää kaapelia.",
+    "@afterHoursCableCrawlPitch": {
+        "description": "Two sentence description of the Cable Crawl arcade game. A bar is one bar of signal strength"
+    },
+    "afterHoursCableCrawlRemote": "Nuolet kääntyvät. Kaapeli ei pysähdy koskaan.",
+    "@afterHoursCableCrawlRemote": {
+        "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCableCrawlTouch": "Käännä pyyhkäisemällä.",
+    "@afterHoursCableCrawlTouch": {
+        "description": "Touchscreen controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStack": "Case Stack",
+    "@afterHoursCaseStack": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you stack Blu-ray cases"
+    },
+    "afterHoursCaseStackGenre": "One-button stacker",
+    "@afterHoursCaseStackGenre": {
+        "description": "Kind of game Case Stack is"
+    },
+    "afterHoursCaseStackPitch": "Rakenna hyllyn korkeinen torni Blu-ray-koteloista, joista jokainen on omaa kokoelmaasi kuuluva teos. Se, mikä ulottuu hyllyn reunan yli, leikataan pois, joten aseta ne täsmälleen paikoilleen.",
+    "@afterHoursCaseStackPitch": {
+        "description": "Two sentence description of the Case Stack arcade game"
+    },
+    "afterHoursCaseStackRemote": "OK keskeyttää tapahtuman.",
+    "@afterHoursCaseStackRemote": {
+        "description": "Remote controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursCaseStackTouch": "Napauta missä tahansa pudottaaksesi.",
+    "@afterHoursCaseStackTouch": {
+        "description": "Touchscreen controls of the Case Stack arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurge": "Pixel Purge",
+    "@afterHoursPixelPurge": {
+        "description": "Name of an After Hours arcade game, the easter egg in Settings > About, where you clear video compression artifacts"
+    },
+    "afterHoursPixelPurgeGenre": "Paddle breaker",
+    "@afterHoursPixelPurgeGenre": {
+        "description": "Kind of game Pixel Purge is, a brick breaker with a paddle"
+    },
+    "afterHoursPixelPurgePitch": "Huonon koodauksen vuoksi kuva on täynnä ruudullisia häiriöitä, jotka hiipivät hieman alaspäin joka sekunti. Napsauta toistopainiketta hakupalkin kohdalla poistaaksesi ne ennen kuin ne ehtivät sinne.",
+    "@afterHoursPixelPurgePitch": {
+        "description": "Two sentence description of the Pixel Purge arcade game. The ball is a play button and the paddle is the seek bar"
+    },
+    "afterHoursPixelPurgeRemote": "Vasemmalla ja oikealla liu’utat pesukoneen. Pallo lähtee liikkeelle itsestään.",
+    "@afterHoursPixelPurgeRemote": {
+        "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeTouch": "Vedä hiirtä liu'uttaaksesi liukusäädintä.",
+    "@afterHoursPixelPurgeTouch": {
+        "description": "Touchscreen controls of the Pixel Purge arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursHowToPlay": "Kuinka pelata",
+    "@afterHoursHowToPlay": {
+        "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+    },
+    "afterHoursStart": "Aloita",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "afterHoursBackToGame": "Takaisin peliin",
+    "@afterHoursBackToGame": {
+        "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+    },
+    "afterHoursEnemies": "Viholliset",
+    "@afterHoursEnemies": {
+        "description": "Heading over the enemies on an arcade game's How to play card"
+    },
+    "afterHoursObstacles": "Esteet",
+    "@afterHoursObstacles": {
+        "description": "Heading over the obstacles on an arcade game's How to play card"
+    },
+    "afterHoursPowerups": "Powerups",
+    "@afterHoursPowerups": {
+        "description": "Heading over the powerups on an arcade game's How to play card"
+    },
+    "afterHoursCastShieldLine": "Kilpi, joka kestää yhden iskun.",
+    "@afterHoursCastShieldLine": {
+        "description": "What a shield powerup does in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPointsLine": "25 pistettä osalta.",
+    "@afterHoursCastPointsLine": {
+        "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastLagBat": "Lag Bat",
+    "@afterHoursCastLagBat": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A bat named after video lag. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastLagBatLine": "Se syöksyy kohti pään korkeudella. Liukahda sen alta.",
+    "@afterHoursCastLagBatLine": {
+        "description": "What the Lag Bat does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGremlin": "Static Gremlin",
+    "@afterHoursCastGremlin": {
+        "description": "Name of an enemy in the Buffer Run arcade game, shown on its How to play card. A gremlin made of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGremlinLine": "Se hyppii lattiaa tai kattoa pitkin sinua kohti. Hyppää sen yli.",
+    "@afterHoursCastGremlinLine": {
+        "description": "What the Static Gremlin does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastCable": "Cable Coil",
+    "@afterHoursCastCable": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A coiled cable on the floor. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastCableLine": "Matalalla lattialla tai katossa. Hyppää sen yli.",
+    "@afterHoursCastCableLine": {
+        "description": "What the Cable Coil does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBanner": "Buffering Banner",
+    "@afterHoursCastBanner": {
+        "description": "Name of an obstacle in the Buffer Run arcade game, shown on its How to play card. A sign showing a buffering spinner. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBannerLine": "Liukahda kyltin alle. Sen pylväs toimii seinänä toisella puolella.",
+    "@afterHoursCastBannerLine": {
+        "description": "What the Buffering Banner does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSkipIntro": "Ohita johdanto",
+    "@afterHoursCastSkipIntro": {
+        "description": "Name of a powerup in the Buffer Run arcade game, shown on its How to play card, named after the Skip Intro button. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSkipIntroLine": "Kolmen sekunnin vauhti, joka murskaa kaiken.",
+    "@afterHoursCastSkipIntroLine": {
+        "description": "What the Skip Intro powerup does in the Buffer Run arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcorn": "Popcorn",
+    "@afterHoursCastPopcorn": {
+        "description": "Name of a collectible in the Buffer Run arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReel": "Loose Reel",
+    "@afterHoursCastRollingReel": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A film reel rolling loose. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastRollingReelLine": "Se vyöryy kaistallasi nopeammin kuin sinä juokset. Hyppää sen yli.",
+    "@afterHoursCastRollingReelLine": {
+        "description": "What the Loose Reel does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastUsher": "Usher",
+    "@afterHoursCastUsher": {
+        "description": "Name of an enemy in the Fast Forward arcade game, shown on its How to play card. A cinema usher. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastUsherLine": "Kävelee sinua kohti ja vaihtaa kaistaa kerran.",
+    "@afterHoursCastUsherLine": {
+        "description": "What the Usher does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastVelvetRope": "Velvet Rope",
+    "@afterHoursCastVelvetRope": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. The rope barrier at a cinema. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastVelvetRopeLine": "Matala. Hyppää sen yli tai vaihda kaistaa.",
+    "@afterHoursCastVelvetRopeLine": {
+        "description": "What the Velvet Rope does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPopcornCart": "Popcorn Cart",
+    "@afterHoursCastPopcornCart": {
+        "description": "Name of an obstacle in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPopcornCartLine": "Liian korkea hyppäämiseen. Vaihda kaistaa.",
+    "@afterHoursCastPopcornCartLine": {
+        "description": "What the Popcorn Cart does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastFrontRowPass": "Front Row Pass",
+    "@afterHoursCastFrontRowPass": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnet": "Magneetti",
+    "@afterHoursCastMagnet": {
+        "description": "Name of a powerup in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMagnetLine": "Kerää lippuja jokaiselta kaistalta kahdeksan sekunnin ajan.",
+    "@afterHoursCastMagnetLine": {
+        "description": "What the Magnet does in the Fast Forward arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTicket": "Lippu",
+    "@afterHoursCastTicket": {
+        "description": "Name of a collectible cinema ticket in the Fast Forward arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBug": "Interference Bug",
+    "@afterHoursCastBug": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A bug causing signal interference. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBugLine": "Wanders at random.",
+    "@afterHoursCastBugLine": {
+        "description": "What the Interference Bug does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastTangle": "Tangle",
+    "@afterHoursCastTangle": {
+        "description": "Name of an enemy in the Cable Crawl arcade game, shown on its How to play card. A tangle of cable. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastTangleLine": "Se jahtaa hitaasti tulppaasi.",
+    "@afterHoursCastTangleLine": {
+        "description": "What the Tangle does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastStatic": "Staattinen",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastStaticLine": "Kuollut solu. Yksi ilmestyy joka kolmas signaali.",
+    "@afterHoursCastStaticLine": {
+        "description": "What the Static block does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBrick": "Power Brick",
+    "@afterHoursCastBrick": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A power supply brick. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBrickLine": "2 × 2-lohko joka viides signaali.",
+    "@afterHoursCastBrickLine": {
+        "description": "What the Power Brick does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastGhost": "Aave",
+    "@afterHoursCastGhost": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastGhostLine": "Viisi sekuntia, jonka aikana kuljetaan kaiken läpi paitsi reunan ohi.",
+    "@afterHoursCastGhostLine": {
+        "description": "What the Ghost powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSnip": "Snip",
+    "@afterHoursCastSnip": {
+        "description": "Name of a powerup in the Cable Crawl arcade game, shown on its How to play card. A cut with scissors. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSnipLine": "Leikkaa kaapeli kahtia, niin saat lisäpisteitä.",
+    "@afterHoursCastSnipLine": {
+        "description": "What the Snip powerup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSignal": "Signaali",
+    "@afterHoursCastSignal": {
+        "description": "Name of the pickup in the Cable Crawl arcade game, bars of signal strength, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSignalLine": "Pisteitä ja vielä kaksi osuutta.",
+    "@afterHoursCastSignalLine": {
+        "description": "What the Signal pickup does in the Cable Crawl arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastShelfCat": "Shelf Cat",
+    "@afterHoursCastShelfCat": {
+        "description": "Name of an enemy in the Case Stack arcade game, shown on its How to play card. A cat on the shelf. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastShelfCatLine": "Lyö palloa sitä mukaa kuin se tulee, jotta se liukuu nopeammin.",
+    "@afterHoursCastShelfCatLine": {
+        "description": "What the Shelf Cat does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBluCase": "Blu-ray kotelo",
+    "@afterHoursCastBluCase": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBluCaseLine": "Nimike kirjastostasi. Ylitys leikataan pois.",
+    "@afterHoursCastBluCaseLine": {
+        "description": "What the Blu-ray Case does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastSteelbook": "Steelbook",
+    "@afterHoursCastSteelbook": {
+        "description": "Name of an obstacle in the Case Stack arcade game, shown on its How to play card. A metal disc case. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastSteelbookLine": "Joka kymmenes tapaus. Liukuu paljon nopeammin.",
+    "@afterHoursCastSteelbookLine": {
+        "description": "What the Steelbook does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastPerfect": "Täydellinen pudotus",
+    "@afterHoursCastPerfect": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastPerfectLine": "Jos osut juuri oikeaan kohtaan, pino kasvaa hieman.",
+    "@afterHoursCastPerfectLine": {
+        "description": "What the Perfect Drop does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBoxSet": "Box Set",
+    "@afterHoursCastBoxSet": {
+        "description": "Name of a powerup in the Case Stack arcade game, shown on its How to play card. A box set of discs. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBoxSetLine": "Kolme täydellistä pudotusta peräkkäin laajentaa sitä huomattavasti.",
+    "@afterHoursCastBoxSetLine": {
+        "description": "What the Box Set does in the Case Stack arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastDeadPixel": "Viallinen pikseli",
+    "@afterHoursCastDeadPixel": {
+        "description": "Name of an enemy in the Pixel Purge arcade game, shown on its How to play card. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastDeadPixelLine": "Putoaa puhdistetuista lohkoista. Kun sen nappaa kiinni, puhdistin kutistuu.",
+    "@afterHoursCastDeadPixelLine": {
+        "description": "What the Dead Pixel does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastMacroblock": "Makrolohko",
+    "@afterHoursCastMacroblock": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A blocky video compression artifact. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastMacroblockLine": "Yksi osuma riittää sen tyhjentämiseen.",
+    "@afterHoursCastMacroblockLine": {
+        "description": "What the Macroblock does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastKeyframe": "Keyframe",
+    "@afterHoursCastKeyframe": {
+        "description": "Name of an obstacle in the Pixel Purge arcade game, shown on its How to play card. A video keyframe. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastKeyframeLine": "Se kestää kolme osumaa ja pudottaa tehostuksen.",
+    "@afterHoursCastKeyframeLine": {
+        "description": "What the Keyframe does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastHdrLine": "Kahdeksan sekunnin ajan kaksi kertaa niin leveä scrubber.",
+    "@afterHoursCastHdrLine": {
+        "description": "What the HDR powerup does in the Pixel Purge arcade game, one line on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursCastBufferNet": "Puskuri",
+    "@afterHoursCastBufferNet": {
+        "description": "Name of a powerup in the Pixel Purge arcade game, shown on its How to play card. A safety net named after video buffering. Keep it short, it shows as a heading in a small column"
+    },
+    "afterHoursCastBufferNetLine": "scrubberin alla oleva verkko, joka estää yhden ohi menneen pallon.",
+    "@afterHoursCastBufferNetLine": {
+        "description": "What the Buffer powerup does in the Pixel Purge arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "afterHoursBufferRunCardTouch": "Napauta hypätäksesi ja napauta uudelleen ilmassa kääntyäksesi toiselle puolelle. Pyyhkäise omaa puoltasi kohti liu’uttaaksesi.",
+    "@afterHoursBufferRunCardTouch": {
+        "description": "Short touchscreen controls of the Buffer Run arcade game on its How to play card. Flip means turning gravity over onto the ceiling. Keep under about 90 characters, it shows as one line"
+    },
+    "afterHoursPixelPurgeCardRemote": "Vasemmalle ja oikealle liu’uta scrubberia.",
+    "@afterHoursPixelPurgeCardRemote": {
+        "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "episodeDirector": "Jakson ohjaaja",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (jakson ohjaaja)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Jakson käsikirjoittaja",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (jakson käsikirjoittaja)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Vierasnäyttelijä",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (vierailija)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeYours": "Siitä, mihin jäit. Kaikki aloittavat siitä.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchParties": "Watch Party",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Aloita Watch Party",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Chat, reaktiot ja äänestys. Toimii Moonbase alustalla.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "Jellyfinin oma. Muissa Jellyfin sovelluksissa olevat ystävät voivat liittyä mukaan.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Voit liittyä molempiin huoneisiin. Tämä valitsee vain sen, jonka avaat.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Watch Partyjen aikana",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Näytä keskustelu videon päällä",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Uudet viestit näkyvät muutaman sekunnin ajan",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Watch Party ilmoitukset",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Kerro minulle, kun joku tällä palvelimella aloittaa sellaisen",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    },
+    "watchPartyJoinWithCode": "Liity koodilla",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "Tällä palvelimella",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "{count} tällä palvelimella",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Liittyäksesi sinun on oltava pääsy kyseiseen kohteeseen. Huone sulkeutuu, kun viimeinen henkilö poistuu sieltä.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "Täällä näkyvät ne watch partyt , joita voit seurata. Saitko joltakulta koodin? Valitse ”Liity koodilla”.",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "Kutsulinkin liittäminen tähän toimii myös. Puhelimella linkki avaa Moonfin-sovelluksen suoraan Watch Partyihin.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} watching} other{{count} watching}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "{name}:n Watch Partyt",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Kaikki hallitsevat",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Äänestys siitä, mitä katsotaan",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "Watch Party tarvitsee Moonbasen laajennuksen palvelimella",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Pyydä palvelimen ylläpitäjää asentamaan Moonbase laajennus. Jellyfinissä SyncPlay toimii edelleen ilman sitä.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Tuo PIN-koodi ei toiminut. Yritä uudelleen.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "Liian monta yritystä. Odota hetki.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Tämä Watch Party on täynnä.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Missään huoneessa ei ole kyseistä koodia.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "Sinulla ei ole pääsyä siihen, mitä he katsovat.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "Järjestäjä poisti sinut Watch Party:stä.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "Watch Partysi",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Liitä se mihin tahansa keskusteluun. Se avaa tällä palvelimella sivun, jossa on ”Avaa Moonfinissä” painike.",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Lähetä kutsu",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Skannaa koodi puhelimellasi saadaksesi kutsulinkin ja lähetä se sitten sieltä. Tai jaa vain koodi.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "Peli odottaa kaikkien pelaajien vuoroa enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "Synkronoituna",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Kuroa umpeen",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Puskurointi",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "En katso",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "Valmis",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Liittyminen",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Järjestäjä",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "Odotetaan {name}:n liittymistä",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "Aloitetaan joka tapauksessa {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Yhdessä aloittaminen",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} keskeyttänyt",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} jatkoi",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} siirtyi kohtaan {time}",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} liittyi",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} vasen",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} vaihdettiin {title}",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Sinä olet nyt järjestäjä",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "{name} on nyt järjestäjä",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Kaikki voivat nyt hallita toistoa",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Vain järjestäjä hallitsee toistoa nyt",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Vain järjestäjä hallitsee toistoa nyt.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "Yhteyden palauttaminen partyihin...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Takaisin partyihin",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} lopetti partyn",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Chat",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Lähetä Partyihin",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyBackToClose": "Sulkemaan",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "watchPartyType": "Tyyppi",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Odota hetki",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Brb",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Taas!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "Love",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Wow",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Sad",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Fire",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Popcorn",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Nimitä isännäksi",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Jokainen voi hallita toistoa",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Kuka tahansa voi toistaa, keskeyttää ja ohittaa",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "Huoneen PIN",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Pyydä PIN koodia ennen kuin kukaan liittyy ryhmään",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "4–8 numeroa",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Lähde",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Poistu · {name} palvelimelta",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} järjesti watch partyn",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "Ensimmäinen sija Watch Parties osiossa Home sivustolla",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Tämä kutsu koskee palvelinta, jota et ole vielä lisännyt: {address}. Lisää se ja kirjaudu sisään liittyäksesi.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "siloPinRemember": "Tallenna PIN koodi tähän laitteeseen",
+    "@siloPinRemember": {
+        "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "watchPartyReplyNoWay": "No way",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "settingsDecodingAndRenderingSection": "Dekoodaus & Renderointi",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Audio Striimi",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Audio Uloslähtö",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Passthrough asetukset",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsImdbListsSection": "IMDb Listat",
+    "@settingsImdbListsSection": {
+        "description": "Section header on the IMDb Lists settings screen over the IMDb row switches"
+    },
+    "settingsTmdbListsSection": "TMDB Listat",
+    "@settingsTmdbListsSection": {
+        "description": "Section header on the TMDB Lists settings screen over the TMDB row switches"
+    },
+    "settingsSeerrHomePageRowsSection": "Seerr Rivi Kotisivulla",
+    "@settingsSeerrHomePageRowsSection": {
+        "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+    },
+    "settingsSavedCustomHomeRowsSection": "Tallennetut mukautetut kotirivit",
+    "@settingsSavedCustomHomeRowsSection": {
+        "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+    },
+    "settingsRewatchSection": "Katso uudelleen",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "favoritesSwitchViewSection": "Vaihda näkymää",
+    "@favoritesSwitchViewSection": {
+        "description": "Section header in the Favorites display options for choosing between Home and Library view"
+    },
+    "settingsPreviewAudioRowsOffInHomeRows": "Albumit, artistit ja soittolistat on kaikki poistettu käytöstä. Jos haluat näyttää jonkin näistä, siirry kohtaan Rivit, avaa {group} kohdasta{disabled} ,ja ota se käyttöön.",
+    "@settingsPreviewAudioRowsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is on, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off audio rows are",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewAudioRowsOffInHomeRowsSwitchOff": "Jos haluat nähdä albumit, artistit tai äänisoittolistat Etusivulla, ota ensin käyttöön {setting} Siirry sitten kohtaan Rivit, avaa {group} kohdassa {disabled} ja ota yksi niistä käyttöön.",
+    "@settingsPreviewAudioRowsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is off, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the audio rows once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRows": "Kokoelmat rivi on poistettu käytöstä. Jos haluat tuoda sen näkyviin, siirry kohtaan Rivit, avaa {group} kohdassa {disabled} ja ota se käyttöön.",
+    "@settingsPreviewCollectionsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRowsSwitchOff": "Jos haluat nähdä Kokoelmat-rivin Etusivulla, ota ensin käyttöön {setting}. Siirry sitten kohtaan Rivit, avaa {group} kohdassa {disabled} ja ota se käyttöön.",
+    "@settingsPreviewCollectionsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is off, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Collections row once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Collections Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewRowsOffInKidsMode": "Kids Mode nämä rivit eivät näy aloitussivulla, joten nämä asetukset eivät vaikuta siihen.",
+    "@settingsPreviewRowsOffInKidsMode": {
+        "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+    },
+    "settingsPreviewNeedsRowInRows": "Valitse rivi kohdassa Rivit, osiossa {disabled}",
+    "@settingsPreviewNeedsRowInRows": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+        "placeholders": {
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewNeedsSwitchAndRow": "Ota {setting} käyttöön ja valitse sitten rivi kohdasta Rows",
+    "@settingsPreviewNeedsSwitchAndRow": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is off. The Rows screen only lists those rows once the switch is on",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            }
+        }
+    },
+    "settingsPreviewKeptOffByKidsMode": "Kids Mode pitää tämän pois päältä Etusivu",
+    "@settingsPreviewKeptOffByKidsMode": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
+    },
+    "settingsPreviewAudioRowsEmpty": "Musiikkia ei ole näytettävissä, joten Home jättää nämä rivit pois.",
+    "@settingsPreviewAudioRowsEmpty": {
+        "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
+    },
+    "settingsPreviewRowsEmpty": "Näissä riveissä ei ole mitään näytettävää, joten Home jättää ne pois.",
+    "@settingsPreviewRowsEmpty": {
+        "description": "Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out"
+    },
+    "settingsPreviewCollectionsEmpty": "Näytettäviä kokoelmia ei ole, joten Home jättää tämän rivin pois.",
+    "@settingsPreviewCollectionsEmpty": {
+        "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+    },
+    "settingsPreviewShowEpisodesNote": "Tämä muuttaa vain niiden kokoelmien rivejä, jotka on lisätty Rows-kohtaan. Kokoelma rivi näyttää samalta.",
+    "@settingsPreviewShowEpisodesNote": {
+        "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+    },
+    "recentlyAddedAndReleased": "Äskettäin lisättyjä ja julkaistuja",
+    "@recentlyAddedAndReleased": {
+        "description": "Section title for Recently Added and Recently Released home row settings"
+    },
+    "hideWatchedInRecentRows": "Piilota katsotut",
+    "@hideWatchedInRecentRows": {
+        "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+    },
+    "hideWatchedInRecentRowsDescription": "Piilota katsotut sisällöt ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -kotiriveiltä.",
+    "@hideWatchedInRecentRowsDescription": {
+        "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+    },
+    "seerrWaitingForImport": "Ladattu, odottaa tuontia",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Jumissa",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrDownloadFailed": "Lataaminen epäonnistui",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "seerrImportBlocked": "Tuonti estetty",
+    "@seerrImportBlocked": {
+        "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+    },
+    "seerrNotFoundYet": "Ei vielä löytynyt",
+    "@seerrNotFoundYet": {
+        "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+    },
+    "seerrGetDifferentRelease": "Hanki eri julkaisu",
+    "@seerrGetDifferentRelease": {
+        "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+    },
+    "seerrGetDifferentReleaseConfirm": "{service} poistaa {release} latausohjelmasta, estää sen lataamisen uudelleen ja etsii toisen julkaisun.",
+    "@seerrGetDifferentReleaseConfirm": {
+        "description": "Body of the confirm dialog for Get a different release",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            },
+            "release": {
+                "type": "String",
+                "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseDone": "Poistettu. {service} etsii toista julkaisua.",
+    "@seerrGetDifferentReleaseDone": {
+        "description": "Short confirmation after Get a different release removed the stuck download",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseFailed": "Latausta ei voitu poistaa",
+    "@seerrGetDifferentReleaseFailed": {
+        "description": "Error shown when Get a different release could not remove the stuck download"
+    },
+    "kidsModePinToSwitchUser": "Syötä lastentilan PIN-koodi siirtyäksesi {name}:iin",
+    "@kidsModePinToSwitchUser": {
+        "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
     }
 }

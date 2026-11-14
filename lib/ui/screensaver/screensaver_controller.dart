@@ -5,31 +5,52 @@ import 'package:flutter/services.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../data/models/aggregated_item.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/app_exit.dart';
 import '../../util/platform_detection.dart';
 
 class ScreensaverController {
-  ScreensaverController(this._prefs, PlaybackManager playbackManager) {
+  ScreensaverController(this._prefs, this._playbackManager) {
     if (PlatformDetection.isTV) {
       _enabledCache = _prefs.get(UserPreferences.screensaverEnabled);
       _timeoutCache = _prefs.get(UserPreferences.screensaverTimeout);
-      _playingSub = playbackManager.state.playingStream.listen(
+      _sleepAfterCache = _prefs.get(UserPreferences.sleepAfterIdle);
+      _duringAudioCache = _prefs.get(UserPreferences.screensaverDuringAudio);
+      _playingSub = _playbackManager.state.playingStream.listen(
         _onPlayingChanged,
       );
       _prefs.addListener(_onPrefsChanged);
       _restartIdleTimer();
+      _restartSleepTimer();
     }
     visible.addListener(refreshWakeLock);
     _refreshWakeLock();
   }
 
   final UserPreferences _prefs;
+  final PlaybackManager _playbackManager;
+
+  @visibleForTesting
+  Future<void> Function() exitApp = AppExit.closeApp;
+
+  /// Apple discourages apps quitting themselves, so on Apple TV the screen
+  /// goes back to tvOS's own screensaver and sleep while Moonfin stays open.
+  @visibleForTesting
+  bool handBackInsteadOfExit = PlatformDetection.isAppleTV;
+
+  @visibleForTesting
+  bool get holdsScreenOn => _wakeLockEnabled;
 
   final ValueNotifier<bool> visible = ValueNotifier(false);
 
   StreamSubscription<bool>? _playingSub;
   Timer? _idleTimer;
+  Timer? _sleepTimer;
+  int _sleepAfterCache = 0;
+  bool _screenHandedBack = false;
+  bool _duringAudioCache = false;
   final Set<LogicalKeyboardKey> _consumedKeys = {};
   bool _enabledCache = false;
   ScreensaverTimeout _timeoutCache = ScreensaverTimeout.m5;
@@ -37,6 +58,7 @@ class ScreensaverController {
   bool _playbackActive = false;
   bool _streamPlaying = false;
   bool _trailerActive = false;
+  bool _homePreviewActive = false;
   bool _nativePlayerPresented = false;
   bool _wakeLockEnabled = false;
 
@@ -74,17 +96,32 @@ class ScreensaverController {
     _onStateChanged();
   }
 
+  /// A home card's preview, which can be a full trailer.
+  void setHomePreviewActive(bool value) {
+    if (_homePreviewActive == value) return;
+    _homePreviewActive = value;
+    _refreshWakeLock();
+    _onStateChanged();
+  }
+
   bool get _armed =>
       PlatformDetection.isTV &&
       _enabledCache &&
       !_activityPaused &&
       !_playbackActive &&
-      !_streamPlaying &&
+      (!_streamPlaying || (_duringAudioCache && _playingAudio)) &&
       !_trailerActive &&
+      !_homePreviewActive &&
       !_nativePlayerPresented;
+
+  bool get _playingAudio {
+    final item = _playbackManager.queueService.currentItem;
+    return item is AggregatedItem && item.isAudioLike;
+  }
 
   void notifyInteraction() {
     if (!PlatformDetection.isTV || visible.value) return;
+    _restartSleepTimer();
     if (_armed) {
       _restartIdleTimer();
     } else {
@@ -97,6 +134,7 @@ class ScreensaverController {
       visible.value = false;
     }
     _restartIdleTimer();
+    _restartSleepTimer();
   }
 
   bool dismissIfVisible() {
@@ -130,15 +168,25 @@ class ScreensaverController {
   void _onPrefsChanged() {
     final enabled = _prefs.get(UserPreferences.screensaverEnabled);
     final timeout = _prefs.get(UserPreferences.screensaverTimeout);
-    if (enabled == _enabledCache && timeout == _timeoutCache) return;
+    final sleepAfter = _prefs.get(UserPreferences.sleepAfterIdle);
+    final duringAudio = _prefs.get(UserPreferences.screensaverDuringAudio);
+    if (enabled == _enabledCache &&
+        timeout == _timeoutCache &&
+        sleepAfter == _sleepAfterCache &&
+        duringAudio == _duringAudioCache) {
+      return;
+    }
     _enabledCache = enabled;
     _timeoutCache = timeout;
+    _sleepAfterCache = sleepAfter;
+    _duringAudioCache = duringAudio;
     _refreshWakeLock();
     _onStateChanged();
   }
 
   void _onStateChanged() {
     if (!PlatformDetection.isTV) return;
+    _restartSleepTimer();
     if (!_armed) {
       _idleTimer?.cancel();
       if (visible.value) {
@@ -159,6 +207,48 @@ class ScreensaverController {
         visible.value = true;
       }
     });
+  }
+
+  static bool get sleepAfterIdleSupported =>
+      PlatformDetection.isTV &&
+      (PlatformDetection.isAndroid || PlatformDetection.isAppleTV);
+
+  /// A paused player counts as idle too, since it holds the screen on just
+  /// like the screensaver does.
+  bool get _sleepArmed =>
+      sleepAfterIdleSupported &&
+      _sleepAfterCache > 0 &&
+      !_activityPaused &&
+      !_streamPlaying;
+
+  void _restartSleepTimer() {
+    _sleepTimer?.cancel();
+    if (_screenHandedBack) {
+      _screenHandedBack = false;
+      _refreshWakeLock();
+    }
+    if (!_sleepArmed) return;
+    _sleepTimer = Timer(
+      Duration(minutes: _sleepAfterCache),
+      () => unawaited(_letTvSleep()),
+    );
+  }
+
+  Future<void> _letTvSleep() async {
+    if (!_sleepArmed) return;
+    if (handBackInsteadOfExit) {
+      _screenHandedBack = true;
+      _refreshWakeLock();
+      return;
+    }
+    if (_playbackManager.queueService.currentItem != null) {
+      await _playbackManager.stop(userInitiated: false);
+      await _playbackManager.lastStopReport.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {},
+      );
+    }
+    await exitApp();
   }
 
   static const _systemChannel = MethodChannel('moonfin/appletv_system');
@@ -195,16 +285,18 @@ class ScreensaverController {
   }
 
   void _refreshWakeLock({bool force = false}) {
-    final shouldEnable = wakeLockNeeded(
-      activityPaused: _activityPaused,
-      playbackActive: _playbackActive,
-      streamPlaying: _streamPlaying,
-      trailerActive: _trailerActive,
-      screensaverVisible: visible.value,
-      isTv: PlatformDetection.isTV,
-      screensaverEnabled: _enabledCache,
-      nativePlayerPresented: _nativePlayerPresented,
-    );
+    final shouldEnable =
+        !_screenHandedBack &&
+        wakeLockNeeded(
+          activityPaused: _activityPaused,
+          playbackActive: _playbackActive,
+          streamPlaying: _streamPlaying,
+          trailerActive: _trailerActive || _homePreviewActive,
+          screensaverVisible: visible.value,
+          isTv: PlatformDetection.isTV,
+          screensaverEnabled: _enabledCache,
+          nativePlayerPresented: _nativePlayerPresented,
+        );
     if (_wakeLockEnabled == shouldEnable && !force) {
       return;
     }
@@ -220,6 +312,7 @@ class ScreensaverController {
     visible.removeListener(refreshWakeLock);
     _playingSub?.cancel();
     _idleTimer?.cancel();
+    _sleepTimer?.cancel();
     _prefs.removeListener(_onPrefsChanged);
     _wakeLockEnabled = false;
     unawaited(_setWakeLockEnabled(false));

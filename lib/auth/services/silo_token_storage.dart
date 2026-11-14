@@ -28,6 +28,20 @@ class SiloTokenStorage {
 
   final AuthenticationStore _store;
 
+  /// Proofs for PINs asked every time, kept per store under [_proofKey].
+  /// They are never written to disk, so any later start (the app opened
+  /// again, or a background job or the car starting it headless) asks for
+  /// the PIN again. Only the choice to be asked is stored.
+  static final _unremembered = Expando<Map<String, Map<String, dynamic>>>(
+    'unremembered Silo PIN proofs',
+  );
+
+  Map<String, Map<String, dynamic>> get _inMemory =>
+      _unremembered[_store] ??= {};
+
+  static String _proofKey(String serverId, String accountId, String id) =>
+      '$serverId\u0000$accountId\u0000$id';
+
   /// The stored pair for [accountId] on [serverId], or null.
   SiloTokens? read(String serverId, String accountId) =>
       SiloTokens.fromJson(_store.getSiloTokens(serverId, accountId));
@@ -40,20 +54,35 @@ class SiloTokenStorage {
     String accountId,
     SiloTokens tokens, {
     bool newLogin = false,
-  }) => _store.putSiloTokens(
-    serverId,
-    accountId,
-    tokens.toJson(),
-    newLogin: newLogin,
-  );
+  }) {
+    if (newLogin) {
+      final prefix = _proofKey(serverId, accountId, '');
+      _inMemory.removeWhere((key, _) => key.startsWith(prefix));
+    }
+    return _store.putSiloTokens(
+      serverId,
+      accountId,
+      tokens.toJson(),
+      newLogin: newLogin,
+    );
+  }
 
-  /// The stored PIN proof of Silo profile [user], unless it has expired.
+  /// The PIN proof of Silo profile [user], unless it has expired.
   /// Null for a profile without one and for Jellyfin and Emby users. [now]
   /// is for tests.
   String? profileToken(PrivateUser user, {DateTime? now}) {
     final accountId = user.siloAccountId;
     if (accountId == null) return null;
-    final proof = _store.getSiloProfileToken(user.serverId, accountId, user.id);
+    final stored = _store.getSiloProfileToken(
+      user.serverId,
+      accountId,
+      user.id,
+    );
+    // A PIN asked every time keeps its proof in memory only, and only while
+    // that choice is still stored (signing the account out forgets both).
+    final proof = stored?['remember'] == false
+        ? _inMemory[_proofKey(user.serverId, accountId, user.id)]
+        : stored;
     final token = proof?['token'];
     if (token is! String || token.isEmpty) return null;
     final expires = DateTime.tryParse(proof?['expiresAt'] as String? ?? '');
@@ -68,18 +97,66 @@ class SiloTokenStorage {
   bool needsPin(PrivateUser user, {DateTime? now}) =>
       user.siloHasPin && profileToken(user, now: now) == null;
 
-  /// Keeps the proof Silo gave for [user]'s PIN, under its account.
+  /// Keeps the proof Silo gave for [user]'s PIN, under its account. Without
+  /// [remember] the proof only lasts while the profile is in use: it stays
+  /// in memory, [forgetUnrememberedPin] drops it when the profile is left,
+  /// and only the choice is stored, for the next PIN dialog.
   Future<void> saveProfileToken(
     PrivateUser user,
     String token, {
     DateTime? expiresAt,
+    bool remember = true,
   }) async {
     final accountId = user.siloAccountId;
     if (accountId == null) return;
-    await _store.putSiloProfileToken(user.serverId, accountId, user.id, {
+    final proof = {
       'token': token,
       if (expiresAt != null) 'expiresAt': expiresAt.toUtc().toIso8601String(),
-    });
+    };
+    final key = _proofKey(user.serverId, accountId, user.id);
+    if (remember) {
+      _inMemory.remove(key);
+    } else {
+      _inMemory[key] = proof;
+    }
+    await _store.putSiloProfileToken(
+      user.serverId,
+      accountId,
+      user.id,
+      remember ? proof : {'remember': false},
+    );
+  }
+
+  /// Whether [user]'s PIN is kept on this device once entered, as last
+  /// chosen in the PIN dialog. True until the person asks to be asked
+  /// every time.
+  bool remembersPin(PrivateUser user) {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return true;
+    final proof = _store.getSiloProfileToken(user.serverId, accountId, user.id);
+    return proof?['remember'] != false;
+  }
+
+  /// Drops [user]'s PIN proof, which Silo no longer takes, keeping whether
+  /// its PIN is asked for every time.
+  Future<void> forgetProfileToken(PrivateUser user) async {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return;
+    _inMemory.remove(_proofKey(user.serverId, accountId, user.id));
+    await _store.putSiloProfileToken(
+      user.serverId,
+      accountId,
+      user.id,
+      remembersPin(user) ? null : {'remember': false},
+    );
+  }
+
+  /// Drops [user]'s PIN proof when the person chose to be asked for the PIN
+  /// every time, keeping that choice. A remembered proof stays.
+  void forgetUnrememberedPin(PrivateUser user) {
+    final accountId = user.siloAccountId;
+    if (accountId == null) return;
+    _inMemory.remove(_proofKey(user.serverId, accountId, user.id));
   }
 
   /// Saves every pair [client]'s session refreshes from now on, for

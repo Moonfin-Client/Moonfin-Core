@@ -11,6 +11,7 @@ class _FakeEmby extends Interceptor {
   List<String> views;
   Map<String, dynamic> config;
   int viewsRequests = 0;
+  List<Map<String, dynamic>>? itemsByIds;
 
   Map<String, dynamic> _item(String id) => {'Id': id, 'Name': 'Library $id'};
 
@@ -28,7 +29,7 @@ class _FakeEmby extends Interceptor {
       case ('GET', '/Users/user-1/Items'):
         final ids = (options.queryParameters['Ids'] as String).split(',');
         data = {
-          'Items': [for (final id in ids) _item(id)],
+          'Items': itemsByIds ?? [for (final id in ids) _item(id)],
         };
       case ('POST', '/Users/user-1/Configuration'):
         config = Map<String, dynamic>.from(options.data as Map);
@@ -117,5 +118,28 @@ void main() {
     serve(views: ['3', '5'], myMediaExcludes: ['9']);
 
     expect(await ids(includeHidden: true), ['3', '5', '9']);
+  });
+
+  test("a stale hidden Guid doesn't bring back every library", () async {
+    serve(
+      views: ['3', '5'],
+      myMediaExcludes: ['0123456789abcdef0123456789abcdef'],
+    );
+    server.itemsByIds = [server._item('3'), server._item('5')];
+
+    expect(await ids(includeHidden: true), ['3', '5']);
+  });
+
+  test('a library hidden by Guid still comes back', () async {
+    serve(views: ['3'], myMediaExcludes: ['abcdef0123456789abcdef0123456789']);
+    server.itemsByIds = [
+      {
+        'Id': '9',
+        'Guid': 'abcdef0123456789abcdef0123456789',
+        'Name': 'Library 9',
+      },
+    ];
+
+    expect(await ids(includeHidden: true), ['3', '9']);
   });
 }

@@ -41,6 +41,7 @@ import '../../data/services/media_server_client_factory.dart';
 import '../services/silo_household.dart';
 import '../services/silo_token_storage.dart';
 import '../../data/services/achievements_service.dart';
+import '../../data/services/item_membership_service.dart';
 import '../../data/services/plex_tv_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
@@ -51,6 +52,7 @@ import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
+import '../../playback/media_kit_player_backend.dart';
 import '../../playback/native_apple_player_backend.dart';
 import '../../playback/audio_handler.dart';
 import '../../playback/headless_session_bootstrap.dart';
@@ -253,6 +255,7 @@ class SessionRepository {
     _remoteNavigationGeneration++;
     _remoteSearch?.close();
     _pluginSyncService.resetState();
+    ItemMembershipService.instance.clearCache();
     if (GetIt.instance.isRegistered<AchievementsService>()) {
       GetIt.instance<AchievementsService>().reset();
     }
@@ -317,6 +320,8 @@ class SessionRepository {
       accessToken: accessToken,
       onEnded: () => _onSiloLoginEnded(serverId, userId, user.name),
     );
+    siloClientOf(client)?.onProfileProofRejected = () =>
+        _onSiloProofRejected(serverId, userId);
     client.userId = userId;
 
     // A stored token can be long dead, and everything past this point fires
@@ -331,6 +336,7 @@ class SessionRepository {
           _logger.w('Stored access token was rejected. Logging out.');
           // Point the teardown at this session so it removes the right
           // stored credentials.
+          _forgetUnrememberedPinOfActive();
           _activeServerId = serverId;
           _activeUserId = userId;
           await destroyCurrentSession(tokenKnownInvalid: true);
@@ -362,6 +368,9 @@ class SessionRepository {
     userDataSync.bindTo(_socketHandler.events, userId: userId);
     _refreshCarBrowseTree(signedIn: true);
 
+    if (serverId != _activeServerId || userId != _activeUserId) {
+      _forgetUnrememberedPinOfActive();
+    }
     _activeServerId = serverId;
     _activeUserId = userId;
 
@@ -458,22 +467,17 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
-    // Moonbase for Plex has no push or Seerr proxy, and unlike Silo, Plex has
-    // no requests of its own to set up.
-    if (client.serverType == ServerType.plex) return;
-
-    // Register the FCM token now that a session exists, and push the current
-    // notification prefs so defaults reach the plugin. Startup registration
-    // bails before login, so this is where closed-app push actually enrolls.
+    // Register the FCM token now that a session exists. This is where Firebase
+    // first starts, and only when the plugin can deliver push.
     if (PlatformDetection.isMobile) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {
           await GetIt.instance<PushMessagingService>()
               .registerWithCurrentToken();
         }
-        await _pluginSyncService.pushNotificationPrefs(client);
       } catch (_) {}
     }
+    await _pluginSyncService.syncNotificationPrefs(client);
 
     final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
@@ -522,9 +526,11 @@ class SessionRepository {
       }
 
       // init language prefs if not already set
-      if (serverUser.configuration != null) {
+      if (serverUser.configuration != null &&
+          GetIt.instance.isRegistered<UserPreferences>()) {
         GetIt.instance<UserPreferences>().initLanguagePrefs(
           serverUser.configuration!,
+          expectedProfileScope: '${serverId}_${user.id}',
         );
       }
     } on DioException catch (e) {
@@ -687,6 +693,38 @@ class SessionRepository {
     }());
   }
 
+  /// Silo no longer takes the active profile's PIN proof (its PIN was set,
+  /// changed or reset elsewhere). The proof goes, and the server's profiles
+  /// open, where picking the profile asks for the PIN again.
+  void _onSiloProofRejected(String serverId, String userId) {
+    if (_activeServerId != serverId || _activeUserId != userId) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user == null) return;
+    _logger.w('Silo refused the profile\'s PIN proof. Asking for the PIN.');
+    unawaited(() async {
+      try {
+        await _siloTokens.forgetProfileToken(user);
+      } catch (e) {
+        _logger.w('Forgetting the refused PIN proof failed: $e');
+      }
+      final silo = _clientFactory.getClientIfExists(serverId);
+      if (silo != null) siloClientOf(silo)?.profileToken = null;
+      _router.go('${Destinations.server}?serverId=$serverId');
+    }());
+  }
+
+  bool _hasOtherSignedInUser(String? serverId, String? userId) =>
+      _authStore.getServers().any(
+        (server) => _authStore.getUsers(server.id).any(
+          (u) =>
+              u.accessToken.isNotEmpty &&
+              !(u.serverId == serverId && u.id == userId),
+        ),
+      );
+
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
   List<PrivateUser> _siloSiblings(String serverId, String? userId) {
@@ -708,13 +746,24 @@ class SessionRepository {
     }
   }
 
-  /// Whether the active user is a Silo profile with other profiles of its
-  /// account stored here, so "Sign out of the account" means more than
-  /// "Sign out".
-  bool get activeUserHasSiloSiblings {
+  /// How many other profiles of the active user's Silo account are stored
+  /// here. "Sign out" takes them too.
+  int get activeSiloSiblingCount {
     final serverId = _activeServerId;
-    return serverId != null &&
-        _siloSiblings(serverId, _activeUserId).isNotEmpty;
+    return serverId == null ? 0 : _siloSiblings(serverId, _activeUserId).length;
+  }
+
+  /// Leaving a Silo profile whose PIN is asked for every time locks it
+  /// again, however it is left: a switch, a sign-out or a rejected token.
+  void _forgetUnrememberedPinOfActive() {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (serverId == null || userId == null) return;
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user != null) _siloTokens.forgetUnrememberedPin(user);
   }
 
   /// Signs the whole Silo account out on this device: every stored
@@ -744,6 +793,7 @@ class SessionRepository {
   }
 
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+    _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
     _remoteNavigationGeneration++;
@@ -759,12 +809,15 @@ class SessionRepository {
     if (PlatformDetection.isMobile && !tokenKnownInvalid) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {
-          await GetIt.instance<PushMessagingService>().unregister();
+          await GetIt.instance<PushMessagingService>().unregister(
+            deleteToken: !_hasOtherSignedInUser(serverId, userId),
+          );
         }
       } catch (_) {}
     }
 
     _pluginSyncService.resetState();
+    ItemMembershipService.instance.clearCache();
     if (GetIt.instance.isRegistered<SiloWatchPartyManager>()) {
       GetIt.instance<SiloWatchPartyManager>().onSessionChanged(
         signedOut: true,
@@ -972,7 +1025,7 @@ class SessionRepository {
   }
 
   Future<void> _setLocalVolume(PlaybackManager manager, double volume) async {
-    final clamped = volume.clamp(0, 100).toDouble();
+    final clamped = volume.clamp(0, maxPlayerVolume).toDouble();
     final backend = manager.backend;
     if (backend == null) return;
     if (PlatformDetection.isMobile) {

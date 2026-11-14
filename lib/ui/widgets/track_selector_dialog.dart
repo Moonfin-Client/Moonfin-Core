@@ -23,11 +23,14 @@ Future<T?> showStyledPlayerDialog<T>(
   bool barrierDismissible = true,
   ImageProvider? titleImage,
   bool sidePanel = false,
+  Set<LogicalKeyboardKey> closeKeys = const {},
+  Widget Function(BuildContext ctx)? titleBuilder,
 }) {
   return showFocusRestoringDialog<T>(
     context: context,
     useRootNavigator: useRootNavigator,
     barrierDismissible: barrierDismissible,
+    closeKeys: closeKeys,
     builder: (dialogContext) {
       final mediaQuery = MediaQuery.of(dialogContext);
 
@@ -46,14 +49,9 @@ Future<T?> showStyledPlayerDialog<T>(
               effectiveBottomInset -
               24;
 
-          final titleText = Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          );
+          final titleText =
+              titleBuilder?.call(dialogContext) ??
+              Text(title, style: playerDialogTitleStyle);
 
           final inner = playerDialogPanel(
             constraints: sidePanel
@@ -142,6 +140,12 @@ Future<T?> showStyledPlayerDialog<T>(
   );
 }
 
+const playerDialogTitleStyle = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+  color: Colors.white,
+);
+
 /// The panel the player's dialogs sit in, on glass when the theme uses it.
 Widget playerDialogPanel({
   required BoxConstraints constraints,
@@ -217,12 +221,14 @@ class TrackSelectorDialog {
     int? dividerBefore,
     Widget? footer,
     bool useRootNavigator = true,
+    Set<LogicalKeyboardKey> closeKeys = const {},
   }) {
     return showStyledPlayerDialog<int>(
       context,
       title: title,
       showCancel: true,
       useRootNavigator: useRootNavigator,
+      closeKeys: closeKeys,
       // The footer rides along as the last row rather than sitting under the
       // list, so a long track list keeps the full height and the footer is
       // something you scroll down to instead of something in the way.

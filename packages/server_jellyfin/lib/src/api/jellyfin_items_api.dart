@@ -303,6 +303,7 @@ class JellyfinItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final userId = _getUserId();
     final response = await _dio.get(
@@ -312,6 +313,7 @@ class JellyfinItemsApi implements ItemsApi {
         if (recursive) 'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
+        if (hideWatched == true) 'Filters': 'IsUnplayed',
         'Limit': ?limit,
         'Fields': ?fields,
         'EnableImageTypes': ?enableImageTypes,
@@ -449,11 +451,13 @@ class JellyfinItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async {
     final response = await _dio.get(
       '/Playlists/$playlistId/Items',
       queryParameters: {
         'Fields':
+            fields ??
             'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,Artists,AlbumArtist,IndexNumber,MediaType,PlaylistItemId,BackdropImageTags,ParentBackdropImageTags,ParentBackdropItemId,SeriesName,ParentIndexNumber,Genres,Chapters,Overview,UserData,MediaStreams,DateCreated,SortName',
         'EnableImageTypes': 'Primary,Backdrop,Logo,Thumb',
         'ImageTypeLimit': 1,

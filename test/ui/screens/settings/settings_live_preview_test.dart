@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,51 +9,137 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin_design/moonfin_design.dart' show AppColorScheme;
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
+import 'package:moonfin/data/models/calendar_entry.dart';
+import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/models/media_bar_slide_item.dart';
+import 'package:moonfin/data/models/media_segment.dart';
+import 'package:moonfin/data/repositories/calendar_repository.dart';
+import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/services/background_service.dart';
+import 'package:moonfin/data/services/connectivity_service.dart';
+import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/row_data_source.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/saved_media_presence.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/playback/subtitle_fonts.dart';
+import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/detail_metadata_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/browse/book_category_screen.dart';
+import 'package:moonfin/ui/screens/browse/classic_book_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/immersive_music_screen.dart';
+import 'package:moonfin/ui/screens/browse/library_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
+import 'package:moonfin/ui/screens/browse/quick_access_music_screen.dart';
+import 'package:moonfin/ui/screens/browse/reading_room_book_screen.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_common.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_controller.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
+import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
+import 'package:moonfin/ui/screens/home/home_backdrop.dart';
+import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
+import 'package:moonfin/ui/screens/settings/live_preview/preview_row_samples.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/settings/subtitle_customization_screen.dart';
 import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
 import 'package:moonfin/ui/screensaver/screensaver_gradient_backdrops.dart';
+import 'package:moonfin/ui/widgets/bounded_network_image.dart';
+import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
+import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/trickplay.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seasonal/seasonal_effects.dart';
 import 'package:moonfin/ui/widgets/settings/preference_tiles.dart';
 import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/ui/widgets/settings/settings_section_header.dart';
+import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/widgets/user_avatar_image.dart';
 import 'package:moonfin/util/overlay_color_palette.dart';
+import 'package:moonfin/util/device_hinge.dart';
 import 'package:moonfin/util/platform_detection.dart';
-import 'package:server_core/server_core.dart' show ImageApi, MediaServerClient;
+import 'package:playback_core/playback_core.dart'
+    show PlaybackManager, QueueService;
+import 'package:server_core/server_core.dart'
+    show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Users extends Mock implements UserRepository {}
+
+class _Saved extends Mock implements SavedMediaPresence {}
 
 class _Client extends Mock implements MediaServerClient {}
 
 class _Images extends Mock implements ImageApi {}
 
+class _Sync extends Mock implements PluginSyncService {}
+
+class _Calendar extends Mock implements CalendarRepository {}
+
+class _Factory extends Mock implements MediaServerClientFactory {}
+
+class _MdbList extends Mock implements MdbListRepository {}
+
+class _Backdrops extends Mock implements BackgroundService {}
+
+class _Item extends Fake implements AggregatedItem {}
+
+class _Rows extends Mock implements RowDataSource {}
+
+class _Playback extends Mock implements PlaybackManager {}
+
+class _Home extends Mock implements HomeViewModel {}
+
+class _Connectivity extends Mock implements ConnectivityService {}
+
+/// Two films in a library called Films, whatever the call asks for.
+class _Items implements ItemsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => switch (invocation.memberName) {
+    #getItems => Future.value(<String, dynamic>{
+      'Items': [
+        for (final name in ['First Film', 'Second Film'])
+          {'Id': name, 'Name': name, 'Type': 'Movie', 'ServerId': 'server'},
+      ],
+      'TotalRecordCount': 2,
+    }),
+    #getItem => Future.value(<String, dynamic>{
+      'Name': 'Films',
+      'CollectionType': 'movies',
+    }),
+    _ => super.noSuchMethod(invocation),
+  };
+}
+
 /// Items with no artwork URLs, so images fall back to drawn placeholders and
-/// nothing touches the network.
-List<MediaBarSlideItem> _fakeItems() => [
+/// nothing touches the network. [backdrops] gives each one a backdrop address
+/// that loads nothing, for counting where the backdrop is drawn.
+List<MediaBarSlideItem> _fakeItems({bool backdrops = false}) => [
   for (var i = 0; i < 4; i++)
     MediaBarSlideItem(
       itemId: 'item$i',
       serverId: 'server',
+      backdropUrl: backdrops ? 'http://server/backdrop$i.jpg' : null,
       title: 'Sample Title $i',
       overview: 'An overview long enough to wrap over a couple of lines.',
       officialRating: 'PG-13',
@@ -211,6 +301,10 @@ void main() {
       UserPreferences.trickPlayVerticalPositionPercent.key,
       UserPreferences.trickPlayFollowScrubPosition.key,
       UserPreferences.trickPlayPauseWhileScrubbing.key,
+      UserPreferences.mediaSegmentCountdown.key,
+      UserPreferences.nextUpTimeout.key,
+      UserPreferences.showNextAirDate.key,
+      UserPreferences.replaceSkipOutroWithNextUp.key,
     ]) {
       expect(
         SettingsPreviewController.sceneForKey(key),
@@ -367,7 +461,7 @@ void main() {
     });
   });
 
-  group('the scene chips on a TV', () {
+  group('the scene pills on a TV', () {
     late AppLocalizations l10n;
 
     setUp(() {
@@ -376,20 +470,15 @@ void main() {
       l10n = lookupAppLocalizations(const Locale('en'));
     });
 
-    Future<Map<SettingsPreviewScene, FocusNode>> pumpChips(
+    Future<FocusNode> pumpScenes(
       WidgetTester tester,
       SettingsPreviewController controller, {
       required double width,
       required double scale,
+      VoidCallback? onExitLeft,
     }) async {
-      final nodes = {
-        for (final scene in SettingsPreviewScene.values) scene: FocusNode(),
-      };
-      addTearDown(() {
-        for (final node in nodes.values) {
-          node.dispose();
-        }
-      });
+      final node = FocusNode();
+      addTearDown(node.dispose);
       await tester.pumpWidget(
         host(
           controller,
@@ -402,9 +491,14 @@ void main() {
                 alignment: Alignment.topLeft,
                 child: SizedBox(
                   width: width,
-                  child: SettingsPreviewSceneChips(
-                    controller: controller,
-                    focusNodes: nodes,
+                  // The preview rebuilds the strip as the scene changes.
+                  child: ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) => SettingsPreviewScenes(
+                      controller: controller,
+                      focusNode: node,
+                      onExitLeft: onExitLeft,
+                    ),
                   ),
                 ),
               ),
@@ -412,80 +506,85 @@ void main() {
           ),
         ),
       );
+      // The strip measures its labels a frame after it's built.
+      await tester.pump();
       await tester.pump();
       expect(tester.takeException(), isNull);
-      return nodes;
+      return node;
     }
 
-    Rect chip(WidgetTester tester, SettingsPreviewScene scene) =>
+    Rect scene(WidgetTester tester, SettingsPreviewScene scene) =>
         tester.getRect(find.text(settingsPreviewSceneName(l10n, scene)));
 
     // 622 is what the TV layout leaves the preview column.
     for (final scale in DesktopUiScale.values) {
-      testWidgets('the chips get their room first at UI scale ${scale.name}', (
-        tester,
-      ) async {
-        await pumpChips(
+      testWidgets('the strip stays in its row beside the label at UI scale '
+          '${scale.name}', (tester) async {
+        await pumpScenes(
           tester,
           SettingsPreviewController(),
           width: 622,
           scale: scale.scaleFactor,
         );
+        final strip = tester.getRect(find.byType(SlidingPillTabs));
         final row = tester.getRect(find.byType(SingleChildScrollView));
-        final label = tester.getSize(
+        final label = tester.getRect(
           find.text(l10n.settingsLivePreview.toUpperCase()),
         );
-        final first = chip(tester, SettingsPreviewScene.home);
-        expect(first.left, greaterThanOrEqualTo(row.left));
-        expect(first.right, lessThanOrEqualTo(row.right));
-        // Either every chip fits, or the label gave up all of its room
-        // before any chip went past the edge.
-        final last = chip(tester, settingsPreviewScenes.last);
-        expect(
-          last.right <= row.right || label.width == 0,
-          isTrue,
-          reason: 'label ${label.width}, chips end ${last.right} of ${row.right}',
-        );
-        if (scale.scaleFactor <= DesktopUiScale.large.scaleFactor) {
-          expect(last.right, lessThanOrEqualTo(row.right));
-        }
+        expect(label.right, lessThanOrEqualTo(strip.left));
+        expect(strip.right, lessThanOrEqualTo(622));
+        expect(scene(tester, SettingsPreviewScene.home).left,
+            greaterThanOrEqualTo(row.left));
         debugDefaultTargetPlatformOverride = null;
       });
     }
 
-    testWidgets('chips too wide for the row scroll with the first in view', (
+    testWidgets('scenes too wide for the row scroll with the first in view', (
       tester,
     ) async {
-      await pumpChips(
+      await pumpScenes(
         tester,
         SettingsPreviewController(),
-        width: 260,
-        scale: DesktopUiScale.greatGrandparents.scaleFactor,
+        width: 300,
+        scale: 1,
       );
       final row = tester.getRect(find.byType(SingleChildScrollView));
-      final first = chip(tester, SettingsPreviewScene.home);
+      final first = scene(tester, SettingsPreviewScene.home);
       expect(first.left, greaterThanOrEqualTo(row.left));
       expect(first.right, lessThanOrEqualTo(row.right));
       expect(
-        chip(tester, SettingsPreviewScene.search).right,
+        scene(tester, SettingsPreviewScene.search).right,
         greaterThan(row.right),
       );
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('focusing a chip shows its scene', (tester) async {
+    testWidgets('Left and Right switch scenes and Left off the first leaves', (
+      tester,
+    ) async {
       final controller = SettingsPreviewController();
-      final nodes = await pumpChips(
+      var left = 0;
+      final node = await pumpScenes(
         tester,
         controller,
         width: 622,
         scale: 1,
+        onExitLeft: () => left++,
       );
-      nodes[SettingsPreviewScene.player]!.requestFocus();
+      node.requestFocus();
       await tester.pump();
-      expect(controller.scene, SettingsPreviewScene.player);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.details);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(left, 0);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      expect(left, 1);
 
       // Focus back on a setting hands the preview back to it.
+      controller.showScene(SettingsPreviewScene.player);
       controller.focus(
         const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
       );
@@ -633,7 +732,12 @@ void main() {
       }
       for (final key in [
         'media_segment_actions',
+        'pref_media_segment_countdown',
         'next_up_behavior',
+        'next_up_timeout',
+        'pref_show_next_air_date',
+        'replace_skip_outro_with_next_up',
+        'trickplay_pause_while_scrubbing',
         'showDescriptionOnPause',
         null,
       ]) {
@@ -925,6 +1029,128 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('a tried focus color rings the focused card', (tester) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(title: 'Focus', prefKey: 'focus_color'),
+        )
+        ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+        ..tryValue('focus_color', AppTheme.purple);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.home);
+
+      bool rings(Widget widget) {
+        final decoration = widget is DecoratedBox ? widget.decoration : null;
+        return decoration is BoxDecoration &&
+            decoration.border?.top.color == Color(AppTheme.purple.colorValue);
+      }
+
+      expect(find.byWidgetPredicate(rings), findsOneWidget);
+
+      // Classic rows hold their first card in focus for Focus Color too.
+      controller.tryValue('pref_home_rows_style', HomeRowsStyle.v1);
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsOneWidget);
+
+      controller.clearTry('focus_color');
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsNothing);
+
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Clock',
+          prefKey: 'pref_clock_behavior',
+        ),
+      );
+      controller.tryValue('focus_color', AppTheme.purple);
+      await pumpPreview(tester, controller);
+      expect(find.byWidgetPredicate(rings), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Peek Home Rows lifts the first row over the bar', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Peek Home Rows',
+            prefKey: 'mediaBarRowPeek',
+          ),
+        )
+        ..tryValue('mediaBarMode', UserPreferences.mediaBarModeMoonfin)
+        ..tryValue('mediaBarRowPeek', false);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.home);
+      expect(find.text(l10n.continueWatching), findsNothing);
+
+      controller.tryValue('mediaBarRowPeek', true);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.continueWatching), findsOneWidget);
+
+      // Banner keeps its own row under the card and has no room for a
+      // peeking one, as on Home.
+      controller.tryValue('mediaBarMode', UserPreferences.mediaBarModeBanner);
+      await pumpPreview(tester, controller);
+      final banner = tester.widgetList(find.text(l10n.continueWatching)).length;
+      controller.tryValue('mediaBarRowPeek', false);
+      await pumpPreview(tester, controller);
+      expect(
+        tester.widgetList(find.text(l10n.continueWatching)).length,
+        banner,
+      );
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Info Overlay puts the band over Classic rows on desktop', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.homeRowsStyle,
+        HomeRowsStyle.v1,
+      );
+      final title = find.text(_fakeItems().first.title);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Clock',
+            prefKey: 'pref_clock_behavior',
+          ),
+        )
+        ..tryValue('pref_home_row_info_overlay', false);
+      await pumpPreview(tester, controller);
+      final without = tester.widgetList(title).length;
+
+      controller.tryValue('pref_home_row_info_overlay', true);
+      await pumpPreview(tester, controller);
+      expect(tester.widgetList(title).length, without + 1);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    test('the Home row and card settings show on Home', () {
+      for (final key in [
+        UserPreferences.homeSectionsJson.key,
+        UserPreferences.homeRowImageType(HomeSectionType.resume).key,
+        UserPreferences.favoritesRowSortBy.key,
+        UserPreferences.studiosRowSortOrder.key,
+        UserPreferences.hideHomeWatchProgress.key,
+        UserPreferences.watchedIndicatorBehavior.key,
+        UserPreferences.classicHomeRowsPadding.key,
+        UserPreferences.homeRowInfoOverlay.key,
+        UserPreferences.mediaBarRowPeek.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.home,
+          reason: key,
+        );
+      }
+    });
+
     testWidgets('each surface draws its own rating settings', (tester) async {
       final controller = SettingsPreviewController()
         ..focus(
@@ -1089,8 +1315,8 @@ void main() {
       }
 
       // Messages shows with its switch though the server has none right now.
-      // Friends still needs the server's friends feature, and Downloads a
-      // user who may download.
+      // Friends still needs the server's friends feature, and Downloads
+      // something saved, as on the real bar.
       controller
         ..tryValue('pref_show_downloads_button', true)
         ..tryValue('pref_show_server_messages_button', true)
@@ -1102,19 +1328,9 @@ void main() {
       expect(find.byIcon(Icons.download_for_offline), findsNothing);
       expect(find.byIcon(Icons.movie_rounded), findsNothing);
 
-      // Nothing is saved yet, and Downloads shows all the same.
-      final users = _Users();
-      when(() => users.currentUser).thenReturn(
-        PrivateUser(
-          id: 'user',
-          name: 'moonfin',
-          serverId: 'server',
-          accessToken: 'token',
-          lastUsed: DateTime(2026),
-          canDownload: true,
-        ),
-      );
-      GetIt.instance.registerSingleton<UserRepository>(users);
+      final saved = _Saved();
+      when(() => saved.hasSavedMedia).thenReturn(true);
+      GetIt.instance.registerSingleton<SavedMediaPresence>(saved);
       controller.tryValue('pref_show_downloads_button', true);
       await pumpPreview(tester, controller);
       expect(find.byIcon(Icons.download_for_offline), findsOneWidget);
@@ -1155,6 +1371,10 @@ void main() {
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.homeRowsStyle,
         HomeRowsStyle.v1,
+      );
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.homeRowInfoOverlay,
+        false,
       );
       final controller = SettingsPreviewController()
         ..focus(
@@ -1327,6 +1547,157 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('the skip button draws the countdown being tried', (
+      tester,
+    ) async {
+      final key = UserPreferences.mediaSegmentCountdown.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Countdown', prefKey: key))
+        // The countdown still shows on an intro that skips itself.
+        ..tryValue('media_segment_actions', 'intro:skip,outro:askToSkip')
+        ..tryValue(key, MediaSegmentCountdown.both);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.player);
+      final skip = find.byType(SkipSegmentOverlay);
+      final ring = find.descendant(
+        of: skip,
+        matching: find.byType(CircularProgressIndicator),
+      );
+      expect(
+        tester.widget<SkipSegmentOverlay>(skip).segment.type,
+        MediaSegmentType.intro,
+      );
+      // 0:42 into an intro that ends at 1:30, with the seconds in the ring.
+      expect(
+        find.descendant(of: skip, matching: find.text('48')),
+        findsOneWidget,
+      );
+
+      controller.tryValue(key, MediaSegmentCountdown.timer);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsOneWidget);
+      expect(ring, findsNothing);
+
+      controller.tryValue(key, MediaSegmentCountdown.progressBar);
+      await pumpPreview(tester, controller);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      expect(ring, findsOneWidget);
+
+      controller.tryValue(key, MediaSegmentCountdown.none);
+      await pumpPreview(tester, controller);
+      expect(ring, findsNothing);
+      expect(find.text(l10n.endsIn(':48')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Next Up Timeout shows the card counting down from it', (
+      tester,
+    ) async {
+      final key = UserPreferences.nextUpTimeout.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Timeout', prefKey: key))
+        ..tryValue('pref_media_segment_countdown', MediaSegmentCountdown.timer)
+        ..tryValue(key, 15000);
+      await pumpPreview(tester, controller);
+      final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+      expect(card.nextItem, isNotNull);
+      expect(card.countsDown, isFalse);
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+      // The player hides its controls when the card comes up.
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+      // It holds where it starts instead of running out.
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text(l10n.endsIn(':15')), findsOneWidget);
+
+      controller.tryValue(key, 0);
+      await pumpPreview(tester, controller);
+      expect(find.byType(NextUpOverlay), findsOneWidget);
+      expect(find.textContaining(l10n.endsIn('')), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'Show Next Air Date draws the air date card, and none when off',
+      (tester) async {
+        final key = UserPreferences.showNextAirDate.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Air Date', prefKey: key))
+          ..tryValue(key, true);
+        await pumpPreview(tester, controller);
+        final card = tester.widget<NextUpOverlay>(find.byType(NextUpOverlay));
+        expect(card.airDate, isNotNull);
+        expect(card.nextItem, isNull);
+        expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+        controller.tryValue(key, false);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+        controller
+          ..tryValue(key, true)
+          ..tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'Replace Skip Outro puts the Up Next card in the button\'s place',
+      (tester) async {
+        final key = UserPreferences.replaceSkipOutroWithNextUp.key;
+        final controller = SettingsPreviewController()
+          ..focus(SettingsPreviewEntry(title: 'Replace', prefKey: key))
+          ..tryValue(key, false);
+        await pumpPreview(tester, controller);
+        final skip = find.byType(SkipSegmentOverlay);
+        expect(
+          tester.widget<SkipSegmentOverlay>(skip).segment.type,
+          MediaSegmentType.outro,
+        );
+        expect(find.byType(NextUpOverlay), findsNothing);
+
+        controller.tryValue(key, true);
+        await pumpPreview(tester, controller);
+        expect(skip, findsNothing);
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        // With Next Up off there's no card to put there.
+        controller.tryValue('next_up_behavior', NextUpBehavior.disabled);
+        await pumpPreview(tester, controller);
+        expect(skip, findsOneWidget);
+        expect(find.byType(NextUpOverlay), findsNothing);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Pause While Scrubbing shows whether a scrub pauses', (
+      tester,
+    ) async {
+      final key = UserPreferences.trickPlayPauseWhileScrubbing.key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Pause', prefKey: key))
+        ..tryValue('trickplay_mode', TrickplayMode.single)
+        ..tryValue(key, true);
+      await pumpPreview(tester, controller);
+      expect(find.byType(Trickplay), findsOneWidget);
+      expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.pause_rounded), findsNothing);
+
+      controller.tryValue(key, false);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+
+      // Without trickplay the player never pauses a scrub.
+      controller
+        ..tryValue(key, true)
+        ..tryValue('trickplay_mode', TrickplayMode.disabled);
+      await pumpPreview(tester, controller);
+      expect(find.byIcon(Icons.pause_rounded), findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('the screensaver settings show it over Home', (tester) async {
       final controller = SettingsPreviewController()
         ..focus(
@@ -1388,6 +1759,102 @@ void main() {
       await prefs.set(UserPreferences.screensaverDimming, 50);
       await tester.pump();
       expect(dimmed, findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Home draws its backdrop in the style tried or saved', (
+      tester,
+    ) async {
+      for (final key in [
+        UserPreferences.homeBackdropEnabled.key,
+        UserPreferences.homeBackdropStyle.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.home,
+        );
+      }
+      final prefs = GetIt.instance<UserPreferences>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Home Screen Backdrop',
+            prefKey: 'pref_home_backdrop_style',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await pumpPreview(tester, controller);
+      String? drawn() {
+        final backdrop = find.byType(HomeBackdrop);
+        return backdrop.evaluate().isEmpty
+            ? null
+            : tester.widget<HomeBackdrop>(backdrop).style;
+      }
+
+      expect(drawn(), UserPreferences.homeBackdropFullScreen);
+      for (final style in [
+        UserPreferences.homeBackdropCorner,
+        UserPreferences.homeBackdropTop,
+      ]) {
+        controller.tryValue('pref_home_backdrop_style', style);
+        await tester.pump();
+        expect(drawn(), style);
+      }
+      controller.tryValue(
+        'pref_home_backdrop_style',
+        UserPreferences.homeBackdropOff,
+      );
+      await tester.pump();
+      expect(drawn(), isNull);
+
+      // Saving Off turns the switch off too, and a style tried from there
+      // still shows before it's saved.
+      controller.clearTry('pref_home_backdrop_style');
+      await prefs.set(
+        UserPreferences.homeBackdropStyle,
+        UserPreferences.homeBackdropOff,
+      );
+      await prefs.set(UserPreferences.homeBackdropEnabled, false);
+      await tester.pump();
+      expect(drawn(), isNull);
+      controller.tryValue(
+        'pref_home_backdrop_style',
+        UserPreferences.homeBackdropCorner,
+      );
+      await tester.pump();
+      expect(drawn(), UserPreferences.homeBackdropCorner);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the details backdrop switch takes the picture away in every '
+        'style', (tester) async {
+      final prefs = GetIt.instance<UserPreferences>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Details Screen Backdrop',
+            prefKey: 'pref_show_details_backdrop',
+          ),
+        );
+      addTearDown(controller.dispose);
+      SetupPreviewData.debugOverride = ValueNotifier(
+        _fakeItems(backdrops: true),
+      );
+      final pictures = find.byWidgetPredicate(
+        (widget) =>
+            widget is BoundedNetworkImage &&
+            widget.imageUrl.startsWith('http://server/backdrop'),
+      );
+      for (final style in DetailScreenStyle.values) {
+        controller.tryValue('pref_detail_screen_style', style);
+        await prefs.set(UserPreferences.detailsBackdropEnabled, true);
+        await pumpPreview(tester, controller);
+        final shown = pictures.evaluate().length;
+
+        await prefs.set(UserPreferences.detailsBackdropEnabled, false);
+        await tester.pump();
+        expect(pictures.evaluate().length, lessThan(shown), reason: style.name);
+      }
       debugDefaultTargetPlatformOverride = null;
     });
 
@@ -1518,6 +1985,35 @@ void main() {
       expect(find.text('2020'), findsNothing);
       debugDefaultTargetPlatformOverride = null;
     });
+
+    testWidgets('the viewer\'s own score reads in the rating style tried', (
+      tester,
+    ) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Personal Rating Style',
+            prefKey: 'pref_personal_rating_style',
+          ),
+        )
+        ..tryValue('pref_detail_screen_style', DetailScreenStyle.modern);
+      await pumpPreview(tester, controller);
+      expect(controller.scene, SettingsPreviewScene.details);
+      expect(find.text('8.0'), findsOneWidget);
+
+      controller.tryValue(
+        'pref_personal_rating_style',
+        PersonalRatingStyle.stars,
+      );
+      await pumpPreview(tester, controller);
+      expect(find.text('4.0/5'), findsOneWidget);
+      expect(find.text('8.0'), findsNothing);
+
+      controller.clearTry('pref_personal_rating_style');
+      await pumpPreview(tester, controller);
+      expect(find.text('8.0'), findsOneWidget);
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   for (final scale in DesktopUiScale.values) {
@@ -1566,6 +2062,64 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
   }
+
+  testWidgets('Home grows with the UI scale a picker tries', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'UI Scale',
+          prefKey: 'pref_desktop_ui_scale',
+        ),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    Finder sizedTo(double height) => find.byWidgetPredicate(
+      (widget) => widget is SizedBox && widget.height == height,
+    );
+    double textScale() => MediaQuery.textScalerOf(
+      tester.element(find.text(_fakeItems().first.title).first),
+    ).scale(1);
+
+    await pump();
+    expect(controller.scene, SettingsPreviewScene.home);
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+
+    const tried = DesktopUiScale.extraLarge;
+    controller.tryValue('pref_desktop_ui_scale', tried);
+    await pump();
+    expect(
+      sizedTo(
+        InfoArea.fixedHeight(isMobile: false, desktopScale: tried.scaleFactor),
+      ),
+      findsOneWidget,
+    );
+    expect(sizedTo(150.0 * (0.8 * tried.scaleFactor)), findsWidgets);
+    expect(textScale(), closeTo(tried.scaleFactor, 1e-9));
+    expect(
+      GetIt.instance<UserPreferences>().get(UserPreferences.desktopUiScale),
+      DesktopUiScale.medium,
+    );
+
+    controller.clearTry('pref_desktop_ui_scale');
+    await pump();
+    expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
+    expect(textScale(), 1);
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
@@ -2150,6 +2704,41 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('the subtitle line sits on the picture, not a letterbox bar', (
+      tester,
+    ) async {
+      BoxFit pictureFit() => tester
+          .widget<FittedBox>(
+            find
+                .ancestor(
+                  of: find.byWidgetPredicate(
+                    (w) => w is SizedBox && w.width == 2390,
+                  ),
+                  matching: find.byType(FittedBox),
+                )
+                .first,
+          )
+          .fit;
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Stroke',
+            prefKey: 'subtitles_stroke_width',
+          ),
+        )
+        ..tryValue('player_zoom_mode', ZoomMode.fit);
+      await pumpPlayer(tester, controller);
+      expect(pictureFit(), BoxFit.cover);
+
+      // Away from the subtitle look the wide film keeps its bars.
+      controller.focus(
+        const SettingsPreviewEntry(title: 'Zoom', prefKey: 'player_zoom_mode'),
+      );
+      await pumpPlayer(tester, controller);
+      expect(pictureFit(), BoxFit.contain);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('an HDR setting shows the HDR look while it has focus', (
       tester,
     ) async {
@@ -2230,6 +2819,84 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    for (final layout in [
+      InterfaceLayout.tv,
+      InterfaceLayout.desktop,
+      InterfaceLayout.phone,
+    ]) {
+      testWidgets('on $layout the subtitle clears the seek bar while the '
+          'controls show', (tester) async {
+        if (layout == InterfaceLayout.desktop) {
+          debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+        }
+        PlatformDetection.setInterfaceLayout(layout);
+        final controller = SettingsPreviewController()
+          ..tryValue(
+            'playback_engine_preference',
+            PlaybackEnginePreference.media3,
+          )
+          ..tryValue('subtitles_offset_position', 0.1)
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Zoom',
+              prefKey: 'player_zoom_mode',
+            ),
+          );
+        await pumpPlayer(tester, controller);
+        expect(find.byType(Slider), findsOneWidget);
+
+        final text = line('hear');
+        double bottom() => tester
+            .widget<Positioned>(
+              find.ancestor(of: text, matching: find.byType(Positioned)).first,
+            )
+            .bottom!;
+        // The canvas is scaled to fit the preview, so gaps are measured in
+        // its own units.
+        double gapTo(Finder finder) =>
+            (tester.getRect(finder).top - tester.getRect(text).bottom) /
+            (tester.getRect(text).width / tester.getSize(text).width);
+        final height = tester
+            .getSize(find.ancestor(of: text, matching: find.byType(Stack)).first)
+            .height;
+        final endsAt = find.byWidgetPredicate(
+          (widget) => widget is PlaybackTimeRow && widget.bold,
+        );
+        expect(endsAt, findsOneWidget);
+        expect(gapTo(endsAt), closeTo(8, 0.01));
+        expect(gapTo(find.byType(Slider)), greaterThan(8));
+        final lifted = bottom();
+        expect(lifted, greaterThan(0.1 * height));
+
+        // With nothing above the bar it sits just over the bar.
+        controller.tryValue('playback_time_above_right', PlaybackTimeSlot.none);
+        await pumpPlayer(tester, controller);
+        expect(endsAt, findsNothing);
+        expect(gapTo(find.byType(Slider)), closeTo(8, 0.01));
+
+        // An offset already higher than that is kept.
+        controller
+          ..clearTry('playback_time_above_right')
+          ..tryValue('subtitles_offset_position', 0.36);
+        await pumpPlayer(tester, controller);
+        expect(bottom(), closeTo(math.max(0.36 * height, lifted), 0.001));
+
+        // With the controls down the line keeps its own offset.
+        controller
+          ..tryValue('subtitles_offset_position', 0.1)
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Size',
+              prefKey: 'subtitles_text_size',
+            ),
+          );
+        await pumpPlayer(tester, controller);
+        expect(find.byType(Slider), findsNothing);
+        expect(bottom(), closeTo(0.1 * height, 0.001));
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
     testWidgets('the subtitle look screen reports its tiles and tries colors', (
       tester,
     ) async {
@@ -2257,6 +2924,1436 @@ void main() {
       await tester.pumpAndSettle();
       expect(controller.isTrying('subtitles_text_color'), isFalse);
       expect(prefs.get(UserPreferences.subtitlesTextColor), 0xFFFFFFFF);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the line follows the stroke width and shadow', (
+      tester,
+    ) async {
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Text Shadow',
+            prefKey: 'subtitles_shadow',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await pumpPlayer(tester, controller);
+      final plain = lineStyle(tester, 'hear').shadows!;
+
+      controller
+        ..tryValue('subtitles_shadow', true)
+        ..tryValue('subtitles_stroke_width', 200);
+      await pumpPlayer(tester, controller);
+      final styled = lineStyle(tester, 'hear').shadows!;
+      expect(styled.first.color.a, closeTo(0.8, 0.01));
+      // The outline reaches twice as far, with more copies so it stays solid.
+      double reach(Iterable<Shadow> shadows) => shadows
+          .map((s) => math.max(s.offset.dx.abs(), s.offset.dy.abs()))
+          .reduce(math.max);
+      expect(reach(styled.skip(1)), closeTo(reach(plain) * 2, 0.001));
+      expect(styled.length - 1, greaterThan(plain.length));
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a font is only saved once it has downloaded', (tester) async {
+      final roboto = File('assets/fonts/Roboto-Regular.ttf').readAsBytesSync();
+      var portal = true;
+      final previous = SubtitleFonts.instance;
+      SubtitleFonts.instance = SubtitleFonts(
+        directory: () async => null,
+        client: MockClient(
+          (_) async => portal
+              ? http.Response('<html>Sign in</html>', 200)
+              : http.Response.bytes(roboto, 200),
+        ),
+      );
+      addTearDown(() => SubtitleFonts.instance = previous);
+      await tester.pumpWidget(
+        host(SettingsPreviewController(), const SubtitleCustomizationScreen()),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> pick() async {
+        await tester.ensureVisible(find.text(l10n.subtitleFont));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.subtitleFont));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Fira Sans'));
+        await tester.runAsync(() => SubtitleFonts.instance.load('Fira Sans'));
+        await tester.pumpAndSettle();
+      }
+
+      await pick();
+      expect(
+        find.text(l10n.subtitleFontDownloadFailed('Fira Sans')),
+        findsOneWidget,
+      );
+      expect(prefs.get(UserPreferences.subtitlesFont), '');
+
+      portal = false;
+      await pick();
+      expect(prefs.get(UserPreferences.subtitlesFont), 'Fira Sans');
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Bold Text switches the weight', (tester) async {
+      await tester.pumpWidget(
+        host(SettingsPreviewController(), const SubtitleCustomizationScreen()),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.subtitlesTextWeight), 700);
+      await tester.tap(find.text(l10n.subtitleBold));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.subtitlesTextWeight), 400);
+      debugDefaultTargetPlatformOverride = null;
+    });
+  });
+
+  group('the calendar scene', () {
+    late _Sync sync;
+    late _Calendar calendar;
+
+    setUp(() {
+      registerFallbackValue(DateTime(2026));
+      registerFallbackValue(<String>{});
+      sync = _Sync();
+      when(() => sync.pluginAvailable).thenReturn(true);
+      when(() => sync.seerrAvailable).thenReturn(false);
+      when(() => sync.calendarAvailable).thenReturn(true);
+      when(() => sync.calendarRemindersAvailable).thenReturn(false);
+      when(() => sync.calendarDaysBack).thenReturn(14);
+      when(() => sync.calendarDaysAhead).thenReturn(90);
+      GetIt.instance.registerSingleton<PluginSyncService>(sync);
+
+      final now = DateTime.now();
+      calendar = _Calendar();
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'aired',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.subtract(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Aired Show',
+            seasonNumber: 1,
+            episodeNumber: 4,
+            hasFile: true,
+            itemId: 'series',
+            episodeId: 'episode',
+          ),
+          CalendarEntry(
+            key: 'next',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 2)),
+            hasTime: true,
+            title: 'Upcoming Show',
+            episodeTitle: 'The Next One',
+            seasonNumber: 2,
+            episodeNumber: 1,
+          ),
+          CalendarEntry(
+            key: 'later',
+            kind: CalendarEntryKind.episode,
+            release: CalendarRelease.airing,
+            date: now.add(const Duration(days: 3)),
+            hasTime: true,
+            title: 'Later Show',
+            seasonNumber: 1,
+            episodeNumber: 2,
+          ),
+        ]),
+      );
+      // Only the aired show is one the user follows.
+      when(() => calendar.seriesProgress(any())).thenAnswer(
+        (_) async => {'series': const CalendarSeriesProgress(favorite: true)},
+      );
+      GetIt.instance.registerSingleton<CalendarRepository>(calendar);
+    });
+
+    test('its settings show on it, and ones it never draws stay put', () {
+      for (final key in [
+        UserPreferences.calendarStyle.key,
+        UserPreferences.calendarWeekStart.key,
+        UserPreferences.calendarScope.key,
+        UserPreferences.calendarShowBadges.key,
+        UserPreferences.calendarColorBy.key,
+        UserPreferences.calendarImageType.key,
+        UserPreferences.calendarSpoilerSafe.key,
+        UserPreferences.calendarReminders.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.calendar,
+          reason: key,
+        );
+      }
+      // The release types are shared with the Upcoming Movies row, and the
+      // select action only acts on a press.
+      for (final key in [
+        UserPreferences.radarrCalendarShowCinema.key,
+        UserPreferences.calendarSelectAction.key,
+      ]) {
+        expect(SettingsPreviewController.sceneForKey(key), isNull, reason: key);
+      }
+      expect(
+        SettingsPreviewController.sceneForKey(
+          UserPreferences.showCalendarButton.key,
+        ),
+        SettingsPreviewScene.home,
+      );
+    });
+
+    test('the chip waits on the server offering the calendar', () {
+      expect(settingsPreviewScenes, contains(SettingsPreviewScene.calendar));
+      when(() => sync.calendarAvailable).thenReturn(false);
+      expect(
+        settingsPreviewScenes,
+        isNot(contains(SettingsPreviewScene.calendar)),
+      );
+    });
+
+    for (final layout in [
+      InterfaceLayout.tv,
+      InterfaceLayout.desktop,
+      InterfaceLayout.phone,
+    ]) {
+      testWidgets('draws the style a picker tries on $layout', (tester) async {
+        debugDefaultTargetPlatformOverride = layout == InterfaceLayout.desktop
+            ? TargetPlatform.linux
+            : TargetPlatform.android;
+        PlatformDetection.setInterfaceLayout(layout);
+        // A phone's top bar asks the player for its height, so the bottom bar
+        // keeps that out of the test.
+        if (layout == InterfaceLayout.phone) {
+          await GetIt.instance<UserPreferences>().set(
+            UserPreferences.navbarPosition,
+            NavbarPosition.bottom,
+          );
+        }
+        SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+        // The test font's glyphs are a full em wide, so the calendar's header
+        // chips only run out of room here. Anything else still fails.
+        final onError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (!details.exceptionAsString().contains('overflowed')) {
+            onError?.call(details);
+          }
+        };
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        // One frame starts the load and the next draws what it found.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        for (final position in NavbarPosition.values) {
+          controller
+            ..tryValue('pref_navbar_position', position)
+            ..tryValue('pref_calendar_style', CalendarStyle.countdown);
+          await tester.pump(const Duration(milliseconds: 300));
+          expect(find.byType(CalendarCountdownView), findsOneWidget);
+          expect(find.byType(CalendarAgendaView), findsNothing);
+          expect(tester.takeException(), isNull);
+        }
+
+        controller.clearTry('pref_calendar_style');
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(CalendarAgendaView), findsOneWidget);
+        await tester.pumpWidget(const SizedBox());
+        FlutterError.onError = onError;
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
+    /// The test font draws every glyph a full em wide, so the header's tab
+    /// chips run out of room sideways. A vertical overflow still fails.
+    void ignoreSidewaysOverflow() {
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        final message = details.exceptionAsString();
+        if (!message.contains('overflowed') ||
+            !(message.contains('on the right') ||
+                message.contains('on the left'))) {
+          onError?.call(details);
+        }
+      };
+      addTearDown(() => FlutterError.onError = onError);
+    }
+
+    testWidgets('a tablet or an open folding phone keeps the phone calendar '
+        'in the small frame', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      Finder named(String type) =>
+          find.byWidgetPredicate((w) => w.runtimeType.toString() == type);
+
+      for (final (size, hinge) in [
+        (const Size(1194, 834), HingeStatus.unknown),
+        (const Size(669, 951), HingeStatus.partiallyOpen),
+      ]) {
+        tester.view.physicalSize = size;
+        DeviceHinge.debugStatus = hinge;
+        final controller = SettingsPreviewController();
+        await tester.pumpWidget(
+          host(
+            controller,
+            const SizedBox(
+              width: 480,
+              height: 640,
+              child: SettingsLivePreview(),
+            ),
+          ),
+        );
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Style',
+            prefKey: 'pref_calendar_style',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Upcoming Show'), findsWidgets, reason: '$size');
+        expect(named('_Preview'), findsNothing, reason: '$size');
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Week',
+            prefKey: 'pref_calendar_week_start',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(named('_MobileCell'), findsWidgets, reason: '$size');
+        expect(named('_WideCell'), findsNothing, reason: '$size');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
+    testWidgets('half open, the picked entry fits the upper half at large '
+        'text', (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.navbarPosition,
+        NavbarPosition.bottom,
+      );
+      tester.view.physicalSize = const Size(669, 951);
+      tester.view.devicePixelRatio = 1.0;
+      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      DeviceHinge.debugStatus = HingeStatus.partiallyOpen;
+      addTearDown(() => DeviceHinge.debugStatus = HingeStatus.unknown);
+      ignoreSidewaysOverflow();
+      final controller = CalendarController();
+      addTearDown(controller.dispose);
+      unawaited(controller.load());
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: CalendarAgendaView(controller: controller)),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Upcoming Show'), findsWidgets);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    Future<void> settle(WidgetTester tester) async {
+      // One frame starts the load and the next draws what it found.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    /// Runs [body] with the desktop preview up, [style] saved and [prefKey]
+    /// in focus.
+    Future<void> withCalendar(
+      WidgetTester tester,
+      String prefKey,
+      Future<void> Function(SettingsPreviewController controller) body, {
+      CalendarStyle style = CalendarStyle.agenda,
+    }) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.calendarStyle,
+        style,
+      );
+      // The test font's glyphs are a full em wide, so the calendar's header
+      // chips only run out of room here. Anything else still fails.
+      final onError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (!details.exceptionAsString().contains('overflowed')) {
+          onError?.call(details);
+        }
+      };
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      await settle(tester);
+      expect(controller.scene, SettingsPreviewScene.calendar);
+      await body(controller);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      FlutterError.onError = onError;
+      debugDefaultTargetPlatformOverride = null;
+    }
+
+    testWidgets('a tried scope filters the list before it\'s saved', (
+      tester,
+    ) async {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      await withCalendar(tester, 'pref_calendar_scope', (controller) async {
+        expect(find.text('Upcoming Show'), findsWidgets);
+
+        controller.tryValue('pref_calendar_scope', CalendarScope.myShows);
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsNothing);
+        expect(find.text(l10n.calendarNothingUpcoming), findsOneWidget);
+        expect(
+          GetIt.instance<UserPreferences>().get(UserPreferences.calendarScope),
+          CalendarScope.everything,
+        );
+
+        controller.clearTry('pref_calendar_scope');
+        await settle(tester);
+        expect(find.text('Upcoming Show'), findsWidgets);
+      });
+    });
+
+    testWidgets('a tried Color By colors the calendar before it\'s saved', (
+      tester,
+    ) async {
+      // A film still to come takes the film color by type and the accent by
+      // status, so the two can be told apart.
+      when(
+        () => calendar.load(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+          unmonitored: any(named: 'unmonitored'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (_) async => CalendarResult([
+          CalendarEntry(
+            key: 'film',
+            kind: CalendarEntryKind.movie,
+            release: CalendarRelease.digital,
+            date: DateTime.now().add(const Duration(days: 2)),
+            hasTime: false,
+            title: 'Upcoming Film',
+          ),
+        ]),
+      );
+      Finder kicker(Color color) => find.byWidgetPredicate(
+        (widget) => widget is Text && widget.style?.color == color,
+      );
+      await withCalendar(tester, 'pref_calendar_color_by', (controller) async {
+        expect(find.text('Upcoming Film'), findsWidgets);
+        expect(kicker(calendarMovieColor), findsOneWidget);
+        expect(kicker(AppColorScheme.accent), findsNothing);
+
+        controller.tryValue('pref_calendar_color_by', CalendarColorBy.status);
+        await settle(tester);
+        expect(kicker(calendarMovieColor), findsNothing);
+        expect(kicker(AppColorScheme.accent), findsOneWidget);
+      });
+    });
+
+    testWidgets('a tried Image Type shapes the week\'s cards before it\'s '
+        'saved', (tester) async {
+      Finder art(double aspectRatio) => find.byWidgetPredicate(
+        (widget) => widget is CalendarArt && widget.aspectRatio == aspectRatio,
+      );
+      await withCalendar(tester, 'pref_calendar_image_type', (
+        controller,
+      ) async {
+        expect(find.text('Later Show'), findsOneWidget);
+        expect(art(2 / 3), findsOneWidget);
+
+        controller.tryValue(
+          'pref_calendar_image_type',
+          CalendarImageType.thumb,
+        );
+        await settle(tester);
+        expect(art(2 / 3), findsNothing);
+        expect(art(16 / 9), findsNWidgets(2));
+      }, style: CalendarStyle.countdown);
+    });
+
+    testWidgets('Week Start draws the month grid from the day tried', (
+      tester,
+    ) async {
+      double left(String day) => tester.getTopLeft(find.text(day)).dx;
+      await withCalendar(tester, 'pref_calendar_week_start', (
+        controller,
+      ) async {
+        expect(find.byType(CalendarMonthScreen), findsOneWidget);
+        // Auto in English starts on Sunday.
+        expect(left('Sun'), lessThan(left('Mon')));
+
+        controller.tryValue(
+          'pref_calendar_week_start',
+          CalendarWeekStart.monday,
+        );
+        await settle(tester);
+        expect(left('Mon'), lessThan(left('Sun')));
+
+        controller.clearTry('pref_calendar_week_start');
+        await settle(tester);
+        expect(left('Sun'), lessThan(left('Mon')));
+      });
+    });
+  });
+
+  group('the library scene', () {
+    AggregatedLibrary library(String id, String type) => AggregatedLibrary(
+      id: id,
+      name: id,
+      collectionType: type,
+      serverId: 'server',
+    );
+
+    late _Backdrops backdrops;
+
+    setUp(() {
+      registerFallbackValue(BlurContext.browsing);
+      registerFallbackValue(_Item());
+      final client = _Client();
+      when(() => client.itemsApi).thenReturn(_Items());
+      when(() => client.imageApi).thenReturn(_Images());
+      when(() => client.baseUrl).thenReturn('http://server');
+      when(() => client.userId).thenReturn('user');
+      when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      final factory = _Factory();
+      when(() => factory.clientForServerOrActive(any())).thenReturn(client);
+      backdrops = _Backdrops();
+      when(() => backdrops.backdropUrlsFor(any())).thenReturn(const []);
+      GetIt.instance
+        ..registerSingleton<MediaServerClientFactory>(factory)
+        ..registerSingleton<MdbListRepository>(_MdbList())
+        ..registerSingleton<BackgroundService>(backdrops);
+    });
+
+    test('its settings show on it', () {
+      for (final key in [
+        UserPreferences.libraryStyle.key,
+        UserPreferences.groupItemsIntoCollections.key,
+        UserPreferences.showMediaDetailsOnLibraryPage.key,
+        UserPreferences.libraryCardTitles.key,
+        UserPreferences.useDetailedSubHeadings.key,
+        UserPreferences.hideBackdropsInLibraries.key,
+        UserPreferences.musicLibraryStyle.key,
+        UserPreferences.bookLibraryStyle.key,
+      ]) {
+        expect(
+          SettingsPreviewController.sceneForKey(key),
+          SettingsPreviewScene.library,
+          reason: key,
+        );
+      }
+    });
+
+    test('the chip waits on a video, music or book library', () {
+      SetupPreviewData.libraries.value = [library('photos', 'homevideos')];
+      expect(settingsPreviewScenes, isNot(contains(SettingsPreviewScene.library)));
+      SetupPreviewData.libraries.value = [library('books', 'books')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+      SetupPreviewData.libraries.value = [library('music', 'music')];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('shows', 'tvshows'),
+      ];
+      expect(settingsPreviewScenes.last, SettingsPreviewScene.library);
+    });
+
+    /// Focuses [prefKey] beside a Movies library and [other], with the
+    /// services the music and book screens read, and checks each tried style
+    /// draws its own screen in place of the video library.
+    Future<SettingsPreviewController> expectStylesDrawn(
+      WidgetTester tester,
+      AggregatedLibrary other,
+      String prefKey,
+      List<(Object, Type)> styles,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [library('films', 'movies'), other];
+      final playback = _Playback();
+      when(() => playback.queueService).thenReturn(QueueService());
+      GetIt.instance
+        ..registerSingleton<PlaybackManager>(playback)
+        ..registerSingleton<RowDataSource>(_Rows())
+        ..registerSingleton<MediaServerClient>(
+          GetIt.instance<MediaServerClientFactory>().clientForServerOrActive(
+            null,
+          ),
+        );
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(SettingsPreviewEntry(title: prefKey, prefKey: prefKey));
+      for (final (style, screen) in styles) {
+        controller.tryValue(prefKey, style);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(screen), findsOneWidget, reason: '$style');
+        expect(find.byType(LibraryBrowseScreen), findsNothing);
+        expect(tester.takeException(), isNull);
+      }
+      return controller;
+    }
+
+    testWidgets('Book Library Style draws the book library in the style a '
+        'picker tries', (tester) async {
+      await expectStylesDrawn(
+        tester,
+        library('shelf', 'books'),
+        'pref_book_library_style',
+        [
+          (BookLibraryStyle.classic, ClassicBookBrowseScreen),
+          (BookLibraryStyle.readingRoom, ReadingRoomBookScreen),
+          (BookLibraryStyle.bookstore, BookCategoryScreen),
+        ],
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('Music Library Style draws the music library in the style a '
+        'picker tries and leaves the app backdrop alone', (tester) async {
+      final controller = await expectStylesDrawn(
+        tester,
+        library('tunes', 'music'),
+        'pref_music_library_style',
+        [
+          (MusicLibraryStyle.classic, MusicBrowseScreen),
+          (MusicLibraryStyle.quickAccess, QuickAccessMusicScreen),
+          (MusicLibraryStyle.immersive, ImmersiveMusicScreen),
+        ],
+      );
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+
+      // Any other library setting goes back to the video library.
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(LibraryBrowseScreen), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('draws the first video library in the style a picker tries', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [
+        library('music', 'music'),
+        library('films', 'movies'),
+        library('shows', 'tvshows'),
+      ];
+      final controller = SettingsPreviewController();
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      controller.focus(
+        const SettingsPreviewEntry(
+          title: 'Video Library Style',
+          prefKey: 'pref_library_style',
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      LibraryBrowseScreen screen() =>
+          tester.widget<LibraryBrowseScreen>(find.byType(LibraryBrowseScreen));
+      expect(screen().libraryId, 'films');
+      expect(screen().previewStyle, LibraryStyle.classic);
+
+      for (final style in LibraryStyle.values) {
+        controller.tryValue('pref_library_style', style);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(screen().previewStyle, style);
+        expect(tester.takeException(), isNull);
+      }
+      // The first film stands in for the focused card, and its backdrop is
+      // worked out without setting the app's own.
+      expect(find.text('First Film'), findsWidgets);
+      verify(() => backdrops.backdropUrlsFor(any())).called(greaterThan(0));
+      verifyNever(
+        () => backdrops.setBackground(any(), context: any(named: 'context')),
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('hiding library backdrops takes the backdrop away', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      SetupPreviewData.libraries.value = [library('films', 'movies')];
+      when(() => backdrops.backdropUrlsFor(any()))
+          .thenReturn(const ['http://server/backdrop.jpg']);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Hide Backdrops in Libraries',
+            prefKey: 'pref_hide_backdrops_in_libraries',
+          ),
+        );
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final backdrop = find.byType(FullscreenBackdropSwitcher);
+      expect(backdrop, findsOneWidget);
+
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.hideBackdropsInLibraries,
+        true,
+      );
+      await tester.pump();
+      expect(backdrop, findsNothing);
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
+  testWidgets('the seasonal settings draw their effect over Home and pause '
+      'the one behind Settings meanwhile', (tester) async {
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalSurprise.key),
+      SettingsPreviewScene.home,
+    );
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalDensity.key),
+      SettingsPreviewScene.home,
+    );
+    // The follower follows focus, which the preview doesn't have.
+    expect(
+      SettingsPreviewController.sceneForKey(UserPreferences.seasonalFollower.key),
+      isNull,
+    );
+
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController();
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 480, height: 640, child: SettingsLivePreview()),
+      ),
+    );
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+
+    controller
+      ..focus(
+        SettingsPreviewEntry(
+          title: 'Seasonal Effect',
+          prefKey: UserPreferences.seasonalSurprise.key,
+        ),
+      )
+      ..tryValue(UserPreferences.seasonalSurprise.key, UserPreferences.seasonalSnow)
+      ..tryValue(
+        UserPreferences.seasonalDensity.key,
+        UserPreferences.seasonalDensityHeavy,
+      );
+    await tester.pump(const Duration(milliseconds: 300));
+    final effect = tester.widget<SeasonalEffectsHost>(
+      find.byType(SeasonalEffectsHost),
+    );
+    expect(effect.effect, UserPreferences.seasonalSnow);
+    expect(effect.density, UserPreferences.seasonalDensityHeavy);
+    expect(seasonalPreviewsRunning.value, 1);
+
+    // It holds still while keys are pressed, and runs again after.
+    bool running() => tester
+        .widget<TickerMode>(
+          find
+              .ancestor(
+                of: find.byType(SeasonalEffectsHost),
+                matching: find.byType(TickerMode),
+              )
+              .first,
+        )
+        .enabled;
+    expect(running(), isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(running(), isFalse);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(running(), isTrue);
+
+    // Any other setting takes the effect away and lets Home's run again.
+    controller.focus(
+      const SettingsPreviewEntry(title: 'Clock', prefKey: 'pref_clock_behavior'),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(SeasonalEffectsHost), findsNothing);
+    expect(seasonalPreviewsRunning.value, 0);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  group('the Row Options rows', () {
+    AggregatedItem item(String name, String type) => AggregatedItem(
+      id: name,
+      serverId: 'server',
+      rawData: {'Id': name, 'Name': name, 'Type': type},
+    );
+
+    final albums = [
+      for (final name in ['Abyss', 'Bloom', 'Crest']) item(name, 'MusicAlbum'),
+    ];
+    final boxSets = [
+      for (final name in ['Sci-Fi', 'Animation']) item(name, 'BoxSet'),
+    ];
+    final genres = HomeRow(
+      id: 'genres',
+      title: 'Genres',
+      rowType: HomeRowType.genres,
+      items: [item('Comedy', 'Genre')],
+    );
+
+    /// Home Rows with [on] switched on in that order.
+    Future<void> homeRows(List<HomeSectionType> on) =>
+        GetIt.instance<UserPreferences>().set(
+          UserPreferences.homeSectionsJson,
+          HomeSectionConfig.toJsonString([
+            for (final (order, type) in on.indexed)
+              HomeSectionConfig(type: type, order: order),
+          ]),
+        );
+
+    /// Home behind Settings, holding [rows].
+    _Home home(List<HomeRow> rows) {
+      final home = _Home();
+      when(() => home.rows).thenReturn(rows);
+      when(() => home.isLoading).thenReturn(false);
+      when(() => home.imageApiForServer(any())).thenReturn(_Images());
+      GetIt.instance.registerSingleton<HomeViewModel>(home);
+      return home;
+    }
+
+    /// Rows that load from [load], counting the calls in [asked].
+    void serve(
+      SettingsPreviewController controller,
+      Future<HomeRow> Function(PreviewRowQuery query) load, {
+      List<PreviewRowQuery>? asked,
+    }) => PreviewRowSamples.debugSet(
+      controller,
+      PreviewRowSamples(
+        load: (query) {
+          asked?.add(query);
+          return load(query);
+        },
+      ),
+    );
+
+    HomeRow audioRow(List<AggregatedItem> items) => HomeRow(
+      id: 'audioAlbums',
+      title: 'Albums',
+      rowType: HomeRowType.audioAlbums,
+      items: items,
+      isAudio: true,
+    );
+
+    Future<void> show(
+      WidgetTester tester,
+      SettingsPreviewController controller,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(
+            width: 960,
+            height: 760,
+            child: Column(
+              children: [
+                Expanded(child: SettingsLivePreview()),
+                SettingsPreviewInspector(),
+              ],
+            ),
+          ),
+        ),
+      );
+      // The settle delay, the load and the swap a frame later.
+      for (var i = 0; i < 4; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(tester.takeException(), isNull);
+    }
+
+    MediaCard card(WidgetTester tester, String title) =>
+        tester.widget<MediaCard>(find.widgetWithText(MediaCard, title));
+
+    void tv() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+      // The InfoArea looks for the item's logo on its server.
+      final client = _Client();
+      when(() => client.imageApi).thenReturn(_Images());
+      final factory = _Factory();
+      when(() => factory.getClientIfExists(any())).thenReturn(client);
+      when(() => factory.getActiveClient()).thenReturn(client);
+      GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
+    }
+
+    testWidgets(
+      'an audio setting shows Home with the D-pad on the Albums row',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await prefs.set(UserPreferences.displayGenresRows, true);
+        await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
+        home([genres]);
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Audio Rows Sorting',
+              prefKey: 'pref_audio_rows_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums));
+        await show(tester, controller);
+
+        // The first album is focused, square like every audio card, and the
+        // InfoArea above the row describes it.
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').aspectRatio, 1.0);
+        expect(card(tester, 'Bloom').externalIsFocused, isFalse);
+        expect(
+          tester.widget<InfoArea>(find.byType(InfoArea)).item?.name,
+          'Abyss',
+        );
+        // Genres comes next on Home, drawn without a real card.
+        expect(find.text('Comedy'), findsOneWidget);
+        expect(find.widgetWithText(MediaCard, 'Comedy'), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'Modern widens a focused collection to 16:9 and keeps audio square',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await prefs.set(UserPreferences.displayCollectionsRows, true);
+        await homeRows([
+          HomeSectionType.collections,
+          HomeSectionType.audioAlbums,
+        ]);
+        home(const []);
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Collections Row Sorting',
+              prefKey: 'pref_collections_row_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) async => query.section == HomeSectionType.collections
+              ? HomeRow(
+                  id: 'collections',
+                  title: 'Collections',
+                  rowType: HomeRowType.collections,
+                  items: boxSets,
+                )
+              : audioRow(albums),
+        );
+        await show(tester, controller);
+        final focused = card(tester, 'Sci-Fi');
+        expect(focused.externalIsFocused, isTrue);
+        expect(focused.aspectRatio, closeTo(16 / 9, 0.001));
+        expect(card(tester, 'Animation').aspectRatio, closeTo(2 / 3, 0.001));
+        expect(find.text('Abyss'), findsOneWidget);
+
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+        await show(tester, controller);
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').aspectRatio, 1.0);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'a section off in Home Rows leaves Home as it is and says why',
+      (tester) async {
+        tv();
+        await GetIt.instance<UserPreferences>().set(
+          UserPreferences.displayAudioRows,
+          true,
+        );
+        await homeRows([HomeSectionType.genres]);
+        home([genres]);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Display Audio Rows',
+              prefKey: 'pref_display_audio_rows',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums), asked: asked);
+        await show(tester, controller);
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        // It names the group on the Rows screen the audio rows are in.
+        expect(
+          find.text(
+            'Albums, Artists and Audio Playlists are all turned off. To show '
+            'one, go to Rows, open General under Disabled, and turn it on.',
+          ),
+          findsOneWidget,
+        );
+        // The inspector says what the setting needs, not that it shows.
+        expect(
+          find.text('Turn on a row in Rows, under Disabled'),
+          findsOneWidget,
+        );
+        expect(find.byType(MediaCard), findsNothing);
+        expect(asked, isEmpty);
+
+        // Rows only lists the audio rows once the switch is on, so the switch
+        // comes first.
+        controller.tryValue('pref_display_audio_rows', false);
+        await show(tester, controller);
+        expect(
+          find.text(
+            l10n.settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+              l10n.displayAudioRows,
+              l10n.general,
+              l10n.disabled,
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            l10n.settingsPreviewNeedsSwitchAndRow(l10n.displayAudioRows),
+          ),
+          findsOneWidget,
+        );
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('Home reloading behind Settings leaves the rows below alone', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await homeRows([HomeSectionType.audioAlbums, HomeSectionType.genres]);
+      final viewModel = home([genres]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => audioRow(albums));
+      await show(tester, controller);
+      expect(find.text('Comedy'), findsOneWidget);
+
+      // A Row Options change sends Home back to loading placeholders.
+      when(() => viewModel.rows).thenReturn([
+        const HomeRow(
+          id: 'genres',
+          title: 'Genres',
+          rowType: HomeRowType.genres,
+          isLoading: true,
+        ),
+      ]);
+      controller.tryValue(
+        'pref_audio_rows_sort_order',
+        SortDirection.descending,
+      );
+      await show(tester, controller);
+      expect(find.text('Comedy'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'a tried sort keeps the old row up until the new one has loaded',
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await homeRows([HomeSectionType.audioAlbums]);
+        home(const []);
+        final newest = Completer<HomeRow>();
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Audio Rows Sorting',
+              prefKey: 'pref_audio_rows_sort_by',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(
+          controller,
+          (query) => query.sortBy == LibrarySortBy.dateAdded
+              ? newest.future
+              : Future.value(audioRow(albums)),
+        );
+        await show(tester, controller);
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+        controller.tryValue('pref_audio_rows_sort_by', LibrarySortBy.dateAdded);
+        await show(tester, controller);
+        // Still loading: the row on screen is the one for the saved sort.
+        expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+        newest.complete(audioRow(albums.reversed.toList()));
+        await show(tester, controller);
+        // Every card moves at once, focus going to the new first one.
+        expect(card(tester, 'Crest').externalIsFocused, isTrue);
+        expect(card(tester, 'Abyss').externalIsFocused, isFalse);
+        expect(
+          tester.getTopLeft(find.widgetWithText(MediaCard, 'Bloom')).dx,
+          lessThan(
+            tester.getTopLeft(find.widgetWithText(MediaCard, 'Abyss')).dx,
+          ),
+        );
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      "nothing loads while the rows aren't shown or the server is out of reach",
+      (tester) async {
+        tv();
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.displayAudioRows, true);
+        await homeRows([HomeSectionType.audioAlbums]);
+        home(const []);
+        final asked = <PreviewRowQuery>[];
+        final controller = SettingsPreviewController()
+          ..focus(
+            const SettingsPreviewEntry(
+              title: 'Clock',
+              prefKey: 'pref_clock_behavior',
+            ),
+          );
+        addTearDown(controller.dispose);
+        serve(controller, (_) async => audioRow(albums), asked: asked);
+        await show(tester, controller);
+        expect(asked, isEmpty);
+
+        final connectivity = _Connectivity();
+        when(() => connectivity.canReachServer).thenReturn(false);
+        GetIt.instance.registerSingleton<ConnectivityService>(connectivity);
+        controller.focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+        await show(tester, controller);
+        expect(asked, isEmpty);
+        expect(find.byType(MediaCard), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('a sort saved without trying it shows its own order', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await homeRows([HomeSectionType.audioAlbums]);
+      // Home loaded the albums by name.
+      home([audioRow(albums)]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) async => audioRow(
+          query.sortBy == LibrarySortBy.dateAdded
+              ? albums.reversed.toList()
+              : albums,
+        ),
+      );
+      await show(tester, controller);
+      expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+
+      // A tap on a phone saves the option it picks without trying it first,
+      // so Home's rows, loaded by name, are no answer for the new sort.
+      await prefs.set(UserPreferences.audioRowsSortBy, LibrarySortBy.dateAdded);
+      await show(tester, controller);
+      expect(card(tester, 'Crest').externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('the focused row waits for every audio row of a new sort', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayAudioRows, true);
+      await homeRows([
+        HomeSectionType.audioAlbums,
+        HomeSectionType.audioArtists,
+      ]);
+      home(const []);
+      final artists = [item('Zed', 'MusicArtist')];
+      final albumsLoaded = Completer<HomeRow>();
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Audio Rows Sorting',
+            prefKey: 'pref_audio_rows_sort_by',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(
+        controller,
+        (query) => query.section == HomeSectionType.audioAlbums
+            ? albumsLoaded.future
+            : Future.value(
+                HomeRow(
+                  id: 'audioArtists',
+                  title: 'Artists',
+                  rowType: HomeRowType.audioArtists,
+                  items: artists,
+                  isAudio: true,
+                ),
+              ),
+      );
+      await show(tester, controller);
+      // Artists came back first, but Albums comes first on Home, so nothing
+      // is focused until it's in.
+      expect(find.byType(MediaCard), findsNothing);
+
+      albumsLoaded.complete(audioRow(albums));
+      await show(tester, controller);
+      expect(card(tester, 'Abyss').externalIsFocused, isTrue);
+      expect(find.text('Zed'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    AggregatedItem watched(String name, Map<String, Object> userData) =>
+        AggregatedItem(
+          id: name,
+          serverId: 'server',
+          rawData: {
+            'Id': name,
+            'Name': name,
+            'Type': 'Movie',
+            'UserData': userData,
+          },
+        );
+
+    testWidgets('a card setting shows Home from the first row it changes', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayGenresRows, true);
+      await homeRows([HomeSectionType.genres, HomeSectionType.resume]);
+      home([
+        genres,
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [
+            watched('Dune', {'PlayedPercentage': 40}),
+          ],
+        ),
+      ]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Hide Watch Progress',
+            prefKey: 'pref_hide_home_watch_progress',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+
+      // Genres comes first on Home, but the row with progress is the one
+      // brought into focus.
+      expect(card(tester, 'Dune').externalIsFocused, isTrue);
+      expect(card(tester, 'Dune').playedPercentage, 40);
+      expect(find.text('Comedy'), findsNothing);
+
+      await prefs.set(UserPreferences.hideHomeWatchProgress, true);
+      await show(tester, controller);
+      expect(card(tester, 'Dune').playedPercentage, isNull);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a row\'s image type being tried draws on that row', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await homeRows([HomeSectionType.resume]);
+      home([
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [watched('Dune', const {})],
+        ),
+      ]);
+      final key = UserPreferences.homeRowImageType(HomeSectionType.resume).key;
+      final controller = SettingsPreviewController()
+        ..focus(SettingsPreviewEntry(title: 'Continue Watching', prefKey: key))
+        ..tryValue(key, ImageType.poster);
+      addTearDown(controller.dispose);
+      expect(controller.scene, SettingsPreviewScene.home);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+      expect(card(tester, 'Dune').aspectRatio, lessThan(1));
+
+      controller.tryValue(key, ImageType.thumb);
+      await show(tester, controller);
+      expect(card(tester, 'Dune').aspectRatio, greaterThan(1));
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a Favorites sort being tried loads the favorites in it', (
+      tester,
+    ) async {
+      tv();
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await prefs.set(UserPreferences.displayFavoritesRows, true);
+      await homeRows([HomeSectionType.favoriteMovies]);
+      home(const []);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Favorites Sort',
+            prefKey: 'pref_favorites_row_sort_by',
+          ),
+        )
+        ..tryValue('pref_favorites_row_sort_by', LibrarySortBy.dateAdded);
+      addTearDown(controller.dispose);
+      final asked = <PreviewRowQuery>[];
+      serve(
+        controller,
+        (query) async => HomeRow(
+          id: 'favoriteMovies',
+          title: 'Favorite Movies',
+          rowType: HomeRowType.favorites,
+          items: [item('Sorted by ${query.sortBy.name}', 'Movie')],
+        ),
+        asked: asked,
+      );
+      await show(tester, controller);
+      expect(asked.single.section, HomeSectionType.favoriteMovies);
+      expect(asked.single.sortBy, LibrarySortBy.dateAdded);
+      // Without artwork the card writes its title over the art and under it.
+      final sorted = find.widgetWithText(MediaCard, 'Sorted by dateAdded');
+      expect(tester.widget<MediaCard>(sorted.first).externalIsFocused, isTrue);
+      await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });
   });

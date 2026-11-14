@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "Προτιμήστε τη διακωδικοποίηση διακομιστή",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Προφίλ 7 Απευθείας αναπαραγωγή",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Ελέγχει εάν οι ροές επιπέδου βελτίωσης προφίλ 7 Dolby Vision θα πρέπει να κατευθύνουν την αναπαραγωγή.",
-    "settingsAutoAftkrtEnabled": "Αυτόματο (AFTKRT ενεργοποιημένο)",
-    "settingsEnabledOnThisDevice": "Ενεργοποιήθηκε σε αυτήν τη συσκευή",
-    "settingsDisabledPreferTranscode": "Απενεργοποιημένο (προτιμώ διακωδικοποίηση)",
+    "settingsAutoAftkrtEnabled": "Αυτόματο",
+    "settingsEnabledOnThisDevice": "Ενεργοποιημένο",
+    "settingsDisabledPreferTranscode": "Ανενεργό",
     "settingsResumeRewindDescription": "Κατά τη συνέχιση της αναπαραγωγής (από τη Συνέχεια παρακολούθησης ή μια σελίδα στοιχείου πολυμέσων), πόσα δευτερόλεπτα πρέπει να επαναληφθούν;",
     "settingsUnpauseRewindDescription": "Κατά τη συνέχιση της αναπαραγωγής αφού πατήσετε το κουμπί παύσης, πόσα δευτερόλεπτα πρέπει να επαναληφθούν;",
     "settingsSkipBackLengthDescription": "Πόσα δευτερόλεπτα για να επιστρέψετε μετά το πάτημα του κουμπιού επαναφοράς.",
@@ -9184,5 +9184,478 @@
     "adminBackToSearch": "Επιστροφή στα Κριτήρια Αναζήτησης",
     "@adminBackToSearch": {
         "description": "Tooltip on the button that returns from the Identify results list to the search form"
+    },
+    "detailScreenStylePremiere": "Πρεμιέρα",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "keyNameHome": "Αρχική",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "guideRepeatBadge": "Επαναλαμβάνω",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "savedMediaRead": "Ανάγνωση",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "loadingAnimationSizeMedium": "Μέσον",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeThumbnail": "Μικρογραφία",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "detailSectionGroupOther": "Αλλος",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Λογότυπο",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "libraryStyleClassic": "Κλασικό",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "seerrDownloading": "Λήψη",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "adminMetadataLockFieldStudios": "Στούντιο",
+    "adminMetadataLockFieldTags": "Ετικέτες",
+    "libraryStyleModern": "Μοντέρνο",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "bookLibraryStyleClassic": "Κλασικό",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "Εξωτερικές λίστες",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "screensaverBackdrop": "σκηνικό",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "adminEmbyConnect": "Emby Συνδεθείτε",
+    "adminMetadataFieldArtists": "Καλλιτέχνες",
+    "adminMetadataFieldAlbum": "Αλμπουμ",
+    "adminMetadataSectionRatings": "Ακροαματικότητα",
+    "adminTaskResultFailed": "Απέτυχε",
+    "adminMetadataLockFieldRuntime": "Χρόνος εκτέλεσης",
+    "watchPartyType": "Τύπος",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "filterTrailers": "Τρέιλερ",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "seerrOriginalLanguage": "Γλώσσα Πρωτότυπου",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "Χρόνος εκτέλεσης",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "Κλασικό",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Μοντέρνο",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "setupStylePremiere": "Πρεμιέρα",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "autoDownloadKeepAll": "Ολοι",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "bottomNavbarTabsAvailable": "Διαθέσιμος",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortReleaseDate": "Ημερομηνία κυκλοφορίας",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortLastPlayed": "Τελευταία αναπαραγωγή",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "detailsBackdropFit": "Κατάλληλος",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "siloApproveSignInApprove": "Εγκρίνω",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "musicSortYear": "Έτος",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
+    },
+    "afterHoursPlay": "Αναπαραγωγή",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "animeMarkerPending": "Εκκρεμής",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "spotlightCollectionsCard": "Συλλογές",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameDelete": "Διαγραφή",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "interfaceLayoutDesktop": "Επιτραπέζιος υπολογιστής",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "adminMetadataLockFieldGenres": "Είδη",
+    "externalRowSortShuffle": "Τυχαία αναπαραγωγή",
+    "achievementsPeriodYear": "Έτος",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "adminLogWatch": "Παρακολούθηση",
+    "accountActive": "Ενεργός",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "interfaceLayoutTv": "τηλεόραση",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "keyboardStyleClassic": "Κλασικό",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "performanceModeAuto": "Αυτόματο",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeSmall": "Μικρό",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationPositionBouncing": "Αναπηδώμενο",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "detailSectionExtras": "Πρόσθετα",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "musicLibraryStyleClassic": "Κλασικό",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "adminLogLevelNone": "Κανένα",
+    "friendsDecline": "Πτώση",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "selectAllStudios": "Επιλέξτε Όλα",
+    "playlistSortRuntime": "Χρόνος εκτέλεσης",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "librarySortAlbum": "Αλμπουμ",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "loadingAnimationSizeLarge": "Μεγάλο",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "rendererModeAuto": "Αυτόματο",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "seasonalRowCountryOther": "Αλλος",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "chatLeave": "Αποχώρηση από την ομάδα",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "librarySortGenre": "Είδος",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "recordPromptNow": "Τώρα",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "upcomingEpisodeToday": "Σήμερα",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "performanceMode": "Επιδόσεις",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "mediaBarModeBanner": "Σημαία",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "sortByName": "Ονομα",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "afterHoursCastStatic": "Στατικό",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "detailMetadataStatus": "Κατάσταση σειράς",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Είδη",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailSectionPoster": "Αφίσα",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "Επόμενο",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Στίχοι",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Μετάδοση",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "Στούντιο",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Κεφάλαια",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionCollections": "Συλλογές",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Περισσότερα σαν αυτό",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "συστάσεις",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Εμφανίσεις",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "Βιογραφία",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "settingsAudioPassthroughMode": "Διέλευση",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "screensaverBackdropBlack": "Μαύρος",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "tags": "Ετικέτες",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "adminLiveTvTabRecordings": "Εγγραφές",
+    "adminGroupLibrary": "Βιβλιοθήκη",
+    "adminGroupPlayback": "Αναπαραγωγή",
+    "adminGroupPeople": "Ανθρωποι",
+    "adminMetadataDisplayOrderTv": "τηλεόραση",
+    "adminMetadataLockFieldName": "Ονομα",
+    "adminMetadataLockFieldCast": "Ανθρωποι",
+    "filtersHeader": "Φίλτρα",
+    "externalRowSortName": "Ονομα",
+    "externalRowSortReleaseDate": "Ημερομηνία κυκλοφορίας",
+    "achievementsAppearance": "Εμφάνιση",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "Παρακολουθημένα",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "chatGroupName": "Όνομα ομάδας",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "audioPlaylistsSection": "Λίστες αναπαραγωγής ήχου",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "autoDownloadDeleteNever": "Ποτέ",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "Λήψη",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "animationSpeedMedium": "Μέσον",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "Ανενεργό",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "calendarSettingsColorByType": "Τύπος",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "filterExtras": "Πρόσθετα",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "settingsAdvancedSection": "Προχωρημένος",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistTypeVideo": "Βίντεο",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "adminTranscodingHwaAdvanced": "Προχωρημένος",
+    "playlistTypeAudiobook": "Ηχητικό βιβλίο",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Βιβλίο",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "Αυτόματο",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "Συγγραφέας",
+    "adminMetadataLockFieldOverview": "Επισκόπηση",
+    "screensaverGeneralSettings": "Γενικές Ρυθμίσεις",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neon Pulse",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "Καθημερινά",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Εβδομαδιαίος",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Τίτλοι",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Χρήστες",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Δραστηριότητα",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Αυτόματο",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "Διαχειρ",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Δημιουργία ομάδας",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Προβολή λεπτομερειών",
+    "achievementsUnlockedMore": "+{count} περισσότερα",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Περιγραφή",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Κανονικός",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Χώρα",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Αυτόματο",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Βιβλίο",
+    "adminImageTypeMenu": "Μενού",
+    "adminGroupOverview": "Επισκόπηση",
+    "seriesRecordingAllEpisodes": "Όλα τα επεισόδια",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Γυαλί",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Προτάσεις Moonfin",
+    "sinceYouWatchedSourceOnline": "Ομοιότητα TMDb",
+    "calendarSettingsView": "Θέα",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Ειδικά",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Δράσεις",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Έναρξη",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }

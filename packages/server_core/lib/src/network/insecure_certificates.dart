@@ -9,6 +9,15 @@ import 'package:dio/dio.dart';
 /// validation.
 bool gAllowSelfSignedCertificates = false;
 
+/// Whether [host] belongs to one of the user's own servers. The setting only
+/// reaches those, so plex.tv, Emby Connect and the other outside services
+/// can't be intercepted while it's on. The app points this at its servers.
+bool Function(String host) gIsOwnServerHost = (_) => false;
+
+/// Whether an untrusted certificate from [host] is let through.
+bool acceptsUntrustedCertificate(String host) =>
+    gAllowSelfSignedCertificates && gIsOwnServerHost(host.toLowerCase());
+
 /// Whether [error] is a TLS handshake that failed because the server's
 /// certificate isn't trusted, which [gAllowSelfSignedCertificates] lets
 /// through. dart:io's handshake error reaches Dio untyped, so it's matched by

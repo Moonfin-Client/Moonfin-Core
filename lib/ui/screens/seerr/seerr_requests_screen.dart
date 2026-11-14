@@ -437,6 +437,8 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
         child: _RequestCard(
           request: req,
           summary: s.summaryFor(req),
+          download: s.downloadFor(req),
+          notFoundYet: s.isNotFoundYet(req),
           canManage: s.canManageRequests,
           isActioning: s.actioningRequestId == req.id,
           onTap: () => _onRequestTap(req),
@@ -511,6 +513,8 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
               child: _RequestCard(
                 request: req,
                 summary: s.summaryFor(req),
+                download: s.downloadFor(req),
+                notFoundYet: s.isNotFoundYet(req),
                 canManage: s.canManageRequests,
                 isActioning: s.actioningRequestId == req.id,
                 onTap: () => _onRequestTap(req),
@@ -1444,6 +1448,13 @@ class _Badge extends StatelessWidget {
 class _RequestCard extends StatefulWidget {
   final SeerrRequest request;
   final SeerrMediaSummary? summary;
+
+  /// The download bar's summary, from the arr's queue when Moonbase could
+  /// read it, or null when nothing is downloading.
+  final SeerrDownloadSummary? download;
+
+  /// Approved, released and watched for, with nothing grabbed yet.
+  final bool notFoundYet;
   final bool canManage;
   final bool isActioning;
   final VoidCallback? onTap;
@@ -1461,6 +1472,8 @@ class _RequestCard extends StatefulWidget {
   const _RequestCard({
     required this.request,
     this.summary,
+    this.download,
+    this.notFoundYet = false,
     required this.canManage,
     required this.isActioning,
     this.onTap,
@@ -1561,7 +1574,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   ) {
     final scale = _uiScale();
     final onSurface = AppColorScheme.onSurface;
-    final downloadSummary = SeerrDownloadSummary.forRequest(request);
+    final downloadSummary = widget.download;
     final (statusLabel, statusColor) = _StatusChip.infoFor(request, l10n);
     final actions = _actions(l10n);
 
@@ -1635,13 +1648,18 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           date: date,
           scale: scale,
           marqueeTitle: showFocusBorder,
+          note: downloadSummary?.reason,
           status: downloadSummary != null
               ? SeerrDownloadProgressBar(
                   summary: downloadSummary,
                   // The tile's own scale, so the bar stays in proportion
                   // with the caption around it.
                   scale: scale,
+                  // The caption shows the reason in the requester's place.
+                  reasonMaxLines: 0,
                 )
+              : widget.notFoundYet
+              ? SeerrNotFoundYetLabel(scale: scale)
               : _StatusPill(label: statusLabel, color: statusColor),
         ),
       ],
@@ -1657,7 +1675,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   ) {
     final scale = _uiScale();
     final onSurface = AppColorScheme.onSurface;
-    final downloadSummary = SeerrDownloadSummary.forRequest(request);
+    final downloadSummary = widget.download;
     return SizedBox(
       // Fixed on purpose. The list gives children an unbounded height, so
       // sizing to content here (stretch, IntrinsicHeight) throws.
@@ -1723,6 +1741,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   // chip, and the two together contradict each other.
                   if (downloadSummary != null)
                     SeerrDownloadProgressBar(summary: downloadSummary)
+                  else if (widget.notFoundYet)
+                    const SeerrNotFoundYetLabel()
                   else
                     _StatusChip(request: request),
                   // Pins the provenance to the foot so it lines up across the

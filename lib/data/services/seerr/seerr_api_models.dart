@@ -167,8 +167,8 @@ class SeerrMedia {
 }
 
 /// One Radarr/Sonarr queue entry, reported by Seerr while a request downloads.
-/// Only what the progress bars need: the byte counts, and the download id to
-/// count a season pack once.
+/// Only what the progress bars need: the byte counts, the download id to
+/// count a season pack once, and the queue status and time left.
 @JsonSerializable()
 class SeerrDownloadingItem {
   final int? size;
@@ -179,7 +179,22 @@ class SeerrDownloadingItem {
   /// back by a delay profile, which is not downloading yet.
   final String? downloadId;
 
-  const SeerrDownloadingItem({this.size, this.sizeLeft, this.downloadId});
+  /// The queue status as Radarr/Sonarr report it, such as "downloading",
+  /// "warning" for a stalled torrent, "paused" or "completed". Older Sonarr
+  /// capitalises it.
+  final String? status;
+
+  /// Time left as a .NET TimeSpan, "hh:mm:ss" or "d.hh:mm:ss". Missing when
+  /// the client can't estimate it, such as for a torrent with no peers.
+  final String? timeLeft;
+
+  const SeerrDownloadingItem({
+    this.size,
+    this.sizeLeft,
+    this.downloadId,
+    this.status,
+    this.timeLeft,
+  });
 
   factory SeerrDownloadingItem.fromJson(Map<String, dynamic> json) =>
       _$SeerrDownloadingItemFromJson(json);
@@ -338,6 +353,9 @@ class SeerrDiscoverItem {
   final int? voteCount;
   final double? popularity;
   final bool adult;
+
+  /// The US age rating. Only Silo's watchlist carries one.
+  final String? contentRating;
   final SeerrMediaInfo? mediaInfo;
   final String? character;
   final String? job;
@@ -361,6 +379,7 @@ class SeerrDiscoverItem {
     this.voteCount,
     this.popularity,
     this.adult = false,
+    this.contentRating,
     this.mediaInfo,
     this.character,
     this.job,
@@ -392,6 +411,9 @@ class SeerrMovieDetails {
   final String? releaseDate;
   final String? status;
   final int? runtime;
+
+  /// The US age rating. Only Silo's detail carries one.
+  final String? contentRating;
   final int? budget;
   final int? revenue;
   final double? voteAverage;
@@ -417,6 +439,7 @@ class SeerrMovieDetails {
     this.releaseDate,
     this.status,
     this.runtime,
+    this.contentRating,
     this.budget,
     this.revenue,
     this.voteAverage,
@@ -453,6 +476,9 @@ class SeerrTvDetails {
   final String? status;
   final int? numberOfSeasons;
   final int? numberOfEpisodes;
+
+  /// The US age rating. Only Silo's detail carries one.
+  final String? contentRating;
   final double? voteAverage;
   final int? voteCount;
   final double? popularity;
@@ -480,6 +506,7 @@ class SeerrTvDetails {
     this.status,
     this.numberOfSeasons,
     this.numberOfEpisodes,
+    this.contentRating,
     this.voteAverage,
     this.voteCount,
     this.popularity,
@@ -1185,6 +1212,31 @@ class SeerrLanguageProfile {
   Map<String, dynamic> toJson() => _$SeerrLanguageProfileToJson(this);
 }
 
+/// One series Sonarr offers for a TMDB id, from Seerr's
+/// `service/sonarr/lookup`. Seerr's own request modal lists these when TMDB
+/// has no TVDB id for a series, because Sonarr can't add a series without one.
+@JsonSerializable()
+class SeerrSonarrSeries {
+  final int tvdbId;
+  final String title;
+  final int? year;
+  final String? overview;
+  final String? remotePoster;
+
+  const SeerrSonarrSeries({
+    required this.tvdbId,
+    required this.title,
+    this.year,
+    this.overview,
+    this.remotePoster,
+  });
+
+  factory SeerrSonarrSeries.fromJson(Map<String, dynamic> json) =>
+      _$SeerrSonarrSeriesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrSonarrSeriesToJson(this);
+}
+
 @JsonSerializable()
 class SeerrSeason {
   final int? id;
@@ -1192,6 +1244,7 @@ class SeerrSeason {
   final int? episodeCount;
   final String? name;
   final String? airDate;
+  final String? posterPath;
 
   const SeerrSeason({
     this.id,
@@ -1199,6 +1252,7 @@ class SeerrSeason {
     this.episodeCount,
     this.name,
     this.airDate,
+    this.posterPath,
   });
 
   factory SeerrSeason.fromJson(Map<String, dynamic> json) =>

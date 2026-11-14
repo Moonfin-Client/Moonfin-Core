@@ -11,12 +11,12 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/platform_detection.dart';
-import '../../../../util/playback_time_label.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/focus/focusable_button.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/rating_display.dart';
+import '../../../widgets/scroll_edge_arrows.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
 import '../../../widgets/seerr/seerr_request_dialog.dart';
 import '../../../widgets/seerr/seerr_status_dot.dart';
@@ -149,6 +149,8 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
   // since which ones exist depends on what loaded.
   List<FocusNode> _stops = const [];
 
+  final _seasonScroll = ScrollController();
+
   ItemDetailViewModel get _vm => widget.viewModel;
 
   @override
@@ -171,6 +173,12 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
   void moveDown(FocusNode node) {
     final i = _stops.indexOf(node);
     if (i >= 0 && i + 1 < _stops.length) _enter(_stops[i + 1]);
+  }
+
+  @override
+  void dispose() {
+    _seasonScroll.dispose();
+    super.dispose();
   }
 
   void _enter(FocusNode? node) {
@@ -513,41 +521,25 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
     );
   }
 
-  /// How far into the title the viewer is and how long is left, or for a
-  /// show, the same for the episode it would resume.
   List<Widget> _progress(
     AggregatedItem item,
     AppLocalizations l10n,
     bool landscape,
   ) {
-    final show = item.type == 'Series';
-    final target = show ? _vm.nextUp : item;
-    final runtime = target?.runtime;
-    final position = target?.playbackPosition;
-    if (target == null ||
-        target.isPlayed ||
-        runtime == null ||
-        position == null ||
-        position <= Duration.zero ||
-        position >= runtime) {
-      return const [];
-    }
+    final line = resumeLine(item, l10n);
+    if (line == null) return const [];
 
-    final number = show ? episodeNumber(target) : null;
     final bar = ClipRRect(
       borderRadius: AppRadius.circular(2),
       child: LinearProgressIndicator(
-        value: position.inMilliseconds / runtime.inMilliseconds,
+        value: line.fraction,
         minHeight: 4,
         color: AppColorScheme.accent,
         backgroundColor: AppColorScheme.onBackground.withValues(alpha: 0.15),
       ),
     );
     final label = Text(
-      [
-        ?number,
-        l10n.timeRemaining(formatRuntimeShort(runtime - position)),
-      ].join(' · '),
+      line.label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -575,6 +567,7 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
     final node = pageNode('seasons');
     final seerr = _vm.isSeerrOnly ? _vm.seerr : null;
     final status = seerrItemSeasonStatus(_vm);
+    final showStatus = seerr != null && seerrBadgeStyle() != null;
     final on = AppColorScheme.onBackground;
 
     Widget card(int index, AggregatedItem season) {
@@ -645,7 +638,7 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
                         fontSize: 12,
                       ),
                     ),
-                  if (seerr != null)
+                  if (showStatus)
                     SeerrStatusDot(status: status[number], size: 14),
                 ],
               ),
@@ -678,15 +671,20 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
           final width = count <= 3
               ? (constraints.maxWidth - gap * (count - 1)) / count
               : (constraints.maxWidth - gap * 2) / 3.3;
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            child: Row(
-              spacing: gap,
-              children: [
-                for (final (index, season) in seasons.indexed)
-                  SizedBox(width: width, child: card(index, season)),
-              ],
+          return ScrollEdgeArrows(
+            controller: _seasonScroll,
+            size: 36,
+            child: SingleChildScrollView(
+              controller: _seasonScroll,
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              child: Row(
+                spacing: gap,
+                children: [
+                  for (final (index, season) in seasons.indexed)
+                    SizedBox(width: width, child: card(index, season)),
+                ],
+              ),
             ),
           );
         },

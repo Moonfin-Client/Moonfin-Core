@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/user_preferences.dart';
 import '../../util/accent_folding.dart';
 import '../services/storage_path_service.dart';
+import '../utils/latest_media_row_normalizer.dart';
 import 'offline_catalog.dart';
 import 'offline_errors.dart';
 import 'offline_media_segments.dart';
@@ -19,6 +22,12 @@ class OfflineItemsApi implements ItemsApi {
   final StoragePathService _storagePath;
 
   OfflineItemsApi(this._catalog, this._storagePath);
+
+  bool get _hideWatchedInRecentRows =>
+      GetIt.instance.isRegistered<UserPreferences>() &&
+      GetIt.instance<UserPreferences>().get(
+        UserPreferences.hideWatchedInRecentRows,
+      );
 
   Map<String, dynamic> _envelope(
     List<Map<String, dynamic>> items, {
@@ -616,6 +625,13 @@ class OfflineItemsApi implements ItemsApi {
       scope = scope.where((e) => includeItemTypes.contains(e.type)).toList();
     }
 
+    final hideWatched = _hideWatchedInRecentRows;
+    if (hideWatched) {
+      scope = scope
+          .where((e) => !isRawItemWatchedForRecentRow(e.metadata))
+          .toList();
+    }
+
     // Collapse episodes into their series and tracks into their albums,
     // mirroring the server's grouped Latest behavior.
     final seen = <String>{};
@@ -639,6 +655,9 @@ class OfflineItemsApi implements ItemsApi {
       } else if (e.type == 'MusicAlbum') {
         continue;
       }
+      if (hideWatched && isRawItemWatchedForRecentRow(display.metadata)) {
+        continue;
+      }
       if (seen.add(display.id)) collapsed.add(display);
     }
     return _envelope(_materialize(collapsed), limit: limit ?? 16);
@@ -654,10 +673,16 @@ class OfflineItemsApi implements ItemsApi {
     int? imageTypeLimit,
     // The downloaded catalog is flat, so there is nothing to recurse into.
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     var scope = _scope(parentId, includeItemTypes: includeItemTypes);
     if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
       scope = scope.where((e) => includeItemTypes.contains(e.type)).toList();
+    }
+    if (hideWatched ?? _hideWatchedInRecentRows) {
+      scope = scope
+          .where((e) => !isRawItemWatchedForRecentRow(e.metadata))
+          .toList();
     }
     final dated =
         scope.where((e) => _date(e.metadata, 'PremiereDate') != null).toList()
@@ -869,6 +894,7 @@ class OfflineItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
+    String? fields,
   }) async =>
       _envelope(const []);
 

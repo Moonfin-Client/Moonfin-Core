@@ -191,6 +191,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
                       context,
                       prefs,
                       UserPreferences.downloadRemoveWatchedAfterHours,
+                      choices: _removeWatchedChoices,
                       save: (hours) async {
                         await prefs.setRemoveWatchedAfterHours(hours);
                         // A shorter delay applies to what is already watched.
@@ -231,9 +232,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
                     leading: const Icon(Icons.image_outlined),
                     title: Text(l10n.imageCacheLimit),
                     subtitle: Text(
-                      imageCacheLimitMb == 0
-                          ? l10n.noLimit
-                          : l10n.mbValue(imageCacheLimitMb),
+                      _imageCacheLimitLabel(l10n, imageCacheLimitMb),
                     ),
                     onTap: () =>
                         _pickImageCacheLimit(context, prefs, imageCacheLimitMb),
@@ -289,79 +288,24 @@ class DownloadSettingsScreen extends ConsumerWidget {
   ) {
     final values = DownloadQuality.values;
     final hasCurrent = values.any((quality) => quality.name == current);
-    if (PlatformDetection.isTV) {
-      showFocusRestoringModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) => SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+    _showOptionSheet<String>(
+      context,
+      current: current,
+      onPicked: (v) => prefs.set(UserPreferences.defaultDownloadQuality, v),
+      options: [
+        for (final q in values)
+          DpadRadioListTile<String>(
+            autofocus:
+                q.name == current || (!hasCurrent && q == values.first),
+            title: Text(q.label),
+            subtitle: Text(
+              q.isTranscoded
+                  ? '${q.estimatedSizePerHour} • ${q.encodingInfo}'
+                  : q.estimatedSizePerHour,
             ),
-            child: DpadRadioGroup<String>(
-              groupValue: current,
-              onChanged: (v) {
-                if (v != null) {
-                  prefs.set(UserPreferences.defaultDownloadQuality, v);
-                }
-                Navigator.pop(ctx);
-              },
-              child: ListView(
-                shrinkWrap: true,
-                children: values
-                    .map(
-                      (q) => DpadRadioListTile<String>(
-                        autofocus: q.name == current ||
-                            (!hasCurrent && q == values.first),
-                        title: Text(q.label),
-                        subtitle: Text(
-                          q.isTranscoded
-                              ? '${q.estimatedSizePerHour} • ${q.encodingInfo}'
-                              : q.estimatedSizePerHour,
-                        ),
-                        value: q.name,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+            value: q.name,
           ),
-        ),
-      );
-      return;
-    }
-
-    showFocusRestoringModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: DpadRadioGroup<String>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              prefs.set(UserPreferences.defaultDownloadQuality, v);
-            }
-            Navigator.pop(ctx);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: values
-                .map(
-                  (q) => DpadRadioListTile<String>(
-                    autofocus:
-                        q.name == current || (!hasCurrent && q == values.first),
-                    title: Text(q.label),
-                    subtitle: Text(
-                      q.isTranscoded
-                          ? '${q.estimatedSizePerHour} • ${q.encodingInfo}'
-                          : q.estimatedSizePerHour,
-                    ),
-                    value: q.name,
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
+      ],
     );
   }
 
@@ -382,75 +326,22 @@ class DownloadSettingsScreen extends ConsumerWidget {
       102400,
       current,
     }.toList()..sort();
-    if (PlatformDetection.isTV) {
-      showFocusRestoringModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) => SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+    _showOptionSheet<int>(
+      context,
+      current: current,
+      onPicked: (v) => prefs.set(UserPreferences.downloadStorageLimitMb, v),
+      options: [
+        for (final mb in values)
+          DpadRadioListTile<int>(
+            autofocus: mb == current,
+            title: Text(
+              mb == 0
+                  ? l10n.noLimit
+                  : l10n.gbValue((mb / 1024).toStringAsFixed(0)),
             ),
-            child: DpadRadioGroup<int>(
-              groupValue: current,
-              onChanged: (v) {
-                if (v != null) {
-                  prefs.set(UserPreferences.downloadStorageLimitMb, v);
-                }
-                Navigator.pop(ctx);
-              },
-              child: ListView(
-                shrinkWrap: true,
-                children: values
-                    .map(
-                      (mb) => DpadRadioListTile<int>(
-                        autofocus: mb == current,
-                        title: Text(
-                          mb == 0
-                              ? l10n.noLimit
-                              : l10n.gbValue((mb / 1024).toStringAsFixed(0)),
-                        ),
-                        value: mb,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+            value: mb,
           ),
-        ),
-      );
-      return;
-    }
-
-    showFocusRestoringModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: DpadRadioGroup<int>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              prefs.set(UserPreferences.downloadStorageLimitMb, v);
-            }
-            Navigator.pop(ctx);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: values
-                .map(
-                  (mb) => DpadRadioListTile<int>(
-                    autofocus: mb == current,
-                    title: Text(
-                      mb == 0
-                          ? l10n.noLimit
-                          : l10n.gbValue((mb / 1024).toStringAsFixed(0)),
-                    ),
-                    value: mb,
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
+      ],
     );
   }
 
@@ -461,34 +352,29 @@ class DownloadSettingsScreen extends ConsumerWidget {
   ) {
     final l10n = AppLocalizations.of(context);
     final values = [0, 100, 200, 350, 500, 1024, 2048];
-    showFocusRestoringModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: DpadRadioGroup<int>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              prefs.set(UserPreferences.imageCacheLimitMb, v);
-              unawaited(enforceImageCacheBudget(v * 1024 * 1024));
-            }
-            Navigator.pop(ctx);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: values
-                .map(
-                  (mb) => DpadRadioListTile<int>(
-                    autofocus:
-                        mb == current || (!values.contains(current) && mb == 0),
-                    title: Text(mb == 0 ? l10n.noLimit : l10n.mbValue(mb)),
-                    value: mb,
-                  ),
-                )
-                .toList(),
+    _showOptionSheet<int>(
+      context,
+      current: current,
+      onPicked: (v) {
+        prefs.set(UserPreferences.imageCacheLimitMb, v);
+        unawaited(enforceImageCacheBudget(v * 1024 * 1024));
+      },
+      options: [
+        for (final mb in values)
+          DpadRadioListTile<int>(
+            autofocus:
+                mb == current || (!values.contains(current) && mb == 0),
+            title: Text(_imageCacheLimitLabel(l10n, mb)),
+            value: mb,
           ),
-        ),
-      ),
+      ],
     );
+  }
+
+  static String _imageCacheLimitLabel(AppLocalizations l10n, int mb) {
+    if (mb == 0) return l10n.noLimit;
+    if (mb % 1024 == 0) return l10n.gbValue('${mb ~/ 1024}');
+    return l10n.mbValue(mb);
   }
 
   void _pickConcurrentDownloads(
@@ -497,27 +383,44 @@ class DownloadSettingsScreen extends ConsumerWidget {
     int current,
   ) {
     final hasCurrent = current >= 1 && current <= 8;
+    _showOptionSheet<int>(
+      context,
+      current: current,
+      onPicked: (v) => prefs.set(UserPreferences.downloadConcurrentCount, v),
+      options: [
+        for (var n = 1; n <= 8; n++)
+          DpadRadioListTile<int>(
+            autofocus: n == current || (!hasCurrent && n == 1),
+            title: Text('$n'),
+            value: n,
+          ),
+      ],
+    );
+  }
+
+  /// On a phone these sheets open in the short list below the settings
+  /// preview, so the options scroll instead of getting cut off.
+  static void _showOptionSheet<T>(
+    BuildContext context, {
+    required T current,
+    required ValueChanged<T> onPicked,
+    required List<Widget> options,
+  }) {
     showFocusRestoringModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => SafeArea(
-        child: DpadRadioGroup<int>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              prefs.set(UserPreferences.downloadConcurrentCount, v);
-            }
-            Navigator.pop(ctx);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var n = 1; n <= 8; n++)
-                DpadRadioListTile<int>(
-                  autofocus: n == current || (!hasCurrent && n == 1),
-                  title: Text('$n'),
-                  value: n,
-                ),
-            ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+          ),
+          child: DpadRadioGroup<T>(
+            groupValue: current,
+            onChanged: (v) {
+              if (v != null) onPicked(v);
+              Navigator.pop(ctx);
+            },
+            child: ListView(shrinkWrap: true, children: options),
           ),
         ),
       ),
@@ -1076,7 +979,17 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
 /// Never, right away, a day, a week.
 const _deleteAfterChoices = [-1, 0, 24, 24 * 7];
 
+/// The same, plus asking once a download is played to the end.
+const _removeWatchedChoices = [
+  -1,
+  UserPreferences.removeWatchedAsk,
+  0,
+  24,
+  24 * 7,
+];
+
 String _deleteAfterLabel(AppLocalizations l10n, int hours) => switch (hours) {
+  UserPreferences.removeWatchedAsk => l10n.removeWatchedAsk,
   < 0 => l10n.autoDownloadDeleteNever,
   0 => l10n.autoDownloadDeleteImmediately,
   < 24 * 7 => l10n.autoDownloadDeleteAfterDay,
@@ -1089,6 +1002,7 @@ void _pickDeleteAfter(
   BuildContext context,
   UserPreferences prefs,
   Preference<int> pref, {
+  List<int> choices = _deleteAfterChoices,
   Future<void> Function(int hours)? save,
 }) {
   final l10n = AppLocalizations.of(context);
@@ -1106,7 +1020,7 @@ void _pickDeleteAfter(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final hours in _deleteAfterChoices)
+            for (final hours in choices)
               DpadRadioListTile<int>(
                 autofocus: hours == current,
                 title: Text(_deleteAfterLabel(l10n, hours)),

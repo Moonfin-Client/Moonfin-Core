@@ -55,7 +55,7 @@ enum ClientIdentityStore {
         let chain = (item[kSecImportItemCertChain as String] as? [SecCertificate]) ?? []
         return URLCredential(
             identity: identity,
-            certificates: Array(chain.dropFirst()),
+            certificates: chain.count > 1 ? Array(chain.dropFirst()) : nil,
             persistence: .forSession)
     }
 }

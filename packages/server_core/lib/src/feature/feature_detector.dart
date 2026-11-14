@@ -1,3 +1,4 @@
+import '../media_server_client.dart';
 import '../models/server_type.dart';
 
 /// What Moonfin can do with a given server.
@@ -87,9 +88,12 @@ class FeatureDetector {
       _isJellyfin || _isEmby || _isSilo || _isPlex;
 
   /// The rest of the Moonfin plugin's routes (`/Moonfin/*` at the server
-  /// root: Seerr proxy, games, anime markers, custom rows, bookmarks...),
-  /// which only the Jellyfin and Emby plugins have.
+  /// root: bookmarks, personal ratings...), which only the Jellyfin and Emby
+  /// plugins have.
   bool get supportsFullMoonfinPlugin => _isJellyfin || _isEmby;
+
+  /// Moonbase's retro games, which Moonbase for Plex serves too.
+  bool get supportsRetroGames => supportsFullMoonfinPlugin || _isPlex;
 
   /// Remote control: listing the account's other sessions and sending them
   /// play, pause and navigation commands (the Jellyfin/Emby Sessions API).
@@ -102,4 +106,77 @@ class FeatureDetector {
   /// wouldn't stick there. Every Silo library gets a Latest row.
   bool get supportsLatestItemsExcludes => !_isSilo;
 
+  /// Personal likes and dislikes. Plex has none, and its own rating already
+  /// stands in for favorites.
+  bool get supportsPersonalRatings => !_isPlex;
+
+  /// Favoriting people. Plex can only favorite media, and Silo keeps no
+  /// person favorites.
+  bool get supportsPersonFavorites => !_isPlex && !_isSilo;
+
+  /// Trailer links on items. Plex keeps none, so a trailer is searched for on
+  /// YouTube instead.
+  bool get supportsRemoteTrailers => !_isPlex;
+
+  /// Downloading a transcoded copy. Plex's transcoder makes streams rather
+  /// than files, so Plex only downloads originals.
+  bool get supportsTranscodedDownloads => !_isPlex;
+
+  /// The 4K filter in the library picker. Emby's items query takes no 4K
+  /// flag. Silo filters 4K by resolution.
+  bool get supportsUhdFilter => !_isEmby;
+
+  /// The series status, likes, 3D, extras and disc source filters in the
+  /// library picker. Plex keeps none of these.
+  bool get supportsExtraLibraryFilters => !_isPlex;
+
+  /// The unreleased series filter in the library picker. Emby's series
+  /// status holds only continuing and ended.
+  bool get supportsUnreleasedSeriesFilter => _isJellyfin;
+
+  /// The guide's sports, news and kids filters. Plex programs never carry
+  /// those flags, so the filters would always come up empty there.
+  bool get supportsGuideCategoryFilters => !_isPlex;
+
+  /// Whether adding to or removing from a collection needs the user's
+  /// collection permission (or admin). Only Jellyfin gates it.
+  bool get collectionsNeedPermission => _isJellyfin;
+
+  /// The achievements plugin, which is Jellyfin-only.
+  bool get supportsAchievements => _isJellyfin;
+
+  /// Moonbase's server-sent settings stream. Emby sends plugin events over
+  /// the session websocket, and Moonbase for Silo can't stream.
+  bool get supportsPluginSettingsStream => _isJellyfin || _isPlex;
+
+  /// Phone pushes from Moonbase. Moonbase for Silo sends none.
+  bool get supportsPushNotifications => _isJellyfin || _isEmby || _isPlex;
+
+  /// Installing Moonbase from the app, through the admin plugins API.
+  bool get supportsMoonbaseInstall => _isJellyfin;
+
+  /// Reading whether the server may encode HEVC (Jellyfin's `encoding`
+  /// configuration).
+  bool get supportsHevcEncodingSetting => _isJellyfin;
+
+  /// Measuring bandwidth against the server for auto bitrate. Silo has no
+  /// bandwidth test route, and its playback start applies the server's own
+  /// policy to the client's bandwidth.
+  bool get supportsBandwidthTest => !_isSilo;
+
+  /// Reporting reading progress inside an EPUB to the server.
+  bool get supportsBookProgressReports => _isJellyfin;
+}
+
+extension ServerTypeFeatures on ServerType {
+  /// What Moonfin can do with a server of this type. The version isn't known
+  /// here, so version-gated flags count it as recent enough. Build a
+  /// [FeatureDetector] with the server's version for those.
+  FeatureDetector get features =>
+      FeatureDetector(serverType: this, serverVersion: '');
+}
+
+extension MediaServerClientFeatures on MediaServerClient {
+  /// [ServerTypeFeatures.features] for this client's server.
+  FeatureDetector get features => serverType.features;
 }

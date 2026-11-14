@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moonfin/ui/screens/home/home_screen.dart';
+import 'package:moonfin/ui/screens/home/home_backdrop.dart';
 
 void main() {
   testWidgets('Top fades the top half and covers the bottom half across the '
@@ -13,7 +13,7 @@ void main() {
           child: SizedBox(
             width: 800,
             height: 600,
-            child: HomeScreen.topBackdrop(const SizedBox.expand()),
+            child: HomeBackdrop.topLayout(const SizedBox.expand()),
           ),
         ),
       ),

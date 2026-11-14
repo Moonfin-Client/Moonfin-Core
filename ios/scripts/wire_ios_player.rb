@@ -41,6 +41,7 @@ abs_files += [
   File.join(tvos_runner, 'Playback', 'ChannelCarousel.swift'),
   File.join(tvos_runner, 'Playback', 'ChannelCarouselOverlay.swift'),
   File.join(tvos_runner, 'Playback', 'EpisodeBrowser.swift'),
+  File.join(tvos_runner, 'Playback', 'WatchPartyOverlay.swift'),
   File.join(tvos_runner, 'Playback', 'MoonfinTvosStubs.swift'),
 ].select { |f| File.exist?(f) }
 basenames = abs_files.map { |f| File.basename(f) }
@@ -69,12 +70,12 @@ abs_files.each do |abs|
 end
 
 # --- AetherEngine ---
-# Pinned to a revision of the fork, which carries client certificate support
-# upstream doesn't have yet. An engine bump is a deliberate change rather than
+# Pinned to a revision of the fork, which carries client certificate support,
+# a frame timing fix and the Dolby Vision FEL curve fold that upstream doesn't
+# ship. An engine bump is a deliberate change rather than
 # something a resolve should pick up on its own.
-# The fork also turns on the DualLayerDolbyVision trait, which Xcode 26 can't set from a project.
 aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = 'd55f374108310435cb877a2f550e19ee996f92ba'
+aether_revision = '34f149ba2dd483f490dca13a5a3027d58a9956f5'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 

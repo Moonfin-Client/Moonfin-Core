@@ -1,0 +1,337 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/home/home_view_model.dart';
+import 'package:moonfin/ui/screens/settings/home_row_toggles_screen.dart';
+import 'package:moonfin/util/platform_detection.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _MockHomeViewModel extends Mock implements HomeViewModel {}
+
+class _MockSyncService extends Mock implements PluginSyncService {}
+
+class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+class _MockUsersApi extends Mock implements UsersApi {}
+
+// Returning to Home from settings only refreshes Continue Watching and Next Up,
+// so a setting that changes Home's rows has to reload Home itself, like the
+// sort pickers do.
+void main() {
+  late UserPreferences prefs;
+  late _MockHomeViewModel home;
+  late _MockSyncService sync;
+
+  setUpAll(() {
+    registerFallbackValue(const UserConfiguration());
+  });
+
+  setUp(() async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    prefs = UserPreferences(store);
+    GetIt.instance.registerSingleton<PreferenceStore>(store);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+
+    sync = _MockSyncService();
+    when(() => sync.pluginAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(sync);
+
+    home = _MockHomeViewModel();
+    when(() => home.load(preserveExisting: any(named: 'preserveExisting')))
+        .thenAnswer((_) async {});
+    GetIt.instance.registerSingleton<HomeViewModel>(home);
+  });
+
+  tearDown(() async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    await GetIt.instance.reset();
+  });
+
+  Future<void> pump(WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1200, 8000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const HomeRowTogglesScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  final toggles = {
+    'Display Audio Rows': UserPreferences.displayAudioRows,
+    'Display Collections Rows': UserPreferences.displayCollectionsRows,
+    'Display Favorites Rows': UserPreferences.displayFavoritesRows,
+    'Display Genres Rows': UserPreferences.displayGenresRows,
+    'Display Playlist Rows': UserPreferences.displayPlaylistsRows,
+  };
+
+  for (final MapEntry(key: title, value: preference) in toggles.entries) {
+    testWidgets('$title reloads Home when turned on and off', (tester) async {
+      await prefs.set(preference, false);
+      await pump(tester);
+
+      await tester.tap(find.text(title));
+      await tester.pumpAndSettle();
+      expect(prefs.get(preference), isTrue);
+      verify(() => home.load(preserveExisting: false)).called(1);
+
+      await tester.tap(find.text(title));
+      await tester.pumpAndSettle();
+      expect(prefs.get(preference), isFalse);
+      verify(() => home.load(preserveExisting: false)).called(1);
+    });
+  }
+
+  testWidgets('Hide Watched reloads Home', (tester) async {
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+    await pump(tester);
+
+    expect(find.text('RECENTLY ADDED AND RELEASED'), findsOneWidget);
+
+    await tester.tap(find.text('Hide Watched'));
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+    verify(() => home.load(preserveExisting: false)).called(1);
+  });
+
+  testWidgets(
+    'Hide Watched syncs with the server when the plugin is available',
+    (tester) async {
+      await prefs.set(UserPreferences.hideWatchedInRecentRows, false);
+
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: false),
+      );
+      when(
+        () => usersApi.updateUserConfiguration(any()),
+      ).thenAnswer((_) async {});
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      when(() => sync.pluginAvailable).thenReturn(true);
+      when(() => sync.pushSettings(client)).thenAnswer((_) async {});
+
+      await pump(tester);
+
+      // The server has hidePlayedInLatest off when Hide Watched is turned on, so it's updated.
+      await tester.tap(find.text('Hide Watched'));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+      verify(
+        () => usersApi.updateUserConfiguration(
+          any(
+            that: isA<UserConfiguration>().having(
+              (c) => c.hidePlayedInLatest,
+              'hidePlayedInLatest',
+              isTrue,
+            ),
+          ),
+        ),
+      ).called(1);
+      verify(() => home.load(preserveExisting: false)).called(2);
+      clearInteractions(usersApi);
+      clearInteractions(home);
+
+      // The server already matches, so nothing is written.
+      await tester.tap(find.text('Hide Watched'));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+      verifyNever(() => usersApi.updateUserConfiguration(any()));
+      verify(() => home.load(preserveExisting: false)).called(1);
+    },
+  );
+
+  testWidgets(
+    'Hide Watched aligns with server hidePlayedInLatest when preference is unset',
+    (tester) async {
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+      );
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      await pump(tester);
+
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+      verify(() => usersApi.getUserConfiguration()).called(1);
+    },
+  );
+
+  testWidgets(
+    'delayed response during profile switch does not seed new profile preference',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final completer = Completer<UserConfiguration>();
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer((_) => completer.future);
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pump();
+
+      // Profile B takes over while the request is in flight.
+      await store.setString('pref_last_user_id', 'userB');
+      expect(prefs.activeProfileScopeSuffix(), 'server1_userB');
+
+      // Profile A's answer comes back with hidePlayedInLatest on.
+      completer.complete(const UserConfiguration(hidePlayedInLatest: true));
+      await tester.pumpAndSettle();
+
+      // Profile B wasn't seeded.
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
+        isFalse,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
+    },
+  );
+
+  testWidgets(
+    'delayed response after sign-out does not write to base preference key',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final completer = Completer<UserConfiguration>();
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer((_) => completer.future);
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pump();
+
+      // Signing out while the request is in flight.
+      await store.remove('pref_last_user_id');
+      expect(prefs.activeProfileScopeSuffix(), isNull);
+
+      // The late answer has hidePlayedInLatest on.
+      completer.complete(const UserConfiguration(hidePlayedInLatest: true));
+      await tester.pumpAndSettle();
+
+      // The unscoped key wasn't written.
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: false),
+        isFalse,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isFalse);
+    },
+  );
+
+  testWidgets(
+    'seeds hideWatchedInRecentRows when unscoped base key exists but scoped profile key is absent',
+    (tester) async {
+      final store = GetIt.instance<PreferenceStore>();
+      // An old unscoped key is already stored.
+      await store.setBool(UserPreferences.hideWatchedInRecentRows.key, false);
+
+      // Signing in as profile A.
+      await store.setString('pref_last_server_id', 'server1');
+      await store.setString('pref_last_user_id', 'userA');
+
+      final client = _MockMediaServerClient();
+      final usersApi = _MockUsersApi();
+      when(() => client.usersApi).thenReturn(usersApi);
+      when(() => usersApi.getUserConfiguration()).thenAnswer(
+        (_) async => const UserConfiguration(hidePlayedInLatest: true),
+      );
+      GetIt.instance.registerSingleton<MediaServerClient>(client);
+
+      tester.view.physicalSize = const Size(1200, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HomeRowTogglesScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The scoped key is still seeded.
+      expect(
+        prefs.containsPreference(UserPreferences.hideWatchedInRecentRows, scopedOnly: true),
+        isTrue,
+      );
+      expect(prefs.get(UserPreferences.hideWatchedInRecentRows), isTrue);
+    },
+  );
+
+  testWidgets('Merge Recent Rows by Type reloads Home', (tester) async {
+    await prefs.set(UserPreferences.mergeRecentRowsByType, false);
+    await pump(tester);
+
+    await tester.tap(find.text('Merge Recent Rows by Type'));
+    await tester.pumpAndSettle();
+
+    expect(prefs.get(UserPreferences.mergeRecentRowsByType), isTrue);
+    verify(() => home.load(preserveExisting: false)).called(1);
+  });
+
+  testWidgets('Recently Released Series Sort By reloads Home', (tester) async {
+    await prefs.set(
+      UserPreferences.recentlyReleasedSeriesType,
+      RecentlyReleasedSeriesType.series,
+    );
+    await pump(tester);
+
+    await tester.tap(find.text('Recently Released Series Sort By'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Season').last);
+    await tester.pumpAndSettle();
+
+    expect(
+      prefs.get(UserPreferences.recentlyReleasedSeriesType),
+      RecentlyReleasedSeriesType.season,
+    );
+    verify(() => home.load(preserveExisting: false)).called(1);
+  });
+}

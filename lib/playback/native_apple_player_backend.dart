@@ -11,6 +11,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
@@ -19,6 +20,8 @@ import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
+import 'subtitle_cues.dart';
+import 'subtitle_fonts.dart';
 
 class NativeApplePlayerBackend
     with SubtitleDelayState, AppleSecondarySubtitleControls
@@ -139,6 +142,14 @@ class NativeApplePlayerBackend
   Future<void> setReconnecting(String? label) =>
       _invoke<void>('setReconnecting', {'label': label});
 
+  /// The watch party the player follows, or null when there's none.
+  Future<void> setWatchParty(Map<String, dynamic>? party) =>
+      _invoke<void>('setWatchParty', {'party': party});
+
+  /// A toast, chat line or reaction to show over the video once.
+  Future<void> showWatchPartyEvent(Map<String, dynamic> event) =>
+      _invoke<void>('showWatchPartyEvent', event);
+
   /// An alert over the player. [actionLabel] adds a button that answers with
   /// a `messageAction` event.
   Future<void> showMessage(
@@ -202,11 +213,13 @@ class NativeApplePlayerBackend
       case 'setSubtitlePosition':
       case 'selectSecondarySubtitle':
       case 'setSecondarySubtitleDelay':
+      case 'loadSubtitleCues':
       case 'configureSecondarySubtitleStyle':
       case 'setSpeed':
       case 'setBitrate':
       case 'selectChannel':
       case 'openGuide':
+      case 'guideButton':
       case 'record':
       case 'messageAction':
       case 'toggleOrientation':
@@ -223,6 +236,10 @@ class NativeApplePlayerBackend
       case 'downloadSubtitle':
       case 'syncplayLeave':
       case 'syncplayIgnoreWait':
+      case 'partyReaction':
+      case 'partyChat':
+      case 'partyLeave':
+      case 'partyEnd':
       case 'openEpisodes':
       case 'selectEpisodesSeason':
       case 'selectEpisode':
@@ -250,6 +267,10 @@ class NativeApplePlayerBackend
         subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
       case 'engineLog':
         _logEngineLine(map['line']);
+      // The engine is holding the stream for new credentials, so playback
+      // state stands.
+      case 'credentialsRefused':
+        _errorStream.add(map.cast<String, dynamic>());
       case 'playerError':
       case 'error':
         _logPlaybackError(map);
@@ -425,6 +446,7 @@ class NativeApplePlayerBackend
       'subtitleRendererMode': _modeToWire(_requestedSubtitleRendererMode),
       'forceSubtitlesDisabledOnStart':
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
+      ...appleTvCadenceArgs(_prefs),
     });
   }
 
@@ -450,6 +472,19 @@ class NativeApplePlayerBackend
   // No way to re-open a live source in place, so the manager escalates.
   @override
   Future<bool> resumeLiveEdge() async => false;
+
+  // The engine replaces the open stream's request headers in place (a
+  // route whose requests AVFoundation makes reloads at the playhead
+  // instead). The server reads the headers before a token in the URL, so
+  // the URL stays as it opened.
+  @override
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
+    if (credentials.requestHeaders.isEmpty) return false;
+    await _invoke<void>('updateRequestHeaders', {
+      'headers': credentials.requestHeaders,
+    });
+    return true;
+  }
 
   @override
   LiveSeekWindow? get liveSeekWindow => null;
@@ -756,6 +791,19 @@ class NativeApplePlayerBackend
     await _invoke<void>('showRemoteSubtitles', {'results': results});
   }
 
+  /// The lines of the subtitle track the delay panel moves, for its timeline.
+  Future<void> showSubtitleCues(
+    List<SubtitleCue> cues, {
+    required bool secondary,
+  }) async {
+    await _invoke<void>('showSubtitleCues', {
+      'secondary': secondary,
+      'cues': [
+        for (final cue in cues) [cue.start, cue.end, cue.text],
+      ],
+    });
+  }
+
   Future<void> showSubtitleProgress(String message) async {
     await _invoke<void>('showSubtitleProgress', {'message': message});
   }
@@ -953,6 +1001,11 @@ class NativeApplePlayerBackend
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    double? strokeScale,
+    int? shadowColor,
+    double? shadowOffset,
+    double? shadowBlur,
+    String? fontFamily,
   }) async {
     await _invoke<void>('configureSubtitleStyle', {
       'textColor': textColor,
@@ -961,6 +1014,11 @@ class NativeApplePlayerBackend
       'fontSize': fontSize,
       'fontWeight': fontWeight,
       'verticalOffset': verticalOffset,
+      'strokeScale': strokeScale,
+      'shadowColor': shadowColor,
+      'shadowOffset': shadowOffset,
+      'shadowBlur': shadowBlur,
+      ...await subtitleFontPaths(fontFamily),
     });
   }
 

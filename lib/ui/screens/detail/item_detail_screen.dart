@@ -5,6 +5,7 @@ import '../../theme/focus_foreground.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/anime_marker_badge.dart';
+import '../../widgets/poster_badges.dart';
 import '../../../data/repositories/anime_marker_repository.dart';
 import '../../widgets/identify_dialog.dart';
 import '../../widgets/media_badge.dart';
@@ -27,6 +28,7 @@ import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/auto_download_service.dart';
 import '../../../data/services/download_service.dart';
+import '../../../data/utils/video_range_label.dart';
 import '../../../data/models/download_quality.dart';
 import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
@@ -54,6 +56,7 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'frost/frost_detail_content.dart';
 import 'premiere/premiere_detail_content.dart';
 import 'quick_look/quick_look_detail_content.dart';
 import 'stage/stage_detail_content.dart';
@@ -89,6 +92,7 @@ import '../../widgets/logo_view.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/seerr/seerr_cancel_request_dialog.dart';
+import '../../widgets/seerr/seerr_different_release_dialog.dart';
 import '../../widgets/seerr/seerr_collection_banner.dart';
 import '../../widgets/seerr/seerr_image_urls.dart';
 import '../../widgets/seerr/seerr_item_chips.dart';
@@ -128,6 +132,7 @@ import '../../../playback/server_shuffle_queue.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
 import '../watch_party/silo_watch_party_screen.dart';
+import '../watch_party/watch_together_route.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/detail_trailer.dart';
 import '../../../util/download_utils.dart';
@@ -285,6 +290,7 @@ class ItemDetailScreen extends StatefulWidget {
   final String itemId;
   final String? serverId;
   final bool autoPlay;
+  final String? libraryId;
 
   /// Only used to resolve an IMDb-keyed Seerr id by searching for it.
   final String? seerrTitle;
@@ -305,6 +311,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.seerrTitle,
     this.contextSeasonId,
     this.quickLook = false,
+    this.libraryId,
   });
 
   @override
@@ -360,6 +367,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       mutations: ItemMutationRepository(client),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       tmdbRepository: GetIt.instance<TmdbRepository>(),
+      libraryId: widget.libraryId,
     );
     _viewModel.seerrOnlyTitle = widget.seerrTitle;
     _viewModel.addListener(_onChanged);
@@ -1008,6 +1016,24 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 onOpenFullPage: _openFullPage,
               )
             : const SizedBox.shrink(),
+
+        DetailScreenStyle.frost =>
+          detailPageDraws(_viewModel.item?.type)
+            ? FrostDetailContent(
+                viewModel: _viewModel,
+                prefs: _prefs,
+                selectedMediaSourceId: _selectedMediaSourceId,
+                initialFocusNode: _ensureInitialFocusNode(),
+                onSelectedMediaSourceChanged: (id) {
+                  setState(() => _selectedMediaSourceId = id);
+                  _viewModel.load(mediaSourceId: id);
+                },
+                autoPlay: widget.autoPlay,
+                actionsExpanded: _actionsExpanded,
+                onActionsExpandedChanged: (val) =>
+                    setState(() => _actionsExpanded = val),
+              )
+            : _buildModernContent(),
       },
     };
   }
@@ -1079,6 +1105,14 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _publishedNavbarTarget;
   final Map<FocusNode, ScrollController> _sectionScrollControllers =
       <FocusNode, ScrollController>{};
+
+  /// Where a row rests when focus enters or leaves it, for a row that doesn't
+  /// start at its first item. An episode's season row starts on that episode.
+  final Map<FocusNode, double> _sectionRestOffsets = <FocusNode, double>{};
+
+  /// The episode whose season row has been scrolled to it, so that happens
+  /// once per episode rather than on every rebuild.
+  String? _episodesRowPlacedFor;
   final Set<FocusNode> _pendingSectionFocusRetries = <FocusNode>{};
   final FocusNode _firstChapterFocusNode = FocusNode(
     debugLabel: 'detailFirstChapter',
@@ -1194,18 +1228,24 @@ class _DetailContentState extends State<_DetailContent> {
     return controller;
   }
 
-  void _resetSectionHorizontalOffset(FocusNode? sectionFocusNode) {
+  /// Returns whether the row was there to move.
+  bool _resetSectionHorizontalOffset(FocusNode? sectionFocusNode) {
     if (sectionFocusNode == null) {
-      return;
+      return false;
     }
     final controller = _sectionScrollControllers[sectionFocusNode];
     if (controller == null || !controller.hasClients) {
-      return;
+      return false;
     }
-    final minOffset = controller.position.minScrollExtent;
-    if (controller.offset != minOffset) {
-      controller.jumpTo(minOffset);
+    final position = controller.position;
+    final restOffset =
+        (position.minScrollExtent +
+                (_sectionRestOffsets[sectionFocusNode] ?? 0))
+            .clamp(position.minScrollExtent, position.maxScrollExtent);
+    if (controller.offset != restOffset) {
+      controller.jumpTo(restOffset);
     }
+    return true;
   }
 
   bool _isLaidOutFocusNode(FocusNode target) {
@@ -1390,7 +1430,12 @@ class _DetailContentState extends State<_DetailContent> {
     }
 
     _scheduleSingleSectionFocusRetry(target, alignment: alignment);
-    return KeyEventResult.ignored;
+    // A row resting past its start can need a frame to build the card it was
+    // just moved to. The press is spoken for meanwhile, so the default
+    // traversal doesn't send focus somewhere else first.
+    return _sectionRestOffsets.containsKey(target)
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
   }
 
   KeyEventResult Function(int index, KeyEvent event)? _buildVerticalRowHandler({
@@ -1862,6 +1907,7 @@ class _DetailContentState extends State<_DetailContent> {
       'MusicAlbum' || 'Playlist' => _buildAlbumContent(context, item),
       'BoxSet' => _buildBoxSetContent(context, item),
       'Photo' => _buildPhotoContent(item),
+      'BookSeries' => _buildBookContent(context, item),
       _ =>
         _isReadableBookItem(item)
             ? _buildBookContent(context, item)
@@ -1987,6 +2033,11 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   List<Widget> _buildBookContent(BuildContext context, AggregatedItem item) {
+    final isSeries = item.type == 'BookSeries';
+    final booksInSeries = isSeries
+        ? viewModel.seriesBooks
+        : const <AggregatedItem>[];
+    item = viewModel.seriesFeaturedBook ?? item;
     final l10n = AppLocalizations.of(context);
     final author = _bookAuthorName(item);
     final authorDisplay = author ?? l10n.unknownAuthor;
@@ -2002,6 +2053,9 @@ class _DetailContentState extends State<_DetailContent> {
         _visibility.shows(DetailSection.moreLikeThis);
     final similarFocusNode = showSimilar
         ? _sectionFocusNode('detailBookSimilar')
+        : null;
+    final bookFocusNode = isSeries
+        ? _sectionFocusNode('detailSeriesBook')
         : null;
     final coverTag = item.primaryImageTag;
     const coverWidth = 132.0;
@@ -2126,9 +2180,11 @@ class _DetailContentState extends State<_DetailContent> {
           text: overview,
           focusNode: overviewFocusNode,
           onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
-          onArrowDown: similarFocusNode != null
-              ? () => _requestSectionFocus(similarFocusNode)
-              : null,
+          onArrowDown: bookFocusNode != null
+              ? () => _requestSectionFocus(bookFocusNode)
+              : similarFocusNode != null
+                  ? () => _requestSectionFocus(similarFocusNode)
+                  : null,
           onArrowLeft: () => _tryFocusSidebar(),
           onCollapse: () => setState(() {}),
           style: const TextStyle(
@@ -2146,6 +2202,32 @@ class _DetailContentState extends State<_DetailContent> {
             height: 1.5,
           ),
         ),
+      if (booksInSeries.isNotEmpty) ...[
+        const SizedBox(height: 32),
+        HorizontalScrollSection(
+          title: l10n.books,
+          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+            ? AppColorScheme.onSurface
+            : Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+          builder: (_, ctrl) => DetailSimilarRow(
+            items: booksInSeries,
+            imageApi: viewModel.imageApi,
+            prefs: prefs,
+            firstItemFocusNode: bookFocusNode,
+            onItemLongPress: _showItemContextMenu,
+            scrollController: ctrl,
+            onItemKeyEvent: _buildVerticalRowHandler(
+              sourceFocusNode: bookFocusNode,
+              upTarget: overviewFocusNode ?? actionButtonsFocusNode,
+              itemCount: booksInSeries.length,
+              consumeDownWhenNoTarget: true,
+            ),
+          )
+        )
+      ],
       if (item.genres.isNotEmpty &&
           _visibility.shows(DetailSection.bookGenres)) ...[
         const SizedBox(height: 20),
@@ -2708,6 +2790,21 @@ class _DetailContentState extends State<_DetailContent> {
         ? viewModel.episodes[currentEpisodeIndex + 1]
         : null;
 
+    // The season row starts on this episode, both where it rests and where
+    // focus lands coming down into it.
+    final startIndex = currentEpisodeIndex < 0 ? 0 : currentEpisodeIndex;
+    _sectionRestOffsets[episodesFocusNode] =
+        startIndex * _EpisodesRow.strideFor(context);
+    if (startIndex > 0 && _episodesRowPlacedFor != item.id) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Until the row is built there's nothing to move, so a later build
+        // tries again.
+        if (mounted && _resetSectionHorizontalOffset(episodesFocusNode)) {
+          _episodesRowPlacedFor = item.id;
+        }
+      });
+    }
+
     final specs = <_SectionSpec>[
       ?_metadataSpec(item, 'detailEpisodeMetadata'),
       ..._chapterAndExtraSpecs(context, item),
@@ -2736,6 +2833,7 @@ class _DetailContentState extends State<_DetailContent> {
                 ctrl,
               ),
               firstItemFocusNode: episodesFocusNode,
+              focusIndex: startIndex,
               onItemKeyEvent: _sectionRowHandler(
                 episodesFocusNode,
                 links,
@@ -4827,6 +4925,10 @@ class DetailActionButtons extends StatefulWidget {
   /// the leading edge.
   final bool centerRow;
 
+  /// Frost's toolbar: Play is a white pill and the rest are bare icons that
+  /// take a lighter platter when focused, with the label floating above.
+  final bool frosted;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4856,6 +4958,7 @@ class DetailActionButtons extends StatefulWidget {
     this.omitTrackButtons = false,
     this.labelsUnderCircles = false,
     this.centerRow = false,
+    this.frosted = false,
   });
 
   @override
@@ -5873,9 +5976,11 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
         const double horizontalPadding = 14.0;
         const double totalPadding = horizontalPadding * 2;
 
-        final double availableWidth = constraints.maxWidth - totalPadding;
         final double stride = bWidth + spacing;
-        int fitCount = ((availableWidth + spacing) / stride).floor();
+        // With no width limit there's nothing to scroll, so every button fits.
+        int fitCount = constraints.hasBoundedWidth
+            ? ((constraints.maxWidth - totalPadding + spacing) / stride).floor()
+            : widget.children.length;
         fitCount = fitCount.clamp(1, widget.children.length);
         _fitCount = fitCount;
 
@@ -6410,19 +6515,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     });
   }
 
-  void _ensureTvPlayFocus(String itemId) {
+  /// [node] defaults to Play's. A person page leads with Favorite instead.
+  void _ensureTvPlayFocus(String itemId, {FocusNode? node}) {
     if (PlatformDetection.useMobileUi) return;
     if (_tvPlayFocusAppliedForItemId == itemId) return;
-    _tryRequestPlayFocus(itemId, 0);
+    _tryRequestPlayFocus(itemId, 0, node);
   }
 
-  void _tryRequestPlayFocus(String itemId, int attempt) {
+  void _tryRequestPlayFocus(String itemId, int attempt, FocusNode? target) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       // Inside the retry rather than on the way in, since it runs for
       // seconds and a panel can open partway through it.
       if (!canClaimInitialFocus(context)) return;
-      final node = _tvPlayFocusNode;
+      final node = target ?? _tvPlayFocusNode;
       if (node.context != null && node.canRequestFocus) {
         node.requestFocus();
         if (node.hasFocus) {
@@ -6434,7 +6540,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
-        _tryRequestPlayFocus(itemId, attempt + 1);
+        _tryRequestPlayFocus(itemId, attempt + 1, target);
       });
     });
   }
@@ -6888,9 +6994,30 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           prefs,
         );
 
+  // Held back for a moment while the late lookups land, so the row shows with
+  // its buttons at once instead of growing one after the rest. It still lays
+  // out, so nothing below it moves when it fades in. Focus is kept out too, or
+  // OK on a remote would press an invisible Play. The rebuild that shows the
+  // row asks for Play's focus again.
   @override
   Widget build(BuildContext context) {
-    final item = viewModel.item!;
+    final settled = viewModel.actionsSettled;
+    return ExcludeFocus(
+      excluding: !settled,
+      child: IgnorePointer(
+        ignoring: !settled,
+        child: AnimatedOpacity(
+          opacity: settled ? 1 : 0,
+          duration: const Duration(milliseconds: 100),
+          child: _buildActions(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActions(BuildContext context) {
+    final featuredBook = viewModel.seriesFeaturedBook;
+    final item = featuredBook ?? viewModel.item!;
     final l10n = AppLocalizations.of(context);
     // Only grab initial focus when this screen is actually in front. A settings
     // panel change (detail style or theme) rebuilds the details underneath the
@@ -6908,13 +7035,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           compact &&
           (item.tmdbId?.isNotEmpty ?? false) &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
+      final favoriteFocusNode = widget.tvPlayFocusNode ?? _primaryFocusNode(0);
+      // Autofocus alone tries once, and misses while the row is still held
+      // back. With no heart Display has this node, so it needs the same help.
+      if (autofocusPlay) {
+        _ensureTvPlayFocus(item.id, node: favoriteFocusNode);
+      }
       final normalizedPrimaryButtons = [
         if (canFavorite)
           _DetailActionButton(
             label: item.isFavorite ? l10n.favorited : l10n.favorite,
             icon: Icons.favorite,
             isPrimary: !compact,
-            focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+            focusNode: favoriteFocusNode,
             autofocus: autofocusPlay,
             onPressed: viewModel.toggleFavorite,
             isActive: item.isFavorite,
@@ -7181,6 +7314,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final seerr = overlay != null && overlay.state.tmdbId != 0 ? overlay : null;
     final onWatchlist = seerr?.state.onUserWatchlist ?? false;
     final seerrTrailer = seerr?.state.bestTrailer;
+    final seriesName = item.seriesName?.trim() ?? '';
 
     final byButton = <DetailButton, Widget>{
       if (_supportsShuffle(item) && shows(DetailButton.shuffle))
@@ -7274,8 +7408,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: () => _isInSyncPlayGroup()
               ? _watchWithGroup(context, item)
               : _pickForWatchParty(context, item),
-          isActive: true,
-          activeColor: AppColorScheme.accent,
         ),
       if (shows(DetailButton.watched))
         DetailButton.watched: _DetailActionButton(
@@ -7359,6 +7491,26 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             Destinations.item(item.seriesId!, serverId: item.serverId),
           ),
         ),
+      // A series page features one of its own books, which mustn't link back.
+      if (item.type == 'Book' &&
+          featuredBook == null &&
+          seriesName.isNotEmpty &&
+          shows(DetailButton.goToSeries))
+        DetailButton.goToSeries: _DetailActionButton(
+          label: l10n.goToSeries,
+          icon: Icons.book,
+          onPressed: () async {
+            final libraryId = await viewModel.libraryIdOf(item);
+            if (!context.mounted) return;
+            context.push(
+              Destinations.item(
+                'bookSeries:$seriesName',
+                serverId: item.serverId,
+                libraryId: libraryId,
+              ),
+            );
+          },
+        ),
       if (shows(DetailButton.seerrRequest))
         DetailButton.seerrRequest: ?_seerrRequestButton(
           context,
@@ -7425,7 +7577,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
     // Taking a request back rides in the same arrangement slot as the track's
     // request button, so moving or hiding seerrRequest carries its cancel
-    // along with it.
+    // along with it. Swapping a stuck download for another release rides with
+    // Manage Requests the same way, since both are an admin's request tools,
+    // and that keeps the synced button arrangement free of a new id.
     final cancelByButton = <DetailButton, Widget>{
       if (shows(DetailButton.seerrRequest))
         DetailButton.seerrRequest: ?_seerrCancelButton(
@@ -7440,6 +7594,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           seerr,
           l10n,
           is4k: true,
+        ),
+      // Only on the title itself. A season or episode page shows the series'
+      // download, and offering there to swap another season's pack would
+      // surprise.
+      if (seerr != null &&
+          item.type != 'Season' &&
+          item.type != 'Episode' &&
+          seerr.state.hd.replaceableDownload != null &&
+          shows(DetailButton.seerrManage))
+        DetailButton.seerrManage: _DetailActionButton(
+          label: l10n.seerrGetDifferentRelease,
+          icon: Icons.find_replace,
+          onPressed: () =>
+              showSeerrDifferentReleaseDialog(context: context, vm: seerr),
         ),
     };
 
@@ -8155,7 +8323,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     // Under the row rather than in it, so a bar never takes a focus slot. The
     // row is left exactly as it was when nothing is downloading, since a Column
     // around it would re-align it.
-    final downloads = seerrItemDownloads(viewModel);
+    // Frost shows them in its own status line.
+    final downloads = widget.frosted ? null : seerrItemDownloads(viewModel);
     final withDownloads = downloads == null
         ? rowContent
         : Column(
@@ -8596,12 +8765,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
   }
 
-  /// On Silo the host picks what a Watch Party watches; anyone else can open
-  /// a party by picking.
+  /// On Silo and Moonbase the host picks what a watch party watches, and
+  /// anyone else can open a party by picking. A Jellyfin user who starts
+  /// SyncPlay groups picks through SyncPlay instead.
   bool _canPickForWatchParty() {
     try {
       final party = GetIt.instance<SiloWatchPartyManager>();
-      if (party.activeSiloClient == null) return false;
+      final moonbase =
+          party.isMoonbase || (party.moonbaseAvailable && !startsSyncPlay());
+      if (party.activeSiloClient == null && !moonbase) return false;
       return party.room?.isHost ?? true;
     } catch (_) {
       return false;
@@ -9574,9 +9746,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             } else {
               // Next Up arrives on its own future, so fall back to whatever is part
               // way through. First unwatched can sit behind the user, since a
-              // skipped episode or a special counts as unwatched.
+              // skipped episode or a special counts as unwatched. A Next Up
+              // marked played is stale until its refetch lands, so go on from
+              // the first unwatched episode after it.
+              final shownNextUp = viewModel.nextUp;
+              var nextUp = shownNextUp;
+              if (shownNextUp != null && shownNextUp.isPlayed) {
+                final at = allEpisodes.indexWhere(
+                  (e) => e.id == shownNextUp.id,
+                );
+                nextUp = at < 0
+                    ? null
+                    : allEpisodes
+                          .skip(at + 1)
+                          .where((e) => !e.isPlayed)
+                          .firstOrNull;
+              }
               targetEpisode =
-                  viewModel.nextUp ??
+                  nextUp ??
                   allEpisodes.firstWhere(
                     (e) => !e.isPlayed && (e.playedPercentage ?? 0) > 0,
                     orElse: () => allEpisodes.firstWhere(
@@ -11477,16 +11664,11 @@ String? resolutionFromStreams(List<Map<String, dynamic>> streams) {
   return 'SD';
 }
 
-String? hdrFromStreams(List<Map<String, dynamic>> streams) {
+/// The range badges for the video stream (`DV P8`, `HDR10+`, `SDR`), or none
+/// when there's no video stream or it carries no range at all.
+List<String> hdrBadgesFromStreams(List<Map<String, dynamic>> streams) {
   final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-  if (video == null) {
-    return null;
-  }
-  final hdr = video['VideoRangeType'] as String?;
-  if (hdr == null || hdr.isEmpty) {
-    return null;
-  }
-  return hdr.toUpperCase();
+  return video == null ? const [] : videoRangeBadges(video);
 }
 
 String? audioLabelFromStreams(List<Map<String, dynamic>> streams) {
@@ -11521,8 +11703,14 @@ String? codecFromStreams(
   final badges = <String>[];
   final res = resolutionFromStreams(streams) ?? item.videoResolution;
   if (res != null) badges.add(res);
-  final hdr = hdrFromStreams(streams) ?? item.hdrType;
-  if (hdr != null) badges.add(hdr);
+  var hdr = hdrBadgesFromStreams(streams);
+  // The item's own streams are its first version's, so they only stand in for
+  // that one.
+  if (hdr.isEmpty &&
+      selectedMediaSource?['Id'] == item.mediaSources.firstOrNull?['Id']) {
+    hdr = hdrBadgesFromStreams(item.mediaStreams);
+  }
+  badges.addAll(hdr);
   final vcodec =
       codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
   if (vcodec != null) badges.add(vcodec);
@@ -12157,8 +12345,12 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// and a followed series' delete setting.
   static Widget? _keepDownloadedRow(AggregatedItem item) {
     final prefs = GetIt.instance<UserPreferences>();
+    final removeWatchedHours = prefs.get(
+      UserPreferences.downloadRemoveWatchedAfterHours,
+    );
     final removeWatched =
-        prefs.get(UserPreferences.downloadRemoveWatchedAfterHours) >= 0;
+        removeWatchedHours >= 0 ||
+        removeWatchedHours == UserPreferences.removeWatchedAsk;
     final autoDownloads = GetIt.instance.isRegistered<AutoDownloadService>();
     final episodeRules =
         autoDownloads &&
@@ -12811,6 +13003,196 @@ class _StarFillIcon extends StatelessWidget {
   }
 }
 
+class _FrostedButtonFace extends StatefulWidget {
+  final String label;
+  final IconData? icon;
+  final Widget Function(double size, Color color)? iconBuilder;
+  final bool isPrimary;
+  final bool isActive;
+  final Color? activeColor;
+  final bool focused;
+
+  /// A phone has no focus to show the label for, and less room.
+  final bool compact;
+
+  /// Play takes its own row, with the circles under it.
+  final bool fill;
+
+  const _FrostedButtonFace({
+    required this.label,
+    required this.icon,
+    required this.iconBuilder,
+    required this.isPrimary,
+    required this.isActive,
+    required this.activeColor,
+    required this.focused,
+    required this.compact,
+    required this.fill,
+  });
+
+  @override
+  State<_FrostedButtonFace> createState() => _FrostedButtonFaceState();
+}
+
+class _FrostedButtonFaceState extends State<_FrostedButtonFace> {
+  // The label is drawn in the overlay, since the glass under the toolbar
+  // clips anything that reaches past it.
+  final _tip = OverlayPortalController();
+  final _link = LayerLink();
+
+  @override
+  void initState() {
+    super.initState();
+    _tip.show();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const duration = Duration(milliseconds: 180);
+    final focused = widget.focused;
+    final compact = widget.compact;
+    final size = compact ? 46.0 : 60.0;
+
+    if (widget.isPrimary) {
+      // Filled in the accent until it has focus. The circles beside it have
+      // no fill of their own to match, so Play keeps one on the glass.
+      final ink = focused
+          ? AppColorScheme.onButtonFocused
+          : AppColorScheme.onAccent;
+      return AnimatedScale(
+        scale: focused ? 1.06 : 1,
+        duration: duration,
+        child: AnimatedContainer(
+          duration: duration,
+          height: compact ? 48 : size,
+          width: widget.fill ? double.infinity : null,
+          constraints: BoxConstraints(minWidth: compact ? 140 : 200),
+          padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 28),
+          decoration: BoxDecoration(
+            color: focused
+                ? AppColorScheme.buttonFocused
+                : AppColorScheme.accent,
+            borderRadius: AppRadius.circular(size / 2),
+            boxShadow: [
+              if (focused)
+                BoxShadow(
+                  color: AppColorScheme.buttonFocused.withValues(alpha: 0.3),
+                  spreadRadius: 4,
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdaptiveIcon(
+                widget.icon ?? Icons.play_arrow,
+                color: ink,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              // Capped rather than flexible, so the toolbar can measure it.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: ink,
+                    fontSize: compact ? 17 : 19,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final Color color;
+    if (widget.isActive && widget.icon == Icons.favorite) {
+      color = const Color(0xFFFF375F);
+    } else if (widget.isActive) {
+      color = widget.activeColor ?? AppColorScheme.accent;
+    } else {
+      color = AppColorScheme.onButtonNormal;
+    }
+    final face = AnimatedScale(
+      scale: focused ? 1.12 : 1,
+      duration: duration,
+      child: AnimatedContainer(
+        duration: duration,
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColorScheme.buttonFocused.withValues(
+            alpha: focused ? 0.32 : 0,
+          ),
+        ),
+        child: Center(
+          child: widget.iconBuilder != null
+              ? widget.iconBuilder!(30, color)
+              : AdaptiveIcon(
+                  widget.icon!,
+                  color: color,
+                  size: compact ? 22 : 25,
+                ),
+        ),
+      ),
+    );
+    if (compact) return face;
+
+    return OverlayPortal(
+      controller: _tip,
+      overlayChildBuilder: (context) => Align(
+        alignment: Alignment.topLeft,
+        child: CompositedTransformFollower(
+          link: _link,
+          showWhenUnlinked: false,
+          targetAnchor: Alignment.topCenter,
+          followerAnchor: Alignment.bottomCenter,
+          offset: const Offset(0, -16),
+          child: IgnorePointer(
+            child: AnimatedOpacity(
+              opacity: focused ? 1 : 0,
+              duration: duration,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColorScheme.surface.withValues(alpha: 0.95),
+                  borderRadius: AppRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x59000000),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: CompositedTransformTarget(link: _link, child: face),
+    );
+  }
+}
+
 class _DetailActionButton extends StatefulWidget {
   final String label;
   final IconData? icon;
@@ -12881,6 +13263,19 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color labelColor,
   }) {
     final host = context.findAncestorWidgetOfExactType<DetailActionButtons>();
+    if (host?.frosted ?? false) {
+      return _FrostedButtonFace(
+        label: widget.label,
+        icon: widget.icon,
+        iconBuilder: widget.iconBuilder,
+        isPrimary: widget.isPrimary,
+        isActive: widget.isActive,
+        activeColor: widget.activeColor,
+        focused: showHighlight,
+        compact: isMobile,
+        fill: host!.fullWidthPrimary,
+      );
+    }
     final labelUnder = host?.labelsUnderCircles ?? false;
     // With the circles' labels under them, Play keeps its own in the pill.
     final labeledPlay = widget.isPrimary && labelUnder;
@@ -12894,10 +13289,16 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     // wrap beneath); landscape keeps it content-width, inline with them.
     final fullWidth = widget.isPrimary && (host?.fullWidthPrimary ?? false);
 
+    // Only a compact layout, which has no focus to show, keeps Play filled
+    // with the accent. Everywhere else it looks like the buttons beside it
+    // until it has focus, or a white accent would read as focused next to the
+    // one that is.
+    final accentPrimary = widget.isPrimary && isMobile;
+
     if (fullWidth) {
       final fg = showHighlight
           ? AppColorScheme.onButtonFocused
-          : AppColorScheme.onAccent;
+          : (accentPrimary ? AppColorScheme.onAccent : labelColor);
       final heartColor = (widget.icon == Icons.favorite && widget.isActive)
           ? const Color(0xFFE50914)
           : fg;
@@ -12909,11 +13310,17 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         decoration: BoxDecoration(
           color: showHighlight
               ? AppColorScheme.buttonFocused
-              : AppColorScheme.accent,
+              : (accentPrimary
+                    ? AppColorScheme.accent
+                    : Colors.white.withValues(alpha: 0.06)),
           borderRadius: AppRadius.circular(height / 2),
           border: Border.all(
-            color: showHighlight ? focusColor : Colors.transparent,
-            width: 3,
+            color: showHighlight
+                ? focusColor
+                : (accentPrimary
+                      ? Colors.transparent
+                      : AppColorScheme.onSurface.withValues(alpha: 0.35)),
+            width: showHighlight || accentPrimary ? 3 : 1.5,
           ),
         ),
         child: Row(
@@ -12942,11 +13349,6 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       );
       return SizedBox(width: double.infinity, child: pillInner);
     }
-
-    // Only a compact layout or a labeled Play keeps it filled with the
-    // accent. Everywhere else it looks like the buttons beside it until it
-    // has focus.
-    final accentPrimary = widget.isPrimary && (isMobile || labeledPlay);
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -13874,6 +14276,7 @@ class DetailSimilarRow extends StatelessWidget {
           final isSeerrItem =
               item.id.startsWith('tmdb:') || item.serverId == 'seerr';
           return MediaCard(
+            posterBadgeItemId: isSeerrItem ? null : item.id,
             title: item.name,
             titleColor: isNeon ? AppColorScheme.accent : null,
             imageUrl: item.primaryImageTag != null
@@ -14005,6 +14408,7 @@ class DetailFeaturesRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = items[index];
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: item.name,
             subtitle: item.subtitle,
             titleColor: isNeon ? AppColorScheme.onSurface : null,
@@ -14675,7 +15079,9 @@ class DetailMetadataSectionState extends State<DetailMetadataSection> {
               name: name,
               id: id,
               onTap: name.isNotEmpty
-                  ? () => context.push(Destinations.studio(name))
+                  ? () => context.push(
+                      Destinations.studio(name, serverId: serverId),
+                    )
                   : null,
             );
           }).toList(),
@@ -15089,11 +15495,12 @@ class DetailSeasonsRow extends StatelessWidget {
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
         itemBuilder: (context, index) {
           final season = seasons[index];
-          final showAvailabilityBadges =
-              prefs.get(UserPreferences.showSeerrAvailabilityBadges);
           final seerrStatus = seerrSeasonStatus?[season.indexNumber];
-          final hasSeerrDot =
-              showAvailabilityBadges && SeerrMediaStatus.hasDot(seerrStatus);
+          final seerrStyle = SeerrMediaStatus.hasDot(seerrStatus)
+              ? seerrBadgeStyle(prefs)
+              : null;
+          final hasSeerrDot = seerrStyle == SeerrBadgeStyle.badge;
+          final hasSeerrBanner = seerrStyle == SeerrBadgeStyle.banner;
           return MediaCard(
             title: season.name,
             subtitle: _progressText(season),
@@ -15104,6 +15511,9 @@ class DetailSeasonsRow extends StatelessWidget {
             imageUrl: _seasonImageUrl(season, isMobile: isMobile),
             width: cardWidth,
             aspectRatio: 2 / 3,
+            // The card draws a banner itself, while its own dot would take the
+            // watched corner, so the dot goes top left here.
+            seerrStatus: hasSeerrBanner ? seerrStatus : null,
             overlayOccupiesTopLeft: hasSeerrDot,
             imageOverlays: [
               if (hasSeerrDot)
@@ -15112,10 +15522,12 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
-              // Top left, dropped below the Seerr dot when there is one so the two stack
-              // rather than overlap.
+              // Top left, dropped below the Seerr dot or banner when there is one so
+              // the two stack rather than overlap.
               Positioned(
-                top: hasSeerrDot ? 30 : 6,
+                top: hasSeerrDot
+                    ? 30
+                    : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
                 child: AnimeSeasonAudioBadge(
                   seriesId: season.seriesId,
@@ -15152,6 +15564,11 @@ class DetailSeasonsRow extends StatelessWidget {
   }
 
   String? _seasonImageUrl(AggregatedItem season, {required bool isMobile}) {
+    // A season only Seerr knows of has no server artwork, just its TMDB poster.
+    if (season.serverId == 'seerr') {
+      final path = season.rawData['PosterPath'] as String?;
+      return path == null || path.isEmpty ? null : '$seerrPosterBase$path';
+    }
     final desktopScale = _desktopUiScale(prefs: prefs);
     final primaryHeight = isMobile ? 300 : (400 * desktopScale).round();
     final secondaryWidth = isMobile ? 200 : (260 * desktopScale).round();
@@ -15210,6 +15627,9 @@ class _EpisodesRow extends StatelessWidget {
   final ImageApi imageApi;
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
+
+  /// The card that takes [firstItemFocusNode], so the row is entered there.
+  final int focusIndex;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
   final VoidCallback? onChanged;
 
@@ -15223,10 +15643,28 @@ class _EpisodesRow extends StatelessWidget {
     required this.imageApi,
     this.scrollController,
     this.firstItemFocusNode,
+    this.focusIndex = 0,
     this.onItemKeyEvent,
     this.onChanged,
     this.contextSeasonId,
   });
+
+  static const _compactCardWidth = 180.0;
+  static const _cardWidth = 220.0;
+  static const _compactGap = 8.0;
+  static const _gap = 12.0;
+
+  static double cardWidth({required bool isMobile}) =>
+      isMobile ? _compactCardWidth : _cardWidth * _desktopUiScale();
+
+  static double gap({required bool isMobile}) =>
+      isMobile ? _compactGap : _gap * _desktopUiScale();
+
+  /// One card and the gap after it, as [build] lays them out.
+  static double strideFor(BuildContext context) {
+    final isMobile = _isCompact(context);
+    return cardWidth(isMobile: isMobile) + gap(isMobile: isMobile);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15252,7 +15690,7 @@ class _EpisodesRow extends StatelessWidget {
         padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: episodes.length,
         separatorBuilder: (_, _) =>
-            SizedBox(width: isMobile ? 8 : 12 * desktopScale),
+            SizedBox(width: gap(isMobile: isMobile)),
         itemBuilder: (context, index) {
           final ep = episodes[index];
           final isCurrent = ep.id == currentEpisodeId;
@@ -15261,7 +15699,9 @@ class _EpisodesRow extends StatelessWidget {
             isCurrent: isCurrent,
             imageApi: imageApi,
             isMobile: isMobile,
-            focusNode: index == 0 ? firstItemFocusNode : null,
+            focusNode: index == focusIndex.clamp(0, episodes.length - 1)
+                ? firstItemFocusNode
+                : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (event) => onItemKeyEvent!(index, event),
@@ -15390,7 +15830,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
           onLongPress: _handleLongPress,
           onSecondaryTap: _handleLongPress,
           child: Container(
-            width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
+            width: _EpisodesRow.cardWidth(isMobile: widget.isMobile),
             decoration: BoxDecoration(borderRadius: AppRadius.circular(8)),
             clipBehavior: Clip.antiAlias,
             child: Stack(
@@ -15440,6 +15880,21 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                                 size: 18,
                               ),
                             ),
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: PosterBadges(itemId: ep.id, scale: 0.8),
+                          ),
+                          Positioned.fill(
+                            child: PosterBadgeCorners(
+                              itemId: ep.id,
+                              scale: 0.8,
+                              top: ep.isPlayed && (ep.playedPercentage ?? 0) == 0
+                                  ? 30
+                                  : 6,
+                              bottom: (ep.playedPercentage ?? 0) > 0 ? 12 : 6,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -15683,6 +16138,18 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                               _EpisodeProgressBar(
                                 percentage: episode.playedPercentage!,
                               ),
+                            Positioned(
+                              top: 6,
+                              left: 6,
+                              child: PosterBadges(itemId: episode.id, scale: 0.8),
+                            ),
+                            Positioned.fill(
+                              child: PosterBadgeCorners(
+                                itemId: episode.id,
+                                scale: 0.8,
+                                bottom: (episode.playedPercentage ?? 0) > 0 ? 12 : 6,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -15950,16 +16417,35 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                   percentage: episode.playedPercentage!,
                                 ),
                               // Top left, opposite the played tick and above the progress
-                              // bar. Draws only when the server picked this placement.
+                              // bar. The anime pill draws only when the server picked this
+                              // placement, and pads itself only when it does.
                               Positioned(
                                 top: 6,
                                 left: 6,
-                                child: AnimeMarkerBadge(
-                                  seriesId: episode.seriesId,
-                                  episodeId: episode.id,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AnimeMarkerBadge(
+                                      seriesId: episode.seriesId,
+                                      episodeId: episode.id,
+                                      scale: 0.8,
+                                      slot: AnimeMarkerPlacement.thumbnail,
+                                      filled: true,
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                    ),
+                                    PosterBadges(itemId: episode.id, scale: 0.8),
+                                  ],
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: PosterBadgeCorners(
+                                  itemId: episode.id,
                                   scale: 0.8,
-                                  slot: AnimeMarkerPlacement.thumbnail,
-                                  filled: true,
+                                  top: episode.isPlayed ? 30 : 6,
+                                  bottom: (episode.playedPercentage ?? 0) > 0
+                                      ? 12
+                                      : 6,
                                 ),
                               ),
                               if (episode.isPlayed)
@@ -16741,6 +17227,7 @@ class FilmographyRow extends StatelessWidget {
           }
 
           return MediaCard(
+            posterBadgeItemId: item.id,
             title: title,
             subtitle: subtitle,
             imageUrl: item.primaryImageTag != null

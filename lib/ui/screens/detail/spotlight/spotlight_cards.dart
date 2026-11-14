@@ -305,6 +305,9 @@ class _SpotlightCardsBuilder {
         'people': _boxSetPeopleCard,
         'playlist_order': _boxSetPlaylistOrderCard,
       },
+      'BookSeries' => {
+        'books': _booksCard,
+      },
       _ => {
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
@@ -390,11 +393,14 @@ class _SpotlightCardsBuilder {
       }
     }
 
+    final isEpisode = item.type == 'Episode';
+    final fallbackDirector = isEpisode ? l10n.episodeDirector : l10n.director;
+    final fallbackWriter = isEpisode ? l10n.episodeWriter : l10n.writer;
     for (final d in vm.directors) {
-      add(d, l10n.director);
+      add(d, fallbackDirector);
     }
     for (final w in vm.writers) {
-      add(w, l10n.writer);
+      add(w, fallbackWriter);
     }
     return merged.values
         .map(
@@ -1126,6 +1132,33 @@ class _SpotlightCardsBuilder {
       if (url != null) return url;
     }
     return null;
+  }
+
+  SpotlightCardSpec? _booksCard() {
+    final books = vm.seriesBooks;
+    if (books.isEmpty) return null;
+    return SpotlightCardSpec(
+      id: 'books',
+      title: l10n.books,
+      subtitle: l10n.spotlightTitlesCount(books.length),
+      imageUrl:
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            item,
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            books[0],
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          fallbackImageUrl ??
+          _firstItemLandscape(books),
+      icon: Icons.book,
+      sections: [
+        _mediaSection(l10n.books, books),
+      ],
+    );
   }
 
   SpotlightCardSpec? _boxSetItemsCard() {

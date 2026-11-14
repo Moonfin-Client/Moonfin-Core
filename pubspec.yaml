@@ -1,11 +1,9 @@
 name: moonfin
 description: "Moonfin - Jellyfin & Emby media client for mobile, tablet, and desktop"
 publish_to: 'none'
-version: 3.0.0+30000156
+version: 3.1.0+30000163
 
 moonfin:
-  android_tv_version: 3.0.0
-  android_tv_build_number: 2000023
   beta: false
   beta_number: 1
 
@@ -190,6 +188,7 @@ dependencies:
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  firebase_app_installations: ^0.4.5
   pointer_interceptor: ^0.10.1+2
   flutter_markdown_plus: ^1.0.12
   markdown: ^7.3.1
@@ -294,11 +293,14 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/ratings/
+    # Country flags for poster labels, from flag-icons (MIT, see the LICENSE beside them).
+    - assets/icons/flags/
     - assets/icons/social/
     - assets/fonts/
     - assets/subtitle_fonts/
     - assets/licenses/cores/
     - assets/reader/
+    - assets/after_hours/
 
   fonts:
     # The web engine fetches Roboto from fonts.gstatic.com unless it finds a
@@ -332,6 +334,10 @@ flutter:
         - asset: assets/fonts/Literata-Regular.ttf
         - asset: assets/fonts/Literata-SemiBold.ttf
           weight: 600
+    # The After Hours arcade's display face.
+    - family: Jersey10
+      fonts:
+        - asset: assets/fonts/Jersey10-Regular.ttf
 
 # The identity has to match Partner Center's Product identity page or the Store
 # rejects the upload.

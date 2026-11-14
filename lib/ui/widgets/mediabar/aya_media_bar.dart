@@ -7,6 +7,7 @@ import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../util/platform_detection.dart';
 import '../focus/glass_focus_halo.dart';
 import '../offline_aware_image.dart';
+import 'media_bar_new_release_label.dart';
 
 class AyaMediaBar extends StatefulWidget {
   static const _cornerRadius = 18.0;
@@ -48,6 +49,7 @@ class AyaMediaBar extends StatefulWidget {
   final EdgeInsets padding;
   final bool focusExpansionEnabled;
   final Widget? trailerOverlay;
+  final List<Widget> navArrows;
   final ValueChanged<String?>? onAmbientArtworkChanged;
 
   const AyaMediaBar({
@@ -58,6 +60,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.padding,
     required this.focusExpansionEnabled,
     this.trailerOverlay,
+    this.navArrows = const <Widget>[],
     this.onAmbientArtworkChanged,
   });
 
@@ -271,6 +274,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                       _buildAnimatedSlide(context, theme, item),
                       if (widget.trailerOverlay != null) widget.trailerOverlay!,
                       if (widget.items.length > 1) _buildIndicators(),
+                      ...widget.navArrows,
                     ],
                   ),
                 ),
@@ -332,7 +336,25 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         Positioned(
           left: AyaMediaBar._contentLeftPadding,
           top: AyaMediaBar._contentTopPadding,
-          child: _buildLogoOrTitle(theme, item),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLogoOrTitle(theme, item),
+              if (item.newRelease case final release?) ...[
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AyaMediaBar._titleMaxWidth,
+                  ),
+                  child: MediaBarNewReleaseLine(
+                    release: release,
+                    showMessage: !PlatformDetection.useMobileUi,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );

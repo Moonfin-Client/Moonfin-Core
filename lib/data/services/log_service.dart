@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import 'media_server_client_factory.dart';
+import 'moonbase_client_log_api.dart';
 import 'plugin_sync_service.dart';
 
 enum LogLevel { debug, info, warning, error }
@@ -103,10 +104,24 @@ class LogService extends ChangeNotifier {
   // kept and only the value goes, since knowing auth was present still reads.
   // A hyphenated name like X-Emby-Token is covered by the bare token branch.
   static final _credentialRegex = RegExp(
-    r"""\b(api[_-]?key|access[_-]?token|auth[_-]?token|authorization|token)"""
+    r"""\b(api[_-]?key|access[_-]?token|auth[_-]?token|refresh[_-]?token|"""
+    r"""authorization|token|password|passwd|pass|pwd|client[_-]?secret|"""
+    r"""secret|signature|sig)"""
     r"""(\s*[:=]\s*"?)"""
     r"""((?:(?:Bearer|Basic|MediaBrowser)\s+)?[^\s&"',;<>{}\[\]]+)""",
     caseSensitive: false,
+  );
+
+  // A real address ends in a letters-only domain, so a display mode like
+  // 1920x1080@23.976 stays.
+  static final _emailRegex = RegExp(
+    r'[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}\b',
+  );
+
+  // The folder after home is the account name, often the person's own. Server
+  // user IDs in paths like /Users/<id>/Items aren't names, so they stay.
+  static final _homeDirRegex = RegExp(
+    r'(/home/|/Users/|\\Users\\)(?![0-9a-fA-F]{32}\b|[0-9a-fA-F-]{36}\b)[^/\\\s]+',
   );
 
   static final _ipv4Regex = RegExp(
@@ -288,7 +303,7 @@ class LogService extends ChangeNotifier {
   }
 
   /// Whether the active server will take a report right now. Jellyfin has an
-  /// endpoint for this, Emby only gets one from the Moonfin plugin.
+  /// endpoint for this, the others only get one from Moonbase.
   bool get canUploadToServer {
     try {
       return _acceptsReports(_clientFactory.getActiveClient());
@@ -298,8 +313,8 @@ class LogService extends ChangeNotifier {
   }
 
   bool _acceptsReports(MediaServerClient client) {
-    if (client.clientLogApi == null) return false;
-    if (client.serverType != ServerType.emby) return true;
+    if (clientLogApiOf(client) == null) return false;
+    if (client.features.supportsClientLog) return true;
     // Tests and background isolates never register the sync service, and the
     // ping never runs there, so treat it as allowed.
     if (!GetIt.instance.isRegistered<PluginSyncService>()) return true;
@@ -314,11 +329,14 @@ class LogService extends ChangeNotifier {
     } on StateError {
       return 'Sign in to a server to send reports.';
     }
-    if (client.serverType == ServerType.emby) {
-      return 'This Emby server needs the Moonfin plugin, with client log '
-          'upload turned on.';
-    }
-    return 'The active server does not support report uploads.';
+    return switch (client.serverType) {
+      ServerType.emby =>
+        'This Emby server needs the Moonfin plugin, with client log upload '
+            'turned on.',
+      ServerType.plex || ServerType.silo =>
+        'This server needs Moonbase, with client log upload turned on.',
+      _ => 'The active server does not support report uploads.',
+    };
   }
 
   /// Uploads the current report to the active server.
@@ -332,7 +350,7 @@ class LogService extends ChangeNotifier {
     } on StateError {
       throw StateError('No active server to send the report to.');
     }
-    final api = client.clientLogApi;
+    final api = clientLogApiOf(client);
     if (api == null || !_acceptsReports(client)) {
       throw StateError(uploadUnavailableReason);
     }
@@ -412,12 +430,26 @@ class LogService extends ChangeNotifier {
 
     if (lower.contains('key') ||
         lower.contains('token') ||
-        lower.contains('auth')) {
+        lower.contains('auth') ||
+        lower.contains('pass') ||
+        lower.contains('pwd') ||
+        lower.contains('secret') ||
+        lower.contains('sig')) {
       result = result.replaceAllMapped(_credentialRegex, (match) {
         return '${match.group(1)}${match.group(2)}[REDACTED]';
       });
     }
-    
+
+    if (result.contains('@')) {
+      result = result.replaceAll(_emailRegex, '[REDACTED]');
+    }
+
+    if (lower.contains('home/') || lower.contains('users')) {
+      result = result.replaceAllMapped(_homeDirRegex, (match) {
+        return '${match.group(1)}[REDACTED]';
+      });
+    }
+
     // catch any ipv4's
     if (result.contains('.')) {
       result = result.replaceAll(_ipv4Regex, '[REDACTED]');

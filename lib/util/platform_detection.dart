@@ -11,6 +11,12 @@ class PlatformDetection {
 
   static const double _mobileFormFactorBreakpoint = 600;
 
+  /// Whether a touch screen of this size has room for the layouts desktop
+  /// uses, as a tablet or an opened folding phone does. Takes the live size,
+  /// since a fold changes it while the app runs.
+  static bool hasTabletSizedScreen(Size size) =>
+      size.shortestSide >= _mobileFormFactorBreakpoint;
+
   static const bool isAppleTV = bool.fromEnvironment('MOONFIN_TVOS');
 
   /// True for the dedicated Android TV flavor produced by the Android TV
@@ -62,13 +68,22 @@ class PlatformDetection {
     }
     return switch (_interfaceLayout) {
       InterfaceLayout.tv => true,
-      InterfaceLayout.desktop || InterfaceLayout.phone => false,
+      InterfaceLayout.desktop => false,
+      // A remote can't reach the phone layout's tab bar, so a TV-only device
+      // would be stuck there with no way back to this setting.
+      InterfaceLayout.phone => _isTv && !_supportsTouchLayout,
       InterfaceLayout.automatic => _isTv,
     };
   }
 
   static bool _isTv = false;
   static void setTvMode(bool value) => _isTv = value;
+
+  static bool _supportsTouchLayout = true;
+  static void setSupportsTouchLayout(bool value) =>
+      _supportsTouchLayout = value;
+
+  static bool get canUsePhoneLayout => isAndroid && _supportsTouchLayout;
 
   /// The user's layout override. The compile time platforms above are never
   /// overridden, so this only steers the two where detection has to guess.
@@ -224,6 +239,10 @@ class PlatformDetection {
   static String? get deviceBoard => _capabilityString('deviceBoard');
   static String? get deviceHardware => _capabilityString('deviceHardware');
   static String? get deviceSocModel => _capabilityString('deviceSocModel');
+
+  /// Amazon starts every Fire TV model name with AFT.
+  static bool get isFireTv =>
+      isAndroid && (deviceModel?.toUpperCase().startsWith('AFT') ?? false);
 
   static void setDisplayHdrTypes(Iterable<String>? values) {
     _hasDisplayHdrCapabilities = values != null;

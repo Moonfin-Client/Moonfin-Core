@@ -202,4 +202,55 @@ class MoonfinAssOverlayVisibilityTest {
         h.overlay.setPrimaryVisible(true)
         assertSame(frame, h.visibleFrame())
     }
+
+    @Test
+    fun frameFlattenedAcrossATrackSwitchStaysHiddenUntilLibassConfirmsIt() {
+        val h = MoonfinAssOverlayTestHarness()
+        val a = Any()
+        val b = Any()
+        h.overlay.syncNativeAssTrack(a)
+        h.publishFrame(h.frame(3, 4))
+
+        // A was rendered, then B was selected before the frame was published.
+        val lateA = h.frame(8, 9, changed = 2)
+        h.overlay.syncNativeAssTrack(b)
+        h.retainUnconfirmedFrame(a, lateA)
+        assertSame(lateA, h.cachedFrame())
+        assertTrue(h.visibleFrame() == null)
+
+        // libass compares B's first render with lateA, its latest output.
+        h.publishFrame(AssFrame(images = null, changed = 0))
+        assertSame(lateA, h.visibleFrame())
+    }
+
+    @Test
+    fun frameFlattenedAcrossOffAndOnIsShownOnceTheNextRenderConfirmsIt() {
+        val h = MoonfinAssOverlayTestHarness()
+        val track = Any()
+        h.overlay.syncNativeAssTrack(track)
+        h.publishFrame(h.frame(3, 4))
+
+        val late = h.frame(8, 9, changed = 2)
+        h.overlay.syncNativeAssTrack(null)
+        h.overlay.syncNativeAssTrack(track)
+        h.retainUnconfirmedFrame(track, late)
+        assertTrue(h.visibleFrame() == null)
+
+        h.publishFrame(AssFrame(images = null, changed = 0))
+        assertSame(late, h.visibleFrame())
+    }
+
+    @Test
+    fun emptyRenderAcrossATrackSwitchHidesTheOldCaption() {
+        val h = MoonfinAssOverlayTestHarness()
+        val a = Any()
+        h.overlay.syncNativeAssTrack(a)
+        h.publishFrame(h.frame(3, 4))
+
+        // ass-kt returns no frame at all when nothing is on screen.
+        h.overlay.syncNativeAssTrack(Any())
+        h.retainUnconfirmedFrame(a, null)
+        h.overlay.syncNativeAssTrack(a)
+        assertTrue(h.visibleFrame() == null)
+    }
 }

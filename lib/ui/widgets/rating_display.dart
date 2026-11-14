@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -7,6 +6,7 @@ import '../../data/services/rating_icon_provider.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/tv_ui_scale.dart';
+import 'settings/settings_preview_scope.dart';
 
 final _textShadows = [
   Shadow(blurRadius: 4, color: AppColors.black.withValues(alpha: 0.54)),
@@ -43,6 +43,16 @@ class RatingsRow extends StatelessWidget {
   /// the value. Implies [singleLine].
   final bool inlineChips;
 
+  /// Frost's strip: a column per source, its name small over its score, with
+  /// a hairline between them.
+  final bool columns;
+
+  /// Grows the strip's text, for a TV where it's read from across the room.
+  final double columnTextScale;
+
+  /// Centers each line of a wrapping row under a centered title.
+  final bool centered;
+
   const RatingsRow({
     super.key,
     required this.ratings,
@@ -55,6 +65,9 @@ class RatingsRow extends StatelessWidget {
     this.showBadges = true,
     this.singleLine = false,
     this.inlineChips = false,
+    this.columns = false,
+    this.columnTextScale = 1,
+    this.centered = false,
   });
 
   /// Null when there is nothing to draw, so the caller skips its spacing too.
@@ -67,6 +80,9 @@ class RatingsRow extends StatelessWidget {
     required Map<String, double> extraRatings,
     required UserPreferences prefs,
     bool labels = true,
+    bool columns = false,
+    double columnTextScale = 1,
+    bool centered = false,
   }) {
     if (!prefs.effectiveShowDetailRatings) return null;
 
@@ -91,6 +107,9 @@ class RatingsRow extends StatelessWidget {
       enabledRatings: prefs.get(UserPreferences.enabledRatings),
       showLabels: labels && prefs.get(UserPreferences.showRatingLabels),
       showBadges: prefs.get(UserPreferences.showRatingBadges),
+      columns: columns,
+      columnTextScale: columnTextScale,
+      centered: centered,
     );
   }
 
@@ -103,14 +122,9 @@ class RatingsRow extends StatelessWidget {
 
   /// The viewer picked how ratings read on the detail screen, so the row
   /// speaks the same dialect: five-star users see their score out of five.
-  static String _formatPersonal(double value) {
-    var style = PersonalRatingStyle.numeric;
-    if (GetIt.instance.isRegistered<UserPreferences>()) {
-      style = GetIt.instance<UserPreferences>().get(
-        UserPreferences.personalRatingStyle,
-      );
-    }
-    if (style == PersonalRatingStyle.stars) {
+  static String _formatPersonal(BuildContext context, double value) {
+    if (previewValue(context, UserPreferences.personalRatingStyle) ==
+        PersonalRatingStyle.stars) {
       return '${(value / 2).toStringAsFixed(1)}/5';
     }
     return value.toStringAsFixed(1);
@@ -177,13 +191,15 @@ class RatingsRow extends StatelessWidget {
 
     if (filtered.isEmpty) return const SizedBox.shrink();
 
+    if (columns) return _columns(filtered.take(7), columnTextScale);
+
     final children = [
       for (final item in filtered)
         _SingleRating(
           source: item.key,
           value: item.value,
           valueText: item.key == 'personal'
-              ? _formatPersonal(item.value)
+              ? _formatPersonal(context, item.value)
               : null,
           showLabel: showLabels,
           showBadge: showBadges,
@@ -204,6 +220,7 @@ class RatingsRow extends StatelessWidget {
     }
 
     return Wrap(
+      alignment: centered ? WrapAlignment.center : WrapAlignment.start,
       spacing: 6,
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -211,6 +228,84 @@ class RatingsRow extends StatelessWidget {
     );
   }
 }
+
+/// One column per source. With no width to share, as in a row that
+/// scrolls, each column is as wide as its text.
+Widget _columns(Iterable<MapEntry<String, double>> ratings, double scale) =>
+    LayoutBuilder(
+      builder: (context, constraints) {
+        final share = constraints.hasBoundedWidth;
+        final muted = AppColorScheme.onBackground.withValues(alpha: 0.6);
+        return IntrinsicHeight(
+          child: Row(
+            mainAxisSize: share ? MainAxisSize.max : MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (index, entry) in ratings.indexed)
+                _ratingCell(
+                  share,
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: index == 0
+                          ? null
+                          : Border(
+                              left: BorderSide(
+                                color: AppColorScheme.onBackground.withValues(
+                                  alpha: 0.14,
+                                ),
+                              ),
+                            ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: share ? 4 : 14),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            RatingIconProvider.sourceDisplayName(entry.key)
+                                .toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: muted,
+                              fontSize: 10 * scale,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            entry.key == 'personal'
+                                ? RatingsRow._formatPersonal(
+                                    context,
+                                    entry.value,
+                                  )
+                                : RatingIconProvider.formatRating(
+                                    entry.key,
+                                    entry.value,
+                                  ),
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: AppColorScheme.onBackground.withValues(
+                                alpha: 0.92,
+                              ),
+                              fontSize: 22 * scale,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+
+Widget _ratingCell(bool share, Widget child) =>
+    share ? Expanded(child: child) : child;
 
 class _SingleRating extends StatelessWidget {
   final String source;

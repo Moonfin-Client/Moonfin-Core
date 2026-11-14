@@ -8,10 +8,12 @@ import '../../screens/watch_party/silo_watch_party_screen.dart'
     show memberAvatarUrl;
 import '../overlay_sheet.dart';
 import '../user_avatar_image.dart';
+import '../watch_party/watch_party_player_overlay.dart';
 
-/// The Watch Party's in-player control, in SyncPlay's place on Silo: a sheet
-/// with the room's code and status, who is watching, and the host's way
-/// back to the lobby or a member's way out. Empty outside a playing room.
+/// The Watch Party's in-player control, in SyncPlay's place. On Silo it's a
+/// sheet with the room's code and status, who is watching, and the host's
+/// way back to the lobby or a member's way out. On Moonbase it opens the
+/// party panel. Empty outside a playing room.
 class WatchPartyPlayerButton extends StatelessWidget {
   const WatchPartyPlayerButton({super.key, this.size = 24, this.extent = 48});
 
@@ -32,7 +34,9 @@ class WatchPartyPlayerButton extends StatelessWidget {
           height: extent,
           child: IconButton(
             tooltip: l10n.watchParty,
-            onPressed: () => _showSheet(context),
+            onPressed: () => _manager.isMoonbase
+                ? showWatchPartyPanel(context)
+                : _showSheet(context),
             icon: Icon(
               Icons.groups_rounded,
               color: AppColorScheme.onSurface,

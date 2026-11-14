@@ -22,11 +22,15 @@ enum HomeRowType {
   mediaBar,
   pluginDynamic,
   liveTvFavorites,
+
+  /// Watch Parties, shown first while rooms exist. Not a layout section.
+  watchParties,
 }
 
 class HomeRow {
   final String id;
   final String title;
+  final String? subtitle;
   final List<AggregatedItem> items;
   final HomeRowType rowType;
   final bool isLoading;
@@ -36,6 +40,7 @@ class HomeRow {
   const HomeRow({
     required this.id,
     required this.title,
+    this.subtitle,
     this.items = const [],
     required this.rowType,
     this.isLoading = false,
@@ -46,6 +51,7 @@ class HomeRow {
   HomeRow copyWith({
     String? id,
     String? title,
+    String? subtitle,
     List<AggregatedItem>? items,
     HomeRowType? rowType,
     bool? isLoading,
@@ -55,6 +61,7 @@ class HomeRow {
       HomeRow(
         id: id ?? this.id,
         title: title ?? this.title,
+        subtitle: subtitle ?? this.subtitle,
         items: items ?? this.items,
         rowType: rowType ?? this.rowType,
         isLoading: isLoading ?? this.isLoading,

@@ -42,6 +42,10 @@ class LockedFocusRow<T> extends StatefulWidget {
   /// are only ever replaced wholesale.
   final LockedFocusItemKey<T>? itemKey;
   final double itemExtent;
+
+  /// Each card's width when the cards differ, so scrolling lands on the
+  /// right one. Left null, every card is [itemExtent] wide.
+  final double Function(int index)? itemExtentOf;
   final double leadingPadding;
   final double itemSpacing;
   final ScrollController? controller;
@@ -88,6 +92,7 @@ class LockedFocusRow<T> extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.itemKey,
     this.glide,
+    this.itemExtentOf,
   });
 
   @override
@@ -276,11 +281,9 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
     }
     if (!_scrollController.hasClients) return;
     final drift = _layoutDrift();
-    scrollListToIndex(
+    scrollListToOffset(
       _scrollController,
-      index,
-      itemExtent: widget.itemExtent + widget.itemSpacing,
-      leadingPadding: widget.leadingPadding + drift,
+      _offsetOf(index) + widget.leadingPadding + drift,
     ).whenComplete(() {
       // The glide itself can leave a card behind mid-shrink, so check again
       // once it stops.
@@ -297,7 +300,6 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
   /// before it has shrunk back, and the list keeps that in-between width for
   /// every card after it until the row scrolls back to its start.
   double _layoutDrift() {
-    final stride = widget.itemExtent + widget.itemSpacing;
     final leading = Directionality.of(context) == TextDirection.rtl
         ? widget.padding.right
         : widget.padding.left;
@@ -305,9 +307,19 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>>
       final box = _itemKeys[i].currentContext?.findRenderObject();
       if (box is! RenderBox || !box.attached || !box.hasSize) continue;
       final reveal = RenderAbstractViewport.of(box).getOffsetToReveal(box, 0);
-      return reveal.offset - leading - i * stride;
+      return reveal.offset - leading - _offsetOf(i);
     }
     return 0;
+  }
+
+  double _offsetOf(int index) {
+    final extentOf = widget.itemExtentOf;
+    if (extentOf == null) return index * (widget.itemExtent + widget.itemSpacing);
+    var offset = 0.0;
+    for (var i = 0; i < index; i++) {
+      offset += extentOf(i) + widget.itemSpacing;
+    }
+    return offset;
   }
 
   void _runGlide() {
