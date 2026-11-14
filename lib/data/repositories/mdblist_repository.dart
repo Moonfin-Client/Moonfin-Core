@@ -192,6 +192,39 @@ class MdbListRepository {
     }
   }
 
+  /// One rating out of 10 per movie, by TMDB id, from what Moonbase already
+  /// cached. Moonbase never calls MDBList for this, so it answers fast, and a
+  /// movie it doesn't know is just left out. Empty on any failure, including
+  /// a Moonbase too old to have the route.
+  Future<Map<String, double>> cachedMovieRatings(List<String> tmdbIds) async {
+    if (tmdbIds.isEmpty) return const {};
+    // The same wait as getRatings once Moonbase has said it has no ratings.
+    if (_unavailableSince != null) {
+      if (DateTime.now().difference(_unavailableSince!) <
+          _unavailableRetryWindow) {
+        return const {};
+      }
+      _unavailableSince = null;
+    }
+    try {
+      final ep = await moonbaseEndpoint(_client, _dio);
+      if (ep == null) return const {};
+      final response = await _dio.post(
+        '${ep.base}/Moonfin/MdbList/CachedRatings',
+        data: {'type': 'movie', 'tmdbIds': tmdbIds},
+        options: Options(headers: ep.headers),
+      );
+      final ratings = (response.data as Map?)?['ratings'];
+      if (ratings is! Map) return const {};
+      return {
+        for (final MapEntry(:key, :value) in ratings.entries)
+          if (value is num) key.toString(): value.toDouble(),
+      };
+    } catch (_) {
+      return const {};
+    }
+  }
+
   Future<Map<String, double>?> _getEpisodeRating(
     AggregatedItem item,
     MediaServerClient? resolveClient,

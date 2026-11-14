@@ -5126,6 +5126,153 @@ class AppLocalizationsIt extends AppLocalizations {
   String get mediaBarNewEpisodes => 'Nuovi Episodi';
 
   @override
+  String get mediaBarSourceRandomDescription =>
+      'Any title from your libraries, picked at random.';
+
+  @override
+  String get mediaBarSourceRecentlyAddedDescription =>
+      'The latest arrivals on the server, like the home row.';
+
+  @override
+  String get mediaBarSourceRecentlyReleasedDescription =>
+      'The latest releases, like the home row: no time limit, and series follow its Series, Season or Episode setting.';
+
+  @override
+  String get mediaBarSourceNewReleasesDescription =>
+      'Only what\'s new, within the windows and minimum rating below. When nothing qualifies, random titles fill in.';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewMovieBasis => 'New Movie Based On';
+
+  @override
+  String get mediaBarNewMovieBasisDescription =>
+      'Which date makes a movie new: its release, or its arrival on your server.';
+
+  @override
+  String get mediaBarNewMovieByReleaseDescription =>
+      'A movie stays new for the window below after it comes out. Streaming releases show up right away. Theatrical movies only count if they reach your server while still in the window.';
+
+  @override
+  String get mediaBarNewMovieByAddedDescription =>
+      'A movie stays new for the window below after it reaches your server, however it was released. Movies released before the release limit don\'t count, so an old film added today isn\'t new.';
+
+  @override
+  String get mediaBarNewMovieByRelease => 'Release Date';
+
+  @override
+  String get mediaBarNewMovieByAdded => 'Date Added';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new. Theatrical movies often reach servers a while after they come out, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieMaxAge => 'Release Limit';
+
+  @override
+  String get mediaBarNewMovieMaxAgeDescription =>
+      'An older movie that just arrived doesn\'t count as new.';
+
+  @override
+  String mediaBarLastMonths(int months) {
+    return 'Last $months months';
+  }
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
+
+  @override
+  String get mediaBarNewMovieTaglineOnly => 'Only Movies With a Tagline';
+
+  @override
+  String get mediaBarNewMovieTaglineOnlyDescription =>
+      'In the New Releases source, leave out new movies that have no tagline.';
+
+  @override
+  String get mediaBarNewMovieMinRating => 'Minimum Movie Rating';
+
+  @override
+  String get mediaBarNewMovieMinRatingDescription =>
+      'Only movies rated this high count as new. Uses the MDBList score your server keeps, or its own rating.';
+
+  @override
+  String mediaBarRatingAtLeast(String rating) {
+    return '$rating and above';
+  }
+
+  @override
+  String get mediaBarMixTypes => 'Mix Movies and Series';
+
+  @override
+  String get mediaBarMixTypesDescription =>
+      'Movies and series take turns, as long as each has titles.';
+
+  @override
+  String get mediaBarUpcomingEpisode => 'New Episode';
+
+  @override
+  String mediaBarUpcomingSeason(int season) {
+    return 'New Season $season';
+  }
+
+  @override
+  String get mediaBarUpcomingMovie => 'Coming Soon';
+
+  @override
+  String mediaBarThisWeekday(String day) {
+    return 'This $day';
+  }
+
+  @override
+  String mediaBarOnDate(String date) {
+    return '$date';
+  }
+
+  @override
+  String get mediaBarUpcomingEpisodes => 'Upcoming Episodes';
+
+  @override
+  String get mediaBarUpcomingEpisodesDescription =>
+      'Shows when the next episode airs, from the Sonarr calendar. With New Releases, returning series join the bar too.';
+
+  @override
+  String get mediaBarUpcomingMovies => 'Upcoming Movies';
+
+  @override
+  String get mediaBarUpcomingMoviesDescription =>
+      'With New Releases, up to two movies Radarr expects soon join the bar. They open in Seerr.';
+
+  @override
+  String get mediaBarUpcomingDays => 'Upcoming Horizon';
+
+  @override
+  String get mediaBarUpcomingDaysDescription =>
+      'How many days ahead to look for what\'s coming.';
+
+  @override
+  String get mediaBarFollowedFirst => 'Followed Series First';
+
+  @override
+  String get mediaBarFollowedFirstDescription =>
+      'Series you\'ve started come first.';
+
+  @override
   String get moviesAndTvShows => 'Film e Serie TV';
 
   @override

@@ -1349,6 +1349,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'newest',
       'new seasons',
       'new episodes',
+      'new movies',
     ]),
     mediaBar.leaf(
       'mediaBarNewReleaseBanner',
@@ -1360,6 +1361,77 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'mediaBarNewReleaseDays',
       l10n.mediaBarNewReleaseDays,
       subtitle: l10n.mediaBarNewReleaseDaysDescription,
+    ),
+    mediaBar.leaf(
+      'mediaBarNewReleaseKinds',
+      l10n.mediaBarNewReleaseKinds,
+      keywords: ['new movie', 'new season', 'new episode', 'new series'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieBasis',
+      l10n.mediaBarNewMovieBasis,
+      subtitle: l10n.mediaBarNewMovieBasisDescription,
+      keywords: ['new movie', 'release date', 'date added'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDays',
+      l10n.mediaBarNewMovieDays,
+      subtitle: l10n.mediaBarNewMovieDaysDescription,
+      keywords: ['new movie'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieMaxAgeMonths',
+      l10n.mediaBarNewMovieMaxAge,
+      subtitle: l10n.mediaBarNewMovieMaxAgeDescription,
+      keywords: ['new movie'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDetail',
+      l10n.mediaBarNewMovieDetail,
+      subtitle: l10n.mediaBarNewMovieDetailDescription,
+      keywords: ['tagline', 'slogan', 'new movie'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieTaglineOnly',
+      l10n.mediaBarNewMovieTaglineOnly,
+      subtitle: l10n.mediaBarNewMovieTaglineOnlyDescription,
+      keywords: ['tagline', 'slogan', 'new movie', 'new releases'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieMinRating',
+      l10n.mediaBarNewMovieMinRating,
+      subtitle: l10n.mediaBarNewMovieMinRatingDescription,
+      keywords: ['new movie', 'blockbuster', 'best', 'score'],
+    ),
+    mediaBar.leaf(
+      'mediaBarMixTypes',
+      l10n.mediaBarMixTypes,
+      subtitle: l10n.mediaBarMixTypesDescription,
+      keywords: ['movies', 'series', 'alternate', 'balance'],
+    ),
+    mediaBar.leaf(
+      'mediaBarUpcomingEpisodes',
+      l10n.mediaBarUpcomingEpisodes,
+      subtitle: l10n.mediaBarUpcomingEpisodesDescription,
+      keywords: ['upcoming', 'sonarr', 'calendar', 'coming soon'],
+    ),
+    mediaBar.leaf(
+      'mediaBarUpcomingMovies',
+      l10n.mediaBarUpcomingMovies,
+      subtitle: l10n.mediaBarUpcomingMoviesDescription,
+      keywords: ['upcoming', 'radarr', 'calendar', 'coming soon'],
+    ),
+    mediaBar.leaf(
+      'mediaBarUpcomingDays',
+      l10n.mediaBarUpcomingDays,
+      subtitle: l10n.mediaBarUpcomingDaysDescription,
+      keywords: ['upcoming', 'horizon'],
+    ),
+    mediaBar.leaf(
+      'mediaBarFollowedFirst',
+      l10n.mediaBarFollowedFirst,
+      subtitle: l10n.mediaBarFollowedFirstDescription,
+      keywords: ['followed', 'watching'],
     ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(

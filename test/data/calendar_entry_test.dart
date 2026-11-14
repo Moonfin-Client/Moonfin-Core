@@ -150,6 +150,22 @@ void main() {
       expect(list.first.inLibrary, isFalse);
     });
 
+    test('every entry knows whether the movie has a digital date', () {
+      final withDigital = parseRadarrEntries(
+        movie,
+        start: DateTime(2027, 2, 1),
+        end: DateTime(2027, 3, 1),
+      ).single;
+      expect(withDigital.release, CalendarRelease.physical);
+      expect(withDigital.hasDigitalDate, isTrue);
+      final withoutDigital = parseRadarrEntries(
+        {...movie, 'digitalRelease': null},
+        start: DateTime(2027, 2, 1),
+        end: DateTime(2027, 3, 1),
+      ).single;
+      expect(withoutDigital.hasDigitalDate, isFalse);
+    });
+
     test('a movie needs its file before it counts as in the library', () {
       final listed = parseRadarrEntries(
         {...movie, 'moonfinItemId': '900'},

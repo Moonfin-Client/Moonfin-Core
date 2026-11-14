@@ -7,6 +7,7 @@ import '../../../../data/models/media_bar_slide_item.dart';
 import '../../../util/platform_detection.dart';
 import '../focus/glass_focus_halo.dart';
 import '../offline_aware_image.dart';
+import 'media_bar_corner_light.dart';
 import 'media_bar_new_release_label.dart';
 
 class AyaMediaBar extends StatefulWidget {
@@ -326,6 +327,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       contentBuilder: (slideItem) {
         return _buildContent(theme, slideItem);
       },
+      posterBuilder: _buildPosterLabel,
     );
   }
 
@@ -333,6 +335,8 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     return Stack(
       fit: StackFit.expand,
       children: [
+        // Aya has no overlay, so the logo corner gets its own shade.
+        const Positioned.fill(child: MediaBarCornerLight()),
         Positioned(
           left: AyaMediaBar._contentLeftPadding,
           top: AyaMediaBar._contentTopPadding,
@@ -354,6 +358,28 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                 ),
               ],
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// A phone shows the poster, which carries its own title, so only the new
+  /// release label goes on it. The poster leaves room for both lines, but
+  /// not for a tagline.
+  Widget _buildPosterLabel(MediaBarSlideItem item) {
+    final release = item.newRelease;
+    if (release == null) return const SizedBox.shrink();
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          left: 20,
+          top: 20,
+          right: 20,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: MediaBarNewReleaseLine(release: release, showTagline: false),
           ),
         ),
       ],
@@ -461,6 +487,9 @@ class _AyaSlideTransition extends StatefulWidget {
   final double slideScaleBegin;
   final Widget Function(MediaBarSlideItem item) contentBuilder;
 
+  /// What goes over the poster when the slide shows one instead of content.
+  final Widget Function(MediaBarSlideItem item) posterBuilder;
+
   const _AyaSlideTransition({
     required this.item,
     required this.artworkUrl,
@@ -472,6 +501,7 @@ class _AyaSlideTransition extends StatefulWidget {
     required this.transitionDuration,
     required this.slideScaleBegin,
     required this.contentBuilder,
+    required this.posterBuilder,
   });
 
   @override
@@ -526,6 +556,15 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
 
     if (!_sameSlide(_desiredSlide, nextSlide)) {
       _requestSlide(nextSlide);
+      return;
+    }
+    // Same artwork with newer data, like a label that came in once the bar
+    // showed: the slides on screen take it without a new transition.
+    _desiredSlide = nextSlide;
+    if (_sameSlide(_baseSlide, nextSlide)) _baseSlide = nextSlide;
+    if (_incomingSlide case final incoming?
+        when _sameSlide(incoming, nextSlide)) {
+      _incomingSlide = nextSlide;
     }
   }
 
@@ -635,7 +674,10 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
           depthInDuration: widget.depthInDuration,
           depthOutDuration: widget.depthOutDuration,
         ),
-        if (slide.showContent) widget.contentBuilder(slide.item),
+        if (slide.showContent)
+          widget.contentBuilder(slide.item)
+        else
+          widget.posterBuilder(slide.item),
       ],
     );
   }

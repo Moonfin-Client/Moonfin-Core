@@ -11,7 +11,7 @@ import 'package:server_core/server_core.dart';
 import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
-import '../../util/tmdb_thumb.dart';
+import '../models/calendar_entry.dart';
 import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 import '../services/custom_external_lists_service.dart';
@@ -20,6 +20,8 @@ import '../services/plugin_sync_service.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import 'calendar_repository.dart';
+import 'mdblist_repository.dart';
 import 'tmdb_repository.dart';
 
 class MediaBarRepository {
@@ -31,7 +33,7 @@ class MediaBarRepository {
   static const _fields =
       'Type,Genres,OfficialRating,CommunityRating,CriticRating,'
       'RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
-      'Overview,ProviderIds';
+      'Overview,ProviderIds,PremiereDate,DateCreated,Taglines';
 
   MediaBarRepository(this._client, this._prefs);
 
@@ -89,6 +91,22 @@ class MediaBarRepository {
       );
       if (slides.isNotEmpty) return MediaBarReady(slides);
     }
+
+    // Started now so they run alongside the library reads. Only the new
+    // releases source brings in what's coming. The labels on series come
+    // later, with the others.
+    final returningSeries =
+        _isNewReleaseSource &&
+            _prefs.get(UserPreferences.mediaBarUpcomingEpisodes) &&
+            includeTypes.contains('Series')
+        ? _returningSeries(libraryIds, collectionIds)
+        : null;
+    final upcomingMovies =
+        _isNewReleaseSource &&
+            _prefs.get(UserPreferences.mediaBarUpcomingMovies) &&
+            includeTypes.contains('Movie')
+        ? _upcomingMovieSlides(libraryIds, collectionIds, excludedGenres)
+        : null;
 
     final allParentIds = <String>{};
     final allParentItemTypes = <String, List<String>>{};
@@ -157,7 +175,8 @@ class MediaBarRepository {
         allParentIds.toList()..shuffle(_random),
         _sourceConcurrency,
         (parentId) async {
-          if (usableCount >= enough) return null;
+          // Mixing needs both kinds in the pool, so every library is read.
+          if (!_mixesTypes && usableCount >= enough) return null;
           try {
             final batch = await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
@@ -179,6 +198,26 @@ class MediaBarRepository {
       if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
           GetIt.instance<MediaBarRepository>() != this) {
         return const MediaBarDisabled();
+      }
+
+      // Worked out once on the whole pool: the new releases source keeps only
+      // the movies that pass, and the chosen slides take their labels from it.
+      final movieLabels =
+          _prefs.get(UserPreferences.mediaBarNewReleaseBanner) &&
+          _newReleaseKinds.contains(UserPreferences.mediaBarNewMovie);
+      final newMovies = movieLabels || _isNewReleaseSource
+          ? await _newMovies(allItems.where(usable))
+          : const <String, MediaBarNewReleaseInfo>{};
+      if (_isNewReleaseSource) {
+        // Off with the second line, since every tagline is dropped then.
+        final taglineOnly =
+            _prefs.get(UserPreferences.mediaBarNewMovieDetail) &&
+            _prefs.get(UserPreferences.mediaBarNewMovieTaglineOnly);
+        allItems.removeWhere((item) {
+          if (item['Type'] != 'Movie') return false;
+          final release = newMovies[item['Id']?.toString()];
+          return release == null || (taglineOnly && release.tagline == null);
+        });
       }
 
       var selected = _selectItemsWithBackdrops(
@@ -221,16 +260,39 @@ class MediaBarRepository {
         );
       }
 
+      // A fallback can pick titles the pool never held, so those are checked
+      // on their own.
+      final pooled = {for (final item in allItems) item['Id']?.toString()};
+      final labels = !movieLabels
+          ? const <String, MediaBarNewReleaseInfo>{}
+          : selected.every((item) => pooled.contains(item['Id']?.toString()))
+          ? newMovies
+          : await _newMovies(selected);
+
       final items = await _mixInExternal(
-        selected.map(_toSlideItem).toList(),
+        [
+          for (final item in selected)
+            _toSlideItem(item).withNewRelease(labels[item['Id']?.toString()]),
+        ],
         externalPool,
         maxItems,
         excludedGenres,
       );
-      if (items.isEmpty) {
+      final reserved = [
+        if (returningSeries != null)
+          for (final item in (await returningSeries)
+              .where(usable)
+              .take(math.max(1, maxItems ~/ 3)))
+            _toSlideItem(item),
+        ...?await upcomingMovies,
+      ];
+      final placed = reserved.isEmpty
+          ? items
+          : mediaBarPlaceReserved(items, reserved, maxItems);
+      if (placed.isEmpty) {
         return const MediaBarError('No items with backdrop images found');
       }
-      return MediaBarReady(items);
+      return MediaBarReady(placed);
     } catch (e) {
       final firstLibraryItems = await _fetchItemsFromFirstSeriesOrMoviesLibrary(
         includeTypes,
@@ -256,7 +318,16 @@ class MediaBarRepository {
   ) {
     final withBackdrops = source.where(_usableFor(excludedGenres)).toList()
       ..shuffle();
-    return withBackdrops.take(maxItems).toList();
+    var ordered = withBackdrops;
+    if (_prefs.get(UserPreferences.mediaBarFollowedFirst)) {
+      // Started series go in first and lead the bar. The rest stay shuffled.
+      ordered = [
+        ...withBackdrops.where(mediaBarIsFollowedSeries),
+        ...withBackdrops.where((item) => !mediaBarIsFollowedSeries(item)),
+      ];
+    }
+    if (_mixesTypes) ordered = mediaBarAlternateTypes(ordered);
+    return ordered.take(maxItems).toList();
   }
 
   /// The check an item has to pass to go on the bar.
@@ -369,7 +440,7 @@ class MediaBarRepository {
         ? UserPreferences.mediaBarSourceRandom
         : _prefs.get(UserPreferences.mediaBarSourceType);
     if (sourceType == UserPreferences.mediaBarSourceNewReleases) {
-      return _fetchNewReleaseSeries(itemTypes, limit, parentId: parentId);
+      return _fetchNewReleases(itemTypes, limit, parentId: parentId);
     }
     if (sourceType == UserPreferences.mediaBarSourceRecentlyAdded ||
         sourceType == UserPreferences.mediaBarSourceRecentlyReleased) {
@@ -438,6 +509,23 @@ class MediaBarRepository {
           )
           ? _prefs.get(UserPreferences.hideWatchedInRecentRows)
           : null;
+      final childType = switch (_prefs.get(
+        UserPreferences.recentlyReleasedSeriesType,
+      )) {
+        RecentlyReleasedSeriesType.series => null,
+        RecentlyReleasedSeriesType.season => 'Season',
+        RecentlyReleasedSeriesType.episode => 'Episode',
+      };
+      if (sourceType == UserPreferences.mediaBarSourceRecentlyReleased &&
+          childType != null &&
+          (itemTypes == null || itemTypes.contains('Series'))) {
+        return await _fetchRecentlyReleasedByChild(
+          childType,
+          itemTypes,
+          parentId: parentId,
+          hideWatched: hideWatched,
+        );
+      }
       final response =
           sourceType == UserPreferences.mediaBarSourceRecentlyReleased
           ? await _client.itemsApi
@@ -478,42 +566,247 @@ class MediaBarRepository {
     }
   }
 
+  /// Recently released the way the home row reads it in Episode or Season
+  /// mode: series by their latest episode or season rather than their first
+  /// air date. Movies, when the type allows them, come as before.
+  Future<List<Map<String, dynamic>>> _fetchRecentlyReleasedByChild(
+    String childType,
+    List<String>? itemTypes, {
+    String? parentId,
+    bool? hideWatched,
+  }) async {
+    Future<List<Map<String, dynamic>>> released(
+      List<String> types,
+      int limit,
+    ) async {
+      final response = await _client.itemsApi
+          .getRecentlyReleasedItems(
+            includeItemTypes: types,
+            parentId: parentId,
+            recursive: true,
+            limit: limit,
+            fields: _fields,
+            enableImageTypes: 'Backdrop,Logo,Banner',
+            hideWatched: hideWatched,
+          )
+          .timeout(const Duration(seconds: 15));
+      return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+    }
+
+    final batches = await Future.wait([
+      // Several episodes or seasons share a series, so more are read to end up
+      // with as many series as the other sources give.
+      released([childType], _poolSize * 4).then(_seriesOf),
+      if (itemTypes == null || itemTypes.contains('Movie'))
+        released(const ['Movie'], _poolSize),
+    ]);
+    final items = batches.expand((batch) => batch);
+    return (hideWatched ?? false)
+        ? items.where((item) => !isRawItemWatchedForRecentRow(item)).toList()
+        : items.toList();
+  }
+
   bool get _isNewReleaseSource =>
       _prefs.get(UserPreferences.mediaBarSourceType) ==
       UserPreferences.mediaBarSourceNewReleases;
+
+  /// What the Sonarr and Radarr calendars expect within the horizon, through
+  /// Moonbase. Empty when that isn't set up or is slow: the bar never waits
+  /// more than a few seconds for it. The calendar keeps its answer a couple of
+  /// minutes, so the labels asked for later reuse it.
+  Future<List<CalendarEntry>> _upcomingEntries() async {
+    if (!GetIt.instance.isRegistered<CalendarRepository>()) return const [];
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final days = _prefs.get(UserPreferences.mediaBarUpcomingDays);
+    try {
+      final result = await GetIt.instance<CalendarRepository>()
+          .load(start: today, end: today.add(Duration(days: days + 1)))
+          .timeout(const Duration(seconds: 3));
+      return result.entries;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Library series with an episode due within the horizon, for the new
+  /// releases source, so a series coming back shows up before it airs. The
+  /// ones the user follows come first, then the soonest. The caller keeps a
+  /// third of the slides at most, so they don't crowd out what's already out.
+  Future<List<Map<String, dynamic>>> _returningSeries(
+    List<String> libraryIds,
+    List<String> collectionIds,
+  ) async {
+    // The calendar places titles in libraries, not in collections.
+    if (libraryIds.isEmpty && collectionIds.isNotEmpty) return const [];
+    final entries = [
+      for (final entry in await _upcomingEntries())
+        if (libraryIds.isEmpty || entry.libraryIds.any(libraryIds.contains))
+          entry,
+    ];
+    // More than will be kept, so the followed ones can be found among them.
+    final ids = mediaBarUpcomingBySeries(
+      entries,
+      now: DateTime.now(),
+    ).keys.take(_poolSize);
+    if (ids.isEmpty) return const [];
+    try {
+      final series = await _seriesOf([
+        for (final id in ids) {'SeriesId': id},
+      ]);
+      return [
+        ...series.where(mediaBarIsFollowedSeries),
+        ...series.where((item) => !mediaBarIsFollowedSeries(item)),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Up to two movies Radarr expects digitally within the horizon and that
+  /// aren't on the server yet, as outside slides that open in Seerr. A movie
+  /// TMDB has no logo for is left out.
+  Future<List<MediaBarSlideItem>> _upcomingMovieSlides(
+    List<String> libraryIds,
+    List<String> collectionIds,
+    Set<String> excludedGenres,
+  ) async {
+    // Nothing says what age an upcoming movie is rated for, so a viewer who
+    // blocks any rating doesn't get them, as with the outside lists.
+    if (!GetIt.instance<PluginSyncService>().tmdbDetailsAvailable ||
+        activeParentalFilter.isActive ||
+        (libraryIds.isEmpty && collectionIds.isNotEmpty)) {
+      return const [];
+    }
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final byMovie = <int, CalendarEntry>{};
+    for (final entry in await _upcomingEntries()) {
+      final tmdbId = entry.tmdbId;
+      // A movie already on the server isn't coming anymore.
+      if (!entry.isMovie ||
+          !mediaBarIsHomeRelease(entry) ||
+          !entry.monitored ||
+          entry.hasFile ||
+          entry.itemId != null ||
+          tmdbId == null ||
+          entry.day.isBefore(today) ||
+          (libraryIds.isNotEmpty &&
+              !entry.libraryIds.any(libraryIds.contains))) {
+        continue;
+      }
+      byMovie.putIfAbsent(tmdbId, () => entry);
+    }
+    // No minimum rating here: someone chose to add these to Radarr, and a
+    // movie that isn't out yet often has no rating to go by anyway.
+    final candidates = byMovie.values.toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    // A few more than needed are looked up at once, since some have no logo.
+    final slides = await Future.wait(
+      candidates
+          .take(4)
+          .map((entry) => _upcomingMovieSlide(entry, excludedGenres)),
+    );
+    return slides.nonNulls.take(2).toList();
+  }
+
+  Future<MediaBarSlideItem?> _upcomingMovieSlide(
+    CalendarEntry entry,
+    Set<String> excludedGenres,
+  ) async {
+    final tmdbId = '${entry.tmdbId}';
+    final Map<String, dynamic>? details;
+    try {
+      details = await GetIt.instance<TmdbRepository>()
+          .titleDetails(type: 'movie', tmdbId: tmdbId, imdbId: entry.imdbId)
+          .timeout(const Duration(seconds: 3));
+    } catch (_) {
+      return null;
+    }
+    // Without its logo, the slide would look broken next to the others.
+    final logoUrl = _tmdbImage(details?['logoPath'] as String?, 500);
+    final backdropUrl =
+        _tmdbImage(details?['backdropPath'] as String?, 1280) ??
+        entry.backdropUrl;
+    if (logoUrl == null || backdropUrl == null) return null;
+    // Every genre counts here, not only the three the slide shows.
+    final genres = (details?['genres'] as List?)?.cast<String>() ?? const [];
+    if (genres.any(excludedGenres.contains)) return null;
+    final trailerUrl = details?['trailerUrl'] as String?;
+    final runtime = entry.runtimeMinutes;
+    return MediaBarSlideItem(
+      itemId: tmdbId,
+      serverId: MediaBarSlideItem.externalServerId,
+      title: entry.title,
+      overview: details?['overview'] as String? ?? entry.overview,
+      backdropUrl: backdropUrl,
+      logoUrl: logoUrl,
+      posterUrl: entry.posterUrl,
+      year: entry.year,
+      genres: genres.take(3).toList(),
+      runtime: runtime != null && runtime > 0
+          ? Duration(minutes: runtime)
+          : null,
+      communityRating: (details?['rating'] as num?)?.toDouble(),
+      tmdbId: tmdbId,
+      imdbId: entry.imdbId,
+      itemType: 'Movie',
+      remoteTrailers: [
+        if (trailerUrl != null) {'Url': trailerUrl},
+      ],
+      newRelease: mediaBarUpcomingOf(entry),
+    );
+  }
+
+  bool get _mixesTypes =>
+      _prefs.get(UserPreferences.mediaBarMixTypes) &&
+      _prefs.get(UserPreferences.mediaBarContentType) ==
+          UserPreferences.mediaBarContentTypeBoth;
+
+  static const _seriesKinds = {
+    UserPreferences.mediaBarNewSeries,
+    UserPreferences.mediaBarNewSeason,
+    UserPreferences.mediaBarNewEpisodes,
+  };
+
+  Set<String> get _newReleaseKinds => mediaBarNewReleaseKindsOf(
+    _prefs.get(UserPreferences.mediaBarNewReleaseKinds),
+  );
+
+  /// The recent rows' Hide Watched, which the bar's recent sources follow too.
+  bool get _hidesWatched => _prefs.get(UserPreferences.hideWatchedInRecentRows);
+
+  /// New series and new movies, as the content type allows. The movies are
+  /// only the newest by date here: [_newMovies] applies the window and the
+  /// minimum rating once the pool is in.
+  Future<List<Map<String, dynamic>>> _fetchNewReleases(
+    List<String>? itemTypes,
+    int limit, {
+    String? parentId,
+  }) async {
+    final batches = await Future.wait([
+      if (itemTypes == null || itemTypes.contains('Series'))
+        _fetchNewReleaseSeries(limit, parentId: parentId),
+      if (itemTypes == null || itemTypes.contains('Movie'))
+        _fetchNewReleaseMovies(parentId: parentId),
+    ]);
+    final items = batches.expand((batch) => batch);
+    return _hidesWatched
+        ? items.where((item) => !isRawItemWatchedForRecentRow(item)).toList()
+        : items.toList();
+  }
 
   /// Series with episodes that aired within the window, newest first. A series'
   /// own date is its first season's, so the episodes are asked for and brought
   /// back to their series.
   Future<List<Map<String, dynamic>>> _fetchNewReleaseSeries(
-    List<String>? itemTypes,
     int limit, {
     String? parentId,
   }) async {
-    // A movie library, or movies only. Nothing here, so a movie library doesn't
-    // add random movies next to the new series. If every library is empty, the
-    // bar falls back to random titles.
-    if (itemTypes != null && !itemTypes.contains('Series')) return const [];
     try {
       final episodes = await _recentEpisodes(parentId: parentId, limit: 300);
-      final seriesIds = <String>[];
-      for (final episode in episodes) {
-        final id = episode['SeriesId']?.toString();
-        if (id == null || seriesIds.contains(id)) continue;
-        seriesIds.add(id);
-        if (seriesIds.length >= _poolSize) break;
-      }
-      if (seriesIds.isEmpty) return const [];
-
-      final response = await _client.itemsApi
-          .getItems(
-            ids: seriesIds,
-            fields: _fields,
-            enableTotalRecordCount: false,
-            enableImageTypes: 'Backdrop,Logo,Banner',
-          )
-          .timeout(const Duration(seconds: 15));
-      return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+      return await _seriesOf(episodes);
     } catch (error) {
       // A server that fails falls back to random titles, so the bar doesn't
       // vanish as if nothing aired.
@@ -523,7 +816,149 @@ class MediaBarRepository {
       if (statusCode == 401 || statusCode == 403) {
         return const <Map<String, dynamic>>[];
       }
-      return _fetchItems(itemTypes, limit, parentId: parentId, random: true);
+      return _fetchItems(
+        const ['Series'],
+        limit,
+        parentId: parentId,
+        random: true,
+      );
+    }
+  }
+
+  /// The newest movies by the chosen date, cut at the window on the server
+  /// where it can be. Jellyfin can't filter on the date added, so then the cut
+  /// is on the release date's limit and [_newMovies] checks the rest.
+  Future<List<Map<String, dynamic>>> _fetchNewReleaseMovies({
+    String? parentId,
+  }) async {
+    final now = DateTime.now();
+    final byDateAdded =
+        _prefs.get(UserPreferences.mediaBarNewMovieBasis) ==
+        UserPreferences.mediaBarNewMovieByAdded;
+    final maxAge = _prefs.get(UserPreferences.mediaBarNewMovieMaxAgeMonths);
+    try {
+      final response = await _client.itemsApi
+          .getItems(
+            parentId: parentId,
+            includeItemTypes: const ['Movie'],
+            recursive: true,
+            sortBy: byDateAdded ? 'DateCreated' : 'PremiereDate',
+            sortOrder: 'Descending',
+            minPremiereDate: byDateAdded
+                ? DateTime(now.year, now.month - maxAge, now.day)
+                : now.subtract(
+                    Duration(
+                      days: _prefs.get(UserPreferences.mediaBarNewMovieDays),
+                    ),
+                  ),
+            limit: _poolSize,
+            fields: _fields,
+            enableTotalRecordCount: false,
+            enableImageTypes: 'Backdrop,Logo,Banner',
+          )
+          .timeout(const Duration(seconds: 15));
+      return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+    } catch (_) {
+      return const <Map<String, dynamic>>[];
+    }
+  }
+
+  /// The series [children] (episodes or seasons) belong to, in the order they
+  /// first come up, fetched in one request.
+  Future<List<Map<String, dynamic>>> _seriesOf(
+    Iterable<Map<String, dynamic>> children,
+  ) async {
+    final seriesIds = <String>[];
+    for (final child in children) {
+      final id = child['SeriesId']?.toString();
+      if (id == null || seriesIds.contains(id)) continue;
+      seriesIds.add(id);
+      if (seriesIds.length >= _poolSize) break;
+    }
+    if (seriesIds.isEmpty) return const [];
+
+    final response = await _client.itemsApi
+        .getItems(
+          ids: seriesIds,
+          fields: _fields,
+          enableTotalRecordCount: false,
+          enableImageTypes: 'Backdrop,Logo,Banner',
+        )
+        .timeout(const Duration(seconds: 15));
+    final byId = {
+      for (final item
+          in (response['Items'] as List? ?? []).cast<Map<String, dynamic>>())
+        item['Id']?.toString(): item,
+    };
+    // The server answers in its own order, so the newest stay first.
+    return [for (final id in seriesIds) ?byId[id]];
+  }
+
+  /// The new movies among [items], by id, with the minimum rating applied.
+  /// Asks Moonbase only when a minimum is set and something is new, and never
+  /// waits more than a second for it.
+  Future<Map<String, MediaBarNewReleaseInfo>> _newMovies(
+    Iterable<Map<String, dynamic>> items,
+  ) async {
+    final now = DateTime.now();
+    final byDateAdded =
+        _prefs.get(UserPreferences.mediaBarNewMovieBasis) ==
+        UserPreferences.mediaBarNewMovieByAdded;
+    final days = _prefs.get(UserPreferences.mediaBarNewMovieDays);
+    final maxAge = _prefs.get(UserPreferences.mediaBarNewMovieMaxAgeMonths);
+
+    final found = <String, MediaBarNewReleaseInfo>{};
+    final community = <String, double?>{};
+    final tmdbIds = <String, String>{};
+    for (final item in items) {
+      final id = item['Id']?.toString();
+      if (id == null) continue;
+      final release = mediaBarNewMovieOf(
+        item,
+        byDateAdded: byDateAdded,
+        days: days,
+        maxAgeMonths: maxAge,
+        now: now,
+      );
+      if (release == null) continue;
+      // With the second line off, the tagline is dropped here so the label
+      // stays on its own.
+      found[id] = _prefs.get(UserPreferences.mediaBarNewMovieDetail)
+          ? release
+          : MediaBarNewReleaseInfo(kind: release.kind, date: release.date);
+      community[id] = (item['CommunityRating'] as num?)?.toDouble();
+      final providerIds = item['ProviderIds'] as Map<String, dynamic>?;
+      final tmdbId = (providerIds?['Tmdb'] ?? providerIds?['tmdb'])?.toString();
+      if (tmdbId != null && tmdbId.isNotEmpty) tmdbIds[id] = tmdbId;
+    }
+
+    final min = _prefs.get(UserPreferences.mediaBarNewMovieMinRating);
+    if (min <= 0 || found.isEmpty) return found;
+
+    final cached = await _cachedRatings(tmdbIds.values.toSet().toList());
+    found.removeWhere((id, _) {
+      final kept = mediaBarMeetsMinRating(
+        cached: cached[tmdbIds[id]],
+        community: community[id],
+        minTenths: min,
+      );
+      return !kept;
+    });
+    return found;
+  }
+
+  /// MDBList scores Moonbase already has, by TMDB id. Empty when Moonbase
+  /// isn't there or is slow, so the server's own ratings stand in.
+  Future<Map<String, double>> _cachedRatings(List<String> tmdbIds) async {
+    if (tmdbIds.isEmpty || !GetIt.instance.isRegistered<MdbListRepository>()) {
+      return const {};
+    }
+    try {
+      return await GetIt.instance<MdbListRepository>()
+          .cachedMovieRatings(tmdbIds)
+          .timeout(const Duration(seconds: 1));
+    } catch (_) {
+      return const {};
     }
   }
 
@@ -569,40 +1004,72 @@ class MediaBarRepository {
     return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
   }
 
-  /// What aired lately for each series slide on the server, by item id. Asked
-  /// for once the bar shows, so a slow server only holds back the labels.
+  /// The labels worked out once the bar shows, by item id: for each series,
+  /// what aired lately, or what the Sonarr calendar has next once there's
+  /// nothing new left to watch. Asked for after the bar shows, so a slow
+  /// server only holds back the labels.
   Future<Map<String, MediaBarNewReleaseInfo>> loadNewReleases(
     List<MediaBarSlideItem> slides,
   ) async {
-    if (!_prefs.get(UserPreferences.mediaBarNewReleaseBanner)) return const {};
+    final kinds = _newReleaseKinds;
+    final aired =
+        _prefs.get(UserPreferences.mediaBarNewReleaseBanner) &&
+        kinds.any(_seriesKinds.contains);
+    final upcomingOn = _prefs.get(UserPreferences.mediaBarUpcomingEpisodes);
+    final releases = <String, MediaBarNewReleaseInfo>{};
+    // With no series label wanted, the series aren't asked about at all.
+    if (!aired && !upcomingOn) return releases;
     final days = _prefs.get(UserPreferences.mediaBarNewReleaseDays);
     final now = DateTime.now();
-    final releases = <String, MediaBarNewReleaseInfo>{};
+    final upcoming = upcomingOn
+        ? mediaBarUpcomingBySeries(await _upcomingEntries(), now: now)
+        : const <String, MediaBarNewReleaseInfo>{};
     await mapBounded(
       slides
           .where((slide) => !slide.isExternal && slide.itemType == 'Series')
           .toList(),
       _sourceConcurrency,
       (series) async {
+        final next = upcoming[series.itemId];
+        if (!aired && next == null) return null;
         try {
           final recent = await _recentEpisodes(
             parentId: series.itemId,
             limit: 100,
           );
-          // Only a season with several recent episodes on one day can have
-          // come out at once, so only then is the whole season fetched.
-          final seasonId = mediaBarSeasonToCheck(recent, now: now, days: days);
-          final release = mediaBarNewReleaseOf(
-            recent,
-            latestSeason: seasonId == null
-                ? null
-                : await _seasonEpisodes(seasonId),
-            now: now,
-            days: days,
+          MediaBarNewReleaseInfo? past;
+          if (aired) {
+            // Only a season with several recent episodes on one day can have
+            // come out at once, so only then is the whole season fetched.
+            final seasonId = mediaBarSeasonToCheck(
+              recent,
+              now: now,
+              days: days,
+            );
+            final release = mediaBarNewReleaseOf(
+              recent,
+              latestSeason: seasonId == null
+                  ? null
+                  : await _seasonEpisodes(seasonId),
+              now: now,
+              days: days,
+            );
+            if (release != null &&
+                kinds.contains(mediaBarNewReleaseKindName(release.kind))) {
+              past = release;
+            }
+          }
+          final label = mediaBarSeriesLabel(
+            past: past,
+            upcoming: next,
+            caughtUp: mediaBarCaughtUp(recent, now: now, days: days),
           );
-          if (release != null) releases[series.itemId] = release;
+          if (label != null) {
+            releases[series.itemId] = label;
+          }
         } catch (_) {
-          // A series that can't be asked about just goes without a label.
+          // A series that can't be asked about still gets what's coming.
+          if (next != null) releases[series.itemId] = next;
         }
         return null;
       },
@@ -714,19 +1181,27 @@ class MediaBarRepository {
     Set<String> excludedGenres,
   ) async {
     if (external.isEmpty) return library;
-    final chosen = (<Object>[...library, ...external.take(maxItems)]
+    final shuffled = (<Object>[...library, ...external.take(maxItems)]
           ..shuffle(_random))
         .take(maxItems)
         .toList();
+    // The shuffle only picks where outside titles go. Library slides keep
+    // their order, so followed series stay first and types keep alternating.
+    final inOrder = library.iterator;
+    final chosen = [
+      for (final pick in shuffled)
+        if (pick is MediaBarSlideItem && inOrder.moveNext())
+          inOrder.current
+        else
+          pick,
+    ];
     final slides = <String, MediaBarSlideItem>{};
     await mapBounded(
       chosen.whereType<ImdbExternalListItem>().toList(),
       _sourceConcurrency,
       (item) async {
-        final slide = await _toExternalSlide(item);
-        if (slide == null || slide.genres.any(excludedGenres.contains)) {
-          return null;
-        }
+        final slide = await _toExternalSlide(item, excludedGenres);
+        if (slide == null) return null;
         slides[slide.itemId] = slide;
         return null;
       },
@@ -745,7 +1220,11 @@ class MediaBarRepository {
 
   /// The slide for an outside title, filled in from TMDB through Moonbase
   /// where it can be. Null when there is still no backdrop to show.
-  Future<MediaBarSlideItem?> _toExternalSlide(ImdbExternalListItem item) async {
+  /// Null too when one of its genres is excluded.
+  Future<MediaBarSlideItem?> _toExternalSlide(
+    ImdbExternalListItem item,
+    Set<String> excludedGenres,
+  ) async {
     final mediaType = item.type == 'Series' ? 'tv' : 'movie';
     final tmdbId = item.tmdbId.isNotEmpty ? item.tmdbId : null;
     final imdbId = item.imdbId.isNotEmpty ? item.imdbId : null;
@@ -761,6 +1240,11 @@ class MediaBarRepository {
         _tmdbImage(details?['backdropPath'] as String?, 1280) ??
         _tmdbImage(item.backdropUrl, 1280);
     if (backdropUrl == null) return null;
+    // Every genre counts here, not only the three the slide shows. The list's
+    // own genres stand in when TMDB has nothing.
+    final genres =
+        (details?['genres'] as List?)?.cast<String>() ?? item.genres;
+    if (genres.any(excludedGenres.contains)) return null;
     final runTimeTicks = (details?['runTimeTicks'] as num?)?.toInt();
     final trailerUrl = details?['trailerUrl'] as String?;
 
@@ -770,14 +1254,11 @@ class MediaBarRepository {
       title: item.title,
       overview: details?['overview'] as String?,
       backdropUrl: backdropUrl,
-      bannerUrl: seerrThumbUrl(type: mediaType, tmdbId: tmdbId, imdbId: imdbId),
       logoUrl: _tmdbImage(details?['logoPath'] as String?, 500),
       posterUrl: _tmdbImage(item.posterUrl, 500),
       officialRating: item.officialRating,
       year: item.year,
-      genres:
-          (details?['genres'] as List?)?.cast<String>().take(3).toList() ??
-          const [],
+      genres: genres.take(3).toList(),
       runtime: runTimeTicks != null
           ? Duration(microseconds: runTimeTicks ~/ 10)
           : null,
@@ -903,6 +1384,8 @@ class MediaBarRepository {
       remoteTrailers:
           (data['RemoteTrailers'] as List?)?.cast<Map<String, dynamic>>() ??
           const [],
+      fullyWatched:
+          data['Type'] == 'Series' && isRawItemWatchedForRecentRow(data),
     );
   }
 }
@@ -1017,6 +1500,256 @@ MediaBarNewReleaseInfo? mediaBarNewReleaseOf(
     season: season,
     episode: (latest['IndexNumber'] as num?)?.toInt(),
   );
+}
+
+/// The label kinds picked in settings, from their stored comma list.
+Set<String> mediaBarNewReleaseKindsOf(String stored) =>
+    stored.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
+
+/// The settings name of [kind], as stored in the kinds list.
+String mediaBarNewReleaseKindName(MediaBarNewRelease kind) => switch (kind) {
+  MediaBarNewRelease.newSeries => UserPreferences.mediaBarNewSeries,
+  MediaBarNewRelease.newSeason => UserPreferences.mediaBarNewSeason,
+  MediaBarNewRelease.newEpisodes => UserPreferences.mediaBarNewEpisodes,
+  MediaBarNewRelease.newMovie => UserPreferences.mediaBarNewMovie,
+  // Upcoming labels have their own switches rather than a place in the list.
+  MediaBarNewRelease.upcomingEpisode => 'upcomingEpisode',
+  MediaBarNewRelease.upcomingSeason => 'upcomingSeason',
+  MediaBarNewRelease.upcomingSeries => 'upcomingSeries',
+  MediaBarNewRelease.upcomingMovie => 'upcomingMovie',
+};
+
+/// Whether a movie's calendar date is the one it can be watched at home: the
+/// digital release, or the physical one for a movie that has no digital date
+/// at all. Never the physical date of a movie already out digitally.
+@visibleForTesting
+bool mediaBarIsHomeRelease(CalendarEntry entry) => switch (entry.release) {
+  CalendarRelease.digital => true,
+  CalendarRelease.physical => !entry.hasDigitalDate,
+  _ => false,
+};
+
+/// The upcoming label for a calendar entry that hasn't come out yet. A
+/// season's first episode announces the season, and season 1's the series.
+/// Specials are left out.
+@visibleForTesting
+MediaBarNewReleaseInfo? mediaBarUpcomingOf(CalendarEntry entry) {
+  if (entry.isMovie) {
+    return MediaBarNewReleaseInfo(
+      kind: MediaBarNewRelease.upcomingMovie,
+      date: entry.date,
+    );
+  }
+  final season = entry.seasonNumber ?? 0;
+  if (season <= 0) return null;
+  final premiere =
+      entry.badge == CalendarBadge.seriesPremiere ||
+      entry.badge == CalendarBadge.seasonPremiere ||
+      entry.episodeNumber == 1;
+  return MediaBarNewReleaseInfo(
+    kind: !premiere
+        ? MediaBarNewRelease.upcomingEpisode
+        : season == 1
+        ? MediaBarNewRelease.upcomingSeries
+        : MediaBarNewRelease.upcomingSeason,
+    season: season,
+    episode: entry.episodeNumber,
+    date: entry.date,
+  );
+}
+
+/// The next episode due for each library series in [entries], by its id. Only
+/// what hasn't aired and isn't on the server yet counts.
+@visibleForTesting
+Map<String, MediaBarNewReleaseInfo> mediaBarUpcomingBySeries(
+  List<CalendarEntry> entries, {
+  required DateTime now,
+}) {
+  final upcoming = <String, MediaBarNewReleaseInfo>{};
+  final sorted = [...entries]..sort((a, b) => a.date.compareTo(b.date));
+  for (final entry in sorted) {
+    final id = entry.itemId;
+    if (!entry.isEpisode || id == null || upcoming.containsKey(id)) continue;
+    if (entry.hasFile || entry.statusAt(now) != CalendarStatus.upcoming) {
+      continue;
+    }
+    final info = mediaBarUpcomingOf(entry);
+    if (info != null) upcoming[id] = info;
+  }
+  return upcoming;
+}
+
+/// Whether every episode that aired within the window is watched, or nothing
+/// aired at all. Either way there's nothing new left to watch. Every one, not
+/// the latest: a season out in one day has no single latest episode.
+@visibleForTesting
+bool mediaBarCaughtUp(
+  List<Map<String, dynamic>> recentEpisodes, {
+  required DateTime now,
+  required int days,
+}) {
+  final aired = [
+    for (final episode in recentEpisodes)
+      if (isRecentlyAiredEpisode(episode, now: now, days: days)) episode,
+  ];
+  return aired.every((episode) {
+    final userData = episode['UserData'];
+    return userData is Map && userData['Played'] == true;
+  });
+}
+
+/// The label a series slide gets: what aired lately while there's some of it
+/// left to watch, else what comes next, else what aired.
+@visibleForTesting
+MediaBarNewReleaseInfo? mediaBarSeriesLabel({
+  MediaBarNewReleaseInfo? past,
+  MediaBarNewReleaseInfo? upcoming,
+  required bool caughtUp,
+}) {
+  if (past != null && !caughtUp) return past;
+  return upcoming ?? past;
+}
+
+/// [slides] with [reserved] placed from the second slide on, so the first
+/// stays something to watch. Each one takes the place of a slide of its own
+/// type when there is one further on, so a mix of movies and series keeps
+/// alternating and the count stays the same. Otherwise it goes in.
+@visibleForTesting
+List<MediaBarSlideItem> mediaBarPlaceReserved(
+  List<MediaBarSlideItem> slides,
+  List<MediaBarSlideItem> reserved,
+  int maxItems,
+) {
+  final result = [
+    for (final slide in slides)
+      if (!reserved.any((r) => r.itemId == slide.itemId)) slide,
+  ];
+  final placed = <String>{};
+  var at = 1;
+  for (final slide in reserved) {
+    // A title already among the slides only moves, so no other one goes.
+    final moved = slides.any((s) => s.itemId == slide.itemId);
+    if (result.isEmpty) {
+      // An outside title can't be played, so it never leads the bar.
+      if (slide.isExternal) continue;
+      result.add(slide);
+    } else {
+      final start = at.clamp(1, result.length);
+      final same = moved
+          ? -1
+          : result.indexWhere(
+              (s) => s.itemType == slide.itemType && !placed.contains(s.itemId),
+              start,
+            );
+      if (same >= 0) {
+        result[same] = slide;
+      } else {
+        result.insert(start, slide);
+      }
+    }
+    placed.add(slide.itemId);
+    at += 2;
+  }
+  return result.take(maxItems).toList();
+}
+
+/// Why [item] is a new movie, or null when it isn't one. By release date, it
+/// came out within the last [days]. By date added, it reached the server
+/// within the last [days] and came out within the last [maxAgeMonths], so an
+/// old film added today doesn't count.
+@visibleForTesting
+MediaBarNewReleaseInfo? mediaBarNewMovieOf(
+  Map<String, dynamic> item, {
+  required bool byDateAdded,
+  required int days,
+  required int maxAgeMonths,
+  required DateTime now,
+}) {
+  if (item['Type'] != 'Movie') return null;
+  final released = DateTime.tryParse(item['PremiereDate'] as String? ?? '');
+  final floor = now.subtract(Duration(days: days));
+  bool inWindow(DateTime date) => !date.isAfter(now) && !date.isBefore(floor);
+
+  // Jellyfin only keeps taglines in its metadata language, so there's never
+  // an English one standing in for a missing French one.
+  final tagline = (item['Taglines'] as List?)
+      ?.whereType<String>()
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .firstOrNull;
+
+  if (!byDateAdded) {
+    if (released == null || !inWindow(released)) return null;
+    return MediaBarNewReleaseInfo(
+      kind: MediaBarNewRelease.newMovie,
+      date: released,
+      tagline: tagline,
+    );
+  }
+
+  final added = DateTime.tryParse(item['DateCreated'] as String? ?? '');
+  if (added == null || !inWindow(added)) return null;
+  final oldest = DateTime(now.year, now.month - maxAgeMonths, now.day);
+  if (released == null || released.isBefore(oldest)) return null;
+  return MediaBarNewReleaseInfo(
+    kind: MediaBarNewRelease.newMovie,
+    date: added,
+    tagline: tagline,
+  );
+}
+
+/// Whether a new movie is rated at least [minTenths] tenths of a point out of
+/// 10, so 65 asks for 6.5. The cached MDBList score wins over the server's own
+/// rating, which is the one from the day the movie arrived. A movie with no
+/// rating at all doesn't pass a minimum.
+@visibleForTesting
+bool mediaBarMeetsMinRating({
+  double? cached,
+  double? community,
+  required int minTenths,
+}) {
+  if (minTenths <= 0) return true;
+  final score = cached ?? community;
+  // Rounded, so a 6.5 stored as 6.4999 still reaches 65.
+  return score != null && (score * 10).round() >= minTenths;
+}
+
+/// [items] with series and movies taking turns, starting with whichever comes
+/// first. When one kind runs out, the other fills the rest, so the bar never
+/// shows fewer slides for it. Anything else keeps its place in the queue of
+/// the kind it's not, after both.
+@visibleForTesting
+List<Map<String, dynamic>> mediaBarAlternateTypes(
+  List<Map<String, dynamic>> items,
+) {
+  final series = [for (final item in items) if (item['Type'] == 'Series') item];
+  final movies = [for (final item in items) if (item['Type'] == 'Movie') item];
+  final others = [
+    for (final item in items)
+      if (item['Type'] != 'Series' && item['Type'] != 'Movie') item,
+  ];
+  final result = <Map<String, dynamic>>[];
+  var seriesTurn = items.isNotEmpty && items.first['Type'] == 'Series';
+  var s = 0, m = 0;
+  while (s < series.length || m < movies.length) {
+    if ((seriesTurn && s < series.length) || m >= movies.length) {
+      result.add(series[s++]);
+    } else {
+      result.add(movies[m++]);
+    }
+    seriesTurn = !seriesTurn;
+  }
+  return [...result, ...others];
+}
+
+/// A series the user has watched part of.
+@visibleForTesting
+bool mediaBarIsFollowedSeries(Map<String, dynamic> item) {
+  if (item['Type'] != 'Series') return false;
+  final userData = item['UserData'];
+  if (userData is! Map) return false;
+  final played = (userData['PlayedPercentage'] as num?)?.toDouble() ?? 0;
+  return played > 0 || userData['Played'] == true;
 }
 
 // A mixed library names no collection type, so the bar takes it for either
