@@ -68,6 +68,8 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_show_server_messages_button': SettingsPreviewScene.home,
     'navbarColor': SettingsPreviewScene.home,
     'navbarOpacity': SettingsPreviewScene.home,
+    'focus_color': SettingsPreviewScene.home,
+    'pref_desktop_ui_scale': SettingsPreviewScene.home,
     'pref_home_rows_style': SettingsPreviewScene.home,
     'pref_home_rows_fullscreen': SettingsPreviewScene.home,
     'poster_size': SettingsPreviewScene.home,
@@ -75,6 +77,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'mediaBarMode': SettingsPreviewScene.home,
     'mediaBarOverlayColor': SettingsPreviewScene.home,
     'mediaBarOverlayOpacity': SettingsPreviewScene.home,
+    'mediaBarRowPeek': SettingsPreviewScene.home,
     'mediaBarEnableAdditionalRatings': SettingsPreviewScene.home,
     'mediaBarEnabledRatings': SettingsPreviewScene.home,
     'mediaBarShowRatingLabels': SettingsPreviewScene.home,
@@ -88,7 +91,42 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_home_backdrop_style': SettingsPreviewScene.home,
     'seasonal_surprise': SettingsPreviewScene.home,
     'seasonal_density': SettingsPreviewScene.home,
+    'pref_display_audio_rows': SettingsPreviewScene.home,
+    'pref_audio_rows_sort_by': SettingsPreviewScene.home,
+    'pref_audio_rows_sort_order': SettingsPreviewScene.home,
+    'pref_display_collections_rows': SettingsPreviewScene.home,
+    'pref_collections_row_sort_by': SettingsPreviewScene.home,
+    'pref_collections_row_sort_order': SettingsPreviewScene.home,
+    'pref_collections_row_show_episodes': SettingsPreviewScene.home,
+    'pref_display_favorites_rows': SettingsPreviewScene.home,
+    'pref_favorites_row_sort_by': SettingsPreviewScene.home,
+    'pref_favorites_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_genres_rows': SettingsPreviewScene.home,
+    'pref_genres_row_sort_by': SettingsPreviewScene.home,
+    'pref_genres_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_playlists_rows': SettingsPreviewScene.home,
+    'pref_playlists_row_sort_by': SettingsPreviewScene.home,
+    'pref_playlists_row_sort_order': SettingsPreviewScene.home,
+    'pref_display_studios_rows': SettingsPreviewScene.home,
+    'pref_studios_row_sort_by': SettingsPreviewScene.home,
+    'pref_studios_row_sort_order': SettingsPreviewScene.home,
+    'home_sections_config': SettingsPreviewScene.home,
+    'pref_merge_continue_watching_next_up': SettingsPreviewScene.home,
+    'pref_merge_recent_rows_by_type': SettingsPreviewScene.home,
+    'pref_display_rewatch_row': SettingsPreviewScene.home,
+    'pref_display_since_you_watched_rows': SettingsPreviewScene.home,
+    'seasonal_row_enabled': SettingsPreviewScene.home,
+    'pref_hide_home_watch_progress': SettingsPreviewScene.home,
+    'pref_hide_home_unwatched_count': SettingsPreviewScene.home,
+    'pref_watched_indicator_behavior': SettingsPreviewScene.home,
+    'pref_media_type_badge_behavior': SettingsPreviewScene.home,
+    'pref_enable_series_thumbnails': SettingsPreviewScene.home,
+    'pref_card_focus_expansion': SettingsPreviewScene.home,
+    'pref_classic_home_rows_padding': SettingsPreviewScene.home,
+    'pref_modern_home_rows_padding': SettingsPreviewScene.home,
+    'pref_home_row_info_overlay': SettingsPreviewScene.home,
     'pref_detail_screen_style': SettingsPreviewScene.details,
+    'pref_personal_rating_style': SettingsPreviewScene.details,
     'pref_hide_details_media_description': SettingsPreviewScene.details,
     'pref_show_details_backdrop': SettingsPreviewScene.details,
     'pref_details_backdrop_size': SettingsPreviewScene.details,
@@ -155,7 +193,11 @@ class SettingsPreviewController extends ChangeNotifier {
     'subtitles_use_embedded_styles': SettingsPreviewScene.player,
     'subtitles_use_embedded_font_sizes': SettingsPreviewScene.player,
     'media_segment_actions': SettingsPreviewScene.player,
+    'pref_media_segment_countdown': SettingsPreviewScene.player,
     'next_up_behavior': SettingsPreviewScene.player,
+    'next_up_timeout': SettingsPreviewScene.player,
+    'pref_show_next_air_date': SettingsPreviewScene.player,
+    'replace_skip_outro_with_next_up': SettingsPreviewScene.player,
     'loading_animation_image': SettingsPreviewScene.player,
     'loading_animation_size': SettingsPreviewScene.player,
     'loading_animation_position': SettingsPreviewScene.player,
@@ -168,6 +210,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'trickplay_pause_while_scrubbing': SettingsPreviewScene.player,
     'pref_keyboard_style': SettingsPreviewScene.search,
     'pref_calendar_style': SettingsPreviewScene.calendar,
+    'pref_calendar_week_start': SettingsPreviewScene.calendar,
     'pref_calendar_scope': SettingsPreviewScene.calendar,
     'pref_calendar_show_episodes': SettingsPreviewScene.calendar,
     'pref_calendar_show_movies': SettingsPreviewScene.calendar,
@@ -190,11 +233,12 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_book_library_style': SettingsPreviewScene.library,
   };
 
-  /// The screensaver comes on over Home, so every one of its settings shows
-  /// there.
+  /// The screensaver comes on over Home, and each row's image type shows on
+  /// Home, so all of those settings show there.
   static SettingsPreviewScene? sceneForKey(String? key) => key == null
       ? null
-      : key.startsWith('pref_screensaver_')
+      : key.startsWith('pref_screensaver_') ||
+            key.startsWith('homeRowImageType_')
       ? SettingsPreviewScene.home
       : _sceneByKey[key];
 

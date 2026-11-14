@@ -19,7 +19,173 @@ final class MoonfinDartProject: FlutterDartProject {
   #endif
 }
 
+/// Follows every finger on a touchscreen Mac. AppKit only hands direct touches
+/// to gesture recognizers, so this one never decides what the gesture is and
+/// just reports each finger as it lands, moves and lifts.
+final class DirectTouchRecognizer: NSGestureRecognizer {
+  /// Receives `[phase, slot, x, y, seconds]` for each finger that changed.
+  var onTouches: (([[Any]]) -> Void)?
+
+  private struct Finger {
+    // NSTouch objects do not last the touch, only their identity does.
+    let identity: NSObjectProtocol
+    let slot: Int
+    var x: Double
+    var y: Double
+  }
+
+  private var fingers: [Finger] = []
+
+  /// Whether a view belongs to a platform view. Relies on the embedder's
+  /// layout: this recognizer's view holds the Flutter view and the text input
+  /// view, and the Flutter view holds one wrapper per platform view. A hit on
+  /// the wrapper itself means the platform view passed on the touch, as the
+  /// video surface does, so only views inside a wrapper count.
+  static func isPlatformView(_ candidate: NSView, in root: NSView) -> Bool {
+    var depth = 0
+    var view: NSView? = candidate
+    while let current = view, current !== root {
+      depth += 1
+      view = current.superview
+    }
+    return view === root && depth > 2
+  }
+
+  // AppKit turns touches nobody claims into mouse events with recognizers of
+  // its own. Making them wait on this one leaves a single source of input,
+  // where racing them lost long presses and drags at random.
+  override func shouldBeRequiredToFail(by other: NSGestureRecognizer) -> Bool {
+    guard let view = view, let theirs = other.view else { return true }
+    return !Self.isPlatformView(theirs, in: view)
+  }
+
+  override func canBePrevented(by other: NSGestureRecognizer) -> Bool {
+    false
+  }
+
+  override func touchesBegan(with event: NSEvent) {
+    super.touchesBegan(with: event)
+    var report: [[Any]] = []
+    for touch in touches(.began, in: event) where index(of: touch) == nil {
+      let slot = (0...).first { free in !fingers.contains { $0.slot == free } } ?? 0
+      let point = location(of: touch)
+      fingers.append(Finger(identity: touch.identity, slot: slot, x: point.x, y: point.y))
+      report.append(["down", slot, point.x, point.y, event.timestamp])
+    }
+    send(report)
+    if !fingers.isEmpty {
+      state = state == .possible ? .began : .changed
+    }
+  }
+
+  override func touchesMoved(with event: NSEvent) {
+    super.touchesMoved(with: event)
+    var report: [[Any]] = []
+    for touch in touches(.moved, in: event) {
+      guard let index = index(of: touch) else { continue }
+      let point = location(of: touch)
+      fingers[index].x = point.x
+      fingers[index].y = point.y
+      report.append(["move", fingers[index].slot, point.x, point.y, event.timestamp])
+    }
+    send(report)
+    if isTracking { state = .changed }
+  }
+
+  override func touchesEnded(with event: NSEvent) {
+    super.touchesEnded(with: event)
+    lift(.ended, event: event)
+  }
+
+  override func touchesCancelled(with event: NSEvent) {
+    super.touchesCancelled(with: event)
+    lift(.cancelled, event: event)
+  }
+
+  // AppKit stops reporting any finger still down once the gesture is over.
+  override func reset() {
+    super.reset()
+    let seconds = ProcessInfo.processInfo.systemUptime
+    send(fingers.map { ["cancel", $0.slot, $0.x, $0.y, seconds] })
+    fingers.removeAll()
+  }
+
+  private var isTracking: Bool { state == .began || state == .changed }
+
+  private func lift(_ phase: NSTouch.Phase, event: NSEvent) {
+    let ended = phase == .ended
+    var report: [[Any]] = []
+    for touch in touches(phase, in: event) {
+      guard let index = index(of: touch) else { continue }
+      let point = location(of: touch)
+      report.append([ended ? "up" : "cancel", fingers[index].slot, point.x, point.y, event.timestamp])
+      fingers.remove(at: index)
+    }
+    send(report)
+    guard isTracking else { return }
+    state = fingers.isEmpty ? (ended ? .ended : .cancelled) : .changed
+  }
+
+  private func touches(_ phase: NSTouch.Phase, in event: NSEvent) -> Set<NSTouch> {
+    guard let view = view else { return [] }
+    return event.touches(matching: phase, in: view).filter { $0.type == .direct }
+  }
+
+  private func index(of touch: NSTouch) -> Int? {
+    fingers.firstIndex { $0.identity.isEqual(touch.identity) }
+  }
+
+  /// In points from the top left, as Flutter measures.
+  private func location(of touch: NSTouch) -> (x: Double, y: Double) {
+    guard let view = view else { return (0, 0) }
+    let point = touch.location(in: view)
+    return (Double(point.x), Double(view.isFlipped ? point.y : view.bounds.height - point.y))
+  }
+
+  private func send(_ report: [[Any]]) {
+    if !report.isEmpty { onTouches?(report) }
+  }
+}
+
+/// Hands the fingers on a touchscreen Mac to MacosTouchInput, which explains
+/// why (lib/util/macos_touch_input.dart).
+///
+/// TODO(flutter/flutter#190217): remove both once the embedder handles direct
+/// touches.
+final class DirectTouchBridge: NSObject, NSGestureRecognizerDelegate {
+  init?(view: NSView, messenger: FlutterBinaryMessenger) {
+    // Not an API floor: screens only take touches from macOS 27, and before
+    // it the recognizer would have nothing to follow.
+    guard #available(macOS 27.0, *) else { return nil }
+    let channel = FlutterBasicMessageChannel(
+      // Keep in step with MacosTouchInput.
+      name: "moonfin/macos_touch",
+      binaryMessenger: messenger,
+      codec: FlutterStandardMessageCodec.sharedInstance()
+    )
+    super.init()
+
+    let recognizer = DirectTouchRecognizer(target: nil, action: nil)
+    recognizer.allowedTouchTypes = .direct
+    recognizer.delegate = self
+    recognizer.onTouches = { channel.sendMessage($0) }
+    view.addGestureRecognizer(recognizer)
+  }
+
+  // A webview or other platform view scrolls and taps on its own, so a touch
+  // on one is left to it.
+  func gestureRecognizer(
+    _ gestureRecognizer: NSGestureRecognizer,
+    shouldReceive touch: NSTouch
+  ) -> Bool {
+    guard let view = gestureRecognizer.view else { return false }
+    guard let hit = view.hitTest(touch.location(in: view.superview)) else { return true }
+    return !DirectTouchRecognizer.isPlatformView(hit, in: view)
+  }
+}
+
 class MainFlutterWindow: NSWindow {
+  private var touchBridge: DirectTouchBridge?
   private var sfSymbolChannel: FlutterMethodChannel?
   private var downloadDirChannel: FlutterMethodChannel?
   private var gameChannel: NativeGameChannel?
@@ -57,6 +223,11 @@ class MainFlutterWindow: NSWindow {
     self.backgroundColor = NSColor(white: 0.04, alpha: 1.0)
 
     RegisterGeneratedPlugins(registry: flutterViewController)
+
+    self.touchBridge = DirectTouchBridge(
+      view: flutterViewController.view,
+      messenger: flutterViewController.engine.binaryMessenger
+    )
 
     let sfSymbolChannel = FlutterMethodChannel(
       name: "moonfin/sf_symbols",

@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/plugin_sync_service.dart';
+import '../services/seerr/arr_queue.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_download_progress.dart';
 import '../services/seerr/seerr_models.dart';
@@ -30,6 +33,10 @@ class SeerrRequestsState {
   final SeerrRequestCounts? counts;
   final Map<String, SeerrMediaSummary> summaries;
 
+  /// The arr's own queue per title, keyed like [summaries], for the titles
+  /// Moonbase could read. A title missing here shows what Seerr reports.
+  final Map<String, ArrQueue> arrQueues;
+
   const SeerrRequestsState({
     this.isLoading = false,
     this.isRefreshing = false,
@@ -43,6 +50,7 @@ class SeerrRequestsState {
     this.sort = 'added',
     this.counts,
     this.summaries = const {},
+    this.arrQueues = const {},
   });
 
   bool get canManageRequests =>
@@ -53,6 +61,34 @@ class SeerrRequestsState {
     if (tmdbId == null) return null;
     return summaries['${request.type}:$tmdbId'];
   }
+
+  /// The arr's queue for what [request] asked for: only its seasons of a
+  /// series, and nothing for a 4K request, which Moonbase doesn't read.
+  ArrQueue? arrQueueFor(SeerrRequest request) {
+    if (request.is4k) return null;
+    final tmdbId = request.media?.tmdbId;
+    if (tmdbId == null) return null;
+    final queue = arrQueues['${request.type}:$tmdbId'];
+    return queue?.forSeasons(
+      (request.seasons ?? const <SeerrSeasonRequest>[])
+          .map((s) => s.seasonNumber),
+    );
+  }
+
+  /// The download bar for a request card, from the arr's queue when there is
+  /// one and from Seerr's download status otherwise.
+  SeerrDownloadSummary? downloadFor(SeerrRequest request) =>
+      SeerrDownloadSummary.forRequest(
+        request,
+        arrQueue: arrQueueFor(request),
+      );
+
+  /// An approved request whose released movie the arr hasn't found a release
+  /// for yet.
+  bool isNotFoundYet(SeerrRequest request) =>
+      request.status == SeerrRequest.statusApproved &&
+      request.media?.status == SeerrMediaStatus.processing &&
+      (arrQueueFor(request)?.isNotFoundYet ?? false);
 
   SeerrRequestsState copyWith({
     bool? isLoading,
@@ -67,6 +103,7 @@ class SeerrRequestsState {
     String? sort,
     SeerrRequestCounts? counts,
     Map<String, SeerrMediaSummary>? summaries,
+    Map<String, ArrQueue>? arrQueues,
   }) => SeerrRequestsState(
     isLoading: isLoading ?? this.isLoading,
     isRefreshing: isRefreshing ?? this.isRefreshing,
@@ -82,6 +119,7 @@ class SeerrRequestsState {
     sort: sort ?? this.sort,
     counts: counts ?? this.counts,
     summaries: summaries ?? this.summaries,
+    arrQueues: arrQueues ?? this.arrQueues,
   );
 }
 
@@ -95,21 +133,39 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   SeerrRequestsState get state => _state;
 
   Timer? _downloadPollTimer;
+  bool _isDisposed = false;
+
+  /// How many queue reads each title has started, keyed like the queues.
+  final Map<String, int> _arrQueueFetches = {};
 
   SeerrRequestsViewModel(this._repo, [this._prefs]);
 
   @override
+  void notifyListeners() {
+    // The arr queue fetches can land after the screen has closed.
+    if (_isDisposed) return;
+    super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _isDisposed = true;
     _downloadPollTimer?.cancel();
     super.dispose();
   }
 
-  bool get _hasActiveDownloads => _state.requests
-      .any((r) => SeerrDownloadSummary.forRequest(r) != null);
+  /// A card showing a bar, or one waiting for the arr to find a release,
+  /// which the next queue read may turn into a bar.
+  bool _isWatched(SeerrRequest r) =>
+      _state.downloadFor(r) != null || _state.isNotFoundYet(r);
+
+  bool get _hasActiveDownloads => _state.requests.any(_isWatched);
 
   /// Keep a refresh timer running only while something is downloading, so the
   /// progress bars advance without the user pulling to refresh.
   void _syncDownloadPolling() {
+    // A fetch that lands after the screen closed must not start a new timer.
+    if (_isDisposed) return;
     if (_hasActiveDownloads) {
       _downloadPollTimer ??= Timer.periodic(
         const Duration(seconds: 15),
@@ -151,10 +207,89 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         _state = _state.copyWith(requests: requests);
         notifyListeners();
       }
+      // Only the cards showing a bar or Not found yet. Every other title is
+      // fetched on load and refresh, which keeps a long list from costing a
+      // plugin call per title on every tick.
+      await _loadArrQueues(_state.requests.where(_isWatched).toList());
     } catch (_) {
       // Leave the list as-is and let the next tick retry.
     }
     _syncDownloadPolling();
+  }
+
+  /// Reads the arr's queue through Moonbase for each title in [requests] with
+  /// an approved HD request on its way, once per title however many requests
+  /// share it. A title Moonbase can't read drops out of the map, which puts
+  /// its card back on what Seerr reports.
+  Future<void> _loadArrQueues(List<SeerrRequest> requests) async {
+    if (!GetIt.instance.isRegistered<PluginSyncService>() ||
+        !GetIt.instance<PluginSyncService>().arrQueueAvailable) {
+      // Moonbase stopped offering the queue while the screen was open, so
+      // the cards go back to what Seerr reports, and a read still on its way
+      // is dropped.
+      _arrQueueFetches.updateAll((_, count) => count + 1);
+      if (_state.arrQueues.isNotEmpty) {
+        _state = _state.copyWith(arrQueues: const {});
+        notifyListeners();
+      }
+      return;
+    }
+    final wanted = <String, ({int? tmdbId, int? tvdbId})>{};
+    for (final r in requests) {
+      final media = r.media;
+      final tmdbId = media?.tmdbId;
+      if (r.is4k || tmdbId == null) continue;
+      if (r.status != SeerrRequest.statusApproved) continue;
+      if (media!.status != SeerrMediaStatus.processing &&
+          media.status != SeerrMediaStatus.partiallyAvailable) {
+        continue;
+      }
+      if (r.type == 'tv') {
+        if (media.tvdbId == null) continue;
+        wanted['tv:$tmdbId'] = (tmdbId: null, tvdbId: media.tvdbId);
+      } else {
+        wanted['movie:$tmdbId'] = (tmdbId: tmdbId, tvdbId: null);
+      }
+    }
+    if (wanted.isEmpty) return;
+
+    // Load, load more and the poll can each ask for the same title at once.
+    // Only the latest ask for a title may land, so an older, slower reply
+    // can't put back a queue a newer one already replaced.
+    final fetches = {
+      for (final key in wanted.keys)
+        key: _arrQueueFetches[key] = (_arrQueueFetches[key] ?? 0) + 1,
+    };
+    final results = await Future.wait(
+      wanted.entries.map((entry) async {
+        try {
+          final queue = await _repo.getArrQueue(
+            tmdbId: entry.value.tmdbId,
+            tvdbId: entry.value.tvdbId,
+          );
+          return MapEntry(entry.key, queue);
+        } catch (e) {
+          debugPrint('[SeerrRequests] Arr queue for ${entry.key} failed: $e');
+          return MapEntry<String, ArrQueue?>(entry.key, null);
+        }
+      }),
+    );
+    if (_isDisposed) return;
+    final updated = Map<String, ArrQueue>.from(_state.arrQueues);
+    var changed = false;
+    for (final entry in results) {
+      if (_arrQueueFetches[entry.key] != fetches[entry.key]) continue;
+      changed = true;
+      final queue = entry.value;
+      if (queue == null) {
+        updated.remove(entry.key);
+      } else {
+        updated[entry.key] = queue;
+      }
+    }
+    if (!changed) return;
+    _state = _state.copyWith(arrQueues: updated);
+    notifyListeners();
   }
 
   SeerrRequestFilter _restoreFilter(SeerrUser user) {
@@ -199,11 +334,19 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         hasMore: _hasMorePages(response, response.results.length),
         counts: _state.counts,
         summaries: _state.summaries,
+        arrQueues: _state.arrQueues,
       );
       notifyListeners();
       _syncDownloadPolling();
 
       _hydrateSummaries(_state.requests);
+      // Not awaited, so a slow arr doesn't hold up the counts. The poll
+      // decides again once it lands, since a stuck download Seerr can't see
+      // still needs its bar kept current.
+      unawaited(
+        _loadArrQueues(_state.requests).whenComplete(_syncDownloadPolling),
+      );
+
       await _loadCounts(user);
     } catch (e) {
       _state = _state.copyWith(
@@ -249,6 +392,9 @@ class SeerrRequestsViewModel extends ChangeNotifier {
             _hasMorePages(response, merged.length),
       );
       _hydrateSummaries(response.results);
+      unawaited(
+        _loadArrQueues(response.results).whenComplete(_syncDownloadPolling),
+      );
     } catch (_) {
       _state = _state.copyWith(isLoadingMore: false, hasMore: false);
     }
@@ -374,6 +520,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         actioningRequestId: null,
       );
       notifyListeners();
+      await _loadArrQueues([updated]);
       _syncDownloadPolling();
     } catch (_) {
       await load(isRefresh: true);

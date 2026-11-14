@@ -18,6 +18,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/top_toolbar.dart';
 import 'calendar_controller.dart';
 
@@ -29,12 +30,19 @@ UserPreferences get _prefs => GetIt.instance<UserPreferences>();
 
 /// Content insets that clear the top bar or the collapsed left rail.
 EdgeInsets calendarChromeInsets(BuildContext context) {
-  final top = MediaQuery.paddingOf(context).top;
+  final safe = MediaQuery.paddingOf(context);
+  final top = safe.top;
   if (PlatformDetection.useMobileUi) {
     final bar = NavigationLayout.usesBottomNavbar
         ? 0.0
         : TopToolbar.heightFor(context);
-    return EdgeInsets.only(top: top + 8 + bar, left: 16, right: 16);
+    // An opened folding phone on its side keeps the clock in a top corner,
+    // so the sides clear the system's insets too.
+    return EdgeInsets.only(
+      top: top + 8 + bar,
+      left: 16 + safe.left,
+      right: 16 + safe.right,
+    );
   }
   final position = NavigationLayout.sanitizeNavbarPosition(
     _prefs.get(UserPreferences.navbarPosition),
@@ -116,8 +124,9 @@ String calendarSubtitle(
   ].join(' · ');
 }
 
-Color calendarColor(CalendarEntry e, DateTime now) {
-  if (_prefs.get(UserPreferences.calendarColorBy) == CalendarColorBy.status) {
+Color calendarColor(BuildContext context, CalendarEntry e, DateTime now) {
+  if (previewValue(context, UserPreferences.calendarColorBy) ==
+      CalendarColorBy.status) {
     return switch (e.statusAt(now)) {
       CalendarStatus.ready => calendarReadyColor,
       CalendarStatus.upcoming => AppColorScheme.accent,

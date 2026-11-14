@@ -12,6 +12,7 @@ import '../offline/connectivity_aware_media_server_client.dart';
 import '../offline/offline_catalog.dart';
 import '../repositories/offline_repository.dart';
 import 'pending_rating_store.dart';
+import 'plex_games_api.dart';
 import 'storage_path_service.dart';
 
 class MediaServerClientFactory {
@@ -140,6 +141,7 @@ class MediaServerClientFactory {
         return PlexMediaServerClient(
           baseUrl: baseUrl,
           deviceInfo: deviceInfo,
+          gamesApi: plexMoonbaseGamesApi,
         );
       case ServerType.silo:
         return SiloMediaServerClient(

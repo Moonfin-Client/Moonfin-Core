@@ -36,6 +36,7 @@ ResponseBody _effective(Map<String, Object?> values) => FixtureServer.json(
 const _stored = <String, Object?>{
   siloLibraryOrderKey: [3, 1],
   siloDisabledLibrariesKey: null,
+  siloHideWatchedItemsKey: false,
   siloAudioLanguageKey: 'en',
   siloSubtitleLanguageKey: null,
   siloSubtitleModeKey: 'auto',
@@ -219,6 +220,7 @@ void main() {
       await _client(server).usersApi.updateUserConfiguration(
         const UserConfiguration(
           orderedViews: ['3', '1'],
+          hidePlayedInLatest: false,
           audioLanguagePreference: 'en',
           enableNextEpisodeAutoPlay: true,
           subtitleMode: 'default',
@@ -232,6 +234,26 @@ void main() {
       );
       expect(settings.writes, {
         siloDisabledLibrariesKey: [1],
+      });
+    });
+
+    test('updating hidePlayedInLatest writes home.hide_watched_items', () async {
+      final settings = _Settings({
+        ..._stored,
+        siloHideWatchedItemsKey: true,
+      });
+      final server = FixtureServer(settings.routes());
+      final users = _client(server).usersApi;
+
+      final config = await users.getUserConfiguration();
+      expect(config.hidePlayedInLatest, isTrue);
+
+      await users.updateUserConfiguration(
+        config.copyWith(hidePlayedInLatest: false),
+      );
+
+      expect(settings.writes, {
+        siloHideWatchedItemsKey: false,
       });
     });
 

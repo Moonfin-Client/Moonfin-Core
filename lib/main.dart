@@ -32,6 +32,7 @@ import 'data/services/media_server_client_factory.dart';
 import 'data/services/crash_report_service.dart';
 import 'data/services/log_service.dart';
 import 'data/services/storage_path_service.dart';
+import 'util/macos_touch_input.dart';
 import 'util/scroll_sensitivity_binding.dart';
 import 'util/silo_image_hooks.dart';
 import 'util/webview_environment.dart';
@@ -61,6 +62,7 @@ import 'util/device_performance.dart';
 import 'ui/navigation/app_router.dart';
 import 'ui/screensaver/screensaver_controller.dart';
 import 'ui/widgets/reader/epub_js_view.dart';
+import 'util/device_hinge.dart';
 import 'util/platform_detection.dart';
 import 'util/process_exit_reporter.dart';
 import 'util/system_ui.dart';
@@ -324,6 +326,13 @@ Future<void> _detectAndSetTvMode() async {
       final isTV = await channel.invokeMethod<bool>('isTvDevice');
       if (isTV != null) {
         PlatformDetection.setTvMode(isTV);
+        if (isTV) {
+          try {
+            final touch =
+                await channel.invokeMethod<bool>('supportsTouchLayout');
+            if (touch != null) PlatformDetection.setSupportsTouchLayout(touch);
+          } catch (_) {}
+        }
         return;
       }
     } catch (_) {}
@@ -851,6 +860,7 @@ Future<void> autoDownloadBackgroundMain() =>
 void main() async {
   configureHttpOverrides();
   ScrollSensitivityBinding.ensureInitialized();
+  MacosTouchInput.install();
 
   // Pre-warms the liquid_glass_widgets shader programs so the first glass
   // pane doesn't white-flash. Cheap no-op on tiers where the package
@@ -1037,6 +1047,8 @@ void main() async {
     GetIt.instance<AirPlayCommandBridge>().start();
   } catch (_) {}
 
+  DeviceHinge.init();
+
   runApp(const MoonfinApp());
 }
 
@@ -1085,12 +1097,6 @@ Future<void> _initDeferredStartupServices(UserPreferences prefs) async {
     await GetIt.instance<SeerrNotificationService>().initialize();
     await GetIt.instance<SeerrNotificationService>().handleColdStart();
   } catch (_) {}
-
-  if (PlatformDetection.isMobile) {
-    try {
-      await GetIt.instance<PushMessagingService>().initialize();
-    } catch (_) {}
-  }
 
   // Audio session ownership differs per platform:
   // - Android: MoonfinAudioHandler acquires audio focus per playback, and skips

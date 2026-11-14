@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "Preferiraj transkodiranje poslužitelja",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Profil 7 Izravna igra",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Kontrolira hoće li Dolby Vision streamovi sloja poboljšanja profila 7 usmjeravati reprodukciju.",
-    "settingsAutoAftkrtEnabled": "Automatski (AFTKRT omogućen)",
-    "settingsEnabledOnThisDevice": "Omogućeno na ovom uređaju",
-    "settingsDisabledPreferTranscode": "Onemogućeno (radije transkodiranje)",
+    "settingsAutoAftkrtEnabled": "Automatski",
+    "settingsEnabledOnThisDevice": "Omogućeno",
+    "settingsDisabledPreferTranscode": "Isključeno",
     "settingsResumeRewindDescription": "Prilikom nastavka reprodukcije (od Nastavi gledanja ili stranice s medijskom stavkom), koliko sekundi treba premotati unatrag?",
     "settingsUnpauseRewindDescription": "Kada nastavljate reprodukciju nakon pritiska na gumb za pauzu, koliko sekundi treba premotati unatrag?",
     "settingsSkipBackLengthDescription": "Koliko sekundi za skok unatrag nakon pritiska tipke za premotavanje unatrag.",
@@ -8958,5 +8958,483 @@
     "imdbMostPopularMovies": "IMDb najpopularniji filmovi",
     "imdbMostPopularTvShows": "IMDb najpopularnije TV serije",
     "imdbLowestRatedMovies": "IMDb najlošije ocijenjeni filmovi",
-    "imdbTopEnglishMovies": "IMDb najbolje ocijenjeni engleski filmovi"
+    "imdbTopEnglishMovies": "IMDb najbolje ocijenjeni engleski filmovi",
+    "emulatorCoreDownloading": "Preuzimanje",
+    "castMembers": "Prenesi",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "Video",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "audioPlaylistsSection": "Audiopopisi za reprodukciju",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "tags": "oznake",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "selectAllStudios": "Odaberite sve",
+    "filtersHeader": "Filteri",
+    "interfaceLayoutTv": "televizor",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "Radna površina",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "Banner",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "Najave",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "Dodaci",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "Izvorni jezik",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "Trajanje",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "Klasični",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "Moderni",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "televizor",
+    "adminMetadataLockFieldName": "Ime",
+    "adminMetadataLockFieldGenres": "Žanrovi",
+    "adminMetadataLockFieldCast": "Osobe",
+    "adminMetadataLockFieldRuntime": "Trajanje",
+    "adminMetadataLockFieldStudios": "Studiji",
+    "adminMetadataLockFieldTags": "oznake",
+    "seerrDownloading": "Preuzimanje",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "Performanse",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "Automatski",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "Sličica",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Mali",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "srednje",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "velika",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "Odbijajući",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "Pozadina",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "Crna",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "Sve",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "Nikada",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "Preuzimanje",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "Zbirke",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "Početna",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "srednje",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "Isključeno",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "Status serije",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "Žanrovi",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "Danas",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "Na čekanju",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "čitati",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "Ime",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "Izgled",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "Gledano",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "Ponoviti",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "na raspolaganju",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "Pad",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "Naziv grupe",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "Napusti grupu",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "ostalo",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logotip",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "Plakat",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "Sljedeći",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Tekst",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Prenesi",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "Studiji",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "poglavlja",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Dodaci",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Zbirke",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Više poput ovoga",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "Preporuke",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Filmografija",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "Biografija",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "ostalo",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "Napredno",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "Datum izlaska",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "Trajanje",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "Zadnje igrano",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "Automatski",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "Klasični",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "Moderni",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "Izvođači",
+    "adminMetadataFieldAlbum": "Album",
+    "adminMetadataSectionRatings": "Ocjene",
+    "adminLiveTvTabRecordings": "Snimke",
+    "adminLogLevelNone": "Ništa",
+    "adminTaskResultFailed": "Neuspješno",
+    "adminLogWatch": "Gledaj",
+    "adminGroupLibrary": "Biblioteka",
+    "adminGroupPlayback": "Reprodukcija",
+    "adminGroupPeople": "Osobe",
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "Žanr",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "Klasični",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "Vanjski popisi",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby Povežite se",
+    "adminTranscodingHwaAdvanced": "Napredno",
+    "musicLibraryStyleClassic": "Klasični",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "Izbriši",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "Klasični",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "Sada",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "Fit",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "Ime",
+    "externalRowSortReleaseDate": "Datum izlaska",
+    "externalRowSortShuffle": "Nasumično",
+    "siloApproveSignInApprove": "Odobriti",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "Aktivan",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "Premijera",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "Premijera",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "Tip",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "Reproduciraj",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "Statični",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "Tip",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "moveUp": "Pomakni se gore",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Pomakni dolje",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "Audioknjiga",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Knjiga",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "settingsAudioPassthroughMode": "Passthrough",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "interfaceLayoutAutomatic": "Automatski",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "Autor",
+    "adminMetadataLockFieldOverview": "Pregled",
+    "screensaverGeneralSettings": "Opće postavke",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neonski puls",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "Dnevno",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Tjedni",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Naslovi",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Korisnici",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Aktivnost",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Automatski",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "Administrator",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Stvori grupu",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Prikaži pojedinosti",
+    "achievementsUnlockedMore": "+{count} više",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Slogan",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normalan",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Država",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatski",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Knjiga",
+    "adminImageTypeMenu": "Izbornik",
+    "adminGroupOverview": "Pregled",
+    "seriesRecordingAllEpisodes": "Sve epizode",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Staklo",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb sličnost",
+    "calendarSettingsView": "Pogled",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Posebne ponude",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Radnje",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Početak",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    }
 }

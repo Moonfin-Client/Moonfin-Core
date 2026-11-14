@@ -26,17 +26,22 @@ class PlexMediaServerClient extends MediaServerClient {
   String _baseUrl;
   String? _accessToken;
   String? _userId;
+  final GamesApi? Function(MediaServerClient client)? _gamesApi;
 
-  PlexMediaServerClient({required String baseUrl, required this.deviceInfo})
-    : _baseUrl = baseUrl,
-      _dio = Dio(
-        BaseOptions(
-          baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 8),
-          receiveTimeout: const Duration(seconds: 30),
-          headers: {'Accept': 'application/json'},
-        ),
-      ) {
+  PlexMediaServerClient({
+    required String baseUrl,
+    required this.deviceInfo,
+    GamesApi? Function(MediaServerClient client)? gamesApi,
+  }) : _baseUrl = baseUrl,
+       _gamesApi = gamesApi,
+       _dio = Dio(
+         BaseOptions(
+           baseUrl: baseUrl,
+           connectTimeout: const Duration(seconds: 8),
+           receiveTimeout: const Duration(seconds: 30),
+           headers: {'Accept': 'application/json'},
+         ),
+       ) {
     configureServerDio(_dio);
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -193,6 +198,11 @@ class PlexMediaServerClient extends MediaServerClient {
 
   @override
   late final AdminItemsApi adminItemsApi = PlexAdminItemsApi(_dio, imageApi);
+
+  /// Retro games come from Moonbase's companion service, which the app finds
+  /// and signs for, since Plex itself has none.
+  @override
+  late final GamesApi? gamesApi = _gamesApi?.call(this);
 
   @override
   void dispose() {

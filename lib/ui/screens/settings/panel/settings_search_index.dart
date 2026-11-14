@@ -136,7 +136,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final seerrOnAnyServer = seerrOnAnySignedInServer();
   // Retro games come from the Moonfin plugin's game libraries.
   final gamesOnAnyServer = anySignedInServerSupports(
-    (f) => f.supportsFullMoonfinPlugin,
+    (f) => f.supportsRetroGames,
   );
   final friendsAvailable =
       GetIt.instance<AchievementsService>().socialAvailable;
@@ -976,6 +976,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     home.leaf('pref_home_rows_style', l10n.rowsType, keywords: [
       'classic',
       'modern rows',
+      'carousel',
     ]),
     if (!PlatformDetection.useMobileUi) ...[
       home.leaf(
@@ -1130,6 +1131,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['next up', 'days', 'cutoff'],
     ),
     rowToggles.leaf(
+      'pref_hide_watched_in_recent_rows',
+      l10n.hideWatchedInRecentRows,
+      subtitle: l10n.hideWatchedInRecentRowsDescription,
+      keywords: ['watched', 'played', 'recent', 'recently added', 'recently released'],
+    ),
+    rowToggles.leaf(
       'pref_merge_recent_rows_by_type',
       l10n.mergeRecentRowsByType,
       subtitle: l10n.mergeRecentRowsByTypeDescription,
@@ -1177,14 +1184,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     rowImages.screen(keywords: ['poster', 'thumbnail', 'banner']),
     if (pluginAvailable) ...[
-      home.leaf(
-        'mdblist_watching_now_enabled',
-        l10n.mdblistWatchingNow,
-        subtitle: l10n.mdblistWatchingNowDescription,
-        keywords: ['mdblist', 'watching now', 'scrobble', 'live', 'viewers'],
-      ),
       seasonalRow.screen(keywords: ['holiday', 'christmas', 'halloween', 'seasonal']),
-      seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: seerrBrand(l10n.seasonalRowDescription)),
       seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
       seasonalRow.leaf('seasonal_row_hidden_holidays', l10n.seasonalRowHolidays),
       if (GetIt.instance<MediaServerClient>().itemsApi is! ServerHomeSectionsApi)
@@ -1194,64 +1194,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       imdbLists.screen(keywords: ['top 250', 'popular', 'charts']),
       imdbLists.leaf('imdb_rows_sort_by', l10n.imdbRowsSorting),
       imdbLists.leaf('imdb_rows_sort_order', l10n.sortOrder),
-      imdbLists.leaf('imdb_top_250_movies_enabled', l10n.imdbTop250Movies),
-      imdbLists.leaf('imdb_top_250_tv_shows_enabled', l10n.imdbTop250TvShows),
-      imdbLists.leaf(
-        'imdb_most_popular_movies_enabled',
-        l10n.imdbMostPopularMovies,
-      ),
-      imdbLists.leaf(
-        'imdb_most_popular_tv_shows_enabled',
-        l10n.imdbMostPopularTvShows,
-      ),
-      imdbLists.leaf(
-        'imdb_lowest_rated_movies_enabled',
-        l10n.imdbLowestRatedMovies,
-      ),
-      imdbLists.leaf(
-        'imdb_top_english_movies_enabled',
-        l10n.imdbTopEnglishMovies,
-      ),
       if (tmdbAvailable) ...[
         tmdbLists.screen(keywords: ['popular', 'top rated', 'trending']),
         tmdbLists.leaf('tmdb_rows_sort_by', l10n.tmdbRowsSorting),
         tmdbLists.leaf('tmdb_rows_sort_order', l10n.sortOrder),
-        tmdbLists.leaf('tmdb_popular_movies_enabled', 'Popular Movies'),
-        tmdbLists.leaf('tmdb_top_rated_movies_enabled', 'Top Rated Movies'),
-        tmdbLists.leaf('tmdb_now_playing_movies_enabled', 'Now Playing Movies'),
-        tmdbLists.leaf('tmdb_upcoming_movies_enabled', 'Upcoming Movies'),
-        tmdbLists.leaf('tmdb_popular_tv_enabled', 'Popular TV'),
-        tmdbLists.leaf('tmdb_top_rated_tv_enabled', 'Top Rated TV'),
-        tmdbLists.leaf('tmdb_airing_today_tv_enabled', 'Airing Today TV'),
-        tmdbLists.leaf('tmdb_on_the_air_tv_enabled', 'On The Air TV'),
-        tmdbLists.leaf(
-          'tmdb_trending_movie_daily_enabled',
-          'Trending Movies (Daily)',
-        ),
-        tmdbLists.leaf(
-          'tmdb_trending_movie_weekly_enabled',
-          'Trending Movies (Weekly)',
-        ),
-        tmdbLists.leaf('tmdb_trending_tv_daily_enabled', 'Trending TV (Daily)'),
-        tmdbLists.leaf(
-          'tmdb_trending_tv_weekly_enabled',
-          'Trending TV (Weekly)',
-        ),
-        tmdbLists.leaf(
-          'tmdb_trending_all_weekly_enabled',
-          'Trending All (Weekly)',
-        ),
       ],
       if (seerrAvailable) ...[
         calendars.screen(keywords: ['radarr', 'sonarr', 'upcoming releases']),
         calendars.leaf(
           'merge_radarr_sonarr_calendars',
           l10n.mergeRadarrSonarrCalendars,
-        ),
-        calendars.leaf(
-          'enable_radarr_calendar',
-          l10n.enableRadarrCalendar,
-          keywords: ['movies'],
         ),
         calendars.leaf(
           'radarr_calendar_show_cinema',
@@ -1277,11 +1229,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
           'radarr_calendar_hide_downloaded',
           l10n.radarrCalendarHideDownloaded,
           header: 'Radarr',
-        ),
-        calendars.leaf(
-          'enable_sonarr_calendar',
-          l10n.enableSonarrCalendar,
-          keywords: ['shows', 'episodes'],
         ),
         calendars.leaf(
           'sonarr_calendar_show_episode_info',

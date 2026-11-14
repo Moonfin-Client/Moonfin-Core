@@ -93,12 +93,11 @@ private class RendererLoader :
             report("Skia (set in settings)")
             return "--enable-impeller=false"
         }
-        val metaData = context.packageManager
-            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            .metaData
-        if (metaData?.getBoolean(ENABLE_IMPELLER_KEY, false) == true) {
-            report("Impeller (manifest)")
-            return null
+        // An unanswered check falls through to the TV box rules. A phone missing
+        // Impeller costs less than a box landing on the GLES path.
+        if (isTelevisionOrNull(context) == false) {
+            report("Impeller (not a TV)")
+            return "--enable-impeller=true"
         }
         val qualifies = ImpellerPolicy.deviceQualifies(
             sdkInt = Build.VERSION.SDK_INT,
@@ -178,8 +177,6 @@ private class RendererLoader :
 
     companion object {
         private const val TAG = "MoonfinRenderer"
-        private const val ENABLE_IMPELLER_KEY =
-            "io.flutter.embedding.android.EnableImpeller"
 
         // UserPreferences.rendererMode, which shared_preferences stores under
         // the flutter. prefix.

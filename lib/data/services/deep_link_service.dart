@@ -41,6 +41,8 @@ class DeepLinkService {
   ///  - `moonfin://item?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///    (starts playback)
+  ///  - `moonfin://home[?serverId=<serverId>][&userId=<userId>]` (opens Home,
+  ///    as that user when one is given)
   ///  - `moonfin://search?query=<text>` (opens search with the query text)
   ///  - `moonfin://live-tv/guide` and `moonfin://live-tv/recordings`, for
   ///    remapping remote buttons the system keeps from apps (Guide, DVR)
@@ -51,7 +53,9 @@ class DeepLinkService {
   /// `userId` optionally pins a stored user, skipping the profile picker on a
   /// cold start and switching to that user when another one is signed in. It
   /// is only honored for users already signed in on this device, and never
-  /// bypasses a PIN, an always-authenticate setting or Kids Mode.
+  /// bypasses a PIN, an always-authenticate setting or Kids Mode. On a home
+  /// link those ask for the PIN or the login rather than staying on the
+  /// signed-in user.
   static String? routeForDeepLink(Uri uri) {
     if (uri.scheme != 'moonfin') return null;
     if (uri.host == 'party') {
@@ -82,8 +86,9 @@ class DeepLinkService {
         _ => null,
       };
     }
+    final isHome = uri.host == 'home';
     final id = uri.queryParameters['id'];
-    if (id == null || id.isEmpty) return null;
+    if (!isHome && (id == null || id.isEmpty)) return null;
     final serverId = uri.queryParameters['serverId'];
     final userId = uri.queryParameters['userId'];
     final params = <String, String>{
@@ -94,6 +99,7 @@ class DeepLinkService {
     final query = params.entries
         .map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value)}')
         .join('&');
-    return query.isEmpty ? '/item/$id' : '/item/$id?$query';
+    final path = isHome ? Destinations.home : '/item/$id';
+    return query.isEmpty ? path : '$path?$query';
   }
 }

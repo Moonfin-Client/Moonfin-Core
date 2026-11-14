@@ -11,9 +11,13 @@ import '../di/injection.dart';
 import '../playback/car_artwork.dart';
 import '../playback/headless_session_bootstrap.dart';
 import '../preference/user_preferences.dart';
+import '../util/platform_detection.dart';
 
 Future<void> watchNextBackgroundMain() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // WatchNextWorker only starts this on a TV, and the client name sent to the
+  // server is read from this flag.
+  PlatformDetection.setTvMode(true);
   const channel = MethodChannel('org.moonfin.androidtv/watch_next');
 
   var ok = false;

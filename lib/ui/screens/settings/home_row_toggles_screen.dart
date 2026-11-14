@@ -29,12 +29,46 @@ class HomeRowTogglesScreen extends StatefulWidget {
 class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
+  Future<void> _hideWatchedConfigSync = Future<void>.value();
 
   @override
   void initState() {
     super.initState();
     _syncService = GetIt.instance<PluginSyncService>();
     _syncService.addListener(_onSyncChanged);
+    _syncHideWatchedFromServerIfUnset();
+  }
+
+  void _syncHideWatchedFromServerIfUnset() {
+    final hasScope = _prefs.activeProfileScopeSuffix() != null;
+    if (_prefs.containsPreference(
+      UserPreferences.hideWatchedInRecentRows,
+      scopedOnly: hasScope,
+    )) {
+      return;
+    }
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+    final initialScope = _prefs.activeProfileScopeSuffix();
+    _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
+      try {
+        final config = await client.usersApi.getUserConfiguration();
+        if (_prefs.activeProfileScopeSuffix() != initialScope) {
+          return;
+        }
+        if (!_prefs.containsPreference(
+              UserPreferences.hideWatchedInRecentRows,
+              scopedOnly: initialScope != null,
+            ) &&
+            config.hidePlayedInLatest) {
+          _prefs.seedHideWatchedFromServer(
+            config,
+            expectedProfileScope: initialScope,
+          );
+          if (mounted) setState(() {});
+        }
+      } catch (_) {}
+    });
   }
 
   @override
@@ -58,6 +92,29 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   void _reloadHomeRows() {
     if (!GetIt.instance.isRegistered<HomeViewModel>()) return;
     GetIt.instance<HomeViewModel>().load(preserveExisting: false);
+  }
+
+  void _onHideWatchedInRecentRowsChanged() {
+    _pushPersonalizationSync();
+    _reloadHomeRows();
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+    final initialScope = _prefs.activeProfileScopeSuffix();
+    _hideWatchedConfigSync = _hideWatchedConfigSync.then((_) async {
+      try {
+        final config = await client.usersApi.getUserConfiguration();
+        if (_prefs.activeProfileScopeSuffix() != initialScope) {
+          return;
+        }
+        final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
+        if (config.hidePlayedInLatest != hideWatched) {
+          await client.usersApi.updateUserConfiguration(
+            config.copyWith(hidePlayedInLatest: hideWatched),
+          );
+          _reloadHomeRows();
+        }
+      } catch (_) {}
+    });
   }
 
   void _onFavoritesRowsToggleChanged() {
@@ -362,9 +419,16 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ],
               ),
 
-              _SectionHeader(l10n.recentlyAdded),
+              _SectionHeader(l10n.recentlyAddedAndReleased),
               adaptiveListSection(
                 children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.hideWatchedInRecentRows,
+                    title: l10n.hideWatchedInRecentRows,
+                    subtitle: l10n.hideWatchedInRecentRowsDescription,
+                    icon: Icons.visibility_off_outlined,
+                    onChanged: _onHideWatchedInRecentRowsChanged,
+                  ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.mergeRecentRowsByType,
                     title: l10n.mergeRecentRowsByType,
@@ -594,7 +658,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ),
               ],
 
-              _SectionHeader('REWATCH'),
+              _SectionHeader(l10n.settingsRewatchSection),
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(
@@ -709,7 +773,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                   ],
                 ],
               ),
-              _SectionHeader('STUDIOS'),
+              _SectionHeader(l10n.studios),
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(

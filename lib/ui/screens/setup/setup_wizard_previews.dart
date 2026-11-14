@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/media_bar_slide_item.dart';
 import '../../../data/models/media_bar_state.dart';
@@ -40,6 +41,7 @@ import '../../widgets/bottom_nav/dock_bar.dart';
 import '../../widgets/bottom_nav/split_bar.dart';
 import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/carousel_panel.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
@@ -95,13 +97,42 @@ abstract final class SetupPreviewData {
     final override = debugOverride;
     if (override != null) return override.value;
     final loaded = _viewModel?.items ?? const [];
-    return loaded.isNotEmpty ? loaded : _fallbackItems.value;
+    return _drawn = keepDrawn(
+      _drawn,
+      loaded.isNotEmpty ? loaded : _fallbackItems.value,
+    );
+  }
+
+  /// The titles the previews last drew. A change to the bar's style or to what
+  /// it shows reloads it with a fresh random pick, and following that would
+  /// swap the sample under the person looking at it.
+  static List<MediaBarSlideItem> _drawn = const [];
+
+  /// [drawn] kept in its order, each title swapped for its newer copy when
+  /// [next] still has it, then topped up from [next] or cut to its count.
+  @visibleForTesting
+  static List<MediaBarSlideItem> keepDrawn(
+    List<MediaBarSlideItem> drawn,
+    List<MediaBarSlideItem> next,
+  ) {
+    if (drawn.isEmpty || next.isEmpty) return next;
+    final fresh = {
+      for (final item in next) (item.serverId, item.itemId): item,
+    };
+    return [
+      for (final item in drawn)
+        fresh.remove((item.serverId, item.itemId)) ?? item,
+      ...fresh.values,
+    ].take(next.length).toList();
   }
 
   static bool _loading = false;
   static bool _loadingLibraries = false;
 
   static Future<void> ensureLoaded() async {
+    // Each screen of previews starts from the bar's current titles, which
+    // also drops the last server's after a switch.
+    _drawn = const [];
     if (debugOverride != null) return;
     unawaited(loadLibraries());
     if (_loading) return;
@@ -208,15 +239,13 @@ Size _designSize() {
 bool get _tv => PlatformDetection.useLeanbackUi;
 bool get _phone => PlatformDetection.useMobileUi;
 
-/// The saved UI scale, which Home sizes its rows and info area by.
-double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
-    ? GetIt.instance<UserPreferences>()
-          .get(UserPreferences.desktopUiScale)
-          .scaleFactor
-    : 1.0;
+/// The UI scale, which Home sizes its rows and info area by.
+double _desktopScale(BuildContext context) =>
+    previewValue(context, UserPreferences.desktopUiScale).scaleFactor;
 
 /// TV rows render at 0.8 of the desktop size, same as homeRowPlatformScale.
-double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
+double _rowScale(BuildContext context) =>
+    (_tv ? 0.8 : 1.0) * _desktopScale(context);
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
 
@@ -391,25 +420,61 @@ double _overlayOpacity(BuildContext context) =>
 // ---------------------------------------------------------------------------
 
 Widget mediaBarPreview(String mode) => _liveOrFallback(
-  live: (context, titles) => _mediaBarModePreview(
-    context,
-    mode,
-    _withNewReleasePreview(context, titles),
-  ),
+  live: (context, titles) {
+    final items = _withNewReleasePreview(context, titles);
+    final peek = _rowPeekCover(context, mode);
+    final bar = _mediaBarModePreview(context, mode, items, rowPeek: peek);
+    if (peek == 0) return bar;
+    return ClipRect(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          bar,
+          Positioned(
+            left: 0,
+            right: 0,
+            top: _designSize().height - peek,
+            child: _homeRowsColumn(
+              context,
+              items,
+              modern: previewValue(
+                context,
+                UserPreferences.homeRowsStyle,
+              ).usesModernCards,
+              infoArea: false,
+            ),
+          ),
+        ],
+      ),
+    );
+  },
   fallback: _fallbackMediaBar(mode),
   fallbackAspect: 16 / 7,
 );
 
+/// [mode]'s bar. Moonfin and MakD keep their backdrop under a row peeking
+/// [rowPeek] up into the bar and lift their content above it, and the others
+/// shrink to what's left, as on Home.
 Widget _mediaBarModePreview(
   BuildContext context,
   String mode,
-  List<MediaBarSlideItem> items,
-) => switch (mode) {
-  UserPreferences.mediaBarModeMakd => _makdBar(context, items),
-  UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
-  UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
+  List<MediaBarSlideItem> items, {
+  double rowPeek = 0,
+}) => switch (mode) {
+  UserPreferences.mediaBarModeMakd => _makdBar(context, items, rowPeek),
+  UserPreferences.mediaBarModeBookshelf => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _bookshelfBar(context, items),
+  ),
+  UserPreferences.mediaBarModeGallery => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _galleryBar(context, items),
+  ),
   UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
-  UserPreferences.mediaBarModeAya => _ayaBar(context, items),
+  UserPreferences.mediaBarModeAya => Padding(
+    padding: EdgeInsets.only(bottom: rowPeek),
+    child: _ayaBar(context, items),
+  ),
   // The rows carry the whole screen with the bar off, so the preview packs
   // them tighter than the style default to show more than one.
   UserPreferences.mediaBarModeOff => _homeRowsScreen(
@@ -418,7 +483,7 @@ Widget _mediaBarModePreview(
     modern: !_phone,
     rowGapOverride: 24,
   ),
-  _ => _moonfinBar(context, items),
+  _ => _moonfinBar(context, items, rowPeek),
 };
 
 /// The titles the preview draws, with the new release banner on the first one
@@ -585,7 +650,11 @@ Widget _metadataWrap(
   );
 }
 
-Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _moonfinBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -662,7 +731,7 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 0,
         right: 0,
-        bottom: 0,
+        bottom: rowPeek,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -690,7 +759,7 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
       Positioned(
         left: 0,
         right: 0,
-        bottom: 8,
+        bottom: 8 + rowPeek,
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -718,7 +787,11 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
   return _phone ? _phoneBarScreen(context, items, bar) : bar;
 }
 
-Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
+Widget _makdBar(
+  BuildContext context,
+  List<MediaBarSlideItem> items, [
+  double rowPeek = 0,
+]) {
   final item = items.first;
   final overlay = _overlayColor(context);
   final op = _overlayOpacity(context);
@@ -849,7 +922,7 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       Positioned(
         left: 50,
-        bottom: 20,
+        bottom: 20 + rowPeek,
         width: contentWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -886,7 +959,7 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       Positioned(
         right: 20,
-        bottom: 24,
+        bottom: 24 + rowPeek,
         child: _dots(
           count: 5,
           active: 9,
@@ -1882,17 +1955,21 @@ Widget navbarPreview(NavbarPosition position) => _liveOrFallback(
 /// Home as the settings live preview draws it: the navbar where it's set, with
 /// its buttons, labels and clock, over the rows in their set style and size.
 /// Values a settings picker is trying stand in for the saved ones.
-Widget settingsHomePreview() {
+/// [focusCard] holds the first card in focus in Classic rows too, so Focus
+/// Color has a ring to show on.
+Widget settingsHomePreview({bool focusCard = false}) {
   final position = GetIt.instance.isRegistered<UserPreferences>()
       ? GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition)
       : NavbarPosition.top;
   return _liveOrFallback(
     live: (context, items) {
-      final modern =
-          previewValue(context, UserPreferences.homeRowsStyle) ==
-          HomeRowsStyle.v2;
+      final modern = previewValue(
+        context,
+        UserPreferences.homeRowsStyle,
+      ).usesModernCards;
       // Modern rows hold the first card in focus, the way Home looks with a
       // row in focus, so the card's grown state and its details show.
+      final focusFirst = modern || focusCard;
       final home = switch (previewValue(
         context,
         UserPreferences.navbarPosition,
@@ -1901,23 +1978,23 @@ Widget settingsHomePreview() {
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.left => _leftNavbarPreview(
           context,
           items,
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
         NavbarPosition.bottom => _bottomNavbarPreview(
           context,
           items,
           previewValue(context, UserPreferences.bottomNavbarStyle),
           modern: modern,
-          focusFirst: modern,
+          focusFirst: focusFirst,
         ),
       };
-      final backdrop = _homeBackdropStyle(context);
+      final backdrop = settingsHomeBackdropStyle(context);
       return Stack(
         fit: StackFit.expand,
         children: [
@@ -1941,7 +2018,7 @@ Widget settingsHomePreview() {
 
 /// The backdrop Home draws. A phone only has the switch and always fills the
 /// screen, and a style the picker is trying shows before the switch follows it.
-String _homeBackdropStyle(BuildContext context) {
+String settingsHomeBackdropStyle(BuildContext context) {
   final enabled = previewValue(context, UserPreferences.homeBackdropEnabled);
   if (_phone) {
     return enabled
@@ -1990,9 +2067,10 @@ bool get _calendarAvailable =>
     GetIt.instance.isRegistered<PluginSyncService>() &&
     GetIt.instance<PluginSyncService>().calendarAvailable;
 
+/// The real bar waits for something saved, so it never offers a way into an
+/// empty screen.
 bool get _downloadsAvailable =>
-    GetIt.instance.isRegistered<UserRepository>() &&
-    DownloadsNavSlot.isAvailable();
+    DownloadsNavSlot.isSupported() && DownloadsNavSlot.hasSavedMedia();
 
 /// The user's libraries for a navbar that lists them one by one, minus the
 /// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
@@ -2630,22 +2708,27 @@ Widget _fallbackNavbar(NavbarPosition position) {
 // Home rows
 // ---------------------------------------------------------------------------
 
-Widget homeRowsPreview({required bool modern}) => _liveOrFallback(
-  live: (context, items) => _homeRowsScreen(
-    context,
-    items,
-    modern: modern,
-    // Modern's whole point is the focused card, so its preview holds the
-    // first card in that state with the text block it grows underneath.
-    focusFirst: modern,
-  ),
-  fallback: _fallbackHomeRows(modern: modern),
-);
+/// [carousel] picks Carousel over Modern for a modern preview. Left null it
+/// follows the Row Type setting.
+Widget homeRowsPreview({required bool modern, bool? carousel}) =>
+    _liveOrFallback(
+      live: (context, items) => _homeRowsScreen(
+        context,
+        items,
+        modern: modern,
+        carousel: carousel,
+        // Modern's whole point is the focused card, so its preview holds the
+        // first card in that state with the text block it grows underneath.
+        focusFirst: modern,
+      ),
+      fallback: _fallbackHomeRows(modern: modern),
+    );
 
 Widget _homeRowsScreen(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
 }) {
@@ -2657,12 +2740,31 @@ Widget _homeRowsScreen(
         context,
         items,
         modern: modern,
+        carousel: carousel,
         focusFirst: focusFirst,
         rowGapOverride: rowGapOverride,
       ),
     ),
   );
 }
+
+/// The sample item as a library item, for widgets that only take those.
+AggregatedItem _slideAsItem(MediaBarSlideItem item) => AggregatedItem(
+  id: item.itemId,
+  serverId: item.serverId,
+  rawData: {
+    'Name': item.title,
+    'Type': item.itemType,
+    'Overview': item.overview,
+    'ProductionYear': item.year,
+    'OfficialRating': item.officialRating,
+    'Genres': item.genres,
+    'CommunityRating': item.communityRating,
+    'CriticRating': item.criticRating,
+    if (item.runtime case final runtime?)
+      'RunTimeTicks': runtime.inMicroseconds * 10,
+  },
+);
 
 /// The colours of the 4K and HDR10 built-in labels.
 const _sampleLabels = [
@@ -2680,15 +2782,65 @@ bool _showSampleLabels(BuildContext context) {
   return previewValue(context, UserPreferences.showPosterLabels);
 }
 
+/// The sample rows' poster and thumb heights at the card size being looked at.
+/// Modern's sample posters are drawn larger than Home's. Carousel's keep
+/// Home's size, so its panel fits under them as it does on Home.
+(double, double) _sampleCardHeights(
+  BuildContext context, {
+  required bool modern,
+  bool carousel = false,
+}) {
+  final posterSize = previewValue(context, UserPreferences.posterSize);
+  return (
+    (modern && !carousel ? 240.0 : 150.0) *
+        _rowScale(context) *
+        posterSize.portraitHeight /
+        PosterSize.medium.portraitHeight,
+    110.0 *
+        _rowScale(context) *
+        posterSize.landscapeHeight /
+        PosterSize.medium.landscapeHeight,
+  );
+}
+
+/// How much of the media bar the first Home row covers while Peek Home Rows
+/// is on: its title and the top half of its cards, as on Home. Zero where
+/// Home doesn't peek.
+double _rowPeekCover(BuildContext context, String mode) {
+  if (_phone ||
+      !previewValue(context, UserPreferences.mediaBarRowPeek) ||
+      !UserPreferences.mediaBarModeAllowsRowPeek(mode) ||
+      previewValue(context, UserPreferences.fullScreenRows)) {
+    return 0;
+  }
+  final style = previewValue(context, UserPreferences.homeRowsStyle);
+  final modern = style.usesModernCards;
+  final (poster, thumb) = _sampleCardHeights(
+    context,
+    modern: modern,
+    carousel: style == HomeRowsStyle.carousel,
+  );
+  // The title band's padding and line of text, then the cards' top padding.
+  final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
+  return header + (modern ? poster : thumb) / 2;
+}
+
 Widget _homeRowsColumn(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
+  bool infoArea = true,
 }) {
   final l10n = AppLocalizations.of(context);
-  final scale = _rowScale;
+  final scale = _rowScale(context);
+  final isCarousel =
+      modern &&
+      (carousel ??
+          previewValue(context, UserPreferences.homeRowsStyle) ==
+              HomeRowsStyle.carousel);
 
   Widget header(String title) => Padding(
     padding: modern
@@ -2704,6 +2856,27 @@ Widget _homeRowsColumn(
     ),
   );
 
+  Widget focusRing() => Positioned(
+    top: -3.5,
+    bottom: -3.5,
+    left: -3.5,
+    right: -3.5,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius:
+            ThemeRegistry.active.borders.cardRadius + AppRadius.circular(3.5),
+        border: Border.fromBorderSide(
+          ThemeRegistry.active.borders.focusBorder.copyWith(
+            color: Color(
+              previewValue(context, UserPreferences.focusColor).colorValue,
+            ),
+            width: 3.0,
+          ),
+        ),
+      ),
+    ),
+  );
+
   Widget card(
     MediaBarSlideItem item, {
     required double height,
@@ -2711,84 +2884,98 @@ Widget _homeRowsColumn(
     String? imageUrl,
     double? progress,
     List<PosterBadge> labels = const [],
+    bool focused = false,
   }) {
     final width = height * aspect;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: width,
-          height: height,
-          child: ClipRRect(
-            borderRadius: ThemeRegistry.active.borders.cardRadius,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _artwork(imageUrl ?? item.posterUrl),
-                if (labels.isNotEmpty)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: PosterBadgeSample(badges: labels, scale: 0.85 * scale),
-                  ),
-                if (progress != null)
-                  Positioned(
-                    left: 6,
-                    right: 6,
-                    bottom: 6,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: SizedBox(
-                        height: 6,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: (progress * 100).round(),
-                              child: ColoredBox(color: AppColorScheme.accent),
-                            ),
-                            Expanded(
-                              flex: 100 - (progress * 100).round(),
-                              child: ColoredBox(
-                                color: AppColorScheme.scrim.withValues(
-                                  alpha: 0.54,
-                                ),
-                              ),
-                            ),
-                          ],
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: width,
+              height: height,
+              child: ClipRRect(
+                borderRadius: ThemeRegistry.active.borders.cardRadius,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _artwork(imageUrl ?? item.posterUrl),
+                    if (labels.isNotEmpty)
+                      Positioned(
+                        top: 6,
+                        left: 6,
+                        child: PosterBadgeSample(
+                          badges: labels,
+                          scale: 0.85 * scale,
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                    if (progress != null)
+                      Positioned(
+                        left: 6,
+                        right: 6,
+                        bottom: 6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: SizedBox(
+                            height: 6,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.accent,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 100 - (progress * 100).round(),
+                                  child: ColoredBox(
+                                    color: AppColorScheme.scrim.withValues(
+                                      alpha: 0.54,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            if (focused) focusRing(),
+          ],
         ),
-        const SizedBox(height: 6),
-        SizedBox(
-          width: width,
-          child: Text(
-            item.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
+          SizedBox(
+            width: width,
+            child: Text(
+              item.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
-          Text(
-            '${item.year}',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-              shadows: _textShadows,
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
+              ),
             ),
-          ),
+        ],
       ],
     );
   }
@@ -2811,15 +2998,11 @@ Widget _homeRowsColumn(
     ),
   );
 
-  final posterSize = previewValue(context, UserPreferences.posterSize);
-  final posterScale =
-      posterSize.portraitHeight / PosterSize.medium.portraitHeight;
-  final posterHeight = (modern ? 240.0 : 150.0) * scale * posterScale;
-  final thumbHeight =
-      110.0 *
-      scale *
-      posterSize.landscapeHeight /
-      PosterSize.medium.landscapeHeight;
+  final (posterHeight, thumbHeight) = _sampleCardHeights(
+    context,
+    modern: modern,
+    carousel: isCarousel,
+  );
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
   final showOverview = !previewValue(
     context,
@@ -2849,90 +3032,76 @@ Widget _homeRowsColumn(
                 child: _artwork(item.backdropUrl ?? item.posterUrl),
               ),
             ),
-            Positioned(
-              top: -3.5,
-              bottom: -3.5,
-              left: -3.5,
-              right: -3.5,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      ThemeRegistry.active.borders.cardRadius +
-                      AppRadius.circular(3.5),
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.focusBorder.copyWith(
-                      width: 3.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            focusRing(),
           ],
         ),
-        const SizedBox(height: 6),
-        Text(
-          item.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
-          ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
+        // Carousel shows all of this in its panel instead.
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
           Text(
-            '${item.year}',
+            item.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: AppColorScheme.onSurface,
               shadows: _textShadows,
             ),
           ),
-        const SizedBox(height: 4),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(width: width, height: 76),
-            Positioned(
-              left: 0,
-              top: 0,
-              width: width * 2.4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _sampleRatings(
-                    context,
-                    item,
-                    UserPreferences.homeRowsRatings,
-                    personal: true,
-                    singleLine: !_phone,
-                  ),
-                  if (showOverview && item.overview != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        item.overview!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.4,
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                          shadows: _textShadows,
-                        ),
-                      ),
-                    ),
-                ],
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
               ),
             ),
-          ],
-        ),
+          const SizedBox(height: 4),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(width: width, height: 76),
+              Positioned(
+                left: 0,
+                top: 0,
+                width: width * 2.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _sampleRatings(
+                      context,
+                      item,
+                      UserPreferences.homeRowsRatings,
+                      personal: true,
+                      singleLine: !_phone,
+                    ),
+                    if (showOverview && item.overview != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          item.overview!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                            shadows: _textShadows,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -2946,7 +3115,7 @@ Widget _homeRowsColumn(
     final showLabels = _showSampleLabels(context);
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
-        if (withFocus && i == 0)
+        if (withFocus && i == 0 && modern)
           focusedCard(_itemAt(items, offset))
         else
           card(
@@ -2959,23 +3128,56 @@ Widget _homeRowsColumn(
             labels: !showLabels || i % 3 == 2
                 ? const []
                 : (i % 3 == 0 ? _sampleLabels : _sampleLabels.sublist(0, 1)),
+            focused: withFocus && i == 0,
           ),
     ];
+    final desktopScale = _desktopScale(context);
+    final panelItem = _itemAt(items, offset);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [header(title), cardsRow(cards)],
+      children: [
+        header(title),
+        cardsRow(cards),
+        if (isCarousel) ...[
+          SizedBox(height: carouselPanelGap(desktopScale)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
+            child: SizedBox(
+              height: carouselPanelHeight(desktopScale),
+              child: CarouselPanel(
+                item: _slideAsItem(panelItem),
+                desktopScale: desktopScale,
+                backdropUrl: panelItem.backdropUrl,
+                ratings: _sampleRatings(
+                  context,
+                  panelItem,
+                  UserPreferences.homeRowsRatings,
+                  personal: true,
+                  singleLine: !_phone,
+                ),
+                showOverview: showOverview,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  // Classic TV keeps the info overlay band above the rows, so its preview
-  // starts with one. Modern shows its metadata under the focused card instead.
-  final infoOverlay = !modern && _tv
+  // Classic keeps the info overlay band above the rows while Info Overlay is
+  // on, so its preview starts with one. Modern shows its metadata under the
+  // focused card instead.
+  final infoOverlay =
+      infoArea &&
+          !modern &&
+          !_phone &&
+          previewValue(context, UserPreferences.homeRowInfoOverlay)
       ? Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
           child: SizedBox(
             height: InfoArea.fixedHeight(
               isMobile: false,
-              desktopScale: _desktopScale,
+              desktopScale: _desktopScale(context),
             ),
             // Right after the UI scale changes, the saved scale can be read
             // here a frame before the text picks it up, so a column that's

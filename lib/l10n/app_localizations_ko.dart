@@ -464,7 +464,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => '첫날';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -3850,7 +3850,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get calendarReleaseCinema => 'Cinema';
 
   @override
-  String get calendarReleaseDigital => 'Digital';
+  String get calendarReleaseDigital => '디지털';
 
   @override
   String get calendarReleasePhysical => 'Physical';
@@ -3860,10 +3860,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Toggle Upcoming Calendars from Radarr/Sonarr.';
-
-  @override
-  String get enableRadarrCalendar => 'Enable Radarr\'s Upcoming Calendar';
+      'Choose what the Radarr and Sonarr rows show.';
 
   @override
   String get radarrCalendarShowCinema => 'Show Upcoming Cinema Releases';
@@ -3880,9 +3877,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Hide Movies Already on the Server';
-
-  @override
-  String get enableSonarrCalendar => 'Enable Sonarr\'s Upcoming Calendar';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Display Episode Information';
@@ -4729,6 +4723,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showLibrariesFromAllServers => '연결된 모든 서버의 라이브러리 표시';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => '유형별 최근 행 병합';
 
   @override
@@ -5162,6 +5166,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeRowsExternalLists => '외부 목록';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => '행별 설정';
 
   @override
@@ -5389,10 +5396,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'Watching on MDBList';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Show what MDBList users are currently watching';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5781,6 +5784,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get seerrImportingStatus => '가져오는 중';
+
+  @override
+  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+
+  @override
+  String get seerrDownloadStalled => 'Stalled';
+
+  @override
+  String get seerrDownloadFailed => '다운로드 실패';
+
+  @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
 
   @override
   String itemsCount(int count) {
@@ -10686,7 +10720,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayShuffleModeSorted => '정렬됨';
 
   @override
-  String get syncPlayParticipantYou => 'You';
+  String get syncPlayParticipantYou => '나';
 
   @override
   String syncPlayGroupSubtitle(String participants, String detail) {
@@ -10956,6 +10990,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get kidsModeExitSubtitle => 'PIN을 입력하면 전체 앱으로 돌아갑니다';
+
+  @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
 
   @override
   String get pinIncorrect => '잘못된 PIN';
@@ -12078,6 +12117,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeRowsStyleModern => '모던';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => '홈 행';
 
   @override
@@ -12203,13 +12245,13 @@ class AppLocalizationsKo extends AppLocalizations {
       'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin 추천';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Jellyfin 추천';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb 유사도';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -13085,7 +13127,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => '유형';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -15139,6 +15181,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get setupRowsModernHint => '제목이 아래에 표시되는 더 큰 카드 레이아웃.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => '모든 정보가 중앙에 한 번에 정렬된 레이아웃.';
 
   @override
@@ -15171,7 +15217,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => '첫날';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15904,6 +15950,30 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsAdvancedSection => '고급';
+
+  @override
+  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+
+  @override
+  String get settingsAudioStreamSection => 'Audio Stream';
+
+  @override
+  String get settingsAudioOutputSection => 'Audio Output';
+
+  @override
+  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+
+  @override
+  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+
+  @override
+  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+
+  @override
+  String get settingsRewatchSection => 'Rewatch';
+
+  @override
+  String get favoritesSwitchViewSection => 'Switch View';
 
   @override
   String get playerSettingsSubtitle => '컨트롤, 탐색, 플레이어 버튼 및 Trickplay';
@@ -16900,6 +16970,71 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsPreviewNotShown => '미리보기에 표시되지 않음';
 
   @override
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
+    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRows(
+    String group,
+    String disabled,
+  ) {
+    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String get settingsPreviewRowsOffInKidsMode =>
+      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+
+  @override
+  String settingsPreviewNeedsRowInRows(String disabled) {
+    return 'Turn on a row in Rows, under $disabled';
+  }
+
+  @override
+  String settingsPreviewNeedsSwitchAndRow(String setting) {
+    return 'Turn on $setting, then turn on a row in Rows';
+  }
+
+  @override
+  String get settingsPreviewKeptOffByKidsMode =>
+      'Kids Mode keeps this off Home';
+
+  @override
+  String get settingsPreviewAudioRowsEmpty =>
+      'There\'s no music to show, so Home leaves these rows out.';
+
+  @override
+  String get settingsPreviewRowsEmpty =>
+      'There\'s nothing to show in these rows, so Home leaves them out.';
+
+  @override
+  String get settingsPreviewCollectionsEmpty =>
+      'There are no collections to show, so Home leaves this row out.';
+
+  @override
+  String get settingsPreviewShowEpisodesNote =>
+      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
+
+  @override
   String get settingsPreviewSaved => '저장됨';
 
   @override
@@ -17020,7 +17155,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => '보기';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17042,14 +17177,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get calendarSettingsWhatShows => 'What shows';
 
   @override
-  String get calendarSettingsScope => 'Show';
+  String get calendarSettingsScope => '표시';
 
   @override
   String get calendarSettingsScopeDescription =>
       'My shows keeps the series you favorited or started watching';
 
   @override
-  String get calendarSettingsScopeEverything => 'Everything';
+  String get calendarSettingsScopeEverything => '전체';
 
   @override
   String get calendarSettingsScopeMyShows => 'My shows';
@@ -17062,7 +17197,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => '스페셜';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17083,7 +17218,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => '유형';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17100,7 +17235,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => '작업';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17172,7 +17307,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => '재생';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17313,7 +17448,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => '시작';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -17423,7 +17558,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => '고정';
 
   @override
   String get afterHoursCastStaticLine =>

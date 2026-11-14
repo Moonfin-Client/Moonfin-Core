@@ -1960,6 +1960,9 @@ class SiloItemsApi
     _changedSeries.clear();
   }
 
+  /// Forgets the cached `home.hide_watched_items` read after settings change.
+  void forgetHideWatched() => _hideWatched.forget();
+
   /// Of [itemIds], those whose user data may have changed: one this client
   /// changed in the last [_changedTtl], or a season or episode of a show
   /// that had something changed (marking an episode moves the season's and
@@ -2349,6 +2352,7 @@ class SiloItemsApi
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final libraryId = _libraryIdOf(parentId);
     if (parentId != null && libraryId == null) return _empty(0);
@@ -2360,7 +2364,7 @@ class SiloItemsApi
     if (scope == null) return _empty(0);
     final today = _clock().toLocal();
     final tomorrow = DateTime(today.year, today.month, today.day + 1);
-    final hideWatched = await _hidesWatchedOnHome();
+    final shouldHideWatched = hideWatched ?? await _hidesWatchedOnHome();
     return _page(
       {
         'library_id': ?libraryId,
@@ -2377,7 +2381,7 @@ class SiloItemsApi
               },
             ],
           },
-          if (hideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
+          if (shouldHideWatched) ...siloRuleGroups(filters: const ['IsUnplayed']),
         ]),
         'image_size': siloListImageSize,
       },

@@ -279,4 +279,57 @@ void main() {
       expect(find.text(l10n.pinTryAgainIn('45s')), findsOneWidget);
     });
   });
+
+  group('a title and subtitle saying what the PIN is for', () {
+    Future<void> open(
+      WidgetTester tester, {
+      String? title,
+      String? subtitle,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => PinEntryDialog.show(
+                  context,
+                  mode: PinEntryMode.verify,
+                  onVerify: (_) => true,
+                  title: title,
+                  subtitle: subtitle,
+                ),
+                child: const Text('Show Dialog'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('replace the generic wording', (tester) async {
+      await open(
+        tester,
+        title: 'Kids Mode',
+        subtitle: 'Enter the Kids Mode PIN to switch to Alex',
+      );
+
+      expect(find.text('Kids Mode'), findsOneWidget);
+      expect(
+        find.text('Enter the Kids Mode PIN to switch to Alex'),
+        findsOneWidget,
+      );
+      expect(find.text('Enter PIN'), findsNothing);
+    });
+
+    testWidgets('leave the generic wording when not given', (tester) async {
+      await open(tester);
+
+      expect(find.text('Enter PIN'), findsOneWidget);
+      expect(find.text('Enter your 4-digit PIN'), findsOneWidget);
+    });
+  });
 }

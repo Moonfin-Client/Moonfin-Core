@@ -74,6 +74,18 @@ void main() {
         equals(15),
       );
     });
+
+    test('expands limit when hideWatched is true', () {
+      expect(
+        latestMediaFetchLimitForCollection(
+          'movies',
+          defaultLimit: 15,
+          maxLimit: 100,
+          hideWatched: true,
+        ),
+        equals(60),
+      );
+    });
   });
 
   group('normalizeLatestMediaItems', () {
@@ -399,6 +411,59 @@ void main() {
         isEmpty,
         reason: 'the tag names the episode, not the series',
       );
+    });
+
+    test('hideWatched filters out played movies and fully watched series', () {
+      const playedMovie = AggregatedItem(
+        id: 'm1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'm1',
+          'Name': 'Played Movie',
+          'Type': 'Movie',
+          'UserData': {'Played': true},
+        },
+      );
+      const unplayedMovie = AggregatedItem(
+        id: 'm2',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'm2',
+          'Name': 'Unplayed Movie',
+          'Type': 'Movie',
+          'UserData': {'Played': false},
+        },
+      );
+      const watchedSeries = AggregatedItem(
+        id: 's1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 's1',
+          'Name': 'Watched Series',
+          'Type': 'Series',
+          'UserData': {'Played': false, 'UnplayedItemCount': 0},
+          'ChildCount': 3,
+        },
+      );
+      const partialSeries = AggregatedItem(
+        id: 's2',
+        serverId: 'server1',
+        rawData: {
+          'Id': 's2',
+          'Name': 'Partial Series',
+          'Type': 'Series',
+          'UserData': {'Played': false, 'UnplayedItemCount': 2},
+          'ChildCount': 3,
+        },
+      );
+
+      final result = normalizeLatestMediaItems(
+        [playedMovie, unplayedMovie, watchedSeries, partialSeries],
+        limit: 10,
+        hideWatched: true,
+      );
+
+      expect(result.map((i) => i.id).toList(), equals(['m2', 's2']));
     });
   });
 }

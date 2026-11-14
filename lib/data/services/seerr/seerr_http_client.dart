@@ -65,7 +65,8 @@ class SeerrHttpClient {
 
   Options _authOptions([Options? existing]) {
     final headers = <String, dynamic>{
-      'Authorization': 'MediaBrowser Token="${proxyConfig.jellyfinToken}"',
+      ...(proxyConfig.authHeaders ??
+          {'Authorization': 'MediaBrowser Token="${proxyConfig.jellyfinToken}"'}),
     };
     if (existing != null) {
       return existing.copyWith(headers: {...?existing.headers, ...headers});
@@ -880,6 +881,46 @@ class SeerrHttpClient {
     return response.data as List<dynamic>;
   }
 
+  /// What Radarr (for [tmdbId]) or Sonarr (for [tvdbId]) holds for a title,
+  /// read by Moonbase. Null for any answer but a 200: no admin Seerr session,
+  /// no arr set up, or an arr that didn't answer all mean Moonbase can't see
+  /// it, which is not the same as an empty queue.
+  Future<Map<String, dynamic>?> getArrQueue({int? tmdbId, int? tvdbId}) async {
+    final response = await _dio.get(
+      _moonfinUrl(tmdbId != null ? 'Radarr/Queue' : 'Sonarr/Queue'),
+      queryParameters: tmdbId != null ? {'tmdbId': tmdbId} : {'tvdbId': tvdbId},
+      options: _authOptions(),
+    );
+    final data = response.data;
+    if (response.statusCode != 200 || data is! Map<String, dynamic>) {
+      return null;
+    }
+    return data;
+  }
+
+  /// Removes a download from the client and blocklists its release, so the
+  /// arr searches for another. Admins only. A 404 that says the download is
+  /// no longer in the queue is the outcome asked for. Moonbase also answers
+  /// 404 when it can't find the arr at all, and that one is a failure.
+  Future<void> removeArrQueueItem({
+    required bool radarr,
+    required int queueId,
+  }) async {
+    final response = await _dio.delete(
+      _moonfinUrl('${radarr ? 'Radarr' : 'Sonarr'}/Queue/$queueId'),
+      options: _authOptions(),
+    );
+    if (response.statusCode == 404 && _isGoneFromQueue(response.data)) return;
+    _requireSuccess(response, 'removeArrQueueItem');
+  }
+
+  /// Moonbase's answer for a queue id the arr no longer lists.
+  static bool _isGoneFromQueue(Object? data) {
+    if (data is! Map) return false;
+    final error = data['error'];
+    return error is String && error.toLowerCase().contains('no longer in the');
+  }
+
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final response = await _dio.get(
       _moonfinUrl('Status'),
@@ -893,14 +934,18 @@ class SeerrHttpClient {
     required String username,
     required String password,
     String authType = 'jellyfin',
+    String? authToken,
   }) async {
     final response = await _dio.post(
       _moonfinUrl('Login'),
-      data: MoonfinLoginRequest(
-        username: username,
-        password: password,
-        authType: authType,
-      ).toJson(),
+      data: {
+        ...MoonfinLoginRequest(
+          username: username,
+          password: password,
+          authType: authType,
+        ).toJson(),
+        'authToken': ?authToken,
+      },
       options: _authJsonOptions(),
     );
     _requireSuccess(response, 'moonfinLogin');
@@ -914,21 +959,27 @@ class SeerrHttpClient {
   /// Attempts the password-less Quick Connect sign in. Never throws on a non
   /// success status so the caller can inspect the plugin's errorCode and tell
   /// an unsupported server apart from a transient failure.
-  Future<MoonfinQuickConnectResult> moonfinQuickConnectLogin({
-    String? username,
-  }) async {
-    final response = await _dio.post(
-      _moonfinUrl('Login'),
-      data: {
+  Future<MoonfinSsoResult> moonfinQuickConnectLogin({String? username}) =>
+      _ssoLogin({
         if (username != null && username.isNotEmpty) 'username': username,
         'authType': 'quickconnect',
-      },
+      });
+
+  /// Signs in to Seerr with the Plex account's plex.tv token, through Moonbase
+  /// for Plex. Never throws on a non success status, like Quick Connect.
+  Future<MoonfinSsoResult> moonfinPlexLogin({required String authToken}) =>
+      _ssoLogin({'authType': 'plex', 'authToken': authToken});
+
+  Future<MoonfinSsoResult> _ssoLogin(Map<String, dynamic> body) async {
+    final response = await _dio.post(
+      _moonfinUrl('Login'),
+      data: body,
       options: _authJsonOptions(),
     );
 
     final data = response.data;
     final map = data is Map<String, dynamic> ? data : const <String, dynamic>{};
-    return MoonfinQuickConnectResult(
+    return MoonfinSsoResult(
       success: response.statusCode == 200 && map['success'] == true,
       errorCode: map['errorCode']?.toString(),
       seerrUserId: (map['seerrUserId'] as num?)?.toInt(),

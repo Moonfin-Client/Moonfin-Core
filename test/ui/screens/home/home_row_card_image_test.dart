@@ -18,6 +18,14 @@ class _PrimaryImageApi implements ImageApi {
   }) => 'http://fake/$itemId/Primary?tag=${tag ?? ''}';
 
   @override
+  String getBackdropImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? index,
+    String? tag,
+  }) => 'http://fake/$itemId/Backdrop?tag=${tag ?? ''}';
+
+  @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -218,6 +226,57 @@ void main() {
     });
   });
 
+  group('Carousel rows', () {
+    const myMedia = HomeRow(
+      id: 'libraryTiles',
+      title: 'My Media',
+      rowType: HomeRowType.libraryTiles,
+    );
+
+    test('use Modern cards', () async {
+      final prefs = await createPreferences(HomeRowsStyle.carousel);
+      final card = image(row, _item('m1', 'Movie'), prefs);
+
+      expect(isHomeRowModern(row, prefs), isTrue);
+      expect(card.aspectRatio, 2 / 3);
+      expect(lookups.single.imageType, ImageType.poster);
+    });
+
+    test('draw the panel only for media rows', () async {
+      final prefs = await createPreferences(HomeRowsStyle.carousel);
+
+      expect(isHomeRowCarousel(row, prefs), isTrue);
+      expect(isHomeRowCarousel(audioRow, prefs), isFalse);
+      expect(isHomeRowCarousel(myMedia, prefs), isFalse);
+    });
+
+    test('Modern and Classic rows draw no panel', () async {
+      for (final style in [HomeRowsStyle.v1, HomeRowsStyle.v2]) {
+        final prefs = await createPreferences(style);
+        expect(isHomeRowCarousel(row, prefs), isFalse);
+      }
+    });
+
+    test('the panel takes the item backdrop, else its parent, else none', () {
+      final own = _item('m1', 'Movie', extra: {'BackdropImageTags': ['b1']});
+      final episode = _item(
+        'e1',
+        'Episode',
+        extra: {
+          'ParentBackdropItemId': 'series1',
+          'ParentBackdropImageTags': ['sb1'],
+        },
+      );
+
+      expect(carouselBackdropUrl(own, api), 'http://fake/m1/Backdrop?tag=b1');
+      expect(
+        carouselBackdropUrl(episode, api),
+        'http://fake/series1/Backdrop?tag=sb1',
+      );
+      expect(carouselBackdropUrl(_item('v1', 'Video'), api), isNull);
+    });
+  });
+
   test('the MDBList watching row paints the stored backdrop at 16:9', () async {
     final prefs = await createPreferences(HomeRowsStyle.v2);
     const watching = HomeRow(
@@ -253,6 +312,57 @@ void main() {
       );
 
       expect(card.url, 'http://fake/m1/Primary?tag=p-m1');
+    },
+  );
+
+  test(
+    'the Modern metadata line shows artist and year, genres and runtime',
+    () {
+      String line(Map<String, dynamic> raw) => homeRowModernMetadataLine(
+        AggregatedItem(id: 'i', serverId: 's', rawData: raw),
+      );
+      const minute = 600000000;
+
+      expect(
+        line({
+          'Type': 'MusicAlbum',
+          'AlbumArtist': ' Daft Punk ',
+          'ProductionYear': 2013,
+          'Genres': ['Electronic', 'Disco', 'Funk'],
+        }),
+        'Daft Punk (2013) • Electronic • Disco',
+      );
+      expect(
+        line({
+          'Type': 'Audio',
+          'AlbumArtists': [
+            {'Name': 'Air'},
+          ],
+        }),
+        'Air',
+      );
+      expect(
+        line({
+          'Type': 'MusicAlbum',
+          'Artists': ['Justice'],
+          'ProductionYear': 2007,
+        }),
+        'Justice (2007)',
+      );
+      expect(line({'Type': 'MusicAlbum', 'ProductionYear': 2001}), '2001');
+      expect(
+        line({
+          'Type': 'Movie',
+          'ProductionYear': 1999,
+          'Genres': ['Action'],
+          'RunTimeTicks': 136 * minute,
+        }),
+        '1999 • Action • 2h 16m',
+      );
+      expect(line({'Type': 'Movie', 'RunTimeTicks': 120 * minute}), '2h');
+      expect(line({'Type': 'Episode', 'RunTimeTicks': 45 * minute}), '45m');
+      expect(line({'Type': 'Episode', 'RunTimeTicks': minute ~/ 2}), '');
+      expect(line({'Type': 'Episode', 'RunTimeTicks': 0}), '');
     },
   );
 }
