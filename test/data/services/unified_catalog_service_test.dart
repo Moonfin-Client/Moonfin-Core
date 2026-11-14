@@ -873,6 +873,20 @@ void main() {
       expect((await syncStateOf('a')).serverTotal, isNull);
     });
 
+    test('counts a held title removed while it fetched another', () async {
+      signedIn = [a];
+      a.movies = numbered('a', 5);
+      final service = await synced();
+
+      await checkAround(service, () => service.removeCopy('a', 'a2'));
+
+      expect(movieNames(service), isNot(contains('Movie a2')));
+      expect(movieNames(service), contains('Zunmere'));
+      expect(await storedEntries(), hasLength(5));
+      expect((await syncStateOf('a')).itemCount, 5);
+      expect((await syncStateOf('a')).serverTotal, isNull);
+    });
+
     test('asks again for the watched state of a title it fetched before the '
         'change', () async {
       signedIn = [a];

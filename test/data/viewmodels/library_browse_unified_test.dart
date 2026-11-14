@@ -38,7 +38,7 @@ class _CountingCatalog extends UnifiedCatalogService {
   Object? seriesRefreshError;
 
   @override
-  Future<void> refreshSeriesOf(Iterable<String> itemIds) {
+  Future<bool> refreshSeriesOf(Iterable<String> itemIds) {
     if (seriesRefreshError case final error?) {
       seriesRefreshError = null;
       return Future.error(error);
@@ -1053,6 +1053,30 @@ void main() {
       await expectLater(vm.syncUserDataIfStale(), throwsStateError);
       expect(a.parentRequests, isEmpty);
 
+      a.setUserData('s1', {'Played': true});
+      await vm.syncUserDataIfStale();
+
+      expect(a.parentRequests, [
+        ['e1'],
+      ]);
+      expect(played(vm, 'Arvistel'), isTrue);
+    });
+
+    test('an episode whose server did not answer is tried again', () async {
+      signInToFakeServers();
+      a.series = [catalogMovie('s1', 'Arvistel', type: 'Series')];
+      a.seriesOf['e1'] = 's1';
+      await catalog.forceFullRead();
+      final vm = await viewModel(kind: UnifiedLibraryKind.series);
+      await vm.load();
+
+      a.down = true;
+      userDataSync.publish('e1', {'Played': true});
+      await pumpEventQueue();
+      await vm.syncUserDataIfStale();
+      expect(a.parentRequests, isEmpty);
+
+      a.down = false;
       a.setUserData('s1', {'Played': true});
       await vm.syncUserDataIfStale();
 

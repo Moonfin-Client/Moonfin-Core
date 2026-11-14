@@ -160,7 +160,8 @@ class UserDataSync extends ChangeNotifier {
 
   /// Asks the server what it now holds for [itemIds]. Covers the ancestors the
   /// socket never mentions, and changes that landed while the socket was down.
-  Future<void> refreshFromServer(
+  /// False when a request failed, so the caller can ask again later.
+  Future<bool> refreshFromServer(
     MediaServerClient client,
     Iterable<String> itemIds,
   ) async {
@@ -174,8 +175,9 @@ class UserDataSync extends ChangeNotifier {
     final ids = api is UserDataRefreshScope
         ? (api as UserDataRefreshScope).userDataMayHaveChanged(all)
         : all;
-    if (ids.isEmpty) return;
+    if (ids.isEmpty) return true;
 
+    var complete = true;
     for (var start = 0; start < ids.length; start += _refreshChunkSize) {
       final chunk = ids.sublist(
         start,
@@ -201,8 +203,10 @@ class UserDataSync extends ChangeNotifier {
       } catch (_) {
         // A dropped connection or a library the user lost access to. The next
         // visit asks again.
+        complete = false;
       }
     }
+    return complete;
   }
 
   /// Follows the session websocket for the signed-in user. Safe to call again

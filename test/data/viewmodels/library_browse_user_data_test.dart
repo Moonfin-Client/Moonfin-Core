@@ -15,6 +15,9 @@ class _FakeItemsApi implements ItemsApi {
   /// Called while a user-data request is out.
   void Function()? duringUserDataRequest;
 
+  /// Makes the next user-data request fail.
+  bool failNextUserDataRequest = false;
+
   @override
   Future<Map<String, dynamic>> getItems({
     bool? serverWide,
@@ -67,6 +70,10 @@ class _FakeItemsApi implements ItemsApi {
     if (ids != null) {
       userDataRequests.add(ids);
       duringUserDataRequest?.call();
+      if (failNextUserDataRequest) {
+        failNextUserDataRequest = false;
+        throw StateError('offline');
+      }
       return <String, dynamic>{
         'Items': [
           for (final id in ids)
@@ -164,6 +171,20 @@ void main() {
     expect(api.userDataRequests, hasLength(2));
 
     // The second answer changed both movies, and that alone asks nothing.
+    await vm.syncUserDataIfStale();
+    expect(api.userDataRequests, hasLength(2));
+  });
+
+  test('a refresh the server did not answer is asked again next time', () async {
+    userDataSync.publish('an-episode', {'Played': true});
+    api.failNextUserDataRequest = true;
+
+    await vm.syncUserDataIfStale();
+    expect(api.userDataRequests, hasLength(1));
+
+    await vm.syncUserDataIfStale();
+    expect(api.userDataRequests, hasLength(2));
+
     await vm.syncUserDataIfStale();
     expect(api.userDataRequests, hasLength(2));
   });

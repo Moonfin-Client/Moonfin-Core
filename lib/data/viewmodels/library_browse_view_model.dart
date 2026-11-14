@@ -878,20 +878,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       if (isUnifiedBrowse) {
         // The catalog already asks each server about its own changed copy;
         // only the series of a changed episode is left to find.
+        var complete = true;
         if (_unifiedKinds.contains(UnifiedLibraryKind.series)) {
-          await _unifiedCatalog!.refreshSeriesOf(
+          complete = await _unifiedCatalog!.refreshSeriesOf(
             userDataSync.changedSince(_userDataRevisionSeen),
           );
           if (_disposed) return;
         }
-        _userDataRevisionSeen = startRevision;
+        if (complete) _userDataRevisionSeen = startRevision;
         _patchFromCatalog();
         notifyListeners();
+        settled = complete;
       } else {
         refreshedIds = {for (final item in _items) item.id};
-        await userDataSync.refreshFromServer(_client, refreshedIds);
+        settled = await userDataSync.refreshFromServer(_client, refreshedIds);
       }
-      settled = true;
     } finally {
       _syncingUserData = false;
       // A failed refresh, or a change that arrived meanwhile, possibly to

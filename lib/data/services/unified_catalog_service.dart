@@ -1725,6 +1725,7 @@ class UnifiedCatalogService extends ChangeNotifier {
       heldAfter: heldAfter,
       droppedIds: droppedIds,
       addedEntries: addedEntries,
+      heldIds: heldIds ?? const {},
       removedDuringCheck: removedDuringCheck,
       userDataRevision: userDataRevision,
     );
@@ -1794,7 +1795,8 @@ class UnifiedCatalogService extends ChangeNotifier {
   /// rewrites a row already held, so unlike a full read it needs no
   /// [_userDataDuringRead]. A title [removeCopy] dropped since the check began
   /// is left out, and user data reported since [userDataRevision] for an
-  /// added title is asked for again, as it came after the fetch.
+  /// added title is asked for again, as it came after the fetch. [heldIds] is
+  /// what [heldAfter] was counted from.
   Future<_SyncOutcome> _storeCheckResult(
     _Account account,
     int generation, {
@@ -1802,20 +1804,32 @@ class UnifiedCatalogService extends ChangeNotifier {
     required Map<UnifiedLibraryKind, int> heldAfter,
     required Set<String> droppedIds,
     required List<UnifiedCatalogEntry> addedEntries,
+    required Map<UnifiedLibraryKind, Set<String>> heldIds,
     required Set<String> removedDuringCheck,
     required int userDataRevision,
   }) async {
-    // The server's count still holds a title left out here, so it is
+    // The server's count still holds a title removed here, so it is
     // forgotten and the next check lists the ids again.
     final forgottenTotals = <UnifiedLibraryKind>{};
-    if (addedEntries.any((e) => removedDuringCheck.contains(e.itemId))) {
+    if (removedDuringCheck.isNotEmpty) {
       heldAfter = {...heldAfter};
+      void forget(UnifiedLibraryKind? kind) {
+        if (kind == null || !heldAfter.containsKey(kind)) return;
+        heldAfter[kind] = heldAfter[kind]! - 1;
+        forgottenTotals.add(kind);
+      }
+
       for (final entry in addedEntries) {
-        if (!removedDuringCheck.contains(entry.itemId)) continue;
-        for (final kind in UnifiedLibraryKind.values) {
-          if (kind.itemType != entry.itemType) continue;
-          heldAfter[kind] = heldAfter[kind]! - 1;
-          forgottenTotals.add(kind);
+        if (removedDuringCheck.contains(entry.itemId)) {
+          forget(UnifiedLibraryKind.fromItemType(entry.itemType));
+        }
+      }
+      // A title held when its ids were read is still counted in [heldAfter],
+      // unless the server's list dropped it too. Additions are never held.
+      for (final itemId in removedDuringCheck) {
+        if (droppedIds.contains(itemId)) continue;
+        for (final kind in totals.keys) {
+          if (heldIds[kind]?.contains(itemId) ?? false) forget(kind);
         }
       }
       addedEntries = [
@@ -2179,27 +2193,30 @@ class UnifiedCatalogService extends ChangeNotifier {
 
   /// Refreshes the series behind [itemIds]. A watched episode is published
   /// under its own id and its season's, never the series that counts it; ids a
-  /// server holds a copy under are left to [_onUserDataChanged].
-  Future<void> refreshSeriesOf(Iterable<String> itemIds) async {
+  /// server holds a copy under are left to [_onUserDataChanged]. False when a
+  /// server couldn't be asked, so the caller can try again later.
+  Future<bool> refreshSeriesOf(Iterable<String> itemIds) async {
     final ids = {
       for (final id in itemIds)
         if (id.isNotEmpty) id,
     };
-    if (ids.isEmpty || !_loaded || _isOffline()) return;
+    if (ids.isEmpty) return true;
+    if (!_loaded || _isOffline()) return false;
     final generation = _generation;
-    await Future.wait([
+    final results = await Future.wait([
       for (final session in _activeSessions)
         _refreshSeriesOf(session, ids, generation),
     ]);
+    return results.every((complete) => complete);
   }
 
-  Future<void> _refreshSeriesOf(
+  Future<bool> _refreshSeriesOf(
     ServerUserSession session,
     Set<String> itemIds,
     int generation,
   ) async {
     final entries = _entries[_accountOf(session)];
-    if (entries == null) return;
+    if (entries == null) return true;
     final asked = [
       for (final id in itemIds)
         if (!entries.containsKey(id)) id,
@@ -2217,7 +2234,7 @@ class UnifiedCatalogService extends ChangeNotifier {
               enableImages: false,
             )
             .timeout(_pageTimeout);
-        if (_isStale(generation)) return;
+        if (_isStale(generation)) return false;
         for (final raw in _listOf(response, 'Items')) {
           if (raw is! Map) continue;
           final seriesId = raw['SeriesId']?.toString();
@@ -2230,14 +2247,14 @@ class UnifiedCatalogService extends ChangeNotifier {
           'UnifiedCatalog: watched series of ${session.server.name} not '
           'found: $e',
         );
-        break;
+        return false;
       }
     }
-    if (series.isEmpty) return;
-    await _refreshServerUserData(session, series.toList(), generation);
+    if (series.isEmpty) return true;
+    return _refreshServerUserData(session, series.toList(), generation);
   }
 
-  Future<void> _refreshServerUserData(
+  Future<bool> _refreshServerUserData(
     ServerUserSession session,
     List<String> ids,
     int generation,
@@ -2254,7 +2271,7 @@ class UnifiedCatalogService extends ChangeNotifier {
               enableTotalRecordCount: false,
             )
             .timeout(_pageTimeout);
-        if (_isStale(generation)) return;
+        if (_isStale(generation)) return false;
         final userDataById = <String, Map<String, dynamic>>{};
         for (final raw in _listOf(response, 'Items')) {
           if (raw is! Map) continue;
@@ -2268,9 +2285,10 @@ class UnifiedCatalogService extends ChangeNotifier {
         _logger.w(
           'UnifiedCatalog: watched state of ${session.server.name} not read: $e',
         );
-        return;
+        return false;
       }
     }
+    return true;
   }
 
   /// Applies [serverId]'s user data to its own copy, by item id. Another
