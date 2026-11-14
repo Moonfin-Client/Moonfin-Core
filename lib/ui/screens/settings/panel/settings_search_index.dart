@@ -1596,12 +1596,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
-    if (PlatformDetection.isTV)
-      video.leaf(
-        'remote_scrub_run_on',
-        l10n.remoteScrubRunOn,
-        keywords: ['scrub', 'hold', 'fast forward', 'rewind'],
-      ),
     video.leaf(
       'controlsHideDelay',
       l10n.settingsHideControlsAfter,

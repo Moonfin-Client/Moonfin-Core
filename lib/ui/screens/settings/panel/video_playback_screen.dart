@@ -174,15 +174,6 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   60000: l10n.settingsSixtySeconds,
                 },
               ),
-              if (PlatformDetection.isTV)
-                SwitchPreferenceTile(
-                  preference: UserPreferences.remoteScrubRunOn,
-                  title: l10n.remoteScrubRunOn,
-                  subtitle: PlatformDetection.isAppleTV
-                      ? l10n.remoteScrubRunOnDescriptionAppleTv
-                      : l10n.remoteScrubRunOnDescription,
-                  icon: Icons.speed,
-                ),
               IntPickerPreferenceTile(
                 preference: UserPreferences.controlsHideDelay,
                 title: l10n.settingsHideControlsAfter,

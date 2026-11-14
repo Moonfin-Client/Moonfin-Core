@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,12 +22,10 @@ import 'package:moonfin/data/services/theme_music_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
 import 'package:moonfin/playback/playback_lifecycle_handler.dart';
-import 'package:moonfin/playback/remote_scrub_controller.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
-import 'package:moonfin/ui/widgets/playback/remote_scrub_badge.dart';
 import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -36,14 +33,6 @@ import 'package:moonfin/util/platform_detection.dart';
 import '../util/media_segment_fakes.dart';
 
 class _Images extends Fake implements ImageApi {
-  @override
-  String getTrickplayTileImageUrl(
-    String itemId, {
-    required int width,
-    required int index,
-    String? mediaSourceId,
-  }) => '';
-
   @override
   String getChapterImageUrl(
     String itemId, {
@@ -65,11 +54,10 @@ class _UserLibrary implements UserLibraryApi {
 
 class _Client extends Fake implements MediaServerClient {
   final items = FakeItemsApi();
-  ServerType type = ServerType.jellyfin;
   final userLibrary = _UserLibrary();
 
   @override
-  ServerType get serverType => type;
+  ServerType get serverType => ServerType.jellyfin;
 
   @override
   ItemsApi get itemsApi => items;
@@ -499,6 +487,99 @@ void main() {
     expect(skip.hasPrimaryFocus, isTrue);
 
     await tester.pumpWidget(const SizedBox());
+  });
+
+  group('holding Left or Right on TV', () {
+    Future<void> playOnTv(WidgetTester tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.skipForwardLength,
+        10000,
+      );
+      await mountPlayer(tester);
+      manager.state.setDuration(const Duration(hours: 10));
+      manager.state.setPlaying(true);
+      await tester.pump();
+      // Lets the controls hide.
+      await tester.pump(const Duration(seconds: 10));
+    }
+
+    // Focus moves wait for a frame and retry, so frames keep coming the way
+    // playing video does.
+    Future<void> advance(WidgetTester tester, int milliseconds) async {
+      for (var t = 0; t < milliseconds; t += 10) {
+        tester.binding.scheduleFrame();
+        await tester.pump(const Duration(milliseconds: 10));
+      }
+    }
+
+    test('grows from the set step to 30, 60 and 180 seconds', () {
+      expect(
+        [
+          for (var count = 1; count <= 18; count++)
+            heldSeekStepMs(10000, count) ~/ 1000,
+        ],
+        [10, 10, 10, 30, 30, 30, 30, 30, 60, 60, 60, 60, 60, 60, 60, 60, 180, 180],
+      );
+      expect(heldSeekStepMs(60000, 5), 60000, reason: 'never below the set step');
+    });
+
+    testWidgets('steps on a timer, not on key repeats', (tester) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 200);
+      for (var i = 0; i < 5; i++) {
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      }
+      // Steps land at 350 ms, then every 110 ms, through the eighth.
+      await advance(tester, 850);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [
+        const Duration(seconds: 10),
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30),
+      ]);
+
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(2), reason: 'release stops the hold');
+
+      // A tap on the seek bar moves one set step.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks.last, const Duration(seconds: 190));
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(3));
+
+      // Lets the last commit stop waiting for the player to land.
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('stops by itself when the release never comes', (
+      tester,
+    ) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 1000);
+      await tester.pump(const Duration(seconds: 11));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      // From 10 s, ten seconds of steps: 10, 10, five of 30, eight of 60 and
+      // 73 of 180.
+      expect(
+        manager.seeks.last,
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30 + 8 * 60 + 73 * 180),
+      );
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 
   testWidgets('short Cinema pre-roll blocks ordinary intro/outro actions', (
@@ -1318,407 +1399,6 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
   }
-
-  // Holding Left or Right on an Android TV remote scrubs at rising speeds. With
-  // Keep Scrubbing After Release on, the scrub goes on after release.
-  group('remote scrub on Android TV', () {
-    const holdDelay = RemoteScrubController.holdDelay;
-    final android = TargetPlatformVariant.only(TargetPlatform.android);
-
-    // The badge is always mounted and draws nothing while no scrub runs, so
-    // its icon is what shows a scrub.
-    final scrubIcon = find.descendant(
-      of: find.byType(RemoteScrubBadge),
-      matching: find.byIcon(Icons.fast_forward),
-    );
-
-    // Focus moves wait for a frame and retry a moment later, so this keeps
-    // frames coming the way playing video does.
-    Future<void> focusFrames(WidgetTester tester) async {
-      for (var i = 0; i < 3; i++) {
-        tester.binding.scheduleFrame();
-        await tester.pump(const Duration(milliseconds: 60));
-      }
-    }
-
-    // A 10 minute item playing at the 1 minute mark, with a 10 s trickplay
-    // preview so that a scrub pauses it unless the setting is off.
-    Future<void> mountTv(
-      WidgetTester tester, {
-      bool pauseWhileScrubbing = true,
-      bool runOn = false,
-    }) async {
-      await GetIt.instance<UserPreferences>().set(
-        UserPreferences.remoteScrubRunOn,
-        runOn,
-      );
-      await GetIt.instance<UserPreferences>().set(
-        UserPreferences.trickPlayPauseWhileScrubbing,
-        pauseWhileScrubbing,
-      );
-      // Silo's preview sheets are signed, so the fake needs no credentials.
-      client.type = ServerType.silo;
-      PlatformDetection.setTvMode(true);
-      addTearDown(() => PlatformDetection.setTvMode(false));
-      manager.queueService.setQueue([
-        AggregatedItem(
-          id: 'ep1',
-          serverId: 'server',
-          rawData: const {
-            'Id': 'ep1',
-            'Type': 'Episode',
-            'Trickplay': {
-              'ep1': {
-                '320': {
-                  'Width': 320,
-                  'Height': 180,
-                  'TileWidth': 10,
-                  'TileHeight': 10,
-                  'Interval': 10000,
-                },
-              },
-            },
-          },
-        ),
-      ]);
-      await mountPlayer(tester);
-      manager.state.setDuration(const Duration(minutes: 10));
-      manager.state.setPosition(const Duration(minutes: 1));
-      manager.state.setPlaying(true);
-      await tester.pump();
-      await focusFrames(tester);
-    }
-
-    // Controls hidden, Right held past the hold delay and on for [extra].
-    Future<void> holdRight(WidgetTester tester, Duration extra) async {
-      await tester.pump(const Duration(seconds: 6));
-      expect(find.byType(Slider), findsNothing);
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await focusFrames(tester);
-      await tester.pump(holdDelay - const Duration(milliseconds: 180) + extra);
-    }
-
-    // Catches: a hold seeking while it runs; release not leaving the scrub
-    // session open for OK; OK committing the wrong place.
-    testWidgets('a hold scrubs, waits for OK after release, and OK commits', (
-      tester,
-    ) async {
-      await mountTv(tester);
-      await holdRight(tester, const Duration(seconds: 3));
-      expect(find.byType(Slider), findsOneWidget);
-      expect(scrubIcon, findsOneWidget);
-      expect(manager.seeks, isEmpty);
-      expect(manager.transport, ['pause']);
-
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(seconds: 2));
-      expect(scrubIcon, findsNothing);
-      expect(manager.seeks, isEmpty);
-      manager.state.setPlaying(false);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.select);
-      await tester.pump(const Duration(seconds: 3));
-      expect(manager.seeks, hasLength(1));
-      final moved = manager.seeks.single - const Duration(minutes: 1);
-      expect(moved, greaterThan(const Duration(seconds: 10)));
-      // Every step is one 10 s picture.
-      expect(moved.inMilliseconds % 10000, 0);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a hold with the pause setting off pausing, or not committing on
-    // release.
-    testWidgets('with Pause while scrubbing off, release commits', (
-      tester,
-    ) async {
-      await mountTv(tester, pauseWhileScrubbing: false);
-      await holdRight(tester, const Duration(seconds: 3));
-      expect(scrubIcon, findsOneWidget);
-      expect(manager.seeks, isEmpty);
-
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(seconds: 3));
-      expect(manager.seeks, hasLength(1));
-      expect(manager.seeks.single, greaterThan(const Duration(seconds: 70)));
-      expect(manager.transport, isEmpty);
-      expect(scrubIcon, findsNothing);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a tap just after a release skipping from the pre-seek position
-    // and dropping the scrub's result.
-    testWidgets('a tap just after a release skips from the scrub target', (
-      tester,
-    ) async {
-      await mountTv(tester, pauseWhileScrubbing: false);
-      await holdRight(tester, const Duration(seconds: 3));
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(manager.seeks, hasLength(1));
-      final committed = manager.seeks.single;
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-
-      expect(manager.seeks, hasLength(2));
-      expect(manager.seeks.last, committed + const Duration(seconds: 30));
-      expect(manager.transport, isEmpty, reason: 'a tap never pauses');
-
-      // A second tap before the player reports the first must build on it.
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(manager.seeks, hasLength(3));
-      expect(manager.seeks.last, committed + const Duration(seconds: 60));
-      await tester.pump(const Duration(seconds: 3));
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a skip just after a chapter jump, segment skip or remote seek
-    // building on the pre-seek position.
-    testWidgets('a tap just after any seek skips from the seek target', (
-      tester,
-    ) async {
-      await mountTv(tester, pauseWhileScrubbing: false);
-      const target = Duration(minutes: 5);
-      unawaited(manager.seekTo(target));
-      await tester.pump();
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-
-      expect(manager.seeks.last, target + const Duration(seconds: 30));
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a seek target that never clears, so a later skip starts from
-    // a stale position.
-    testWidgets('a tap after the player catches up skips from the reported '
-        'position', (tester) async {
-      await mountTv(tester, pauseWhileScrubbing: false);
-      var now = DateTime.utc(2026, 11, 10, 12);
-      manager.clock = () => now;
-      unawaited(manager.seekTo(const Duration(minutes: 8)));
-      now = now.add(PlaybackManager.seekTargetTimeout);
-      manager.state.setPosition(const Duration(minutes: 3));
-      await tester.pump();
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-
-      expect(
-        manager.seeks.last,
-        const Duration(minutes: 3, seconds: 30),
-      );
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a tap on the seek bar opening a scrub session, which pauses.
-    testWidgets('with the controls up, a tap skips and playback goes on', (
-      tester,
-    ) async {
-      await mountTv(tester);
-      expect(find.byType(Slider), findsOneWidget);
-      expect(
-        FocusManager.instance.primaryFocus?.debugLabel,
-        'video_player_tv_seekbar',
-      );
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(manager.seeks, isEmpty);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-
-      expect(manager.seeks, [const Duration(seconds: 90)]);
-      expect(manager.transport, isEmpty, reason: 'a tap never pauses');
-      expect(scrubIcon, findsNothing);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a tap dropping the waiting scrub session and seeking, instead
-    // of moving its target.
-    testWidgets('a tap during a waiting scrub moves its target', (
-      tester,
-    ) async {
-      await mountTv(tester);
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(holdDelay + const Duration(seconds: 3));
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(manager.transport, ['pause']);
-      expect(manager.seeks, isEmpty);
-      manager.state.setPlaying(false);
-      final waiting = tester.widget<Slider>(find.byType(Slider)).value;
-      expect(waiting, greaterThan(70000));
-
-      // A tap adds one set skip to the waiting target, without a seek.
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(manager.seeks, isEmpty);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.select);
-      await tester.pump(const Duration(seconds: 3));
-      expect(manager.seeks, hasLength(1));
-      expect(manager.seeks.single.inMilliseconds, waiting.round() + 30000);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // The run-on tests leave the pause setting off: the video plays on while
-    // the scrub runs, and a hold's release is not the player's to hold.
-    Future<void> mountRunOn(WidgetTester tester) =>
-        mountTv(tester, pauseWhileScrubbing: false, runOn: true);
-
-    // Catches: release committing; controls hiding mid-scrub; OK seeking to
-    // the wrong place; a pause the setting did not ask for.
-    testWidgets('run-on: a hold scrubs, survives release, and OK plays from '
-        'the target', (tester) async {
-      await mountRunOn(tester);
-      // Hold the key past the hold delay, release, and let it run for 6 s.
-      await holdRight(tester, Duration.zero);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(seconds: 6));
-      expect(manager.seeks, isEmpty);
-      expect(find.byType(Slider), findsOneWidget);
-      expect(scrubIcon, findsOneWidget);
-      expect(manager.transport, isEmpty);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.select);
-      await tester.pump(const Duration(seconds: 2));
-      expect(manager.seeks, hasLength(1));
-      // A 10 s picture a step: one at once and one every 312.5 ms at level 1.
-      final moved = manager.seeks.single - const Duration(minutes: 1);
-      expect(moved.inMilliseconds % 10000, 0);
-      expect(moved.inSeconds, inInclusiveRange(190, 210));
-      expect(manager.state.isPlaying, isTrue);
-      expect(scrubIcon, findsNothing);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a hold started just before the hide timer fires running with
-    // the controls hidden.
-    testWidgets('run-on: a hold near the hide time keeps the controls up', (
-      tester,
-    ) async {
-      await mountRunOn(tester);
-      await tester.pump(const Duration(seconds: 6));
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await focusFrames(tester);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(find.byType(Slider), findsOneWidget);
-
-      await tester.pump(const Duration(milliseconds: 4600));
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(Slider), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 200));
-      expect(scrubIcon, findsOneWidget);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(milliseconds: 100));
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: Back leaving playback; Back committing.
-    testWidgets('run-on: Back drops the scrub and stays in the player', (
-      tester,
-    ) async {
-      await mountRunOn(tester);
-      await holdRight(tester, Duration.zero);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(seconds: 3));
-      expect(scrubIcon, findsOneWidget);
-
-      await tester.sendKeyEvent(
-        LogicalKeyboardKey.goBack,
-        physicalKey: PhysicalKeyboardKey.escape,
-      );
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(manager.seeks, isEmpty);
-      expect(scrubIcon, findsNothing);
-      expect(find.byType(Slider), findsOneWidget);
-      expect(manager.state.isPlaying, isTrue);
-      expect(find.byType(VideoPlayerScreen), findsOneWidget);
-      expect(manager.stopCalls, 0);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: clicks lost; a click starting a scrub; a jump on press.
-    testWidgets('run-on: a click skips on release, not on press', (
-      tester,
-    ) async {
-      await mountRunOn(tester);
-      await tester.pump(const Duration(seconds: 6));
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await focusFrames(tester);
-      expect(manager.seeks, isEmpty);
-
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump();
-      expect(manager.seeks, [const Duration(seconds: 90)]);
-      expect(scrubIcon, findsNothing);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: the release of a hold that reached the top level not reaching
-    // today's release logic, so the scrub hangs or runs on.
-    testWidgets('run-on: a hold to the top level commits on release', (
-      tester,
-    ) async {
-      const stepEvery = RemoteScrubController.stepEvery;
-      const speeds = RemoteScrubController.speeds;
-      await mountRunOn(tester);
-      // The scrub starts at the hold delay; each period after it is a level.
-      await holdRight(
-        tester,
-        stepEvery * (speeds.length - 1) + const Duration(milliseconds: 50),
-      );
-      expect(manager.seeks, isEmpty);
-      expect(scrubIcon, findsOneWidget);
-
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(const Duration(seconds: 2));
-      expect(manager.seeks, hasLength(1));
-      final moved = manager.seeks.single - const Duration(minutes: 1);
-      expect(moved.inMilliseconds % 10000, 0);
-      expect(moved, greaterThan(const Duration(seconds: 60)));
-      expect(scrubIcon, findsNothing);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-
-    // Catches: a hold or click through the skip prompt skipping 30 seconds.
-    testWidgets('the skip prompt keeps its keys', (tester) async {
-      client.items.segments = [
-        segmentJson(id: 'intro', type: 'Intro', startMs: 0, endMs: 90000),
-      ];
-      await mountTv(tester);
-      manager.state.setPosition(const Duration(seconds: 5));
-      await tester.pump();
-      await tester.pump();
-      final skip = tester
-          .widget<SkipSegmentOverlay>(find.byType(SkipSegmentOverlay))
-          .focusNode!;
-      expect(skip.hasPrimaryFocus, isTrue);
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
-      await tester.pump(holdDelay);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
-      await focusFrames(tester);
-      expect(manager.seeks, isEmpty);
-      expect(scrubIcon, findsNothing);
-      expect(find.byType(Slider), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
-    }, variant: android);
-  });
 
   // With nothing queued after it, skipping the credits closed the player even
   // when they end well before the file does, so a scene after them was never

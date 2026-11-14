@@ -3044,13 +3044,6 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30000,
   );
 
-  // On a TV remote, holding Left or Right starts a scrub that keeps going
-  // after release, at speed levels. Off, a hold scrubs and stops on release.
-  static final remoteScrubRunOn = Preference(
-    key: 'remote_scrub_run_on',
-    defaultValue: false,
-  );
-
   static final controlsHideDelay = Preference(
     key: 'controlsHideDelay',
     defaultValue: 5000,
