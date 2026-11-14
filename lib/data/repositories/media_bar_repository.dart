@@ -1206,13 +1206,18 @@ class MediaBarRepository {
         return null;
       },
     );
-    return [
+    final result = [
       for (final pick in chosen)
         if (pick is MediaBarSlideItem)
           pick
         else
           ?slides[_externalId(pick as ImdbExternalListItem)],
     ];
+    // Outside titles left out make room for library slides not picked yet.
+    while (result.length < maxItems && inOrder.moveNext()) {
+      result.add(inOrder.current);
+    }
+    return result;
   }
 
   static String _externalId(ImdbExternalListItem item) =>

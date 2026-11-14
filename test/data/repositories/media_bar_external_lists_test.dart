@@ -65,6 +65,7 @@ void main() {
     String libraryIds = '',
     String blocked = '',
     String excludedGenres = '',
+    String itemCount = '10',
     Map<String, Map<String, dynamic>> details = const {},
   }) async {
     SharedPreferences.setMockInitialValues({});
@@ -72,7 +73,7 @@ void main() {
     await store.init();
     final prefs = UserPreferences(store);
     await prefs.set(UserPreferences.pluginSyncEnabled, false);
-    await prefs.set(UserPreferences.mediaBarItemCount, '10');
+    await prefs.set(UserPreferences.mediaBarItemCount, itemCount);
     await prefs.set(UserPreferences.mediaBarContentType, contentType);
     await prefs.set(UserPreferences.mediaBarExternalLists, lists.keys.join(','));
     await prefs.set(UserPreferences.mediaBarLibraryIds, libraryIds);
@@ -230,6 +231,24 @@ void main() {
 
     expect(slides.map((s) => s.itemId), ['2']);
     expect(slides.single.genres, ['Comedy']);
+  });
+
+  test('library slides take the place of left out outside titles', () async {
+    final slides = await load(
+      itemCount: '3',
+      libraryIds: 'lib',
+      excludedGenres: 'Horror',
+      lists: {
+        'imdb_top_250_movies': [
+          for (final id in ['1', '2', '3']) _title(id, genres: ['Horror']),
+        ],
+      },
+    );
+
+    expect(
+      slides.map((s) => s.itemId),
+      unorderedEquals(['own0', 'own1', 'own2']),
+    );
   });
 
   test('mixes picked lists in with a picked library', () async {
