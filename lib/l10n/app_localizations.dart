@@ -4780,6 +4780,18 @@ abstract class AppLocalizations {
   /// **'This device can\'t play this video\'s format. Try an external player.'**
   String get playbackVideoUnsupported;
 
+  /// Notice shown over the video when direct play runs out of local disk space for its segment cache and playback steps to a server-served stream
+  ///
+  /// In en, this message translates to:
+  /// **'Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.'**
+  String get playbackStorageFullFallback;
+
+  /// Error shown when playback stops because device storage is full and there is no server-served stream left to fall back to
+  ///
+  /// In en, this message translates to:
+  /// **'Device storage is full, so the video could not be buffered. Free up space on this device and try again.'**
+  String get playbackStorageFullStopped;
+
   /// Overlay shown while a live channel's bounded recovery is retrying
   ///
   /// In en, this message translates to:

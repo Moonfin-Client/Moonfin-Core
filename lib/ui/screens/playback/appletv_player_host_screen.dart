@@ -65,7 +65,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<void>? _sessionEndedSub;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
+  StreamSubscription<PlaybackNotice>? _noticeSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
+  int? _lastShownStorageFullToken;
   bool _exiting = false;
   bool _exitFinished = false;
   final Map<String, List<Map<String, dynamic>>> _castCache = {};
@@ -206,6 +208,22 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
               Future<void>.value(),
         );
       });
+      _noticeSub = manager.noticeStream.listen((notice) {
+        if (!mounted || _exiting) return;
+        if (notice == PlaybackNotice.storageFullServerFallback) {
+          final message = AppLocalizations.of(
+            context,
+          ).playbackStorageFullFallback;
+          final backend = _backend;
+          if (backend != null && backend.isPlayerPresented) {
+            unawaited(backend.showNotice(message));
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
+        }
+      });
       _bringupSub = manager.bringupStateStream.listen((state) {
         if (mounted) {
           setState(() => _bringupState = state);
@@ -214,6 +232,22 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         _syncCinemaSkip();
         if (state.phase == PlaybackBringupPhase.ready) {
           _pushSubtitleStyle(force: true);
+        } else if (state.phase == PlaybackBringupPhase.failed &&
+            state.error == storageFullError &&
+            !_exiting &&
+            mounted &&
+            _lastShownStorageFullToken != state.sessionToken) {
+          _lastShownStorageFullToken = state.sessionToken;
+          final l10n = AppLocalizations.of(context);
+          final message = l10n.playbackStorageFullStopped;
+          final backend = _backend;
+          if (backend != null && backend.isPlayerPresented) {
+            unawaited(backend.showMessage(message, closeLabel: l10n.close));
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
         }
         // The initState load can run before the queue item resolves, so retry
         // here. The per-item guard makes repeat events a no-op.
@@ -1986,6 +2020,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _sessionEndedSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
+    _noticeSub?.cancel();
     _actionSub?.cancel();
     _screensaverPlayingSub?.cancel();
     _positionSub?.cancel();

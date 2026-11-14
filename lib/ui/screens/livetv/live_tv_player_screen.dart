@@ -149,6 +149,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   /// spinner.
   LiveRecoveryStatus? _liveRecoveryStatus;
   StreamSubscription<LiveRecoveryStatus?>? _liveRecoveryStatusSub;
+  StreamSubscription<PlaybackNotice>? _noticeSub;
+  int? _lastShownStorageFullToken;
 
   /// Whether the persistent failure card is showing. Unlike the old snackbar
   /// it does not time out -- it stays until the viewer retries, tunes
@@ -278,6 +280,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       if (!mounted) return;
       setState(() => _liveRecoveryStatus = status);
     });
+    _noticeSub = _manager.noticeStream.listen((notice) {
+      if (!mounted || _isStopping) return;
+      if (notice == PlaybackNotice.storageFullServerFallback) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).playbackStorageFullFallback,
+            ),
+          ),
+        );
+      }
+    });
     FocusManager.instance.addListener(_onGlobalFocusChanged);
     _tvPlayPauseFocus.addListener(_onControlFocusChanged);
     _tvChannelsFocus.addListener(_onControlFocusChanged);
@@ -335,6 +349,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _failureCardReconcilePlayingSub?.cancel();
     _failureCardReconcileBufferingSub?.cancel();
     _liveRecoveryStatusSub?.cancel();
+    _noticeSub?.cancel();
     _retryFocus.dispose();
     _prefs.removeListener(_applySubtitleStyle);
     FocusManager.instance.removeListener(_onGlobalFocusChanged);
@@ -918,8 +933,20 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   /// its bounded recovery could not save the stream. The tune path never sees
   /// it, because by then it has already returned.
   void _onBringupState(PlaybackBringupState state) {
-    if (!mounted || _isStopping || !_channelIsUp) return;
+    if (!mounted || _isStopping) return;
     if (state.phase != PlaybackBringupPhase.failed) return;
+    if (state.error == storageFullError &&
+        _lastShownStorageFullToken != state.sessionToken) {
+      _lastShownStorageFullToken = state.sessionToken;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).playbackStorageFullStopped,
+          ),
+        ),
+      );
+    }
+    if (!_channelIsUp) return;
     _channelIsUp = false;
     _showChannelFailedCard(_currentChannel.name);
   }

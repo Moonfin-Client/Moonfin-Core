@@ -397,6 +397,7 @@ final class NativeApplePlayerViewController: UIViewController {
 
     private var chapters: [(title: String, startMs: Int, imageUrl: String)] = []
     private var showChapterMarkers = false
+    private weak var activeNoticeBanner: UIView?
 
     private var timeSlots = TimeSlotConfig()
     private var clockFormatter = makeClockFormatter(use24Hour: false)
@@ -3514,6 +3515,7 @@ final class NativeApplePlayerViewController: UIViewController {
         _ message: String, actionLabel: String?, closeLabel: String,
         onAction: @escaping () -> Void
     ) {
+        activeNoticeBanner?.removeFromSuperview()
         let alert = makePlayerMenu(title: message, message: nil, preferredStyle: .alert)
         if let actionLabel, !actionLabel.isEmpty {
             alert.addAction(makePlayerAction(title: actionLabel, style: .default) { _ in onAction() })
@@ -3526,6 +3528,71 @@ final class NativeApplePlayerViewController: UIViewController {
             top.present(alert, animated: true)
         }
         if isOnScreen { show() } else { pendingMessage = show }
+    }
+
+    /// Non-blocking banner shown near the top of the video for a few seconds
+    /// (for example when device storage fills up and direct play hands off to a
+    /// server stream) without stealing remote focus or interrupting playback.
+    func showNotice(_ message: String) {
+        let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        loadViewIfNeeded()
+        activeNoticeBanner?.removeFromSuperview()
+
+        let pill = UIView()
+        pill.translatesAutoresizingMaskIntoConstraints = false
+        pill.isUserInteractionEnabled = false
+        pill.backgroundColor = UIColor(white: 0.08, alpha: 0.92)
+        pill.layer.borderWidth = 1
+        pill.layer.borderColor = UIColor.systemYellow.withAlphaComponent(0.35).cgColor
+
+        let iconView = UIImageView(
+            image: UIImage(systemName: "externaldrive.badge.exclamationmark")
+                ?? UIImage(systemName: "exclamationmark.triangle.fill")
+        )
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.tintColor = .systemYellow
+        iconView.contentMode = .scaleAspectFit
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = trimmed
+        label.textColor = .white
+        label.numberOfLines = 3
+        label.font = .systemFont(ofSize: 26, weight: .medium)
+
+        pill.layer.cornerRadius = 24
+        pill.addSubview(iconView)
+        pill.addSubview(label)
+        view.addSubview(pill)
+        activeNoticeBanner = pill
+
+        NSLayoutConstraint.activate([
+            pill.topAnchor.constraint(equalTo: view.topAnchor, constant: 90),
+            pill.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pill.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 60),
+            pill.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -60),
+            pill.widthAnchor.constraint(lessThanOrEqualToConstant: 1360),
+            iconView.leadingAnchor.constraint(equalTo: pill.leadingAnchor, constant: 28),
+            iconView.centerYAnchor.constraint(equalTo: pill.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 32),
+            iconView.heightAnchor.constraint(equalToConstant: 32),
+            label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 16),
+            label.trailingAnchor.constraint(equalTo: pill.trailingAnchor, constant: -28),
+            label.topAnchor.constraint(equalTo: pill.topAnchor, constant: 18),
+            label.bottomAnchor.constraint(equalTo: pill.bottomAnchor, constant: -18),
+        ])
+
+        pill.alpha = 0
+        UIView.animate(withDuration: 0.25) { pill.alpha = 1 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) { [weak pill] in
+            guard let pill, pill.superview != nil else { return }
+            UIView.animate(withDuration: 0.35) {
+                pill.alpha = 0
+            } completion: { _ in
+                pill.removeFromSuperview()
+            }
+        }
     }
 
     /// Dismissal is asynchronous, so whatever comes next has to wait for the

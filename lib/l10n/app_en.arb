@@ -3708,6 +3708,14 @@
   "@playbackVideoUnsupported": {
     "description": "Shown when the player can't show an item's video and no transcode is left to try, instead of playing the audio over a black screen"
   },
+  "playbackStorageFullFallback": "Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.",
+  "@playbackStorageFullFallback": {
+    "description": "Notice shown over the video when direct play runs out of local disk space for its segment cache and playback steps to a server-served stream"
+  },
+  "playbackStorageFullStopped": "Device storage is full, so the video could not be buffered. Free up space on this device and try again.",
+  "@playbackStorageFullStopped": {
+    "description": "Error shown when playback stops because device storage is full and there is no server-served stream left to fall back to"
+  },
   "liveReconnecting": "Reconnecting… ({attempt} of {total})",
   "@liveReconnecting": {
     "description": "Overlay shown while a live channel's bounded recovery is retrying",

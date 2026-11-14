@@ -59,7 +59,9 @@ class _AppleTvLiveTvPlayerHostScreenState
   StreamSubscription<void>? _exitSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
+  StreamSubscription<PlaybackNotice>? _noticeSub;
   StreamSubscription<bool>? _screensaverPlayingSub;
+  int? _lastShownStorageFullToken;
 
   (SubtitleStyle, double, double, int)? _lastSubtitleStyle;
   late AppleTvClickpadSeekMode _clickpadSeekMode = _prefs.get(
@@ -152,10 +154,39 @@ class _AppleTvLiveTvPlayerHostScreenState
       // A failure once the channel is playing means the manager's recovery
       // couldn't save the stream. The tune never sees it.
       if (state.phase == PlaybackBringupPhase.failed &&
-          _channelIsUp &&
+          (_channelIsUp ||
+              (state.error == storageFullError &&
+                  _lastShownStorageFullToken != state.sessionToken)) &&
           !_exiting) {
+        if (state.error == storageFullError) {
+          _lastShownStorageFullToken = state.sessionToken;
+        }
         _channelIsUp = false;
-        _showChannelFailed(_currentChannel.name);
+        _showChannelFailed(
+          _currentChannel.name,
+          overrideMessage: state.error == storageFullError && mounted
+              ? AppLocalizations.of(context).playbackStorageFullStopped
+              : null,
+        );
+      }
+    });
+    _noticeSub = _manager.noticeStream.listen((notice) {
+      if (!mounted || _exiting) return;
+      if (notice == PlaybackNotice.storageFullServerFallback) {
+        final message = AppLocalizations.of(
+          context,
+        ).playbackStorageFullFallback;
+        final backend = _backend;
+        if (backend != null &&
+            backend.isPlayerPresented &&
+            !_inGuide &&
+            !_recordingFlow) {
+          unawaited(backend.showNotice(message));
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+        }
       }
     });
     _liveRecoverySub = _manager.liveRecoveryStatusStream.listen((status) {
@@ -233,6 +264,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _exitSub?.cancel();
     _actionSub?.cancel();
     _bringupSub?.cancel();
+    _noticeSub?.cancel();
     _tracksChangedSub?.cancel();
     _screensaverPlayingSub?.cancel();
     _liveRecoverySub?.cancel();
@@ -331,7 +363,20 @@ class _AppleTvLiveTvPlayerHostScreenState
     if (!mounted || _exiting || _currentChannel.id != channel.id) return;
     _channelIsUp = terminalState?.phase == PlaybackBringupPhase.ready;
     if (!_channelIsUp) {
-      _showChannelFailed(channel.name);
+      final isStorageFull = terminalState?.error == storageFullError;
+      if (isStorageFull &&
+          terminalState?.sessionToken == _lastShownStorageFullToken) {
+        return;
+      }
+      if (isStorageFull && terminalState?.sessionToken != null) {
+        _lastShownStorageFullToken = terminalState!.sessionToken;
+      }
+      _showChannelFailed(
+        channel.name,
+        overrideMessage: isStorageFull
+            ? AppLocalizations.of(context).playbackStorageFullStopped
+            : null,
+      );
       return;
     }
     _pushMetadata();
@@ -341,10 +386,10 @@ class _AppleTvLiveTvPlayerHostScreenState
   /// The Flutter player's failure card, as an alert over the native player
   /// with the same Retry. Before the player is up, there's only Flutter to
   /// show it on.
-  void _showChannelFailed(String channelName) {
+  void _showChannelFailed(String channelName, {String? overrideMessage}) {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    final message = l10n.failedToPlayChannel(channelName);
+    final message = overrideMessage ?? l10n.failedToPlayChannel(channelName);
     final backend = _backend;
     if (backend != null && backend.isPlayerPresented && !_inGuide) {
       unawaited(
