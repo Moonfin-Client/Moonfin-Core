@@ -32,8 +32,9 @@ void main() {
     collectionType: 'movies',
     serverId: 'a',
   );
+  // The same name, so only the unified kind tells the two apart.
   final merged = AggregatedLibrary.merged(
-    name: 'Movies',
+    name: perServer.name,
     unifiedKindName: 'movies',
     libraries: const [perServer],
   );

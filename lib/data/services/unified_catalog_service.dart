@@ -385,6 +385,10 @@ class UnifiedCatalogService extends ChangeNotifier {
   /// out of what the read brings.
   final Map<_Account, Set<String>> _removedDuringRead = {};
 
+  /// The same for an account's count check, kept apart so a check and a full
+  /// read can't end each other's tracking.
+  final Map<_Account, Set<String>> _removedDuringCheck = {};
+
   /// Bumped when an account's rows are written while not in memory, so
   /// [_loadAccount] can tell its read was overtaken.
   final Map<_Account, int> _diskWrites = {};
@@ -529,6 +533,7 @@ class UnifiedCatalogService extends ChangeNotifier {
     _syncingServers.clear();
     _userDataDuringRead.clear();
     _removedDuringRead.clear();
+    _removedDuringCheck.clear();
     _userDataQueue.clear();
     _userDataTimer?.cancel();
     _userDataTimer = null;
@@ -1621,6 +1626,29 @@ class UnifiedCatalogService extends ChangeNotifier {
     int generation,
   ) async {
     final account = _accountOf(session);
+    final removedDuringCheck = _removedDuringCheck[account] = {};
+    final userDataRevision = _userDataSync.revision;
+    try {
+      return await _checkAndStore(
+        session,
+        generation,
+        removedDuringCheck,
+        userDataRevision,
+      );
+    } finally {
+      if (identical(_removedDuringCheck[account], removedDuringCheck)) {
+        _removedDuringCheck.remove(account);
+      }
+    }
+  }
+
+  Future<_SyncOutcome?> _checkAndStore(
+    ServerUserSession session,
+    int generation,
+    Set<String> removedDuringCheck,
+    int userDataRevision,
+  ) async {
+    final account = _accountOf(session);
     final client = session.client;
     final libraries = await _librariesByKind(client);
     if (_isStale(generation)) return _SyncOutcome.unchanged;
@@ -1697,6 +1725,8 @@ class UnifiedCatalogService extends ChangeNotifier {
       heldAfter: heldAfter,
       droppedIds: droppedIds,
       addedEntries: addedEntries,
+      removedDuringCheck: removedDuringCheck,
+      userDataRevision: userDataRevision,
     );
   }
 
@@ -1762,7 +1792,9 @@ class UnifiedCatalogService extends ChangeNotifier {
   /// Writes what a check found: deletes [droppedIds] and inserts
   /// [addedEntries]. [heldAfter] is the row count per kind afterwards. Never
   /// rewrites a row already held, so unlike a full read it needs no
-  /// [_userDataDuringRead].
+  /// [_userDataDuringRead]. A title [removeCopy] dropped since the check began
+  /// is left out, and user data reported since [userDataRevision] for an
+  /// added title is asked for again, as it came after the fetch.
   Future<_SyncOutcome> _storeCheckResult(
     _Account account,
     int generation, {
@@ -1770,7 +1802,27 @@ class UnifiedCatalogService extends ChangeNotifier {
     required Map<UnifiedLibraryKind, int> heldAfter,
     required Set<String> droppedIds,
     required List<UnifiedCatalogEntry> addedEntries,
+    required Set<String> removedDuringCheck,
+    required int userDataRevision,
   }) async {
+    // The server's count still holds a title left out here, so it is
+    // forgotten and the next check lists the ids again.
+    final forgottenTotals = <UnifiedLibraryKind>{};
+    if (addedEntries.any((e) => removedDuringCheck.contains(e.itemId))) {
+      heldAfter = {...heldAfter};
+      for (final entry in addedEntries) {
+        if (!removedDuringCheck.contains(entry.itemId)) continue;
+        for (final kind in UnifiedLibraryKind.values) {
+          if (kind.itemType != entry.itemType) continue;
+          heldAfter[kind] = heldAfter[kind]! - 1;
+          forgottenTotals.add(kind);
+        }
+      }
+      addedEntries = [
+        for (final entry in addedEntries)
+          if (!removedDuringCheck.contains(entry.itemId)) entry,
+      ];
+    }
     final checkedAt = _now();
     try {
       await _db.transaction(() async {
@@ -1800,7 +1852,9 @@ class UnifiedCatalogService extends ChangeNotifier {
               _db.catalogSyncStates,
               CatalogSyncStatesCompanion(
                 lastSyncedAt: Value(checkedAt),
-                serverTotal: total == null
+                serverTotal: forgottenTotals.contains(kind)
+                    ? const Value(null)
+                    : total == null
                     ? const Value.absent()
                     : Value(total),
                 itemCount: total == null
@@ -1835,8 +1889,20 @@ class UnifiedCatalogService extends ChangeNotifier {
         titlesChanged = entries.remove(itemId) != null || titlesChanged;
       }
       for (final entry in addedEntries) {
+        // Removed while the rows were being written.
+        if (removedDuringCheck.contains(entry.itemId)) continue;
         entries[entry.itemId] = entry;
       }
+      // These weren't in [entries] when [_onUserDataChanged] looked.
+      final changed = _userDataSync.changedSince(userDataRevision).toSet();
+      for (final entry in addedEntries) {
+        if (!changed.contains(entry.itemId) ||
+            !entries.containsKey(entry.itemId)) {
+          continue;
+        }
+        _userDataQueue[(serverId: account.serverId, itemId: entry.itemId)] = 0;
+      }
+      _scheduleUserDataFlush(_userDataDebounce);
     }
     for (final kind in UnifiedLibraryKind.values) {
       final key = _syncStateKey(account, kind);
@@ -1845,7 +1911,9 @@ class UnifiedCatalogService extends ChangeNotifier {
       _syncStates[key] = (
         checkedAt: checkedAt,
         fullReadAt: state.fullReadAt,
-        serverTotal: totals[kind] ?? state.serverTotal,
+        serverTotal: forgottenTotals.contains(kind)
+            ? null
+            : totals[kind] ?? state.serverTotal,
       );
     }
     return titlesChanged ? _SyncOutcome.titlesChanged : _SyncOutcome.unchanged;
@@ -2299,6 +2367,7 @@ class UnifiedCatalogService extends ChangeNotifier {
       final entry = _entries[account]?.remove(itemId);
       _userDataDuringRead[account]?.remove(itemId);
       _removedDuringRead[account]?.add(itemId);
+      _removedDuringCheck[account]?.add(itemId);
       if (entry == null) continue;
       removedAny = true;
       _forgetServerTotal(account, entry.itemType);

@@ -229,6 +229,15 @@ void main() {
     expect(vm.facetValues.years, [2034, 2032]);
   });
 
+  test('a page across movies and series can be grouped', () async {
+    await seedCatalog(db, 'a', [_drama('a1', 'Altovar')]);
+
+    final vm = await genrePage('Drama');
+
+    expect(vm.includeItemTypes, isNull);
+    expect(vm.canGroup, isTrue);
+  });
+
   test('saves its sort apart from the merged libraries\' sort', () async {
     await seedCatalog(db, 'a', [_drama('a1', 'Hodrimel')]);
     final vm = await genrePage('Drama');

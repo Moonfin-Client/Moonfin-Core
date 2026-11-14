@@ -56,36 +56,58 @@ class UnifiedGenreRow {
 
   bool get _isRandom => sortBy.split(',').first == 'Random';
 
-  List<AggregatedItem> cards(UnifiedCatalogService catalog) {
-    final snapshot = catalog.snapshotOf(
-      kinds,
-      UnifiedCatalogQuery(
-        itemTypes: kinds.map((kind) => kind.itemType).join(','),
-        sortBy: sortBy,
-        descending: descending,
-        genre: name,
-      ),
-    );
-    return [
-      for (final raw in snapshot.items)
-        if (!isAnyCopyBlocked(raw))
+  /// The genre's cards, and the copies of the titles a blocked rating hides.
+  /// Null when the catalog holds nothing of the genre.
+  ({List<AggregatedItem> cards, Set<String> blockedCopies})? _read(
+    UnifiedCatalogService catalog,
+  ) {
+    final titles = catalog
+        .snapshotOf(
+          kinds,
+          UnifiedCatalogQuery(
+            itemTypes: kinds.map((kind) => kind.itemType).join(','),
+            sortBy: sortBy,
+            descending: descending,
+            genre: name,
+          ),
+        )
+        .items;
+    if (titles.isEmpty) return null;
+    final cards = <AggregatedItem>[];
+    final blockedCopies = <String>{};
+    for (final raw in titles) {
+      if (isAnyCopyBlocked(raw)) {
+        blockedCopies.addAll(unifiedCopiesOf(raw).map((copy) => copy.key));
+      } else {
+        cards.add(
           AggregatedItem(
             id: raw['Id'].toString(),
             serverId: raw[unifiedServerIdKey].toString(),
             rawData: raw,
           ),
-    ];
+        );
+      }
+    }
+    return (cards: cards, blockedCopies: blockedCopies);
   }
 
-  /// Null when the catalog holds nothing of the genre. A random row keeps
-  /// [shown] in place, since a second draw would move every card.
+  /// Null when the catalog holds nothing of the genre, and empty when it
+  /// holds only blocked titles.
+  List<AggregatedItem>? cards(UnifiedCatalogService catalog) =>
+      _read(catalog)?.cards;
+
+  /// Null when the catalog holds nothing of the genre, and no cards when it
+  /// holds only blocked titles. A random row keeps [shown] in place, since a
+  /// second draw would move every card.
   ({List<AggregatedItem> items, int total})? complete(
     List<AggregatedItem> shown,
     UnifiedCatalogService catalog, {
     required int limit,
   }) {
-    final all = cards(catalog);
-    if (all.isEmpty) return null;
+    final read = _read(catalog);
+    if (read == null) return null;
+    final (cards: all, :blockedCopies) = read;
+    if (all.isEmpty && !_isRandom) return (items: const [], total: 0);
     final size = max(limit, shown.length);
     if (!_isRandom) {
       return (items: all.take(size).toList(), total: all.length);
@@ -102,7 +124,9 @@ class UnifiedGenreRow {
       final card = _copyKeys(item).map((key) => byCopy[key]).nonNulls.firstOrNull;
       if (card != null) {
         if (placed.add(card)) items.add(card);
-      } else if (!hasCatalogCards([item])) {
+      } else if (!hasCatalogCards([item]) &&
+          // A title blocked through another server's copy stays out.
+          !_copyKeys(item).any(blockedCopies.contains)) {
         items.add(item);
         liveOnly++;
       }
@@ -122,7 +146,7 @@ class UnifiedGenreRow {
   }) {
     final seen = {for (final item in shown) ..._copyKeys(item)};
     final more = [
-      for (final card in cards(catalog))
+      for (final card in cards(catalog) ?? const <AggregatedItem>[])
         if (!_copyKeys(card).any(seen.contains)) card,
     ];
     final room = min(pageSize, max(0, maxItems - shown.length));

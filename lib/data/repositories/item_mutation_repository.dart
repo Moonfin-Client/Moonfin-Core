@@ -26,6 +26,8 @@ class ItemMutationRepository {
   /// what the server holds throw, so a caller undoing its own toggle on error
   /// lands on the server's value whichever order the callers run in.
   Future<void> setFavorite(String itemId, {required bool isFavorite}) async {
+    // Read before the request below fills in a guess for an unknown flag.
+    final flagIsKnown = userDataSync.favoriteFor(itemId) != null;
     userDataSync.requestFavorite(itemId, isFavorite);
     final key = (
       session: userDataSync.session,
@@ -49,7 +51,10 @@ class ItemMutationRepository {
         held: rememberedIsOthers
             ? !isFavorite
             : userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
-        heldIsKnown: !rememberedIsOthers,
+        heldIsKnown: !rememberedIsOthers && flagIsKnown,
+        // Unknown, it is what the caller showed before its toggle, so a
+        // failure still lands the caller there.
+        heldIsShown: !rememberedIsOthers,
       );
       sync.done = _syncFavorite(key, sync);
     } else {
@@ -73,7 +78,7 @@ class ItemMutationRepository {
       await Future<void>.value();
       while (userDataSync.session == session) {
         final wanted = sync.wanted;
-        if (wanted == sync.held) {
+        if (sync.heldIsKnown && wanted == sync.held) {
           if (userDataSync.pendingFavorite(itemId) == wanted) {
             userDataSync.confirmFavorite(itemId, wanted);
           }
@@ -91,7 +96,7 @@ class ItemMutationRepository {
           throw _FavoriteSyncFailure(
             error,
             stackTrace,
-            confirmed: sync.heldIsKnown ? sync.held : null,
+            confirmed: sync.heldIsKnown || sync.heldIsShown ? sync.held : null,
           );
         }
         if (userDataSync.session != session) return;
@@ -197,6 +202,7 @@ class _FavoriteSync {
     required this.wanted,
     required this.held,
     required this.heldIsKnown,
+    required this.heldIsShown,
   });
 
   /// The newest choice.
@@ -207,6 +213,10 @@ class _FavoriteSync {
 
   /// False while [held] is only assumed, so that the first change is sent.
   bool heldIsKnown;
+
+  /// Whether [held] is what the caller showed, known or not. A failure then
+  /// reports it as the value to go back to.
+  final bool heldIsShown;
 
   late final Future<void> done;
 }

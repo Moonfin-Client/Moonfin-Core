@@ -870,28 +870,37 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       return;
     }
     _syncingUserData = true;
+    final startRevision = userDataSync.revision;
+    // What this refresh publishes itself, which is no reason to go again.
+    var refreshedIds = const <String>{};
+    var settled = false;
     try {
       if (isUnifiedBrowse) {
         // The catalog already asks each server about its own changed copy;
         // only the series of a changed episode is left to find.
-        final seen = _userDataRevisionSeen;
-        _userDataRevisionSeen = userDataSync.revision;
         if (_unifiedKinds.contains(UnifiedLibraryKind.series)) {
           await _unifiedCatalog!.refreshSeriesOf(
-            userDataSync.changedSince(seen),
+            userDataSync.changedSince(_userDataRevisionSeen),
           );
           if (_disposed) return;
         }
+        _userDataRevisionSeen = startRevision;
         _patchFromCatalog();
         notifyListeners();
       } else {
-        await userDataSync.refreshFromServer(_client, [
-          for (final item in _items) item.id,
-        ]);
+        refreshedIds = {for (final item in _items) item.id};
+        await userDataSync.refreshFromServer(_client, refreshedIds);
       }
+      settled = true;
     } finally {
       _syncingUserData = false;
-      _userDataStale = false;
+      // A failed refresh, or a change that arrived meanwhile, possibly to
+      // another series' episode, is left for the next one.
+      _userDataStale =
+          !settled ||
+          userDataSync
+              .changedSince(startRevision)
+              .any((id) => !refreshedIds.contains(id));
     }
   }
 
@@ -2242,6 +2251,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get isMovieOrSeriesLibrary =>
       _collectionType == 'movies' ||
       _collectionType == 'tvshows' ||
+      isUnifiedBrowse ||
       (includeItemTypes != null &&
           includeItemTypes!.any((t) => t == 'Movie' || t == 'Series'));
 

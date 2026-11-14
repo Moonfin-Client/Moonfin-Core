@@ -299,6 +299,23 @@ void main() {
       await storeRows('b', onB);
     });
 
+    /// Every Animation title of the catalog with a copy on b rated R, and R
+    /// blocked, while server a's own copies carry no rating.
+    Future<void> blockEveryAnimationTitle() async {
+      await db.delete(db.catalogEntries).go();
+      await storeRows('a', [
+        _title('a1', 'Akundel', tmdb: '1'),
+        _title('a2', 'Bantrel', tmdb: '2'),
+        _title('a7', 'Arvistel', type: 'Series', tmdb: '7'),
+      ]);
+      await storeRows('b', [
+        _title('b1', 'Akundel', tmdb: '1', rating: 'R'),
+        _title('b2', 'Bantrel', tmdb: '2', rating: 'R'),
+        _title('b7', 'Arvistel', type: 'Series', tmdb: '7', rating: 'R'),
+      ]);
+      await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+    }
+
     test('the row lists the genre\'s titles from every server once, each '
         'with its copies', () async {
       final vm = model();
@@ -419,6 +436,15 @@ void main() {
       await vm.load();
 
       expect(rowTitles(vm), ['Akundel', 'Arvistel', 'Coswen', 'Dulmira']);
+    });
+
+    test('a genre whose every title a blocked rating covers shows no row, '
+        'not the live one', () async {
+      await blockEveryAnimationTitle();
+      final vm = model();
+      await vm.load();
+
+      expect(vm.rows.where((row) => row.id == _rowId), isEmpty);
     });
 
     test('with the merged setting turned off, the merged row gives way to '
@@ -553,6 +579,59 @@ void main() {
 
           expect(changes, 0);
           expect(rowOf(vm), same(before));
+        });
+      });
+
+      test('a genre whose every title a blocked rating covers drops the live '
+          'row once the stored catalog loads', () async {
+        await prefs.set(UserPreferences.genresRowSortBy, LibrarySortBy.random);
+        await blockEveryAnimationTitle();
+        await catalog.loadNow();
+        fakeAsync((async) {
+          loadLate(async);
+          expectLiveRow(vm);
+
+          catalog.gate!.complete();
+          async.flushMicrotasks();
+
+          expect(vm.rows.where((row) => row.id == _rowId), isEmpty);
+
+          // Nothing of the removed row is left to page the catalog with: a
+          // row of the same id put back pages its own server.
+          when(
+            () => source.loadMore(
+              row: any(named: 'row'),
+              serverId: any(named: 'serverId'),
+              offset: any(named: 'offset'),
+            ),
+          ).thenAnswer((invocation) async {
+            final row = invocation.namedArguments[#row] as HomeRow;
+            return (row.items, row.items.length);
+          });
+          final liveRow = HomeRow(
+            id: _rowId,
+            title: 'Animation',
+            rowType: HomeRowType.genres,
+            items: [
+              for (final item in live)
+                AggregatedItem(
+                  id: item['Id'] as String,
+                  serverId: 'http://a.test',
+                  rawData: item,
+                ),
+            ],
+            totalCount: 40,
+          );
+          vm.setRowsForTesting([liveRow]);
+          unawaited(vm.loadMoreForRow(0));
+          async.flushMicrotasks();
+          verify(
+            () => source.loadMore(
+              row: any(named: 'row'),
+              serverId: 'http://a.test',
+              offset: any(named: 'offset'),
+            ),
+          ).called(1);
         });
       });
 

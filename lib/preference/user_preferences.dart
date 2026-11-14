@@ -2233,7 +2233,9 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
   /// With multi-server libraries on, shows every server's movies as one
-  /// library and every server's series as another. Kept on this device only.
+  /// library and every server's series as another. Stored per server and
+  /// user on this device, and not synced through the plugin: it is not a
+  /// synced field, unlike [enableMultiServerLibraries].
   static final mergeLibrariesByType = Preference(
     key: 'merge_libraries_by_type',
     defaultValue: false,

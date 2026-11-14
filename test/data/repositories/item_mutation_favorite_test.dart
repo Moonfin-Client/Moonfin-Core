@@ -89,10 +89,25 @@ void main() {
   });
 
   test('toggling back before anything is sent sends nothing', () async {
+    userDataSync.publish('ch', {'IsFavorite': false});
     await Future.wait([toggle(), toggle()]);
     verifyNever(() => api.markFavorite(any()));
     verifyNever(() => api.unmarkFavorite(any()));
     expect(userDataSync.favoriteFor('ch'), isFalse);
+  });
+
+  test('toggling back before anything is sent still sends the last choice '
+      'when what the server holds is not known', () async {
+    final runs = [toggle(), toggle()];
+    await settle();
+    expect(requests, hasLength(1));
+    requests.single.complete();
+    await Future.wait(runs);
+
+    verify(() => api.unmarkFavorite('ch')).called(1);
+    verifyNever(() => api.markFavorite(any()));
+    expect(userDataSync.favoriteFor('ch'), isFalse);
+    expect(userDataSync.favoriteChangePending('ch'), isFalse);
   });
 
   group('a page that undoes its own toggle on error', () {
@@ -216,6 +231,26 @@ void main() {
 
       verify(() => otherApi.markFavorite('ch')).called(1);
       expect(userDataSync.favoriteFor('ch'), isTrue);
+      expect(userDataSync.favoriteChangePending('ch'), isFalse);
+    });
+
+    test('the second is sent a quick toggle back, since what it holds is '
+        'not known', () async {
+      final first = repository.setFavorite('ch', isFavorite: true);
+      await settle();
+      requests.single.complete();
+      await first;
+
+      final on = other.setFavorite('ch', isFavorite: true);
+      final off = other.setFavorite('ch', isFavorite: false);
+      await settle();
+      expect(otherRequests, hasLength(1));
+      otherRequests.single.complete();
+      await Future.wait([on, off]);
+
+      verify(() => otherApi.unmarkFavorite('ch')).called(1);
+      verifyNever(() => otherApi.markFavorite(any()));
+      expect(userDataSync.favoriteFor('ch'), isFalse);
       expect(userDataSync.favoriteChangePending('ch'), isFalse);
     });
 

@@ -34,6 +34,18 @@ class _CountingCatalog extends UnifiedCatalogService {
 
   int lookups = 0;
 
+  /// Thrown by the next [refreshSeriesOf].
+  Object? seriesRefreshError;
+
+  @override
+  Future<void> refreshSeriesOf(Iterable<String> itemIds) {
+    if (seriesRefreshError case final error?) {
+      seriesRefreshError = null;
+      return Future.error(error);
+    }
+    return super.refreshSeriesOf(itemIds);
+  }
+
   @override
   Map<String, dynamic>? currentItem(
     UnifiedLibraryKind kind,
@@ -993,6 +1005,61 @@ void main() {
       expect(b.userDataRequests, isEmpty);
       expect(played(vm, 'Arvistel'), isTrue);
       expect(played(vm, 'Dastrel'), isFalse);
+    });
+
+    test('an episode watched while another series is brought up to date '
+        'is not lost', () async {
+      signInToFakeServers();
+      a.series = [
+        catalogMovie('s1', 'Arvistel', type: 'Series'),
+        catalogMovie('s2', 'Dastrel', type: 'Series'),
+      ];
+      a.seriesOf['e1'] = 's1';
+      a.seriesOf['e2'] = 's2';
+      await catalog.forceFullRead();
+      final vm = await viewModel(kind: UnifiedLibraryKind.series);
+      await vm.load();
+
+      a.setUserData('s1', {'Played': true});
+      a.afterUserDataRequest = () {
+        a.afterUserDataRequest = null;
+        a.setUserData('s2', {'Played': true});
+        userDataSync.publish('e2', {'Played': true});
+      };
+      userDataSync.publish('e1', {'Played': true});
+      await pumpEventQueue();
+      await vm.syncUserDataIfStale();
+      expect(played(vm, 'Arvistel'), isTrue);
+
+      await pumpEventQueue();
+      await vm.syncUserDataIfStale();
+
+      expect(a.parentRequests.last, ['e2']);
+      expect(played(vm, 'Dastrel'), isTrue);
+    });
+
+    test('an episode whose series could not be brought up to date is '
+        'tried again', () async {
+      signInToFakeServers();
+      a.series = [catalogMovie('s1', 'Arvistel', type: 'Series')];
+      a.seriesOf['e1'] = 's1';
+      await catalog.forceFullRead();
+      final vm = await viewModel(kind: UnifiedLibraryKind.series);
+      await vm.load();
+
+      catalog.seriesRefreshError = StateError('the series lookup failed');
+      userDataSync.publish('e1', {'Played': true});
+      await pumpEventQueue();
+      await expectLater(vm.syncUserDataIfStale(), throwsStateError);
+      expect(a.parentRequests, isEmpty);
+
+      a.setUserData('s1', {'Played': true});
+      await vm.syncUserDataIfStale();
+
+      expect(a.parentRequests, [
+        ['e1'],
+      ]);
+      expect(played(vm, 'Arvistel'), isTrue);
     });
 
     test('changed for one title brings only its card up to date', () async {

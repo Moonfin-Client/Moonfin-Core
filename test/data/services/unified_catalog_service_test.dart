@@ -829,6 +829,67 @@ void main() {
       );
     });
 
+    /// Runs a check that finds the added movie `new`, and does [meanwhile]
+    /// once it has fetched that movie and waits on the count of series.
+    Future<void> checkAround(
+      UnifiedCatalogService service,
+      FutureOr<void> Function() meanwhile,
+    ) async {
+      a.movies = [...a.movies, catalogMovie('new', 'Zunmere')];
+      final counts = a.countRequests;
+      a.holdRequests = true;
+      final checking = service.syncNow();
+      await pumpEventQueue();
+      expect(a.countRequests, counts + 1);
+      a.releaseNext();
+      await pumpEventQueue();
+      expect(a.idPageStartIndexes, [0]);
+      a.releaseNext();
+      await pumpEventQueue();
+      expect(a.rowRequests, [
+        ['new'],
+      ]);
+      a.releaseNext();
+      await pumpEventQueue();
+      expect(a.countRequests, counts + 2);
+      expect(a.heldRequests, hasLength(1));
+      await meanwhile();
+      a.letThrough();
+      await checking;
+      await pumpEventQueue();
+    }
+
+    test('does not bring back a title removed while it fetched it', () async {
+      signedIn = [a];
+      a.movies = numbered('a', 5);
+      final service = await synced();
+
+      await checkAround(service, () => service.removeCopy('a', 'new'));
+
+      expect(movieNames(service), isNot(contains('Zunmere')));
+      expect(await storedEntries(), hasLength(5));
+      expect((await syncStateOf('a')).itemCount, 5);
+      // The server's count still held it, so the next check lists the ids.
+      expect((await syncStateOf('a')).serverTotal, isNull);
+    });
+
+    test('asks again for the watched state of a title it fetched before the '
+        'change', () async {
+      signedIn = [a];
+      a.movies = numbered('a', 5);
+      final service = await synced();
+
+      await checkAround(service, () {
+        a.setUserData('new', {'Played': true});
+        userData.publish('new', {'Played': true});
+      });
+
+      expect(a.userDataRequests, [
+        ['new'],
+      ]);
+      expect(movieNames(service, filters: ['IsPlayed']), ['Zunmere']);
+    });
+
     test('cut off by an account change writes nothing', () async {
       signedIn = [a];
       a.movies = numbered('a', 5);
@@ -1696,6 +1757,12 @@ void main() {
           const UnifiedCatalogQuery(itemTypes: 'Movie', sortBy: 'Random'),
           random: Random(7),
         );
+        List<String> idsOf(List items) => [
+          for (final item in items)
+            '${(item as Map)[unifiedServerIdKey]}|${item['Id']}',
+        ];
+        final before = idsOf(snapshot.page()['Items'] as List);
+        expect(before.toSet(), hasLength(100));
         final firstPage = snapshot.page(limit: 30)['Items'] as List;
         service.applyUserData('a', {
           'a1': {'Played': true},
@@ -1707,11 +1774,7 @@ void main() {
         );
         final rest = snapshot.page(startIndex: 30)['Items'] as List;
 
-        final ids = [
-          for (final item in [...firstPage, ...rest])
-            '${(item as Map)[unifiedServerIdKey]}|${item['Id']}',
-        ];
-        expect(ids.toSet(), hasLength(100));
+        expect(idsOf([...firstPage, ...rest]), before);
         expect(snapshot.page()['TotalRecordCount'], 100);
       },
     );
@@ -2594,16 +2657,19 @@ void main() {
 
       // The reset comes after the server has been read, while the rows are
       // encoded or written.
+      var reset = false;
       final watch = Timer.periodic(Duration.zero, (timer) {
         if (a.fullPageStartIndexes.length >= 10) {
           timer.cancel();
           service.reset();
+          reset = true;
         }
       });
       addTearDown(watch.cancel);
       await service.forceFullRead();
       await pumpEventQueue();
 
+      expect(reset, isTrue);
       expect(await storedEntries(), hasLength(anyOf(1200, 1700)));
     });
   });

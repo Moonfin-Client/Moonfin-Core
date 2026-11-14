@@ -55,8 +55,9 @@ void main() {
   });
 
   test('a merged library differs from the library whose id it keeps', () {
+    // The same name, so only the unified kind tells the two apart.
     final merged = AggregatedLibrary.merged(
-      name: 'Movies',
+      name: movies.name,
       unifiedKindName: 'movies',
       libraries: const [movies],
     );

@@ -299,6 +299,7 @@ void main() {
         model.refresh!.focusNode.requestFocus();
         await tester.pump();
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
 
         expect(calls.refresh, 0);
         expect(model.refresh!.focusNode.hasFocus, isTrue);

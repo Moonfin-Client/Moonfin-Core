@@ -1379,9 +1379,15 @@ class HomeViewModel extends ChangeNotifier {
     }
     if (loadedInTime) {
       final cards = genre.cards(catalog);
-      if (cards.isEmpty) {
+      if (cards == null) {
         _mergedGenreRows.remove(live.id);
         return live;
+      }
+      // A genre of blocked titles only stays empty: [live] can still hold a
+      // copy that another server's copy blocks.
+      if (cards.isEmpty) {
+        _mergedGenreRows.remove(live.id);
+        return live.copyWith(items: const [], totalCount: 0);
       }
       _mergedGenreRows[live.id] = genre;
       return live.copyWith(
@@ -1427,7 +1433,12 @@ class HomeViewModel extends ChangeNotifier {
         : genre.complete(shown.items, catalog, limit: _rowPageSize);
     final HomeRow row;
     if (mergedPage != null) {
-      _mergedGenreRows[live.id] = genre;
+      // A row left with no card is removed below, and pages no more.
+      if (mergedPage.items.isEmpty) {
+        _mergedGenreRows.remove(live.id);
+      } else {
+        _mergedGenreRows[live.id] = genre;
+      }
       row = shown.copyWith(
         items: mergedPage.items,
         totalCount: mergedPage.total,

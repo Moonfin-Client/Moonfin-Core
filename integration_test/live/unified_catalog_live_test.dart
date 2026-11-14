@@ -2,10 +2,14 @@
 // several servers held them, to see how the catalogue copes with many servers
 // without owning that many. Skips unless the server is configured:
 //
-//   MOONFIN_LIVE_URL=<server url> MOONFIN_LIVE_TOKEN=<token> \
-//   MOONFIN_LIVE_USER_ID=<user id> \
-//   flutter test integration_test/live -d <device>
+//   flutter test integration_test/live -d <device> \
+//     --dart-define=MOONFIN_LIVE_URL=<server url> \
+//     --dart-define=MOONFIN_LIVE_TOKEN=<token> \
+//     --dart-define=MOONFIN_LIVE_USER_ID=<user id>
 //
+// The test runs on the device, which can't see the host shell's variables,
+// so each setting is passed with --dart-define. A desktop run also reads them
+// from the environment when they are not defined.
 // MOONFIN_LIVE_COPIES sets how many servers to pretend there are (10).
 // MOONFIN_LIVE_SERVER_TYPE=emby runs it against Emby.
 // MOONFIN_LIVE_DEVICE_ID reuses a device the token already belongs to.
@@ -25,11 +29,29 @@ import 'package:server_core/server_core.dart';
 import 'package:server_emby/server_emby.dart';
 import 'package:server_jellyfin/server_jellyfin.dart';
 
+/// The settings passed with --dart-define, which has to name each one.
+const _defined = {
+  'MOONFIN_LIVE_URL': String.fromEnvironment('MOONFIN_LIVE_URL'),
+  'MOONFIN_LIVE_TOKEN': String.fromEnvironment('MOONFIN_LIVE_TOKEN'),
+  'MOONFIN_LIVE_USER_ID': String.fromEnvironment('MOONFIN_LIVE_USER_ID'),
+  'MOONFIN_LIVE_COPIES': String.fromEnvironment('MOONFIN_LIVE_COPIES'),
+  'MOONFIN_LIVE_SERVER_TYPE': String.fromEnvironment(
+    'MOONFIN_LIVE_SERVER_TYPE',
+  ),
+  'MOONFIN_LIVE_DEVICE_ID': String.fromEnvironment('MOONFIN_LIVE_DEVICE_ID'),
+};
+
+/// [name] as defined, else from the environment of a run on the host.
+String? _setting(String name) {
+  final defined = _defined[name] ?? '';
+  if (defined.isNotEmpty) return defined;
+  return Platform.environment[name];
+}
+
 void main() {
-  final env = Platform.environment;
-  final url = env['MOONFIN_LIVE_URL'];
-  final token = env['MOONFIN_LIVE_TOKEN'];
-  final userId = env['MOONFIN_LIVE_USER_ID'];
+  final url = _setting('MOONFIN_LIVE_URL');
+  final token = _setting('MOONFIN_LIVE_TOKEN');
+  final userId = _setting('MOONFIN_LIVE_USER_ID');
   final configured =
       url != null &&
       url.isNotEmpty &&
@@ -37,8 +59,8 @@ void main() {
       token.isNotEmpty &&
       userId != null &&
       userId.isNotEmpty;
-  final copies = int.tryParse(env['MOONFIN_LIVE_COPIES'] ?? '') ?? 10;
-  final isEmby = env['MOONFIN_LIVE_SERVER_TYPE'] == 'emby';
+  final copies = int.tryParse(_setting('MOONFIN_LIVE_COPIES') ?? '') ?? 10;
+  final isEmby = _setting('MOONFIN_LIVE_SERVER_TYPE') == 'emby';
 
   test(
     'one server read as $copies servers folds back into one library',
@@ -46,7 +68,9 @@ void main() {
     timeout: const Timeout(Duration(minutes: 10)),
     () async {
       final deviceInfo = DeviceInfo(
-        id: env['MOONFIN_LIVE_DEVICE_ID'] ?? 'moonfin-unified-catalog-live',
+        id:
+            _setting('MOONFIN_LIVE_DEVICE_ID') ??
+            'moonfin-unified-catalog-live',
         name: 'Moonfin live test',
         appName: 'Moonfin',
         appVersion: '0.0.0',
@@ -136,8 +160,16 @@ void main() {
           for (var i = 0; i < rows.length; i++)
             if (keysByRow[i].isNotEmpty) root(i),
         }.length;
+        // Two editions on one server are two copies there, so servers are
+        // counted rather than copies.
         final folded = items
-            .where((item) => unifiedCopiesOf(item).length == copies)
+            .where(
+              (item) =>
+                  {
+                    for (final copy in unifiedCopiesOf(item)) copy.serverId,
+                  }.length ==
+                  copies,
+            )
             .length;
         // ignore: avoid_print
         print(

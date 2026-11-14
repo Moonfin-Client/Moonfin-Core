@@ -480,6 +480,23 @@ void main() {
         expect(tiles(tester), ['Drama 3', 'Family 1', 'Horror 1']);
       });
 
+      testWidgets('a rating blocked once the tiles are shown takes its titles '
+          'out of them', (tester) async {
+        mergedServers({'a', 'b'});
+        await seedRated(tester);
+        await pumpGenres(tester);
+        expect(tiles(tester), ['Drama 3', 'Family 1', 'Horror 1']);
+
+        await prefs.set(UserPreferences.blockedParentalRatings, 'R');
+        await pumpUntil(
+          tester,
+          () => tiles(tester).length == 1,
+          reason: 'the tiles kept the blocked titles',
+        );
+
+        expect(tiles(tester), ['Drama 1']);
+      });
+
       testWidgets('with every title blocked there is no genre to show, not '
           'the server\'s own list', (tester) async {
         mergedServers({'a', 'b'});
@@ -531,6 +548,29 @@ void main() {
         ),
       );
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('turning merged libraries off once the tiles are shown lists '
+        'the server\'s own genres, opening its own pages', (tester) async {
+      await turnOnMergedLibraries(prefs);
+      mergedServers({'a', 'b'});
+      stubOwnGenres();
+      await seedBoth(tester);
+      await pumpGenres(tester);
+      expect(tiles(tester), hasLength(4));
+
+      mergedServers(const {});
+      await prefs.set(UserPreferences.mergeLibrariesByType, false);
+      await pumpUntil(
+        tester,
+        () => tiles(tester).length == 1,
+        reason: 'the tiles stayed the merged ones',
+      );
+
+      expect(tiles(tester), ['Drama 2']);
+      await tester.tap(find.byType(GenreGridCard));
+      await tester.pumpAndSettle();
+      expect(find.text('opened /genre/Drama?genreId=g1'), findsOneWidget);
     });
 
     testWidgets('lists the server\'s own genres when nothing merges', (

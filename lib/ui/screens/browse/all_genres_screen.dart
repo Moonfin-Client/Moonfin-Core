@@ -71,6 +71,10 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   List<GenreCardData> _genres = [];
   bool _isLoading = true;
   bool _lastGroupCollections = false;
+
+  /// Merge mode decides where tiles come from and what they open.
+  bool _lastMergeLibraries = false;
+  String _lastBlockedRatings = '';
   final Set<String> _usedArtworkIds = {};
 
   /// A grouping toggle starts a second load, so the first stops writing.
@@ -191,8 +195,17 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     if (!mounted) return;
     final currentGroup =
         _prefs.get(UserPreferences.groupItemsIntoCollections);
-    if (_lastGroupCollections != currentGroup) {
+    final currentMerge = _prefs.effectiveMergeLibrariesByType;
+    final currentBlocked = _prefs.get(UserPreferences.blockedParentalRatings);
+    final blockedChanged = _lastBlockedRatings != currentBlocked;
+    _lastBlockedRatings = currentBlocked;
+    if (_lastGroupCollections != currentGroup ||
+        _lastMergeLibraries != currentMerge) {
       _lastGroupCollections = currentGroup;
+      _lastMergeLibraries = currentMerge;
+      _load();
+    } else if (blockedChanged && _fromCatalog) {
+      // Catalog tiles count and show only titles no blocked rating covers.
       _load();
     } else {
       setState(() {});
@@ -204,6 +217,8 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     super.initState();
     _lastGroupCollections =
         _prefs.get(UserPreferences.groupItemsIntoCollections);
+    _lastMergeLibraries = _prefs.effectiveMergeLibrariesByType;
+    _lastBlockedRatings = _prefs.get(UserPreferences.blockedParentalRatings);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
