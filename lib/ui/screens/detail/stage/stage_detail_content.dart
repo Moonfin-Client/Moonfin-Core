@@ -207,8 +207,10 @@ class _StageDetailContentState extends State<StageDetailContent>
     );
   }
 
-  void _go(FocusNode? node) {
-    if (node == null || node.context?.mounted != true) return;
+  void _go(FocusNode? section) {
+    if (section == null) return;
+    final node = entryFor(section);
+    if (node.context?.mounted != true) return;
     node.requestFocus();
     // The episodes bring their whole section into view as focus arrives.
     if (node == pageNode('episodes')) return;
@@ -217,8 +219,12 @@ class _StageDetailContentState extends State<StageDetailContent>
       if (!mounted || ctx == null || !ctx.mounted || offScreen(ctx) == 0) {
         return;
       }
-      Scrollable.ensureVisible(
-        ctx,
+      final box = ctx.findRenderObject();
+      if (box == null || !pageScroll.hasClients) return;
+      // Only the page scrolls, so a card back in the middle of its row
+      // doesn't pull the row sideways.
+      pageScroll.position.ensureVisible(
+        box,
         alignment: 0.3,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,

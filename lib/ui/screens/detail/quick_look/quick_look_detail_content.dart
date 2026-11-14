@@ -165,14 +165,14 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
   @override
   void moveUp(FocusNode node) {
     final i = _stops.indexOf(node);
-    if (i > 0) return _enter(_stops[i - 1]);
+    if (i > 0) return _enter(entryFor(_stops[i - 1]));
     _toActions();
   }
 
   @override
   void moveDown(FocusNode node) {
     final i = _stops.indexOf(node);
-    if (i >= 0 && i + 1 < _stops.length) _enter(_stops[i + 1]);
+    if (i >= 0 && i + 1 < _stops.length) _enter(entryFor(_stops[i + 1]));
   }
 
   @override
