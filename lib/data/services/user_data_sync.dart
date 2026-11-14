@@ -98,8 +98,17 @@ class UserDataSync extends ChangeNotifier {
     changes.forEach((itemId, patch) {
       if (itemId.isEmpty || patch.isEmpty) return;
       final existing = _userData[itemId];
+      // The server leaves out a percentage it has cleared, and a missing key
+      // would keep the old progress bar on the item it is merged into. Only a
+      // whole user data record says that, and every server's record carries
+      // the position: a partial one (a Silo event whose read-back failed, only
+      // `IsFavorite` or `Played`) says nothing about progress.
       final merged = replace
-          ? Map<String, dynamic>.from(patch)
+          ? <String, dynamic>{
+              if (patch.containsKey('PlaybackPositionTicks'))
+                'PlayedPercentage': null,
+              ...patch,
+            }
           : <String, dynamic>{...?existing, ...patch};
       if (_pendingFavorites.containsKey(itemId)) {
         merged['IsFavorite'] = _pendingFavorites[itemId];
