@@ -16,6 +16,8 @@ AggregatedItem _createItem({
   String? parentBackdropItemId,
   List<String>? parentBackdropImageTags,
   List<String>? backdropImageTags,
+  String? parentLogoImageTag,
+  String? parentLogoItemId,
 }) {
   final imageTags = <String, dynamic>{};
   if (primaryImageTag != null) {
@@ -40,6 +42,8 @@ AggregatedItem _createItem({
       'ParentBackdropItemId': ?parentBackdropItemId,
       'ParentBackdropImageTags': ?parentBackdropImageTags,
       'BackdropImageTags': ?backdropImageTags,
+      'ParentLogoImageTag': ?parentLogoImageTag,
+      'ParentLogoItemId': ?parentLogoItemId,
     },
   );
 }
@@ -292,6 +296,67 @@ void main() {
 
       expect(result.single.id, equals('series-dark'));
       expect(result.single.thumbImageTag, equals('darkThumb123'));
+    });
+
+    test('an episode carries the show logo onto the series card', () {
+      final episode = _createItem(
+        id: 'ep-dark-3',
+        name: 'Truths',
+        type: 'Episode',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'darkLogo789',
+        parentLogoItemId: 'series-dark',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.id, equals('series-dark'));
+      expect(result.single.logoImageTag, equals('darkLogo789'));
+    });
+
+    test('a season carries the show logo onto the series card', () {
+      final season = _createItem(
+        id: 'season-dark-2',
+        name: 'Season 2',
+        type: 'Season',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'darkLogo789',
+        parentLogoItemId: 'series-dark',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [season],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.logoImageTag, equals('darkLogo789'));
+    });
+
+    test('an episode ignores a logo that is not the show\'s', () {
+      final episode = _createItem(
+        id: 'ep-dark-4',
+        name: 'Origins',
+        type: 'Episode',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'otherLogo',
+        parentLogoItemId: 'collection-1',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.logoImageTag, isNull);
     });
 
     test('an episode ignores a thumb tag belonging to its season', () {
