@@ -568,7 +568,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
           l10n.recommendations,
           state.recommendations,
         ),
-      if (pieces.similar) row('seerr-similar', l10n.similar, state.similar),
+      if (pieces.similar) row('seerr-similar', l10n.similar, pieces.similarItems),
     ];
   }
 }

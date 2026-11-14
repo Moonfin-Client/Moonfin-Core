@@ -452,12 +452,14 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     ];
   }
 
-  List<_Poster> _seerrPosters(_Seg seg) {
-    final state = seerrItemTabState(_vm);
-    if (state == null) return const [];
+  List<SeerrDiscoverItem> _seerrItems(_Seg seg, SeerrDetailPieces pieces) =>
+      seg == _Seg.similar
+      ? pieces.similarItems
+      : seerrItemTabState(_vm)?.recommendations ?? const [];
+
+  List<_Poster> _seerrPosters(List<SeerrDiscoverItem> items) {
     return [
-      for (final item
-          in seg == _Seg.similar ? state.similar : state.recommendations)
+      for (final item in items)
         (
           title: item.title ?? item.name ?? '',
           imageUrl: item.posterPath == null
@@ -1116,7 +1118,9 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       _Tab.related || _Tab.seerr => area(
         _scroll(
           _posterGrid(
-            seg == null ? _libraryPosters(sections) : _seerrPosters(seg),
+            seg == null
+                ? _libraryPosters(sections)
+                : _seerrPosters(_seerrItems(seg, pieces)),
             columns: 7,
             gap: 6,
             phone: false,
@@ -2674,8 +2678,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     final pieces = _pieces(sections);
     final rows = [
       if (pieces.recommendations)
-        (_Seg.recommended, _seerrPosters(_Seg.recommended)),
-      if (pieces.similar) (_Seg.similar, _seerrPosters(_Seg.similar)),
+        (
+          _Seg.recommended,
+          _seerrPosters(_seerrItems(_Seg.recommended, pieces)),
+        ),
+      if (pieces.similar) (_Seg.similar, _seerrPosters(pieces.similarItems)),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
