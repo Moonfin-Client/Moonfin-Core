@@ -100,10 +100,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     // Progress and watched-state changes notify too, and leave genres alone.
     if (catalog.titlesRevision == _catalogTitlesRevision) return;
     _catalogTitlesRevision = catalog.titlesRevision;
-    if (catalog.genres(UnifiedLibraryKind.values).length !=
-        _catalogGenreCount) {
-      _load();
-    }
+    _load();
   }
 
   Future<bool> _activeServerMergesGenres() async {

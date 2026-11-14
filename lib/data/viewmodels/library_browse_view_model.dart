@@ -164,7 +164,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         for (final item in _items)
           isUnifiedBrowse
               ? unifiedSearchText(item.rawData)
-              : foldForSearch(item.sortName ?? item.name),
+              // The name on the card and the one it is sorted under, which
+              // can put an article last.
+              : foldForSearch(
+                  item.sortName == null
+                      ? item.name
+                      : '${item.name}\n${item.sortName}',
+                ),
       ];
       _searchNamesSource = _items;
     }

@@ -1368,10 +1368,16 @@ class HomeViewModel extends ChangeNotifier {
     }
     // A catalog slower than the grace completes the row once it is loaded.
     final catalogLoad = catalog.tryEnsureLoaded();
-    if (await catalogLoad.timeout(
+    var loadedInTime = await catalogLoad.timeout(
       UnifiedCatalogService.loadGrace,
       onTimeout: () => false,
-    )) {
+    );
+    // An empty row is removed, which would leave a late catalog nowhere to
+    // put its cards, and there is nothing to show meanwhile anyway.
+    if (!loadedInTime && filterEmptyElements(live.items).isEmpty) {
+      loadedInTime = await catalogLoad;
+    }
+    if (loadedInTime) {
       final cards = genre.cards(catalog);
       if (cards.isEmpty) {
         _mergedGenreRows.remove(live.id);

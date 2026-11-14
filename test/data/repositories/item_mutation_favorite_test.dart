@@ -219,6 +219,23 @@ void main() {
       expect(userDataSync.favoriteChangePending('ch'), isFalse);
     });
 
+    test('a failure on the second, sent without knowing what it holds, '
+        'reaches every caller', () async {
+      final first = repository.setFavorite('ch', isFavorite: true);
+      await settle();
+      requests.single.complete();
+      await first;
+
+      final on = other.setFavorite('ch', isFavorite: true);
+      await settle();
+      final off = other.setFavorite('ch', isFavorite: false);
+      otherRequests.single.completeError(Exception('offline'));
+
+      await expectLater(on, throwsException);
+      await expectLater(off, throwsException);
+      verifyNever(() => otherApi.unmarkFavorite(any()));
+    });
+
     test('a failure on one leaves the other changed', () async {
       final first = repository.setFavorite('ch', isFavorite: true);
       final second = other.setFavorite('ch', isFavorite: true);

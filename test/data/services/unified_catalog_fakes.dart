@@ -113,8 +113,11 @@ Future<void> seedCatalog(
 Future<int> turnsDuring(Future<void> Function() work) async {
   var turns = 0;
   final timer = Timer.periodic(Duration.zero, (_) => turns++);
-  await work();
-  timer.cancel();
+  try {
+    await work();
+  } finally {
+    timer.cancel();
+  }
   return turns;
 }
 

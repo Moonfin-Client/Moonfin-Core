@@ -110,9 +110,11 @@ class LibraryScopeService {
     List<AggregatedLibrary> libraries,
   ) async {
     try {
+      // Read first, so the ids and the server are the same one's even when
+      // the active server changes during the request.
+      final serverId = _activeServerId?.call();
       final hidden = await _views.getMyMediaExcludes();
       if (hidden.isEmpty) return libraries;
-      final serverId = _activeServerId?.call();
       return [
         for (final library in libraries)
           ?library.withoutHidden(hidden, serverId: serverId),

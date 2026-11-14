@@ -880,7 +880,8 @@ class MultiServerRepository {
 
     final nextOffsets = <String, int>{};
     // A server that can't be asked is left where it was, to be asked again by
-    // the next page, rather than failing the page the others answered.
+    // the next page, rather than failing the page the others answered. Its
+    // held-back tiles are still shown.
     final failedServerIds = <String>{};
     final results = await Future.wait(
       sessions.map(
@@ -1179,7 +1180,10 @@ class MultiServerRepository {
         }, label: 'loadMore ${row.rowType} from ${session.server.name}')
             .catchError((Object _) {
           failedServerIds.add(session.server.id);
-          return const <AggregatedItem>[];
+          // What it already gave and the row had no room for still counts.
+          return <AggregatedItem>[
+            ...?_rowHeldBack['${row.id}_${session.server.id}'],
+          ];
         }),
       ),
     );
@@ -1194,12 +1198,12 @@ class MultiServerRepository {
       readCountByServer[cacheKey] =
           _rowOffsets[cacheKey] ?? itemsByServer[serverId]?.length ?? 0;
     }
-    // Moving the offsets on and dropping the held-back tiles only now means a
-    // server that failed tries the same page again.
+    // Moving the offsets on only now means a server that failed tries the
+    // same page again. The held-back tiles are all in this page, the failed
+    // servers' too.
     if (generation == _pagingGeneration) {
       _rowOffsets.addAll(nextOffsets);
       for (final session in sessions) {
-        if (failedServerIds.contains(session.server.id)) continue;
         _rowHeldBack.remove('${row.id}_${session.server.id}');
       }
     }

@@ -150,7 +150,8 @@ void main() {
 
         // Without an external id a title stays a card per server.
         expect(items.length, matchedTitles + withoutId);
-        expect(folded, greaterThan(0));
+        // A server may hold no series, or nothing with an external id.
+        if (matchedTitles > 0) expect(folded, greaterThan(0));
 
         for (final sortBy in const [
           'DateCreated,SortName',
@@ -186,7 +187,9 @@ void main() {
       fromDisk.stop();
       // ignore: avoid_print
       print('reopened from disk in ${fromDisk.elapsedMilliseconds} ms');
-      expect(reload.hasTitles(UnifiedLibraryKind.movies), isTrue);
+      for (final kind in UnifiedLibraryKind.values) {
+        expect(reload.hasTitles(kind), service.hasTitles(kind));
+      }
     },
   );
 }

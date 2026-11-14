@@ -263,8 +263,8 @@ void main() {
       expect(_names(vm), <String>['The Matrix']);
     });
 
-    test('outside a merged library, only the name a title is listed under '
-        'is matched', () async {
+    test('outside a merged library, a title is matched by its name and the '
+        'one it is sorted under, not by its other names', () async {
       final api = _FakeItemsApi([
         [
           {
@@ -285,7 +285,10 @@ void main() {
       expect(_names(vm), isEmpty);
 
       vm.setSearchQuery('the morvent');
-      expect(_names(vm), isEmpty);
+      expect(_names(vm), ['The Morvent']);
+
+      vm.setSearchQuery('morvent, the');
+      expect(_names(vm), ['The Morvent']);
     });
 
     test('finds an accented name typed without its accents', () async {

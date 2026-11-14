@@ -96,19 +96,22 @@ class UnifiedGenreRow {
     };
     final placed = Set<AggregatedItem>.identity();
     final items = <AggregatedItem>[];
+    // Live cards the catalog doesn't hold, kept beside every card it does.
+    var liveOnly = 0;
     for (final item in shown) {
       final card = _copyKeys(item).map((key) => byCopy[key]).nonNulls.firstOrNull;
       if (card != null) {
         if (placed.add(card)) items.add(card);
       } else if (!hasCatalogCards([item])) {
         items.add(item);
+        liveOnly++;
       }
     }
     for (final card in all) {
       if (items.length >= size) break;
       if (placed.add(card)) items.add(card);
     }
-    return (items: items, total: max(all.length, items.length));
+    return (items: items, total: all.length + liveOnly);
   }
 
   ({List<AggregatedItem> items, int total}) nextPage(

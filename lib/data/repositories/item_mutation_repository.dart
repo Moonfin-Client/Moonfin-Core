@@ -49,6 +49,7 @@ class ItemMutationRepository {
         held: rememberedIsOthers
             ? !isFavorite
             : userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
+        heldIsKnown: !rememberedIsOthers,
       );
       sync.done = _syncFavorite(key, sync);
     } else {
@@ -87,10 +88,15 @@ class ItemMutationRepository {
         } catch (error, stackTrace) {
           if (userDataSync.session != session) return;
           userDataSync.failFavoriteChange(itemId);
-          throw _FavoriteSyncFailure(error, stackTrace, confirmed: sync.held);
+          throw _FavoriteSyncFailure(
+            error,
+            stackTrace,
+            confirmed: sync.heldIsKnown ? sync.held : null,
+          );
         }
         if (userDataSync.session != session) return;
         sync.held = wanted;
+        sync.heldIsKnown = true;
         _lastFavoriteServer[itemId] = (session: session, server: key.server);
         // Another server's run under the same id may have ended the change.
         if (userDataSync.favoriteChangePending(itemId)) {
@@ -187,7 +193,11 @@ typedef _FavoriteSyncKey = ({
 
 /// One server's favorite change in progress.
 class _FavoriteSync {
-  _FavoriteSync({required this.wanted, required this.held});
+  _FavoriteSync({
+    required this.wanted,
+    required this.held,
+    required this.heldIsKnown,
+  });
 
   /// The newest choice.
   bool wanted;
@@ -195,14 +205,18 @@ class _FavoriteSync {
   /// What the server holds, as far as this client knows.
   bool held;
 
+  /// False while [held] is only assumed, so that the first change is sent.
+  bool heldIsKnown;
+
   late final Future<void> done;
 }
 
-/// A failed favorite request and the value the server still holds.
+/// A failed favorite request and the value the server still holds, null when
+/// that isn't known.
 class _FavoriteSyncFailure {
   _FavoriteSyncFailure(this.error, this.stackTrace, {required this.confirmed});
 
   final Object error;
   final StackTrace stackTrace;
-  final bool confirmed;
+  final bool? confirmed;
 }

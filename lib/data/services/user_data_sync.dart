@@ -112,6 +112,8 @@ class UserDataSync extends ChangeNotifier {
         merged['IsFavorite'] = _pendingFavorites[itemId];
       }
       if (existing != null && mapEquals(existing, merged)) return;
+      // Moved to the end, so the eviction below never drops what just changed.
+      _userData.remove(itemId);
       _userData[itemId] = merged;
       _itemRevisions[itemId] = ++_revision;
       changed = true;
