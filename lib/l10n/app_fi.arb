@@ -4006,7 +4006,7 @@
     "@upcomingSeries": {
         "description": "Seerr row: upcoming series"
     },
-    "networks": "Suoratoistopalvelut",
+    "networks": "Sisältöverkostot",
     "@networks": {
         "description": "Seerr row: networks"
     },
@@ -5881,7 +5881,7 @@
     "adminUnknownError": "Tuntematon virhe",
     "adminBrowse": "Selaa",
     "adminCloseBrowser": "Sulje selain",
-    "adminNetworkingTitle": "Verkostoituminen",
+    "adminNetworkingTitle": "Verkkoasetukset",
     "adminNetworkingRestartWarning": "Verkkoasetusten muutokset voivat vaatia palvelimen uudelleenkäynnistyksen.",
     "adminNetworkingRemoteAccess": "Ota etäkäyttö käyttöön",
     "adminNetworkingPorts": "Portit",
@@ -7014,7 +7014,7 @@
     "homeRowsStyleModern": "Moderni",
     "homeRowsSection": "Kotirivit",
     "rowsType": "Rivien tyyppi",
-    "rowsTypeDescription": "Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan rivejä.",
+    "rowsTypeDescription": "Klassisessa näkymässä säilytetään kuvatyyppi ja tietopaneeli rivikohtaisesti. Modernissa näkymässä rivit sijoitetaan pystysuunnassa taustakuvaan nähden. Karusellinäkymässä jokaisen rivin alle lisätään tietopaneeli.",
     "displayFavoritesRows": "Näytä suosikkirivit",
     "displayFavoritesRowsSubtitle": "Näytä suosikkielokuvat, sarjat ja muut suosikkirivit Etusivu osioissa.",
     "favoritesRowSorting": "Suosikkirivien lajittelu",
@@ -18220,7 +18220,7 @@
     "@watchPartyScanInvite": {
         "description": "TV lobby line next to the invite QR code"
     },
-    "watchPartyStartsTogether": "Peli odottaa kaikkien pelaajien vuoroa enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.",
+    "watchPartyStartsTogether": "Odotetaan osallistujia enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.",
     "@watchPartyStartsTogether": {
         "description": "Lobby note on how a party starts"
     },
@@ -18441,7 +18441,7 @@
     "@watchPartyReactionPopcorn": {
         "description": "Name of a watch party reaction"
     },
-    "watchPartyMakeHost": "Nimitä isännäksi",
+    "watchPartyMakeHost": "Nimitä järjestäjäksi",
     "@watchPartyMakeHost": {
         "description": "Host action on a member of the watch party"
     },
@@ -18740,5 +18740,17 @@
                 "type": "String"
             }
         }
+    },
+    "homeRowsStreamingServices": "Suoratoistopalvelut",
+    "@homeRowsStreamingServices": {
+        "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
+    },
+    "homeRowsStyleCarousel": "Karuselli",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "setupRowsCarouselHint": "Julisteet, joiden alla on suuri yksityiskohdapaneeli.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
     }
 }
