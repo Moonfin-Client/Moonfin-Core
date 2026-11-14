@@ -902,13 +902,17 @@ class _NouveauCircleActionButton extends StatefulWidget {
   final void Function(BuildContext context)? onFocused;
   final bool compact;
 
-  const _NouveauCircleActionButton({
+  // Keyed by the action's own node, so the button and its focus state move
+  // with the action when the ones before it come and go.
+  _NouveauCircleActionButton({
     required this.action,
     this.onArrowLeft,
     this.onArrowRight,
     this.onFocused,
     this.compact = false,
-  });
+  }) : super(
+         key: action.focusNode == null ? null : ObjectKey(action.focusNode),
+       );
 
   @override
   State<_NouveauCircleActionButton> createState() =>

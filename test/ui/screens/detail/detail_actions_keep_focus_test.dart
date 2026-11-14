@@ -90,8 +90,16 @@ void main() {
   Future<void> run(
     WidgetTester tester, {
     bool modernStyle = false,
+    bool nouveauStyle = false,
     int? buttonLimit,
+    bool hostNodes = false,
   }) async {
+    // The Modern page hands in its own nodes for the row's right end and the
+    // first button of the second line.
+    final rightNode = FocusNode(debugLabel: 'actionRowRight');
+    final extraFirstNode = FocusNode(debugLabel: 'extraFirstBtn');
+    addTearDown(rightNode.dispose);
+    addTearDown(extraFirstNode.dispose);
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
     tester.view.physicalSize = const Size(1920, 1080);
     tester.view.devicePixelRatio = 1;
@@ -103,7 +111,12 @@ void main() {
       );
     }
 
-    var item = _movie(played: false, position: const Duration(minutes: 20));
+    // Nouveau's Play pill is width capped and also shows the time left, which
+    // the test font is too wide to fit unless little time is left.
+    var item = _movie(
+      played: false,
+      position: Duration(minutes: nouveauStyle ? 88 : 20),
+    );
     final vm = _ViewModel();
     when(() => vm.item).thenAnswer((_) => item);
     when(() => vm.isSeerrOnly).thenReturn(false);
@@ -126,6 +139,9 @@ void main() {
             itemId: 'movie-1',
             onSelectedMediaSourceChanged: (_) {},
             modernStyle: modernStyle,
+            nouveauStyle: nouveauStyle,
+            actionRowRightFocusNode: hostNodes ? rightNode : null,
+            extraFirstFocusNode: hostNodes ? extraFirstNode : null,
           ),
         ),
       ),
@@ -210,4 +226,21 @@ void main() {
   testWidgets('focus stays on Watched in the second line', (tester) async {
     await run(tester, buttonLimit: 2);
   });
+
+  testWidgets('focus stays on Watched with the modern page nodes', (
+    tester,
+  ) async {
+    await run(tester, modernStyle: true, hostNodes: true);
+  });
+
+  testWidgets('focus stays on Watched in the nouveau row', (tester) async {
+    await run(tester, nouveauStyle: true);
+  });
+
+  testWidgets(
+    'focus follows Watched out of the second line with the modern page nodes',
+    (tester) async {
+      await run(tester, modernStyle: true, buttonLimit: 2, hostNodes: true);
+    },
+  );
 }

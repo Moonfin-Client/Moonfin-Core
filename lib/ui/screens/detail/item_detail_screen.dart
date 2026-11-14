@@ -6130,6 +6130,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   List<Object> _rowPrimaryIds = const [];
   List<Object> _rowExtraIds = const [];
 
+  /// The node each action was given in the last build.
+  Map<Object, FocusNode> _nodeByAction = const {};
+
   FocusNode _actionFocusNode(Object id) => _actionFocusNodes.putIfAbsent(
     id,
     () => FocusNode(debugLabel: 'detail_action_$id'),
@@ -7762,13 +7765,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     if (widget.nouveauStyle) {
-      final orderedSecondaryButtons = <_DetailActionButton>[
+      final orderedSecondary = <(Object, _DetailActionButton)>[
         for (final detailButton in _orderedButtons(prefs)) ...[
           if (byButton[detailButton] case final btn?)
-            ?_actionForOverflow(context, btn),
+            if (_actionForOverflow(context, btn) case final action?)
+              (detailButton, action),
           if (cancelByButton[detailButton] case final btn?)
-            ?_actionForOverflow(context, btn),
+            if (_actionForOverflow(context, btn) case final action?)
+              (('cancel', detailButton), action),
         ],
+      ];
+      final secondaryNodes = [
+        for (final (id, _) in orderedSecondary) _actionFocusNode(id),
       ];
 
       // A null primary only means there is nothing to play, and the secondary
@@ -7833,21 +7841,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                   ? _focusDownTarget
                   : null,
               onArrowLeft: _focusSidebar,
-              onArrowRight: orderedSecondaryButtons.isNotEmpty
-                  ? () => _primaryFocusNode(1).requestFocus()
+              onArrowRight: secondaryNodes.isNotEmpty
+                  ? () => secondaryNodes.first.requestFocus()
                   : widget.onArrowRightAtEnd,
             );
 
-      final secondaryActions = orderedSecondaryButtons.asMap().entries.map((
-        entry,
-      ) {
+      final secondaryActions = orderedSecondary.asMap().entries.map((entry) {
         final index = entry.key;
-        final button = entry.value;
-        final focusIndex = index + 1;
+        final (_, button) = entry.value;
 
         return _toNouveauAction(
           button,
-          focusNode: _primaryFocusNode(focusIndex),
+          focusNode: secondaryNodes[index],
           onArrowUp:
               NavigationLayout.focusNavbarNotifier.value != null ||
                   widget.upTarget != null
@@ -7862,10 +7867,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               ? (primaryButton == null
                     ? _focusSidebar
                     : () => primaryFocusNode.requestFocus())
-              : () => _primaryFocusNode(focusIndex - 1).requestFocus(),
-          onArrowRight: index == orderedSecondaryButtons.length - 1
+              : () => secondaryNodes[index - 1].requestFocus(),
+          onArrowRight: index == secondaryNodes.length - 1
               ? widget.onArrowRightAtEnd
-              : () => _primaryFocusNode(focusIndex + 1).requestFocus(),
+              : () => secondaryNodes[index + 1].requestFocus(),
         );
       }).toList();
 
@@ -8003,8 +8008,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
     _rowPrimaryIds = [for (final button in primaryButtons) idOf[button]!];
     _rowExtraIds = [for (final button in extraButtons) idOf[button]!];
-    Widget keyed(Widget button, Widget wired) =>
-        KeyedSubtree(key: ValueKey(idOf[button]), child: wired);
+    // The page's own nodes stay with their slot, so an action that moves into
+    // or out of one changes node. Focus follows the action, not the node.
+    final focused = FocusManager.instance.primaryFocus;
+    final focusedAction = _nodeByAction.entries
+        .where((entry) => identical(entry.value, focused))
+        .firstOrNull
+        ?.key;
+    final nodeByAction = <Object, FocusNode>{};
+    Widget keyed(Widget button, Widget wired, FocusNode node) {
+      nodeByAction[idOf[button]!] = node;
+      return KeyedSubtree(key: ValueKey(idOf[button]), child: wired);
+    }
 
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
@@ -8016,11 +8031,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         final existingUp = button is _DetailActionButton
             ? button.onArrowUp
             : null;
+        final fNode = index == allButtons.length - 1
+            ? (widget.actionRowRightFocusNode ?? _primaryNodePlain(index))
+            : _primaryNodePlain(index);
         final wired = _wireButton(
           button,
-          focusNode: index == allButtons.length - 1
-              ? (widget.actionRowRightFocusNode ?? _primaryNodePlain(index))
-              : _primaryNodePlain(index),
+          focusNode: fNode,
           onArrowUp:
               existingUp ??
               (NavigationLayout.focusNavbarNotifier.value != null ||
@@ -8055,7 +8071,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
           },
         );
-        return keyed(button, wired);
+        return keyed(button, wired, fNode);
       }).toList();
       final startsRow = widget.modernStyle && !widget.centerRow;
       final rowAlignment = startsRow
@@ -8140,7 +8156,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               ? () => _focusSecondRowButton(index, extraButtons.length)
               : (widget.downTarget != null ? _focusDownTarget : null),
         );
-        return keyed(button, wired);
+        return keyed(button, wired, fNode);
       }).toList();
 
       final normalizedExtraButtons = extraButtons.asMap().entries.map((entry) {
@@ -8187,7 +8203,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
           suppressAutoScrollToTop: true,
         );
-        return keyed(button, wired);
+        return keyed(button, wired, fNode);
       }).toList();
 
       final moreButton = _DetailActionButton(
@@ -8357,6 +8373,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           ),
         );
       }
+    }
+
+    _nodeByAction = nodeByAction;
+    final refocus = nodeByAction[focusedAction];
+    if (refocus != null && !identical(refocus, focused)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && refocus.context?.mounted == true) refocus.requestFocus();
+      });
     }
 
     // Under the row rather than in it, so a bar never takes a focus slot. The
