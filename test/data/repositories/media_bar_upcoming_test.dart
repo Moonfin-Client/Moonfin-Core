@@ -176,6 +176,32 @@ void main() {
     test('nothing aired within the window', () {
       expect(mediaBarCaughtUp(const [], now: _now, days: 30), isTrue);
     });
+
+    test('an older episode in the window is still not watched', () {
+      expect(
+        mediaBarCaughtUp(
+          [
+            _aired(_now.subtract(const Duration(days: 8))),
+            _aired(_now.subtract(const Duration(days: 1)), played: true),
+          ],
+          now: _now,
+          days: 30,
+        ),
+        isFalse,
+      );
+    });
+
+    test('a season out in one day needs every episode watched', () {
+      final day = _now.subtract(const Duration(days: 2));
+      expect(
+        mediaBarCaughtUp(
+          [_aired(day, played: true), _aired(day), _aired(day)],
+          now: _now,
+          days: 30,
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('the label a series gets', () {
@@ -249,6 +275,36 @@ void main() {
         's1',
         'up',
       ]);
+    });
+
+    test('titles already on the bar move without pushing others out', () {
+      final slides = [
+        for (final id in 'ABCDEF'.split('')) _slide(id, 'Series'),
+      ];
+      expect(
+        ids(
+          mediaBarPlaceReserved(slides, [
+            _slide('B', 'Series'),
+            _slide('D', 'Series'),
+          ], 6),
+        ),
+        ['A', 'B', 'C', 'D', 'E', 'F'],
+      );
+    });
+
+    test('an outside title never leads an empty bar', () {
+      final outside = MediaBarSlideItem(
+        itemId: 'up',
+        serverId: MediaBarSlideItem.externalServerId,
+        title: 'up',
+      );
+      expect(ids(mediaBarPlaceReserved(const [], [outside], 4)), isEmpty);
+      expect(
+        ids(
+          mediaBarPlaceReserved(const [], [_slide('s1', 'Series'), outside], 4),
+        ),
+        ['s1', 'up'],
+      );
     });
 
     test('a title already on the bar is not shown twice', () {

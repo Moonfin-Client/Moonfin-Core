@@ -197,7 +197,15 @@ class MdbListRepository {
   /// movie it doesn't know is just left out. Empty on any failure, including
   /// a Moonbase too old to have the route.
   Future<Map<String, double>> cachedMovieRatings(List<String> tmdbIds) async {
-    if (tmdbIds.isEmpty || _unavailableSince != null) return const {};
+    if (tmdbIds.isEmpty) return const {};
+    // The same wait as getRatings once Moonbase has said it has no ratings.
+    if (_unavailableSince != null) {
+      if (DateTime.now().difference(_unavailableSince!) <
+          _unavailableRetryWindow) {
+        return const {};
+      }
+      _unavailableSince = null;
+    }
     try {
       final ep = await moonbaseEndpoint(_client, _dio);
       if (ep == null) return const {};

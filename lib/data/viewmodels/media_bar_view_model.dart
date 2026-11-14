@@ -122,25 +122,27 @@ class MediaBarViewModel extends ChangeNotifier {
   }
 
   /// A title outside the library has no people on the server, so they come
-  /// from Seerr. Without Seerr, an empty detail stops the placeholder.
+  /// from Seerr. Without Seerr, an empty detail stops the placeholder. A
+  /// failed request isn't kept, so the next selection tries again.
   Future<void> _externalGalleryDetail(String itemId) async {
     final slide = items.where((item) => item.itemId == itemId).firstOrNull;
     final tmdbId = int.tryParse(slide?.tmdbId ?? '');
-    SeerrCredits? credits;
     try {
       final seerr = await GetIt.instance.getAsync<SeerrRepository>();
+      await seerr.ensureInitialized();
+      SeerrCredits? credits;
       if (tmdbId != null && seerr.isAvailable) {
         credits = slide!.itemType == 'Series'
             ? (await seerr.getTvDetails(tmdbId)).credits
             : (await seerr.getMovieDetails(tmdbId)).credits;
       }
+      _galleryDetails[itemId] = GalleryDetail.fromSeerr(itemId, credits);
+      notifyListeners();
     } catch (_) {
-      // Shown without people.
+      // Not cached, so it's asked again.
     } finally {
       _galleryDetailInFlight.remove(itemId);
     }
-    _galleryDetails[itemId] = GalleryDetail.fromSeerr(itemId, credits);
-    notifyListeners();
   }
 
   MediaBarViewModel(

@@ -704,15 +704,17 @@ class MediaBarRepository {
 
     // A few more than needed are looked up at once, since some have no logo.
     final slides = await Future.wait(
-      candidates.take(4).map(_upcomingMovieSlide),
+      candidates
+          .take(4)
+          .map((entry) => _upcomingMovieSlide(entry, excludedGenres)),
     );
-    return [
-      for (final slide in slides)
-        if (slide != null && !slide.genres.any(excludedGenres.contains)) slide,
-    ].take(2).toList();
+    return slides.nonNulls.take(2).toList();
   }
 
-  Future<MediaBarSlideItem?> _upcomingMovieSlide(CalendarEntry entry) async {
+  Future<MediaBarSlideItem?> _upcomingMovieSlide(
+    CalendarEntry entry,
+    Set<String> excludedGenres,
+  ) async {
     final tmdbId = '${entry.tmdbId}';
     final Map<String, dynamic>? details;
     try {
@@ -728,6 +730,9 @@ class MediaBarRepository {
         _tmdbImage(details?['backdropPath'] as String?, 1280) ??
         entry.backdropUrl;
     if (logoUrl == null || backdropUrl == null) return null;
+    // Every genre counts here, not only the three the slide shows.
+    final genres = (details?['genres'] as List?)?.cast<String>() ?? const [];
+    if (genres.any(excludedGenres.contains)) return null;
     final trailerUrl = details?['trailerUrl'] as String?;
     final runtime = entry.runtimeMinutes;
     return MediaBarSlideItem(
@@ -739,9 +744,7 @@ class MediaBarRepository {
       logoUrl: logoUrl,
       posterUrl: entry.posterUrl,
       year: entry.year,
-      genres:
-          (details?['genres'] as List?)?.cast<String>().take(3).toList() ??
-          const [],
+      genres: genres.take(3).toList(),
       runtime: runtime != null && runtime > 0
           ? Duration(minutes: runtime)
           : null,
@@ -1178,19 +1181,27 @@ class MediaBarRepository {
     Set<String> excludedGenres,
   ) async {
     if (external.isEmpty) return library;
-    final chosen = (<Object>[...library, ...external.take(maxItems)]
+    final shuffled = (<Object>[...library, ...external.take(maxItems)]
           ..shuffle(_random))
         .take(maxItems)
         .toList();
+    // The shuffle only picks where outside titles go. Library slides keep
+    // their order, so followed series stay first and types keep alternating.
+    final inOrder = library.iterator;
+    final chosen = [
+      for (final pick in shuffled)
+        if (pick is MediaBarSlideItem && inOrder.moveNext())
+          inOrder.current
+        else
+          pick,
+    ];
     final slides = <String, MediaBarSlideItem>{};
     await mapBounded(
       chosen.whereType<ImdbExternalListItem>().toList(),
       _sourceConcurrency,
       (item) async {
-        final slide = await _toExternalSlide(item);
-        if (slide == null || slide.genres.any(excludedGenres.contains)) {
-          return null;
-        }
+        final slide = await _toExternalSlide(item, excludedGenres);
+        if (slide == null) return null;
         slides[slide.itemId] = slide;
         return null;
       },
@@ -1209,7 +1220,11 @@ class MediaBarRepository {
 
   /// The slide for an outside title, filled in from TMDB through Moonbase
   /// where it can be. Null when there is still no backdrop to show.
-  Future<MediaBarSlideItem?> _toExternalSlide(ImdbExternalListItem item) async {
+  /// Null too when one of its genres is excluded.
+  Future<MediaBarSlideItem?> _toExternalSlide(
+    ImdbExternalListItem item,
+    Set<String> excludedGenres,
+  ) async {
     final mediaType = item.type == 'Series' ? 'tv' : 'movie';
     final tmdbId = item.tmdbId.isNotEmpty ? item.tmdbId : null;
     final imdbId = item.imdbId.isNotEmpty ? item.imdbId : null;
@@ -1225,6 +1240,9 @@ class MediaBarRepository {
         _tmdbImage(details?['backdropPath'] as String?, 1280) ??
         _tmdbImage(item.backdropUrl, 1280);
     if (backdropUrl == null) return null;
+    // Every genre counts here, not only the three the slide shows.
+    final genres = (details?['genres'] as List?)?.cast<String>() ?? const [];
+    if (genres.any(excludedGenres.contains)) return null;
     final runTimeTicks = (details?['runTimeTicks'] as num?)?.toInt();
     final trailerUrl = details?['trailerUrl'] as String?;
 
@@ -1238,9 +1256,7 @@ class MediaBarRepository {
       posterUrl: _tmdbImage(item.posterUrl, 500),
       officialRating: item.officialRating,
       year: item.year,
-      genres:
-          (details?['genres'] as List?)?.cast<String>().take(3).toList() ??
-          const [],
+      genres: genres.take(3).toList(),
       runtime: runTimeTicks != null
           ? Duration(microseconds: runTimeTicks ~/ 10)
           : null,
@@ -1561,8 +1577,9 @@ Map<String, MediaBarNewReleaseInfo> mediaBarUpcomingBySeries(
   return upcoming;
 }
 
-/// Whether the latest episode that aired within the window is watched, or
-/// nothing aired at all. Either way there's nothing new left to watch.
+/// Whether every episode that aired within the window is watched, or nothing
+/// aired at all. Either way there's nothing new left to watch. Every one, not
+/// the latest: a season out in one day has no single latest episode.
 @visibleForTesting
 bool mediaBarCaughtUp(
   List<Map<String, dynamic>> recentEpisodes, {
@@ -1573,12 +1590,10 @@ bool mediaBarCaughtUp(
     for (final episode in recentEpisodes)
       if (isRecentlyAiredEpisode(episode, now: now, days: days)) episode,
   ];
-  if (aired.isEmpty) return true;
-  final latest = aired.reduce(
-    (a, b) => _airedAt(b).isAfter(_airedAt(a)) ? b : a,
-  );
-  final userData = latest['UserData'];
-  return userData is Map && userData['Played'] == true;
+  return aired.every((episode) {
+    final userData = episode['UserData'];
+    return userData is Map && userData['Played'] == true;
+  });
 }
 
 /// The label a series slide gets: what aired lately while there's some of it
@@ -1610,14 +1625,20 @@ List<MediaBarSlideItem> mediaBarPlaceReserved(
   final placed = <String>{};
   var at = 1;
   for (final slide in reserved) {
+    // A title already among the slides only moves, so no other one goes.
+    final moved = slides.any((s) => s.itemId == slide.itemId);
     if (result.isEmpty) {
+      // An outside title can't be played, so it never leads the bar.
+      if (slide.isExternal) continue;
       result.add(slide);
     } else {
       final start = at.clamp(1, result.length);
-      final same = result.indexWhere(
-        (s) => s.itemType == slide.itemType && !placed.contains(s.itemId),
-        start,
-      );
+      final same = moved
+          ? -1
+          : result.indexWhere(
+              (s) => s.itemType == slide.itemType && !placed.contains(s.itemId),
+              start,
+            );
       if (same >= 0) {
         result[same] = slide;
       } else {

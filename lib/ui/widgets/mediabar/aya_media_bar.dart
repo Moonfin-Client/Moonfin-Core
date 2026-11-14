@@ -556,6 +556,15 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
 
     if (!_sameSlide(_desiredSlide, nextSlide)) {
       _requestSlide(nextSlide);
+      return;
+    }
+    // Same artwork with newer data, like a label that came in once the bar
+    // showed: the slides on screen take it without a new transition.
+    _desiredSlide = nextSlide;
+    if (_sameSlide(_baseSlide, nextSlide)) _baseSlide = nextSlide;
+    if (_incomingSlide case final incoming?
+        when _sameSlide(incoming, nextSlide)) {
+      _incomingSlide = nextSlide;
     }
   }
 
