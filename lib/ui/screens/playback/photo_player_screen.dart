@@ -95,10 +95,13 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
             )
             .toList();
         final idx = items.indexWhere((i) => i.id == widget.itemId);
+        // The album list is capped, so a photo past the cap is added to the
+        // end, where its name sorts, rather than opening on the first one.
+        if (idx < 0) items.add(item);
         if (!mounted) return;
         setState(() {
           _items = items;
-          _currentIndex = idx >= 0 ? idx : 0;
+          _currentIndex = idx >= 0 ? idx : items.length - 1;
         });
       } else {
         if (!mounted) return;
@@ -312,6 +315,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
                 Center(
                   child: IconButton(
                     iconSize: 72,
+                    tooltip: AppLocalizations.of(context).play,
                     icon: AdaptiveIcon(
                       Icons.play_circle_fill,
                       color: AppColorScheme.onSurface,

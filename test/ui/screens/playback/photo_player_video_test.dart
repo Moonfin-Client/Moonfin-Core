@@ -195,10 +195,23 @@ void main() {
     await next(tester);
     expect(find.text('Video 2'), findsOneWidget);
     expect(playButton, findsOneWidget);
+    expect(find.byTooltip('Play'), findsOneWidget);
 
     await next(tester);
     expect(find.text('Photo 3'), findsOneWidget);
     expect(playButton, findsNothing);
+  });
+
+  testWidgets('a photo missing from the capped album list still opens', (
+    tester,
+  ) async {
+    when(
+      () => items.getItem('photo9'),
+    ).thenAnswer((_) async => _entry('photo9', 'Photo 9', 'Photo'));
+    await pumpViewer(tester, 'photo9');
+
+    expect(find.text('Photo 9'), findsOneWidget);
+    expect(find.text('4 / 4'), findsOneWidget);
   });
 
   testWidgets('playing loads the full item and starts it by the registered '
