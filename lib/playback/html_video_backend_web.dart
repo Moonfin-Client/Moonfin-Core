@@ -1744,6 +1744,11 @@ class HtmlVideoBackend extends PlayerBackend
   /// Needs a recent click, so call it straight from the button's handler.
   Future<void> enterPictureInPicture() async {
     if (_disposed || !supportsPictureInPicture) return;
+    if (_pictureInPicturePending) {
+      // A second press while the first request is open: keep that one.
+      _pictureInPictureExitWanted = false;
+      return;
+    }
     _pictureInPicturePending = true;
     _pictureInPictureExitWanted = false;
     try {
