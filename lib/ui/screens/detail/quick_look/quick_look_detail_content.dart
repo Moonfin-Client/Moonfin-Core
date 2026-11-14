@@ -182,7 +182,8 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
   }
 
   void _enter(FocusNode? node) {
-    if (node?.context?.mounted == true) node!.requestFocus();
+    final target = node == null ? null : entryFor(node);
+    if (target?.context?.mounted == true) target!.requestFocus();
   }
 
   void _toActions() {

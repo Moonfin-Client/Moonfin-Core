@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -327,5 +328,51 @@ void main() {
     expect(find.text('First film'), findsOneWidget);
     expect(find.text('Series'), findsOneWidget);
     expect(find.text('The show'), findsOneWidget);
+  });
+
+  testWidgets('up into a row scrolled past its first card lands on the card '
+      'it was left from', (tester) async {
+    final films = [
+      for (var i = 0; i < 30; i++)
+        {'Id': 'film-$i', 'Type': 'Movie', 'Name': 'Film $i'},
+    ];
+    when(
+      () => itemsApi.getItems(
+        parentId: 'item-1',
+        startIndex: any(named: 'startIndex'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          ...films,
+          {'Id': 'show-1', 'Type': 'Series', 'Name': 'The show'},
+        ],
+        'TotalRecordCount': films.length + 1,
+      },
+    );
+    await pumpContent(tester, viewModel('BoxSet'));
+
+    Focus.of(tester.element(find.text('Film 0'))).requestFocus();
+    await tester.pump();
+    for (var i = 0; i < films.length - 1; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+    }
+    final last = Focus.of(tester.element(find.text('Film 29')));
+    expect(last.hasPrimaryFocus, isTrue);
+    expect(find.text('Film 0'), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(
+      Focus.of(tester.element(find.text('The show'))).hasPrimaryFocus,
+      isTrue,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(last.hasPrimaryFocus, isTrue);
   });
 }

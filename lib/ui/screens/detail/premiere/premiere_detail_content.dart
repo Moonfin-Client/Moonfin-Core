@@ -101,7 +101,8 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
   }
 
   void _enter(FocusNode? node) {
-    if (node?.context?.mounted == true) node!.requestFocus();
+    final target = node == null ? null : entryFor(node);
+    if (target?.context?.mounted == true) target!.requestFocus();
   }
 
   /// Back to whichever button was focused last, at the top of the page.
