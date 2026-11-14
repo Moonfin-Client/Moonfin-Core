@@ -751,6 +751,10 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryStatusController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
 
+  /// The queue item [currentResolution] was resolved for, null without one.
+  dynamic get currentResolutionItem =>
+      _currentResolution == null ? null : _lastPlaybackItem;
+
   /// Whether a stream that lost its connection is being reopened, for a
   /// screen to say so rather than show a plain buffering spinner.
   bool get isReconnecting => _reconnecting;
