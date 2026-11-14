@@ -12353,6 +12353,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Durée d\'affichage des commandes du lecteur après votre dernier appui sur une touche, toucher ou mouvement de souris.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming =>
       'Assombrissement des commandes en HDR';
 

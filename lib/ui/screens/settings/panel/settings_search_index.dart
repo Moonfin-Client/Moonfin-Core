@@ -1610,6 +1610,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['osd', 'timeout', 'auto hide', 'player ui'],
     ),
     video.leaf(
+      'hideControlsOnResume',
+      l10n.settingsHideControlsOnResume,
+      subtitle: l10n.settingsHideControlsOnResumeDescription,
+      keywords: ['osd', 'unpause', 'play', 'auto hide', 'player ui'],
+    ),
+    video.leaf(
       'hdrControlsDimming',
       l10n.settingsHdrControlsDimming,
       subtitle: l10n.settingsHdrControlsDimmingDescription,

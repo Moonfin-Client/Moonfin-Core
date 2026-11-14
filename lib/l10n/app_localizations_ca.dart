@@ -12382,6 +12382,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Quant de temps es mantenen els controls del reproductor a la pantalla després de l\'última pulsació de botó, toc o moviment del ratolí.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming => 'Atenua els controls en HDR';
 
   @override

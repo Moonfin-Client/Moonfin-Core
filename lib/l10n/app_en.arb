@@ -11269,6 +11269,14 @@
   "@settingsHideControlsAfterDescription": {
     "description": "Description under the Hide Controls After playback setting"
   },
+  "settingsHideControlsOnResume": "Hide Controls When Resuming",
+  "@settingsHideControlsOnResume": {
+    "description": "Playback setting that clears the player controls as soon as playback resumes from a pause"
+  },
+  "settingsHideControlsOnResumeDescription": "When you press play on a paused video, the player controls disappear right away instead of waiting.",
+  "@settingsHideControlsOnResumeDescription": {
+    "description": "Description under the Hide Controls When Resuming playback setting"
+  },
   "settingsHdrControlsDimming": "Dim Controls in HDR",
   "@settingsHdrControlsDimming": {
     "description": "Playback setting for how much the player controls dim while HDR video plays"

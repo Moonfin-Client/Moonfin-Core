@@ -469,6 +469,7 @@ class UserPreferences extends ChangeNotifier {
     'audio_night_mode',
     'confirm_exit',
     'controlsHideDelay',
+    'hideControlsOnResume',
     'hdrControlsDimming',
     'defaultFavoritesFilter',
     'detailButtonOrderDesktop',
@@ -3053,6 +3054,13 @@ class UserPreferences extends ChangeNotifier {
   static final controlsHideDelay = Preference(
     key: 'controlsHideDelay',
     defaultValue: 5000,
+  );
+
+  /// Clear the player controls as soon as playback resumes from a pause,
+  /// instead of waiting out [controlsHideDelay].
+  static final hideControlsOnResume = Preference<bool>(
+    key: 'hideControlsOnResume',
+    defaultValue: false,
   );
 
   /// How much the player controls dim while HDR plays, in percent.

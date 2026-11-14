@@ -12259,6 +12259,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kuinka kauan ohjauselementit pysyvät ruudulla viimeisen painikkeen painalluksen, napautuksen tai hiiren liikkeen jälkeen.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming => 'HDR tilan himmennysohjaimet';
 
   @override

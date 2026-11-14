@@ -12133,6 +12133,13 @@ class AppLocalizationsPa extends AppLocalizations {
       'How long the player controls stay on screen after your last button press, tap or mouse move.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming => 'Dim Controls in HDR';
 
   @override

@@ -21424,6 +21424,18 @@ abstract class AppLocalizations {
   /// **'How long the player controls stay on screen after your last button press, tap or mouse move.'**
   String get settingsHideControlsAfterDescription;
 
+  /// Playback setting that clears the player controls as soon as playback resumes from a pause
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Controls When Resuming'**
+  String get settingsHideControlsOnResume;
+
+  /// Description under the Hide Controls When Resuming playback setting
+  ///
+  /// In en, this message translates to:
+  /// **'When you press play on a paused video, the player controls disappear right away instead of waiting.'**
+  String get settingsHideControlsOnResumeDescription;
+
   /// Playback setting for how much the player controls dim while HDR video plays
   ///
   /// In en, this message translates to:

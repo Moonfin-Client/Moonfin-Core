@@ -950,6 +950,85 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  group('resuming from a pause with the controls up', () {
+    Future<void> resume(
+      WidgetTester tester,
+      LogicalKeyboardKey key, {
+      required bool hideOnResume,
+    }) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.hideControlsOnResume,
+        hideOnResume,
+      );
+      await mountPlayer(tester);
+      expect(find.byType(Slider), findsOneWidget);
+
+      await tester.sendKeyEvent(key);
+      await tester.pump();
+      expect(manager.transport, ['resume']);
+      manager.state.setPlaying(true);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    for (final key in [
+      LogicalKeyboardKey.select,
+      LogicalKeyboardKey.mediaPlayPause,
+    ]) {
+      testWidgets('${key.keyLabel} hides them at once when set to', (
+        tester,
+      ) async {
+        await resume(tester, key, hideOnResume: true);
+        expect(find.byType(Slider), findsNothing);
+
+        await tester.pumpWidget(const SizedBox());
+      });
+
+      testWidgets('${key.keyLabel} leaves them for the delay by default', (
+        tester,
+      ) async {
+        await resume(tester, key, hideOnResume: false);
+        expect(find.byType(Slider), findsOneWidget);
+        await tester.pump(const Duration(seconds: 10));
+        expect(find.byType(Slider), findsNothing);
+
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
+
+    // With the controls already hidden, OK resumes and brings them up as it
+    // always has; the setting only covers a resume from the controls.
+    testWidgets('a resume with the controls hidden still shows them', (
+      tester,
+    ) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.hideControlsOnResume,
+        true,
+      );
+      await mountPlayer(tester);
+      await tester.sendKeyEvent(
+        LogicalKeyboardKey.goBack,
+        physicalKey: PhysicalKeyboardKey.escape,
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(Slider), findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await tester.pump();
+      expect(manager.transport, ['resume']);
+      manager.state.setPlaying(true);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(Slider), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   group('dimming the controls in HDR', () {
     Future<ColorFilter?> controlsFilter(
       WidgetTester tester, {

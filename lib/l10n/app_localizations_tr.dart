@@ -12200,6 +12200,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Son tuşa basma, dokunma veya fare hareketinden sonra oynatıcı kontrollerinin ekranda ne kadar kalacağı.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming => 'HDR\'de Kontrolleri Karart';
 
   @override

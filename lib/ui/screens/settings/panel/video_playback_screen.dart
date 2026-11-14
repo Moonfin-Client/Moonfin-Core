@@ -199,6 +199,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   5000: l10n.fiveSeconds,
                 },
               ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.hideControlsOnResume,
+                title: l10n.settingsHideControlsOnResume,
+                subtitle: l10n.settingsHideControlsOnResumeDescription,
+                icon: Icons.play_circle_outline,
+              ),
               SliderPreferenceTile(
                 preference: UserPreferences.hdrControlsDimming,
                 title: l10n.settingsHdrControlsDimming,

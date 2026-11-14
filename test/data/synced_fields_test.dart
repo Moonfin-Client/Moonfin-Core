@@ -130,6 +130,7 @@ void main() {
     'hiddenOsdButtonsMobile',
     'hiddenOsdButtonsTv',
     'hideBackdropsInLibraries',
+    'hideControlsOnResume',
     'hideDetailsMediaDescription',
     'hideHomeMediaDescription',
     'hideHomeUnwatchedCount',

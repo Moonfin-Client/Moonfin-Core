@@ -12287,6 +12287,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Per quanto tempo i controlli del lettore restano sullo schermo dopo l\'ultima pressione di un tasto, tocco o movimento del mouse.';
 
   @override
+  String get settingsHideControlsOnResume => 'Hide Controls When Resuming';
+
+  @override
+  String get settingsHideControlsOnResumeDescription =>
+      'When you press play on a paused video, the player controls disappear right away instead of waiting.';
+
+  @override
   String get settingsHdrControlsDimming => 'Attenua Controlli in HDR';
 
   @override

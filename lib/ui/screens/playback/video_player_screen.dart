@@ -312,6 +312,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _controlsVisible = true;
   bool _subtitleDelayOpen = false;
   Timer? _hideTimer;
+  // Set when play is asked for from paused with the controls up and
+  // "Hide Controls When Resuming" on. The playing listener uses it once
+  // playback has actually started.
+  bool _hideControlsOnPlay = false;
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
   Timer? _endsAtTicker;
@@ -1053,10 +1057,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       // The hide timer passes over a player that hasn't started yet, so a
       // start or resume slower than its delay needs it armed again here. A
       // pause with a description card clears the controls sooner so the card
-      // shows quickly.
+      // shows quickly. A resume asked for with "Hide Controls When Resuming"
+      // on clears them as soon as the picture moves.
+      final hideNow = playing && _hideControlsOnPlay && !_routeCovered;
+      _hideControlsOnPlay = false;
       if (_controlsVisible && !_isSeeking) {
         if (playing) {
-          _scheduleHide();
+          _scheduleHide(delay: hideNow ? Duration.zero : null);
         } else if (_hasPausedDescriptionCard) {
           _scheduleHide(delay: const Duration(seconds: 2));
         }
@@ -3422,6 +3429,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _commitPendingScrub();
       return;
     }
+    _hideControlsOnPlay =
+        _controlsVisible &&
+        !_castOwnsTransport &&
+        !_state.isPlaying &&
+        _prefs.get(UserPreferences.hideControlsOnResume);
     final rewindMs = _prefs.get(UserPreferences.unpauseRewindDuration);
     if (rewindMs > 0) {
       final rewind = Duration(milliseconds: rewindMs);

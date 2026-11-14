@@ -249,6 +249,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('clockBehavior', UserPreferences.clockBehavior, SyncCodec.enumName, enumValues: prefs.ClockBehavior.values),
   SyncedField('confirmExit', UserPreferences.confirmExit, SyncCodec.boolean),
   SyncedField('controlsHideDelay', UserPreferences.controlsHideDelay, SyncCodec.integer),
+  SyncedField('hideControlsOnResume', UserPreferences.hideControlsOnResume, SyncCodec.boolean),
   SyncedField('hdrControlsDimming', UserPreferences.hdrControlsDimming, SyncCodec.integer),
   SyncedField('crashReportsEnabled', UserPreferences.crashReportsEnabled, SyncCodec.boolean),
   SyncedField('defaultAudioLanguage', UserPreferences.defaultAudioLanguage, SyncCodec.text),
