@@ -309,6 +309,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return backend is HtmlVideoBackend ? backend : null;
   }
 
+  /// The web backend lasts as long as the app, so this is only null off web.
+  HtmlVideoBackend? get _webVideoBackend =>
+      PlatformDetection.isWeb && GetIt.instance.isRegistered<HtmlVideoBackend>()
+      ? GetIt.instance<HtmlVideoBackend>()
+      : null;
+
+  /// The video is in the browser's floating window, apart from [_isInPiP],
+  /// which is the system PiP on phones.
+  bool _isInBrowserPiP = false;
+
+  void _onBrowserPiPChanged() {
+    final inPiP = _webVideoBackend?.inPictureInPicture.value ?? false;
+    if (!mounted || inPiP == _isInBrowserPiP) return;
+    setState(() => _isInBrowserPiP = inPiP);
+  }
+
+  void _toggleBrowserPiP() {
+    final backend = _activeHtmlVideoBackend;
+    if (backend == null) return;
+    if (_isInBrowserPiP) {
+      unawaited(backend.exitPictureInPicture());
+    } else {
+      unawaited(backend.enterPictureInPicture());
+    }
+  }
+
   bool _controlsVisible = true;
   bool _subtitleDelayOpen = false;
   Timer? _hideTimer;
@@ -1092,6 +1118,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       unawaited(_syncAlwaysOnTopState());
     }
 
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      _isInBrowserPiP = webVideoBackend.inPictureInPicture.value;
+      webVideoBackend.inPictureInPicture.addListener(_onBrowserPiPChanged);
+    }
+
     if (PlatformDetection.isMobile) {
       _initBrightness();
     }
@@ -1215,6 +1247,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!PlatformDetection.isTV) _pipService.enableAutoPiP(false);
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
       unawaited(_setAlwaysOnTop(false));
+    }
+    // Leaving the player stops the video, so its floating window goes too.
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      webVideoBackend.inPictureInPicture.removeListener(_onBrowserPiPChanged);
+      unawaited(webVideoBackend.exitPictureInPicture());
     }
     // The launch coordinator briefly owns this route while Android decides
     // whether to hand the queue to an external player. Keep that prepared
@@ -4592,8 +4630,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
+      // The element has to stay mounted under the label: taking it out of
+      // the page closes the browser's floating window.
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+            if (_isInBrowserPiP)
+              ColoredBox(
+                color: Colors.black,
+                // Above the transport in the middle, so the two don't overlap.
+                child: Align(
+                  alignment: const Alignment(0, -0.4),
+                  child: Text(
+                    AppLocalizations.of(
+                      context,
+                    ).playerPlayingInPictureInPicture,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white70, fontSize: 28),
+                  ),
+                ),
+              ),
+          ],
+        ),
       );
     }
 
@@ -6301,6 +6361,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               size: secondaryIconSize,
               extent: secondaryExtent,
               tooltip: _tooltipMessage(l10n.playbackInformation, shortcut: 'I'),
+            ),
+          if (shows(OsdButton.pictureInPicture) &&
+              !_castOwnsTransport &&
+              (_activeHtmlVideoBackend?.supportsPictureInPicture ?? false))
+            OsdButton.pictureInPicture: _controlButton(
+              _isInBrowserPiP
+                  ? Icons.picture_in_picture_rounded
+                  : Icons.picture_in_picture_alt_rounded,
+              onPressed: _toggleBrowserPiP,
+              size: secondaryIconSize,
+              extent: secondaryExtent,
+              tooltip: _isInBrowserPiP
+                  ? _tooltipMessage(l10n.playerTooltipExitPictureInPicture)
+                  : _tooltipMessage(l10n.playerTooltipPictureInPicture),
             ),
           if (PlatformDetection.useDesktopUi && shows(OsdButton.fullscreen))
             OsdButton.fullscreen: _controlButton(
@@ -8169,6 +8243,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_castService.castItemNotifier.value?.id != item.id) return;
     _manager.setTransportInterceptor(_castTransport);
     setState(() => _castOwnsTransport = true);
+    // The copy here is paused under the casting cover, so it can't float.
+    unawaited(_activeHtmlVideoBackend?.exitPictureInPicture());
   }
 
   void _onCastChanged() {
