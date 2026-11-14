@@ -683,10 +683,9 @@ class MediaBarRepository {
     final byMovie = <int, CalendarEntry>{};
     for (final entry in await _upcomingEntries()) {
       final tmdbId = entry.tmdbId;
-      // Only a digital date means it can be watched at home, and a movie
-      // already on the server isn't coming anymore.
+      // A movie already on the server isn't coming anymore.
       if (!entry.isMovie ||
-          entry.release != CalendarRelease.digital ||
+          !mediaBarIsHomeRelease(entry) ||
           !entry.monitored ||
           entry.hasFile ||
           entry.itemId != null ||
@@ -1500,6 +1499,16 @@ String mediaBarNewReleaseKindName(MediaBarNewRelease kind) => switch (kind) {
   MediaBarNewRelease.upcomingSeason => 'upcomingSeason',
   MediaBarNewRelease.upcomingSeries => 'upcomingSeries',
   MediaBarNewRelease.upcomingMovie => 'upcomingMovie',
+};
+
+/// Whether a movie's calendar date is the one it can be watched at home: the
+/// digital release, or the physical one for a movie that has no digital date
+/// at all. Never the physical date of a movie already out digitally.
+@visibleForTesting
+bool mediaBarIsHomeRelease(CalendarEntry entry) => switch (entry.release) {
+  CalendarRelease.digital => true,
+  CalendarRelease.physical => !entry.hasDigitalDate,
+  _ => false,
 };
 
 /// The upcoming label for a calendar entry that hasn't come out yet. A

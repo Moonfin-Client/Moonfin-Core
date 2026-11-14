@@ -78,6 +78,44 @@ void main() {
     });
   });
 
+  group('the date a movie comes home', () {
+    CalendarEntry release(
+      CalendarRelease kind, {
+      bool hasDigitalDate = false,
+    }) => CalendarEntry(
+      key: 'radarr:1:${kind.name}',
+      kind: CalendarEntryKind.movie,
+      release: kind,
+      date: DateTime(2026, 11, 20),
+      hasTime: false,
+      title: 'A movie',
+      hasDigitalDate: hasDigitalDate,
+    );
+
+    test('the digital release counts', () {
+      expect(
+        mediaBarIsHomeRelease(
+          release(CalendarRelease.digital, hasDigitalDate: true),
+        ),
+        isTrue,
+      );
+    });
+
+    test('the physical one only stands in when there is no digital date', () {
+      expect(mediaBarIsHomeRelease(release(CalendarRelease.physical)), isTrue);
+      expect(
+        mediaBarIsHomeRelease(
+          release(CalendarRelease.physical, hasDigitalDate: true),
+        ),
+        isFalse,
+      );
+    });
+
+    test('the cinema release never counts', () {
+      expect(mediaBarIsHomeRelease(release(CalendarRelease.cinema)), isFalse);
+    });
+  });
+
   group('the next episode of each series', () {
     test('the soonest one wins', () {
       final soon = _now.add(const Duration(days: 2));
