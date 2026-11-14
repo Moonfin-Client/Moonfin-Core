@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +19,7 @@ import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
+import 'package:moonfin/ui/widgets/local_search_field.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -353,7 +353,9 @@ void main() {
         ),
       );
       await pumpGuide(tester, surface: const Size(390, 844));
-      final list = tester.widget<ListView>(find.byType(ListView).last).controller!;
+      final list = tester
+          .widget<ListView>(find.byType(ListView).last)
+          .controller!;
       list.jumpTo(400);
       await tester.pump();
       expect(list.offset, greaterThan(0));
@@ -395,15 +397,14 @@ void main() {
   );
   testWidgets('empty group mode keeps categories', (tester) async {
     await GetIt.instance<UserPreferences>().set(
-      UserPreferences.liveTvCategoryDisplay, LiveTvCategoryDisplay.groups,
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.groups,
     );
     await pumpGuide(tester);
     expect(find.byType(EpgFilterRail), findsOneWidget);
   });
 
-  testWidgets('TV Left opens the picker, OK selects and Back keeps the group', (
-    tester,
-  ) async {
+  testWidgets('TV picker OK selects and Right or Back cancels', (tester) async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
     addTearDown(
       () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
@@ -415,6 +416,8 @@ void main() {
     when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
       (_) async => const ChannelGroupLineup({
         'ch1': {'Sports'},
+        'ch2': {'Sports'},
+        'ch3': {'News'},
       }),
     );
     await pumpGuide(tester);
@@ -434,14 +437,44 @@ void main() {
     );
     await key(LogicalKeyboardKey.arrowDown);
     await key(LogicalKeyboardKey.arrowDown);
+    await key(LogicalKeyboardKey.arrowDown);
     await key(LogicalKeyboardKey.select);
     expect(picker, findsNothing);
     expect(find.text('Sports'), findsOneWidget);
     expect(
-      tester.widget<EpgChannelCell>(find.byType(EpgChannelCell)).name,
+      tester.widget<EpgChannelCell>(find.byType(EpgChannelCell).first).name,
       'Channel 1',
     );
     expect(_focusedLabel(), 'GuideChannel:0');
+
+    // Search leaves Channel 2 at row 0; clearing it moves Channel 2 to row 1.
+    final search = tester
+        .widget<LocalSearchField>(find.byType(LocalSearchField))
+        .controller;
+    search.text = 'Channel 2';
+    await tester.pump(const Duration(milliseconds: 220));
+    await _pumpFrames(tester);
+    expect(
+      tester.widget<EpgChannelCell>(find.byType(EpgChannelCell)).name,
+      'Channel 2',
+    );
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await key(LogicalKeyboardKey.arrowLeft);
+    expect(search.text, isEmpty);
+    expect(picker, findsOneWidget);
+    await key(LogicalKeyboardKey.arrowUp); // Highlight News without selecting.
+    await key(LogicalKeyboardKey.arrowRight);
+    expect(picker, findsNothing);
+    expect(_focusedLabel(), 'GuideChannel:1');
+    expect(
+      tester.widget<EpgChannelCell>(find.byType(EpgChannelCell).at(1)).name,
+      'Channel 2',
+    );
+    expect(find.text('Sports'), findsOneWidget);
+
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
     await key(LogicalKeyboardKey.arrowLeft);
     await key(LogicalKeyboardKey.arrowUp);
     await key(LogicalKeyboardKey.escape);
@@ -449,6 +482,153 @@ void main() {
     expect(find.text('Sports'), findsOneWidget);
     expect(_focusedLabel(), 'GuideChannel:0');
   });
+
+  // Opening the picker clears the channel search. A program category then
+  // refetches guide data, so cancellation must retain the channel ID until
+  // those rows exist again instead of restoring whichever row appears first.
+  for (final scenario in [
+    (
+      label: 'Right',
+      closeKey: LogicalKeyboardKey.arrowRight,
+      omitChannel: false,
+      navigateAway: false,
+    ),
+    (
+      label: 'Back',
+      closeKey: LogicalKeyboardKey.escape,
+      omitChannel: false,
+      navigateAway: false,
+    ),
+    (
+      label: 'missing channel',
+      closeKey: LogicalKeyboardKey.arrowRight,
+      omitChannel: true,
+      navigateAway: false,
+    ),
+    (
+      label: 'navigate away',
+      closeKey: LogicalKeyboardKey.arrowRight,
+      omitChannel: false,
+      navigateAway: true,
+    ),
+  ]) {
+    testWidgets('TV picker ${scenario.label} waits for Sports category rows', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.liveTvCategoryDisplay,
+        LiveTvCategoryDisplay.both,
+      );
+      channelCount = 5;
+      when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+        (_) async => const ChannelGroupLineup(
+          {
+            'ch1': {'League'},
+          },
+          programmeCategories: {'sports'},
+        ),
+      );
+      Completer<void>? sportsReload;
+      when(
+        () => liveTvApi.getGuide(
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+          channelIds: any(named: 'channelIds'),
+          isSports: any(named: 'isSports'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          enableImages: any(named: 'enableImages'),
+          enableUserData: any(named: 'enableUserData'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer((invocation) async {
+        final ids =
+            (invocation.namedArguments[#channelIds] as List?)?.cast<String>() ??
+            const <String>[];
+        final sports = invocation.namedArguments[#isSports] == true;
+        if (sports && sportsReload != null) await sportsReload!.future;
+        return <String, dynamic>{
+          'Items': [
+            for (final id in ids)
+              if (!(sports &&
+                  sportsReload != null &&
+                  scenario.omitChannel &&
+                  id == 'ch2'))
+                for (final program in _programsFor(id))
+                  <String, dynamic>{...program, if (sports) 'IsSports': true},
+          ],
+        };
+      });
+
+      await pumpGuide(tester);
+      _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+      await _pumpFrames(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await _pumpFrames(tester);
+      final picker = find.byType(GuideFilterPicker);
+      expect(picker, findsOneWidget);
+      await tester.tap(
+        find.descendant(of: picker, matching: find.text('Sports')),
+      );
+      await _pumpFrames(tester);
+
+      final search = tester
+          .widget<LocalSearchField>(find.byType(LocalSearchField))
+          .controller;
+      search.text = 'Channel 2';
+      await tester.pump(const Duration(milliseconds: 220));
+      await _pumpFrames(tester);
+      expect(
+        tester.widget<EpgChannelCell>(find.byType(EpgChannelCell).first).name,
+        'Channel 2',
+      );
+      _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+      await _pumpFrames(tester);
+
+      sportsReload = Completer<void>();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await _pumpFrames(tester);
+      expect(search.text, isEmpty);
+      expect(picker, findsOneWidget);
+      await tester.sendKeyEvent(scenario.closeKey);
+      await _pumpFrames(tester);
+      expect(picker, findsNothing);
+      expect(_focusedLabel(), 'GuideBrowse');
+
+      if (scenario.navigateAway) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await _pumpFrames(tester);
+        expect(_focusedLabel(), 'GuideSearch');
+      }
+      sportsReload!.complete();
+      await _pumpFrames(tester);
+
+      if (scenario.navigateAway) {
+        expect(_focusedLabel(), 'GuideSearch');
+      } else {
+        final focused = _focusedLabel();
+        expect(focused, startsWith('GuideChannel:'));
+        final focusedRow = find.byWidgetPredicate(
+          (widget) =>
+              widget is Focus && widget.focusNode?.debugLabel == focused,
+        );
+        final focusedCell = find.descendant(
+          of: focusedRow,
+          matching: find.byType(EpgChannelCell),
+        );
+        expect(focusedCell, findsOneWidget);
+        expect(
+          tester.widget<EpgChannelCell>(focusedCell).name,
+          scenario.omitChannel ? 'Channel 0' : 'Channel 2',
+        );
+      }
+    });
+  }
+
   /// Focuses a row-0 cell two hours into the window and then steps right once,
   /// which is the only move permitted to rewrite the anchor. Returns the
   /// anchor's offset in minutes from the window start.
@@ -857,21 +1037,20 @@ void main() {
   testWidgets(
     'the mini-player guide fetches no program artwork, having no hero band',
     (tester) async {
-      when(
-        () => liveTvApi.getProgram(any(), userId: any(named: 'userId')),
-      ).thenAnswer(
-        (inv) async => <String, dynamic>{
-          'Id': inv.positionalArguments[0],
-          'ChannelId': 'ch0',
-          'Name': 'anything',
-          'StartDate': DateTime.now().toUtc().toIso8601String(),
-          'EndDate': DateTime.now()
-              .toUtc()
-              .add(const Duration(minutes: 30))
-              .toIso8601String(),
-          'ImageTags': <String, dynamic>{'Primary': 'tag'},
-        },
-      );
+      when(() => liveTvApi.getProgram(any(), userId: any(named: 'userId')))
+          .thenAnswer(
+            (inv) async => <String, dynamic>{
+              'Id': inv.positionalArguments[0],
+              'ChannelId': 'ch0',
+              'Name': 'anything',
+              'StartDate': DateTime.now().toUtc().toIso8601String(),
+              'EndDate': DateTime.now()
+                  .toUtc()
+                  .add(const Duration(minutes: 30))
+                  .toIso8601String(),
+              'ImageTags': <String, dynamic>{'Primary': 'tag'},
+            },
+          );
 
       await pumpGuide(tester, miniPlayerMode: true);
       // Past both the scroll debounce and the on-focus artwork debounce.

@@ -241,7 +241,11 @@ class ChannelCarouselPrewarm {
                       GuideChannelLoadState.loading,
                 )
                 .toList();
-      if (ids.isNotEmpty) await viewModel.ensureProgramsForChannels(ids);
+      if (ids.isNotEmpty) {
+        await viewModel.ensureProgramsForChannels(ids);
+        // The new listings may end sooner than the current boundary timer.
+        if (!_disposed) viewModel.scheduleBoundaryRefresh();
+      }
     }
   }
 

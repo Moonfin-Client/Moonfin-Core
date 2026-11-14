@@ -17,12 +17,14 @@ class GuideFilterPicker extends StatefulWidget {
     required this.includeCategories,
     required this.filterLabel,
     required this.sidePanel,
+    this.onRightClose,
   });
 
   final LiveTvGuideViewModel vm;
   final bool includeCategories;
   final String Function(GuideFilter) filterLabel;
   final bool sidePanel;
+  final VoidCallback? onRightClose;
 
   @override
   State<GuideFilterPicker> createState() => _GuideFilterPickerState();
@@ -150,6 +152,14 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
           Navigator.of(context).pop();
           return KeyEventResult.handled;
         }
+        if (widget.sidePanel &&
+            (PlatformDetection.isTV || !_searchFocus.hasFocus) &&
+            event is KeyDownEvent &&
+            event.logicalKey.isRightKey) {
+          widget.onRightClose?.call();
+          Navigator.of(context).pop();
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.ignored;
       },
       child: Material(
@@ -263,6 +273,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                       spacing: 16,
                       children: [
                         _remoteHint(l10n.ok, l10n.select),
+                        if (widget.sidePanel) _remoteHint('→', l10n.close),
                         _remoteHint(l10n.back, l10n.close),
                       ],
                     ),

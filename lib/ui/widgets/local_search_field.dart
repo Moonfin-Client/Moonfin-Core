@@ -20,6 +20,7 @@ class LocalSearchField extends StatefulWidget {
     required this.focusNode,
     this.tvFieldKey,
     this.hint,
+    this.compact = false,
     this.onChanged,
     this.onTvKeyEvent,
   });
@@ -28,6 +29,7 @@ class LocalSearchField extends StatefulWidget {
   final FocusNode focusNode;
   final GlobalKey<CustomTVTextFieldState>? tvFieldKey;
   final String? hint;
+  final bool compact;
   final ValueChanged<String>? onChanged;
   final FocusOnKeyEventCallback? onTvKeyEvent;
 
@@ -115,7 +117,11 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
           keyboardStyle: _prefs.get(UserPreferences.keyboardStyle),
           popParentOnKeyboardClose: false,
           hint: effectiveHint,
-          prefixIcon: Icon(Icons.search, color: foreground),
+          prefixIcon: Icon(
+            Icons.search,
+            color: foreground,
+            size: widget.compact ? 18 : null,
+          ),
           textStyle: TextStyle(color: foreground, fontSize: 17),
           hintStyle: TextStyle(
             color: foreground.withValues(alpha: 0.62),
@@ -128,9 +134,9 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
           focusedBorderColor: focusColor,
           borderWidth: 2,
           focusedBorderWidth: 2,
-          contentPadding: const EdgeInsets.symmetric(
+          contentPadding: EdgeInsets.symmetric(
             horizontal: 14,
-            vertical: 11,
+            vertical: widget.compact ? 5 : 11,
           ),
         ),
       );
@@ -146,20 +152,35 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
           decoration: InputDecoration(
             hintText: effectiveHint,
             hintStyle: TextStyle(color: foreground.withValues(alpha: 0.62)),
-            prefixIcon: Icon(Icons.search, color: foreground),
+            prefixIcon: Icon(
+              Icons.search,
+              color: foreground,
+              size: widget.compact ? 18 : null,
+            ),
+            prefixIconConstraints: widget.compact
+                ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                : null,
             suffixIcon: value.text.isEmpty
                 ? null
                 : IconButton(
                     tooltip: l10n.clear,
                     onPressed: widget.controller.clear,
-                    icon: Icon(Icons.close, color: foreground),
+                    padding: widget.compact ? EdgeInsets.zero : null,
+                    constraints: widget.compact
+                        ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                        : null,
+                    icon: Icon(
+                      Icons.close,
+                      color: foreground,
+                      size: widget.compact ? 18 : null,
+                    ),
                   ),
             filled: true,
             fillColor: fillColor,
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 14,
-              vertical: 10,
+              vertical: widget.compact ? 5 : 10,
             ),
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(24)),

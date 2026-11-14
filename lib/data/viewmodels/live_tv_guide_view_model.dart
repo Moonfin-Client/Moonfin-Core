@@ -949,6 +949,33 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     _notifyListeners();
   }
 
+  /// Look up one channel outside the loaded page of a program category.
+  /// A missing match means the channel doesn't belong to this category now.
+  Future<bool> ensureCategoryChannel(String channelId) async {
+    final category = _filter;
+    if (!_isCategory(category) || _categoryLoadedFor != category) return false;
+    if (_categoryPrograms.containsKey(channelId)) return true;
+    if (_categoryQueriedIds.contains(channelId)) return false;
+    final channel = _pageChannels.where((c) => c.id == channelId).firstOrNull;
+    if (channel == null) return false;
+
+    final request = _categoryRequest;
+    final programs = await _fetchPrograms([channel], category: category);
+    if (_disposed ||
+        request != _categoryRequest ||
+        category != _filter ||
+        !_pageChannels.any((c) => c.id == channelId)) {
+      return false;
+    }
+    _categoryQueriedIds.add(channelId);
+    _advanceCategoryCursor();
+    final matches = programs[channelId];
+    if (matches == null) return false;
+    _categoryPrograms[channelId] = matches;
+    _notifyListeners();
+    return true;
+  }
+
   static int _batchSizeFor(GuideFilter? category) =>
       _serverFilteredCategories.contains(category)
       ? _categoryBatchSize
@@ -1187,11 +1214,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     }
     _publishChannels(items, revision);
     if (lineup != null) {
-      if (lineup.programmeCategories != null) {
-        _programmeCategories = lineup.programmeCategories;
-      }
+      // Null means the category check was unavailable, not unchanged.
+      _programmeCategories = lineup.programmeCategories;
       _applyChannelGroupLineup(lineup);
     } else if (account != null) {
+      // The fallback channel reply cannot confirm the previous categories.
+      _programmeCategories = null;
       final visible = _channels.map((channel) => channel.id).toSet();
       _channelGroups.removeWhere((id, _) => !visible.contains(id));
       _rebuildGroupChoices(complete: true);

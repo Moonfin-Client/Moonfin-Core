@@ -181,7 +181,7 @@ void main() {
       verify(() => api.getChannelGroups(userId: 'user')).called(1);
     });
     test(
-      'removing the plugin restores the default categories on reload',
+      'unknown categories or missing plugin restore default filters',
       () async {
         _stubChannels(api, [_channel('one')]);
         when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
@@ -195,6 +195,22 @@ void main() {
         await vm.load();
         vm.setGroup('Local');
         expect(vm.availableProgrammeCategories, [GuideFilter.movies]);
+
+        when(() => api.getChannelGroups(userId: 'user')).thenThrow(
+          Exception('Moonbase timed out'),
+        );
+        await vm.load();
+        expect(vm.availableProgrammeCategories, contains(GuideFilter.sports));
+        expect(vm.selectedGroup, 'Local');
+        expect(vm.filteredChannels.single.id, 'one');
+
+        // A successful lineup may omit categories while the guide imports.
+        when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
+          (_) async => const ChannelGroupLineup({'one': {'Local'}}),
+        );
+        await vm.load();
+        expect(vm.availableProgrammeCategories, contains(GuideFilter.sports));
+        expect(vm.availableProgrammeCategories, contains(GuideFilter.news));
 
         when(() => api.getChannelGroups(userId: 'user')).thenAnswer(
           (_) async => const ChannelGroupLineup({}, endpointAvailable: false),
