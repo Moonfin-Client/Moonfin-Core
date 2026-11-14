@@ -1736,19 +1736,40 @@ class HtmlVideoBackend extends PlayerBackend
   /// True while the video plays in the browser's floating window.
   final ValueNotifier<bool> inPictureInPicture = ValueNotifier<bool>(false);
 
+  // An exit asked for while a request is still open, such as leaving the
+  // player before the window appears. The window is closed once it opens.
+  bool _pictureInPicturePending = false;
+  bool _pictureInPictureExitWanted = false;
+
   /// Needs a recent click, so call it straight from the button's handler.
   Future<void> enterPictureInPicture() async {
     if (_disposed || !supportsPictureInPicture) return;
+    _pictureInPicturePending = true;
+    _pictureInPictureExitWanted = false;
     try {
       await _videoElement.requestPictureInPicture().toDart;
     } catch (_) {
       // Refused, for example before the video has any metadata. The button
       // stays as it was, since no enter event follows.
+      return;
+    } finally {
+      _pictureInPicturePending = false;
+    }
+    if (_disposed || _pictureInPictureExitWanted) {
+      _pictureInPictureExitWanted = false;
+      try {
+        await web.document.exitPictureInPicture().toDart;
+      } catch (_) {}
     }
   }
 
   Future<void> exitPictureInPicture() async {
-    if (_disposed || !inPictureInPicture.value) return;
+    if (_disposed) return;
+    if (_pictureInPicturePending) {
+      _pictureInPictureExitWanted = true;
+      return;
+    }
+    if (!inPictureInPicture.value) return;
     try {
       await web.document.exitPictureInPicture().toDart;
     } catch (_) {}
