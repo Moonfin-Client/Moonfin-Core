@@ -1799,6 +1799,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
             'kodi',
             'raw',
             'no sound',
+            'silent',
             'silence',
           ],
         ),
