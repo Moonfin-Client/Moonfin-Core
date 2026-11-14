@@ -98,6 +98,12 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     private var castStatusListener: SessionManagerListener<CastSession>? = null
     // The TV UI has no cast buttons, so a TV never starts the Cast SDK.
     private val castSdkEnabled by lazy { !isTelevision(this) }
+    // The Cast SDK reports to Google once it starts, so it waits until it's needed.
+    private var castStarted = false
+    private val castPrefs by lazy { getSharedPreferences("moonfin_cast", Context.MODE_PRIVATE) }
+    private var castWasActive: Boolean
+        get() = castPrefs.getBoolean("wasActive", false)
+        set(value) = castPrefs.edit().putBoolean("wasActive", value).apply()
     private var castDiscoveryCallback: MediaRouter.Callback? = null
 
     // A receiver is published by both the MediaRouter and the MediaRouter2
@@ -687,7 +693,12 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
             }
         })
 
-        registerCastStatusListener()
+        // Starting it here lets a cast that was still running when the app
+        // closed reconnect.
+        if (castSdkEnabled && castWasActive) {
+            runCatching { startCast() }
+            castWasActive = getCurrentCastSession() != null
+        }
 
         dlnaController = DlnaController(this)
 
@@ -1317,7 +1328,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         }
 
         val castContext = try {
-            CastContext.getSharedInstance(this)
+            startCast()
         } catch (t: Throwable) {
             result.error("CAST_INIT_FAILED", t.message, null)
             return
@@ -1559,14 +1570,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         result: MethodChannel.Result,
         action: (com.google.android.gms.cast.framework.media.RemoteMediaClient) -> Unit,
     ) {
-        val castContext = try {
-            CastContext.getSharedInstance(this)
-        } catch (t: Throwable) {
-            result.error("CAST_INIT_FAILED", t.message, null)
-            return
-        }
-
-        val session = castContext.sessionManager.currentCastSession
+        val session = getCurrentCastSession()
         if (session == null) {
             result.error("NO_CAST_SESSION", "No active Google Cast session", null)
             return
@@ -1591,18 +1595,21 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
         val listener = object : SessionManagerListener<CastSession> {
             override fun onSessionStarted(session: CastSession, sessionId: String) {
+                castWasActive = true
                 registerCastMediaListeners(session.remoteMediaClient)
                 emitCurrentGoogleCastStatus(session.remoteMediaClient)
                 emitGoogleCastEvent("connected")
             }
 
             override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
+                castWasActive = true
                 registerCastMediaListeners(session.remoteMediaClient)
                 emitCurrentGoogleCastStatus(session.remoteMediaClient)
                 emitGoogleCastEvent("connected")
             }
 
             override fun onSessionEnded(session: CastSession, error: Int) {
+                castWasActive = false
                 unregisterCastMediaCallback()
                 emitGoogleCastEvent("disconnected")
             }
@@ -1619,6 +1626,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
             // The SDK tries to resume the last session on launch, and failing that
             // just means there's nothing left to rejoin.
             override fun onSessionResumeFailed(session: CastSession, error: Int) {
+                castWasActive = false
                 emitGoogleCastEvent("disconnected")
             }
 
@@ -2132,6 +2140,15 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     private fun castContext(): CastContext? =
-        if (castSdkEnabled) CastContext.getSharedInstance(this) else null
+        if (castSdkEnabled && castStarted) CastContext.getSharedInstance(this) else null
+
+    private fun startCast(): CastContext {
+        val context = CastContext.getSharedInstance(this)
+        if (!castStarted) {
+            castStarted = true
+            registerCastStatusListener()
+        }
+        return context
+    }
 
 }
