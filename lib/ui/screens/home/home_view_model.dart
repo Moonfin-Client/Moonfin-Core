@@ -110,6 +110,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
+  bool _onNowRefreshInFlight = false;
   bool _reloadRequestedWhileLoading = false;
   bool _pendingReloadPreserveExisting = true;
   bool _pendingReloadForceRefresh = false;
@@ -1043,17 +1044,80 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// Lightweight refresh for returning to home from a pushed route. Viewing or
-  /// playing an item only changes the resume and next-up rows, so this refetches
-  /// just those and updates them in place, leaving every other row (and its
-  /// pagination, scroll, and focus state) untouched. A full [refresh] still runs
-  /// on the Home button, pull-to-refresh, cold start, and periodic refresh.
+  /// playing an item changes the resume and next-up rows, and time spent away
+  /// moves On Now along, so this refetches just those and updates them in
+  /// place, leaving every other row (and its pagination, scroll, and focus
+  /// state) untouched. A full [refresh] still runs on the Home button,
+  /// pull-to-refresh, cold start, and periodic refresh.
   Future<void> refreshResumeAndNextUp() async {
     // A full load can start before the server has the playback stop and fetch
     // the old rows, so wait for it to finish and fetch again.
     while (_isLoading) {
       await _loadDone;
     }
+    await Future.wait([_refreshResumeRows(), _refreshOnNowRows()]);
+  }
 
+  /// Refetches the programs airing now for the On Now rows: the standalone
+  /// section and the row inside the Live TV section, which share one fetch.
+  Future<void> _refreshOnNowRows() async {
+    // A quick second return would otherwise race the first request, and an
+    // older answer landing last would bring back programs that have ended.
+    if (_onNowRefreshInFlight) return;
+    _onNowRefreshInFlight = true;
+    try {
+      await _refreshOnNowRowsNow();
+    } finally {
+      _onNowRefreshInFlight = false;
+    }
+  }
+
+  Future<void> _refreshOnNowRowsNow() async {
+    final ids = [
+      for (final row in _rows)
+        if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
+          row.id,
+    ];
+    if (ids.isEmpty) {
+      await _restoreMissingOnNow();
+      return;
+    }
+    final fresh = _dataSource.loadOnNow(_serverId);
+    // Each row's refresh handles a failure; this keeps one that no row ends
+    // up awaiting from surfacing as uncaught.
+    fresh.ignore();
+    await Future.wait([
+      for (final id in ids)
+        _refreshRowInPlace(id, () => fresh, (items) => items),
+    ]);
+  }
+
+  /// Brings On Now back when its section is on but the row was left out for
+  /// having nothing airing, e.g. the guide was filled in while the user was
+  /// away. Checks for programs first, so a section that stays empty costs one
+  /// small request per return. Once there are some, the row is loaded back
+  /// in the user's section order.
+  Future<void> _restoreMissingOnNow() async {
+    final configs = _prefs.activeHomeSectionConfigs;
+    final standalone = configs.any((c) => c.type == HomeSectionType.onNow);
+    if (!standalone && !configs.any((c) => c.type == HomeSectionType.liveTv)) {
+      return;
+    }
+    final HomeRow fresh;
+    try {
+      fresh = await _dataSource.loadOnNow(_serverId);
+    } catch (_) {
+      return;
+    }
+    if (filterEmptyElements(fresh.items).isEmpty) return;
+    // The standalone section has no row left, so loading only the sections
+    // missing from Home puts it back in place and leaves the other rows and
+    // their loaded pages alone. The Live TV section keeps its own row, so it
+    // takes the same full refresh as the Home button.
+    await load(preserveExisting: true, newSectionsOnly: standalone);
+  }
+
+  Future<void> _refreshResumeRows() async {
     // A row that came back empty was dropped, so there's no row to refresh in
     // place. Loading it as a new section brings it back once it has items.
     if (const ['resume', 'nextUp', 'resumeAudio'].any(
