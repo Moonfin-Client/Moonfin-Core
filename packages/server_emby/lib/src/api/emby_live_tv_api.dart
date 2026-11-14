@@ -1,11 +1,53 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
-class EmbyLiveTvApi implements LiveTvApi {
+class EmbyLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
   final Dio _dio;
   static const _postChannelIdsThreshold = 1800;
 
   EmbyLiveTvApi(this._dio);
+
+  /// Emby already exposes the M3U group names as channel tags.
+  /// Fetch the user-scoped lineup once and preserve complete labels.
+  @override
+  Future<ChannelGroupLineup> getChannelGroups({String? userId}) async {
+    final response = await getChannels(
+      sortBy: 'SortName',
+      sortOrder: 'Ascending',
+      fields: 'ImageTags,UserData,Tags',
+      enableTotalRecordCount: false,
+      userId: userId,
+    );
+    final items = response['Items'];
+    if (items is! List) {
+      throw const FormatException('Invalid Emby Live TV channels response');
+    }
+
+    final channels = <Map<String, dynamic>>[];
+    final groups = <String, Set<String>>{};
+    Set<String> names(Iterable<dynamic> values) => {
+      for (final name in values)
+        if (name is String && name.trim().isNotEmpty) name.trim(),
+    };
+    for (final item in items) {
+      if (item is! Map<String, dynamic> ||
+          item['Id'] is! String ||
+          (item['Id'] as String).isEmpty ||
+          item['Name'] is! String) {
+        throw const FormatException('Invalid Emby Live TV channel');
+      }
+      channels.add(item);
+      final tagged = item['TagItems'];
+      final labels = tagged is List
+          ? names(tagged.map((tag) => tag is Map ? tag['Name'] : null))
+          : <String>{};
+      if (labels.isEmpty && item['Tags'] is List) {
+        labels.addAll(names(item['Tags'] as List));
+      }
+      if (labels.isNotEmpty) groups[item['Id'] as String] = labels;
+    }
+    return ChannelGroupLineup(groups, channels: channels);
+  }
 
   @override
   Future<Map<String, dynamic>> getChannels({

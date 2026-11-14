@@ -1677,6 +1677,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ]),
     if (liveTvOnAnyServer)
       quality.leaf(
+        'live_tv_category_display',
+        l10n.liveTvCategoryDisplay,
+        keywords: ['live tv', 'guide', 'channel groups', 'categories'],
+      ),
+    if (liveTvOnAnyServer)
+      quality.leaf(
         'pref_live_direct',
         l10n.settingsLiveTvDirect,
         subtitle: l10n.settingsLiveTvDirectSubtitle,

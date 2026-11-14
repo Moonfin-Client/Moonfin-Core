@@ -11184,6 +11184,38 @@
   "settingsPrivacyPolicySubtitle": "How Moonfin handles your data",
   "settingsCheckForUpdates": "Check for Updates",
   "settingsCheckForUpdatesSubtitle": "Check for the latest Moonfin release",
+  "liveTvCategoryDisplay": "Live TV guide filters",
+  "@liveTvCategoryDisplay": {
+    "description": "Settings label for choosing program categories, tuner channel groups, or both in the Live TV guide."
+  },
+  "liveTvProgrammeCategories": "Program categories",
+  "@liveTvProgrammeCategories": {
+    "description": "Heading for program-based filters such as Movies, Sports, and News in the Live TV browse picker."
+  },
+  "liveTvChannelGroups": "Channel groups",
+  "@liveTvChannelGroups": {
+    "description": "Heading for channel groups supplied by the Live TV tuner or M3U playlist, not program categories."
+  },
+  "guideBrowse": "Browse guide",
+  "@guideBrowse": {
+    "description": "Title of the searchable channel-group and program-category picker in the Live TV guide."
+  },
+  "guideAllChannels": "All channels",
+  "@guideAllChannels": {
+    "description": "Browse option that shows all accessible Live TV channels, without a category or channel-group filter."
+  },
+  "guideSearchChannels": "Search channels",
+  "@guideSearchChannels": {
+    "description": "Placeholder for the Live TV guide search field that searches channel names and numbers."
+  },
+  "guideSearchGroups": "Search groups",
+  "@guideSearchGroups": {
+    "description": "Placeholder for the Live TV browse picker search field when it filters channel-group names."
+  },
+  "guideSearchGroupsAndCategories": "Search groups and categories",
+  "@guideSearchGroupsAndCategories": {
+    "description": "Placeholder for the Live TV browse picker search field when it filters both channel groups and program categories."
+  },
   "settingsBoth": "Both",
   "settingsShuffleContentTypeFilter": "Shuffle Content Type Filter",
   "settingsAudioPreferencesSubtitle": "Audio tracks, processing, and passthrough options",

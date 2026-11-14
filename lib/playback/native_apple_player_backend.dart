@@ -217,6 +217,7 @@ class NativeApplePlayerBackend
       case 'configureSecondarySubtitleStyle':
       case 'setSpeed':
       case 'setBitrate':
+      case 'visibleChannelsChanged':
       case 'selectChannel':
       case 'openGuide':
       case 'guideButton':

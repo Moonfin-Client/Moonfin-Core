@@ -68,6 +68,7 @@ final class NativeApplePlayerViewController: UIViewController {
     var onSubtitleAction: (([String: Any]) -> Void)?
     var onSetSpeed: ((Double) -> Void)?
     var onSetBitrate: ((Int) -> Void)?
+    var onVisibleChannelsChanged: (([String]) -> Void)?
     var onSelectChannel: ((String) -> Void)?
     var onOpenGuide: (() -> Void)?
     var onRecord: (() -> Void)?
@@ -2671,6 +2672,7 @@ final class NativeApplePlayerViewController: UIViewController {
             entries: channelList,
             startIndex: selectedChannelIndex,
             theme: carouselTheme)
+        overlay.onVisibleChannelsChanged = onVisibleChannelsChanged
         overlay.onChannelSelected = { [weak self] channelId in
             self?.onSelectChannel?(channelId)
         }
