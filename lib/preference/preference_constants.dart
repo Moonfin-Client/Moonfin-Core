@@ -73,12 +73,19 @@ enum ApplePlayerUi {
   native,
 }
 
-/// When the Apple TV clickpad may seek. Protected modes reveal hidden controls
-/// first; pausedOnly additionally requires the viewer to pause playback.
+/// When Siri Remote clicks and swipes may seek on Apple TV. The stricter modes
+/// bring up hidden controls first, and pausedOnly also needs playback paused.
 enum AppleTvClickpadSeekMode {
   always,
   controlsVisible,
-  pausedOnly,
+  pausedOnly;
+
+  bool allowsSeek({required bool controlsVisible, required bool playing}) =>
+      switch (this) {
+        always => true,
+        AppleTvClickpadSeekMode.controlsVisible => controlsVisible,
+        pausedOnly => controlsVisible && !playing,
+      };
 }
 
 /// Where the play, skip and seek buttons sit on phones, tablets and desktop.

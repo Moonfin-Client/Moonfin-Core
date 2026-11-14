@@ -1509,10 +1509,8 @@ final class NativeApplePlayerViewController: UIViewController {
 
         skipForwardMs = (args["skipForwardMs"] as? NSNumber)?.intValue ?? 30000
         skipBackMs = (args["skipBackMs"] as? NSNumber)?.intValue ?? 10000
-        #if os(tvOS)
         clickpadSeekMode = ClickpadSeekMode(
             rawValue: args["clickpadSeekMode"] as? String ?? "") ?? .always
-        #endif
         // A fast forward or rewind key on a remote reaches the transport
         // commands rather than the clickpad, so they move by the same setting.
         player.nowPlaying.setSkipIntervals(
@@ -2798,14 +2796,12 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         // During a paused scrub session play means go to the scrubbed spot
         // and carry on from there, not resume where the video was paused.
-        #if os(tvOS)
         if scrubTargetMs != nil && !clickpadSeekingAllowed {
             // Let the play/pause press act on the current player state,
             // without the abandoned preview resuming playback first.
             wasPlayingBeforeScrub = false
             abandonScrubSession()
         }
-        #endif
         if scrubTargetMs != nil {
             wasPlayingBeforeScrub = true
             commitScrub()

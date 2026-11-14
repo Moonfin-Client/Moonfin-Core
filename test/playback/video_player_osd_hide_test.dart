@@ -559,6 +559,56 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
+    testWidgets('set to seek with the controls up, a press first shows them', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.controlsVisible,
+      );
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty, reason: 'held, it stays blocked');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, playback never seeks', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+
+      for (var i = 0; i < 2; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 300);
+      }
+      expect(manager.seeks, isEmpty);
+
+      manager.state.setPlaying(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
     testWidgets('stops by itself when the release never comes', (
       tester,
     ) async {

@@ -490,6 +490,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   int _heldSeekCount = 0;
   Timer? _heldSeekTimer;
 
+  /// A Left or Right that wasn't allowed to seek stays blocked while held.
+  LogicalKeyboardKey? _clickpadBlockedKey;
+
   double _brightnessValue = 0.5;
   double _systemVolume = 1.0;
   bool _showVolumeOverlay = false;
@@ -3621,6 +3624,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _heldSeekKey = null;
   }
 
+  bool get _clickpadSeekAllowed => _prefs
+      .get(UserPreferences.appleTvClickpadSeekMode)
+      .allowsSeek(controlsVisible: _controlsVisible, playing: _state.isPlaying);
+
   SubtitleViewConfiguration _buildSubtitleConfig() =>
       buildSubtitleViewConfiguration(
         context: context,
@@ -3948,7 +3955,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             return KeyEventResult.ignored;
           }
           if (!_controlsVisible) {
-            if (_beginHeldSeek(
+            if (!_clickpadSeekAllowed) {
+              _clickpadBlockedKey = event.logicalKey;
+              _showControls(focusSeekbar: true);
+            } else if (_beginHeldSeek(
               event,
               (ms) => _seekRelative(ms, showControls: false),
             )) {
@@ -5520,6 +5530,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               switch (event.logicalKey) {
                                 case LogicalKeyboardKey.arrowLeft:
                                 case LogicalKeyboardKey.arrowRight:
+                                  if (event is KeyRepeatEvent &&
+                                      event.logicalKey == _clickpadBlockedKey) {
+                                    return KeyEventResult.handled;
+                                  }
+                                  if (!_clickpadSeekAllowed) {
+                                    _clickpadBlockedKey = event.logicalKey;
+                                    _showControls();
+                                    return KeyEventResult.handled;
+                                  }
                                   _beginHeldSeek(
                                     event,
                                     _seekRelativeAccumulate,

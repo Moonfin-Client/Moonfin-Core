@@ -1599,10 +1599,9 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     if (PlatformDetection.isAppleTV)
       video.leaf(
         'appleTvClickpadSeekMode',
-        'Allow clickpad seeking',
-        subtitle:
-            'Choose when Left/Right clicks and touchpad drags can seek. Protected modes reveal hidden controls first.',
-        keywords: ['remote', 'accidental skip', 'seek lock', 'paused'],
+        l10n.clickpadSeeking,
+        subtitle: l10n.clickpadSeekingDescription,
+        keywords: ['remote', 'touchpad', 'accidental skip', 'seek lock'],
       ),
     video.leaf(
       'controlsHideDelay',

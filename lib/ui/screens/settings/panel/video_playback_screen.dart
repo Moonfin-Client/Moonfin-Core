@@ -177,15 +177,15 @@ class _VideoPlaybackScreen extends StatelessWidget {
               if (PlatformDetection.isAppleTV)
                 EnumPreferenceTile<AppleTvClickpadSeekMode>(
                   preference: UserPreferences.appleTvClickpadSeekMode,
-                  title: 'Allow clickpad seeking',
-                  description:
-                      'Choose when Left/Right clicks and touchpad drags can seek. Protected modes reveal hidden controls first.',
+                  title: l10n.clickpadSeeking,
+                  description: l10n.clickpadSeekingDescription,
                   icon: Icons.touch_app_outlined,
                   labelOf: (v) => switch (v) {
-                    AppleTvClickpadSeekMode.always => 'Always',
+                    AppleTvClickpadSeekMode.always => l10n.always,
                     AppleTvClickpadSeekMode.controlsVisible =>
-                        'When controls are visible',
-                    AppleTvClickpadSeekMode.pausedOnly => 'Only while paused',
+                      l10n.clickpadSeekingControlsVisible,
+                    AppleTvClickpadSeekMode.pausedOnly =>
+                      l10n.clickpadSeekingPausedOnly,
                   },
                 ),
               IntPickerPreferenceTile(

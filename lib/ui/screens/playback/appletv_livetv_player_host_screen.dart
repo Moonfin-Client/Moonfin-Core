@@ -62,7 +62,9 @@ class _AppleTvLiveTvPlayerHostScreenState
   StreamSubscription<bool>? _screensaverPlayingSub;
 
   (SubtitleStyle, double, double, int)? _lastSubtitleStyle;
-  String _lastClickpadPrefs = '';
+  late AppleTvClickpadSeekMode _clickpadSeekMode = _prefs.get(
+    UserPreferences.appleTvClickpadSeekMode,
+  );
 
   late int _currentIndex;
   bool _exiting = false;
@@ -156,7 +158,6 @@ class _AppleTvLiveTvPlayerHostScreenState
         _showChannelFailed(_currentChannel.name);
       }
     });
-    _lastClickpadPrefs = _clickpadPrefsSnapshot();
     _liveRecoverySub = _manager.liveRecoveryStatusStream.listen((status) {
       if (!mounted) return;
       unawaited(
@@ -253,16 +254,13 @@ class _AppleTvLiveTvPlayerHostScreenState
     super.dispose();
   }
 
-  String _clickpadPrefsSnapshot() =>
-      _prefs.get(UserPreferences.appleTvClickpadSeekMode).name;
-
   void _onPrefsChanged() {
     final previous = _lastSubtitleStyle;
     _pushSubtitleStyle();
-    final next = _clickpadPrefsSnapshot();
-    final clickpadChanged = next != _lastClickpadPrefs;
-    _lastClickpadPrefs = next;
-    if (previous != _lastSubtitleStyle || clickpadChanged) _pushMetadata();
+    final mode = _prefs.get(UserPreferences.appleTvClickpadSeekMode);
+    final modeChanged = mode != _clickpadSeekMode;
+    _clickpadSeekMode = mode;
+    if (previous != _lastSubtitleStyle || modeChanged) _pushMetadata();
   }
 
   /// [force] pushes even when nothing changed, for a new stream or backend.
@@ -791,7 +789,7 @@ class _AppleTvLiveTvPlayerHostScreenState
       hasNext: false,
       skipForwardMs: _prefs.get(UserPreferences.skipForwardLength),
       skipBackMs: _prefs.get(UserPreferences.skipBackLength),
-      clickpadSeekMode: _prefs.get(UserPreferences.appleTvClickpadSeekMode),
+      clickpadSeekMode: _clickpadSeekMode,
       audioTracks: _trackOptions(audioStreams, _manager.audioStreamIndex),
       subtitleTracks: [
         ..._trackOptions(
