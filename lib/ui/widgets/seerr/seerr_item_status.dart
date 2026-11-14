@@ -107,17 +107,18 @@ Map<int, int> seerrItemSeasonStatus(ItemDetailViewModel viewModel) {
   return state?.hd.seasonStatus ?? const {};
 }
 
-/// The Seerr state of an item with something downloading, or null.
+/// The Seerr state of an item with something downloading, or with an approved
+/// request the arr hasn't found a release for yet, or null.
 SeerrMediaDetailState? seerrItemDownloads(ItemDetailViewModel viewModel) {
   final state = _resolved(viewModel);
   if (state == null) return null;
   final downloading = state.hdDownload != null || state.download4k != null;
-  return downloading ? state : null;
+  return downloading || state.hd.isNotFoundYet ? state : null;
 }
 
 /// Progress bars for whatever Radarr or Sonarr is fetching right now, one per
 /// quality track. Labelled only when both are running, so the usual single bar
-/// stays uncluttered.
+/// stays uncluttered. An HD track with nothing grabbed yet says so instead.
 class SeerrItemDownloadBars extends StatelessWidget {
   final SeerrMediaDetailState state;
 
@@ -127,7 +128,8 @@ class SeerrItemDownloadBars extends StatelessWidget {
   Widget build(BuildContext context) {
     final hd = state.hdDownload;
     final uhd = state.download4k;
-    final both = hd != null && uhd != null;
+    final notFoundYet = hd == null && state.hd.isNotFoundYet;
+    final both = (hd != null || notFoundYet) && uhd != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -136,11 +138,15 @@ class SeerrItemDownloadBars extends StatelessWidget {
           SeerrDownloadProgressBar(
             summary: hd,
             prefixLabel: both ? 'HD' : null,
-          ),
+            reasonMaxLines: 3,
+          )
+        else if (notFoundYet)
+          SeerrNotFoundYetLabel(prefixLabel: both ? 'HD' : null),
         if (uhd != null)
           SeerrDownloadProgressBar(
             summary: uhd,
             prefixLabel: AppLocalizations.of(context).uhd4k,
+            reasonMaxLines: 3,
           ),
       ],
     );

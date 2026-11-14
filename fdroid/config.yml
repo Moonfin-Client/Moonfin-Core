@@ -1,0 +1,14 @@
+repo_url: https://fdroid.moonfin.io/repo
+repo_name: Moonfin
+repo_description: >-
+  The official Moonfin repo. It carries the same Android APK as each GitHub
+  release, for phones, tablets and TVs.
+repo_icon: icon.png
+
+# Only the newest APK is published, older ones stay on the GitHub releases.
+archive_older: 0
+
+keystore: keystore.p12
+repo_keyalias: moonfin-fdroid
+keystorepass: {env: FDROID_KEYSTORE_PASSWORD}
+keypass: {env: FDROID_KEYSTORE_PASSWORD}

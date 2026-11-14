@@ -174,49 +174,12 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
       switch (style) {
         HomeRowsStyle.v1 => l10n.homeRowsStyleClassic,
         HomeRowsStyle.v2 => l10n.homeRowsStyleModern,
+        HomeRowsStyle.carousel => l10n.homeRowsStyleCarousel,
       };
 
   void _reloadHomeRows() {
     if (!GetIt.instance.isRegistered<HomeViewModel>()) return;
     GetIt.instance<HomeViewModel>().load(preserveExisting: true);
-  }
-
-  void _syncMdblistWatchingNowSection(bool isEnabled) {
-    final configs = List<HomeSectionConfig>.from(_prefs.homeSectionsConfig);
-    final idx = configs.indexWhere(
-      (c) => c.type == HomeSectionType.mdblistWatchingNow,
-    );
-
-    if (isEnabled) {
-      if (idx >= 0) {
-        final existing = configs.removeAt(idx);
-        final lastEnabledIndex = configs.lastIndexWhere((c) => c.enabled);
-        final insertIndex = lastEnabledIndex >= 0 ? lastEnabledIndex + 1 : 0;
-        configs.insert(insertIndex, existing.copyWith(enabled: true));
-      } else {
-        final lastEnabledIndex = configs.lastIndexWhere((c) => c.enabled);
-        final insertIndex = lastEnabledIndex >= 0 ? lastEnabledIndex + 1 : 0;
-        configs.insert(
-          insertIndex,
-          const HomeSectionConfig(
-            type: HomeSectionType.mdblistWatchingNow,
-            enabled: true,
-            order: 0,
-          ),
-        );
-      }
-    } else {
-      if (idx >= 0) {
-        configs[idx] = configs[idx].copyWith(enabled: false);
-      }
-    }
-
-    for (var i = 0; i < configs.length; i++) {
-      configs[i] = configs[i].copyWith(order: i);
-    }
-    _prefs.setHomeSectionsConfig(configs);
-    _pushPersonalizationSync();
-    _reloadHomeRows();
   }
 
   @override
@@ -288,7 +251,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                   setState(() {});
                 },
               ),
-              if (rowsStyle == HomeRowsStyle.v2)
+              if (rowsStyle.usesModernCards)
                 SwitchPreferenceTile(
                   preference: UserPreferences.modernCardsOnMyMediaRow,
                   title: l10n.modernCardsOnMyMediaRow,
@@ -301,7 +264,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                     setState(() {});
                   },
                 ),
-              if (rowsStyle == HomeRowsStyle.v2 && !isMobileUi) ...[
+              if (rowsStyle.usesModernCards && !isMobileUi) ...[
                 EnumPreferenceTile<ModernCardTransitionSpeed>(
                   preference: UserPreferences.modernCardTransitionSpeed,
                   title: l10n.modernCardsTransitionSpeed,
@@ -325,15 +288,15 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 ),
               ],
               SliderPreferenceTile(
-                preference: rowsStyle == HomeRowsStyle.v2
+                preference: rowsStyle.usesModernCards
                     ? UserPreferences.modernHomeRowsPadding
                     : UserPreferences.classicHomeRowsPadding,
                 title: l10n.homeRowsPadding,
                 description: l10n.homeRowsPaddingDescription,
                 icon: Icons.unfold_more,
-                min: rowsStyle == HomeRowsStyle.v2 ? 360 : 10,
-                max: rowsStyle == HomeRowsStyle.v2 ? 560 : 130,
-                divisions: rowsStyle == HomeRowsStyle.v2 ? 10 : 6,
+                min: rowsStyle.usesModernCards ? 360 : 10,
+                max: rowsStyle.usesModernCards ? 560 : 130,
+                divisions: rowsStyle.usesModernCards ? 10 : 6,
                 enabled: isPaddingEnabled,
                 onChangeEnd: _pushPersonalizationSync,
               ),
@@ -484,25 +447,16 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 _TvSettingsListTile(
                   leading: const Icon(Icons.movie_outlined),
                   title: const Text('IMDb Lists'),
-                  subtitle: const Text(
-                    'Configure IMDb Top 250, Popular, and other charts.',
-                  ),
+                  subtitle: const Text('Sort the IMDb chart rows.'),
                   onTap: () =>
                       context.pushSettingsScreen(const _ImdbListsScreen()),
-                ),
-                SwitchPreferenceTile(
-                  preference: UserPreferences.mdblistWatchingNowEnabled,
-                  title: l10n.mdblistWatchingNow,
-                  subtitle: l10n.mdblistWatchingNowDescription,
-                  icon: Icons.public,
-                  onChangedValue: _syncMdblistWatchingNowSection,
                 ),
                 _TvSettingsListTile(
                   leading: const Icon(Icons.trending_up),
                   title: const Text('TMDB Lists'),
                   subtitle: Text(
                     tmdbAvailable
-                        ? 'Configure Popular, Top Rated, and Trending TMDB lists.'
+                        ? 'Sort the TMDB chart rows.'
                         : 'TMDB API key must be configured in Moonbase settings to use this feature.',
                   ),
                   onTap: tmdbAvailable

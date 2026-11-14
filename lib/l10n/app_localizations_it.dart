@@ -3956,10 +3956,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Attiva o disattiva i calendari delle uscite di Radarr/Sonarr.';
-
-  @override
-  String get enableRadarrCalendar => 'Abilita Calendario Uscite di Radarr';
+      'Scegli cosa mostrano le righe di Radarr e Sonarr.';
 
   @override
   String get radarrCalendarShowCinema => 'Mostra Uscite al Cinema in Arrivo';
@@ -3976,9 +3973,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get radarrCalendarHideDownloaded => 'Nascondi Film Già sul Server';
-
-  @override
-  String get enableSonarrCalendar => 'Abilita Calendario Uscite di Sonarr';
 
   @override
   String get sonarrCalendarShowEpisodeInfo => 'Mostra Informazioni Episodio';
@@ -4856,6 +4850,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mostra librerie da tutti i server connessi';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => 'Unisci Righe Recenti per Tipo';
 
   @override
@@ -5307,6 +5311,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeRowsExternalLists => 'Liste Esterne';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Impostazioni per Riga';
 
   @override
@@ -5539,10 +5546,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'In Visione su MDBList';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Mostra cosa stanno guardando ora gli utenti di MDBList';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5955,13 +5958,35 @@ class AppLocalizationsIt extends AppLocalizations {
   String get seerrImportingStatus => 'Importazione';
 
   @override
-  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+  String get seerrWaitingForImport => 'Scaricato, in attesa di importazione';
 
   @override
-  String get seerrDownloadStalled => 'Stalled';
+  String get seerrDownloadStalled => 'Bloccato';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Download non riuscito';
+
+  @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
 
   @override
   String itemsCount(int count) {
@@ -11395,6 +11420,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inserisci il PIN per ripristinare l\'app completa';
 
   @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
+
+  @override
   String get pinIncorrect => 'PIN errato';
 
   @override
@@ -12580,6 +12610,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeRowsStyleModern => 'Moderno';
+
+  @override
+  String get homeRowsStyleCarousel => 'Carousel';
 
   @override
   String get homeRowsSection => 'Righe Home';
@@ -15761,6 +15794,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get setupRowsModernHint => 'Schede più grandi con i titoli sotto.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Tutto centrato in un unico blocco.';
 
   @override
@@ -16572,34 +16609,29 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsAdvancedSection => 'Avanzate';
 
   @override
-  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+  String get settingsDecodingAndRenderingSection => 'Decodifica e Rendering';
 
   @override
-  String get settingsAudioStreamSection => 'Audio Stream';
+  String get settingsAudioStreamSection => 'Traccia Audio';
 
   @override
-  String get settingsAudioOutputSection => 'Audio Output';
+  String get settingsAudioOutputSection => 'Uscita Audio';
 
   @override
-  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+  String get settingsPassthroughSettingsSection => 'Impostazioni Passthrough';
 
   @override
-  String get settingsImdbListsSection => 'IMDb Lists';
+  String get settingsSeerrHomePageRowsSection => 'Righe Seerr nella Home';
 
   @override
-  String get settingsTmdbListsSection => 'TMDB Lists';
+  String get settingsSavedCustomHomeRowsSection =>
+      'Righe Personalizzate Salvate';
 
   @override
-  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+  String get settingsRewatchSection => 'Da Rivedere';
 
   @override
-  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
-
-  @override
-  String get settingsRewatchSection => 'Rewatch';
-
-  @override
-  String get favoritesSwitchViewSection => 'Switch View';
+  String get favoritesSwitchViewSection => 'Cambia Vista';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17642,7 +17674,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
-    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+    return 'Album, Artisti e Playlist Audio sono tutti disattivati. Per mostrarne uno, vai in Righe, apri $group sotto $disabled e attivalo.';
   }
 
   @override
@@ -17651,7 +17683,7 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+    return 'Per vedere Album, Artisti o Playlist Audio nella Home, attiva prima $setting. Poi vai in Righe, apri $group sotto $disabled e attivane uno.';
   }
 
   @override
@@ -17659,7 +17691,7 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+    return 'La riga Collezioni è disattivata. Per mostrarla, vai in Righe, apri $group sotto $disabled e attivala.';
   }
 
   @override
@@ -17668,42 +17700,42 @@ class AppLocalizationsIt extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+    return 'Per vedere la riga Collezioni nella Home, attiva prima $setting. Poi vai in Righe, apri $group sotto $disabled e attivala.';
   }
 
   @override
   String get settingsPreviewRowsOffInKidsMode =>
-      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+      'La Modalità Bambini tiene queste righe fuori dalla Home, quindi queste impostazioni non la cambiano.';
 
   @override
   String settingsPreviewNeedsRowInRows(String disabled) {
-    return 'Turn on a row in Rows, under $disabled';
+    return 'Attiva una riga in Righe, sotto $disabled';
   }
 
   @override
   String settingsPreviewNeedsSwitchAndRow(String setting) {
-    return 'Turn on $setting, then turn on a row in Rows';
+    return 'Attiva $setting, poi attiva una riga in Righe';
   }
 
   @override
   String get settingsPreviewKeptOffByKidsMode =>
-      'Kids Mode keeps this off Home';
+      'La Modalità Bambini la tiene fuori dalla Home';
 
   @override
   String get settingsPreviewAudioRowsEmpty =>
-      'There\'s no music to show, so Home leaves these rows out.';
+      'Non c\'è musica da mostrare, quindi la Home non mostra queste righe.';
 
   @override
   String get settingsPreviewRowsEmpty =>
-      'There\'s nothing to show in these rows, so Home leaves them out.';
+      'Non c\'è niente da mostrare in queste righe, quindi la Home non le mostra.';
 
   @override
   String get settingsPreviewCollectionsEmpty =>
-      'There are no collections to show, so Home leaves this row out.';
+      'Non ci sono collezioni da mostrare, quindi la Home non mostra questa riga.';
 
   @override
   String get settingsPreviewShowEpisodesNote =>
-      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
+      'Cambia solo le righe di una singola collezione aggiunta in Righe. La riga Collezioni resta uguale.';
 
   @override
   String get settingsPreviewSaved => 'Salvato';

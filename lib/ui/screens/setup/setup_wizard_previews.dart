@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/media_bar_slide_item.dart';
 import '../../../data/models/media_bar_state.dart';
@@ -40,6 +41,7 @@ import '../../widgets/bottom_nav/dock_bar.dart';
 import '../../widgets/bottom_nav/split_bar.dart';
 import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/carousel_panel.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
 import '../../widgets/info_area.dart';
@@ -435,9 +437,10 @@ Widget mediaBarPreview(String mode) => _liveOrFallback(
             child: _homeRowsColumn(
               context,
               items,
-              modern:
-                  previewValue(context, UserPreferences.homeRowsStyle) ==
-                  HomeRowsStyle.v2,
+              modern: previewValue(
+                context,
+                UserPreferences.homeRowsStyle,
+              ).usesModernCards,
               infoArea: false,
             ),
           ),
@@ -1960,9 +1963,10 @@ Widget settingsHomePreview({bool focusCard = false}) {
       : NavbarPosition.top;
   return _liveOrFallback(
     live: (context, items) {
-      final modern =
-          previewValue(context, UserPreferences.homeRowsStyle) ==
-          HomeRowsStyle.v2;
+      final modern = previewValue(
+        context,
+        UserPreferences.homeRowsStyle,
+      ).usesModernCards;
       // Modern rows hold the first card in focus, the way Home looks with a
       // row in focus, so the card's grown state and its details show.
       final focusFirst = modern || focusCard;
@@ -2704,22 +2708,27 @@ Widget _fallbackNavbar(NavbarPosition position) {
 // Home rows
 // ---------------------------------------------------------------------------
 
-Widget homeRowsPreview({required bool modern}) => _liveOrFallback(
-  live: (context, items) => _homeRowsScreen(
-    context,
-    items,
-    modern: modern,
-    // Modern's whole point is the focused card, so its preview holds the
-    // first card in that state with the text block it grows underneath.
-    focusFirst: modern,
-  ),
-  fallback: _fallbackHomeRows(modern: modern),
-);
+/// [carousel] picks Carousel over Modern for a modern preview. Left null it
+/// follows the Row Type setting.
+Widget homeRowsPreview({required bool modern, bool? carousel}) =>
+    _liveOrFallback(
+      live: (context, items) => _homeRowsScreen(
+        context,
+        items,
+        modern: modern,
+        carousel: carousel,
+        // Modern's whole point is the focused card, so its preview holds the
+        // first card in that state with the text block it grows underneath.
+        focusFirst: modern,
+      ),
+      fallback: _fallbackHomeRows(modern: modern),
+    );
 
 Widget _homeRowsScreen(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
 }) {
@@ -2731,12 +2740,31 @@ Widget _homeRowsScreen(
         context,
         items,
         modern: modern,
+        carousel: carousel,
         focusFirst: focusFirst,
         rowGapOverride: rowGapOverride,
       ),
     ),
   );
 }
+
+/// The sample item as a library item, for widgets that only take those.
+AggregatedItem _slideAsItem(MediaBarSlideItem item) => AggregatedItem(
+  id: item.itemId,
+  serverId: item.serverId,
+  rawData: {
+    'Name': item.title,
+    'Type': item.itemType,
+    'Overview': item.overview,
+    'ProductionYear': item.year,
+    'OfficialRating': item.officialRating,
+    'Genres': item.genres,
+    'CommunityRating': item.communityRating,
+    'CriticRating': item.criticRating,
+    if (item.runtime case final runtime?)
+      'RunTimeTicks': runtime.inMicroseconds * 10,
+  },
+);
 
 /// The colours of the 4K and HDR10 built-in labels.
 const _sampleLabels = [
@@ -2755,13 +2783,16 @@ bool _showSampleLabels(BuildContext context) {
 }
 
 /// The sample rows' poster and thumb heights at the card size being looked at.
+/// Modern's sample posters are drawn larger than Home's. Carousel's keep
+/// Home's size, so its panel fits under them as it does on Home.
 (double, double) _sampleCardHeights(
   BuildContext context, {
   required bool modern,
+  bool carousel = false,
 }) {
   final posterSize = previewValue(context, UserPreferences.posterSize);
   return (
-    (modern ? 240.0 : 150.0) *
+    (modern && !carousel ? 240.0 : 150.0) *
         _rowScale(context) *
         posterSize.portraitHeight /
         PosterSize.medium.portraitHeight,
@@ -2782,9 +2813,13 @@ double _rowPeekCover(BuildContext context, String mode) {
       previewValue(context, UserPreferences.fullScreenRows)) {
     return 0;
   }
-  final modern =
-      previewValue(context, UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-  final (poster, thumb) = _sampleCardHeights(context, modern: modern);
+  final style = previewValue(context, UserPreferences.homeRowsStyle);
+  final modern = style.usesModernCards;
+  final (poster, thumb) = _sampleCardHeights(
+    context,
+    modern: modern,
+    carousel: style == HomeRowsStyle.carousel,
+  );
   // The title band's padding and line of text, then the cards' top padding.
   final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
   return header + (modern ? poster : thumb) / 2;
@@ -2794,12 +2829,18 @@ Widget _homeRowsColumn(
   BuildContext context,
   List<MediaBarSlideItem> items, {
   required bool modern,
+  bool? carousel,
   bool focusFirst = false,
   double? rowGapOverride,
   bool infoArea = true,
 }) {
   final l10n = AppLocalizations.of(context);
   final scale = _rowScale(context);
+  final isCarousel =
+      modern &&
+      (carousel ??
+          previewValue(context, UserPreferences.homeRowsStyle) ==
+              HomeRowsStyle.carousel);
 
   Widget header(String title) => Padding(
     padding: modern
@@ -2908,31 +2949,33 @@ Widget _homeRowsColumn(
             if (focused) focusRing(),
           ],
         ),
-        const SizedBox(height: 6),
-        SizedBox(
-          width: width,
-          child: Text(
-            item.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: AppColorScheme.onSurface,
-              shadows: _textShadows,
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
+          SizedBox(
+            width: width,
+            child: Text(
+              item.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppColorScheme.onSurface,
+                shadows: _textShadows,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
-          Text(
-            '${item.year}',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
-              shadows: _textShadows,
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
+              ),
             ),
-          ),
+        ],
       ],
     );
   }
@@ -2958,6 +3001,7 @@ Widget _homeRowsColumn(
   final (posterHeight, thumbHeight) = _sampleCardHeights(
     context,
     modern: modern,
+    carousel: isCarousel,
   );
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
   final showOverview = !previewValue(
@@ -2991,70 +3035,73 @@ Widget _homeRowsColumn(
             focusRing(),
           ],
         ),
-        const SizedBox(height: 6),
-        Text(
-          item.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: AppColorScheme.onSurface,
-            shadows: _textShadows,
-          ),
-        ),
-        const SizedBox(height: 2),
-        if (item.year != null)
+        // Carousel shows all of this in its panel instead.
+        if (!isCarousel) ...[
+          const SizedBox(height: 6),
           Text(
-            '${item.year}',
+            item.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: AppColorScheme.onSurface,
               shadows: _textShadows,
             ),
           ),
-        const SizedBox(height: 4),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(width: width, height: 76),
-            Positioned(
-              left: 0,
-              top: 0,
-              width: width * 2.4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _sampleRatings(
-                    context,
-                    item,
-                    UserPreferences.homeRowsRatings,
-                    personal: true,
-                    singleLine: !_phone,
-                  ),
-                  if (showOverview && item.overview != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        item.overview!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.4,
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                          shadows: _textShadows,
-                        ),
-                      ),
-                    ),
-                ],
+          const SizedBox(height: 2),
+          if (item.year != null)
+            Text(
+              '${item.year}',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                shadows: _textShadows,
               ),
             ),
-          ],
-        ),
+          const SizedBox(height: 4),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(width: width, height: 76),
+              Positioned(
+                left: 0,
+                top: 0,
+                width: width * 2.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _sampleRatings(
+                      context,
+                      item,
+                      UserPreferences.homeRowsRatings,
+                      personal: true,
+                      singleLine: !_phone,
+                    ),
+                    if (showOverview && item.overview != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          item.overview!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                            shadows: _textShadows,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -3084,9 +3131,36 @@ Widget _homeRowsColumn(
             focused: withFocus && i == 0,
           ),
     ];
+    final desktopScale = _desktopScale(context);
+    final panelItem = _itemAt(items, offset);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [header(title), cardsRow(cards)],
+      children: [
+        header(title),
+        cardsRow(cards),
+        if (isCarousel) ...[
+          SizedBox(height: carouselPanelGap(desktopScale)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
+            child: SizedBox(
+              height: carouselPanelHeight(desktopScale),
+              child: CarouselPanel(
+                item: _slideAsItem(panelItem),
+                desktopScale: desktopScale,
+                backdropUrl: panelItem.backdropUrl,
+                ratings: _sampleRatings(
+                  context,
+                  panelItem,
+                  UserPreferences.homeRowsRatings,
+                  personal: true,
+                  singleLine: !_phone,
+                ),
+                showOverview: showOverview,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

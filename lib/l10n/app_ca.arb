@@ -16630,7 +16630,7 @@
     "@upcomingCalendars": {
         "description": "Settings screen for the Radarr and Sonarr calendar home rows"
     },
-    "upcomingCalendarsDescription": "Activa o desactiva els calendaris de properes estrenes de Radarr/Sonarr.",
+    "upcomingCalendarsDescription": "Tria què mostren les files de Radarr i Sonarr.",
     "@upcomingCalendarsDescription": {
         "description": "Subtitle of the Upcoming Calendars settings entry"
     },
@@ -17000,10 +17000,6 @@
     "mdblistWatchingNow": "Ara es mira a MDBList",
     "@mdblistWatchingNow": {
         "description": "Title of the Watching on MDBList home row"
-    },
-    "mdblistWatchingNowDescription": "Mostra què miren ara mateix els usuaris de MDBList",
-    "@mdblistWatchingNowDescription": {
-        "description": "Description for the Watching on MDBList setting"
     },
     "watchingNowLiveSummary": "{users} mirant ara · {movies} pel·lícules · {shows} sèries",
     "@watchingNowLiveSummary": {
@@ -17562,17 +17558,9 @@
             }
         }
     },
-    "enableRadarrCalendar": "Activa el calendari de properes estrenes de Radarr",
-    "@enableRadarrCalendar": {
-        "description": "Turns on the Radarr calendar home row"
-    },
     "calendarShowReleaseDate": "Mostra la data d'estrena a la pantalla d'inici",
     "@calendarShowReleaseDate": {
         "description": "Shows the release date under each item of a calendar row"
-    },
-    "enableSonarrCalendar": "Activa el calendari de properes estrenes de Sonarr",
-    "@enableSonarrCalendar": {
-        "description": "Turns on the Sonarr calendar home row"
     },
     "sonarrCalendarShowEpisodeInfo": "Mostra la informació de l'episodi",
     "@sonarrCalendarShowEpisodeInfo": {
@@ -18515,5 +18503,29 @@
     "siloPinRemember": "Recorda el PIN en aquest dispositiu",
     "@siloPinRemember": {
         "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "settingsDecodingAndRenderingSection": "Descodificació i renderització",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Flux d'àudio",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Sortida d'àudio",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Configuració del passthrough",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsRewatchSection": "Torna a veure",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "seerrDownloadFailed": "Ha fallat la baixada",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

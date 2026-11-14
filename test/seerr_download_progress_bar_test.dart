@@ -13,7 +13,11 @@ const _summary = SeerrDownloadSummary(
   downloadedBytes: 1 * _gb,
 );
 
-Widget _host({required double width, SeerrDownloadSummary summary = _summary}) {
+Widget _host({
+  required double width,
+  SeerrDownloadSummary summary = _summary,
+  int reasonMaxLines = 1,
+}) {
   return MaterialApp(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
@@ -21,7 +25,10 @@ Widget _host({required double width, SeerrDownloadSummary summary = _summary}) {
       body: Center(
         child: SizedBox(
           width: width,
-          child: SeerrDownloadProgressBar(summary: summary),
+          child: SeerrDownloadProgressBar(
+            summary: summary,
+            reasonMaxLines: reasonMaxLines,
+          ),
         ),
       ),
     ),
@@ -268,6 +275,70 @@ void main() {
     }
   });
 
+  testWidgets('a blocked import names its state, with no percentage', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        width: 166,
+        summary: const SeerrDownloadSummary(
+          fraction: 1,
+          state: SeerrDownloadState.importBlocked,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Import blocked'), findsOneWidget);
+    expect(find.textContaining('%'), findsNothing);
+  });
+
+  testWidgets('the arr reason sits under the bar, one line on a card', (
+    tester,
+  ) async {
+    const reason =
+        'qBittorrent cannot resolve magnet link with DHT disabled, and this '
+        'sentence keeps going long enough to need more than one line';
+    const stalled = SeerrDownloadSummary(
+      fraction: 0,
+      state: SeerrDownloadState.stalled,
+      reason: reason,
+    );
+    await tester.pumpWidget(_host(width: 166, summary: stalled));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    final card = tester.widget<Text>(find.text(reason));
+    expect(card.maxLines, 1);
+    expect(card.overflow, TextOverflow.ellipsis);
+
+    await tester.pumpWidget(
+      _host(width: 320, summary: stalled, reasonMaxLines: 3),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.widget<Text>(find.text(reason)).maxLines, 3);
+  });
+
+  testWidgets('no reason line without a reason', (tester) async {
+    await tester.pumpWidget(_host(width: 320));
+    await tester.pumpAndSettle();
+    expect(find.byType(Text), findsNWidgets(3));
+  });
+
+  testWidgets('not found yet is a line, not an empty bar', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(
+          body: SizedBox(width: 120, child: SeerrNotFoundYetLabel()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Not found yet'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
+
   testWidgets('narrow: a stuck download leaves the percentage alone', (
     tester,
   ) async {
@@ -308,62 +379,72 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: ListView(
-            children: [
-              SizedBox(
-                height: 175,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 110),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Flexible(child: Text('Toy Story 5')),
-                                const SizedBox(width: 8),
-                                const SizedBox(width: 40, height: 17),
-                                const SizedBox(width: 8),
-                                const SizedBox(width: 70, height: 22),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const SeerrDownloadProgressBar(summary: _summary),
-                            const SizedBox(height: 8),
-                            const Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Requested by Axel · Modified by Axel · '
-                                    '26 August 2026',
-                                    maxLines: 2,
+    // With the arr's reason too, which adds a line under the bar.
+    for (final summary in const [
+      _summary,
+      SeerrDownloadSummary(
+        fraction: 0,
+        state: SeerrDownloadState.stalled,
+        reason: 'qBittorrent cannot resolve magnet link with DHT disabled',
+      ),
+    ]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ListView(
+              children: [
+                SizedBox(
+                  height: 175,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 110),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Flexible(child: Text('Toy Story 5')),
+                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 40, height: 17),
+                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 70, height: 22),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              SeerrDownloadProgressBar(summary: summary),
+                              const SizedBox(height: 8),
+                              const Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Requested by Axel · Modified by Axel · '
+                                      '26 August 2026',
+                                      maxLines: 2,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 32, height: 32),
-                              ],
-                            ),
-                          ],
+                                  SizedBox(width: 32, height: 32),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(tester.takeException(), isNull);
+      expect(tester.takeException(), isNull);
+    }
   });
 }
