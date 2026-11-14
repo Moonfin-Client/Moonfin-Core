@@ -3044,6 +3044,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30000,
   );
 
+  static final appleTvClickpadSeekMode = EnumPreference(
+    key: 'appleTvClickpadSeekMode',
+    defaultValue: AppleTvClickpadSeekMode.always,
+    values: AppleTvClickpadSeekMode.values,
+  );
+
   static final controlsHideDelay = Preference(
     key: 'controlsHideDelay',
     defaultValue: 5000,

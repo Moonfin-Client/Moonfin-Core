@@ -17686,5 +17686,21 @@
   "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+  },
+  "clickpadSeeking": "Allow Clickpad Seeking",
+  "@clickpadSeeking": {
+    "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+  },
+  "clickpadSeekingDescription": "When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.",
+  "@clickpadSeekingDescription": {
+    "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+  },
+  "clickpadSeekingControlsVisible": "When controls are showing",
+  "@clickpadSeekingControlsVisible": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+  },
+  "clickpadSeekingPausedOnly": "Only while paused",
+  "@clickpadSeekingPausedOnly": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
   }
 }

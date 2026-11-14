@@ -490,6 +490,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   int _heldSeekCount = 0;
   Timer? _heldSeekTimer;
 
+  /// A Left or Right that wasn't allowed to seek stays blocked while held.
+  LogicalKeyboardKey? _clickpadBlockedKey;
+
   double _brightnessValue = 0.5;
   double _systemVolume = 1.0;
   bool _showVolumeOverlay = false;
@@ -3596,6 +3599,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     firstStep(back ? -_heldSeekBaseMs : _heldSeekBaseMs);
     _heldSeekTimer = Timer(_heldSeekStartDelay, () {
       _stepHeldSeek();
+      if (_heldSeekKey == null) return;
       _heldSeekTimer = Timer.periodic(_heldSeekStepEvery, (timer) {
         if (_heldSeekStartDelay + _heldSeekStepEvery * timer.tick >
             _heldSeekLimit) {
@@ -3609,6 +3613,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _stepHeldSeek() {
+    if (!_clickpadSeekAllowed) {
+      _endHeldSeek();
+      _dropScrubSession(resume: false);
+      return;
+    }
     final ms = heldSeekStepMs(_heldSeekBaseMs, ++_heldSeekCount);
     _seekRelativeAccumulate(
       _heldSeekKey == LogicalKeyboardKey.arrowLeft ? -ms : ms,
@@ -3620,6 +3629,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _heldSeekTimer = null;
     _heldSeekKey = null;
   }
+
+  bool get _clickpadSeekAllowed => _prefs
+      .get(UserPreferences.appleTvClickpadSeekMode)
+      .allowsSeek(controlsVisible: _controlsVisible, playing: !_state.isPaused);
 
   SubtitleViewConfiguration _buildSubtitleConfig() =>
       buildSubtitleViewConfiguration(
@@ -3812,7 +3825,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         // key-release and play is what commits. Otherwise release commits
         // directly.
         if (!_pauseDuringScrub) {
-          _commitPendingScrub();
+          if (_clickpadSeekAllowed) {
+            _commitPendingScrub();
+          } else {
+            _dropScrubSession(resume: false);
+          }
         }
       }
       return KeyEventResult.ignored;
@@ -3948,7 +3965,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             return KeyEventResult.ignored;
           }
           if (!_controlsVisible) {
-            if (_beginHeldSeek(
+            if (!_clickpadSeekAllowed) {
+              _clickpadBlockedKey = event.logicalKey;
+              _showControls(focusSeekbar: true);
+            } else if (_beginHeldSeek(
               event,
               (ms) => _seekRelative(ms, showControls: false),
             )) {
@@ -5520,6 +5540,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               switch (event.logicalKey) {
                                 case LogicalKeyboardKey.arrowLeft:
                                 case LogicalKeyboardKey.arrowRight:
+                                  if (event is KeyRepeatEvent &&
+                                      event.logicalKey == _clickpadBlockedKey) {
+                                    return KeyEventResult.handled;
+                                  }
+                                  if (!_clickpadSeekAllowed) {
+                                    _clickpadBlockedKey = event.logicalKey;
+                                    _showControls();
+                                    return KeyEventResult.handled;
+                                  }
                                   _beginHeldSeek(
                                     event,
                                     _seekRelativeAccumulate,

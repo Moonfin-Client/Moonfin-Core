@@ -31420,6 +31420,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Left and Right slide the scrubber.'**
   String get afterHoursPixelPurgeCardRemote;
+
+  /// Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Clickpad Seeking'**
+  String get clickpadSeeking;
+
+  /// Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls
+  ///
+  /// In en, this message translates to:
+  /// **'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.'**
+  String get clickpadSeekingDescription;
+
+  /// Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen
+  ///
+  /// In en, this message translates to:
+  /// **'When controls are showing'**
+  String get clickpadSeekingControlsVisible;
+
+  /// Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen
+  ///
+  /// In en, this message translates to:
+  /// **'Only while paused'**
+  String get clickpadSeekingPausedOnly;
 }
 
 class _AppLocalizationsDelegate

@@ -514,6 +514,17 @@ void main() {
       }
     }
 
+    Future<void> pausedWithControlsUp(WidgetTester tester) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+      manager.state.setPlaying(false);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 300);
+    }
+
     test('grows from the set step to 30, 60 and 180 seconds', () {
       expect(
         [
@@ -555,6 +566,100 @@ void main() {
       expect(manager.seeks, hasLength(3));
 
       // Lets the last commit stop waiting for the player to land.
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek with the controls up, a press first shows them', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.controlsVisible,
+      );
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty, reason: 'held, it stays blocked');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, playback never seeks', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+
+      for (var i = 0; i < 2; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 300);
+      }
+      expect(manager.seeks, isEmpty);
+
+      // A stalled stream isn't a pause.
+      manager.state
+        ..setPlayWhenReady(true)
+        ..setPlaying(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      manager.state.setPlayWhenReady(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, resuming drops a hold', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 200);
+      manager.state.setPlaying(true);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a hold ended before its first step stays ended', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPlaying(true);
+      await advance(tester, 400);
+      manager.state.setPlaying(false);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 600);
+      expect(manager.seeks, isEmpty);
+
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpWidget(const SizedBox());
     });
