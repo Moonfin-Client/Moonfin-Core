@@ -18126,6 +18126,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clickpadSeekingPausedOnly => 'Only while paused';
+
+  @override
+  String get seriesTrackMode => 'Sub / Dub';
+
+  @override
+  String get seriesTrackModeTitle => 'Audio and Subtitles for This Series';
+
+  @override
+  String get seriesTrackModeDefault => 'Default';
+
+  @override
+  String get seriesTrackModeDefaultDescription =>
+      'Follow your audio and subtitle settings';
+
+  @override
+  String get seriesTrackModeSubbed => 'Subbed';
+
+  @override
+  String get seriesTrackModeSubbedDescription =>
+      'Original audio with full subtitles in your language';
+
+  @override
+  String get seriesTrackModeDubbed => 'Dubbed';
+
+  @override
+  String get seriesTrackModeDubbedDescription =>
+      'Audio in your language, forced subtitles only';
 }
 
 /// The translations for English, as used in the United Kingdom (`en_GB`).

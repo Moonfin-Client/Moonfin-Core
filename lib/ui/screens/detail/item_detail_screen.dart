@@ -7037,7 +7037,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         button.icon == Icons.favorite ||
         button.icon == Icons.playlist_add ||
         button.icon == Icons.settings ||
-        button.icon == Icons.movie_outlined;
+        button.icon == Icons.movie_outlined ||
+        button.icon == Icons.translate;
   }
 
   /// The buttons in the order they should be laid out.
@@ -7418,6 +7419,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.subtitles,
           onPressed: () => _openSubtitleSelector(context, item),
         ),
+      if (item.type == 'Series' &&
+          !viewModel.isSeerrOnly &&
+          shows(DetailButton.trackMode))
+        DetailButton.trackMode: _seriesTrackModeButton(context, item, l10n),
       if (!widget.omitTrackButtons &&
           isPlayableMedia &&
           item.mediaSources.length > 1 &&
@@ -11182,6 +11187,66 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         }
       }
     }
+  }
+
+  /// Whether a series plays subbed, dubbed or by the usual settings. The
+  /// label says which while it isn't the usual.
+  _DetailActionButton _seriesTrackModeButton(
+    BuildContext context,
+    AggregatedItem series,
+    AppLocalizations l10n,
+  ) {
+    final mode = GetIt.instance<UserPreferences>().getSeriesTrackMode(
+      series.id,
+    );
+    return _DetailActionButton(
+      label: switch (mode) {
+        SeriesTrackMode.standard => l10n.seriesTrackMode,
+        SeriesTrackMode.subbed => l10n.seriesTrackModeSubbed,
+        SeriesTrackMode.dubbed => l10n.seriesTrackModeDubbed,
+      },
+      icon: Icons.translate,
+      onPressed: () => _showSeriesTrackModeSelector(context, series, mode),
+      isActive: mode != SeriesTrackMode.standard,
+      activeColor: AppColorScheme.accent,
+    );
+  }
+
+  Future<void> _showSeriesTrackModeSelector(
+    BuildContext context,
+    AggregatedItem series,
+    SeriesTrackMode current,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    const modes = SeriesTrackMode.values;
+    final result = await TrackSelectorDialog.show(
+      context,
+      title: l10n.seriesTrackModeTitle,
+      options: [
+        for (final mode in modes)
+          switch (mode) {
+            SeriesTrackMode.standard => TrackOption(
+              label: l10n.seriesTrackModeDefault,
+              subtitle: l10n.seriesTrackModeDefaultDescription,
+            ),
+            SeriesTrackMode.subbed => TrackOption(
+              label: l10n.seriesTrackModeSubbed,
+              subtitle: l10n.seriesTrackModeSubbedDescription,
+            ),
+            SeriesTrackMode.dubbed => TrackOption(
+              label: l10n.seriesTrackModeDubbed,
+              subtitle: l10n.seriesTrackModeDubbedDescription,
+            ),
+          },
+      ],
+      selectedIndex: modes.indexOf(current),
+    );
+    if (result == null || result >= modes.length || !mounted) return;
+    await GetIt.instance<UserPreferences>().setSeriesTrackMode(
+      series.id,
+      modes[result],
+    );
+    if (mounted) setState(() {});
   }
 
   void _showVersionSelector(

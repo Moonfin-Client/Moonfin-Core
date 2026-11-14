@@ -6,6 +6,21 @@ enum SubtitleMode {
   none,
 }
 
+/// How one series picks its audio and subtitles, set from its details.
+/// [standard] leaves it to the audio and subtitle settings. [subbed] plays
+/// audio in another language than the viewer's with full subtitles, [dubbed]
+/// audio in the viewer's language with forced subtitles only.
+///
+/// The name is what gets stored.
+enum SeriesTrackMode {
+  standard,
+  subbed,
+  dubbed;
+
+  static SeriesTrackMode fromStored(String raw) =>
+      SeriesTrackMode.values.asNameMap()[raw.trim()] ?? standard;
+}
+
 /// What the server re-encodes audio to when it has no choice. TrueHD isn't an
 /// option, since Jellyfin can't repackage it into a streaming container and the
 /// track lands silent.

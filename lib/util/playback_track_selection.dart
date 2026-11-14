@@ -1,7 +1,10 @@
+import 'dart:ui' as ui;
+
 import '../data/models/series_track_preference.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import 'audio_track_logic.dart';
+import 'language_matching.dart';
 import 'subtitle_track_logic.dart';
 
 /// What the viewer already picked during this playback session, as the
@@ -37,6 +40,14 @@ int? selectPlaybackAudioIndex({
   if (explicitIndex != null &&
       audioStreams.any((s) => s['Index'] == explicitIndex)) {
     return explicitIndex;
+  }
+
+  // A sub or dub mode outranks the track the series remembers, but not audio
+  // the viewer switched to during this session.
+  final mode = _seriesTrackMode(prefs, seriesId);
+  if (mode != SeriesTrackMode.standard && session.audioLanguage == null) {
+    final modeIndex = _modeAudioIndex(mode, audioStreams, prefs, session);
+    if (modeIndex != null) return modeIndex;
   }
 
   if (seriesId != null && seriesId.isNotEmpty) {
@@ -77,6 +88,17 @@ int? selectPlaybackSubtitleIndex({
   String? seriesId,
   SessionTrackChoices session = const SessionTrackChoices(),
 }) {
+  final mode = _seriesTrackMode(prefs, seriesId);
+  if (mode != SeriesTrackMode.standard && session.subtitleEnabled == null) {
+    return _modeSubtitleIndex(
+      subtitleStreams: subtitleStreams,
+      audioStreams: audioStreams,
+      prefs: prefs,
+      seriesId: seriesId,
+      session: session,
+    );
+  }
+
   final seriesSubPref = seriesId != null && seriesId.isNotEmpty
       ? prefs.getSeriesSubtitlePreference(seriesId)
       : SeriesTrackPreference.empty;
@@ -140,5 +162,130 @@ int? selectPlaybackSubtitleIndex({
     preferredAudioLanguage:
         prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto',
     activeAudioLanguage: activeAudioLanguage,
+  );
+}
+
+SeriesTrackMode _seriesTrackMode(UserPreferences prefs, String? seriesId) =>
+    seriesId == null || seriesId.isEmpty
+    ? SeriesTrackMode.standard
+    : prefs.getSeriesTrackMode(seriesId);
+
+/// The language the viewer listens in: the audio language setting, or the
+/// device's own language while that is on auto.
+String _viewerLanguage(UserPreferences prefs) {
+  final audio =
+      (prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? '').trim();
+  if (audio.isNotEmpty && audio.toLowerCase() != 'auto') return audio;
+  return ui.PlatformDispatcher.instance.locale.languageCode;
+}
+
+/// The audio a sub or dub mode asks for, or null when the episode has none,
+/// which leaves the usual choice to stand.
+int? _modeAudioIndex(
+  SeriesTrackMode mode,
+  List<Map<String, dynamic>> audioStreams,
+  UserPreferences prefs,
+  SessionTrackChoices session,
+) {
+  final viewer = _viewerLanguage(prefs);
+  final preferAudioDescription =
+      prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false;
+  final usable = audioStreams
+      .where(
+        (s) =>
+            s['Index'] != null &&
+            !isCommentaryAudioStream(s) &&
+            (preferAudioDescription || !isAudioDescriptionAudioStream(s)),
+      )
+      .toList();
+
+  if (mode == SeriesTrackMode.dubbed) {
+    final dubs = usable.where((s) => matchLang(s['Language'], viewer)).toList();
+    if (dubs.isEmpty) return null;
+    return computeEffectiveAudioIndex(
+      audioStreams: dubs,
+      preferredAudioLanguage: viewer,
+      fallbackAudioLanguage: '',
+      preferDefaultAudioTrack:
+          prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
+      preferAudioDescription: preferAudioDescription,
+      lastExplicitAudioIndex: session.audioIndex,
+      lastExplicitAudioTitle: session.audioTitle,
+    );
+  }
+
+  // An untagged track could just as well be the dub, so only a track tagged
+  // with another language counts as the original.
+  final originals = usable.where((s) {
+    final language = normalizeLanguage(s['Language'] as String?);
+    return language.isNotEmpty &&
+        language != 'und' &&
+        !matchLang(language, viewer);
+  }).toList();
+  if (originals.isEmpty) return null;
+  final original = originals.firstWhere(
+    (s) => s['IsDefault'] == true,
+    orElse: () => originals.first,
+  );
+  return original['Index'] as int?;
+}
+
+/// Subtitles under a sub or dub mode follow the audio that actually plays:
+/// full ones over audio in another language, forced ones over audio in the
+/// viewer's own. A subbed series with no original audio in this episode so
+/// gets the dub's forced subtitles, and a dubbed one with no dub gets full
+/// subtitles.
+int? _modeSubtitleIndex({
+  required List<Map<String, dynamic>> subtitleStreams,
+  required List<Map<String, dynamic>> audioStreams,
+  required UserPreferences prefs,
+  required String? seriesId,
+  required SessionTrackChoices session,
+}) {
+  final audioIndex = selectPlaybackAudioIndex(
+    audioStreams: audioStreams,
+    prefs: prefs,
+    seriesId: seriesId,
+    session: session,
+  );
+  final audioLanguage = audioStreams.firstWhere(
+    (s) => s['Index'] == audioIndex,
+    orElse: () => const <String, dynamic>{},
+  )['Language'] as String?;
+
+  final viewer = _viewerLanguage(prefs);
+  final subtitleSetting =
+      (prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? '')
+          .trim();
+  final subtitleLanguage =
+      subtitleSetting.isEmpty || subtitleSetting.toLowerCase() == 'none'
+      ? viewer
+      : subtitleSetting;
+
+  final nativeAudio = matchLang(audioLanguage, viewer);
+  final full = subtitleStreams
+      .where((s) => !isForcedSubtitleStream(s))
+      .toList();
+
+  return computeEffectiveSubtitleIndex(
+    subtitleStreams: nativeAudio || full.isEmpty ? subtitleStreams : full,
+    selectedSubtitleIndex: null,
+    activePlaybackSubtitleIndex: null,
+    subtitleMode: nativeAudio ? SubtitleMode.forced : SubtitleMode.always,
+    preferredLanguage: subtitleLanguage,
+    // Forced lines in some other language are no help to someone who
+    // understands the audio.
+    fallbackLanguage: nativeAudio
+        ? ''
+        : prefs.get(UserPreferences.fallbackSubtitleLanguage) as String? ?? '',
+    preferSdh: prefs.get(UserPreferences.preferSdhSubtitles) as bool? ?? false,
+    preferTextSubtitles:
+        prefs.get(UserPreferences.preferTextSubtitles) as bool? ?? false,
+    preferExternalSubtitles:
+        prefs.get(UserPreferences.preferExternalSubtitles) as bool? ?? false,
+    pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay) as bool? ?? false,
+    assDirectPlay: prefs.get(UserPreferences.assDirectPlay) as bool? ?? false,
+    preferredAudioLanguage: viewer,
+    activeAudioLanguage: audioLanguage,
   );
 }

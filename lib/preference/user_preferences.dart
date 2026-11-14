@@ -4682,6 +4682,27 @@ class UserPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
+  SeriesTrackMode getSeriesTrackMode(String seriesId) {
+    final pref = Preference(
+      key: 'pref_series_track_mode_$seriesId',
+      defaultValue: '',
+    );
+    return SeriesTrackMode.fromStored(_store.get(pref));
+  }
+
+  Future<void> setSeriesTrackMode(String seriesId, SeriesTrackMode mode) async {
+    final key = Preference(
+      key: 'pref_series_track_mode_$seriesId',
+      defaultValue: '',
+    );
+    if (mode == SeriesTrackMode.standard) {
+      await _store.delete(key);
+    } else {
+      await _store.set(key, mode.name);
+    }
+    notifyListeners();
+  }
+
   int getItemSubtitleStreamIndex(String itemId) {
     final pref = Preference<int>(
       key: 'pref_item_subtitle_index_$itemId',

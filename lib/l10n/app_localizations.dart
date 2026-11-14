@@ -31444,6 +31444,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only while paused'**
   String get clickpadSeekingPausedOnly;
+
+  /// Series details action button that picks whether the series plays subbed, dubbed or by the usual audio and subtitle settings. Shown while the series follows the usual settings
+  ///
+  /// In en, this message translates to:
+  /// **'Sub / Dub'**
+  String get seriesTrackMode;
+
+  /// Title of the dialog opened by the Sub / Dub button on a series' details
+  ///
+  /// In en, this message translates to:
+  /// **'Audio and Subtitles for This Series'**
+  String get seriesTrackModeTitle;
+
+  /// Sub / Dub option: the series follows the audio and subtitle settings like everything else
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get seriesTrackModeDefault;
+
+  /// Explains the Default option of the Sub / Dub dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Follow your audio and subtitle settings'**
+  String get seriesTrackModeDefaultDescription;
+
+  /// Sub / Dub option, also the button label while it is chosen: original audio with subtitles in the viewer's language
+  ///
+  /// In en, this message translates to:
+  /// **'Subbed'**
+  String get seriesTrackModeSubbed;
+
+  /// Explains the Subbed option of the Sub / Dub dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Original audio with full subtitles in your language'**
+  String get seriesTrackModeSubbedDescription;
+
+  /// Sub / Dub option, also the button label while it is chosen: audio in the viewer's language
+  ///
+  /// In en, this message translates to:
+  /// **'Dubbed'**
+  String get seriesTrackModeDubbed;
+
+  /// Explains the Dubbed option of the Sub / Dub dialog. Forced subtitles only cover signs and foreign-language lines
+  ///
+  /// In en, this message translates to:
+  /// **'Audio in your language, forced subtitles only'**
+  String get seriesTrackModeDubbedDescription;
 }
 
 class _AppLocalizationsDelegate

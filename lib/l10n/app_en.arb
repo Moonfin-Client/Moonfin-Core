@@ -17702,5 +17702,37 @@
   "clickpadSeekingPausedOnly": "Only while paused",
   "@clickpadSeekingPausedOnly": {
     "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+  },
+  "seriesTrackMode": "Sub / Dub",
+  "@seriesTrackMode": {
+    "description": "Series details action button that picks whether the series plays subbed, dubbed or by the usual audio and subtitle settings. Shown while the series follows the usual settings"
+  },
+  "seriesTrackModeTitle": "Audio and Subtitles for This Series",
+  "@seriesTrackModeTitle": {
+    "description": "Title of the dialog opened by the Sub / Dub button on a series' details"
+  },
+  "seriesTrackModeDefault": "Default",
+  "@seriesTrackModeDefault": {
+    "description": "Sub / Dub option: the series follows the audio and subtitle settings like everything else"
+  },
+  "seriesTrackModeDefaultDescription": "Follow your audio and subtitle settings",
+  "@seriesTrackModeDefaultDescription": {
+    "description": "Explains the Default option of the Sub / Dub dialog"
+  },
+  "seriesTrackModeSubbed": "Subbed",
+  "@seriesTrackModeSubbed": {
+    "description": "Sub / Dub option, also the button label while it is chosen: original audio with subtitles in the viewer's language"
+  },
+  "seriesTrackModeSubbedDescription": "Original audio with full subtitles in your language",
+  "@seriesTrackModeSubbedDescription": {
+    "description": "Explains the Subbed option of the Sub / Dub dialog"
+  },
+  "seriesTrackModeDubbed": "Dubbed",
+  "@seriesTrackModeDubbed": {
+    "description": "Sub / Dub option, also the button label while it is chosen: audio in the viewer's language"
+  },
+  "seriesTrackModeDubbedDescription": "Audio in your language, forced subtitles only",
+  "@seriesTrackModeDubbedDescription": {
+    "description": "Explains the Dubbed option of the Sub / Dub dialog. Forced subtitles only cover signs and foreign-language lines"
   }
 }
