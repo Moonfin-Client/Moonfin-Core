@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/local_search_field.dart';
+import '../../../widgets/overlay_sheet.dart';
 
 typedef GuideFilterChoice = (GuideFilter, String?);
 
@@ -142,6 +143,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
         if (_scroll?.hasClients == true) _scroll!.jumpTo(0);
       },
     );
+    final closeOnBack = createDialogBackCloseHandler(context);
     return Focus(
       canRequestFocus: false,
       onKeyEvent: (_, event) {
@@ -149,7 +151,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
             event.logicalKey.isBackKey &&
             !(event.logicalKey == LogicalKeyboardKey.backspace &&
                 _searchFocus.hasFocus)) {
-          Navigator.of(context).pop();
+          closeOnBack();
           return KeyEventResult.handled;
         }
         if (widget.sidePanel &&

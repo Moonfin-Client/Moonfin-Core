@@ -16,6 +16,7 @@ import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_filter_picker.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_now_next_card.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
@@ -361,7 +362,13 @@ void main() {
       expect(list.offset, greaterThan(0));
       await tester.enterText(find.byType(TextField), 'Channel 4');
       await tester.pump(const Duration(milliseconds: 200));
-      expect(list.offset, 0);
+      await _pumpFrames(tester);
+      final firstMatch = find.byType(EpgNowNextCard).first;
+      expect(
+        tester.widget<EpgNowNextCard>(firstMatch).channelName,
+        'Channel 4',
+      );
+      expect(firstMatch.hitTestable(), findsOneWidget);
       await tester.enterText(find.byType(TextField), '');
       await tester.pump(const Duration(milliseconds: 200));
       await tester.tap(find.text('All channels'));

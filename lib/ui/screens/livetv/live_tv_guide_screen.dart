@@ -1484,7 +1484,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       } finally {
         _checkingPickerRestore = false;
       }
-      if (!mounted || !identical(_pendingPickerRestore, pending)) return;
+      if (!mounted || _pendingPickerRestore != pending) return;
       if (!canRestore()) {
         _pendingPickerRestore = null;
         _suppressPickerRestorePrefetch = false;
@@ -1601,8 +1601,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             );
           } else if (previousRow != null) {
             _browseFocus.requestFocus();
-          } else if (previousFocus?.context != null) {
+          } else if (previousFocus?.context?.mounted == true) {
             previousFocus?.requestFocus();
+          } else {
+            _focusFilterRail();
           }
         });
       }
